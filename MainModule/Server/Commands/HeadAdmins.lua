@@ -426,7 +426,7 @@ return function(Vargs, env)
 
 				if
 					Remote.GetGui(plr, "YesNoPrompt", {
-						Question = `Shutdown all running servers for the reason '{tostring(args[1])}'?`;
+						Question = `Shutdown all running servers for the reason '{args[1]}'?`;
 						Title = "Global Shutdown";
 					}) == "Yes"
 				then

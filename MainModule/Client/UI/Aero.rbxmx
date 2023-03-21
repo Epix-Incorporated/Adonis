@@ -2746,7 +2746,7 @@ return function(data, env)
 			if options then
 				for i,v in options do
 					local button = scroller:Add("TextButton", {
-						Text = `  {tostring(v)}`;
+						Text = `  {v}`;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, 30*(i-1));
 						ZIndex = menu.ZIndex;
@@ -2922,7 +2922,7 @@ return function(data, env)
 					end
 
 					local label = create("TextLabel",{
-						Text = ` {tostring(text)}`;
+						Text = ` {text}`;
 						ToolTip = desc;
 						Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 						Visible = true;
@@ -11856,7 +11856,7 @@ return function(data, env)
 					tim = 0.5 - (tick() - lastChat)
 				end
 				tim = string.sub(tostring(tim), 1, 3)
-				client.Handlers.ChatHandler("SpamBot", `Sending too fast! Please wait {tostring(tim)} seconds.`, "System")
+				client.Handlers.ChatHandler("SpamBot", `Sending too fast! Please wait {tim} seconds.`, "System")
 			end
 			box.Text = "Click here or press the '/' key to chat"
 			fadeOut()

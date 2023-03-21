@@ -126,8 +126,8 @@ return function(Vargs)
 			end
 		end
 
-		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #game.Players:GetPlayers()
-		stats.MaxPlayers = game.Players.MaxPlayers
+		stats.PlayerCount = #service.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #service.Players:GetPlayers()
+		stats.MaxPlayers = service.Players.MaxPlayers
 		stats.ServerStartTime = server.ServerStartTime
 		stats.ServerSpeed = math.min(frames/60, 1) * 100
 		stats.Admins = admins
@@ -442,8 +442,8 @@ return function(Vargs)
 							v.command = tostring(v.command)
 						end
 
-						warn(`WebPanel executed command from Web Panel: {tostring(v.command)}`)
-						Logs:AddLog("Script", `WebPanel Executed command: {tostring(v.command)}`)
+						warn(`WebPanel executed command from Web Panel: {v.command}`)
+						Logs:AddLog("Script", `WebPanel Executed command: {v.command}`)
 
 						Process.Command(fakePlayer, v.command, {
 							AdminLevel = 900,

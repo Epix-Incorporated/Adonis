@@ -31,7 +31,7 @@ local function tabToString(tab)
 				str ..= "; "
 			end
 
-			str ..= `{tostring(i)}: {tostring(v)}`
+			str ..= `{i}: {v}`
 		end
 		return str
 	else
@@ -1597,7 +1597,7 @@ return function(data, env)
 						end
 					elseif type(value) == "boolean" then
 						gameTab:Add("TextLabel", {
-							Text = `  {tostring(setting)}: `;
+							Text = `  {setting}: `;
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
@@ -1610,7 +1610,7 @@ return function(data, env)
 									Position = UDim2.new(1, -100, 0, 0);
 									BackgroundTransparency = 1;
 									OnToggle = function(enabled, button)
-										--warn(`Setting {tostring(setting)}: {tostring(enabled)}`)
+										--warn(`Setting {setting}: {enabled}`)
 										Remote.Send("SaveSetSetting", setting, enabled)
 									end
 								}
@@ -1632,7 +1632,7 @@ return function(data, env)
 									BackgroundTransparency = 1;
 									TextChanged = function(text, enter, new)
 										if enter then
-											--warn(`Setting {tostring(setting)}: {tostring(text)}`)
+											--warn(`Setting {setting}: {text}`)
 											Remote.Send("SaveSetSetting", setting, text)
 										end
 									end

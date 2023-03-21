@@ -36,7 +36,7 @@ return function(Vargs)
 		AdminLevel = "Players";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
 		Function = function(plr,args)    -- Function to run for command
 			print("HELLO WORLD FROM AN EXAMPLE COMMAND :)")
-			print(`Player supplied args[1] {tostring(args[1])}`)
+			print(`Player supplied args[1] {args[1]}`)
 		end
 	}
 end

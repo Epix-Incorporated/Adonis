@@ -62,7 +62,7 @@ end
 
 local function warn(str)
 	if DebugMode or player.UserId == 1237666 then
-		realWarn(`ACLI: {tostring(str)}`)
+		realWarn(`ACLI: {str}`)
 	end
 end
 
@@ -78,7 +78,7 @@ local function Locked(obj)
 end
 
 local function callCheck(child)
-	warn(`CallCheck: {tostring(child)}`)
+	warn(`CallCheck: {child}`)
 	if Locked(child) then
 		warn("Child locked?")
 		Kill("ACLI: Locked")
@@ -100,7 +100,7 @@ local function doPcall(func, ...)
 		return ran,ret
 	else
 		warn(tostring(ret))
-		Kill(`ACLI: Error\n{tostring(ret)}`)
+		Kill(`ACLI: Error\n{ret}`)
 		return ran,ret
 	end
 end
@@ -120,7 +120,7 @@ local function loadingTime()
 end
 
 local function checkChild(child)
-	warn(`Checking child: {tostring(child and child.ClassName)} : {tostring(child and child:GetFullName())}`)
+	warn(`Checking child: child and child.ClassName} : {child and child:GetFullName()}`)
 	callCheck(child)
 	if child and not foundClient and not checkedChildren[child] and child:IsA("Folder") and child.Name == "Adonis_Client" then
 		warn("Loading Folder...")
@@ -144,7 +144,7 @@ local function checkChild(child)
 
 		warn("Getting origName")
 		origName = (nameVal and nameVal.Value) or child.Name
-		warn(`Got name: {tostring(origName)}`)
+		warn(`Got name: {origName}`)
 
 		warn("Changing child parent...")
 		child.Parent = nil
@@ -160,7 +160,7 @@ local function checkChild(child)
 		if clientModule and clientModule:IsA("ModuleScript") then
 			print("Debug: Loading the client?")
 			local meta = require(clientModule)
-			warn(`Got metatable: {tostring(meta)}`)
+			warn(`Got metatable: {meta}`)
 			if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
 				local ran,ret = pcall(meta,{
 					Module = clientModule,
@@ -172,7 +172,7 @@ local function checkChild(child)
 					Kill = Kill
 				})
 
-				warn(`Got return: {tostring(ret)}`)
+				warn(`Got return: {ret}`)
 				if ret ~= "SUCCESS" then
 					warn(ret)
 					Kill("ACLI: Loading Error [Bad Module Return]")
@@ -225,7 +225,7 @@ else
 		warn("CoreGui not locked?")
 		Kill("ACLI: Error")
 	else
-		warn(`CoreGui Locked: {tostring(Locked(game:GetService("CoreGui")))}`)
+		warn(`CoreGui Locked: {Locked(game:GetService("CoreGui"))}`)
 	end
 
 	warn("Checking Services")
@@ -261,9 +261,9 @@ else
 		wait(5);
 	until (time() - start > 600) or foundClient
 
-	warn(`Elapsed: {tostring(time() - start)}`);
-	warn(`Timeout: {tostring(time() - start > 600)}`);
-	warn(`Found Client: {tostring(foundClient)}`);
+	warn(`Elapsed: {time() - start}`);
+	warn(`Timeout: {time() - start > 600}`);
+	warn(`Found Client: {foundClient}`);
 
 	warn("Disconnecting finder event...");
 	if finderEvent then

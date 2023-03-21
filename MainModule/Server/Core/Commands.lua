@@ -90,7 +90,7 @@ return function(Vargs, GetEnv)
 			if cmd.Chattable ~= nil then
 				cmd.NonChattable = not cmd.Chattable
 				cmd.Chattable = nil
-				warn(`Deprecated 'Chattable' property found in command {ind}; switched to NonChattable = {tostring(cmd.NonChattable)}`)
+				warn(`Deprecated 'Chattable' property found in command {ind}; switched to NonChattable = {cmd.NonChattable}`)
 			end
 
 			Admin.PrefixCache[cmd.Prefix] = true

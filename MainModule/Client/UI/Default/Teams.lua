@@ -142,7 +142,7 @@ return function(data, env)
 						TextXAlignment = "Left";
 						TextYAlignment = "Center";
 						Text = team.Name;
-						ToolTip = `[Auto-Assignable]: {tostring(team.AutoAssignable)}`;
+						ToolTip = `[Auto-Assignable]: {team.AutoAssignable}`;
 						ZIndex = 13;
 					},
 					{

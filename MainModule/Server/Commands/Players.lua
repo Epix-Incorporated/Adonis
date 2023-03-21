@@ -368,7 +368,7 @@ return function(Vargs, env)
 					elseif pending and pending.Pending then
 						error("You already have a pending request")
 					else
-						service.TrackTask(`Thread: {tostring(plr)} Help Request Handler`, function()
+						service.TrackTask(`Thread: {plr} Help Request Handler`, function()
 							Functions.Hint("Request sent", {plr})
 
 							pending = {
@@ -788,9 +788,9 @@ return function(Vargs, env)
 				end
 
 				if nilNum > 0 and Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
-					Functions.Hint(`There are currently {tostring(num)} player(s); {tostring(nilNum)} are nil or loading`, {plr})
+					Functions.Hint(`There are currently {num} player(s); {nilNum} are nil or loading`, {plr})
 				else
-					Functions.Hint(`There are {tostring(num)} player(s)`, {plr})
+					Functions.Hint(`There are {num} player(s)`, {plr})
 				end
 			end
 		};

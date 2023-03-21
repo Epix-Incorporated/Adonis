@@ -342,9 +342,9 @@ return function(Vargs, GetEnv)
 								})
 
 								if command then
-									local rets = {TrackTask(`Remote: {p.Name}: {tostring(comString)}`, command, p, args)}
+									local rets = {TrackTask(`Remote: {p.Name}: {comString}`, command, p, args)}
 									if not rets[1] then
-										logError(p, `{tostring(comString)}: {tostring(rets[2])}`)
+										logError(p, `{comString}: {rets[2]}`)
 									else
 										return {unpack(rets, 2)}
 									end
@@ -494,7 +494,7 @@ return function(Vargs, GetEnv)
 						end
 					elseif cmdError ~= nil and cmdError ~= true and not isSystem then
 						Remote.MakeGui(p, "Output", {
-							Message = `There was an error but the error was not a string? : {tostring(cmdError)}`;
+							Message = `There was an error but the error was not a string? : {cmdError}`;
 						})
 					end
 				end
@@ -604,7 +604,7 @@ return function(Vargs, GetEnv)
 					local filtered = service.LaxFilter(msg, p)
 
 					AddLog(Logs.Chats, {
-						Text = `{p.Name}: {tostring(filtered)}`;
+						Text = `{p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
 					})
@@ -632,7 +632,7 @@ return function(Vargs, GetEnv)
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
-						Text = `[MUTED] {p.Name}: {tostring(filtered)}`;
+						Text = `[MUTED] {p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
 					})
@@ -734,7 +734,7 @@ return function(Vargs, GetEnv)
 			end)
 
 			if not ran then
-				AddLog("Errors", `{p.Name} PlayerAdded Failed: {tostring(err)}`)
+				AddLog("Errors", `{p.Name} PlayerAdded Failed: {err}`)
 				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:")
 				warn(tostring(err))
 			end
@@ -773,7 +773,7 @@ return function(Vargs, GetEnv)
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						AddLog("Script", {
 							Text = `{p.Name} Failed to Load`,
-							Desc = `{tostring(keyData.LoadingStatus)}: Client failed to load in time (10 minutes?)`,
+							Desc = `{keyData.LoadingStatus}: Client failed to load in time (10 minutes?)`,
 							Player = p;
 						});
 						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
@@ -842,10 +842,10 @@ return function(Vargs, GetEnv)
 
 			--// Run OnJoin commands
 			for i,v in Settings.OnJoin do
-				TrackTask(`Thread: OnJoin_Cmd: {tostring(v)}`, Admin.RunCommandAsPlayer, v, p)
+				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
 				AddLog("Script", {
-					Text = `OnJoin: Executed {tostring(v)}`;
-					Desc = `Executed OnJoin command; {tostring(v)}`
+					Text = `OnJoin: Executed {v}`;
+					Desc = `Executed OnJoin command; {v}`
 				})
 			end
 
@@ -1050,10 +1050,10 @@ return function(Vargs, GetEnv)
 
 				--// Run OnSpawn commands
 				for _, v in Settings.OnSpawn do
-					TrackTask(`Thread: OnSpawn_Cmd: {tostring(v)}`, Admin.RunCommandAsPlayer, v, p)
+					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
 					AddLog("Script", {
-						Text = `OnSpawn: Executed {tostring(v)}`;
-						Desc = `Executed OnSpawn command; {tostring(v)}`;
+						Text = `OnSpawn: Executed {v}`;
+						Desc = `Executed OnSpawn command; {v}`;
 					})
 				end
 

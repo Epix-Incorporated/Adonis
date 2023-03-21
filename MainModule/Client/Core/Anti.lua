@@ -308,7 +308,7 @@ return function(Vargs, GetEnv)
 					return
 				end
 				hasActivated = true
-				Detected("crash", `Tamper Protection 790438; {tostring(message)};`)
+				Detected("crash", `Tamper Protection 790438; {message};`)
 				task.wait(1)
 				pcall(Disconnect, "Adonis_790438")
 				pcall(Kill, "Adonis_790438")
@@ -366,7 +366,7 @@ return function(Vargs, GetEnv)
 					if type(time) ~= "number" or not (time > 0) then
 						idleTamper("Invalid time data")
 					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
-						Detected("kick", `Anti-idle detected. {tostring(math.ceil(time/60) - 20)} minutes above maximum possible Roblox value`)
+						Detected("kick", `Anti-idle detected. {math.ceil(time/60) - 20} minutes above maximum possible Roblox value`)
 					end
 				end)
 
@@ -489,7 +489,7 @@ return function(Vargs, GetEnv)
 
 				if t and (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						Detected("kick", `Building Tools detected; {tostring(t.BinType)}`)
+						Detected("kick", `Building Tools detected; {t.BinType}`)
 					end
 				end
 			end
@@ -501,11 +501,11 @@ return function(Vargs, GetEnv)
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
 					if soundIdCheck(child) then
-						Detected("crash", `CMDx Detected; {tostring(child)}`)
+						Detected("crash", `CMDx Detected; {child}`)
 					else
 						task.wait()
 						if soundIdCheck(child) then
-							Detected("crash", `CMDx Detected; {tostring(child)}`)
+							Detected("crash", `CMDx Detected; {child}`)
 						end
 					end
 				end
@@ -528,13 +528,13 @@ return function(Vargs, GetEnv)
 			--[[
 			service.ScriptContext.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) ~= "CoreScript" then
-					Detected("kick", `Non-CoreScript Detected; {tostring(child)}`)
+					Detected("kick", `Non-CoreScript Detected; {child}`)
 				end
 			end)
 
 			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
-					Detected("kick", `Localscript Detected; {tostring(child)}`)
+					Detected("kick", `Localscript Detected; {child}`)
 				end
 			end)
 			]]

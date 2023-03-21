@@ -461,7 +461,7 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not ok then
-					p:Kick(`\n[CLI-192385] Loading Error \n[HookClient Error: {tostring(err)}]`)
+					p:Kick(`\n[CLI-192385] Loading Error \n[HookClient Error: {err}]`)
 					return false
 				else
 					return true
@@ -481,9 +481,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadExistingPlayer = function(p)
-			warn(`Loading existing player: {tostring(p)}`)
+			warn(`Loading existing player: {p}`)
 
-			TrackTask(`Thread: Setup Existing Player: {tostring(p)}`, function()
+			TrackTask(`Thread: Setup Existing Player: {p}`, function()
 				Process.PlayerAdded(p)
 				--Core.MakeClient(p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 120))
 			end)
@@ -575,7 +575,7 @@ return function(Vargs, GetEnv)
 				if scriptType == "Script" then Deps.ScriptBase:Clone()
 					elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
 					else nil,
-				`Invalid script type '{tostring(scriptType)}'`
+				`Invalid script type '{scriptType}'`
 			)
 
 			local execCode = Functions.GetRandom()
@@ -750,7 +750,7 @@ return function(Vargs, GetEnv)
 					elseif reqTypeName == "Read" then Enum.DataStoreRequestType.GetAsync
 					elseif reqTypeName == "Update" then Enum.DataStoreRequestType.UpdateAsync
 					else nil,
-				`Invalid request type name '{tostring(reqTypeName)}'`
+				`Invalid request type name '{reqTypeName}'`
 			)
 
 			local reqPerMin = 60 + #service.Players:GetPlayers() * 10
@@ -766,7 +766,7 @@ return function(Vargs, GetEnv)
 
 		DS_WriteLimiter = function(reqTypeName: string, func, ...)
 			local vararg = table.pack(...)
-			return Queue(`DataStoreWriteData_{tostring(reqTypeName)}`, function()
+			return Queue(`DataStoreWriteData_{reqTypeName}`, function()
 				local gotDelay = Core.DS_GetRequestDelay(reqTypeName); --// Wait for budget; also return how long we should wait before the next request is allowed to go
 				func(unpack(vararg, 1, vararg.n))
 				task.wait(gotDelay)
@@ -776,18 +776,18 @@ return function(Vargs, GetEnv)
 		RemoveData = function(key)
 			local DataStore = Core.DataStore
 			if DataStore then
-				local ran2, err2 = Queue(`DataStoreWriteData{tostring(key)}`, function()
+				local ran2, err2 = Queue(`DataStoreWriteData{key}`, function()
 					local ran, ret = Core.DS_WriteLimiter("Write", DataStore.RemoveAsync, DataStore, Core.DataStoreEncode(key))
 					if ran then
 						Core.DataCache[key] = nil
 					else
-						logError(`DataStore RemoveAsync Failed: {tostring(ret)}`)
+						logError(`DataStore RemoveAsync Failed: {ret}`)
 					end
 					task.wait(6)
 				end, 120, true)
 
 				if not ran2 then
-					warn(`DataStore RemoveData Failed: {tostring(err2)}`)
+					warn(`DataStore RemoveData Failed: {err2}`)
 				end
 			end
 		end;
@@ -802,19 +802,19 @@ return function(Vargs, GetEnv)
 				if value == nil then
 					return Core.RemoveData(key)
 				else
-					local ran2, err2 = Queue(`DataStoreWriteData{tostring(key)}`, function()
+					local ran2, err2 = Queue(`DataStoreWriteData{key}`, function()
 						local ran, ret = Core.DS_WriteLimiter("Write", DataStore.SetAsync, DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
 						else
-							logError(`DataStore SetAsync Failed: {tostring(ret)}`);
+							logError(`DataStore SetAsync Failed: {ret}`);
 						end
 
 						task.wait(6)
 					end, 120, true)
 
 					if not ran2 then
-						logError(`DataStore SetData Failed: {tostring(err2)}`)
+						logError(`DataStore SetData Failed: {err2}`)
 
 						--// Attempt 3 times, with slight delay between if failed
 						task.wait(1)
@@ -836,12 +836,12 @@ return function(Vargs, GetEnv)
 			local DataStore = Core.DataStore
 			if DataStore then
 				local err = false
-				local ran2, err2 = Queue(`DataStoreWriteData{tostring(key)}`, function()
+				local ran2, err2 = Queue(`DataStoreWriteData{key}`, function()
 					local ran, ret = Core.DS_WriteLimiter("Update", DataStore.UpdateAsync, DataStore, Core.DataStoreEncode(key), callback)
 
 					if not ran then
 						err = ret
-						logError(`DataStore UpdateAsync Failed: {tostring(ret)}`)
+						logError(`DataStore UpdateAsync Failed: {ret}`)
 						return error(ret)
 					end
 
@@ -849,7 +849,7 @@ return function(Vargs, GetEnv)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
-					logError(`DataStore UpdateData Failed: {tostring(err2)}`)
+					logError(`DataStore UpdateData Failed: {err2}`)
 
 					--// Attempt 3 times, with slight delay between if failed
 					task.wait(1)
@@ -878,7 +878,7 @@ return function(Vargs, GetEnv)
 						Core.DataCache[key] = ret
 						return ret
 					else
-						logError(`DataStore GetAsync Failed: {tostring(ret)}`)
+						logError(`DataStore GetAsync Failed: {ret}`)
 						if Core.DataCache[key] then
 							return Core.DataCache[key]
 						else
@@ -888,7 +888,7 @@ return function(Vargs, GetEnv)
 				end, 120, true)
 
 				if not ran2 then
-					logError(`DataStore GetData Failed: {tostring(err2)}`)
+					logError(`DataStore GetData Failed: {err2}`)
 					--// Attempt 3 times, with slight delay between if failed
 					task.wait(1)
 					if not repeatCount then
@@ -929,7 +929,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if not curTable then
-						--warn(`{tostring(ind)} could not be found`);
+						--warn(`{ind} could not be found`);
 						--// Not allowed or table is not found
 						return nil
 					end
@@ -1102,7 +1102,7 @@ return function(Vargs, GetEnv)
 
 				Core.CrossServer("LoadData", "TableUpdate", data)
 			else
-				error(`Invalid data action type '{tostring(data.Type)}'`, 2)
+				error(`Invalid data action type '{data.Type}'`, 2)
 			end
 
 			AddLog(Logs.Script, {
@@ -1169,7 +1169,7 @@ return function(Vargs, GetEnv)
 
 					AddLog("Script", {
 						Text = `Added value to {displayName}`,
-						Desc = `Added {tostring(data.Value)} to {displayName} from datastore`,
+						Desc = `Added {data.Value} to {displayName} from datastore`,
 					})
 
 					table.insert(realTable, data.Value)
@@ -1179,7 +1179,7 @@ return function(Vargs, GetEnv)
 						if CheckMatch(v, data.Value) then
 							AddLog("Script", {
 								Text = `Removed value from {displayName}`,
-								Desc = `Removed {tostring(data.Value)} from {displayName} from datastore`,
+								Desc = `Removed {data.Value} from {displayName} from datastore`,
 							})
 
 							table.remove(realTable, i)
@@ -1341,8 +1341,8 @@ return function(Vargs, GetEnv)
 								__index = function(tab,inde)
 									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
 										AddLog(Logs.Script, {
-											Text = `Access to {tostring(inde)} was granted`;
-											Desc = `A server script was granted access to {tostring(inde)}`;
+											Text = `Access to {inde} was granted`;
+											Desc = `A server script was granted access to {inde}`;
 										})
 
 										if targ[inde]~=nil and type(targ[inde]) == "table" and Settings.G_Access_Perms == "Read" then
@@ -1352,13 +1352,13 @@ return function(Vargs, GetEnv)
 										end
 									elseif API_Special[inde] == false then
 										AddLog(Logs.Script, {
-											Text = `Access to {tostring(inde)} was denied`;
-											Desc = `A server script attempted to access {tostring(inde)} via _G.Adonis.Access`;
+											Text = `Access to {inde} was denied`;
+											Desc = `A server script attempted to access {inde} via _G.Adonis.Access`;
 										})
 
-										error(`Access Denied: {tostring(inde)}`)
+										error(`Access Denied: {inde}`)
 									else
-										error(`Could not find {tostring(inde)}`)
+										error(`Could not find {inde}`)
 									end
 								end;
 								__newindex = function(tabl, inde, valu)

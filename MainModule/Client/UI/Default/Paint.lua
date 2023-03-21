@@ -60,7 +60,7 @@ return function(data, env)
 		local pixel = pointer:Clone()
 		pixel.Name = "Pixel"
 		pixel.Parent = canvas
-		pixelCount.Text = `Pixels: {tostring(pixelCount.Text:sub(9) + 1)}`
+		pixelCount.Text = `Pixels: {pixelCount.Text:sub(9) + 1}`
 	end)
 	
 	local clearButton = topbar:Add("TextButton", {

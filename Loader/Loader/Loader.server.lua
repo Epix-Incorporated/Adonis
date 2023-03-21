@@ -130,7 +130,7 @@ else
 			table.insert(data.ServerPlugins, module)
 			
 		else
-			warn(`[DEVELOPER ERROR] Unknown Plugin Type for {tostring(module)}; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'`)
+			warn(`[DEVELOPER ERROR] Unknown Plugin Type for {module}; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'`)
 		end
 	end
 

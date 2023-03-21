@@ -115,7 +115,7 @@ return function(Vargs, env)
 						table.remove(variables.TimeBans, ind)
 					else
 						table.insert(tab, {
-							Text = `{tostring(v.Name)}:{tostring(v.UserId)}`,
+							Text = `{v.Name}:{v.UserId}`,
 							Desc = string.format("Issued by: %s | Minutes left: %d", v.Moderator or "%UNKNOWN%", minutes)
 						})
 					end
@@ -1422,7 +1422,7 @@ return function(Vargs, env)
 				local name = args[1] or tostring(#Variables.Waypoints + 1)
 				if plr.Character:FindFirstChild("HumanoidRootPart") then
 					Variables.Waypoints[name] = plr.Character.HumanoidRootPart.Position
-					Functions.Hint(`Made waypoint {name} | {tostring(Variables.Waypoints[name])}`, {plr})
+					Functions.Hint(`Made waypoint {name} | {Variables.Waypoints[name]}`, {plr})
 				end
 			end
 		};
@@ -1472,7 +1472,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local tab = table.create(#Variables.Cameras)
 				for _, v in Variables.Cameras do
-					table.insert(tab, {Text = v.Name, Desc = `Pos: {tostring(v.Brick.Position)}`})
+					table.insert(tab, {Text = v.Name, Desc = `Pos: {v.Brick.Position}`})
 				end
 				Remote.MakeGui(plr, "List", {Title = "Cameras", Tab = tab})
 			end
@@ -1818,7 +1818,7 @@ return function(Vargs, env)
 
 						for _, t in cTasks do
 							table.insert(temp, {
-								Text = `{tostring(t.Name or t.Function)}- Status: {t.Status} - Elapsed: {t.CurrentTime - t.Created}`;
+								Text = `{t.Name or t.Function}- Status: {t.Status} - Elapsed: {t.CurrentTime - t.Created}`;
 								Desc = tostring(t.Function);
 							})
 						end
@@ -1834,7 +1834,7 @@ return function(Vargs, env)
 
 					for _, v in tasks do
 						table.insert(temp, {
-							Text = `{tostring(v.Name or v.Function)} - Status: {v.Status} - Elapsed: {os.time()-v.Created}`;
+							Text = `{v.Name or v.Function} - Status: {v.Status} - Elapsed: {os.time()-v.Created}`;
 							Desc = tostring(v.Function);
 						})
 					end
@@ -1847,7 +1847,7 @@ return function(Vargs, env)
 
 					for _, v in cTasks do
 						table.insert(temp, {
-							Text = `{tostring(v.Name or v.Function)} - Status: {v.Status} - Elapsed: {v.CurrentTime-v.Created}`;
+							Text = `{v.Name or v.Function} - Status: {v.Status} - Elapsed: {v.CurrentTime-v.Created}`;
 							Desc = tostring(v.Function);
 						})
 					end
@@ -2658,7 +2658,7 @@ return function(Vargs, env)
 						end
 
 						mod.Parent = workspace
-						service.TrackTask(`Thread: JailLoop{tostring(ind)}`, function()
+						service.TrackTask(`Thread: JailLoop{ind}`, function()
 							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if opt == "rainbow" then
@@ -5090,7 +5090,7 @@ return function(Vargs, env)
 					asset = service.New("Decal", {
 						Name = "face";
 						Face = "Front";
-						Texture = `rbxassetid://{tostring(Functions.GetTexture(faceId))}`;
+						Texture = `rbxassetid://{Functions.GetTexture(faceId)}`;
 					});
 				elseif faceAssetTypeId == 18 then
 					asset = service.Insert(faceId)
@@ -5514,7 +5514,7 @@ return function(Vargs, env)
 							pitch = 1
 						end
 
-						if not id then error(`Invalid ID: {tostring(id)}`) end
+						if not id then error(`Invalid ID: {id}`) end
 
 						table.insert(idList, {ID = id; Pitch = pitch})
 					end
@@ -6274,7 +6274,7 @@ return function(Vargs, env)
 				for i, v in Logs.Errors do
 					table.insert(tab, i, {
 						Time = v.Time;
-						Text = `{v.Text}: {tostring(v.Desc)}`;
+						Text = `{v.Text}: {v.Desc}`;
 						Desc = tostring(v.Desc);
 					})
 				end

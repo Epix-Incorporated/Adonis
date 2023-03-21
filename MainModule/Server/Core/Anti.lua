@@ -73,7 +73,7 @@ return function(Vargs, GetEnv)
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(`:: Adonis ::\n{tostring(info)}`) end)
+			pcall(function()service.UnWrap(p):Kick(`:: Adonis ::\n{info}`) end)
 
 			task.wait(1)
 
@@ -81,7 +81,7 @@ return function(Vargs, GetEnv)
 			pcall(service.Delete, p)
 
 			Logs.AddLog("Script",{
-				Text = `Server removed {tostring(p)}`;
+				Text = `Server removed {p}`;
 				Desc = info;
 			})
 		end;
@@ -100,12 +100,12 @@ return function(Vargs, GetEnv)
 						end
 
 						Logs.AddLog(Logs.Script, {
-							Text = `Character AE Detected {tostring(player)}`;
-							Desc = `The Anti-Exploit character check detected player: {tostring(player)} action: {tostring(action)} reason: {tostring(reason)}`;
+							Text = `Character AE Detected {player}`;
+							Desc = `The Anti-Exploit character check detected player: {player} action: {action} reason: {reason}`;
 							Player = player;
 						})
 
-						warn(`Charactercheck detected player: {tostring(player)} action: {tostring(action)} reason: {tostring(reason)}`)
+						warn(`Charactercheck detected player: {player} action: {action} reason: {reason}`)
 					else
 						Anti.Detected(player, action, reason)
 					end
@@ -132,8 +132,8 @@ return function(Vargs, GetEnv)
 							end
 
 							Logs.AddLog(Logs.Script, {
-								Text = `AE: Hat joint deletion reset network ownership for player: {tostring(player)}`;
-								Desc = `The AE reset joint handle network ownership for player: {tostring(player)}`;
+								Text = `AE: Hat joint deletion reset network ownership for player: {player}`;
+								Desc = `The AE reset joint handle network ownership for player: {player}`;
 								Player = player;
 							})
 						end)
@@ -209,8 +209,8 @@ return function(Vargs, GetEnv)
 						humanoid.Health = 0
 						humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 						Logs.AddLog(Logs.Script, {
-							Text = `AE: Humanoid came out of dead state for player: {tostring(player)}`;
-							Desc = `AE: Humanoid came out of dead state for player: {tostring(player)}`;
+							Text = `AE: Humanoid came out of dead state for player: {player}`;
+							Desc = `AE: Humanoid came out of dead state for player: {player}`;
 							Player = player;
 						})
 					end
@@ -264,8 +264,8 @@ return function(Vargs, GetEnv)
 								humanoid.Health = 0
 								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 								Logs.AddLog(Logs.Script, {
-									Text = `AE: Waist joint deleted by player: {tostring(player)}`;
-									Desc = `AE: Waist joint deleted by player: {tostring(player)}`;
+									Text = `AE: Waist joint deleted by player: {player}`;
+									Desc = `AE: Waist joint deleted by player: {player}`;
 									Player = player;
 								})
 							end
@@ -343,7 +343,7 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not success then
-					warn(`Failed to check validity of player's name, reason: {tostring(err)}`)
+					warn(`Failed to check validity of player's name, reason: {err}`)
 				end
 			end
 		end;
@@ -396,13 +396,13 @@ return function(Vargs, GetEnv)
 			end
 
 			Logs.AddLog(Logs.Script,{
-				Text = `AE Detected {tostring(player)}`;
-				Desc = `The Anti-Exploit system detected strange activity from {tostring(player)}`;
+				Text = `AE Detected {player}`;
+				Desc = `The Anti-Exploit system detected strange activity from {player}`;
 				Player = player;
 			})
 
 			Logs.AddLog(Logs.Exploit,{
-				Text = `[Action: {tostring(action)} User: ({tostring(player)})] {tostring(string.sub(info, 1, 50))} (Mouse over for full info)`;
+				Text = `[Action: {action} User: ({player})] {string.sub(info, 1, 50)} (Mouse over for full info)`;
 				Desc = tostring(info);
 				Player = player;
 			})

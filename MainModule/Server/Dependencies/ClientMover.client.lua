@@ -19,7 +19,7 @@ do
 	local triggered = false
 
 	local function loadingDetected(reason)
-		(localPlayer or Players.LocalPlayer):Kick(`:: Adonis Loader - Security ::\n{tostring(reason)}`)
+		(localPlayer or Players.LocalPlayer):Kick(`:: Adonis Loader - Security ::\n{reason}`)
 		while true do end
 	end
 
@@ -33,7 +33,7 @@ do
 		end
 
 		if success or not string.match(err, "^Attempted to call require with invalid argument%(s%)%.$") then
-			task_spawn(xpcall, function() loadingDetected(`Require load fail. {tostring(err)}`) end, function(err) loadingDetected(err) end)
+			task_spawn(xpcall, function() loadingDetected(`Require load fail. {err}`) end, function(err) loadingDetected(err) end)
 			while true do end
 		end
 
@@ -45,7 +45,7 @@ do
 		task_wait()
 
 		if not triggered then
-			task_spawn(xpcall, function() loadingDetected(`Loading detectors failed to load{tostring(triggered)}`) end, function(err) loadingDetected(err) end)
+			task_spawn(xpcall, function() loadingDetected(`Loading detectors failed to load{triggered}`) end, function(err) loadingDetected(err) end)
 			while true do end
 		end
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
@@ -68,7 +68,7 @@ end
 
 local function warn(str)
 	if DebugMode or player.UserId == 1237666 then
-		realWarn(`ACLI: {tostring(str)}`)
+		realWarn(`ACLI: {str}`)
 	end
 end
 
@@ -90,7 +90,7 @@ local function loadingTime()
 end
 
 local function callCheck(child)
-	warn(`CallCheck: {tostring(child)}`)
+	warn(`CallCheck: {child}`)
 	if Locked(child) then
 		warn("Child locked?")
 		Kill("ACLI: Locked")
@@ -112,7 +112,7 @@ local function doPcall(func, ...)
 		return ran,ret
 	else
 		warn(tostring(ret))
-		Kill(`ACLI: Error\n{tostring(ret)}`)
+		Kill(`ACLI: Error\n{ret}`)
 		return ran,ret
 	end
 end
@@ -133,14 +133,14 @@ if module and module:IsA("ModuleScript") then
 
 	warn("Getting origName")
 	origName = (nameVal and nameVal.Value) or folder.Name
-	warn(`Got name: {tostring(origName)}`)
+	warn(`Got name: {origName}`)
 
 	warn("Removing old client folder...")
 	local starterPlayer = game:GetService("StarterPlayer");
 	local playerScripts = starterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
 	local found = playerScripts:FindFirstChild(folder.Name);
-	warn(`FOUND?! {tostring(found)}`);
-	warn(`LOOKED FOR : {tostring(folder.Name)}`)
+	warn(`FOUND?! {found}`);
+	warn(`LOOKED FOR : {folder.Name}`)
 	if found then
 		print("REMOVED!")
 		found.Parent = nil --found:Destroy();
@@ -155,7 +155,7 @@ if module and module:IsA("ModuleScript") then
 
 	print("Debug: Loading the client?")
 	local meta = require(module)
-	warn(`Got metatable: {tostring(meta)}`)
+	warn(`Got metatable: {meta}`)
 	if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
 		local ran,ret = pcall(meta,{
 			Module = module,
@@ -168,7 +168,7 @@ if module and module:IsA("ModuleScript") then
 			Kill = Kill
 		})
 
-		warn(`Got return: {tostring(ret)}`)
+		warn(`Got return: {ret}`)
 		if ret ~= "SUCCESS" then
 			realWarn(ret)
 			Kill("ACLI: Loading Error [Bad Module Return]")

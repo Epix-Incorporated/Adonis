@@ -285,27 +285,27 @@ local LoadModule = function(module, yield, envVars, noEnv)
 			if yield then
 				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 				local ran, err = service.TrackTask(
-					`Plugin: {tostring(module)}`,
+					`Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 					GetVargTable(),
 					GetEnv
 				)
 
 				if not ran then
-					warn(`Module encountered an error while loading: {tostring(module)}`)
+					warn(`Module encountered an error while loading: {module}`)
 					warn(tostring(err))
 				end
 			else
-				-- service.Threads.RunTask(`PLUGIN: {tostring(module),setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
+				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
 				local ran, err = service.TrackTask(
-					`Thread: Plugin: {tostring(module)}`,
+					`Thread: Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 					GetVargTable(),
 					GetEnv
 				)
 
 				if not ran then
-					warn(`Module encountered an error while loading: {tostring(module)}`)
+					warn(`Module encountered an error while loading: {module}`)
 					warn(tostring(err))
 				end
 			end
@@ -382,7 +382,7 @@ service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 		--Kill()("Shananigans denied")
 		--player:Kick("Method error")
 		--service.Detected("kick", "Method change detected")
-		logError("Client", `Method Error Occured: {tostring(msg)}`)
+		logError("Client", `Method Error Occured: {msg}`)
 	elseif eType == "ServerError" then
 		logError("Client", tostring(msg))
 	elseif eType == "ReadError" then
@@ -658,7 +658,7 @@ return service.NewProxy({
 		for _, load in CORE_LOADING_ORDER do
 			local modu = Folder.Core:FindFirstChild(load)
 			if modu then
-				log(`~! Loading Core Module: {tostring(load)}`)
+				log(`~! Loading Core Module: {load}`)
 				LoadModule(modu, true, { script = script }, true)
 			end
 		end
@@ -703,7 +703,7 @@ return service.NewProxy({
 		log("~! Init cores")
 		for _, name in CORE_LOADING_ORDER do
 			local core = client[name]
-			log(`~! INIT: {tostring(name)}`)
+			log(`~! INIT: {name}`)
 
 			if core then
 				if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
@@ -728,7 +728,7 @@ return service.NewProxy({
 					end
 
 					if core.Init then
-						log(`Run init for {tostring(name)}`)
+						log(`Run init for {name}`)
 						Pcall(core.Init, data)
 						core.Init = nil
 					end

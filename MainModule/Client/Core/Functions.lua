@@ -1064,7 +1064,7 @@ return function(Vargs, GetEnv)
 					if time() - timer > 5 or isAdmin then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
-							Message = `[Ran] Key: {Functions.KeyCodeToName(key)} | Command: {tostring(Variables.KeyBinds[key])}`
+							Message = `[Ran] Key: {Functions.KeyCodeToName(key)} | Command: {Variables.KeyBinds[key]}`
 						})
 					end
 					timer = time()

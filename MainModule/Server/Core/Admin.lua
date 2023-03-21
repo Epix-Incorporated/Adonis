@@ -270,11 +270,11 @@ return function(Vargs, GetEnv)
 
 		--// Run OnStartup Commands
 		for i,v in Settings.OnStartup do
-			warn(`Running startup command {tostring(v)}`)
-			TrackTask(`Thread: Startup_Cmd: {tostring(v)}`, Admin.RunCommand, v)
+			warn(`Running startup command {v}`)
+			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
 			AddLog("Script", {
-				Text = `Startup: Executed {tostring(v)}`;
-				Desc = `Executed startup command; {tostring(v)}`;
+				Text = `Startup: Executed {v}`;
+				Desc = `Executed startup command; {v}`;
 			})
 		end
 
@@ -1067,7 +1067,7 @@ return function(Vargs, GetEnv)
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask(`SERVER_COMMAND: {coma}`,com.Function,60*5,false,args)
-				--[[local ran, error = TrackTask(`Command: {tostring(coma)}`, com.Function, false, args)
+				--[[local ran, error = TrackTask(`Command: {coma}`, com.Function, false, args)
 				if error then
 					--logError("SERVER","Command",error)
 				end]]

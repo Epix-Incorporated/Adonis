@@ -151,11 +151,11 @@ return function(Vargs, GetEnv)
 		ErrorMessage = function(Message, Trace, Script)
 			--service.FireEvent("ErrorMessage", Message, Trace, Script)
 			if Message and Message ~= "nil" and Message ~= "" and (string.find(Message,":: Adonis ::") or string.find(Message,script.Name) or Script == script) then
-				logError(`{tostring(Message)} - {tostring(Trace)}`)
+				logError(`{Message} - {Trace}`)
 			end
 
 			--if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
-				--Anti.Detected("log",`Scriptless/Traceless error found. Script: {tostring(Script)} - Trace: {tostring(Trace)}`)
+				--Anti.Detected("log",`Scriptless/Traceless error found. Script: {Script} - Trace: {Trace}`)
 			--end
 		end;
 

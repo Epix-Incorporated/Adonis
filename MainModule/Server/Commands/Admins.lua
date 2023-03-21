@@ -216,7 +216,7 @@ return function(Vargs, env)
 						end
 						if
 							Remote.GetGui(plr, "YesNoPrompt", {
-								Question = `Remove '{tostring(user)}' from '{rankName}'?`;
+								Question = `Remove '{user}' from '{rankName}'?`;
 							}) == "Yes"
 						then
 							table.remove(rankData.Users, i)
@@ -226,8 +226,8 @@ return function(Vargs, env)
 									Table = {"Settings", "Ranks", rankName, "Users"};
 									Value = user;
 								});
-								Functions.Hint(`Removed entry '{tostring(user)}' from {rankName}`, {plr})
-								Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rankName))
+								Functions.Hint(`Removed entry '{user}' from {rankName}`, {plr})
+								Logs:AddLog("Script", `{plr} removed {user} from {rankName}`)
 
 							end
 						end
@@ -425,7 +425,7 @@ return function(Vargs, env)
 						for i, v in Variables.Whitelist.Lists.Settings do
 							if string.sub(string.lower(v), 1,#args[2]) == string.lower(args[2])then
 								table.remove(Variables.Whitelist.Lists.Settings,i)
-								Functions.Hint(`Removed {tostring(v)} from the whitelist`, {plr})
+								Functions.Hint(`Removed {v} from the whitelist`, {plr})
 							end
 						end
 					else
@@ -743,7 +743,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.Teams:GetTeams() do
 					if string.sub(string.lower(v.Name), 1, #args[1]) == string.lower(args[1]) then
-						local ans = Remote.GetGui(plr, "YesNoPrompt", { Question = `Remove team: '{tostring(v.Name)}'?` })
+						local ans = Remote.GetGui(plr, "YesNoPrompt", { Question = `Remove team: '{v.Name}'?` })
 
 						if ans == "Yes" then
 							v:Destroy()
@@ -968,11 +968,11 @@ return function(Vargs, env)
 				elseif action == "list" then
 					local tab = {}
 					for i, v in sb.Script do
-						table.insert(tab, {Text = `Script: {tostring(i)}`, Desc = `Running: {tostring(v.Script.Disabled)}`})
+						table.insert(tab, {Text = `Script: {i}`, Desc = `Running: {v.Script.Disabled}`})
 					end
 
 					for i, v in sb.LocalScript do
-						table.insert(tab, {Text = `LocalScript: {tostring(i)}`, Desc = `Running: {tostring(v.Script.Disabled)}`})
+						table.insert(tab, {Text = `LocalScript: {i}`, Desc = `Running: {v.Script.Disabled}`})
 					end
 
 					Remote.MakeGui(plr, "List", {Title = "SB Scripts", Table = tab})

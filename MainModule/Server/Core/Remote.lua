@@ -466,7 +466,7 @@ return function(Vargs, GetEnv)
 							return ret
 						else
 							return {
-								`COMMAND ERROR: {tostring(ret)}`
+								`COMMAND ERROR: {ret}`
 							}
 						end
 					else
@@ -525,8 +525,8 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local output = {}
 						for i,v in Remote.Terminal.Commands do
-							table.insert(output, `{tostring(v.Usage)}{string.rep(" ",30-string.len(tostring(v.Usage)))}`)
-							table.insert(output, `- {tostring(v.Description)}`)
+							table.insert(output, `{v.Usage}{string.rep(" ",30-string.len(tostring(v.Usage)))}`)
+							table.insert(output, `- {v.Description}`)
 						end
 						return output
 					end;
@@ -550,7 +550,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Used to test the connection to the server and it's ability to return data";
 					Function = function(p,args,data)
-						Remote.Terminal.LiveOutput(p,`Return Test: {tostring(args[1])}`)
+						Remote.Terminal.LiveOutput(p,`Return Test: {args[1]}`)
 					end
 				};
 
@@ -561,9 +561,9 @@ return function(Vargs, GetEnv)
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
 						local newenv = GetEnv(getfenv(),{
-							print = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`PRINT: {tostring(v)}`) end end;
-							warn = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`WARN: {tostring(v)}`) end end;
-							error = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`ERROR: {tostring(v)}`) end end;
+							print = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`PRINT: {v}`) end end;
+							warn = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`WARN: {v}`) end end;
+							error = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`ERROR: {v}`) end end;
 						})
 
 						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
@@ -585,7 +585,7 @@ return function(Vargs, GetEnv)
 						if func then
 							func()
 						else
-							Remote.Terminal.LiveOutput(p,`ERROR: {tostring(string.match(err, ":(.*)") or err)}`)
+							Remote.Terminal.LiveOutput(p,`ERROR: {string.match(err, ":(.*)") or err}`)
 						end
 					end
 				};
@@ -609,9 +609,9 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Runs the specified command on the specified player as the server";
 					Function = function(p,args,data)
-						Process.Command(p, `{Settings.Prefix}sudo {tostring(args[1])}`, {DontLog = true, Check = true}, true)
+						Process.Command(p, `{Settings.Prefix}sudo {args[1]}`, {DontLog = true, Check = true}, true)
 						return {
-							`Command ran: {Settings.Prefix}sudo {tostring(args[1])}`
+							`Command ran: {Settings.Prefix}sudo {args[1]}`
 						}
 					end
 				};
@@ -900,7 +900,7 @@ return function(Vargs, GetEnv)
 							local card = trello.makeCard(list.id, name, desc)
 							Functions.Hint(`Made card "{card.name}" in list "{list.name}"`, {p})
 							Logs.AddLog(Logs.Script,{
-								Text = `{tostring(p)} performed Trello operation`;
+								Text = `{p} performed Trello operation`;
 								Desc = "Player created a Trello card";
 								Player = p;
 							})
@@ -923,7 +923,7 @@ return function(Vargs, GetEnv)
 					service.Events.ClientLoaded:Fire(p)
 					task.defer(Process.FinishLoading, p)
 				else
-					warn(`[CLI-199524] ClientLoaded fired when not ready for {tostring(p)}`)
+					warn(`[CLI-199524] ClientLoaded fired when not ready for {p}`)
 					Logs:AddLog("Script", string.format("%s fired ClientLoaded too early", tostring(p)));
 					--p:Kick("Loading error [ClientLoaded Failed]")
 				end
@@ -982,12 +982,12 @@ return function(Vargs, GetEnv)
 					})
 
 					Logs:AddLog(Logs.Script,{
-						Text = `{p.Name} replied to {tostring(target)}`,
+						Text = `{p.Name} replied to {target}`,
 						Desc = message,
 						Player = p;
 					})
 				else
-					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {tostring(args[2])}`)
+					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {args[2]}`)
 				end
 			end;
 		};
@@ -1089,7 +1089,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Fire = function(p: Player,...)
-			assert(p and p:IsA("Player"), `Remote.Fire: {tostring(p)} is not a valid Player`)
+			assert(p and p:IsA("Player"), `Remote.Fire: {p} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
@@ -1099,7 +1099,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Send = function(p: Player,com: string,...)
-			assert(p and p:IsA("Player"), `Remote.Send: {tostring(p)} is not a valid Player`)
+			assert(p and p:IsA("Player"), `Remote.Send: {p} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
@@ -1194,8 +1194,8 @@ return function(Vargs, GetEnv)
 
 				if continue and (data.LastUpdate and os.time() - data.LastUpdate > Remote.TimeUntilKeyDestroyed) then
 					Remote.Clients[key] = nil;
-					--print(`Client key removed for UserId {tostring(key)}`)
-					Logs:AddLog("Script", `Client key removed for UserId {tostring(key)}`)
+					--print(`Client key removed for UserId {key}`)
+					Logs:AddLog("Script", `Client key removed for UserId {key}`)
 				end
 			end
 

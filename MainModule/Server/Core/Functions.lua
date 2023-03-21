@@ -473,7 +473,7 @@ return function(Vargs, GetEnv)
 		ArgsToString = function(args)
 			local str = ""
 			for i, arg in args do
-				str ..= `Arg{tostring(i)}: {tostring(arg)}; `
+				str ..= `Arg{i}: {arg}; `
 			end
 			return str:sub(1, -3)
 		end;
@@ -535,7 +535,7 @@ return function(Vargs, GetEnv)
 				return {plr}
 			else
 				if argument:match("^##") then
-					error(`String passed to GetPlayers is filtered: {tostring(argument)}`, 2)
+					error(`String passed to GetPlayers is filtered: {argument}`, 2)
 				end
 
 				for s in argument:gmatch("([^,]+)") do
@@ -1340,11 +1340,11 @@ return function(Vargs, GetEnv)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
-				player:Kick(`Server Shutdown\n\n{tostring(reason or "No Reason Given")}`)
+				player:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
 			end)
 
 			for _, v in service.Players:GetPlayers() do
-				v:Kick(`Server Shutdown\n\n{tostring(reason or "No Reason Given")}`)
+				v:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
 			end
 		end;
 
