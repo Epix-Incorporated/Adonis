@@ -662,30 +662,41 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"rainbowify", "rainbow"};
 			Args = {"player"};
-			Description = "Make the target player(s)'s character flash random colors";
+			Description = "Make the target player(s)'s character flash rainbow colors";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local scr = Core.NewScript("LocalScript",[[
+				local scr = Core.NewScript("Script",[[
+					local restore = {}
+					local tween = game:GetService("TweenService")
+
 					repeat
-						task.wait(0.1)
+						task.wait()
 						local char = script.Parent.Parent
-						local clr = BrickColor.random()
-						for i, v in char:GetChildren() do
+						local clr = BrickColor.random() 
+						for i, v in next, char:GetChildren() do 
 							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" and (v.Name ~= "Head" or not v.Parent:FindFirstChild("NameTag", true)) then
-								v.BrickColor = clr
-								v.Reflectance = 0
-								v.Transparency = 0
+								if not restore[v] then
+									restore[v] = v.Color
+								end
+								v.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							elseif v:FindFirstChild("NameTag") then
-								v.Head.BrickColor = clr
-								v.Head.Reflectance = 0
-								v.Head.Transparency = 0
-								v.Parent.Head.Transparency = 1
+								if not restore[v.Head] then
+									restore[v.Head] = v.Head.Color
+								end
+								v.Head.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							end
 						end
-					until not char
+					until not char or script.Name == "Stop" -- signal to unrainbowify
+
+					if script.Name == "Stop" then
+						for item, clr in next, restore do
+							item.Color = clr -- restore old colors
+						end
+						script:Destroy()
+					end
 				]])
-				scr.Name = "Effectify"
+				scr.Name = "Rainbowify"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -699,6 +710,22 @@ return function(Vargs, env)
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart
 						new.Disabled = false
+					end
+				end
+			end
+		};
+		
+		Unrainbowify = {
+			Prefix = Settings.Prefix;
+			Commands = {"unrainbowify", "unrainbow"};
+			Args = {"player"};
+			Description = "Removes the rainbow effect from the player(s) specified";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, v in service.GetPlayers(plr, args[1]) do
+					if v.Character.HumanoidRootPart:FindFirstChild("Rainbowify") then
+						v.Character.HumanoidRootPart.Rainbowify.Name = "Stop"
 					end
 				end
 			end
@@ -1361,7 +1388,7 @@ return function(Vargs, env)
 
 		UnEffect = {
 			Prefix = Settings.Prefix;
-			Commands = {"uneffect", "unimage", "uneffectgui", "unspook", "unblind", "unstrobe", "untrippy", "unpixelize", "unlowres", "unpixel", "undance", "unflashify", "unrainbowify", "guifix", "fixgui"};
+			Commands = {"uneffect", "unimage", "uneffectgui", "unspook", "unblind", "unstrobe", "untrippy", "unpixelize", "unlowres", "unpixel", "undance", "unflashify", "guifix", "fixgui"};
 			Args = {"player"};
 			Description = "Removes any effect GUIs on the target player(s)";
 			Fun = true;
