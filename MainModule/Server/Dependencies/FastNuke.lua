@@ -44,7 +44,7 @@ skybox.SkyboxDn, skybox.SkyboxUp = "http://www.roblox.com/asset/?version=1&id=10
 local nukeIgnore = setmetatable({}, {__mode = "v"})
 local explosionParams = OverlapParams.new()
 explosionParams.FilterDescendantsInstances = nukeIgnore
-explosionParams.FilterType = Enum.RaycastFilterType.Blacklist
+explosionParams.FilterType = Enum.RaycastFilterType.Exclude
 explosionParams.RespectCanCollide = true
 
 -- // Functions
