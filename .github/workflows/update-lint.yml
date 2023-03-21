@@ -24,6 +24,6 @@ jobs:
     
     - name: Commit to repo
       run: |
-        git add roblox.toml
-        git commit -m "Update standard library"
+        git add roblox.yml
+        git commit -m "Update lint standard library"
         git push origin master

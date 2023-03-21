@@ -560,10 +560,18 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
+						local oError = error
 						local newenv = GetEnv(getfenv(),{
-							print = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`PRINT: {v}`) end end;
-							warn = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`WARN: {v}`) end end;
-							error = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,`ERROR: {v}`) end end;
+							print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
+							warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+							error = function(reason, level)
+								if level ~= nil and type(level) ~= "number" then
+									oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
+								end
+
+								Remote.Terminal.LiveOutput(p, `LUA_DEMAND_ERROR: {reason}`)
+								oError(`Adonis terminal error: {reason}`, (level or 1) + 1)
+							end;
 						})
 
 						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
