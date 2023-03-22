@@ -393,11 +393,11 @@ return function(Vargs, GetEnv)
 		local remEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
 		local remFuncCheck = service.UnWrap(Instance.new("RemoteFunction"))
 		local rawLogService = service.UnWrap(service.LogService)
-		local nilPlayers = setmetatable({}, {__mode = "v"})
+		local nilPlayers = setmetatable({}, {__mode = "k"})
 
 		service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
 			if child:IsA("Player") then
-				table.insert(nilPlayers, child)
+				nilPlayers[child] = true
 			end
 		end)
 
@@ -448,7 +448,7 @@ return function(Vargs, GetEnv)
 						for _, v in service.Players:GetPlayers() do
 							local otherPlayer = service.UnWrap(v)
 
-							if otherPlayer and not table.find(nilPlayers, otherPlayer) and otherPlayer.Parent == unwrappedPlayers and otherPlayer ~= LocalPlayer then
+							if otherPlayer and not nilPlayers[otherPlayer] and otherPlayer.Parent == unwrappedPlayers and otherPlayer ~= LocalPlayer then
 								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. 0x2")
 								local success2, err2 = pcall(function()
 									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. 0x4")
