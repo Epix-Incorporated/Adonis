@@ -505,8 +505,8 @@ return function(Vargs, GetEnv)
 		end;
 
 		DoCheck = function(pObj, check, banCheck)
-			local pType = typeof(pObj)
-			local cType = typeof(check)
+			local pType = type(pObj)
+			local cType = type(check)
 
 			local pUnWrapped = service.UnWrap(pObj)
 
