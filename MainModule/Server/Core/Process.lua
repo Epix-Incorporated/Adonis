@@ -301,9 +301,9 @@ return function(Vargs, GetEnv)
 				if Anti.KickedPlayers[p] then
 					p:Kick(":: Adonis :: Communication following disconnect.")
 				elseif not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
-					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
+					Anti.Detected(p, "Kick", service.MaxLen((tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)), 150))
 				elseif cliData and type(cliData) ~= "table" then
-					return Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
+					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
 					--elseif cliData and keys and cliData.Module ~= keys.Module then
 					--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
