@@ -695,7 +695,6 @@ return function(Vargs, env)
 									Name = "Adonis_Water";
 									Anchored = true;
 									CanCollide = false;
-									FormFactor = "Custom";
 									TopSurface = "Smooth";
 									BottomSurface = "Smooth";
 									Size = Vector3.new(0.2, 0.2, 0.2);
@@ -888,6 +887,34 @@ return function(Vargs, env)
 						if v:IsA("Accessory") and v.Name:lower() == args[2]:lower() then
 							v:Destroy()
 						end
+					end
+				end
+			end
+		};
+		
+		RemoveLayeredClothings = {
+			Prefix = Settings.Prefix;
+			Commands = {"removelayeredclothings"};
+			Args = {"player"};
+			Description = "Remvoes layered clothings from their HumanoidDescription.";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, p in service.GetPlayers(plr, args[1]) do
+					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						local accessoryBlob = humanoidDesc:GetAccessories(false)
+						
+						for i=#accessoryBlob, 1, -1 do -- backwards loop due to table.remove
+							local blobItem = accessoryBlob[i]
+							
+							if blobItem.IsLayered then
+								table.remove(accessoryBlob, i)
+							end
+						end
+						
+						humanoidDesc:SetAccessories(accessoryBlob, false)
+						humanoid:ApplyDescription(humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
 				end
 			end
@@ -1472,7 +1499,6 @@ return function(Vargs, env)
 						BrickColor = BrickColor.new("Really black");
 						CanCollide = false;
 						Locked = true;
-						FormFactor = "Custom";
 						Size = Vector3.new(1, 1, 1);
 						TopSurface = "Smooth";
 						BottomSurface = "Smooth";
@@ -2131,7 +2157,7 @@ return function(Vargs, env)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local Dropper = v:FindFirstChildOfClass("PlayerGui") or v:FindFirstChildOfClass("Backpack")
 					if Dropper then
-						local piano = Deps.Assets.Piano:clone()
+						local piano = Deps.Assets.Piano:Clone()
 						piano.Parent = Dropper
 						piano.Disabled = false
 					end

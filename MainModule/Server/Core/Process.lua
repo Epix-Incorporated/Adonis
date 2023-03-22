@@ -298,14 +298,10 @@ return function(Vargs, GetEnv)
 
 		Remote = function(p, cliData, com, ...)
 			if p and p:IsA("Player") then
-				local key = tostring(p.UserId)
-				local keys = Remote.Clients[key]
-				if keys == nil then
-					return
-				end
-
-				if not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
-					return Anti.Detected(p, "Kick", string.sub((tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)), 1, 50))
+				if Anti.KickedPlayers[p] then
+					p:Kick(":: Adonis :: Communication following disconnect.")
+				elseif not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
+					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
 				elseif cliData and type(cliData) ~= "table" then
 					return Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
 					--elseif cliData and keys and cliData.Module ~= keys.Module then
@@ -691,6 +687,7 @@ return function(Vargs, GetEnv)
 				--Module = Core.MockClientKeys and Core.MockClientKeys.Module;
 			}
 
+			Core.UpdatePlayerConnection(p)
 			Core.PlayerData[key] = nil
 			Remote.Clients[key] = keyData
 
@@ -1023,7 +1020,7 @@ return function(Vargs, GetEnv)
 					})
 				end
 				if Settings.TopBarShift then
-					Remote.MakeGui(p, "TopBar")
+					Remote.Send(p, "SetVariables", { TopBarShift = true })
 				end
 
 				--if Settings.CustomChat then
@@ -1104,6 +1101,7 @@ return function(Vargs, GetEnv)
 			Core.Connections[cli] = nil
 
 			if p then
+				Anti.KickedPlayers[p] = nil
 				AddLog("Script", {
 					Text = p.Name .. " disconnected";
 					Desc = p.Name .. " disconnected from the server";

@@ -510,7 +510,8 @@ return function(Vargs, GetEnv)
 
 			local pUnWrapped = service.UnWrap(pObj)
 
-			local plr: Player = if pType == "number" then service.Players:GetPlayerByUserId(pObj)
+			local plr: Player = if pType == "userdata" and pObj:IsA("Player") then pObj
+				elseif pType == "number" then service.Players:GetPlayerByUserId(pObj)
 				elseif pType == "string" then service.Players:FindFirstChild(pObj)
 				elseif typeof(pUnWrapped) == "Instance" and pUnWrapped:IsA("Player") then pUnWrapped
 				elseif pType == "userdata" then service.Players:GetPlayerByUserId(pObj.UserId)
@@ -551,7 +552,7 @@ return function(Vargs, GetEnv)
 					return gamepassId and service.CheckPassOwnership(plr, gamepassId)
 				else
 					local username, userId = string.match(check, "^(.*):(.*)")
-					if username and userId and (plr.UserId == userId or string.lower(plr.Name) == string.lower(username)) then
+					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
 						return true
 					end
 
@@ -1013,7 +1014,7 @@ return function(Vargs, GetEnv)
 				if cName then
 					if string.lower(cName) == string.lower(name) then
 						return true
-					elseif id and cId and id == cId then
+					elseif id and cId and id == tonumber(cId) then
 						return true
 					end
 				else

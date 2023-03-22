@@ -3,7 +3,7 @@
 # 📜 Adonis Contribution Guidelines
 *Updated on 2022-06-25 18:35 UTC by Expertcoderz*
 
-<img src="https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png">
+![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png")
 
 Adonis is an ever-expanding, frequently updated, slightly complicated, system. To keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
@@ -27,15 +27,15 @@ Note that Adonis commands are _always_ referenced by their prefix and common usa
   
 ℹ️ **The above rules do not apply to individual commit names and descriptions.**
 
-You may optionally include relevant [label(s)](https://github.com/Sceleratis/Adonis/labels) in your PR to classify it. (Maintainers will add the labels otherwise after reviewing your PR.)
+You may optionally include relevant [label(s)](https://github.com/Epix-Incorporated/Adonis/labels) in your PR to classify it. (Maintainers will add the labels otherwise after reviewing your PR.)
 
 ## Q: What can I contribute?
 
-**A:** Anything within reason! Contributions can be to Adonis itself or the wiki (or both!) As long as your addition or change is useful and doesn't break something, and makes sense (while not violating ROBLOX's rules) it will *probably* be merged. However, something may occasionally be deemed unnecessary or incomplete, at which point a comment will be made on the PR for you to respond to or amend your code (or just so you know the maintainers' reasoning.)
+**A:** Anything within reason! Contributions can be to Adonis itself or the wiki (or both!) As long as your addition or change is useful and doesn't break something, and makes sense (while not violating Roblox's rules) it will *probably* be merged. However, something may occasionally be deemed unnecessary or incomplete, at which point a comment will be made on the PR for you to respond to or amend your code (or just so you know the maintainers' reasoning.)
 
 ## Q: What *can't* I contribute?
 
-**A:** Anything that violates ROBLOX's rules (as in, anything that could get Adonis or games using Adonis in trouble) is not allowed for obvious reasons. Additionally, please do not submit any form of obfuscated code as they have no place in the open-source project that Adonis is.
+**A:** Anything that violates Roblox's rules (as in, anything that could get Adonis or games using Adonis in trouble) is not allowed for obvious reasons. Additionally, please do not submit any form of obfuscated code as they have no place in the open-source project that Adonis is.
 
 There is a very clear/obvious difference between unavoidably complex code and intentionally complicated code. Maintainers are certain to check all file changes before merging and can *usually* spot something abnormal quickly.
 
@@ -59,17 +59,17 @@ Finally, ***be sure to make file changes based on the latest version of the ``ma
 
 **A:** After handling the merge, a maintainer will also add you to the credits list as "@GitHub YourGitHubUsernameHere" if it's your first contribution. If we forget to do this, and you notice, just us me know (via Discord or comment on the PR itself) and we'll fix it.
 
-Once in a while after changes are merged, some quick testing will be done by a maintainer to make sure everything works correctly. Once that's done, the updated models will be published to ROBLOX by an automated process, after which all new servers will be running the latest version of Adonis.
+Once in a while after changes are merged, some quick testing will be done by a maintainer to make sure everything works correctly. Once that's done, the updated models will be published to Roblox by an automated process, after which all new servers will be running the latest version of Adonis.
 
 ## Q: How do I get the "GitHub Contributor" role and group rank?
 
-**A:** After your contribution is accepted, post your Discord & ROBLOX usernames into the discussion thread (<https://github.com/Sceleratis/Adonis/discussions/433>). You will be given the "GitHub Contributor" role in the Discord server and the "Contributors" rank in the ROBLOX group (Epix Incorporated) by a maintainer, assuming you are a member of the server and group respectively.
+**A:** After your contribution is accepted, post your Discord & Roblox usernames into the discussion thread (<https://github.com/Epix-Incorporated/Adonis/discussions/433>). You will be given the "GitHub Contributor" role in the Discord server and the "Contributors" rank in the Roblox group (Epix Incorporated) by a maintainer, assuming you are a member of the server and group respectively.
 
-ROBLOX group: https://www.roblox.com/groups/886423
+Roblox group: <https://www.roblox.com/groups/886423>
 
-Discord server: https://discord.com/invite/H5RvTP3
+Discord server: <https://discord.com/invite/H5RvTP3>
 
-<hr>
+---
 
 ### That's all, folks!
 
