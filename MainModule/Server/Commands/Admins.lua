@@ -1491,8 +1491,10 @@ return function(Vargs, env)
 					if Variables.DisguiseBindings[v.UserId] then
 						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
 						Variables.DisguiseBindings[v.UserId].Rename = nil
-						ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
-						ChatService:UnregisterProcessCommandsFunction("Disguise_"..v.Name)
+						if ChatService then
+							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
+							ChatService:UnregisterProcessCommandsFunction("Disguise_"..v.Name)
+						end
 					end
 
 					Variables.DisguiseBindings[v.UserId] = {
@@ -1502,26 +1504,28 @@ return function(Vargs, env)
 						end);
 					}
 
-					local disguiseSpeaker = ChatService:AddSpeaker(username)
-					disguiseSpeaker:JoinChannel("All")
-					ChatService:RegisterProcessCommandsFunction("Disguise_"..v.Name, function(speaker, message, channelName)
-						if speaker == v.Name then
-							local filteredMessage = select(2, xpcall(function()
-								return service.TextService:FilterStringAsync(message, v.UserId, Enum.TextFilterContext.PrivateChat):GetChatForUserAsync(v.UserId)
-							end, function()
-								Remote.Send(v, "Function", "ChatMessage", "A message filtering error occurred.", Color3.new(1, 64/255, 77/255))
-								return
-							end))
-							if filteredMessage and not server.Admin.DoHideChatCmd(v, message) then
-								disguiseSpeaker:SayMessage(filteredMessage, channelName)
-								if v.Character then
-									service.Chat:Chat(v.Character, filteredMessage, Enum.ChatColor.White)
+					if ChatService then
+						local disguiseSpeaker = ChatService:AddSpeaker(username)
+						disguiseSpeaker:JoinChannel("All")
+						ChatService:RegisterProcessCommandsFunction("Disguise_"..v.Name, function(speaker, message, channelName)
+							if speaker == v.Name then
+								local filteredMessage = select(2, xpcall(function()
+									return service.TextService:FilterStringAsync(message, v.UserId, Enum.TextFilterContext.PrivateChat):GetChatForUserAsync(v.UserId)
+								end, function()
+									Remote.Send(v, "Function", "ChatMessage", "A message filtering error occurred.", Color3.new(1, 64/255, 77/255))
+									return
+								end))
+								if filteredMessage and not server.Admin.DoHideChatCmd(v, message) then
+									disguiseSpeaker:SayMessage(filteredMessage, channelName)
+									if v.Character then
+										service.Chat:Chat(v.Character, filteredMessage, Enum.ChatColor.White)
+									end
 								end
+								return true
 							end
-							return true
-						end
-						return false
-					end)
+							return false
+						end)
+					end
 				end
 			end
 		};
