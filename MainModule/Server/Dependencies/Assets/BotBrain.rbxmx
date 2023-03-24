@@ -268,7 +268,7 @@ end
 
 local function doToucher(part)
 	part.Touched:ConnectParallel(function(hit)
-		if hit and hit:IsA("Part") or hit:IsA("BasePart") and hit.Parent and hit.Parent:IsA("Model") and hit.Parent:FindFirstChildOfClass("Humanoid") then
+		if hit and hit:IsA("BasePart") and hit.Parent and hit.Parent:IsA("Model") and hit.Parent:FindFirstChildOfClass("Humanoid") and hit.Parent ~= script.Parent then
 			doAttack(hit.Parent)
 		end
 	end)
