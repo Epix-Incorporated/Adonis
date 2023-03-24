@@ -1180,7 +1180,9 @@ return function(Vargs, GetEnv)
 				brain.Disabled = false
 				new.Parent = workspace
 
-				task.wait()
+				if i % 5 == 1 then
+					task.wait()
+				end
 
 				event:Fire("SetSetting", {
 					Creator = player;
