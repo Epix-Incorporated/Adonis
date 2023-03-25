@@ -1,6 +1,6 @@
 {
 	ClassName: "NumberValue",
-	Properties: [
+	Properties: {
 		Value: 238
-	]
+	}
 }
