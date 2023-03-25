@@ -78,6 +78,8 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end)
+
+		Logs:AddLog("Script", "Successfully loaded alerts module data");
 	end, warn)
 
 	Commands.UrgentMessages = {
