@@ -1570,7 +1570,7 @@ return function(Vargs, env)
 				return tab
 			end;
 			Function = function(plr: Player, args: {string})
-				local autoUpdate = string.lower(args[1])
+				local autoUpdate = string.lower(tostring(args[1]))
 				Remote.RemoveGui(plr, "IncognitoPlayerList")
 				Remote.MakeGui(plr, "List", {
 					Name = "IncognitoPlayerList";
