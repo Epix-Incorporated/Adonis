@@ -53,6 +53,7 @@ return function(data, env)
 	local Variables = client.Variables
 	local Deps = client.Deps
 	local Functions = client.Functions;
+	local keyCodeToName = Functions.KeyCodeToName;
 
 	local gTable
 	local window = UI.Make("Window", {
@@ -795,7 +796,6 @@ return function(data, env)
 			local inputBlock = false
 			local commandBox
 			local keyBox
-			local keyCodeToName = Functions.KeyCodeToName;
 			local binds = keyTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
