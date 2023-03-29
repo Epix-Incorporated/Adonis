@@ -451,12 +451,19 @@ return function(Vargs)
 			end
 
 			local function checkServ()
-				if not pcall(function()
-					if not isStudio and (findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
-						Detected("crash", "Disallowed Services Detected")
+				if
+					not service.GuiService:IsTenFootInterface() and
+					not service.VRService.VREnabled and
+					not service.UserInputService.GamepadEnabled and
+					not service.UserInputService.TouchEnabled
+				then
+					if not pcall(function()
+						if not isStudio and (findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
+							Detected("crash", "Disallowed Services Detected")
+						end
+					end) then
+						Detected("kick", "Disallowed Services Finding Error")
 					end
-				end) then
-					Detected("kick", "Disallowed Services Finding Error")
 				end
 			end
 
