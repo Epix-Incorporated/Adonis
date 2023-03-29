@@ -16,6 +16,7 @@ return function(data, env)
 	local UI = client.UI
 	local Remote = client.Remote
 	local Variables = client.Variables
+	local Functions = client.Functions
 	local Deps = client.Deps
 
 	local window = UI.Make("Window",{
@@ -104,7 +105,7 @@ return function(data, env)
 				local event = service.UserInputService.InputBegan:Connect(function(InputObject)
 					local textbox = service.UserInputService:GetFocusedTextBox()
 					if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
-						gotKey = InputObject.KeyCode.Name
+						gotKey = Functions.keyCodeToName(InputObject.KeyCode.Value)
 					end
 				end)
 
