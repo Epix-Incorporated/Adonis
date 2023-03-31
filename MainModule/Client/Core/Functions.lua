@@ -1041,7 +1041,13 @@ return function(Vargs, GetEnv)
 			if keyVal then
 				for _, e in Enum.KeyCode:GetEnumItems() do
 					if e.Value == keyVal then
-						return e.Name;
+						local name = service.UserInputService:GetStringForKeyCode(e)
+
+						if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
+							return e.Name
+						else
+							return name
+						end
 					end
 				end
 			end
