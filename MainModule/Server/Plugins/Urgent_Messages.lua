@@ -56,20 +56,8 @@ return function(Vargs, GetEnv)
 		end
 
 		Variables.UrgentMessageCounter = MessageVersion;
-
-		for _, p in ipairs(service.Players:GetPlayers()) do
-			task.spawn(pcall, function()
-				if MessageAdminType then
-					local data = Core.GetPlayer(p);
-					if checkDoNotify(p, data) then
-						data.LastUrgentMessage = MessageVersion;
-						task.delay(0.5, doNotify, p)
-					end
-				end
-			end, warn)
-		end
-
-		service.Events.PlayerAdded:Connect(function(p)
+		
+		local function onPlayerAdded(p: Player)
 			if MessageAdminType then
 				local data = Core.GetPlayer(p);
 				if checkDoNotify(p, data) then
@@ -77,7 +65,13 @@ return function(Vargs, GetEnv)
 					task.delay(0.5, doNotify, p)
 				end
 			end
-		end)
+		end
+
+		for _, p in ipairs(service.Players:GetPlayers()) do
+			task.spawn(pcall, onPlayerAdded, p)
+		end
+
+		service.Events.PlayerAdded:Connect(onPlayerAdded)
 
 		Logs:AddLog("Script", "Successfully loaded alerts module data");
 	end, warn)
