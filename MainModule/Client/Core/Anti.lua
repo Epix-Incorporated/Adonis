@@ -247,7 +247,7 @@ return function(Vargs, GetEnv)
 						success or err ~= "Expected ':' not '.' calling member function Kick" or
 						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace.Name
 					then
-						Detected("kick", "Anti kick found! Method 1")
+						Detected("log", "Potential anti kick found! Method 1")
 						warn(success, err, "|", success2, err2)
 					end
 
@@ -269,7 +269,7 @@ return function(Vargs, GetEnv)
 									success2 or
 									err2 ~= "Cannot kick a non-local Player from a LocalScript"
 								then
-									Detected("kick", "Anti kick found! Method 2")
+									Detected("log", "Potential anti kick found! Method 2")
 									warn(success, err, "|", success2, err2)
 								end
 							end
@@ -281,7 +281,7 @@ return function(Vargs, GetEnv)
 				coroutine.wrap(function()
 					task.wait(4)
 					if not hasCompleted then
-						Detected("kick", "Anti kick found! Method 3")
+						Detected("log", "Potential anti kick found! Method 3")
 					end
 					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
 					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
