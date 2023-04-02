@@ -348,10 +348,9 @@ settings.ExploitNotifications = true        -- Notify all moderators and higher-
 settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
 settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
 settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
-settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 settings.AntiMultiTool = false -- Prevents multitool and because of that many other exploits
 settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
-settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
+-- settings.AntiHumanoidDeletion and settings.ProtectHats have been superseded Workspace.RejectCharacterDeletions 
 
 settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
@@ -498,10 +497,8 @@ descs.ExploitNotifications = [[ Notify all moderators and higher-ups when a play
 descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]
 descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found ]]
-descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player ]]
 descs.AntiMultiTool = [[ Prevents multitool and because of that many other exploits ]]
 descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
-descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
 descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
@@ -610,10 +607,8 @@ order = {
 	"CharacterCheckLogs";
 	"AntiNoclip";
 	"AntiRootJointDeletion";
-	"AntiHumanoidDeletion";
 	"AntiMultiTool";
 	"AntiGod";
-	"ProtectHats";
 	" ";
 	"AntiSpeed";
 	"AntiBuildingTools";
