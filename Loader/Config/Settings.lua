@@ -559,10 +559,12 @@ local settings = {
 
 	--// 8. Anti-Exploit \\--
 	Detection = true;
-	-- Attempt to detect certain known exploits.
+	-- (Extremely important, makes all protection systems work)
+	-- A global toggle for all the other protection settings.
 
 
 	CheckClients = true;
+	-- (Important, makes sure Adonis clients are connected to the server)
 	-- Check clients every minute or two to make sure they're still active.
 
 
@@ -582,10 +584,6 @@ local settings = {
 	-- Attempts to detect paranoid and kills the player if found.
 
 
-	AntiHumanoidDeletion = false;
-	-- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player.
-
-
 	AntiMultiTool = false;
 	-- Prevents multitooling and because of that many other exploits.
 
@@ -602,12 +600,14 @@ local settings = {
 	--  (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
 
 
-	AntiClientIdle = false;
+	AntiAntiIdle = false;
 	-- (Client-Sided) Kick the player if they are using an anti-idle exploit.
+	--  Highly useful for grinding/farming games.
 
 
-	ProtectHats = false;
-	-- Prevents hats from being un-welded from their characters through unnormal means.
+	ExploitGuiDetection = false;
+	-- (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked.
+	-- (If you use StarterGui:SetCore("SendNotification") with an image this will kick you)
 }
 
 
@@ -775,19 +775,18 @@ descs.DonorCapes = [[ Donors get to show off their capes; Not disruptive :) ]]
 descs.DonorCommands = [[ Show your support for the script and let donors use harmless commands like !sparkles ]]
 descs.LocalCapes = [[ Makes Donor capes local so only the donors see their cape [All players can still disable capes locally] ]]
 
-descs.Detection = [[ Attempt to detect certain known exploits. ]]
-descs.CheckClients = [[ Check clients every minute or two to make sure they're still active. ]]
+descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings. ]]
+descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server). Check clients every minute or two to make sure they're still active. ]]
 descs.ExploitNotifications = [[ Notify modorators and higher that an a player was kicked by the AntiExploit. ]]
 descs.CharacterCheckLogs = [[ If the character checks appear in exploit logs and exploit notifications. ]]
 descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found. ]]
 descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found. ]]
-descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player. ]]
 descs.AntiMultiTool = [[ Prevents multitooling and because of that many other exploits. ]]
 descs.AntiGod = [[ If a player does not respawn when they should have they get respawned. ]]
 descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits. ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client. ]]
-descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. ]]
-descs.ProtectHats = [[Prevents hats from being un-welded from their characters through unnormal means. ]]
+descs.AntiAntiIdle  = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games. ]]
+descs.ExploitGuiDetection = [[(Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
 descs.Commands = [[ Custom commands. ]]
 
 local order = {
