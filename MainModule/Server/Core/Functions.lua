@@ -452,8 +452,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetChatService = function()
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120)
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120)
+			local isTextChat = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", isTextChat and 0.2 or 120)
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", isTextChat and 0.2 or 120)
 
 			if chatMod then
 				return require(chatMod)
