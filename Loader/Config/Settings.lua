@@ -898,8 +898,8 @@ local order = {
 	"AntiGod";
 	"AntiSpeed";
 	"AntiBuildingTools";
-	"AntiClientIlde";
-	"ProtectedHats";
+	"AntiAntiIdle";
+	"ExploitGuiDetection";
 	"";
 	"Commands"
 }
