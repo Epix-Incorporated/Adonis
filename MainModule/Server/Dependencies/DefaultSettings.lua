@@ -863,7 +863,6 @@ local order = {
 	"CharacterCheckLogs";
 	"AntiNoclip";
 	"AntiRootJointDeletion";
-	"AntiHumanoidDeletion";
 	"AntiMultiTool";
 	"AntiGod";
 	"AntiSpeed";
