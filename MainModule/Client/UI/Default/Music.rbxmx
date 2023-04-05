@@ -49,7 +49,7 @@ return function(data, env)
 	local visualiserModule = require(script:FindFirstChild("Visualizer"))
 	local sliderModule = require(script:FindFirstChild("Slider"))
 	local localAudioLib = client.Shared:FindFirstChild("AudioLib")
-	localAudioLib = require(localAudioLib).new(service.LocalContainer())
+	localAudioLib = require(localAudioLib).new(service.UnWrap(service.LocalContainer()))
 
 	local localAudioLibFunction = function(func, args)
 		return localAudioLib[func](localAudioLib, args)
