@@ -908,7 +908,7 @@ return function(Vargs, env)
 						for i=#accessoryBlob, 1, -1 do -- backwards loop due to table.remove
 							local blobItem = accessoryBlob[i]
 							
-							if (blobItem.IsLayered) then
+							if blobItem.IsLayered then
 								table.remove(accessoryBlob, i)
 							end
 						end
@@ -3109,40 +3109,35 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
-						v.Character.Humanoid.PlatformStand = true
-						local w = service.New("Weld", plr.Character.HumanoidRootPart )
-						w.Part0 = plr.Character.HumanoidRootPart
-						w.Part1 = v.Character.HumanoidRootPart
-						local w2 = service.New("Weld", plr.Character.Head)
-						w2.Part0 = plr.Character.Head
-						w2.Part1 = v.Character.Head
-						local w3 = service.New("Weld", plr.Character:FindFirstChild("Right Arm"))
-						w3.Part0 = plr.Character:FindFirstChild("Right Arm")
-						w3.Part1 = v.Character:FindFirstChild("Right Arm")
-						local w4 = service.New("Weld", plr.Character:FindFirstChild("Left Arm"))
-						w4.Part0 = plr.Character:FindFirstChild("Left Arm")
-						w4.Part1 = v.Character:FindFirstChild("Left Arm")
-						local w5 = service.New("Weld", plr.Character:FindFirstChild("Right Leg"))
-						w5.Part0 = plr.Character:FindFirstChild("Right Leg")
-						w5.Part1 = v.Character:FindFirstChild("Right Leg")
-						local w6 = service.New("Weld", plr.Character:FindFirstChild("Left Leg"))
-						w6.Part0 = plr.Character:FindFirstChild("Left Leg")
-						w6.Part1 = v.Character:FindFirstChild("Left Leg")
-						plr.Character.Head.face:Destroy()
-						for _, p in v.Character:GetChildren() do
-							if p:IsA("BasePart") then
-								p.CanCollide = false
+						local Humanoid = v.Character.Humanoid
+
+						local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
+						local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, v.Character.Humanoid.RigType)
+						local Animate: BaseScript = newCharacterModel.Animate
+
+						newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
+						newCharacterModel.Name = v.Name
+
+						local oldCFrame = v.Character and v.Character:GetPivot() or CFrame.new()
+
+						if plr.Character then
+							plr.Character = nil
+							v.Character = nil
+						end
+						plr.Character = newCharacterModel
+
+						newCharacterModel:PivotTo(oldCFrame)
+						newCharacterModel.Parent = workspace
+
+						-- hacky way to fix other people being unable to see animations.
+						for _ = 1, 2 do
+							if Animate then
+								Animate.Disabled = not Animate.Disabled
 							end
 						end
-						for _, p in plr.Character:GetChildren() do
-							if p:IsA("BasePart") then
-								p.Transparency = 1
-							elseif p:IsA("Accoutrement") then
-								p:Destroy()
-							end
-						end
-						v.Character.Parent = plr.Character
-						--v.Character.Humanoid.Changed:Connect(function() v.Character.Humanoid.PlatformStand = true end)
+
+						server.Remote.Send(plr, "Function", "SetView", plr.Character.Humanoid)
+						server.Remote.Send(v, "Function", "SetView", plr.Character.Humanoid)
 					end
 				end
 			end

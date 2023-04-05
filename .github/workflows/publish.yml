@@ -14,14 +14,14 @@ jobs:
           
       - name: Get current date
         id: date
-        run: echo "curDate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - uses: Roblox/setup-foreman@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Build Standalone
-        run: rojo build -o Adonis_Release_${{ env.curDate }}.rbxm .github/build.project.json
+        run: rojo build -o Adonis_Release_${{ steps.date.outputs.date }}.rbxm .github/build.project.json
         
       - name: Set DebugMode off
         run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.lua 
@@ -37,7 +37,7 @@ jobs:
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         with:
           webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
-          filename: Adonis_Release_${{ env.curDate }}.rbxm
+          filename: Adonis_Release_${{ steps.date.outputs.date }}.rbxm
           
       - name: Publish Loader
         uses: fjogeleit/http-request-action@v1

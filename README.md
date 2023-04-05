@@ -44,7 +44,7 @@ If you get stuck, feel free to ask for assistance on our [Discord server](https:
 
 ℹ️ **Note:** By default, loaders compiled from the repository have [`DebugMode`](#debug-mode) enabled.
 
-**⚠️ Method 3 compiles the _bleeding edge_ version of Adonis, which may be not fully tested and is highly unstable.**
+**⚠️ Method 3 compiles the *bleeding edge* version of Adonis, which may be not fully tested and is highly unstable.**
 
 ### ⚙️ Configuring Adonis {#configuring-adonis}
 

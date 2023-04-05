@@ -13,6 +13,8 @@ return function(Vargs, GetEnv)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
+	local antiNotificationDebounce = {}
+	local antiNotificationResetTick = os.clock() + 60
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
@@ -37,43 +39,19 @@ return function(Vargs, GetEnv)
 	local function RunAfterPlugins(data)
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
-
-		local function onPlayerAdded(player)
-			if not player.Character then
-				player.CharacterAdded:Wait()
-			end
-
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode == true then
-				Anti.CharacterCheck(player)
-			end
-		end
-
-		if
-			service.ServerScriptService:FindFirstChild("AntiExploit_PlusPlus") or
-			service.ServerScriptService:FindFirstChild("FE_Plus_Plus_AntiExploit") -- // Legacy name
-		then
-			Logs:AddLog("Script", "Didn't run character AC checks because another anti-exploit which does the same is already loaded.")
-			return
-		end
-
-		for _, v in service.Players:GetPlayers() do
-			task.spawn(onPlayerAdded, v)
-		end
-		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
-
-	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
-	local kickedPlayers = setmetatable({}, {__mode = "v"})
 
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
 		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
 		SpoofCheckCache = {};
+		KickedPlayers = setmetatable({}, {__mode = "k"});
+
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(":: Adonis ::\n".. tostring(info)) end)
+			pcall(function()service.UnWrap(p):Kick(":: Adonis Anti Cheat ::\n".. tostring(info)) end)
 
 			task.wait(1)
 
@@ -84,215 +62,6 @@ return function(Vargs, GetEnv)
 				Text = "Server removed "..tostring(p);
 				Desc = info;
 			})
-		end;
-
-		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
-			local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
-
-			local function Detected(player, action, reason)
-				if charGood then
-					if Settings.CharacterCheckLogs ~= true and (string.lower(action) == "log" or string.lower(action) == "kill") then
-						if action == "kill" then
-							local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-							if humanoid then
-								humanoid.Health = 0
-							end
-						end
-
-						Logs.AddLog(Logs.Script, {
-							Text = "Character AE Detected "..tostring(player);
-							Desc = "The Anti-Exploit character check detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason);
-							Player = player;
-						})
-
-						warn("Charactercheck detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason))
-					else
-						Anti.Detected(player, action, reason)
-					end
-				end
-			end
-
-			local function protectHat(hat)
-				local handle = hat:WaitForChild("Handle", 30)
-
-				if handle then
-					task.defer(function()
-						local joint = handle:WaitForChild("AccessoryWeld")
-
-						local connection
-						connection = joint.AncestryChanged:Connect(function(_, parent)
-							if not connection.Connected or parent then
-								return
-							end
-
-							connection:Disconnect()
-
-							if handle and handle:CanSetNetworkOwnership() then
-								handle:SetNetworkOwner(nil)
-							end
-
-							Logs.AddLog(Logs.Script, {
-								Text = "AE: Hat joint deletion reset network ownership for player: "..tostring(player);
-								Desc = "The AE reset joint handle network ownership for player: "..tostring(player);
-								Player = player;
-							})
-						end)
-					end)
-
-					if handle:IsA("Part") then
-						local mesh = handle:FindFirstChildOfClass("SpecialMesh") or handle:WaitForChild("Mesh")
-
-						mesh.AncestryChanged:Connect(function(child, parent)
-							task.defer(function()
-								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) and hat and hat.Parent then
-									mesh.Parent = handle
-									Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
-								end
-							end)
-						end)
-					end
-				end
-			end
-
-			local function onCharacterRemoving(character)
-				charGood = false
-			end
-
-			local function onCharacterAdded(character)
-				charGood = true
-
-				for _, v in character:GetChildren() do
-					if v:IsA("Accoutrement") and Settings.ProtectHats == true then
-						coroutine.wrap(protectHat)(v)
-					end
-				end
-
-				character.ChildAdded:Connect(function(child)
-					if child:IsA("Accoutrement") and Settings.ProtectHats == true then
-						protectHat(child)
-					elseif child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
-						local count = 0
-
-						task.defer(function()
-							for _, v in character:GetChildren() do
-								if v:IsA("BackpackItem") then
-									count += 1
-									if count > 1 then
-										local backpack = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack")
-										if not backpack.Parent then
-											backpack.Parent = player
-										end
-										v.Parent = backpack
-										Detected(player, "log", "Multiple tools equipped at the same time")
-									end
-								end
-							end
-						end)
-					end
-				end)
-
-				local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
-
-				if Settings.AntiHumanoidDeletion then
-					humanoid.AncestryChanged:Connect(function(child, parent)
-						task.defer(function()
-							if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
-								humanoid.Parent = character
-								Detected(player, "kill", "Humanoid removed")
-							end
-						end)
-					end)
-				end
-
-				humanoid.StateChanged:Connect(function(last, state)
-					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead and humanoid then
-						humanoid.Health = 0
-						humanoid:ChangeState(Enum.HumanoidStateType.Dead)
-						Logs.AddLog(Logs.Script, {
-							Text = "AE: Humanoid came out of dead state for player: "..tostring(player);
-							Desc = "AE: Humanoid came out of dead state for player: "..tostring(player);
-							Player = player;
-						})
-					end
-				end)
-
-				if game:GetService("Players").CharacterAutoLoads and Settings.AntiGod == true then
-					local connection
-
-					connection = humanoid.Died:Connect(function()
-						if not connection.Connected then
-							return
-						end
-
-						connection:Disconnect()
-
-						task.wait(game:GetService("Players").RespawnTime + 1.5)
-
-						if workspace:IsAncestorOf(humanoid) then
-							Detected(player, "log", "Player took too long to respawn. Respawning manually")
-							player:LoadCharacter()
-						end
-					end)
-				end
-
-				local animator = humanoid:WaitForChild("Animator")
-
-				animator.AnimationPlayed:Connect(function(animationTrack)
-					local animationId = animationTrack.Animation.AnimationId
-					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
-						task.defer(function()
-							animationTrack:Stop(1/60)
-						end)
-						Detected(player, "log", "Player played an inappropriate character animation")
-					end
-				end)
-
-				local connections = {}
-				local function makeConnection(Conn)
-					local connection
-					connection = Conn:Connect(function(_, parent)
-						task.defer(function()
-							if not connection.Connected or parent or humanoid and humanoid.Health <= 0 then
-								return
-							end
-
-							for _, v in connections do
-								v:Disconnect()
-							end
-
-							if humanoid then
-								humanoid.Health = 0
-								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
-								Logs.AddLog(Logs.Script, {
-									Text = "AE: Waist joint deleted by player: "..tostring(player);
-									Desc = "AE: Waist joint deleted by player: "..tostring(player);
-									Player = player;
-								})
-							end
-						end)
-					end)
-
-					table.insert(connections, connection)
-				end
-
-				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
-					local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-					local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
-
-					makeConnection(rootJoint.AncestryChanged)
-
-					if humanoid.RigType == Enum.HumanoidRigType.R15 then
-						makeConnection(character:WaitForChild("UpperTorso"):WaitForChild("Waist").AncestryChanged)
-					end
-				end
-			end
-
-			if player.Character then
-				coroutine.wrap(onCharacterAdded)(player.Character)
-			end
-
-			player.CharacterRemoving:Connect(onCharacterRemoving)
-			player.CharacterAdded:Connect(onCharacterAdded)
 		end;
 
 		CheckAllClients = function()
@@ -358,15 +127,16 @@ return function(Vargs, GetEnv)
 		Detected = function(player, action, info)
 			local info = string.gsub(tostring(info), "\n", "")
 
-			if table.find(kickedPlayers, player) then
-				player:Kick(":: Adonis ::\n"..info)
+			if Anti.KickedPlayers[player] then
+				player:Kick(":: Adonis Anti Cheat ::\n"..info)
 				return
 			elseif service.RunService:IsStudio() then
-				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
+				warn("ANTI-EXPLOIT: ".. player.Name .." ".. action .." ".. info)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
-						table.insert(kickedPlayers, player)
+						Anti.KickedPlayers[player] = true
+
 						Anti.RemovePlayer(player, info)
 					elseif string.lower(action) == "kill" then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -377,7 +147,8 @@ return function(Vargs, GetEnv)
 						end
 						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
-						table.insert(kickedPlayers, player)
+						Anti.KickedPlayers[player] = true
+
 						Remote.Send(player, "Function", "Kill")
 						task.wait(5)
 						pcall(function()
