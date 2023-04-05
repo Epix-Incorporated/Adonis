@@ -9,52 +9,38 @@
 ------------------------------------------
 
 --[[
-
 	This is only here to help you when editing settings so you understand how they work.
 	And don't break something.
-
 	In case you don't know what Luau is; Luau is the scripting language Roblox uses...
 	so every script you see (such as this one) and pretty much any code on Roblox is
 	written in Luau.
-
 	Anything that looks like {} is known as a table.
 	Tables contain things, like the Luau version of a box.
 	An example of a table would be setting = {"John", "Mary", "Bill"}
 	You can have tables inside of tables, such in the case of setting = {{Group = 1234, Rank = 123, Type = "Admin"}}
 	Just like real boxes, tables can contain pretty much anything including other tables.
-
 	Note: Commas (,) as well as semicolons (;) can both be used to separate things inside a table.
-
 	Anything that looks like "Bob" is what's known as a string. Strings
 	are basically plain text; setting = "Bob" would be correct however
 	setting = Bob would not; because if it's not surrounded by quotes Luau will think
 	that Bob is a variable; Quotes indicate something is a string and therefore not a variable/number/code
-
 	Numbers do not use quotes. setting = 56
-
 	This green block of text you are reading is called a comment. It's like a message
 	from the programmer to anyone who reads their stuff. Anything in a comment will
 	not be seen by Luau when the script is run.
-
-
 	Built-In Permissions Levels:
 		Players - 0
 		Moderators - 100
 		Admins - 200
 		HeadAdmins - 300
 		Creators - 900
-
 	Note that when changing command permissions you MUST include the prefix;
 	So if you change the prefix to $ you would need to do $ff instead of :ff
-
-
 	------------------------------------------
 	------------	Trello		--------------
 	------------------------------------------
-
 	The Trello abilities of the script allow you to manage lists and permissions via
 	a Trello board; The following will guide you through the process of setting up a board;
-
 		1. Sign up for an account at http://trello.com
 		2. Create a new board
 			http://prntscr.com/b9xljn
@@ -66,9 +52,7 @@
 		6. Congrats! The board is ready to be used;
 		7. Create a list and add cards to it;
 			http://prntscr.com/b9xswk
-
 	- You can view lists in-game using :viewlist ListNameHere
-
 	Lists:
 		Moderators - Card Format: Same as settings.Moderators
 		Admins - Card Format: Same as settings.Admins
@@ -81,19 +65,13 @@
 		Permissions - Card Format: Same as settings.Permissions
 		Music - Card Format: SongName:AudioID
 		Commands - Card Format: Command (e.g. :ff bob)
-
 	Card format refers to how card names should look.
-
-
 	------------------------------------------
 	------------	Adonis		--------------
 	------------------------------------------
-
 	--// How to add administrators \\--
-
 	Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
 	Simply place users into the respective "Users" table for whatever level/rank you want to give them.
-
 	Format Example:
 		settings.Ranks = {
 			["Moderators"] = {
@@ -106,16 +84,11 @@
 				Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 			};
 		}
-
 	If you use custom ranks, existing custom ranks will be imported with a level of 1.
 	Add all new CustomRanks to the table below with the respective level you want them to be.
-
 	NOTE: Changing the level of built-in ranks (Moderators, Admins, HeadAdmins, Creators)
 	- Will also change the permission level for any built-in commands associated with that rank.
-
-
 	MAKE SURE YOU SET settings.DataStoreKey TO SOMETHING ABSOLUTELY RANDOM!!
-
 ]]--
 
 
@@ -124,7 +97,6 @@
 ------------------------------------------
 
 --[[
-
 	1. Datastore
 	2. Themes
 	3. Storage
@@ -134,7 +106,6 @@
 	7. Commands
 	8. Anti-Exploit
 	9. Custom Commands
-
 ]]--
 
 
@@ -491,7 +462,6 @@ local settings = {
 		--[[
 			REFERENCE:
 				command_full_name: The name of a command (e.g. :cmds)
-
 			[command_full_name] = {
 				Player = 0; -- Time in seconds.
 				Server = 0;
@@ -559,10 +529,12 @@ local settings = {
 
 	--// 8. Anti-Exploit \\--
 	Detection = true;
-	-- Attempt to detect certain known exploits.
+	-- (Extremely important, makes all protection systems work)
+	-- A global toggle for all the other protection settings.
 
 
 	CheckClients = true;
+	-- (Important, makes sure Adonis clients are connected to the server)
 	-- Check clients every minute or two to make sure they're still active.
 
 
@@ -582,10 +554,6 @@ local settings = {
 	-- Attempts to detect paranoid and kills the player if found.
 
 
-	AntiHumanoidDeletion = false;
-	-- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player.
-
-
 	AntiMultiTool = false;
 	-- Prevents multitooling and because of that many other exploits.
 
@@ -602,12 +570,14 @@ local settings = {
 	--  (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
 
 
-	AntiClientIdle = false;
+	AntiAntiIdle = false;
 	-- (Client-Sided) Kick the player if they are using an anti-idle exploit.
+	--  Highly useful for grinding/farming games.
 
 
-	ProtectHats = false;
-	-- Prevents hats from being un-welded from their characters through unnormal means.
+	ExploitGuiDetection = false;
+	-- (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked.
+	-- (If you use StarterGui:SetCore("SendNotification") with an image this will kick you)
 }
 
 
@@ -775,19 +745,18 @@ descs.DonorCapes = [[ Donors get to show off their capes; Not disruptive :) ]]
 descs.DonorCommands = [[ Show your support for the script and let donors use harmless commands like !sparkles ]]
 descs.LocalCapes = [[ Makes Donor capes local so only the donors see their cape [All players can still disable capes locally] ]]
 
-descs.Detection = [[ Attempt to detect certain known exploits. ]]
-descs.CheckClients = [[ Check clients every minute or two to make sure they're still active. ]]
+descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings. ]]
+descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server). Check clients every minute or two to make sure they're still active. ]]
 descs.ExploitNotifications = [[ Notify modorators and higher that an a player was kicked by the AntiExploit. ]]
 descs.CharacterCheckLogs = [[ If the character checks appear in exploit logs and exploit notifications. ]]
 descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found. ]]
 descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found. ]]
-descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player. ]]
 descs.AntiMultiTool = [[ Prevents multitooling and because of that many other exploits. ]]
 descs.AntiGod = [[ If a player does not respawn when they should have they get respawned. ]]
 descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits. ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client. ]]
-descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. ]]
-descs.ProtectHats = [[Prevents hats from being un-welded from their characters through unnormal means. ]]
+descs.AntiAntiIdle  = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games. ]]
+descs.ExploitGuiDetection = [[(Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
 descs.Commands = [[ Custom commands. ]]
 
 local order = {
@@ -899,8 +868,8 @@ local order = {
 	"AntiGod";
 	"AntiSpeed";
 	"AntiBuildingTools";
-	"AntiClientIlde";
-	"ProtectedHats";
+	"AntiAntiIdle";
+	"ExploitGuiDetection";
 	"";
 	"Commands"
 }
