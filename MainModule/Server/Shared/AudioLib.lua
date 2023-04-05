@@ -44,7 +44,6 @@ function AudioLib.new(container)
 		end
 	end
 
-	local container = SoundService:FindFirstChild(container.Name)
 	self.Sound = container:FindFirstChild("AudioLib_Sound")
 	if not self.Sound then
 		self.Sound = Instance.new("Sound")
