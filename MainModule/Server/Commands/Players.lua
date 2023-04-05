@@ -317,7 +317,7 @@ return function(Vargs, env)
 			Description = "Shows you the FPS (speed) of the server";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint("The server FPS is "..service.Round(service.Workspace:GetRealPhysicsFPS()), {plr})
+				Functions.Hint("The server FPS is "..math.round(service.Workspace:GetRealPhysicsFPS()), {plr})
 			end
 		};
 

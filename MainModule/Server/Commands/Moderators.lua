@@ -1393,7 +1393,7 @@ return function(Vargs, env)
 					end)
 				end
 				for i = 0.1, 5, 0.1 do
-					if Functions.CountTable(tab) - 2 >= Functions.CountTable(players) then break end
+					if service.CountTable(tab) - 2 >= service.CountTable(players) then break end
 					wait(0.1)
 				end
 				return tab

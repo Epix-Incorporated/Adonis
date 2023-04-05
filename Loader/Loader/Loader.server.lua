@@ -40,6 +40,7 @@ if mutex then
 else
 	mutex = Instance.new("StringValue")
 	mutex.Name = "__Adonis_MUTEX"
+	mutex.Archivable = false
 	mutex.Value = script:GetFullName()
 	mutex.Parent = RunService
 
