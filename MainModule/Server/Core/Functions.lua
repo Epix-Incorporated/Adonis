@@ -1400,7 +1400,7 @@ return function(Vargs, GetEnv)
 				for k, v in match do
 					if type(v) == "table" and not Functions.LaxCheckMatch(check[k], v) then
 						return false
-					elseif check[k] ~= v then
+					elseif type(v) ~= "table" and check[k] ~= v then
 						return false
 					end
 				end
