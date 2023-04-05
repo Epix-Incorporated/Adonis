@@ -410,7 +410,7 @@ local settings = {
 	-- Allows other non-Adonis scripts access using _G.Adonis.Access.
 
 
-	G_Access_Key = "";
+	G_Access_Key = "Example_Key";
 	-- Key required to use the _G access Api.
 
 
