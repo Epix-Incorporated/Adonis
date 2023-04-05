@@ -1547,6 +1547,6 @@ return function(Vargs, GetEnv)
 			return if allowNil then nil else BrickColor.random()
 		end;
 
-		NuclearExplode = require(server.Dependancies.FastNuke);
+		NuclearExplode = require(server.Dependencies.FastNuke);
 	};
 end
