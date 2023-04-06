@@ -4548,7 +4548,7 @@ return function(Vargs, env)
 						Icon = server.MatIcons["QR code scanner"];
 						Text = "Click to teleport to GRP";
 						Time = 30;
-						OnClick = Core.Bytecode("service.TeleportService:Teleport(6194809)");
+						OnClick = Core.Bytecode("service.TeleportService:Teleport(5118029260)");
 					})
 				end
 			end
