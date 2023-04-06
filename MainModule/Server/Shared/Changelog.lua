@@ -91,7 +91,7 @@ return {
 	"(Git/ccuser44) Fixed bugs in nightly (#1047)";
 	"(Git/L8X) Add more exploit functions to output check (#1048)";
 	"(Git/LiveFireExercise) Update GRP command (#1049)";
-	"(Git/LiveFireExercise) Adonis Changelog and version update (#1050)";
+	"(Git/LiveFireExercise) Adonis Changelog and version update (#1050, #1051)";
 	"Fixed unranking non-ingame users";
 	"Disabled AutoLocalize for GUI objects";
 	"Added settings.SilentCommandDenials to avoid notifying users when they can't run a command (#836)";
