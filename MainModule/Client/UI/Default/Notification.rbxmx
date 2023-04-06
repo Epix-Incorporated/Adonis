@@ -164,7 +164,7 @@ return function(data, env)
 	
 	task.spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
-		sound.SoundId = 'rbxassetid://'.."203785584"--client.NotificationSound
+		sound.SoundId = 'rbxassetid://203785584'--client.NotificationSound
 		sound.Volume = 0.2
 		sound:Play()
 		wait(0.5)

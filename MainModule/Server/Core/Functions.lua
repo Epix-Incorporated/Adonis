@@ -190,7 +190,7 @@ return function(Vargs, GetEnv)
 					local lower = string.lower
 					local sub = string.sub
 
-					if matched then
+					if matched and #matched > 0 then
 						for _,v in service.Teams:GetChildren() do
 							if sub(lower(v.Name), 1, #matched) == lower(matched) then
 								for _,m in parent:GetChildren() do
@@ -255,7 +255,7 @@ return function(Vargs, GetEnv)
 			["displayname-"] = {
 				Match = "displayname-";
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
-					local matched = tostring(string.match(msg, "displayname%-(.*)"))
+					local matched = tonumber(string.match(msg, "displayname%-(.*)"))
 					local foundNum = 0
 
 					if matched then
@@ -452,8 +452,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetChatService = function()
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120)
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120)
+			local isTextChat = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", isTextChat and 0.2 or 120)
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", isTextChat and 0.2 or 120)
 
 			if chatMod then
 				return require(chatMod)
@@ -473,7 +474,7 @@ return function(Vargs, GetEnv)
 		ArgsToString = function(args)
 			local str = ""
 			for i, arg in args do
-				str ..= "Arg"..tostring(i)..": "..tostring(arg).."; "
+				str ..= `Arg{i}: {arg}; `
 			end
 			return str:sub(1, -3)
 		end;
@@ -535,7 +536,7 @@ return function(Vargs, GetEnv)
 				return {plr}
 			else
 				if argument:match("^##") then
-					error("String passed to GetPlayers is filtered: ".. tostring(argument), 2)
+					error(`String passed to GetPlayers is filtered: {argument}`, 2)
 				end
 
 				for s in argument:gmatch("([^,]+)") do
@@ -568,7 +569,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match("^"..s:lower()) then
+							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{s}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -578,7 +579,7 @@ return function(Vargs, GetEnv)
 							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match("^"..s:lower()) then
+								if p and p.ClassName == "Player" and p.Name:lower():match(`^{s}`) then
 									table.insert(players, p)
 									plus()
 								end
@@ -601,8 +602,8 @@ return function(Vargs, GetEnv)
 
 								if plrCount == 0 and not options.DontError then
 									Remote.MakeGui(plr, "Output", {
-										Message = if not options.NoFakePlayer then "No user named '"..s.."' exists"
-											else "No players matching '"..s.."' were found!";
+										Message = if not options.NoFakePlayer then `No user named '{s}' exists`
+											else `No players matching '{s}' were found!`;
 									})
 								end
 							end
@@ -803,7 +804,7 @@ return function(Vargs, GetEnv)
 			local b = 'ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#'
 
 
-			data = gsub(data, '[^'..b..'=]', '')
+			data = gsub(data, `[^{b}=]`, '')
 			return (gsub(gsub(data, '.', function(x)
 				if x == '=' then
 					return ''
@@ -888,7 +889,7 @@ return function(Vargs, GetEnv)
 
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-			data = gsub(data, '[^'..b..'=]', '')
+			data = gsub(data, `[^{b}=]`, '')
 			return (gsub(gsub(data, '.', function(x)
 				if x == '=' then
 					return ''
@@ -1132,10 +1133,23 @@ return function(Vargs, GetEnv)
 			local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
 			local pos = torso.CFrame
 
-			local clone
+			local oldArchivable = char.Archivable
 			char.Archivable = true
-			clone = char:Clone()
-			char.Archivable = false
+			local rawClone = char:Clone()
+			char.Archivable = oldArchivable
+			local clone = Instance.new("Actor")
+
+			clone.PrimaryPart = rawClone.PrimaryPart
+			clone.WorldPivot = rawClone.WorldPivot
+			--clone:ScaleTo(rawClone:GetScale())
+
+			for k, v in ipairs(rawClone:GetAttributes()) do
+				clone:SetAttribute(k, v)
+			end
+
+			for _, v in ipairs(rawClone:GetChildren()) do
+				v.Parent = clone
+			end
 
 			for i = 1, num do
 				local new = clone:Clone()
@@ -1149,6 +1163,7 @@ return function(Vargs, GetEnv)
 				local anim = isR15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 
 				new.Name = player.Name
+				new.Archivable = false
 				new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0, math.rad((360/num)*i), 0) * CFrame.new((num*0.2)+5, 0, 0)
 
 				hum.WalkSpeed = speed
@@ -1166,7 +1181,9 @@ return function(Vargs, GetEnv)
 				brain.Disabled = false
 				new.Parent = workspace
 
-				wait()
+				if i % 5 == 1 then
+					task.wait()
+				end
 
 				event:Fire("SetSetting", {
 					Creator = player;
@@ -1225,7 +1242,7 @@ return function(Vargs, GetEnv)
 			local tab = {}
 			local str = ''
 
-			for arg in string.gmatch(msg,'([^'..key..']+)') do
+			for arg in string.gmatch(msg,`([^{key}]+)`) do
 				if #tab>=num then
 					break
 				elseif #tab>=num-1 then
@@ -1241,18 +1258,10 @@ return function(Vargs, GetEnv)
 
 		BasicSplit = function(msg,key)
 			local ret = {}
-			for arg in string.gmatch(msg,"([^"..key.."]+)") do
+			for arg in string.gmatch(msg,`([^{key}]+)`) do
 				table.insert(ret,arg)
 			end
 			return ret
-		end;
-
-		CountTable = function(tab)
-			local num = 0
-			for i in tab do
-				num += 1
-			end
-			return num
 		end;
 
 		IsValidTexture = function(id)
@@ -1277,10 +1286,6 @@ return function(Vargs, GetEnv)
 
 		Trim = function(str)
 			return string.match(str, "^%s*(.-)%s*$")
-		end;
-
-		Round = function(num)
-			return math.floor(num + 0.5)
 		end;
 
 		RoundToPlace = function(num, places)
@@ -1340,11 +1345,11 @@ return function(Vargs, GetEnv)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
-				player:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
+				player:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
 			end)
 
 			for _, v in service.Players:GetPlayers() do
-				v:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
+				v:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
 			end
 		end;
 
@@ -1383,7 +1388,7 @@ return function(Vargs, GetEnv)
 					num += 1
 				end
 
-				return good and num == Functions.CountTable(match)
+				return good and num == service.CountTable(match)
 			end
 			return false
 		end;
@@ -1393,7 +1398,9 @@ return function(Vargs, GetEnv)
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
 				for k, v in match do
-					if check[k] ~= v then
+					if type(v) == "table" and not Functions.LaxCheckMatch(check[k], v) then
+						return false
+					elseif type(v) ~= "table" and check[k] ~= v then
 						return false
 					end
 				end
@@ -1461,6 +1468,15 @@ return function(Vargs, GetEnv)
 			end
 			plr.Character = newCharacterModel
 
+			-- Clone StarterCharacterScripts to new character
+			if service.StarterPlayer:FindFirstChild("StarterCharacterScripts") then
+				for _, v in service.StarterPlayer:FindFirstChild("StarterCharacterScripts"):GetChildren() do
+					if v.Archivable then
+						v:Clone().Parent = newCharacterModel
+					end
+				end
+			end
+
 			newCharacterModel:PivotTo(oldCFrame)
 			newCharacterModel.Parent = workspace
 
@@ -1481,7 +1497,7 @@ return function(Vargs, GetEnv)
 					elseif clothingType == "Pants" then "PantsTemplate"
 					elseif clothingType == "ShirtGraphic" then "Graphic"
 					else nil, "Invalid clothing type")
-				] = "rbxassetid://"..id;
+				] = `rbxassetid://{id}`;
 			})
 		end;
 
@@ -1497,7 +1513,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if #color == 3 then
-				color = Color3.fromRGB(unpack(color))
+				color = Color3.fromRGB(color[1], color[2], color[3])
 			else
 				local brickColor = BrickColor.new(str)
 				if str == tostring(brickColor) then
@@ -1530,5 +1546,7 @@ return function(Vargs, GetEnv)
 			end
 			return if allowNil then nil else BrickColor.random()
 		end;
+
+		NuclearExplode = require(server.Dependencies.FastNuke);
 	};
 end

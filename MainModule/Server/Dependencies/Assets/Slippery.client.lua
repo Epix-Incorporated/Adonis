@@ -1,9 +1,9 @@
-wait(0.5)
-local vel = script.Parent.ADONIS_IceVelocity
-while true do 
-	if script.Parent == nil or vel.Parent == nil then break end
-	vel.velocity = Vector3.new(script.Parent.Velocity.X,0,script.Parent.Velocity.Z)
-	wait(0.1)
+task.wait(0.5)
+local vel = script.Parent:WaitForChild("ADONIS_IceVelocity")
+
+while script.Parent ~= nil and vel and vel.Parent  ~= nil do 
+	vel.Velocity = Vector3.new(script.Parent.AssemblyLinearVelocity.X, 0, script.Parent.AssemblyLinearVelocity.Z)
+	task.wait(0.1)
 end
 
 if vel then vel:Destroy() end

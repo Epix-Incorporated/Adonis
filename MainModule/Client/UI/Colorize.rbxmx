@@ -139,7 +139,7 @@ return function(gui: ScreenGui, guiData, gTable)
 		task.wait(time)
 	end
 	
-	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name),function()
+	service.TrackTask(`Thread: Colorize_{gTable.Name}`,function()
 		repeat 
 			for i in SEQUENCE do
 				local one, two = SEQUENCE[i], SEQUENCE[i+1] or SEQUENCE[1]

@@ -57,7 +57,7 @@ return function(Vargs, GetEnv)
 
 		--// Ping loop
 		log("~! Start ClientCheck loop");
-		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
+		task.delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
 		log("Get settings");
@@ -318,7 +318,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			Test = function(args)
-				print("OK WE GOT COMMUNICATION!  ORGL: "..tostring(args[1]))
+				print(`OK WE GOT COMMUNICATION!  ORGL: {args[1]}`)
 			end;
 
 			TestError = function(args)

@@ -25,7 +25,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "trippy"
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -51,7 +51,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "ghost"
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -77,7 +77,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "vibrate"
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -101,7 +101,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						local scr = torso:FindFirstChild("Glitchify")
@@ -137,7 +137,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "RestoreFPS")
 				end
 			end
@@ -160,13 +160,13 @@ return function(Vargs, env)
 				local rAssets = require(7679952474) --// This apparently caches, so don't delete anything else future usage breaks
 				local gerald = rAssets.Gerald
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
 						local human = v.Character:FindFirstChildOfClass("Humanoid");
 						if human then
-							local clone = gerald:Clone();
-							clone.Name = "__ADONIS_GERALD";
-							human:AddAccessory(clone);
+							local clone = gerald:Clone()
+							clone.Name = "__ADONIS_GERALD"
+							human:AddAccessory(clone)
 						end
 					end
 				end
@@ -181,11 +181,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
-						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD");
+						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD")
 						if gerald then
-							gerald:Destroy();
+							gerald:Destroy()
 						end
 					end
 				end
@@ -201,14 +201,14 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local wot = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
-				Remote.Send(plr, "Function", "PlayAudio", wot[math.random(1,#wot)])
+				local WOT = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
+				Remote.Send(plr, "Function", "PlayAudio", WOT[math.random(1, #WOT)])
 			end
 		};
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor"};--//add more :)
+			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor", "freeadmin"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -275,7 +275,7 @@ return function(Vargs, env)
 					sound.PlayOnRemove = true
 					sound.Parent = root
 					sound:Destroy()
-					wait(1.4)
+					task.wait(1.4)
 					local vel = Instance.new("BodyVelocity")
 					vel.Velocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
 					vel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
@@ -307,58 +307,61 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
-				local function generate(userId)
-					local tool = Instance.new("Tool")
-					local targetName = service.Players:GetNameFromUserIdAsync(userId)
-					if service.Players:GetPlayerByUserId(userId) then
-						tool.ToolTip = service.Players:GetPlayerByUserId(userId).DisplayName.." as a tool"
-					else
-						tool.ToolTip = "@"..targetName.." as a tool"
-					end
-					tool.Name = service.Players:GetNameFromUserIdAsync(userId)
-					local handle = Instance.new("Part")
-					handle.Name = "Handle"
-					handle.CanCollide = false
-					handle.Transparency = 1
-					handle.Parent = tool
-					local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(userId), Enum.HumanoidRigType.R15)
-					model.Name = targetName
-					local hum = model:WaitForChild("Humanoid")
-					local bHeight = hum:WaitForChild("BodyHeightScale")
-					local bDepth = hum:WaitForChild("BodyDepthScale")
-					local bWidth = hum:WaitForChild("BodyWidthScale")
-					bHeight.Value = bHeight.Value / 2
-					bDepth.Value = bDepth.Value / 2
-					bWidth.Value = bWidth.Value / 2
-					local cfr = (plr.Character:FindFirstChild("Right Arm") or plr.Character:FindFirstChild("RightFoot")).CFrame
-					handle.CFrame = cfr
-					model:FindFirstChild("Animate").Disabled = true
-					for _, obj in model:GetDescendants() do
-						if obj:IsA("BasePart") then
-							obj.Massless = true
-							obj.CanCollide = false
-						end
-					end
-					model.Parent = tool
-					model:SetPrimaryPartCFrame(cfr)
-					local weld = Instance.new("WeldConstraint")
-					weld.Part0 = handle
-					weld.Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot")
-					weld.Parent = tool
-					tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
-				end
+				local plrChar = assert(plr.Character, "You don't have a character")
+				local cfr = assert(plrChar:FindFirstChild("RightHand") or plrChar:FindFirstChild("Right Arm"), "You don't have a right hand/arm").CFrame
 
-				if pcall(function() service.GetPlayers(plr, args[1]) end) then
-					for _, v in service.GetPlayers(plr, args[1]) do
-						generate(v.UserId)
-					end
-				else
-					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
-					if success then
-						generate(id)
-					else
-						error("Unable to find target user")
-					end
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
+					Routine(function()
+						local targetName = service.Players:GetNameFromUserIdAsync(v.UserId)
+
+						local tool = service.New("Tool", {
+							Name = targetName;
+							ToolTip = `@{targetName} as a tool`;
+						})
+						local handle = service.New("Part", {
+							Parent = tool;
+							Name = "Handle";
+							CanCollide = false;
+							Transparency = 1;
+						})
+
+						local model = service.Players:CreateHumanoidModelFromDescription(
+							service.Players:GetHumanoidDescriptionFromUserId(v.UserId),
+							Enum.HumanoidRigType.R15
+						)
+						model.Name = targetName
+
+						local hum = model:FindFirstChildOfClass("Humanoid") or model:WaitForChild("Humanoid")
+						hum:WaitForChild("BodyHeightScale").Value /= 2
+						hum:WaitForChild("BodyDepthScale").Value /= 2
+						hum:WaitForChild("BodyWidthScale").Value /= 2
+
+						if v ~= plr then
+							handle.CFrame = cfr
+						end
+
+						model.Animate.Disabled = true
+
+						for _, obj in model:GetDescendants() do
+							if obj:IsA("BasePart") then
+								obj.Massless = true
+								obj.CanCollide = false
+							end
+						end
+
+						model.Parent = tool
+						if v ~= plr then
+							model:PivotTo(cfr)
+						end
+
+						service.New("WeldConstraint", {
+							Parent = tool;
+							Part0 = handle;
+							Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot");
+						})
+
+						tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
+					end)
 				end
 			end
 		};
@@ -369,48 +372,66 @@ return function(Vargs, env)
 			Args = {"player"};
 			Fun = true;
 			AdminLevel = "Moderators";
-			Description = "Turns a player into a doll which can be picked up";
-			Function = function(runner, args)
-				for _, plr in service.GetPlayers(runner, args[1]) do
-					if plr.Character.Parent:IsA("Tool") ~= true then
-						local tool = Instance.new("Tool")
-						tool.ToolTip = plr.DisplayName .. " as a tool, converted with Adonis."
-						tool.Name = plr.Name
-						local handle = Instance.new("Part")
-						handle.Name = "Handle"
-						handle.Transparency = 1
-						handle.Parent = tool
-						local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
-						model.Name = plr.DisplayName
-						local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
-						plr.Character:Destroy()
-						plr.Character = model
-						model:SetPrimaryPartCFrame(oldcframe)
-						local hum = model:WaitForChild("Humanoid") -- U forgot that variable
-						local bHeight = hum:WaitForChild("BodyHeightScale")
-						local bDepth = hum:WaitForChild("BodyDepthScale")
-						local bWidth = hum:WaitForChild("BodyWidthScale")
-						bHeight.Value = bHeight.Value / 2
-						bDepth.Value = bDepth.Value / 2
-						bWidth.Value = bWidth.Value / 2
-						local cfr = (plr.Character:FindFirstChild("HumanoidRootPart")).CFrame
-						handle.CFrame = cfr
+			Description = "Turns the target player into a doll which can be picked up";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local char = v.Character
+					if not char then
+						Functions.Hint(`{service.FormatPlayer(v)} has no character`, {plr})
+						continue
+					end
+					if char.Parent and char.Parent:IsA("Tool") then
+						Functions.Hint(`{service.FormatPlayer(v)} is already a doll`, {plr})
+						continue
+					end
+
+					Routine(function()
+						local tool = service.New("Tool", {
+							Name = v.Name;
+							ToolTip = `{service.FormatPlayer(v)} as a tool; converted using Adonis`;
+						})
+						local handle = service.New("Part", {
+							Parent = tool;
+							Name = "Handle";
+							Transparency = 1;
+						})
+
+						local charHum = char:FindFirstChildOfClass("Humanoid")
+						local model = service.Players:CreateHumanoidModelFromDescription(
+							service.Players:GetHumanoidDescriptionFromUserId(plr.UserId),
+							if charHum then charHum.RigType else Enum.HumanoidRigType.R15
+						)
+						model.Name = v.DisplayName
+						model.PrimaryPart = model:WaitForChild("HumanoidRootPart", 1)
+
+						local pivot = char:GetPivot()
+						char:Destroy()
+						v.Character = model
+						model:PivotTo(pivot)
+
+						local hum = model:WaitForChild("Humanoid")
+						hum:WaitForChild("BodyHeightScale").Value /= 2
+						hum:WaitForChild("BodyDepthScale").Value /= 2
+						hum:WaitForChild("BodyWidthScale").Value /= 2
+
+						handle.CFrame = pivot
 						handle.CanCollide = false
 						for _, v in model:GetDescendants() do
 							if v:IsA("BasePart") then
 								v.Massless = true
 							end
 						end
+
 						model.Parent = tool
-						model:SetPrimaryPartCFrame(cfr)
-						local weld = Instance.new("WeldConstraint")
-						weld.Part0 = handle
-						weld.Part1 = model:FindFirstChild("HumanoidRootPart")
-						weld.Parent = tool
+
+						service.New("WeldConstraint", {
+							Parent = tool;
+							Part0 = handle;
+							Part1 = model.PrimaryPart;
+						})
+
 						tool.Parent = workspace
-					else
-						error("That user is already a doll!")
-					end
+					end)
 				end
 			end
 		};
@@ -456,13 +477,13 @@ return function(Vargs, env)
 
 				if not Variables.ZaWarudoDebounce then
 					Variables.ZaWarudoDebounce = true
-					delay(10, function() Variables.ZaWarudoDebounce = false end)
+					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://676242549"
 						audio.Volume = 0.5
 						audio:Play()
-						wait(2)
+						task.wait(2)
 						for i, part in Variables.FrozenObjects do
 							part.Anchored = false
 						end
@@ -471,12 +492,12 @@ return function(Vargs, env)
 						if old then
 							for i = -2, 0, 0.1 do
 								old.Saturation = i
-								wait(0.01)
+								task.wait(0.01)
 							end
 							old:Destroy()
 						end
 
-						local audio = workspace:FindFirstChild("ADONIS_CLOCK_AUDIO")
+						local audio = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
 						if audio then
 							audio:Stop()
 							audio:Destroy()
@@ -487,11 +508,11 @@ return function(Vargs, env)
 						Variables.ZaWarudo = false
 						audio:Destroy()
 					else
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://274698941"
 						audio.Volume = 10
 						audio:Play()
-						wait(2.25)
+						task.wait(2.25)
 						doPause(workspace)
 						Variables.ZaWarudo = game.DescendantAdded:Connect(function(c)
 							if c:IsA("BasePart") and not c.Anchored and c.Name ~= "HumanoidRootPart" then
@@ -504,11 +525,11 @@ return function(Vargs, env)
 						cc.Name = "ADONIS_ZAWARUDO"
 						for i = 0,-2,-0.1 do
 							cc.Saturation = i
-							wait(0.01)
+							task.wait(0.01)
 						end
 
 						audio:Destroy()
-						local clock = service.New("Sound", workspace)
+						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
 						clock.SoundId = "rbxassetid://160189066"
 						clock.Looped = true
@@ -561,7 +582,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(Settings.Prefix.."char", v.Name, "userid-698712377")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-698712377")
 				end
 			end
 		};
@@ -641,30 +662,41 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"rainbowify", "rainbow"};
 			Args = {"player"};
-			Description = "Make the target player(s)'s character flash random colors";
+			Description = "Make the target player(s)'s character flash rainbow colors";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local scr = Core.NewScript("LocalScript",[[
+				local scr = Core.NewScript("Script",[[
+					local restore = {}
+					local tween = game:GetService("TweenService")
+
 					repeat
-						wait(0.1)
+						task.wait()
 						local char = script.Parent.Parent
-						local clr = BrickColor.random()
-						for i, v in char:GetChildren() do
+						local clr = BrickColor.random() 
+						for i, v in next, char:GetChildren() do 
 							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" and (v.Name ~= "Head" or not v.Parent:FindFirstChild("NameTag", true)) then
-								v.BrickColor = clr
-								v.Reflectance = 0
-								v.Transparency = 0
+								if not restore[v] then
+									restore[v] = v.Color
+								end
+								v.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							elseif v:FindFirstChild("NameTag") then
-								v.Head.BrickColor = clr
-								v.Head.Reflectance = 0
-								v.Head.Transparency = 0
-								v.Parent.Head.Transparency = 1
+								if not restore[v.Head] then
+									restore[v.Head] = v.Head.Color
+								end
+								v.Head.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							end
 						end
-					until not char
+					until not char or script.Name == "Stop" -- signal to unrainbowify
+
+					if script.Name == "Stop" then
+						for item, clr in next, restore do
+							item.Color = clr -- restore old colors
+						end
+						script:Destroy()
+					end
 				]])
-				scr.Name = "Effectify"
+				scr.Name = "Rainbowify"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -678,6 +710,22 @@ return function(Vargs, env)
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart
 						new.Disabled = false
+					end
+				end
+			end
+		};
+		
+		Unrainbowify = {
+			Prefix = Settings.Prefix;
+			Commands = {"unrainbowify", "unrainbow"};
+			Args = {"player"};
+			Description = "Removes the rainbow effect from the player(s) specified";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, v in service.GetPlayers(plr, args[1]) do
+					if v.Character.HumanoidRootPart:FindFirstChild("Rainbowify") then
+						v.Character.HumanoidRootPart.Rainbowify.Name = "Stop"
 					end
 				end
 			end
@@ -814,7 +862,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						Admin.RunCommand(Settings.Prefix.."noclip", v.Name)
+						Admin.RunCommand(`{Settings.Prefix}noclip`, v.Name)
 
 						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt:Destroy()
@@ -939,26 +987,26 @@ return function(Vargs, env)
 
 				local audio = Instance.new("Sound")
 				audio.Name = "Adonis_Snap"
-				audio.SoundId = "rbxassetid://".. 2231214507
+				audio.SoundId = "rbxassetid://2231214507"
 				audio.Looped = false
 				audio.Volume = 1
 				audio.PlayOnRemove = true
 
 				--[[local thanos = audio:Clone()
 				thanos.Name = "Adonis_Thanos"
-				thanos.SoundId = "rbxassetid://".. 2231229572
+				thanos.SoundId = "rbxassetid://2231229572"
 
 				thanos.Parent = service.SoundService
 				audio.Parent = service.SoundService
 
-				wait()
+				task.wait()
 				thanos:Destroy()--]]
-				wait()
+				task.wait()
 				audio:Destroy()
 
 				if #playerList == 1 then
-					local player = playerList[1];
-					local tLevel = Admin.GetLevel(player);
+					local player = playerList[1]
+					local tLevel = Admin.GetLevel(player)
 
 					if tLevel < plrLevel then
 						deliverUs[player] = true
@@ -977,7 +1025,7 @@ return function(Vargs, env)
 								else
 									table.remove(playerList, index)
 								end
-								wait()
+								task.wait()
 							end
 						else
 							break
@@ -1056,10 +1104,10 @@ return function(Vargs, env)
 								part.Parent = workspace
 								service.Debris:AddItem(part, 5)
 							end--]]
-							wait(0.2)
+							task.wait(0.2)
 						end
 
-						wait(1)
+						task.wait(1)
 						p:Kick("\n\n\"I don't feel so good\"\n")
 					end)
 				end
@@ -1119,19 +1167,18 @@ return function(Vargs, env)
 				end
 
 				for _, p in service.GetPlayers(plr, args[1]) do
-					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
-						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
+					if not Admin.CheckAuthority(plr, p, string.rep("\u{2588}", 6), true) then
 						continue
 					end
 					local char = p.Character
 					if not char then
-						Functions.Hint(service.FormatPlayer(p).." does not have a character", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a character`, {plr})
 						continue
 					end
 					local torso = char:FindFirstChild("HumanoidRootPart")
 					local humanoid = char:FindFirstChildOfClass("Humanoid")
 					if not (torso and humanoid) then
-						Functions.Hint(service.FormatPlayer(p).." does not have a HumanoidRootPart/Humanoid", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
 					if char:FindFirstChild("ADONIS_UFO") then
@@ -1170,7 +1217,7 @@ return function(Vargs, env)
 
 						ufo.Name = "ADONIS_UFO"
 						ufo.PrimaryPart = primary
-						ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 500, 0))
+						ufo:PivotTo(tPos*CFrame.new(0, 500, 0))
 
 						spotLight.Enabled = false
 						particles.Enabled = false
@@ -1178,20 +1225,20 @@ return function(Vargs, env)
 
 						ufo.Parent = p.Character
 
-						wait()
+						task.wait()
 						rotScript.Disabled = false
 
 						for i = 1, 200 do
 							if not check() then
 								break
 							else
-								ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 200-i, 0))
-								wait(0.001*(i/5))
+								ufo:PivotTo(tPos*CFrame.new(0, 200-i, 0))
+								task.wait(0.001*(i/5))
 							end
 						end
 
 						if check() then
-							wait(1)
+							task.wait(1)
 							spotLight.Enabled = true
 							particles.Enabled = true
 							beam.Transparency = origBeamTrans
@@ -1213,7 +1260,7 @@ return function(Vargs, env)
 								end
 							end
 
-							wait(5)
+							task.wait(5)
 
 							spotLight.Enabled = false
 							particles.Enabled = false
@@ -1246,17 +1293,17 @@ return function(Vargs, env)
 								end
 							end
 
-							wait(1)
+							task.wait(1)
 
-							server.Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
+							Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
 
 							for i = 1, 260 do
 								if not check() then
 									break
 								else
-									ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, i, 0))
+									ufo:PivotTo(tPos*CFrame.new(0, i, 0))
 									--torso.CFrame = bay.CFrame*CFrame.new(0, 2, 0)
-									wait(0.001*(i/5))
+									task.wait(0.001*(i/5))
 								end
 							end
 
@@ -1264,15 +1311,22 @@ return function(Vargs, env)
 								p.CameraMaxZoomDistance = 0.5
 
 								local gui = Instance.new("ScreenGui")
+								gui.IgnoreGuiInset = true
+								gui.ClipToDeviceSafeArea = true
+								gui.ResetOnSpawn = false
+								gui.AutoLocalize = false
+								gui.SelectionGroup = false
 								gui.Parent = service.ReplicatedStorage
 								local bg = Instance.new("Frame")
+								bg.Selectable = false
+								bg.AnchorPoint = Vector2.new(0.5, 0.5)
 								bg.BackgroundTransparency = 0
 								bg.BackgroundColor3 = Color3.new(0, 0, 0)
 								bg.Size = UDim2.new(2, 0, 2, 0)
-								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+								bg.Position = UDim2.new(0, 0, 0, 0)
 								bg.Parent = gui
 								if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
-								wait(0.5)
+								task.wait(0.5)
 								pcall(function() gui:Destroy() end)
 							end
 						end
@@ -1306,7 +1360,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local img = tostring(args[2])
-				if not img then error(args[2].." is not a valid ID") end
+				if not img then error(`{args[2]} is not a valid ID`) end
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "ScreenImage";
@@ -1325,7 +1379,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local img = tostring(args[2])
-				if not img then error(args[2].." is not a valid ID") end
+				if not img then error(`{args[2]} is not a valid ID`) end
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; video = args[2];})
 				end
@@ -1334,7 +1388,7 @@ return function(Vargs, env)
 
 		UnEffect = {
 			Prefix = Settings.Prefix;
-			Commands = {"uneffect", "unimage", "uneffectgui", "unspook", "unblind", "unstrobe", "untrippy", "unpixelize", "unlowres", "unpixel", "undance", "unflashify", "unrainbowify", "guifix", "fixgui"};
+			Commands = {"uneffect", "unimage", "uneffectgui", "unspook", "unblind", "unstrobe", "untrippy", "unpixelize", "unlowres", "unpixel", "undance", "unflashify", "guifix", "fixgui"};
 			Args = {"player"};
 			Description = "Removes any effect GUIs on the target player(s)";
 			Fun = true;
@@ -1357,9 +1411,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local players = service.GetPlayers(plr, args[1])
 				for i, p in players do
-					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+					if not Admin.CheckAuthority(plr, p, "timeout") then
 						table.remove(players, i)
-						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
 					end
 				end
 				service.TeleportService:TeleportAsync(209424751, players)
@@ -1377,9 +1430,9 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local players = service.GetPlayers(plr, args[1])
 				for i, p in players do
-					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+					if not Admin.CheckAuthority(plr, p, "timeout") then
 						table.remove(players, i)
-						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Maze (insufficient permission level)", {plr})
+						Functions.Hint(`Unable to send {service.FormatPlayer(p)} to The Maze (insufficient permission level)`, {plr})
 					end
 				end
 				service.TeleportService:TeleportAsync(280846668, players)
@@ -1426,19 +1479,18 @@ return function(Vargs, env)
 				end
 
 				for _, p in service.GetPlayers(plr, args[1]) do
-					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
-						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
+					if not Admin.CheckAuthority(plr, p, "clown", true) then
 						continue
 					end
 					local char = p.Character
 					if not char then
-						Functions.Hint(service.FormatPlayer(p).." does not have a character", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a character`, {plr})
 						continue
 					end
 					local torso = char:FindFirstChild("HumanoidRootPart")
 					local humanoid = char:FindFirstChildOfClass("Humanoid")
 					if not (torso and humanoid) then
-						Functions.Hint(service.FormatPlayer(p).." does not have a HumanoidRootPart/Humanoid", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
 					if char:FindFirstChild("ADONIS_VAN") then
@@ -1483,37 +1535,37 @@ return function(Vargs, env)
 						humanoid.WalkSpeed = 0
 						sound.Pitch = 1.3
 
-						server.Remote.PlayAudio(p, 421358540, 0.2, 1, true)
+						Remote.PlayAudio(p, 421358540, 0.2, 1, true)
 
 						for i = 1, 200 do
 							if not check() then
 								break
 							else
-								van:SetPrimaryPartCFrame(tPos*(CFrame.new(-200+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
-								wait(0.001*(i/5))
+								van:PivotTo(tPos * (CFrame.new(-200+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
+								task.wait(0.001*(i/5))
 							end
 						end
 
 						sound.Pitch = 0.9
 
-						wait(0.5)
+						task.wait(0.5)
 						if check() then
 							door.Transparency = 1
 						end
-						wait(0.5)
+						task.wait(0.5)
 
 						if check() then
-							torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
+							torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
 						end
 
-						wait(0.5)
+						task.wait(0.5)
 						if check() then
 							door.Transparency = 0
 						end
-						wait(0.5)
+						task.wait(0.5)
 
 						sound.Pitch = 1.3
-						server.Remote.MakeGui(p, "Effect", {
+						Remote.MakeGui(p, "Effect", {
 							Mode = "FadeOut";
 						})
 
@@ -1523,12 +1575,12 @@ return function(Vargs, env)
 							if not check() then
 								break
 							else
-								van:SetPrimaryPartCFrame(tPos*(CFrame.new(0+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
-								torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
-								wait(0.1/(i*5))
+								van:PivotTo(tPos * (CFrame.new(0+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
+								torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
+								task.wait(0.1/(i*5))
 
 								if i == 270 then
-									server.Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
+									Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
 								end
 							end
 						end
@@ -1536,9 +1588,14 @@ return function(Vargs, env)
 						local gui = service.New("ScreenGui", {
 							Parent = service.ReplicatedStorage;
 							IgnoreGuiInset = true;
+							AutoLocalize = false;
+							ClipToDeviceSafeArea = true;
+							ResetOnSpawn = false;
+							SelectionGroup = false;
 						})
 						local bg = service.New("Frame", {
 							Parent = gui;
+							Selectable = false;
 							BackgroundTransparency = 0;
 							BackgroundColor3 = Color3.new(0, 0, 0);
 							Size = UDim2.fromScale(1, 1);
@@ -1551,7 +1608,7 @@ return function(Vargs, env)
 								service.TeleportService:Teleport(527443962, p, nil, bg)
 							end
 						end
-						wait(0.5)
+						task.wait(0.5)
 						pcall(function() van:Destroy() end)
 						pcall(function() gui:Destroy() end)
 					end)
@@ -1587,7 +1644,7 @@ return function(Vargs, env)
 				service.StartLoop("ChickenSpam", 5, function()
 					tempHats = {}
 					for i, v in hats do
-						wait(0.5)
+						task.wait(0.5)
 						if not hat or not hat.Parent or not scr or not scr.Parent then
 							break
 						end
@@ -1629,7 +1686,7 @@ return function(Vargs, env)
 					p.Anchored = true
 					p.CanCollide = false
 					p.Archivable = false
-					--local tornado = deps.Tornado:clone()
+					--local tornado = deps.Tornado:Clone()
 					--tornado.Parent = p
 					--tornado.Disabled = false
 					local cl = Core.NewScript("Script",[[
@@ -1655,9 +1712,11 @@ return function(Vargs, env)
 						function fling(part)
 							part:BreakJoints()
 							part.Anchored=false
-							local pos=Instance.new("BodyPosition", part)
-							pos.maxForce = Vector3.new(math.huge, math.huge, math.huge)--10000, 10000, 10000)
-							pos.position = part.Position
+							local attachment = Instance.New("Attachment", part)
+							local pos=Instance.new("AlignPosition", part)
+							pos.MaxForce = math.huge
+							pos.Position = part.Position
+							pos.Attachment0 = attachment
 							local i=1
 							local run=true
 							while main and wait() and run do
@@ -1694,7 +1753,7 @@ return function(Vargs, env)
 								end
 							end
 							main.CFrame = main.CFrame + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3))
-							wait()
+							task.wait()
 					until main.Parent ~= workspace or not main]])
 					cl.Parent = p
 					cl.Disabled = false
@@ -1703,7 +1762,7 @@ return function(Vargs, env)
 							if not p or not p.Parent then
 								return
 							end
-							wait(1)
+							task.wait(1)
 						end
 						if p then p:Destroy() end
 					end
@@ -1714,68 +1773,18 @@ return function(Vargs, env)
 		Nuke = {
 			Prefix = Settings.Prefix;
 			Commands = {"nuke"};
-			Args = {"player"};
+			Args = {"player", "size"};
 			Description = "Nuke the target player(s)";
-			AdminLevel = "HeadAdmins";
+			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				local nukes = {}
-				local partsHit = {}
+				local size = tonumber(args[2]) or 100
 
-				for i, v in Functions.GetPlayers(plr, args[1]) do
-					local char = v.Character
-					local human = char and char:FindFirstChild("HumanoidRootPart")
-					if human then
-						local p = service.New("Part", {
-							Name = "ADONIS_NUKE";
-							Anchored = true;
-							CanCollide = false;
-							formFactor = "Symmetric";
-							Shape = "Ball";
-							Size = Vector3.new(1, 1, 1);
-							Position = human.Position;
-							BrickColor = BrickColor.new("New Yeller");
-							Transparency = .5;
-							Reflectance = .2;
-							TopSurface = 0;
-							BottomSurface = 0;
-							Parent = workspace.Terrain;
-						})
-
-						p.Touched:Connect(function(hit)
-							if not partsHit[hit] then
-								partsHit[hit] = true
-								hit:BreakJoints()
-								service.New("Explosion", {
-									Position = hit.Position;
-									BlastRadius = 10000;
-									BlastPressure = math.huge;
-									Parent = workspace.Terrain;
-								})
-
-							end
-						end)
-
-						table.insert(Variables.Objects, p)
-						table.insert(nukes, p)
+				for _, v in Functions.GetPlayers(plr, args[1]) do
+					if v.Character and v.Character.PrimaryPart then
+						task.spawn(Functions.NuclearExplode, v.Character.PrimaryPart.Position, size, false, service.UnWrap(v))
 					end
 				end
-
-				for i = 1, 333 do
-					for i, v in nukes do
-						local curPos = v.CFrame
-						v.Size = v.Size + Vector3.new(3, 3, 3)
-						v.CFrame = curPos
-					end
-					wait(1/44)
-				end
-
-				for i, v in nukes do
-					v:Destroy()
-				end
-
-				nukes = nil
-				partsHit = nil
 			end
 		};
 
@@ -1843,7 +1852,7 @@ return function(Vargs, env)
 
 						for i = 0.1, 1, 0.1 do
 							part.Color = oColor:lerp(Color3.new(0, 0, 0), i)
-							wait(math.random(5))
+							task.wait(math.random(5))
 						end
 
 						local ex = service.New("Explosion", {
@@ -1905,8 +1914,8 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-							Admin.RunCommand(Settings.Prefix.."pants", v.Name, "233373970")
-							Admin.RunCommand(Settings.Prefix.."shirt", v.Name, "133078195")
+							Admin.RunCommand(`{Settings.Prefix}pants`, v.Name, "233373970")
+							Admin.RunCommand(`{Settings.Prefix}shirt`, v.Name, "133078195")
 
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Accoutrement") or v:IsA("CharacterMesh") then
@@ -1914,11 +1923,11 @@ return function(Vargs, env)
 								end
 							end
 
-							Admin.RunCommand(Settings.Prefix.."hat", v.Name, "20011951")
+							Admin.RunCommand(`{Settings.Prefix}hat`, v.Name, "20011951")
 
 							local sound = service.New("Sound", v.Character.HumanoidRootPart)
-							sound.SoundId = "http://www.roblox.com/asset/?id="..130767645
-							wait(0.5)
+							sound.SoundId = "http://www.roblox.com/asset/?id=130767645"
+							task.wait(0.5)
 							sound:Play()
 						end
 					end)
@@ -1963,12 +1972,12 @@ return function(Vargs, env)
 											Explosion.Parent = Part
 											Explosion.BlastRadius = 0
 											Explosion.Position = Part.Position + Vector3.new(0, 0, 0)
-											wait()
+											task.wait()
 										end
 									end)
 									--]]
-							wait(5)
-							BodyVelocity:remove()
+							task.wait(5)
+							BodyVelocity:Destroy()
 							if knownchar.Parent then
 								service.New("Explosion", workspace.Terrain).Position = knownchar.HumanoidRootPart.Position
 								knownchar:BreakJoints()
@@ -2027,11 +2036,11 @@ return function(Vargs, env)
 						local hum=v.Character:FindFirstChild("Humanoid")
 						if not hum then return end
 						--Remote.Send(v, "Function", "Effect", "dance")
-						Admin.RunCommand(Settings.Prefix.."sparkles", v.Name, color)
-						Admin.RunCommand(Settings.Prefix.."fire", v.Name, color)
-						Admin.RunCommand(Settings.Prefix.."nograv", v.Name)
-						Admin.RunCommand(Settings.Prefix.."smoke", v.Name, color)
-						Admin.RunCommand(Settings.Prefix.."spin", v.Name)
+						Admin.RunCommand(`{Settings.Prefix}sparkles`, v.Name, color)
+						Admin.RunCommand(`{Settings.Prefix}fire`, v.Name, color)
+						Admin.RunCommand(`{Settings.Prefix}nograv`, v.Name)
+						Admin.RunCommand(`{Settings.Prefix}smoke`, v.Name, color)
+						Admin.RunCommand(`{Settings.Prefix}spin`, v.Name)
 						repeat hum.PlatformStand = true wait() until not hum or hum == nil or hum.Parent == nil
 					end)
 				end
@@ -2054,7 +2063,7 @@ return function(Vargs, env)
 						k.Name = "Epix Puke"
 						Routine(function()
 							repeat
-								wait(0.07)
+								task.wait(0.07)
 								local p = service.New("Part", v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2092,7 +2101,7 @@ return function(Vargs, env)
 										local c = service.New("CylinderMesh", g)
 										c.Scale = Vector3.new(1, 0.2, 1)
 										c.Name = "PukeMesh"
-										wait(10)
+										task.wait(10)
 										g:Destroy()
 									elseif o and o.Name == "Puke Plate" and p then
 										p:Destroy()
@@ -2101,7 +2110,7 @@ return function(Vargs, env)
 								end)
 							until run == false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild("Head"))
 						end)
-						wait(12)
+						task.wait(12)
 						run = false
 						k:Destroy()
 					end)
@@ -2125,8 +2134,8 @@ return function(Vargs, env)
 						k.Name = "ADONIS_BLEED"
 						Routine(function()
 							repeat
-								wait(0.15)
-								v.Character.Humanoid.Health = v.Character.Humanoid.Health-1
+								task.wait(0.15)
+								v.Character:FindFirstChildOfClass("Humanoid"):TakeDamage(1)
 								local p = service.New("Part", v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2163,7 +2172,7 @@ return function(Vargs, env)
 										local c = service.New("CylinderMesh", g)
 										c.Scale = Vector3.new(1, 0.2, 1)
 										c.Name = "BloodMesh"
-										wait(10)
+										task.wait(10)
 										g:Destroy()
 									elseif o and o.Name == "Blood Plate" and p then
 										p:Destroy()
@@ -2172,7 +2181,7 @@ return function(Vargs, env)
 								end)
 							until run == false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild("Head"))
 						end)
-						wait(10)
+						task.wait(10)
 						run = false
 						k:Destroy()
 					end)
@@ -2196,7 +2205,7 @@ return function(Vargs, env)
 						local lleg = v.Character:FindFirstChild("Left Leg")
 						local rleg = v.Character:FindFirstChild("Right Leg")
 						local head = v.Character:FindFirstChild("Head")
-						local hum=v.Character:FindFirstChild("Humanoid")
+						local hum=v.Character:FindFirstChildOfClass("Humanoid")
 						if torso and larm and rarm and lleg and rleg and head and hum and not v.Character:FindFirstChild("Adonis_Poisoned") then
 							local poisoned = service.New("BoolValue", v.Character)
 							poisoned.Name = "Adonis_Poisoned"
@@ -2216,8 +2225,8 @@ return function(Vargs, env)
 							local run = true
 							coroutine.wrap(function() wait(10) run = false end)()
 							repeat
-								wait(1)
-								hum.Health = hum.Health-5
+								task.wait(1)
+								hum:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
 								torso.BrickColor = tor
@@ -2237,7 +2246,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hatpets"};
 			Args = {"player", "number[50 MAX]/destroy"};
-			Description = "Gives the target player(s) hat pets, controlled using the "..Settings.PlayerPrefix.."pets command.";
+			Description = `Gives the target player(s) hat pets, controlled using the {Settings.PlayerPrefix}pets command.`;
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2329,7 +2338,7 @@ return function(Vargs, env)
 						end
 					end
 				else
-					Functions.Hint("You don't have any hat pets! If you are an admin use the "..Settings.Prefix.."hatpets command to get some", {plr})
+					Functions.Hint(`You don't have any hat pets! If you are an admin use the {Settings.Prefix}hatpets command to get some`, {plr})
 				end
 			end
 		};
@@ -2365,19 +2374,22 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, frc in v.Character.HumanoidRootPart:GetChildren() do
-							if frc.Name == "ADONIS_GRAVITY" then
+							if frc.Name == "ADONIS_GRAVITY" or frc.Name == "ADONIS_GRAVITY_ATTACHMENT" then
 								frc:Destroy()
 							end
 						end
-
-						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
+						local attachment = service.New("Attachment", v.Character.HumanoidRootPart)
+						attachment.Name = "ADONIS_GRAVITY_ATTACHMENT"
+						
+						local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
-						frc.force = Vector3.new(0, 0, 0)
+						frc.Attachment0 = attachment
+						frc.Force = Vector3.new(0, 0, 0)
 						for _, prt in v.Character:GetChildren() do
 							if prt:IsA("BasePart") then
-								frc.force = frc.force - Vector3.new(0, prt:GetMass()*tonumber(args[2]), 0)
+								frc.Force -= Vector3.new(0, prt:GetMass()*tonumber(args[2]), 0)
 							elseif prt:IsA("Accoutrement") then
-								frc.force = frc.force - Vector3.new(0, prt.Handle:GetMass()*tonumber(args[2]), 0)
+								frc.Force -= Vector3.new(0, prt.Handle:GetMass()*tonumber(args[2]), 0)
 							end
 						end
 					end
@@ -2396,19 +2408,23 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, frc in v.Character.HumanoidRootPart:GetChildren() do
-							if frc.Name == "ADONIS_GRAVITY" then
+							if frc.Name == "ADONIS_GRAVITY" or frc.Name == "ADONIS_GRAVITY_ATTACHMENT" then
 								frc:Destroy()
 							end
 						end
 
-						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
+						local attachment = service.New("Attachment", v.Character.HumanoidRootPart)
+						attachment.Name = "ADONIS_GRAVITY_ATTACHMENT"
+						
+						local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
-						frc.force = Vector3.new(0, 0, 0)
+						frc.Attachment0 = attachment
+						frc.Force = Vector3.new(0, 0, 0)
 						for _, prt in v.Character:GetChildren() do
 							if prt:IsA("BasePart") then
-								frc.force = frc.force + Vector3.new(0, prt:GetMass()*196.25, 0)
+								frc.Force += Vector3.new(0, prt:GetMass()*workspace.Gravity, 0)
 							elseif prt:IsA("Accoutrement") then
-								frc.force = frc.force + Vector3.new(0, prt.Handle:GetMass()*196.25, 0)
+								frc.Force += Vector3.new(0, prt.Handle:GetMass()*workspace.Gravity, 0)
 							end
 						end
 					end
@@ -2489,7 +2505,9 @@ return function(Vargs, env)
 							s.Color = BrickColor.new(0, 0, 0)
 							v.Transparency = 1
 							m.Head.Transparency = 0
-							m.Head.Mesh:Remove()
+							if m.head:FindFirstChild("Mesh") then
+								m.Head.Mesh:Destroy()
+							end
 							local b = service.New("SpecialMesh")
 							b.Parent = m.Head
 							b.MeshType = "Sphere"
@@ -2516,7 +2534,6 @@ return function(Vargs, env)
 							local hole = service.New("Part", player.Character)
 							hole.Anchored = true
 							hole.CanCollide = false
-							hole.formFactor = Enum.FormFactor.Custom
 							hole.Size = Vector3.new(10, 1, 10)
 							hole.CFrame = torso.CFrame * CFrame.new(0,-3.3,-3)
 							hole.BrickColor = BrickColor.new("Really black")
@@ -2525,11 +2542,11 @@ return function(Vargs, env)
 							local foot = torso.CFrame * CFrame.new(0,-3, 0)
 							for i = 1, 10 do
 								torso.CFrame = foot * CFrame.fromEulerAnglesXYZ(-(math.pi/2)*i/10, 0, 0) * CFrame.new(0, 3, 0)
-								wait(0.1)
+								task.wait(0.1)
 							end
 							for i = 1, 5, 0.2 do
 								torso.CFrame = foot * CFrame.new(0,-(i^2), 0) * CFrame.fromEulerAnglesXYZ(-(math.pi/2), 0, 0) * CFrame.new(0, 3, 0)
-								wait()
+								task.wait()
 							end
 							player.Character:BreakJoints()
 						end
@@ -2548,7 +2565,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					cPcall(function()
-						Admin.RunCommand(Settings.Prefix.."freeze", v.Name)
+						Admin.RunCommand(`{Settings.Prefix}freeze`, v.Name)
 						local char = v.Character
 						local zeus = service.New("Model", char)
 						local cloud = service.New("Part", zeus)
@@ -2567,28 +2584,28 @@ return function(Vargs, env)
 						light.Brightness = 10
 						light.Range = 30
 						light.Enabled = false
-						wait(0.2)
+						task.wait(0.2)
 						sound.Volume = 0.5
 						sound.Pitch = 0.8
 						sound:Play()
 						light.Enabled = true
-						wait(1/100)
+						task.wait(1/100)
 						light.Enabled = false
-						wait(0.2)
+						task.wait(0.2)
 						light.Enabled = true
 						light.Brightness = 1
-						wait(0.05)
+						task.wait(0.05)
 						light.Brightness = 3
-						wait(0.02)
+						task.wait(0.02)
 						light.Brightness = 1
-						wait(0.07)
+						task.wait(0.07)
 						light.Brightness = 10
-						wait(0.09)
+						task.wait(0.09)
 						light.Brightness = 0
-						wait(0.01)
+						task.wait(0.01)
 						light.Brightness = 7
 						light.Enabled = false
-						wait(1.5)
+						task.wait(1.5)
 						local part1 = service.New("Part", zeus)
 						part1.Anchored = true
 						part1.CanCollide = false
@@ -2599,14 +2616,14 @@ return function(Vargs, env)
 						part1.TopSurface = "Smooth"
 						part1.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 15, 0)
 						part1.Rotation = Vector3.new(0.359, 1.4, -14.361)
-						wait()
-						local part2 = part1:clone()
+						task.wait()
+						local part2 = part1:Clone()
 						part2.Parent = zeus
 						part2.Size = Vector3.new(1, 7.48, 2)
 						part2.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 7.5, 0)
 						part2.Rotation = Vector3.new(77.514, -75.232, 78.051)
-						wait()
-						local part3 = part1:clone()
+						task.wait()
+						local part3 = part1:Clone()
 						part3.Parent = zeus
 						part3.Size = Vector3.new(1.86, 7.56, 1)
 						part3.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 1, 0)
@@ -2615,7 +2632,7 @@ return function(Vargs, env)
 						sound.Volume = 1
 						sound.Pitch = 1
 						sound:Play()
-						wait()
+						task.wait()
 						part1.Transparency = 1
 						part2.Transparency = 1
 						part3.Transparency = 1
@@ -2654,23 +2671,26 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local scr = Deps.Assets.Spinner:Clone()
 				scr.Name = "SPINNER"
-				local bg = Instance.new("BodyGyro")
-				bg.Name = "SPINNER_GYRO"
-				bg.maxTorque = Vector3.new(0, math.huge, 0)
-				bg.P = 11111
-				bg.D = 0
+				local spinGryoAttachment = service.New("Attachment")
+				spinGryoAttachment.Name = "ADONIS_SPIN_GYRO_ATTACHMENT"
+				local spinGryo = service.New("AlignOrientation")
+				spinGryo.Name = "ADONIS_SPIN_GYRO"
+				spinGryo.MaxTorque = math.huge
+				spinGryo.Mode = Enum.OrientationAlignmentMode.OneAttachment
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
-								q:Destroy()
-							end
+						local humanoidRootPart = v.Character.HumanoidRootPart
+						for _, q in humanoidRootPart:GetChildren() do
+						if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
+							q:Destroy()
 						end
-						local gyro = bg:Clone()
-						gyro.cframe = v.Character.HumanoidRootPart.CFrame
-						gyro.Parent = v.Character.HumanoidRootPart
+						end
+						spinGryoAttachment.Parent = humanoidRootPart
+						spinGryo.Attachment0 = spinGryoAttachment
+						spinGryo.CFrame = humanoidRootPart.CFrame
+						spinGryo.Parent = humanoidRootPart
 						local new = scr:Clone()
-						new.Parent = v.Character.HumanoidRootPart
+						new.Parent = humanoidRootPart
 						new.Disabled = false
 					end
 				end
@@ -2688,7 +2708,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
+							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
 								q:Destroy()
 							end
 						end
@@ -2710,7 +2730,7 @@ return function(Vargs, env)
 						local human = plr.Character:FindFirstChildOfClass("Humanoid")
 
 						if not human then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
+							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
 							return
 						end
 
@@ -2740,13 +2760,13 @@ return function(Vargs, env)
 							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
 							local st = service.New("Seat", {
 								Name = "Adonis_Torso",
-								FormFactor = 0,
 								TopSurface = 0,
 								BottomSurface = 0,
 								Size = Vector3.new(3, 1, 4),
 							})
 
-							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
+							local attachment = service.New("Attachment", {Parent = st})
+							local bf = service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
 
 							st.CFrame = torso.CFrame
 							st.Parent = char
@@ -2759,7 +2779,7 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = "Cannot support R15 for "..plr.Name.." [Dog Transformation Error]"})
+							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `Cannot support R15 for {plr.Name} [Dog Transformation Error]`})
 						end
 					end
 				end
@@ -2804,8 +2824,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local headMesh = character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2875,8 +2895,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local headMesh = v.Character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2946,8 +2966,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local headMesh = v.Character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2998,7 +3018,7 @@ return function(Vargs, env)
 				decal1.Face = "Left"
 				decal1.Texture = "http://www.roblox.com/asset/?id=332277963"
 				decal1.Name = "Nyan"
-				local decal2=decal1:clone()
+				local decal2=decal1:Clone()
 				decal2.Face = "Right"
 				decal2.Texture = "http://www.roblox.com/asset/?id=332288373"
 
@@ -3021,11 +3041,24 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local head = v.Character:FindFirstChild("Head")
+					local headMesh = head:FindFirstChild("Mesh")
+					if headMesh then
+						head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						head.Transparency = 1
+						for _, c in head:GetChildren() do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					c2:Clone().Parent = decal2
@@ -3081,11 +3114,24 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local head = v.Character:FindFirstChild("Head")
+					local headMesh = head:FindFirstChild("Mesh")
+					if headMesh then
+						head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						head.Transparency = 1
+						for _, c in head:GetChildren() do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
@@ -3130,10 +3176,14 @@ return function(Vargs, env)
 
 				cl.Name = "Animator"
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
-						if p:IsA("Decal") or p:IsA("Sound") then
-							p:Destroy()
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local humRootPart = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
+					if not humRootPart then
+						continue
+					end
+					for _, c in humRootPart:GetChildren() do
+						if c:IsA("Decal") or c:IsA("Sound") then
+							c:Destroy()
 						end
 					end
 
@@ -3142,19 +3192,32 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local head = v.Character:FindFirstChild("Head")
+					local headMesh = head:FindFirstChild("Mesh")
+					if headMesh then
+						head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						head.Transparency = 1
+						for _, c in head:GetChildren() do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
 
-					decal1.Parent = v.Character.HumanoidRootPart
-					decal2.Parent = v.Character.HumanoidRootPart
-					sound.Parent = v.Character.HumanoidRootPart
-					mesh.Parent = v.Character.HumanoidRootPart
+					decal1.Parent = humRootPart
+					decal2.Parent = humRootPart
+					sound.Parent = humRootPart
+					mesh.Parent = humRootPart
 
 					decal1.Animator.Disabled = false
 					decal2.Animator.Disabled = false
@@ -3207,7 +3270,7 @@ return function(Vargs, env)
 							})
 							Functions.NewParticle(p, "Trail", {
 								Color = colorSequence;
-								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
+								Texture = tonumber(args[2]) and `rbxassetid://{args[2]}`;
 								TextureMode = "Stretch";
 								TextureLength = 2;
 								Attachment0 = attachment0;
@@ -3276,7 +3339,7 @@ return function(Vargs, env)
 					if torso then
 						Functions.NewParticle(torso, "ParticleEmitter", {
 							Name = "PARTICLE";
-							Texture = "rbxassetid://".. Functions.GetTexture(args[2]);
+							Texture = `rbxassetid://{Functions.GetTexture(args[2])}`;
 							Size = NumberSequence.new({
 								NumberSequenceKeypoint.new(0, 0);
 								NumberSequenceKeypoint.new(.1,.25,.25);
@@ -3293,7 +3356,7 @@ return function(Vargs, env)
 							Rotation = NumberRange.new(0, 359);
 							RotSpeed = NumberRange.new(-90, 90);
 							Rate = 11;
-							VelocitySpread = 180;
+							SpreadAngle = Vector2.new(-180, 180);
 							Color = ColorSequence.new(startc, endc);
 						})
 					end
@@ -3351,7 +3414,6 @@ return function(Vargs, env)
 									v.C1 = CFrame.new(unpack(c1))
 
 									if p1.Name ~= "Head" and p1.Name ~= "Torso" then
-										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 									elseif p1.Name ~= "Torso" then
 										p1.Anchored = true
@@ -3362,7 +3424,6 @@ return function(Vargs, env)
 											end
 										end
 
-										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 
 										for _, m in p1:GetChildren() do
@@ -3398,7 +3459,6 @@ return function(Vargs, env)
 
 						size(char)
 
-						torso.formFactor = 3
 						torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
 
 						for i, v in welds do
@@ -3500,43 +3560,37 @@ return function(Vargs, env)
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = true end
 							end
-							torso.FormFactor = "Custom"
 							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=v.Character.HumanoidRootPart
 							weld.C0=v.Character.HumanoidRootPart.CFrame
-							head.FormFactor = "Custom"
 							head.Size = Vector3.new(head.Size.X, head.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=head
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(0, 1.5, 0)
-							larm.FormFactor = "Custom"
 							larm.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=larm
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0)
-							rarm.FormFactor = "Custom"
 							rarm.Size = Vector3.new(rarm.Size.X, rarm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=rarm
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0)
-							lleg.FormFactor = "Custom"
 							lleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=lleg
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,-1.5, 0)
-							rleg.FormFactor = "Custom"
 							rleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=rleg
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5, 0)
-							wait()
+							task.wait()
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = false end
 							end
@@ -3571,7 +3625,7 @@ return function(Vargs, env)
 					for _, v in players do
 						table.insert(t, v.Name)
 					end
-					Admin.RunCommand(Settings.Prefix.."package "..table.concat(t, ",").." 295")
+					Admin.RunCommand(`{Settings.Prefix}package {table.concat(t, ",")} 295`)
 				end
 			end
 		};
@@ -3707,7 +3761,7 @@ return function(Vargs, env)
 					num = 1
 					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
 				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
-					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 (size multiplier) went over the size limit]", {plr})
+					Functions.Hint(`Size changed to the maximum {num} [Argument #2 (size multiplier) went over the size limit]`, {plr})
 				end
 
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -3715,7 +3769,7 @@ return function(Vargs, env)
 					local human = char and char:FindFirstChildOfClass("Humanoid")
 
 					if not human then
-						Functions.Hint("Cannot resize "..service.FormatPlayer(v).."'s character: humanoid and/or character doesn't exist!", {plr})
+						Functions.Hint(`Cannot resize {service.FormatPlayer(v)}'s character: humanoid and/or character doesn't exist!`, {plr})
 						continue
 					end
 
@@ -3833,8 +3887,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					service.StartLoop(v.UserId.."LOOPFLING", 2, function()
-						Admin.RunCommand(Settings.Prefix.."fling", v.Name)
+					service.StartLoop(`{v.UserId}LOOPFLING`, 2, function()
+						Admin.RunCommand(`{Settings.Prefix}fling`, v.Name)
 					end)
 				end
 			end
@@ -3849,7 +3903,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					service.StopLoop(v.UserId.."LOOPFLING")
+					service.StopLoop(`{v.UserId}LOOPFLING`)
 				end
 			end
 		};
@@ -3869,7 +3923,7 @@ return function(Vargs, env)
 						if torso then
 							Functions.UnCape(v)
 							torso.CFrame = CFrame.new(dist, dist+10, dist)
-							Admin.RunCommand(Settings.Prefix.."noclip", v.Name)
+							Admin.RunCommand(`{Settings.Prefix}noclip`, v.Name)
 						end
 					end
 				end
@@ -3889,8 +3943,8 @@ return function(Vargs, env)
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
 						local pTorso = plr.Character:FindFirstChild("HumanoidRootPart")
 						if torso and pTorso and plr ~= v then
-							Admin.RunCommand(Settings.Prefix.."clip", v.Name)
-							wait(0.3)
+							Admin.RunCommand(`{Settings.Prefix}clip`, v.Name)
+							task.wait(0.3)
 							torso.CFrame = pTorso.CFrame*CFrame.new(0, 0, 5)
 						else
 							plr:LoadCharacter()
@@ -4166,7 +4220,6 @@ return function(Vargs, env)
 							--ice.CanCollide = false
 							ice.TopSurface = "Smooth"
 							ice.BottomSurface = "Smooth"
-							ice.FormFactor = "Custom"
 							ice.Size = Vector3.new(5, 6, 5)
 							ice.Transparency = 0.3
 							ice.CFrame = v.Character.HumanoidRootPart.CFrame
@@ -4353,7 +4406,7 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
 
-				assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+				assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Functions.PlayAnimation(v , args[2])
@@ -4374,7 +4427,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507777826" -- Default R15 animation
@@ -4392,11 +4445,11 @@ return function(Vargs, env)
 									found = true
 									local walkAnimation = v2:FindFirstChildOfClass("Animation")
 									if walkAnimation then
-										walkAnimation.AnimationId = "rbxassetid://" .. animId
+										walkAnimation.AnimationId = `"rbxassetid://{animId}`
 									else
 										local walkAnimation = Instance.new("Animation")
 										walkAnimation.Name = "WalkAnim" -- Name actually doesn't matter, but I just name it like the default one.
-										walkAnimation.AnimationId = "rbxassetid://" .. animId
+										walkAnimation.AnimationId = `"rbxassetid://{animId}`
 										walkAnimation.Parent = v2
 									end
 								end
@@ -4426,7 +4479,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507767714"
@@ -4444,11 +4497,11 @@ return function(Vargs, env)
 									found = true
 									local runAnimation = v2:FindFirstChildOfClass("Animation")
 									if runAnimation then
-										runAnimation.AnimationId = "rbxassetid://" .. animId
+										runAnimation.AnimationId = `"rbxassetid://{animId}`
 									else
 										local runAnimation = Instance.new("Animation")
 										runAnimation.Name = "RunAnim"
-										runAnimation.AnimationId = "rbxassetid://" .. animId
+										runAnimation.AnimationId = `"rbxassetid://{animId}`
 										runAnimation.Parent = v2
 									end
 								end
@@ -4478,7 +4531,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507765000"
@@ -4496,11 +4549,11 @@ return function(Vargs, env)
 									found = true
 									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
 									if jumpAnimation then
-										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
 									else
 										local jumpAnimation = Instance.new("Animation")
 										jumpAnimation.Name = "JumpAnim"
-										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
 										jumpAnimation.Parent = v2
 									end
 								end
@@ -4530,7 +4583,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507767968"
@@ -4548,11 +4601,11 @@ return function(Vargs, env)
 									found = true
 									local fallAnimation = v2:FindFirstChildOfClass("Animation")
 									if fallAnimation then
-										fallAnimation.AnimationId = "rbxassetid://" .. animId
+										fallAnimation.AnimationId = `rbxassetid://{animId}`
 									else
 										local fallAnimation = Instance.new("Animation")
 										fallAnimation.Name = "FallAnim"
-										fallAnimation.AnimationId = "rbxassetid://" .. animId
+										fallAnimation.AnimationId = `rbxassetid://{animId}`
 										fallAnimation.Parent = v2
 									end
 								end
@@ -4670,9 +4723,9 @@ return function(Vargs, env)
 				r, g, b = tonumber(r), tonumber(g), tonumber(b)
 				if not r or not g or not b then error("Invalid Input") end
 				local num1, num2, num3 = r, g, b
-				num1 = "-"..num1.."00000"
-				num2 = "-"..num2.."00000"
-				num3 = "-"..num3.."00000"
+				num1 = `-{num1}00000`
+				num2 = `-{num2}00000`
+				num3 = `-{num3}00000`
 				if args[2] then
 					for i, v in service.GetPlayers(plr, args[2]) do
 						Remote.SetLighting(v, "FogColor", Color3.new(tonumber(num1), tonumber(num2), tonumber(num3)))
@@ -4700,7 +4753,7 @@ return function(Vargs, env)
 				for i, v in {"Ft", "Bk", "Lf", "Rt", "Up", "Dn"} do
 					local img = args[i] or args[1]
 					if img --[[and (v ~= "Dn" or args[6])]] then
-						sky["Skybox"..v] = tonumber(img) and ("rbxassetid://"..img) or img
+						sky[`Skybox{v}`] = tonumber(img) and (`rbxassetid://{img}`) or img
 					end
 				end
 				if args[7] and args[7]:lower() == "false" then
@@ -4962,7 +5015,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(Settings.Prefix.."char", v.Name, "51310503")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-51310503")
 				end
 			end
 		};
@@ -4976,7 +5029,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(Settings.Prefix.."char", v.Name, "userid-1237666")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-1237666")
 				end
 			end
 		};
@@ -5098,7 +5151,7 @@ return function(Vargs, env)
 					local sound = service.New("Sound")
 					sound.Name = "Part_Sound"
 					sound.Looped = not noloop
-					sound.SoundId = "rbxassetid://"..soundid
+					sound.SoundId = `rbxassetid://{soundid}`
 					sound.Volume = volume
 					sound.EmitterSize = soundrange
 					sound.PlaybackSpeed = pitch
@@ -5138,7 +5191,7 @@ return function(Vargs, env)
 							end
 
 							clicks += 1
-							delay(0.4, function()
+							task.delay(0.4, function()
 								clicks -= 1
 							end)
 
@@ -5174,8 +5227,8 @@ return function(Vargs, env)
 								end
 
 								prevname = spart.Name
-								sound.SoundId = "rbxassetid://"..spart.Name
-								wait(2)
+								sound.SoundId = `rbxassetid://{spart.Name}`
+								task.wait(2)
 							elseif not Success then
 								spart.Name = prevname
 							end
@@ -5188,7 +5241,7 @@ return function(Vargs, env)
 
 					if not toggable then
 						sound:Play()
-						wait(2)
+						task.wait(2)
 					end
 
 					sound.Parent = spart

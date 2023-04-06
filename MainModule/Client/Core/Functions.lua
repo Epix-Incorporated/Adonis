@@ -226,7 +226,7 @@ return function(Vargs, GetEnv)
 
 		GetRandom = function(pLen)
 			--local str = ""
-			--for i=1,math.random(5,10) do str=str..string.char(math.random(33,90)) end
+			--for i=1,math.random(5,10) do str=`{str}{string.char(math.random(33,90))}` end
 			--return str
 
 			local random = math.random
@@ -240,16 +240,12 @@ return function(Vargs, GetEnv)
 			return table.concat(Res)
 		end;
 
-		Round = function(num)
-			return math.floor(num + 0.5)
-		end;
-
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
 			if ob=='reset' then
-				CurrentCamera.CameraType = 'Custom'
-				CurrentCamera.CameraSubject = service.Player.Character.Humanoid
+				CurrentCamera.CameraType = Enum.CameraType.Custom
+				CurrentCamera.CameraSubject = service.Player.Character:FindFirstChildOfClass("Humanoid")
 				CurrentCamera.FieldOfView = 70
 			else
 				CurrentCamera.CameraSubject = ob
@@ -309,7 +305,7 @@ return function(Vargs, GetEnv)
 					else
 						rot -= math.rad(speed*dt)
 					end
-					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
+					cam.CFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
 				end)
 			end
@@ -350,7 +346,7 @@ return function(Vargs, GetEnv)
 
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-			data = gsub(data, '[^'..b..'=]', '')
+			data = gsub(data, `[^{b}=]`, '')
 
 			return (gsub(gsub(data, '.', function(x)
 				if x == '=' then
@@ -537,7 +533,7 @@ return function(Vargs, GetEnv)
 		GetParticleContainer = function(target)
 			if target then
 				for _, v in service.LocalContainer():GetChildren() do
-					if v.Name == target:GetFullName().."PARTICLES" then
+					if v.Name == `{target:GetFullName()}PARTICLES` then
 						local obj = v:FindFirstChild("_OBJECT")
 						if obj.Value == target then
 							return v
@@ -649,100 +645,105 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		NewCape = function(data)
-			local char = data.Parent
-			local material = data.Material or "Neon"
-			local color = data.Color or "White"
-			local reflect = data.Reflectance or 0
-			local decal = tonumber(data.Decal or "")
-			if char then
-				Functions.RemoveCape(char)
-				local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
-				if torso then
-					local isR15 = torso.Name == "UpperTorso"
-
-					local p = service.New("Part", {
-						Parent = char;
-						Name = "ADONIS_CAPE";
-						Anchored = false;
-						CanCollide = false;
-						Massless = true;
-						CanQuery = false;
-						Size = Vector3.new(2, 4, 0.1);
-						Position = torso.Position;
-						BrickColor = BrickColor.new(color);
-						Transparency = 0;
-						Reflectance = reflect;
-						Material = material;
-						TopSurface = 0;
-						BottomSurface = 0;
-					})
-
-					if reflect then
-						p.Reflectance = reflect
-					end
-
-					local motor1 = service.New("Motor", {
-						Parent = p;
-						Part0 = p;
-						Part1 = torso;
-						MaxVelocity = 0.01;
-						C0 = CFrame.new(0, 1.75, 0) * CFrame.Angles(0, math.rad(90), 0);
-						C1 = CFrame.new(0, 1 - (if isR15 then 0.2 else 0), torso.Size.Z / 2) * CFrame.Angles(0, math.rad(90), 0);
-					})
-
-					service.New("BlockMesh", {
-						Parent = p;
-						Scale = Vector3.new(0.9, 0.87, 0.1)
-					})
-
-					local dec
-					if decal and decal ~= 0 then
-						dec = service.New("Decal", {
-							Parent = p;
-							Name = "Decal";
-							Face = 2;
-							Texture = "rbxassetid://"..decal;
-							Transparency = 0;
-						})
-					end
-
-					table.insert(Variables.Capes, {
-						Part = p;
-						Motor = motor1;
-						Enabled = Variables.CapesEnabled;
-						Parent = data.Parent;
-						Torso = torso;
-						Decal = dec;
-						Data = data;
-						Wave = true;
-						isR15 = isR15;
-						isPlayer = service.Players:GetPlayerFromCharacter(data.Parent) == service.Player;
-					})
-
-					if not Variables.CapesEnabled then
-						p.Transparency = 1
-						if dec then
-							dec.Transparency = 1
-						end
-					end
-
-					Functions.MoveCapes()
-				end
+		NewCape = function(options)
+			local char = options.Parent
+			if not char then
+				return
 			end
+
+			local material = options.Material or "Neon"
+			local color = options.Color or "White"
+			local reflect = options.Reflectance or 0
+			local decalId = tonumber(options.Decal or "")
+
+			local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
+			if not (torso and torso:IsA("BasePart")) then
+				return
+			end
+
+			Functions.RemoveCape(char)
+
+			local isR15 = torso.Name == "UpperTorso"
+
+			local p = service.New("Part", {
+				Parent = char;
+				Name = "ADONIS_CAPE";
+				Anchored = false;
+				CanCollide = false;
+				Massless = true;
+				CanQuery = false;
+				Size = Vector3.new(2, 4, 0.1);
+				Position = torso.Position;
+				BrickColor = BrickColor.new(color);
+				Transparency = 0;
+				Reflectance = reflect;
+				Material = material;
+				TopSurface = 0;
+				BottomSurface = 0;
+			})
+
+			service.New("BlockMesh", {
+				Parent = p;
+				Scale = Vector3.new(0.9, 0.87, 0.1);
+			})
+
+			local motor1 = service.New("Motor", {
+				Parent = p;
+				Part0 = p;
+				Part1 = torso;
+				MaxVelocity = 0.1;
+				C0 = CFrame.new(0, 1.75, 0) * CFrame.Angles(0, math.rad(90), 0);
+				C1 = CFrame.new(0, 1 - (if isR15 then 0.2 else 0), (torso.Size.Z/2)) * CFrame.Angles(0, math.rad(90), 0);
+			})
+
+			local decal = if decalId and decalId ~= 0 then service.New("Decal", {
+				Parent = p;
+				Name = "Decal";
+				Face = 2;
+				Texture = `rbxassetid://{decalId}`;
+				Transparency = 0;
+			}) else nil
+
+			local capeData = {
+				Part = p;
+				Motor = motor1;
+				Enabled = true;
+				Parent = char;
+				Torso = torso;
+				Decal = decal;
+				Data = options;
+				Wave = true;
+				isR15 = isR15;
+			}
+			Variables.Capes[Functions.GetRandom()] = capeData
+
+			local p = service.Players:GetPlayerFromCharacter(char)
+			if p and p == service.Player then
+				capeData.isPlayer = true
+			end
+
+			if not Variables.CapesEnabled then
+				p.Transparency = 1
+				if decal then
+					decal.Transparency = 1
+				end
+				capeData.Enabled = false
+			end
+
+			Functions.MoveCapes()
 		end;
 
 		RemoveCape = function(parent)
 			for i, v in Variables.Capes do
 				if v.Parent == parent or not v.Parent or not v.Parent.Parent then
 					pcall(v.Part.Destroy, v.Part)
-					table.remove(Variables.Capes, i)
+					Variables.Capes[i] = nil
 				end
 			end
 		end;
 
 		HideCapes = function(hide)
-			for i, v in Variables.Capes do
+			for i,v in Variables.Capes do
 				local torso = v.Torso
 				local parent = v.Parent
 				local part = v.Part
@@ -767,8 +768,8 @@ return function(Vargs, GetEnv)
 						v.Enabled = false
 					end
 				else
-					pcall(part.Destroy, part)
-					table.remove(Variables.Capes, i)
+					pcall(part.Destroy,part)
+					Variables.Capes[i] = nil
 				end
 			end
 		end;
@@ -776,10 +777,10 @@ return function(Vargs, GetEnv)
 		MoveCapes = function()
 			service.StopLoop("CapeMover")
 			service.StartLoop("CapeMover",0.1,function()
-				if Functions.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
+				if service.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
-					for i, v in Variables.Capes do
+					for i,v in Variables.Capes do
 						local torso = v.Torso
 						local parent = v.Parent
 						local isPlayer = v.isPlayer
@@ -800,21 +801,21 @@ return function(Vargs, GetEnv)
 								local ang = 0.1
 								if wave then
 									if torso.Velocity.Magnitude > 1 then
-										ang += (torso.Velocity.Magnitude/10 * 0.05) + 0.05
+										ang += ((torso.Velocity.Magnitude/10)*.05)+.05
 									end
 									v.Wave = false
 								else
 									v.Wave = true
 								end
 								ang += math.min(torso.Velocity.Magnitude/11, .8)
-								motor.MaxVelocity = math.min((torso.Velocity.Magnitude/111), 0.04) + 0.002
+								motor.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + 0.002
 								if isPlayer then
 									motor.DesiredAngle = -ang
 								else
 									motor.CurrentAngle = -ang -- bugs
 								end
-								if motor.CurrentAngle < -0.2 and motor.DesiredAngle > -0.2 then
-									motor.MaxVelocity = 0.04
+								if motor.CurrentAngle < -.2 and motor.DesiredAngle > -.2 then
+									motor.MaxVelocity = .04
 								end
 							else
 								part.Transparency = 1
@@ -823,18 +824,12 @@ return function(Vargs, GetEnv)
 								end
 							end
 						else
-							pcall(part.Destroy, part)
-							table.remove(Variables.Capes, i)
+							pcall(part.Destroy,part)
+							Variables.Capes[i] = nil
 						end
 					end
 				end
 			end, true)
-		end;
-
-		CountTable = function(tab)
-			local count = 0
-			for _ in tab do count += 1 end
-			return count
 		end;
 
 		ClearAllInstances = function()
@@ -855,7 +850,7 @@ return function(Vargs, GetEnv)
 
 			for _, v in animator:GetPlayingAnimationTracks() do v:Stop() end
 			local anim = service.New('Animation', {
-				AnimationId = 'rbxassetid://'..animId,
+				AnimationId = `rbxassetid://{animId}`,
 				Name = "ADONIS_Animation"
 			})
 			local track = animator:LoadAnimation(anim)
@@ -905,8 +900,8 @@ return function(Vargs, GetEnv)
 			local fps = tonumber(fps)
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
-					local ender = time()+1/fps
-					repeat until time()>=ender
+					local fpslockint = time() +1 /fps
+					repeat until time()>=fpslockint
 				end)
 			end
 		end;
@@ -1036,7 +1031,13 @@ return function(Vargs, GetEnv)
 			if keyVal then
 				for _, e in Enum.KeyCode:GetEnumItems() do
 					if e.Value == keyVal then
-						return e.Name;
+						local name = service.UserInputService:GetStringForKeyCode(e)
+
+						if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
+							return e.Name
+						else
+							return name
+						end
 					end
 				end
 			end
@@ -1059,7 +1060,7 @@ return function(Vargs, GetEnv)
 					if time() - timer > 5 or isAdmin then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
-							Message = "[Ran] Key: "..Functions.KeyCodeToName(key).." | Command: "..tostring(Variables.KeyBinds[key])
+							Message = `[Ran] Key: {Functions.KeyCodeToName(key)} | Command: {Variables.KeyBinds[key]}`
 						})
 					end
 					timer = time()
@@ -1072,7 +1073,7 @@ return function(Vargs, GetEnv)
 			Variables.KeyBinds[tostring(key)] = command
 			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 			UI.Make("Hint",{
-				Message = 'Bound key "'..Functions.KeyCodeToName(key)..'" to command: '..command
+				Message = `Bound key "{Functions.KeyCodeToName(key)}" to command: {command}`
 			})
 		end;
 
@@ -1084,13 +1085,13 @@ return function(Vargs, GetEnv)
 				Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 				Routine(function()
 					UI.Make("Hint",{
-						Message = 'Removed key "'..Functions.KeyCodeToName(key)..'" from keybinds'
+						Message = `Removed key "{Functions.KeyCodeToName(key)}" from keybinds`
 					})
 				end)
 			end
 		end;
 
-		BrickBlur = function(on,trans,color)
+		BrickBlur = function(on, trans, color)
 			local exists = service.LocalContainer():FindFirstChild("ADONIS_WINDOW_FUNC_BLUR")
 			if exists then exists:Destroy() end
 			if on then
@@ -1101,10 +1102,9 @@ return function(Vargs, GetEnv)
 				pa.Transparency = trans or 0.5
 				pa.CanCollide = false
 				pa.Anchored = true
-				pa.FormFactor = "Custom"
-				pa.Size=Vector3.new(100,100,0)
+				pa.Size = Vector3.new(100,100,0)
 				while pa and pa.Parent and task.wait(1/40) do
-					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
+					pa.CFrame = workspace.CurrentCamera.CFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
 				for _, v in workspace.CurrentCamera:GetChildren() do
@@ -1118,16 +1118,18 @@ return function(Vargs, GetEnv)
 		PlayAudio = function(audioId, volume, pitch, looped)
 			if Variables.localSounds[tostring(audioId)] then Variables.localSounds[tostring(audioId)]:Stop() Variables.localSounds[tostring(audioId)]:Destroy() Variables.localSounds[tostring(audioId)]=nil end
 			local sound = service.New("Sound")
-			sound.SoundId = "rbxassetid://"..audioId
+			sound.SoundId = `rbxassetid://{audioId}`
 			if looped then sound.Looped = true end
 			if volume then sound.Volume = volume end
 			if pitch then sound.Pitch = pitch end
-			sound.Name = "ADONI_LOCAL_SOUND "..audioId
+			sound.Name = `ADONIS_LOCAL_SOUND {audioId}`
 			sound.Parent = service.LocalContainer()
 			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
 			task.wait(1)
-			repeat task.wait(0.1) until not sound.IsPlaying
+			if sound.IsPlaying == true then
+				sound.Ended:Wait()
+			end
 			sound:Destroy()
 			Variables.localSounds[tostring(audioId)] = nil
 		end;
@@ -1209,7 +1211,7 @@ return function(Vargs, GetEnv)
 				p.CanCollide = false
 				p.TopSurface = 0
 				p.BottomSurface = 0
-				if type(color)=="table" then
+				if type(color) == "table" then
 					color = Color3.new(color[1],color[2],color[3])
 				end
 				p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
@@ -1219,10 +1221,9 @@ return function(Vargs, GetEnv)
 				if decal and decal~=0 then
 					local dec = service.New("Decal", p)
 					dec.Face = 2
-					dec.Texture = "http://www.roblox.com/asset/?id="..decal
+					dec.Texture = `http://www.roblox.com/asset/?id={decal}`
 					dec.Transparency=0
 				end
-				p.formFactor = "Custom"
 				p.Size = Vector3.new(.2,.2,.2)
 				local msh = service.New("BlockMesh", p)
 				msh.Scale = Vector3.new(9,17.5,.5)
@@ -1265,11 +1266,11 @@ return function(Vargs, GetEnv)
 			local audioId = 296333956
 
 			local audio = Instance.new("Sound",service.LocalContainer())
-			audio.SoundId = "rbxassetid://"..audioId
+			audio.SoundId = `rbxassetid://{audioId}`
 			audio.Volume = 1
 
 			local audio2 = Instance.new("Sound",service.LocalContainer())
-			audio2.SoundId = "rbxassetid://"..audioId
+			audio2.SoundId = `rbxassetid://{audioId}`
 			audio2.Volume = 1
 
 			local phonemes = {
@@ -1586,14 +1587,14 @@ return function(Vargs, GetEnv)
 
 			}
 
-			game:service("ContentProvider"):Preload("rbxassetid://"..audioId)
+			game:service("ContentProvider"):Preload(`rbxassetid://{audioId}`)
 
 			local function getText(str)
 				local tab = {}
 				local str = str
 				local function getNext()
 					for _, v in phonemes do
-						local occ,pos = string.find(string.lower(str),"^"..v.str)
+						local occ,pos = string.find(string.lower(str), `^{v.str}`)
 						if occ then
 							if v.capture then
 								local real = v.real

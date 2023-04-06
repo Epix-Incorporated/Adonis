@@ -60,8 +60,8 @@ return function(data, env)
 			local plr = service.Players:GetPlayerByUserId(userId)
 			if filter == "" or string.find(name:lower(), filter:lower()) then
 				local entry = scroller:Add("TextLabel", {
-					Text = "         "..name;
-					ToolTip = "ID: ".. userId;
+					Text = `         {name}`;
+					ToolTip = `ID: {userId}`;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (30*(i-1)));
@@ -89,7 +89,7 @@ return function(data, env)
 			end
 		end
 		scroller:ResizeCanvas(false, true, false, false, 5, 5)
-		window:SetTitle("Blocked Users ("..count..")")
+		window:SetTitle(`Blocked Users ({count})`)
 	end
 
 	function getData()

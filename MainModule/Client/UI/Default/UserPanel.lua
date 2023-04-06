@@ -26,12 +26,12 @@ local canEditTables = {
 local function tabToString(tab)
 	if type(tab) == "table" then
 		local str = ""
-		for i, v in pairs(tab) do
+		for i, v in tab do
 			if #str > 0 then
 				str ..= "; "
 			end
 
-			str ..= tostring(i) ..": ".. tostring(v)
+			str ..= `{i}: {v}`
 		end
 		return str
 	else
@@ -53,6 +53,7 @@ return function(data, env)
 	local Variables = client.Variables
 	local Deps = client.Deps
 	local Functions = client.Functions;
+	local keyCodeToName = Functions.KeyCodeToName;
 
 	local gTable
 	local window = UI.Make("Window", {
@@ -69,7 +70,7 @@ return function(data, env)
 	local function createPurchaseWindow(isGamepass, id)
 		local purchaseWindow = UI.Make("Window", {
 			Name = "Purchase window";
-			Title = "Purchase "..(isGamepass and "gamepass" or "asset");
+			Title = `Purchase {isGamepass and "gamepass" or "asset"}`;
 			Icon = client.MatIcons["Shopping cart"];
 			AllowMultiple = false;
 			Size = {380, 160};
@@ -135,7 +136,7 @@ return function(data, env)
 		local name = tabPath and table.concat(tabPath, ".") or setting
 
 		local tabWindow = UI.Make("Window",{
-			Name  = name .. "EditSettingsTable";
+			Name  = `{name}EditSettingsTable`;
 			Title = name;
 			Size  = {320, 300};
 			AllowMultiple = false;
@@ -363,7 +364,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						Remote.Send("ProcessCommand", chatMod.Prefix.."cmds")
+						Remote.Send("ProcessCommand", `{chatMod.Prefix}cmds`)
 					end
 				}
 			})
@@ -611,7 +612,7 @@ return function(data, env)
 
 								local img = pWindow:Add("ImageLabel", {
 									BackgroundTransparency = 1;
-									Image = "rbxassetid://".. Functions.GetTexture(currentTexture);
+									Image = `rbxassetid://{Functions.GetTexture(currentTexture)}`;
 									Size = UDim2.new(1, -10, 1, -80);
 									Position = UDim2.new(0, 5, 0, 35);
 								})
@@ -631,7 +632,7 @@ return function(data, env)
 												local num = tonumber(text)
 												if num then
 													lastValid = num
-													img.Image = "rbxassetid://".. Functions.GetTexture(num);
+													img.Image = `rbxassetid://{Functions.GetTexture(num)}`;
 												else
 													new.Text = lastValid
 												end
@@ -795,7 +796,6 @@ return function(data, env)
 			local inputBlock = false
 			local commandBox
 			local keyBox
-			local keyCodeToName = Functions.KeyCodeToName;
 			local binds = keyTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -809,9 +809,9 @@ return function(data, env)
 				selected = nil
 				binds:ClearAllChildren();
 
-				for i,v in pairs(Variables.KeyBinds) do
+				for i,v in Variables.KeyBinds do
 					binds:Add("TextButton", {
-						Text = "Key: ".. string.upper(keyCodeToName(i)) .." | Command: "..v;
+						Text = `Key: {string.upper(keyCodeToName(i))} | Command: {v}`;
 						Size = UDim2.new(1, 0, 0, 25);
 						Position = UDim2.new(0, 0, 0, num*25);
 						OnClicked = function(button)
@@ -1045,9 +1045,9 @@ return function(data, env)
 				selected = nil
 				aliases:ClearAllChildren();
 
-				for i, v in pairs(Variables.Aliases) do
+				for i, v in Variables.Aliases do
 					aliases:Add("TextButton", {
-						Text = "Alias: ".. i .." | Command: "..v;
+						Text = `Alias: {i} | Command: {v}`;
 						Size = UDim2.new(1, 0, 0, 25);
 						Position = UDim2.new(0, 0, 0, num*25);
 						OnClicked = function(button)
@@ -1344,15 +1344,15 @@ return function(data, env)
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
 					Entry = "Keybind";
-					Value = Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode");
+					Value = Functions.KeyCodeToName(Enum.KeyCode[Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode") or "Unknown"].Value);
 					Function = function(toggle)
 						service.Debounce("CliSettingKeybinder", function()
-							local gotKey
+							local gotKey, visualName
 							toggle.Text = "Waiting..."
 							local event = service.UserInputService.InputBegan:Connect(function(InputObject)
 								local textbox = service.UserInputService:GetFocusedTextBox()
 								if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
-									gotKey = InputObject.KeyCode.Name
+									gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 								end
 							end)
 
@@ -1362,7 +1362,7 @@ return function(data, env)
 							event:Disconnect()
 							toggle.Text = "Saving.."
 							Remote.Get("UpdateClient", "CustomConsoleKey", Variables.CustomConsoleKey)
-							toggle.Text = gotKey
+							toggle.Text = visualName
 						end)
 					end
 				};
@@ -1405,7 +1405,7 @@ return function(data, env)
 
 			for i, setData in ipairs(cliSettings) do
 				local label = clientTab:Add("TextLabel", {
-					Text = "  ".. setData.Text;
+					Text = `  {setData.Text}`;
 					ToolTip = setData.Desc;
 					TextXAlignment = "Left";
 					Size = UDim2.new(1, -10, 0, 30);
@@ -1485,7 +1485,7 @@ return function(data, env)
 				})
 
 				local i = 1
-				for truei, setting in pairs(order) do
+				for truei, setting in order do
 					i += 1
 
 					local value = settings[setting]
@@ -1495,7 +1495,7 @@ return function(data, env)
 						continue
 					elseif value == nil then
 						gameTab:Add("TextLabel", {
-							Text = "  "..setting..": ";
+							Text = `  {setting}: `;
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
@@ -1514,12 +1514,12 @@ return function(data, env)
 					elseif type(value) == "table" then
 						if setting == "Ranks" then
 							i -= 1
-							for rank, data in pairs(value) do
+							for rank, data in value do
 								i += 1
 								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
 									gameTab:Add("TextLabel", {
-										Text = "  "..rank..": ";
-										ToolTip = "Permission Level: ".. data.Level;
+										Text = `  {rank}: `;
+										ToolTip = `Permission Level: {data.Level}`;
 										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 										Size = UDim2.new(1, -10, 0, 30);
 										Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
@@ -1536,8 +1536,8 @@ return function(data, env)
 									})
 								else
 									gameTab:Add("TextLabel", {
-										Text = "  "..rank..": ";
-										ToolTip = "Permission Level: ".. data.Level;
+										Text = `  {rank}: `;
+										ToolTip = `Permission Level: {data.Level}`;
 										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 										Size = UDim2.new(1, -10, 0, 30);
 										Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
@@ -1558,7 +1558,7 @@ return function(data, env)
 							end
 						elseif not canEditTables[setting] then
 							gameTab:Add("TextLabel", {
-								Text = "  "..setting..": ";
+								Text = `  {setting}: `;
 								ToolTip = desc;
 								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 								Size = UDim2.new(1, -10, 0, 30);
@@ -1576,7 +1576,7 @@ return function(data, env)
 							})
 						else
 							gameTab:Add("TextLabel", {
-								Text = "  "..setting..": ";
+								Text = `  {setting}: `;
 								ToolTip = desc;
 								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 								Size = UDim2.new(1, -10, 0, 30);
@@ -1597,7 +1597,7 @@ return function(data, env)
 						end
 					elseif type(value) == "boolean" then
 						gameTab:Add("TextLabel", {
-							Text = "  ".. tostring(setting)..": ";
+							Text = `  {setting}: `;
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
@@ -1610,7 +1610,7 @@ return function(data, env)
 									Position = UDim2.new(1, -100, 0, 0);
 									BackgroundTransparency = 1;
 									OnToggle = function(enabled, button)
-										--warn("Setting ".. tostring(setting)..": ".. tostring(enabled))
+										--warn(`Setting {setting}: {enabled}`)
 										Remote.Send("SaveSetSetting", setting, enabled)
 									end
 								}
@@ -1618,7 +1618,7 @@ return function(data, env)
 						})
 					elseif type(value) == "string" or type(value) == "number" then
 						gameTab:Add("TextLabel", {
-							Text = "  "..setting..": ";
+							Text = `  {setting}: `;
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
@@ -1632,7 +1632,7 @@ return function(data, env)
 									BackgroundTransparency = 1;
 									TextChanged = function(text, enter, new)
 										if enter then
-											--warn("Setting "..tostring(setting)..": "..tostring(text))
+											--warn(`Setting {setting}: {text}`)
 											Remote.Send("SaveSetSetting", setting, text)
 										end
 									end

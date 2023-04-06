@@ -16,7 +16,7 @@ return function(Vargs, GetEnv)
 
 	--if true then return end --// fully disabled
 	service.TrackTask("Thread: WEBPANEL_JSON_UPDATE", function()
-		wait(1)
+		task.wait(1)
 		local enabled = rawget(_G,"ADONISWEB_CMD_JSON_DOUPDATE");
 		local secret = rawget(_G,"ADONISWEB_CMD_JSON_SECRET");
 		local endpoint = rawget(_G,"ADONISWEB_CMD_JSON_ENDPOINT");
@@ -26,14 +26,14 @@ return function(Vargs, GetEnv)
 
 		if Core.DebugMode and enabled then
 			print("DEBUG DO LAUNCH ENABLED");
-			wait(5)
+			task.wait(5)
 
 			local list = {};
 			local HTTP = service.HttpService;
 			local Encode = Functions.Base64Encode
 			local Decode = Functions.Base64Decode
 
-			for i,cmd in next,Commands do
+			for i,cmd in Commands do
 				table.insert(list, {
 					Index = i;
 					Prefix = cmd.Prefix;
@@ -46,7 +46,7 @@ return function(Vargs, GetEnv)
 			end
 
 			--warn("COMMANDS LIST JSON: ");
-			--print("\n\n".. HTTP:JSONEncode(list) .."\n\n");
+			--print(`\n\n{HTTP:JSONEncode(list)}\n\n`);
 			--print("ENCODED")
 			--// LAUNCH IT
 			print("LAUNCHING")
@@ -65,8 +65,7 @@ return function(Vargs, GetEnv)
 
 			print("LAUNCHED TO WEBPANEL")
 			print("RESPONSE BELOW")
-			print("SUCCESS: ".. tostring(success).. "\n"..
-				"RESPONSE:\n"..(res and HTTP.JSONEncode(res)) or res)
+			print(`SUCCESS: {success}\nRESPONSE:\n{(res and HTTP.JSONEncode(res)) or res}`)
 		end
 	end)
 end

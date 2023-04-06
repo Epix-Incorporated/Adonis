@@ -30,9 +30,9 @@ return function(data, env)
 
 	local function promptAddUser()
 		local list = {}
-		for _,v in pairs(service.Players:GetPlayers()) do
+		for _,v in service.Players:GetPlayers() do
 			local good = true;
-			for _, peer in next,peerList do
+			for _, peer in peerList do
 				if peer.UserId == v.UserId then
 					good = false;
 					break;
@@ -69,7 +69,7 @@ return function(data, env)
 			SortOrder = "LayoutOrder";
 		})
 
-		for i,peer in next,peers do
+		for i,peer in peers do
 			local pBut = playerList:Add("TextButton", {
 				Text = service.FormatPlayer(peer);
 				Size = UDim2.new(1, 0, 0, 25);
@@ -127,7 +127,7 @@ return function(data, env)
 								Name = "PlayerName";
 								Size = UDim2.new(0, 0, 0, 14);
 								Position = UDim2.new(0, 1, 0, 1);
-								Text = "   "..pName;
+								Text = `   {pName}`;
 								TextSize = "14";
 								TextXAlignment = "Left";
 								BackgroundTransparency = 1;
@@ -137,7 +137,7 @@ return function(data, env)
 								Name = "Message";
 								Size = UDim2.new(1, 0, 0, 10);
 								Position = UDim2.new(0, 0, 0, 14);
-								Text = "   "..(msg or "<font color='rgb(230,0,0)'>An error has occured</font>");
+								Text = `   {msg or "<font color='rgb(230,0,0)'>An error has occured</font>"}`;
 								TextXAlignment = "Left";
 								TextYAlignment = "Top";
 								AutomaticSize = "Y";
@@ -174,7 +174,7 @@ return function(data, env)
 								Name = "PlayerName";
 								Size = UDim2.new(1, -55, 0, 15);
 								Position = UDim2.new(0, 55, 0, 0);
-								Text = if pDisplayName then pDisplayName == pName and ("@"..pName) or string.format("%s (@%s)", pDisplayName, pName) else pName;
+								Text = if pDisplayName then pDisplayName == pName and (`@{pName}`) or string.format("%s (@%s)", pDisplayName, pName) else pName;
 								TextSize = "14";
 								TextXAlignment = "Left";
 								BackgroundTransparency = 1;
@@ -215,12 +215,12 @@ return function(data, env)
 		})
 	end;
 
-	if client.UI.Get("PrivateChat".. SessionName) then
+	if client.UI.Get(`PrivateChat{SessionName}`) then
 		return
 	end
 
 	window = client.UI.Make("Window", {
-		Name  = "PrivateChat".. SessionName;
+		Name  = `"PrivateChat{SessionName}`;
 		Title = "Private Chat";
 		Icon = client.MatIcons.Forum;
 		Size  = {500,300};

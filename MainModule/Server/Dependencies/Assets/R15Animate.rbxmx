@@ -101,8 +101,6 @@ local animNames = {
 -- Existance in this list signifies that it is an emote, the value indicates if it is a looping emote
 local emoteNames = { wave = false, point = false, dance = true, dance2 = true, dance3 = true, laugh = false, cheer = false}
 
-math.randomseed(tick())
-
 function configureAnimationSet(name, fileList)
 	if (animTable[name] ~= nil) then
 		for _, connection in pairs(animTable[name].connections) do
@@ -412,14 +410,14 @@ end
 
 function getTool()	
 	for _, kid in ipairs(Figure:GetChildren()) do
-		if kid.className == "Tool" then return kid end
+		if kid.ClassName == "Tool" then return kid end
 	end
 	return nil
 end
 
 function getToolAnim(tool)
 	for _, c in ipairs(tool:GetChildren()) do
-		if c.Name == "toolanim" and c.className == "StringValue" then
+		if c.Name == "toolanim" and c.ClassName == "StringValue" then
 			return c
 		end
 	end
@@ -427,18 +425,17 @@ function getToolAnim(tool)
 end
 
 function animateTool()
-	
-	if (toolAnim == "None") then
+	if toolAnim == "None" then
 		playToolAnimation("toolnone", toolTransitionTime, Humanoid)
 		return
 	end
 
-	if (toolAnim == "Slash") then
+	if toolAnim == "Slash" then
 		playToolAnimation("toolslash", 0, Humanoid)
 		return
 	end
 
-	if (toolAnim == "Lunge") then
+	if toolAnim == "Lunge" then
 		playToolAnimation("toollunge", 0, Humanoid)
 		return
 	end
@@ -533,8 +530,8 @@ playAnimation("idle", 0.1, Humanoid)
 pose = "Standing"
 
 while Figure.Parent~=nil do
-	local _, time = wait(0.1)
-	move(time)
+	task.wait(0.1)
+	move(os.clock())
 end
 
 

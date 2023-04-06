@@ -70,7 +70,7 @@ return function(data, env)
 		Image = client.MatIcons.Palette;
 		ImageTransparency = 0.2;
 	}).MouseButton1Down:Connect(function()
-		client.Remote.Send("ProcessCommand", data.CmdPlayerPrefix.."brickcolors")
+		client.Remote.Send("ProcessCommand", `{data.CmdPlayerPrefix}brickcolors`)
 	end)
 
 	local createTeam = creator:Add("TextButton", {
@@ -103,7 +103,7 @@ return function(data, env)
 	end)
 	teamColor:GetPropertyChangedSignal("Text"):Connect(function()
 		teamColor.TextColor3 = BrickColor.new(teamColor.Text).Color
-		--teamColor.TextColor3 = BrickColor.new(teamColor.Text:sub(1, 1):upper()..teamColor.Text:sub(2):lower()).Color -- unfortunately we have BrickColors with names like "New Yeller"
+		--teamColor.TextColor3 = `{BrickColor.new(teamColor.Text:sub(1, 1):upper()}{teamColor.Text:sub(2):lower()).Color}` -- unfortunately we have BrickColors with names like "New Yeller"
 	end)
 
 	local function generate()
@@ -142,7 +142,7 @@ return function(data, env)
 						TextXAlignment = "Left";
 						TextYAlignment = "Center";
 						Text = team.Name;
-						ToolTip = "[Auto-Assignable]: "..tostring(team.AutoAssignable);
+						ToolTip = `[Auto-Assignable]: {team.AutoAssignable}`;
 						ZIndex = 13;
 					},
 					{
@@ -185,7 +185,7 @@ return function(data, env)
 			})
 		end
 		scroller:ResizeCanvas(false, true, false, false, 5, 0)
-		window:SetTitle("Teams ("..count..")")
+		window:SetTitle(`Teams ({count})`)
 	end
 
 	service.Teams.ChildAdded:Connect(generate)

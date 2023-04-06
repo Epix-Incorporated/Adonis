@@ -37,6 +37,7 @@ local CORE_LOADING_ORDER = table.freeze {
 --//   Say hi to people reading the script
 --//   ...
 --//   "Hi." - Me
+--//	Your mom
 
 --// Holiday roooaaAaaoooAaaooOod
 local _G, game, script, getfenv, setfenv, workspace,
@@ -78,7 +79,6 @@ local SERVICES_WE_USE = table.freeze {
 	"StarterPlayer";
 	"GroupService";
 	"MarketplaceService";
-	"MarketplaceService";
 	"TestService";
 	"HttpService";
 	"RunService";
@@ -114,7 +114,7 @@ local logError = function(plr, err)
 	end
 
 	if server.Core and server.Core.DebugMode then
-		warn("::Adonis:: Error: "..tostring(plr)..": "..tostring(err))
+		warn(`::Adonis:: Error: {plr}: {err}`)
 	end
 
 	if server and server.Logs then
@@ -126,7 +126,6 @@ local logError = function(plr, err)
 	end
 end
 
---local message = function(...) local Str = "" game:GetService("TestService"):Message(Str) end
 local print = function(...)
 	print(":: Adonis ::", ...)
 end
@@ -134,16 +133,6 @@ end
 local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
-
---[[
-local require = function(mod, ...)
-	if mod and tonumber(mod) then
-		warn("Requiring Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
-	end
-
-	return require(mod, ...)
-end
---]]
 
 local function CloneTable(tab, recursive)
 	local clone = table.clone(tab)
@@ -214,7 +203,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if type(plug) == "function" then
 		if isCore then
-			local ran,err = service.TrackTask("CoreModule: ".. tostring(module), plug, GetVargTable(), GetEnv)
+			local ran,err = service.TrackTask(`CoreModule: {module}`, plug, GetVargTable(), GetEnv)
 			if not ran then
 				warn("Core Module encountered an error while loading:", module)
 				warn(err)
@@ -223,7 +212,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			end
 		elseif yield then
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask("Plugin: ".. tostring(module), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
 				warn(err)
@@ -231,8 +220,8 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				return err;
 			end
 		else
-			--service.Threads.RunTask("PLUGIN: "..tostring(module),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(module), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
+			local ran, err = service.TrackTask(`Thread: Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
 				warn(err)
@@ -246,7 +235,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if server.Logs then
 		server.Logs.AddLog(server.Logs.Script,{
-			Text = "Loaded Module: "..tostring(module);
+			Text = `Loaded Module: {module}`;
 			Desc = "Adonis loaded a core module or plugin";
 		})
 	end
@@ -272,7 +261,7 @@ local function LoadPackage(package, folder, runNow)
 				end
 			end
 		else
-			warn("Missing parent to unpack into for ".. tostring(curFolder))
+			warn(`Missing parent to unpack into for {curFolder}`)
 		end
 	end
 
@@ -283,11 +272,15 @@ local function CleanUp()
 	--local env = getfenv(2)
 	--local ran,ret = pcall(function() return env.script:GetFullName() end)
 	warn("Beginning Adonis cleanup & shutdown process...")
-	--warn("CleanUp called from "..tostring((ran and ret) or "Unknown"))
+	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
 	--local loader = server.Core.ClientLoader
 	server.Model.Name = "Adonis_Loader"
 	server.Model.Parent = service.ServerScriptService
 	server.Running = false
+	
+	server.Logs.SaveCommandLogs()
+	server.Core.GAME_CLOSING = true;
+	server.Core.SaveAllPlayerData()
 
 	pcall(service.Threads.StopAll)
 	pcall(function()
@@ -303,12 +296,6 @@ local function CleanUp()
 	if server.Core and server.Core.RemoteEvent then
 		pcall(server.Core.DisconnectEvent)
 	end
-
-	--[[delay(0, function()
-		for i,v in next,server do
-			server[i] = nil; --// Try to break it to prevent any potential hanging issues; Not very graceful...
-		end
-	--end)--]]
 
 	warn("Unloading complete")
 end;
@@ -345,15 +332,13 @@ service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog("Script", {
-				Text = "Cached method doesn't match found method: "..tostring(extra[1]);
-				Desc = "Method: "..tostring(extra[1])
+				Text = `Cached method doesn't match found method: {extra[1]}`;
+				Desc = `Method: {extra[1]}`
 			})
 		end
 	elseif eType == "ServerError" then
-		--print("Server error")
 		logError("Server", msg)
 	elseif eType == "TaskError" then
-		--print("Task error")
 		logError("Task", msg)
 	end
 end, function(c, parent, tab)
@@ -492,7 +477,7 @@ return service.NewProxy({
 			script:Destroy()
 			return "FAILED"
 		else
-			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
+			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Archivable = false, Value = "Running"})
 			local mutexBackup = mutex:Clone()
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
@@ -533,20 +518,6 @@ return service.NewProxy({
 		local setTab = require(server.Deps.DefaultSettings)
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
-		-- For some reason line 540 errors because CloneTable is nil
-		local function CloneTable(tab, recursive)
-			local clone = table.clone(tab)
-
-			if recursive then
-				for i, v in pairs(clone) do
-					if type(v) == "table" then
-						clone[i] = CloneTable(v, recursive)
-					end
-				end
-			end
-
-			return clone
-		end
 		server.OriginalSettings = CloneTable(server.Settings, true)
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
 		server.Messages = data.Messages or setTab.Settings.Messages or {}
@@ -616,7 +587,6 @@ return service.NewProxy({
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
-		server.Threading = require(server.Deps.ThreadHandler)
 		server.Changelog = require(server.Shared.Changelog)
 		server.Credits = require(server.Shared.Credits)
 		do
@@ -625,7 +595,7 @@ return service.NewProxy({
 				__index = function(self, ind)
 					local materialIcon = MaterialIcons[ind]
 					if materialIcon then
-						self[ind] = "rbxassetid://"..materialIcon
+						self[ind] = `rbxassetid://{materialIcon}`
 						return self[ind]
 					end
 					return ""
@@ -650,6 +620,8 @@ return service.NewProxy({
 
 		--// Server Specific Service Functions
 		ServiceSpecific.GetPlayers = server.Functions.GetPlayers
+		--// Experimental, may have issues with Adonis tables that are protected metatables
+		--ServiceSpecific.CloneTable = CloneTable
 
 		--// Initialize Cores
 		local runLast = {}
@@ -719,7 +691,7 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			warn("Loading Complete; Required by "..tostring(data.Loader:GetFullName()))
+			warn(`Loading Complete; Required by {data.Loader:GetFullName()}`)
 		else
 			warn("Loading Complete; No loader location provided")
 		end

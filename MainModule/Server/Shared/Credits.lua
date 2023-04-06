@@ -60,8 +60,16 @@ return {
 		{Text = "@GitHub NoUserSet", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub xvarmkorv2",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Quantify_RBLX",	Desc = "GitHub Contributor"};
+		{Text = "@GitHub xhayper",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub GGshor",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub WideManHost",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub autodoorsdev",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub Lethalitics",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub RoyallyFlushed",	Desc = "GitHub Contributor"};
+		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
 	};
 	Misc = {
+		{Text = "Kein-Hong Man",		Desc = "Creator of the Yueliang (Lua bytecode compiler in loadstring module). Also created LuLu VM, the first Lua bytecode interpreter used in Adonis (no longer used)"};
 		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used)"};
 		{Text = "darkelementallord",		Desc = "Updated some guis"};
 		{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
@@ -75,6 +83,7 @@ return {
 		{Text = "Bubby4j",					Desc = "Used their \"Refresh Icon\" image (default theme)"};
 		{Text = "meafers",					Desc = "Suggested some stuff"};
 		{Text = "Osyris",					Desc = "Wrote 't', an open-source typechecking library"};
+		{Text = "buildthomas",					Desc = "Wrote 'MockDataStoreService', an open-source mock DataStoreService replacement library"};
 		{Text = "",							Desc = ""};
 		{Text = "~ :) ~",					Desc = ""};
 		{Text = "Donors",					Desc = "Donors keep the wheels turning ;)"};

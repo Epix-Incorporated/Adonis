@@ -41,7 +41,7 @@ return function(Vargs, GetEnv)
 	server.HTTP = {
 		Init = Init;
 		HttpEnabled = (function()
-			local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com/robots.txt")
+			local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://www.google.com/robots.txt")
 			if not success and res:find("Http requests are not enabled.") then
 				return false
 			end
@@ -105,7 +105,7 @@ return function(Vargs, GetEnv)
 							})
 
 							if Settings.Trello_Token ~= "" then
-								pcall(HTTP.Trello.API.makeComment, card.id, "Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
+								pcall(HTTP.Trello.API.makeComment, card.id, `Ran Command: {cmd}\nPlace ID: {game.PlaceId}\nServer Job Id: {game.JobId}\nServer Players: {#service.GetPlayers()}\nServer Time: {service.FormatTime()}`)
 							end
 						end
 					end

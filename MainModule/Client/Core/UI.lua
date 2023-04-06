@@ -173,7 +173,7 @@ return function(Vargs, GetEnv)
 				end]]
 
 				local rets = {
-					TrackTask("UI: ".. module:GetFullName(),
+					TrackTask(`UI: {module:GetFullName()}`,
 						--func,
 						setfenv(func, newEnv),
 						data,
@@ -185,7 +185,7 @@ return function(Vargs, GetEnv)
 					return unpack(rets, 2)
 				else
 					warn("Error while running module", module.Name, rets[2])
-					client.LogError("Error loading ".. module.Name .." - ".. tostring(rets[2]))
+					client.LogError(`Error loading {module.Name} - {rets[2]}`)
 				end
 			else
 				warn("Error while loading module", module.Name, tostring(func))
@@ -424,10 +424,14 @@ return function(Vargs, GetEnv)
 		end;
 
 		Remove = function(name, ignore)
-			local gui = UI.Get(name, ignore)
-			if gui then
-				for i,v in gui do
-					v.Destroy()
+			if name == "Chat" and client.Handlers.RemoveCustomChat then
+				client.Handlers.RemoveCustomChat()
+			else
+				local gui = UI.Get(name, ignore)
+				if gui then
+					for i,v in gui do
+						v.Destroy()
+					end
 				end
 			end
 		end;
@@ -536,9 +540,9 @@ return function(Vargs, GetEnv)
 							if gTable.Class == "TextLabel" and parent == service.PlayerGui then
 								task.wait()
 								gTable.Object.Parent = UI.GetHolder()
-							elseif rawequal(c, gTable.Object) and parent == nil and not gTable.KeepAlive then
+							elseif parent == nil and not gTable.KeepAlive then
 								gTable:Destroy()
-							elseif rawequal(c, gTable.Object) and parent ~= nil then
+							elseif parent ~= nil then
 								gTable.Active = true
 								client.GUIs[gIndex] = gTable
 							end

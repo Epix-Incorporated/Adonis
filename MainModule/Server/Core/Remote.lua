@@ -34,7 +34,7 @@ return function(Vargs, GetEnv)
 	end;
 
 	local function RunAfterPlugins(data)
-		for com in next, Remote.Commands do
+		for com in Remote.Commands do
 			if string.len(com) > Remote.MaxLen then
 				Remote.MaxLen = string.len(com)
 			end
@@ -143,7 +143,7 @@ return function(Vargs, GetEnv)
 					local action = args[1]
 					if action == "GetTasks" then
 						local tab = {}
-						for _, v in next, service.GetTasks() do
+						for _, v in service.GetTasks() do
 							local new = {
 								Status = v.Status;
 								Name = v.Name;
@@ -466,12 +466,12 @@ return function(Vargs, GetEnv)
 							return ret
 						else
 							return {
-								"COMMAND ERROR: "..tostring(ret)
+								`COMMAND ERROR: {ret}`
 							}
 						end
 					else
 						return {
-							"Could not find any command matching \""..command.."\""
+							`Could not find any command matching "{command}"`
 						}
 					end
 				end
@@ -482,7 +482,7 @@ return function(Vargs, GetEnv)
 				local cmd, ind
 				for i, v in Admin.SearchCommands(p, "all") do
 					for _, c in ipairs(v.Commands) do
-						if (v.Prefix or "")..string.lower(c) == (v.Prefix or "")..string.lower("music") then
+						if `{v.Prefix or ""}{string.lower(c) == `{(v.Prefix or "")}music`}` then
 							cmd, ind = v, i
 							break
 						end
@@ -496,13 +496,13 @@ return function(Vargs, GetEnv)
 				end
 				if canUseGlobalBroadcast then
 					if not server.Functions.AudioLib then
-						local audioLibFolder = workspace:FindFirstChild("ADONIS_AUDIOLIB")
+						local audioLibFolder = service.SoundService:FindFirstChild("ADONIS_AUDIOLIB")
 						if not audioLibFolder then
 							audioLibFolder = service.New("Folder")
 							audioLibFolder.Name = "ADONIS_AUDIOLIB"
-							audioLibFolder.Parent = workspace
+							audioLibFolder.Parent = service.SoundService
 						end
-						server.Functions.AudioLib = require(server.Shared.AudioLib).new(audioLibFolder)
+						server.Functions.AudioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
 					end
 
 					return server.Functions.AudioLib[args[1][1]](server.Functions.AudioLib, args[1][2])
@@ -514,7 +514,7 @@ return function(Vargs, GetEnv)
 			Data = {};
 			Format = function(msg,data) (data or {}).Text = msg end;
 			Output = function(tab,msg,mata) table.insert(tab,Remote.Terminal.Format(msg,mata)) end;
-			GetCommand = function(cmd) for i,com in next,Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
+			GetCommand = function(cmd) for i,com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
 			LiveOutput = function(p,data,type) Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
 			Commands = {
 				Help = {
@@ -525,8 +525,8 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local output = {}
 						for i,v in Remote.Terminal.Commands do
-							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
-							table.insert(output, "- ".. tostring(v.Description))
+							table.insert(output, `{v.Usage}{string.rep(" ",30-string.len(tostring(v.Usage)))}`)
+							table.insert(output, `- {v.Description}`)
 						end
 						return output
 					end;
@@ -550,7 +550,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Used to test the connection to the server and it's ability to return data";
 					Function = function(p,args,data)
-						Remote.Terminal.LiveOutput(p,"Return Test: "..tostring(args[1]))
+						Remote.Terminal.LiveOutput(p,`Return Test: {args[1]}`)
 					end
 				};
 
@@ -560,9 +560,18 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
+						local oError = error
 						local newenv = GetEnv(getfenv(),{
-							print = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
-							warn = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
+							print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
+							warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+							error = function(reason, level)
+								if level ~= nil and type(level) ~= "number" then
+									oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
+								end
+
+								Remote.Terminal.LiveOutput(p, `LUA_DEMAND_ERROR: {reason}`)
+								oError(`Adonis terminal error: {reason}`, (level or 1) + 1)
+							end;
 						})
 
 						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
@@ -584,7 +593,7 @@ return function(Vargs, GetEnv)
 						if func then
 							func()
 						else
-							Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(string.match(err, ":(.*)") or err))
+							Remote.Terminal.LiveOutput(p,`ERROR: {string.match(err, ":(.*)") or err}`)
 						end
 					end
 				};
@@ -597,7 +606,7 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						Process.Command(p, args[1], {DontLog = true, Check = true}, true)
 						return {
-							"Command ran: "..args[1]
+							`Command ran: {args[1]}`
 						}
 					end
 				};
@@ -608,9 +617,9 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Runs the specified command on the specified player as the server";
 					Function = function(p,args,data)
-						Process.Command(p, Settings.Prefix.."sudo ".. tostring(args[1]), {DontLog = true, Check = true}, true)
+						Process.Command(p, `{Settings.Prefix}sudo {args[1]}`, {DontLog = true, Check = true}, true)
 						return {
-							"Command ran: ".. Settings.Prefix.."sudo ".. tostring(args[1])
+							`Command ran: {Settings.Prefix}sudo {args[1]}`
 						}
 					end
 				};
@@ -623,12 +632,14 @@ return function(Vargs, GetEnv)
 					Function = function(p, args, data)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
+							local ret = {}
 							for _,v in plrs do
 								v:Kick(args[2] or "Disconnected by server")
-								return {"Disconnect "..tostring(v.Name).." from the server"}
+								table.insert(ret, `Disconnect {service.FormatPlayer(v)} from the server`)
 							end
+							return ret
 						else
-							return {"No players matching '"..args[1].."' found"}
+							return {`No players matching '{args[1]}' found`}
 						end
 					end
 				};
@@ -642,16 +653,18 @@ return function(Vargs, GetEnv)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
 							for _,v in plrs do
+								local ret = {}
 								local char = v.Character
 								if char and char.ClassName == "Model" then
 									char:BreakJoints()
-									return {"Killed "..tostring(v.Name)}
+									table.insert(ret, `Killed {service.FormatPlayer(v)}`)
 								else
-									return {tostring(v.Name).." has no character or it's not a model"}
+									table.insert(ret, `{service.FormatPlayer(v)} has no character or it's not a model`)
 								end
+								return ret
 							end
 						else
-							return {"No players matching '"..args[1].."' found"}
+							return {`No players matching '{args[1]}' found`}
 						end
 					end
 				};
@@ -664,28 +677,29 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
+							local ret = {}
 							for _,v in plrs do
 								v:LoadCharacter()
-								return {"Respawned "..tostring(v.Name)}
+								table.insert(ret, `Respawned {service.FormatPlayer(v)}`)
 							end
 						else
-							return {"No players matching '"..args[1].."' found"}
+							return {`No players matching '{args[1]}' found`}
 						end
 					end
 				};
 
 				Shutdown = {
-					Usage = "shutdown";
+					Usage = "shutdown <reason>";
 					Command = "shutdown";
-					Arguments = 0;
+					Arguments = 1;
 					Description = "Disconnects all players from the server and prevents rejoining";
 					Function = function(p,args,data)
 						service.PlayerAdded:Connect(function(p)
-							p:Kick()
+							p:Kick(args[1] or "No Given Reason")
 						end)
 
 						for _,v in service.Players:GetPlayers() do
-							v:Kick()
+							v:Kick(args[1] or "No Given Reason")
 						end
 					end
 				};
@@ -892,14 +906,14 @@ return function(Vargs, GetEnv)
 						local list = trello.getListObj(lists, listName)
 						if list then
 							local card = trello.makeCard(list.id, name, desc)
-							Functions.Hint("Made card \""..card.name.."\" in list \""..list.name.."\"", {p})
+							Functions.Hint(`Made card "{card.name}" in list "{list.name}"`, {p})
 							Logs.AddLog(Logs.Script,{
-								Text = tostring(p).." performed Trello operation";
+								Text = `{p} performed Trello operation`;
 								Desc = "Player created a Trello card";
 								Player = p;
 							})
 						else
-							Functions.Hint("\""..listName.."\" does not exist", {p})
+							Functions.Hint(`"{listName}" does not exist"`, {p})
 						end
 					end
 				end
@@ -917,7 +931,7 @@ return function(Vargs, GetEnv)
 					service.Events.ClientLoaded:Fire(p)
 					task.defer(Process.FinishLoading, p)
 				else
-					warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
+					warn(`[CLI-199524] ClientLoaded fired when not ready for {p}`)
 					Logs:AddLog("Script", string.format("%s fired ClientLoaded too early", tostring(p)));
 					--p:Kick("Loading error [ClientLoaded Failed]")
 				end
@@ -928,7 +942,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			Test = function(p: Player,args: {[number]: any})
-				print("OK WE GOT COMMUNICATION! FROM: "..p.Name.." ORGL: "..args[1])
+				print(`OK WE GOT COMMUNICATION! FROM: {p.Name} ORGL: {args[1]}`)
 			end;
 
 			ProcessCommand = function(p: Player,args: {[number]: any})
@@ -952,7 +966,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			PrivateMessage = function(p: Player,args: {[number]: any})
-				if not type(args[1]) == "string" then return end
+				if type(args[1]) ~= "string" then return end
 
 				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
 				local target = Variables.PMtickets[args[1]]
@@ -968,7 +982,7 @@ return function(Vargs, GetEnv)
 
 					local replyTicket = Functions.GetRandom()
 					Variables.PMtickets[replyTicket] = p
-					Remote.MakeGui(target,"PrivateMessage",{
+					Remote.MakeGui(target, "PrivateMessage", {
 						Title = title;
 						Player = p;
 						Message = service.Filter(message, p, target);
@@ -976,12 +990,12 @@ return function(Vargs, GetEnv)
 					})
 
 					Logs:AddLog(Logs.Script,{
-						Text = p.Name.." replied to "..tostring(target),
+						Text = `{p.Name} replied to {target}`,
 						Desc = message,
 						Player = p;
 					})
 				else
-					Anti.Detected(p, "info", "Invalid PrivateMessage ticket! Got: ".. tostring(args[2]))
+					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {args[2]}`)
 				end
 			end;
 		};
@@ -1083,7 +1097,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Fire = function(p: Player,...)
-			assert(p and p:IsA("Player"), "Remote.Fire: ".. tostring(p) .." is not a valid Player")
+			assert(p and p:IsA("Player"), `Remote.Fire: {p} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
@@ -1093,7 +1107,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Send = function(p: Player,com: string,...)
-			assert(p and p:IsA("Player"), "Remote.Send: ".. tostring(p) .." is not a valid Player")
+			assert(p and p:IsA("Player"), `Remote.Send: {p} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
@@ -1188,8 +1202,8 @@ return function(Vargs, GetEnv)
 
 				if continue and (data.LastUpdate and os.time() - data.LastUpdate > Remote.TimeUntilKeyDestroyed) then
 					Remote.Clients[key] = nil;
-					--print("Client key removed for UserId ".. tostring(key))
-					Logs:AddLog("Script", "Client key removed for UserId ".. tostring(key))
+					--print(`Client key removed for UserId {key}`)
+					Logs:AddLog("Script", `Client key removed for UserId {key}`)
 				end
 			end
 
@@ -1265,7 +1279,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		NewPlayerEvent = function(p: Player,type: string,func: (...any) -> (...any))
-			return service.Events[type..p.UserId]:Connect(func)
+			return service.Events[`{type}{p.UserId}`]:Connect(func)
 		end;
 
 		StartLoop = function(p: Player,name: string,delay: number | string,funcCode: string)

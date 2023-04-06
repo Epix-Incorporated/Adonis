@@ -30,8 +30,6 @@ return function(Vargs, GetEnv)
 
 		MaxLogs = Settings.MaxLogs;
 
-		game:BindToClose(Logs.SaveCommandLogs);
-
 		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");
 	end;
@@ -131,7 +129,7 @@ return function(Vargs, GetEnv)
 							UserId = p.UserId;
 						}
 					end
-					table.insert(temp, newTab)--{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+					table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
 				end
 
 				if oldLogs then

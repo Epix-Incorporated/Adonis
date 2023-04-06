@@ -1,10 +1,10 @@
 local msgs={
-  {
-    Msg='We need more..... philosophy... ya know?',
-    Color=Enum.ChatColor.Green
-  },{
-  Msg='OH MY GOD STOP TRYING TO EAT MY SOUL',
-  Color=Enum.ChatColor.Red
+{
+Msg='We need more..... philosophy... ya know?',
+Color=Enum.ChatColor.Green
+},{
+Msg='OH MY GOD STOP TRYING TO EAT MY SOUL',
+Color=Enum.ChatColor.Red
 },{
 Msg='I.... CANT.... FEEL.... MY FACE',
 Color=Enum.ChatColor.Red
@@ -37,55 +37,56 @@ Msg='Woooo man do you see the elephent... theres an elephent man..its... PURPLE 
 Color=Enum.ChatColor.Blue
 }}
 
+local Chat = game:GetService("Chat")
 local head = script.Parent.Parent.Head
-local hum = script.Parent.Parent.Humanoid
+local humanoid = script.Parent.Parent:FindFirstChildOfClass("Humanoid")
 local torso = script.Parent
-local chat = game:GetService("Chat")
 local val = Instance.new('StringValue')
 val.Parent = head
 local old = math.random()
 local stop = false
 
-hum.Died:Connect(function()
-stop = true
-wait(0.5)
-workspace.CurrentCamera.FieldOfView = 70
+humanoid.Died:Connect(function()
+	stop = true
+	task.wait(0.5)
+	workspace.CurrentCamera.FieldOfView = 70
 end)
 
 coroutine.wrap(function()
-while not stop and head and val and val.Parent==head do
-local new=math.random(1,#msgs)
-for k,m in pairs(msgs) do
-if new==k then
-if old~=new then
-old=new
-print(m.Msg)
-chat:Chat(head,m.Msg,m.Color)
-end
-end
-end
-wait(5)
-end
+	while not stop and head and val and val.Parent==head do
+		local new=math.random(1,#msgs)
+		for k,m in pairs(msgs) do
+			if new==k then
+				if old ~= new then
+					old=new
+					print(m.Msg)
+					Chat:Chat(head,m.Msg,m.Color)
+				end
+			end
+		end
+		task.wait(5)
+	end
 end)()
 
-hum.WalkSpeed=-16
+humanoid.WalkSpeed=-16
 
 local startspaz = false
 
 coroutine.wrap(function()
-repeat
-wait(0.1)
-workspace.CurrentCamera.FieldOfView = math.random(20,80)
-hum.Health = hum.Health-0.5
-if startspaz then
-hum.PlatformStand = true
-torso.Velocity = Vector3.new(math.random(-10,10),-5,math.random(-10,10))
-torso.RotVelocity = Vector3.new(math.random(-5,5),math.random(-5,5),math.random(-5,5))
-end
-until stop or not hum or not hum.Parent or hum.Health<=0 or not torso
+	repeat
+		task.wait(0.1)
+		workspace.CurrentCamera.FieldOfView = math.random(20, 80)
+		humanoid.Health:TakeDamage(0.5)
+
+		if startspaz then
+			humanoid.PlatformStand = true
+			torso.Velocity = Vector3.new(math.random(-10, 10), -5, math.random(-10, 10))
+			torso.RotVelocity = Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
+		end
+	until stop or not humanoid or not humanoid.Parent or humanoid.Health<=0 or not torso
 end)()
 
-wait(10)
+task.wait(10)
 
 local bg = Instance.new("BodyGyro")
 bg.Name = "SPINNER"
@@ -95,10 +96,10 @@ bg.cframe = torso.CFrame
 bg.Parent = torso
 
 coroutine.wrap(function()
-repeat wait(1/44)
-bg.cframe = bg.cframe * CFrame.Angles(0,math.rad(30),0)
-until stop or not bg or bg.Parent ~= torso
+	repeat task.wait(1/44)
+		bg.cframe = bg.cframe * CFrame.Angles(0,math.rad(30),0)
+	until stop or not bg or bg.Parent ~= torso
 end)()
 
-wait(20)
+task.wait(20)
 startspaz = true

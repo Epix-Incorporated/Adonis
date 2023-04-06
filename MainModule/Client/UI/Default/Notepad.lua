@@ -39,7 +39,7 @@ return function(data, env)
 		BackgroundColor3 = Color3.new(1, 1, 1);
 		TextColor3 = Color3.new(0,0,0);
 		Font = "Code";
-		FontSize = "Size18";
+		TextSize = 18;
 		TextXAlignment = "Left";
 		TextYAlignment = "Top";
 		TextWrapped = true;
@@ -96,6 +96,6 @@ return function(data, env)
 	window:Ready()
 
 	content:GetPropertyChangedSignal("Text"):Connect(function()
-		charCount.Text = tostring(#content.Text).." characters"
+		charCount.Text = `{#content.Text} characters`
 	end)
 end

@@ -62,7 +62,7 @@ return function(Vargs, GetEnv)
 
 		Message = function(jobId, fromPlayer, message, duration)
 			server.Functions.Message(
-				"Global Message from " .. (fromPlayer or "[Unknown]"),
+				`Global Message from {fromPlayer or "[Unknown]"}`,
 				message,
 				service.GetPlayers(),
 				true,
@@ -95,7 +95,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Event = function(jobId, eventId, ...)
-			service.Events["CRSSRV:".. eventId]:Fire(...)
+			service.Events[`CRSSRV:{eventId}`]:Fire(...)
 		end;
 
 		CrossServerVote = function(jobId, data)
@@ -103,17 +103,17 @@ return function(Vargs, GetEnv)
 			local answers = data.Answers
 			local voteKey = data.VoteKey
 
-			local start = os.time()
+			local start = os.clock()
 
 			Logs.AddLog("Commands", {
-				Text = "[CRS_SERVER] Vote initiated by "..data.Initiator,
+				Text = `[CRS_SERVER] Vote initiated by {data.Initiator}`,
 				Desc = question
 			})
 
-			for _, v in pairs(service.GetPlayers()) do
+			for _, v in service.GetPlayers() do
 				Routine(function()
 					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
-					if response and os.time() - start <= 120 then
+					if response and os.clock() - start <= 120 then
 						MsgService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
 					end
 				end)
@@ -122,7 +122,7 @@ return function(Vargs, GetEnv)
 	}
 
 	local function CrossEvent(eventId)
-		return service.Events["CRSSRV".. eventId]
+		return service.Events[`CRSSRV{eventId}`]
 	end
 
 	--// User Commands
@@ -160,7 +160,7 @@ return function(Vargs, GetEnv)
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
 			local disced = false
-			local updateKey = "SERVERPING_".. math.random()
+			local updateKey = `SERVERPING_{math.random()}`
 			local replyList = {}
 			local listener = service.Events.ServerPingReplyReceived:Connect(function(jobId, data)
 				if jobId then
@@ -173,17 +173,17 @@ return function(Vargs, GetEnv)
 				local totalPlayers = 0
 				local totalServers = 0
 
-				for jobId,data in pairs(replyList) do
+				for jobId,data in replyList do
 					totalServers += 1
 					totalPlayers = totalPlayers + (data.NumPlayers or 0)
 					table.insert(tab, {
-						Text = "Players: ".. (data.NumPlayers or 0) .. " | JobId: ".. jobId;
-						Desc = "JobId: ".. jobId;
+						Text = `Players: {data.NumPlayers or 0} | JobId: {jobId}`;
+						Desc = `JobId: {jobId}`;
 					})
 				end
 
 				table.insert(tab, 1, {
-					Text = "Total Servers: ".. totalServers .." | Total Players: ".. totalPlayers;
+					Text = `Total Servers: {totalServers} | Total Players: {totalPlayers}`;
 					Desc = "The total number of servers and players";
 				})
 
@@ -213,7 +213,7 @@ return function(Vargs, GetEnv)
 					Tab = listUpdate(),
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
-					OnClose = "client.Remote.PlayerEvent('".. updateKey .."')",
+					OnClose = `client.Remote.PlayerEvent('{updateKey}')`,
 					AutoUpdate = 1,
 				})
 
@@ -237,8 +237,8 @@ return function(Vargs, GetEnv)
 			local answers = args[1]
 			local anstab = {}
 			local responses = {}
-			local voteKey = "ADONISVOTE".. math.random()
-			local startTime = os.time()
+			local voteKey = `ADONISVOTE{math.random()}`
+			local startTime = os.clock()
 
 			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
 				table.insert(responses, data.Data.Response)
@@ -248,18 +248,18 @@ return function(Vargs, GetEnv)
 				local results = {}
 				local total = #responses
 				local tab = {
-					"Question: "..question;
-					"Total Responses: "..total;
-					"Time Left: ".. math.max(0, 120 - (os.time()-startTime));
-					--"Didn't Vote: "..#players-total;
+					`Question: {question}`;
+					`Total Responses: {total}`;
+					`Time Left: {math.max(0, 120 - (os.clock()-startTime))}`;
+					--`Didn't Vote: {#players-total}`;
 				}
 
-				for _, v in pairs(responses) do
+				for _, v in responses do
 					if not results[v] then results[v] = 0 end
 					results[v] += 1
 				end
 
-				for _, v in pairs(anstab) do
+				for _, v in anstab do
 					local ans = v
 					local num = results[v]
 					local percent
@@ -271,8 +271,8 @@ return function(Vargs, GetEnv)
 					end
 
 					table.insert(tab, {
-						Text = ans.." | "..percent.."% - "..num.."/"..total,
-						Desc = "Number: "..num.."/"..total.." | Percent: "..percent
+						Text = `{ans} | {percent}% - {num}/{total}`,
+						Desc = `Number: {num}/{total} | Percent: {percent}`
 					})
 				end
 
@@ -320,13 +320,13 @@ return function(Vargs, GetEnv)
 		service.Queue("CrossServerMessageQueue", function()
 			--// rate limiting
 			counter += 1
-			if not lastTick then lastTick = os.time() end
+			if not lastTick then lastTick = os.clock() end
 			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat wait() until os.time()-lastTick > 60
+				repeat task.wait() until os.clock()-lastTick > 60
 			end
 
-			if os.time()-lastTick > 60 then
-				lastTick = os.time()
+			if os.clock()-lastTick > 60 then
+				lastTick = os.clock()
 				counter = 1
 			end
 
@@ -339,13 +339,13 @@ return function(Vargs, GetEnv)
 
 	Process.CrossServerMessage = function(msg)
 		local data = msg.Data
-		assert(data and type(data) == "table", "CrossServer: Invalid data type ".. type(data))
+		assert(data and type(data) == "table", `CrossServer: Invalid data type {type(data)}`)
 
 		local serverId, command = data[1], data[2]
 
 		Logs:AddLog("Script", {
-			Text = "Cross-server message received: "..(command or "[NO COMMAND]");
-			Desc = "Origin JobId: "..(serverId or "[MISSING]")
+			Text = `Cross-server message received: {command or "[NO COMMAND]"}`;
+			Desc = `Origin JobId: {serverId or "[MISSING]"}`
 		})
 
 		if not (serverId and command) then return end
@@ -362,7 +362,7 @@ return function(Vargs, GetEnv)
 	end)
 
 	--// Check for additions added by other modules in core before this one loaded
-	for i, v in pairs(oldCommands) do
+	for i, v in oldCommands do
 		Core.CrossServerCommands[i] = v
 	end
 

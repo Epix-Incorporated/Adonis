@@ -36,9 +36,85 @@ return function(Vargs, GetEnv)
 		AddLog = Logs.AddLog;
 
 		TrackTask("Thread: ChatServiceHandler", function()
+
+			--// Support for modern TextChatService
+			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and Settings.OverrideChatCallbacks then
+				local function onNewTextchannel(textchannel)
+					AddLog("Script", "Connected to textchannel: "..textchannel.Name)
+
+					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
+						if
+							chatMessage.Status == Enum.TextChatMessageStatus.Success
+							or chatMessage.Status == Enum.TextChatMessageStatus.Sending
+						then
+							local player = service.Players:GetPlayerByUserId(textSource.UserId)
+							local slowCache = Admin.SlowCache
+
+							if not player then
+								return true
+							elseif Admin.DoHideChatCmd(player, chatMessage.Text) then -- // Hide chat commands?
+								return false
+							elseif Admin.IsMuted(player) then -- // Mute handler
+								Remote.MakeGui(player, "Notification", {
+									Title = "You are muted!";
+									Message = "You are muted and cannot talk in the chat right now.";
+									Time = 10;
+								})
+
+								return false
+							elseif Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
+								Remote.MakeGui(player, "Notification", {
+									Title = "You are chatting too fast!";
+									Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[player]));
+									Time = 10;
+								})
+
+								return false
+							end
+
+							if Variables.DisguiseBindings[textSource.UserId] then -- // Disguise command handler
+								chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
+							end
+
+							if Admin.SlowMode then
+								slowCache[player] = os.time()
+							end
+						end
+
+						return true
+					end
+				end
+
+				local function onTextChannelsAdded(textChannels)
+					for _, v in textChannels:GetChildren() do
+						if v:IsA("TextChannel") then
+							task.spawn(onNewTextchannel, v)
+						end
+					end
+
+					textChannels.ChildAdded:Connect(function(child)
+						if child:IsA("TextChannel") then
+							task.spawn(onNewTextchannel, child)
+						end
+					end)
+				end
+
+				if service.TextChatService:FindFirstChild("TextChannels") then
+					task.spawn(pcall, onTextChannelsAdded, service.TextChatService:FindFirstChild("TextChannels"))
+				end
+
+				service.TextChatService.ChildAdded:Connect(function(child)
+					if child.Name == "TextChannels" then
+						task.spawn(onTextChannelsAdded, child)
+					end
+				end)
+
+				AddLog("Script", "TextChatService Handler Loaded")
+			end
+
+			--// Support for legacy Lua chat system
 			--// ChatService mute handler (credit to Coasterteam)
 			local chatService = Functions.GetChatService()
-
 			if chatService then
 				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
 					local speaker = chatService:GetSpeaker(speakerName)
@@ -184,26 +260,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		if Settings.CommandCooldowns then
-			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
-				local realCmd = Admin.GetCommand(cmdName)
-
-				if realCmd then
-					if cooldownData.Player then
-						realCmd.PlayerCooldown = cooldownData.Player
-					end
-
-					if cooldownData.Server then
-						realCmd.ServerCooldown = cooldownData.Server
-					end
-
-					if cooldownData.Cross then
-						realCmd.CrossCooldown = cooldownData.Cross
-					end
-				end
-			end
-		end
-
 		Admin.Init = nil;
 		AddLog("Script", "Admin Module Initialized")
 	end;
@@ -211,16 +267,16 @@ return function(Vargs, GetEnv)
 	local function RunAfterPlugins(data)
 		--// Backup Map
 		if Settings.AutoBackup then
-			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, Settings.Prefix.."backupmap")
+			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, `{Settings.Prefix}backupmap`)
 		end
 
 		--// Run OnStartup Commands
 		for i,v in Settings.OnStartup do
-			warn("Running startup command ".. tostring(v))
-			TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v)
+			warn(`Running startup command {v}`)
+			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
 			AddLog("Script", {
-				Text = "Startup: Executed "..tostring(v);
-				Desc = "Executed startup command; "..tostring(v);
+				Text = `Startup: Executed {v}`;
+				Desc = `Executed startup command; {v}`;
 			})
 		end
 
@@ -251,7 +307,7 @@ return function(Vargs, GetEnv)
 		--// First try to extract args info from the alias
 		for arg in string.gmatch(alias, "<(%S+)>") do
 			if arg ~= "" and arg ~= " " then
-				local arg = "<".. arg ..">"
+				local arg = `<{arg}>`
 				if not uniqueArgs[arg] then
 					numArgs += 1
 					uniqueArgs[arg] = true
@@ -264,7 +320,7 @@ return function(Vargs, GetEnv)
 		if numArgs == 0 then
 			for arg in string.gmatch(aliasCmd, "<(%S+)>") do
 				if arg ~= "" and arg ~= " " then
-					local arg = "<".. arg ..">"
+					local arg = `<{arg}>`
 					if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
 						numArgs += 1
 						uniqueArgs[arg] = true --// :cmd <arg1> <arg2>
@@ -498,7 +554,7 @@ return function(Vargs, GetEnv)
 					return gamepassId and service.CheckPassOwnership(plr, gamepassId)
 				else
 					local username, userId = string.match(check, "^(.*):(.*)")
-					if username and userId and (plr.UserId == userId or string.lower(plr.Name) == string.lower(username)) then
+					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
 						return true
 					end
 
@@ -567,8 +623,8 @@ return function(Vargs, GetEnv)
 			data.LastLevelUpdate = os.time()
 
 			AddLog("Script", {
-				Text = "Updating cached level for ".. p.Name;
-				Desc = "Updating the cached admin level for ".. p.Name;
+				Text = `Updating cached level for {p.Name}`;
+				Desc = `Updating the cached admin level for {p.Name}`;
 				Player = p;
 			})
 
@@ -598,9 +654,9 @@ return function(Vargs, GetEnv)
 
 				if clients[key] and level and newLevel and type(p) == "userdata" and p:IsA("Player") then
 					if newLevel < level then
-						Functions.Hint("Your admin level has been reduced to ".. newLevel.." [".. (newRank or "Unknown") .."]", {p})
+						Functions.Hint(`Your admin level has been reduced to {newLevel} [{newRank or "Unknown"}]`, {p})
 					elseif newLevel > level then
-						Functions.Hint("Your admin level has been increased to ".. newLevel .." [".. (newRank or "Unknown") .."]", {p})
+						Functions.Hint(`Your admin level has been increased to {newLevel} [{newRank or "Unknown"}]`, {p})
 					end
 				end
 
@@ -671,7 +727,7 @@ return function(Vargs, GetEnv)
 					return true
 				end
 
-				if p.UserId == -1 then --// To account for player emulators in multi-client Studio tests
+				if p.UserId == -1 and Variables.IsStudio then --// To account for player emulators in multi-client Studio tests
 					return true
 				end
 			end
@@ -786,7 +842,7 @@ return function(Vargs, GetEnv)
 				local index,value
 
 				for ind,ent in list do
-					if (type(ent)=="number" or type(ent)=="string") and (ent==p.UserId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(p.Name..":"..p.UserId)) then
+					if (type(ent)=="number" or type(ent)=="string") and (ent==p.UserId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(`{p.Name}:{p.UserId}`)) then
 						index = ind
 						value = ent
 					end
@@ -797,7 +853,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			local value = p.Name ..":".. p.UserId
+			local value = `{p.Name}:{p.UserId}`
 
 			if newList then
 				table.insert(newList, value)
@@ -857,7 +913,7 @@ return function(Vargs, GetEnv)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, "\n Reason: "..(ban.Reason or "(No reason provided.)").."\n Banned until ".. service.FormatTime(ban.EndTime, {WithWrittenDate = true})
+						return true, `\n Reason: {ban.Reason or "(No reason provided.)"}\n Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
 					end
 				end
 			end
@@ -886,7 +942,7 @@ return function(Vargs, GetEnv)
 				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
 			}
 
-			table.insert(Settings.Banned, value)--p.Name..':'..p.UserId
+			table.insert(Settings.Banned, value)--`{p.Name}:{p.UserId}`
 
 			if doSave then
 				Core.DoSave({
@@ -902,7 +958,7 @@ return function(Vargs, GetEnv)
 				if not service.Players:FindFirstChild(p.Name) then
 					Remote.Send(p,'Function','KillClient')
 				else
-					if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
+					if p then pcall(function() p:Kick(`{Variables.BanMessage} | Reason: {value.Reason or "No reason provided"}`) end) end
 				end
 			end
 
@@ -932,7 +988,7 @@ return function(Vargs, GetEnv)
 				if not service.Players:FindFirstChild(p.Name) then
 					Remote.Send(p, "Function", "KillClient")
 				else
-					if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
+					if p then pcall(function() p:Kick(`{Variables.BanMessage} | Reason: {value.Reason or "No reason provided"}`) end) end
 				end
 			end
 
@@ -960,7 +1016,7 @@ return function(Vargs, GetEnv)
 				if cName then
 					if string.lower(cName) == string.lower(name) then
 						return true
-					elseif id and cId and id == cId then
+					elseif id and cId and id == tonumber(cId) then
 						return true
 					end
 				else
@@ -1012,13 +1068,13 @@ return function(Vargs, GetEnv)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
-				--local task,ran,error = service.Threads.TimeoutRunTask("SERVER_COMMAND: "..coma,com.Function,60*5,false,args)
-				--[[local ran, error = TrackTask("Command: ".. tostring(coma), com.Function, false, args)
+				--local task,ran,error = service.Threads.TimeoutRunTask(`SERVER_COMMAND: {coma}`,com.Function,60*5,false,args)
+				--[[local ran, error = TrackTask(`Command: {coma}`, com.Function, false, args)
 				if error then
 					--logError("SERVER","Command",error)
 				end]]
 
-				TrackTask("Command: ".. coma, com.Function, false, args)
+				TrackTask(`Command: {coma}`, com.Function, false, args)
 			end
 		end;
 
@@ -1030,7 +1086,7 @@ return function(Vargs, GetEnv)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
-				local ran, error = TrackTask(plr.Name .. ": ".. coma, com.Function, plr, args, {
+				local ran, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {
 					PlayerData = {
 						Player = plr;
 						Level = adminLvl;
@@ -1038,7 +1094,7 @@ return function(Vargs, GetEnv)
 					}
 				})
 
-				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..plr.Name..": "..coma,com.Function,60*5,plr,args)
+				--local task,ran,error = service.Threads.TimeoutRunTask(`COMMAND:{plr.Name}: {coma}`,com.Function,60*5,plr,args)
 				if error then
 					--logError(plr,"Command",error)
 					error = string.match(error, ":(.+)$") or "Unknown error"
@@ -1057,7 +1113,7 @@ return function(Vargs, GetEnv)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local _, error = TrackTask(plr.Name ..": ".. coma, com.Function, plr, args, {PlayerData = {
+				local _, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = 0;
 					isDonor = false;
@@ -1094,7 +1150,7 @@ return function(Vargs, GetEnv)
 			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
 				local matched
 				matched = if string.find(Command, Settings.SplitKey) then
-					string.match(Command, "^(%S+)"..Settings.SplitKey)
+					string.match(Command, `^(%S+){Settings.SplitKey}`)
 					else string.match(Command, "^(%S+)")
 
 				if matched then
@@ -1119,7 +1175,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if string.find(Command, Settings.SplitKey) then
-				matched = string.match(Command, "^(%S+)"..Settings.SplitKey)
+				matched = string.match(Command, `^(%S+){Settings.SplitKey}`)
 			else
 				matched = string.match(Command, "^(%S+)")
 			end
@@ -1155,7 +1211,7 @@ return function(Vargs, GetEnv)
 		FormatCommandArguments = function(command)
 			local text = ""
 			for i, arg in command.Args do
-				text ..= "<"..arg..">"
+				text ..= `<{arg}>`
 				if i < #command.Args then
 					text ..= Settings.SplitKey
 				end
@@ -1179,10 +1235,10 @@ return function(Vargs, GetEnv)
 			for i, lvl in levels do
 				if type(lvl) == "number" then
 					local list, name, data = Admin.LevelToList(lvl)
-					permissionDesc ..= (name or "No Rank") .."; Level ".. lvl
+					permissionDesc ..= `{name or "No Rank"}; Level {lvl}`
 				elseif type(lvl) == "string" then
 					local numLvl = Admin.StringToComLevel(lvl)
-					permissionDesc ..= lvl .. "; Level ".. (numLvl or "Unknown")
+					permissionDesc ..= `{lvl}; Level {numLvl or "Unknown"}`
 				end
 
 				if i < #levels then
@@ -1206,11 +1262,11 @@ return function(Vargs, GetEnv)
 			local playerPrefix = Settings.PlayerPrefix;
 			local prefix = Settings.Prefix;
 			local blacklist = {
-				[playerPrefix.. "alias"] = true;
-				[playerPrefix.. "newalias"] = true;
-				[playerPrefix.. "removealias"] = true;
-				[playerPrefix.. "client"] = true;
-				[playerPrefix.. "userpanel"] = true;
+				[`{playerPrefix}alias`] = true;
+				[`{playerPrefix}newalias`] = true;
+				[`{playerPrefix}removealias`] = true;
+				[`{playerPrefix}client`] = true;
+				[`{playerPrefix}userpanel`] = true;
 				[":adonissettings"] = true;
 
 			}
@@ -1219,7 +1275,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetArgs = function(msg, num, ...)
-			local args = Functions.Split((string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
+			local args = Functions.Split((string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ''),Settings.SplitKey,num) or {}
 			for _, v in {...} do
 				table.insert(args, v)
 			end
@@ -1236,7 +1292,7 @@ return function(Vargs, GetEnv)
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
 						local escAlias = EscapeSpecialCharacters(tAlias)
-						if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
+						if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 							msg = FormatAliasArgs(alias, cmd, msg)
 						end
 					end
@@ -1248,7 +1304,7 @@ return function(Vargs, GetEnv)
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
 					local escAlias = EscapeSpecialCharacters(tAlias)
-					if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
+					if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 						msg = FormatAliasArgs(alias, cmd, msg)
 					end
 				end
@@ -1343,7 +1399,7 @@ return function(Vargs, GetEnv)
 
 				local cmdFullName = cmd._fullName or (function()
 					local aliases = cmd.Aliases or cmd.Commands or {}
-					cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
+					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
 					return cmd._fullName
 				end)()
 
@@ -1412,7 +1468,7 @@ return function(Vargs, GetEnv)
 
 			local cmdFullName = cmd._fullName or (function()
 				local aliases = cmd.Aliases or cmd.Commands or {}
-				cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
+				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
 				return cmd._fullName
 			end)()
 
@@ -1482,19 +1538,19 @@ return function(Vargs, GetEnv)
 		CheckAuthority = function(p, target, actionName, allowSelf)
 			if p == target then
 				if allowSelf == false then
-					Functions.Hint("You cannot "..actionName.." yourself", {p})
+					Functions.Hint(`You cannot {actionName} yourself`, {p})
 					return false
 				end
 
 				return allowSelf or Remote.GetGui(p, "YesNoPrompt", {
-					Question = "Are you sure you want to "..actionName.." yourself?";
+					Question = `Are you sure you want to {actionName} yourself?`;
 				}) == "Yes"
 
 			elseif Admin.GetLevel(p) > Admin.GetLevel(target) then
 				return true
 			end
 
-			Functions.Hint("You don't have permission to "..actionName.." "..service.FormatPlayer(target), {p})
+			Functions.Hint(`You don't have permission to {actionName} {service.FormatPlayer(target)}`, {p})
 			return false
 		end;
 	}

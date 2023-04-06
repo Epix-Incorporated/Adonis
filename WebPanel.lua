@@ -126,8 +126,8 @@ return function(Vargs)
 			end
 		end
 
-		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #game.Players:GetPlayers()
-		stats.MaxPlayers = game.Players.MaxPlayers
+		stats.PlayerCount = #service.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #service.Players:GetPlayers()
+		stats.MaxPlayers = service.Players.MaxPlayers
 		stats.ServerStartTime = server.ServerStartTime
 		stats.ServerSpeed = math.min(frames/60, 1) * 100
 		stats.Admins = admins
@@ -153,12 +153,12 @@ return function(Vargs)
 			local newaliases = {}
 
 			for _, alias in aliases do
-				Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
+				Admin.CommandCache[string.lower(`{command.Prefix}{alias}`)] = nil
 			end
 
 			for _, alias in CachedAliases[index] do
 				table.insert(newaliases, alias)
-				Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+				Admin.CommandCache[string.lower(`{command.Prefix}{alias}`)] = index
 			end
 
 			command.Commands = newaliases
@@ -187,17 +187,17 @@ return function(Vargs)
 		-- Remove old aliases from command cache
 		for _, alias in aliases do
 			if command.Prefix then
-				Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
+				Admin.CommandCache[string.lower(`{command.Prefix}{alias}`)] = nil
 			end
 		end
 
 		if CachedAliases[index] then
 			for _, alias in CachedAliases[index] do
-				if not table.find(v.aliases, "-"..alias) then
+				if not table.find(v.aliases, `-{alias}`) then
 					table.insert(newaliases, alias)
 
 					if command.Prefix then
-						Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+						Admin.CommandCache[string.lower(`{command.Prefix}{alias}`)] = index
 					end
 				end
 			end
@@ -205,14 +205,14 @@ return function(Vargs)
 		for _, alias in v.aliases do
 			if string.sub(alias, 1, 1) ~= "-" then
 				table.insert(newaliases, alias)
-				Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+				Admin.CommandCache[string.lower(`{command.Prefix}{alias}`)] = index
 			end
 		end
 
 		command.Commands = newaliases
 
 		if v.level ~= "Default" then
-			rawset(command, "AdminLevel", "WebPanel"..v.level)
+			rawset(command, "AdminLevel", `WebPanel{v.level}`)
 			setmetatable(command, {
 				WebPanel = true,
 				__index = function(_, ind)
@@ -233,9 +233,9 @@ return function(Vargs)
 		for i, v in data.CommandOverrides do
 			didrun = true
 
-			local index, command = Admin.GetCommand(Settings.Prefix..i)
+			local index, command = Admin.GetCommand(`{Settings.Prefix}{i}`)
 			if not index or not command then
-				index,command = Admin.GetCommand(Settings.PlayerPrefix..i)
+				index,command = Admin.GetCommand(`{Settings.PlayerPrefix}{i}`)
 			end
 
 			if index and command then
@@ -442,8 +442,8 @@ return function(Vargs)
 							v.command = tostring(v.command)
 						end
 
-						warn("WebPanel executed command from Web Panel: " .. tostring(v.command))
-						Logs:AddLog("Script", "WebPanel Executed command: " .. tostring(v.command))
+						warn(`WebPanel executed command from Web Panel: {v.command}`)
+						Logs:AddLog("Script", `WebPanel Executed command: {v.command}`)
 
 						Process.Command(fakePlayer, v.command, {
 							AdminLevel = 900,
@@ -475,11 +475,11 @@ return function(Vargs)
 				continue
 			end
 
-			local code, msg = tostring(res.StatusCode), tostring(res.StatusMessage)
-
 			if code ~= 520 and code ~= 524 then
-				Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
-				Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
+				local errorMessage = string.format("WebPanel Polling Error: %* (%*)", res.StatusMessage, res.StatusCode)
+
+				Logs:AddLog("Script", errorMessage)
+				Logs:AddLog("Errors", errorMessage)
 				break
 			elseif code == 520 then
 				task.wait(5) --After the server restarts we want to make sure that it has time to inititate everything

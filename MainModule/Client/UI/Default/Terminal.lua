@@ -57,7 +57,7 @@ return function(data, env)
 				local com = textbox.Text
 				local ret
 				textbox.Text = ""
-				out(">"..com,termLines)
+				out(`>{com}`,termLines)
 				ret = client.Remote.Get("Terminal",com,{
 					Time = time();
 				})
@@ -76,6 +76,8 @@ return function(data, env)
 			wait(0.1)
 		end)
 	end)
+
+	out(string.format("Adonis Terminal [%s]", string.match(client.Changelog[5], "%[(.+)%].+")), termLines)
 	
 	gTable = window.gTable
 	window:Ready()
