@@ -10329,7 +10329,7 @@ return function(data, env)
 				if product_info.AssetTypeId == 3 then
 					table.insert(availableSongLists[tab.Name], v)
 					frame:Add("TextButton", {
-						Text = `  {num + 1)}) {success and product_info.Name or `[ERROR] {v.Name}`}`;
+						Text = `  {num + 1}) {success and product_info.Name or `[ERROR] {v.Name}`}`;
 						ToolTip = `Name: {v.Name} | ID: {v.ID}`;
 						Size = UDim2.new(1, 0, 0, 25);
 						Position = UDim2.new(0, 0, 0, num*25);
