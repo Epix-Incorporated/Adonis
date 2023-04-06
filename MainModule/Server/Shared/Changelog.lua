@@ -28,6 +28,7 @@ return {
 	"(Git/P3tray) Added a chair intolerance to :massbring. (#935)";
 	"(Git/EgizianoEG) Fix for the CountryList commands or \"!countries\" command (Not working as expected and gives an error upon execution). (#938)";
 	"(Git/EgizianoEG) Fix for the noclip argument for the \":fly\" command (#939)";
+	"(Git/EgizianoEG) Fix for \":noclip\" command and improve of the readability (#941)";
 	"(Git/EgizianoEG) Fix for the \":hint\" & \":h\" commands (Not visible while using Unity theme (#943)";
 	"(Git/EgizianoEG) Fix for \"Unity\" theme. Window Gui is creating unnecessary instances (#944)";
 	"(Git/EasternBloxxer) Fix console cursor being very hard to see (#948)";
@@ -88,6 +89,9 @@ return {
 	"(Git/ccuser44) Changed NoEnv from an XML to a JSON (#1044)";
 	"(Git/ccuser44) Fixed breaking typo (#1046)";
 	"(Git/ccuser44) Fixed bugs in nightly (#1047)";
+	"(Git/L8X) Add more exploit functions to output check (#1048)";
+	"(Git/LiveFireExercise) Update GRP command (#1049)";
+	"(Git/LiveFireExercise) Adonis Changelog and version update (#1050)";
 	"Fixed unranking non-ingame users";
 	"Disabled AutoLocalize for GUI objects";
 	"Added settings.SilentCommandDenials to avoid notifying users when they can't run a command (#836)";
