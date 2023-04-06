@@ -51,7 +51,7 @@ return function(Vargs, GetEnv)
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(":: Adonis Anti Cheat ::\n".. tostring(info)) end)
+			pcall(function()service.UnWrap(p):Kick(`:: Adonis Anti Cheat ::\n{info}`) end)
 
 			task.wait(1)
 
@@ -59,11 +59,11 @@ return function(Vargs, GetEnv)
 			pcall(service.Delete, p)
 
 			Logs.AddLog("Script",{
-				Text = "Server removed "..tostring(p);
+				Text = `Server removed {p}`;
 				Desc = info;
 			})
 		end;
-
+    
 		CheckAllClients = function()
 			--// Check if clients are alive
 			if Settings.CheckClients and server.Running then
@@ -78,7 +78,7 @@ return function(Vargs, GetEnv)
 						local client = Remote.Clients[key]
 						if client and client.LastUpdate and client.PlayerLoaded then
 							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-								Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
+								Anti.Detected(p, "Kick", `Client Not Responding [>{Anti.ClientTimeoutLimit} seconds]`)
 							end
 						end
 					end
@@ -112,7 +112,7 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not success then
-					warn("Failed to check validity of player's name, reason: ".. tostring(err))
+					warn(`Failed to check validity of player's name, reason: {err}`)
 				end
 			end
 		end;
@@ -128,10 +128,10 @@ return function(Vargs, GetEnv)
 			local info = string.gsub(tostring(info), "\n", "")
 
 			if Anti.KickedPlayers[player] then
-				player:Kick(":: Adonis Anti Cheat ::\n"..info)
+				player:Kick(`:: Adonis Anti Cheat ::\n{info}`)
 				return
 			elseif service.RunService:IsStudio() then
-				warn("ANTI-EXPLOIT: ".. player.Name .." ".. action .." ".. info)
+				warn(`ANTI-EXPLOIT: {player.Name} {action} {info}`)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
@@ -167,19 +167,19 @@ return function(Vargs, GetEnv)
 			end
 
 			Logs.AddLog(Logs.Script,{
-				Text = "AE Detected "..tostring(player);
-				Desc = "The Anti-Exploit system detected strange activity from "..tostring(player);
+				Text = `AE Detected {player}`;
+				Desc = `The Anti-Exploit system detected strange activity from {player}`;
 				Player = player;
 			})
 
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(string.sub(info, 1, 50)) .. " (Mouse over for full info)";
+				Text = `[Action: {action} User: ({player})] {string.sub(info, 1, 50)} (Mouse over for full info)`;
 				Desc = tostring(info);
 				Player = player;
 			})
 
 			if Settings.AENotifs == true or Settings.ExploitNotifications == true then -- AENotifs for old loaders
-				local debounceIndex = tostring(action)..tostring(player)..tostring(info)
+				local debounceIndex = `{action}{player}{info}`
 				if os.clock() < antiNotificationResetTick then
 					antiNotificationDebounce = {}
 					antiNotificationResetTick = os.clock() + 60
@@ -206,7 +206,7 @@ return function(Vargs, GetEnv)
 								string.sub(info, 1, 50)
 							);
 							Time = 30;
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}exploitlogs')`);
 						})
 					end
 				end

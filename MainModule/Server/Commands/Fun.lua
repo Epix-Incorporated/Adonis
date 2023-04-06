@@ -208,7 +208,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor"};--//add more :)
+			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor", "freeadmin"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -316,7 +316,7 @@ return function(Vargs, env)
 
 						local tool = service.New("Tool", {
 							Name = targetName;
-							ToolTip = "@"..targetName.." as a tool";
+							ToolTip = `@{targetName} as a tool`;
 						})
 						local handle = service.New("Part", {
 							Parent = tool;
@@ -377,18 +377,18 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					if not char then
-						Functions.Hint(service.FormatPlayer(v).." has no character", {plr})
+						Functions.Hint(`{service.FormatPlayer(v)} has no character`, {plr})
 						continue
 					end
 					if char.Parent and char.Parent:IsA("Tool") then
-						Functions.Hint(service.FormatPlayer(v).." is already a doll", {plr})
+						Functions.Hint(`{service.FormatPlayer(v)} is already a doll`, {plr})
 						continue
 					end
 
 					Routine(function()
 						local tool = service.New("Tool", {
 							Name = v.Name;
-							ToolTip = service.FormatPlayer(v).." as a tool; converted using Adonis";
+							ToolTip = `{service.FormatPlayer(v)} as a tool; converted using Adonis`;
 						})
 						local handle = service.New("Part", {
 							Parent = tool;
@@ -582,7 +582,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(Settings.Prefix.."char", v.Name, "userid-698712377")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-698712377")
 				end
 			end
 		};
@@ -862,7 +862,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						Admin.RunCommand(Settings.Prefix.."noclip", v.Name)
+						Admin.RunCommand(`{Settings.Prefix}noclip`, v.Name)
 
 						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt:Destroy()
@@ -987,14 +987,14 @@ return function(Vargs, env)
 
 				local audio = Instance.new("Sound")
 				audio.Name = "Adonis_Snap"
-				audio.SoundId = "rbxassetid://".. 2231214507
+				audio.SoundId = "rbxassetid://2231214507"
 				audio.Looped = false
 				audio.Volume = 1
 				audio.PlayOnRemove = true
 
 				--[[local thanos = audio:Clone()
 				thanos.Name = "Adonis_Thanos"
-				thanos.SoundId = "rbxassetid://".. 2231229572
+				thanos.SoundId = "rbxassetid://2231229572"
 
 				thanos.Parent = service.SoundService
 				audio.Parent = service.SoundService
@@ -1172,13 +1172,13 @@ return function(Vargs, env)
 					end
 					local char = p.Character
 					if not char then
-						Functions.Hint(service.FormatPlayer(p).." does not have a character", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a character`, {plr})
 						continue
 					end
 					local torso = char:FindFirstChild("HumanoidRootPart")
 					local humanoid = char:FindFirstChildOfClass("Humanoid")
 					if not (torso and humanoid) then
-						Functions.Hint(service.FormatPlayer(p).." does not have a HumanoidRootPart/Humanoid", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
 					if char:FindFirstChild("ADONIS_UFO") then
@@ -1360,7 +1360,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local img = tostring(args[2])
-				if not img then error(args[2].." is not a valid ID") end
+				if not img then error(`{args[2]} is not a valid ID`) end
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "ScreenImage";
@@ -1379,7 +1379,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local img = tostring(args[2])
-				if not img then error(args[2].." is not a valid ID") end
+				if not img then error(`{args[2]} is not a valid ID`) end
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; video = args[2];})
 				end
@@ -1432,7 +1432,7 @@ return function(Vargs, env)
 				for i, p in players do
 					if not Admin.CheckAuthority(plr, p, "timeout") then
 						table.remove(players, i)
-						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Maze (insufficient permission level)", {plr})
+						Functions.Hint(`Unable to send {service.FormatPlayer(p)} to The Maze (insufficient permission level)`, {plr})
 					end
 				end
 				service.TeleportService:TeleportAsync(280846668, players)
@@ -1484,13 +1484,13 @@ return function(Vargs, env)
 					end
 					local char = p.Character
 					if not char then
-						Functions.Hint(service.FormatPlayer(p).." does not have a character", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a character`, {plr})
 						continue
 					end
 					local torso = char:FindFirstChild("HumanoidRootPart")
 					local humanoid = char:FindFirstChildOfClass("Humanoid")
 					if not (torso and humanoid) then
-						Functions.Hint(service.FormatPlayer(p).." does not have a HumanoidRootPart/Humanoid", {plr})
+						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
 					if char:FindFirstChild("ADONIS_VAN") then
@@ -1914,8 +1914,8 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-							Admin.RunCommand(Settings.Prefix.."pants", v.Name, "233373970")
-							Admin.RunCommand(Settings.Prefix.."shirt", v.Name, "133078195")
+							Admin.RunCommand(`{Settings.Prefix}pants`, v.Name, "233373970")
+							Admin.RunCommand(`{Settings.Prefix}shirt`, v.Name, "133078195")
 
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Accoutrement") or v:IsA("CharacterMesh") then
@@ -1923,10 +1923,10 @@ return function(Vargs, env)
 								end
 							end
 
-							Admin.RunCommand(Settings.Prefix.."hat", v.Name, "20011951")
+							Admin.RunCommand(`{Settings.Prefix}hat`, v.Name, "20011951")
 
 							local sound = service.New("Sound", v.Character.HumanoidRootPart)
-							sound.SoundId = "http://www.roblox.com/asset/?id="..130767645
+							sound.SoundId = "http://www.roblox.com/asset/?id=130767645"
 							task.wait(0.5)
 							sound:Play()
 						end
@@ -2036,11 +2036,11 @@ return function(Vargs, env)
 						local hum=v.Character:FindFirstChild("Humanoid")
 						if not hum then return end
 						--Remote.Send(v, "Function", "Effect", "dance")
-						Admin.RunCommand(Settings.Prefix.."sparkles", v.Name, color)
-						Admin.RunCommand(Settings.Prefix.."fire", v.Name, color)
-						Admin.RunCommand(Settings.Prefix.."nograv", v.Name)
-						Admin.RunCommand(Settings.Prefix.."smoke", v.Name, color)
-						Admin.RunCommand(Settings.Prefix.."spin", v.Name)
+						Admin.RunCommand(`{Settings.Prefix}sparkles`, v.Name, color)
+						Admin.RunCommand(`{Settings.Prefix}fire`, v.Name, color)
+						Admin.RunCommand(`{Settings.Prefix}nograv`, v.Name)
+						Admin.RunCommand(`{Settings.Prefix}smoke`, v.Name, color)
+						Admin.RunCommand(`{Settings.Prefix}spin`, v.Name)
 						repeat hum.PlatformStand = true wait() until not hum or hum == nil or hum.Parent == nil
 					end)
 				end
@@ -2246,7 +2246,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hatpets"};
 			Args = {"player", "number[50 MAX]/destroy"};
-			Description = "Gives the target player(s) hat pets, controlled using the "..Settings.PlayerPrefix.."pets command.";
+			Description = `Gives the target player(s) hat pets, controlled using the {Settings.PlayerPrefix}pets command.`;
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2338,7 +2338,7 @@ return function(Vargs, env)
 						end
 					end
 				else
-					Functions.Hint("You don't have any hat pets! If you are an admin use the "..Settings.Prefix.."hatpets command to get some", {plr})
+					Functions.Hint(`You don't have any hat pets! If you are an admin use the {Settings.Prefix}hatpets command to get some`, {plr})
 				end
 			end
 		};
@@ -2565,7 +2565,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					cPcall(function()
-						Admin.RunCommand(Settings.Prefix.."freeze", v.Name)
+						Admin.RunCommand(`{Settings.Prefix}freeze`, v.Name)
 						local char = v.Character
 						local zeus = service.New("Model", char)
 						local cloud = service.New("Part", zeus)
@@ -2730,7 +2730,7 @@ return function(Vargs, env)
 						local human = plr.Character:FindFirstChildOfClass("Humanoid")
 
 						if not human then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
+							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
 							return
 						end
 
@@ -2779,7 +2779,7 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = "Cannot support R15 for "..plr.Name.." [Dog Transformation Error]"})
+							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `Cannot support R15 for {plr.Name} [Dog Transformation Error]`})
 						end
 					end
 				end
@@ -2824,8 +2824,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local headMesh = character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2895,8 +2895,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local headMesh = v.Character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2966,8 +2966,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local headMesh = v.Character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -3041,8 +3041,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local head = v.Character:FindFirstChild("Head")
 					local headMesh = head:FindFirstChild("Mesh")
@@ -3114,8 +3114,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local head = v.Character:FindFirstChild("Head")
 					local headMesh = head:FindFirstChild("Mesh")
@@ -3192,8 +3192,8 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
-					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
+					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
+					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
 
 					local head = v.Character:FindFirstChild("Head")
 					local headMesh = head:FindFirstChild("Mesh")
@@ -3270,7 +3270,7 @@ return function(Vargs, env)
 							})
 							Functions.NewParticle(p, "Trail", {
 								Color = colorSequence;
-								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
+								Texture = tonumber(args[2]) and `rbxassetid://{args[2]}`;
 								TextureMode = "Stretch";
 								TextureLength = 2;
 								Attachment0 = attachment0;
@@ -3339,7 +3339,7 @@ return function(Vargs, env)
 					if torso then
 						Functions.NewParticle(torso, "ParticleEmitter", {
 							Name = "PARTICLE";
-							Texture = "rbxassetid://".. Functions.GetTexture(args[2]);
+							Texture = `rbxassetid://{Functions.GetTexture(args[2])}`;
 							Size = NumberSequence.new({
 								NumberSequenceKeypoint.new(0, 0);
 								NumberSequenceKeypoint.new(.1,.25,.25);
@@ -3625,7 +3625,7 @@ return function(Vargs, env)
 					for _, v in players do
 						table.insert(t, v.Name)
 					end
-					Admin.RunCommand(Settings.Prefix.."package "..table.concat(t, ",").." 295")
+					Admin.RunCommand(`{Settings.Prefix}package {table.concat(t, ",")} 295`)
 				end
 			end
 		};
@@ -3761,7 +3761,7 @@ return function(Vargs, env)
 					num = 1
 					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
 				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
-					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 (size multiplier) went over the size limit]", {plr})
+					Functions.Hint(`Size changed to the maximum {num} [Argument #2 (size multiplier) went over the size limit]`, {plr})
 				end
 
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -3769,7 +3769,7 @@ return function(Vargs, env)
 					local human = char and char:FindFirstChildOfClass("Humanoid")
 
 					if not human then
-						Functions.Hint("Cannot resize "..service.FormatPlayer(v).."'s character: humanoid and/or character doesn't exist!", {plr})
+						Functions.Hint(`Cannot resize {service.FormatPlayer(v)}'s character: humanoid and/or character doesn't exist!`, {plr})
 						continue
 					end
 
@@ -3887,8 +3887,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					service.StartLoop(v.UserId.."LOOPFLING", 2, function()
-						Admin.RunCommand(Settings.Prefix.."fling", v.Name)
+					service.StartLoop(`{v.UserId}LOOPFLING`, 2, function()
+						Admin.RunCommand(`{Settings.Prefix}fling`, v.Name)
 					end)
 				end
 			end
@@ -3903,7 +3903,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					service.StopLoop(v.UserId.."LOOPFLING")
+					service.StopLoop(`{v.UserId}LOOPFLING`)
 				end
 			end
 		};
@@ -3923,7 +3923,7 @@ return function(Vargs, env)
 						if torso then
 							Functions.UnCape(v)
 							torso.CFrame = CFrame.new(dist, dist+10, dist)
-							Admin.RunCommand(Settings.Prefix.."noclip", v.Name)
+							Admin.RunCommand(`{Settings.Prefix}noclip`, v.Name)
 						end
 					end
 				end
@@ -3943,7 +3943,7 @@ return function(Vargs, env)
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
 						local pTorso = plr.Character:FindFirstChild("HumanoidRootPart")
 						if torso and pTorso and plr ~= v then
-							Admin.RunCommand(Settings.Prefix.."clip", v.Name)
+							Admin.RunCommand(`{Settings.Prefix}clip`, v.Name)
 							task.wait(0.3)
 							torso.CFrame = pTorso.CFrame*CFrame.new(0, 0, 5)
 						else
@@ -4406,7 +4406,7 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
 
-				assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+				assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Functions.PlayAnimation(v , args[2])
@@ -4427,7 +4427,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507777826" -- Default R15 animation
@@ -4445,11 +4445,11 @@ return function(Vargs, env)
 									found = true
 									local walkAnimation = v2:FindFirstChildOfClass("Animation")
 									if walkAnimation then
-										walkAnimation.AnimationId = "rbxassetid://" .. animId
+										walkAnimation.AnimationId = `"rbxassetid://{animId}`
 									else
 										local walkAnimation = Instance.new("Animation")
 										walkAnimation.Name = "WalkAnim" -- Name actually doesn't matter, but I just name it like the default one.
-										walkAnimation.AnimationId = "rbxassetid://" .. animId
+										walkAnimation.AnimationId = `"rbxassetid://{animId}`
 										walkAnimation.Parent = v2
 									end
 								end
@@ -4479,7 +4479,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507767714"
@@ -4497,11 +4497,11 @@ return function(Vargs, env)
 									found = true
 									local runAnimation = v2:FindFirstChildOfClass("Animation")
 									if runAnimation then
-										runAnimation.AnimationId = "rbxassetid://" .. animId
+										runAnimation.AnimationId = `"rbxassetid://{animId}`
 									else
 										local runAnimation = Instance.new("Animation")
 										runAnimation.Name = "RunAnim"
-										runAnimation.AnimationId = "rbxassetid://" .. animId
+										runAnimation.AnimationId = `"rbxassetid://{animId}`
 										runAnimation.Parent = v2
 									end
 								end
@@ -4531,7 +4531,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507765000"
@@ -4549,11 +4549,11 @@ return function(Vargs, env)
 									found = true
 									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
 									if jumpAnimation then
-										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
 									else
 										local jumpAnimation = Instance.new("Animation")
 										jumpAnimation.Name = "JumpAnim"
-										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
 										jumpAnimation.Parent = v2
 									end
 								end
@@ -4583,7 +4583,7 @@ return function(Vargs, env)
 				local animId
 
 				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
 					animId = args[2]
 				elseif args[2] == "R15" then
 					animId = "507767968"
@@ -4601,11 +4601,11 @@ return function(Vargs, env)
 									found = true
 									local fallAnimation = v2:FindFirstChildOfClass("Animation")
 									if fallAnimation then
-										fallAnimation.AnimationId = "rbxassetid://" .. animId
+										fallAnimation.AnimationId = `rbxassetid://{animId}`
 									else
 										local fallAnimation = Instance.new("Animation")
 										fallAnimation.Name = "FallAnim"
-										fallAnimation.AnimationId = "rbxassetid://" .. animId
+										fallAnimation.AnimationId = `rbxassetid://{animId}`
 										fallAnimation.Parent = v2
 									end
 								end
@@ -4723,9 +4723,9 @@ return function(Vargs, env)
 				r, g, b = tonumber(r), tonumber(g), tonumber(b)
 				if not r or not g or not b then error("Invalid Input") end
 				local num1, num2, num3 = r, g, b
-				num1 = "-"..num1.."00000"
-				num2 = "-"..num2.."00000"
-				num3 = "-"..num3.."00000"
+				num1 = `-{num1}00000`
+				num2 = `-{num2}00000`
+				num3 = `-{num3}00000`
 				if args[2] then
 					for i, v in service.GetPlayers(plr, args[2]) do
 						Remote.SetLighting(v, "FogColor", Color3.new(tonumber(num1), tonumber(num2), tonumber(num3)))
@@ -4753,7 +4753,7 @@ return function(Vargs, env)
 				for i, v in {"Ft", "Bk", "Lf", "Rt", "Up", "Dn"} do
 					local img = args[i] or args[1]
 					if img --[[and (v ~= "Dn" or args[6])]] then
-						sky["Skybox"..v] = tonumber(img) and ("rbxassetid://"..img) or img
+						sky[`Skybox{v}`] = tonumber(img) and (`rbxassetid://{img}`) or img
 					end
 				end
 				if args[7] and args[7]:lower() == "false" then
@@ -5015,7 +5015,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(Settings.Prefix.."char", v.Name, "51310503")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-51310503")
 				end
 			end
 		};
@@ -5029,7 +5029,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(Settings.Prefix.."char", v.Name, "userid-1237666")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-1237666")
 				end
 			end
 		};
@@ -5151,7 +5151,7 @@ return function(Vargs, env)
 					local sound = service.New("Sound")
 					sound.Name = "Part_Sound"
 					sound.Looped = not noloop
-					sound.SoundId = "rbxassetid://"..soundid
+					sound.SoundId = `rbxassetid://{soundid}`
 					sound.Volume = volume
 					sound.EmitterSize = soundrange
 					sound.PlaybackSpeed = pitch
@@ -5227,7 +5227,7 @@ return function(Vargs, env)
 								end
 
 								prevname = spart.Name
-								sound.SoundId = "rbxassetid://"..spart.Name
+								sound.SoundId = `rbxassetid://{spart.Name}`
 								task.wait(2)
 							elseif not Success then
 								spart.Name = prevname

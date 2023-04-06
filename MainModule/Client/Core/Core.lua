@@ -165,7 +165,7 @@ return function(Vargs, GetEnv)
 
 					if not Core.Key then
 						log("~! Getting key from server")
-						Remote.Fire(client.DepsName.."GET_KEY")
+						Remote.Fire(`{client.DepsName}GET_KEY`)
 					end
 				end
 			end
@@ -263,9 +263,9 @@ return function(Vargs, GetEnv)
 											return targ[inde]
 										end
 									elseif API_Special[inde] == false then
-										error("Access Denied: "..tostring(inde))
+										error(`Access Denied: {inde}`)
 									else
-										error("Could not find "..tostring(inde))
+										error(`Could not find {inde}`)
 									end
 								end;
 								__newindex = function(tabl,inde,valu)

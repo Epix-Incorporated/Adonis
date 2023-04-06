@@ -73,15 +73,15 @@ return function(data, env)
 		for i, friend in ipairs(friendDictionary) do
 			if friend.UserName:sub(1, #filter):lower() == filter:lower() or friend.DisplayName:sub(1, #filter):lower() == filter:lower() then
 				local entry = scroller:Add("TextLabel", {
-					Text = "             "..(if friend.UserName == friend.DisplayName then friend.UserName else friend.DisplayName.." (@"..friend.UserName..")");
-					ToolTip = "Location: "..friend.LastLocation;
+					Text = `             {if friend.UserName == friend.DisplayName then friend.UserName else `{friend.DisplayName} (@{friend.UserName})`}`;
+					ToolTip = `Location: {friend.LastLocation}`;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, 0, 0, 30);
 					LayoutOrder = i;
 					TextXAlignment = "Left";
 				})
 				entry:Add("TextLabel", {
-					Text = " "..locationTypeToStr(friend.LocationType).."  ";
+					Text = ` {locationTypeToStr(friend.LocationType)}  `;
 					BackgroundTransparency = 1;
 					Size = UDim2.new(0, 120, 1, 0);
 					Position = UDim2.new(1, -120, 0, 0);
@@ -99,7 +99,7 @@ return function(data, env)
 		end
 		
 		scroller:ResizeCanvas(false, true, false, false, 5, 5)
-		window:SetTitle("Online Friends ("..#friendDictionary..")")
+		window:SetTitle(`Online Friends ({#friendDictionary})`)
 	end
 
 	search:GetPropertyChangedSignal("Text"):Connect(generate)

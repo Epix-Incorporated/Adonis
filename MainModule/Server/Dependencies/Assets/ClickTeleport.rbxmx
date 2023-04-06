@@ -24,7 +24,7 @@ local char = target.Character
 local humanoid = char:FindFirstChildOfClass("Humanoid")
 if not humanoid then tool:Destroy() return end
 
-tool.Name = mode.." "..target.Name
+tool.Name = `{mode} {target.Name}`
 
 local function onButton1Down(mouse)
 	if not target.Character or not target.Character:FindFirstChildOfClass("Humanoid") then

@@ -33,7 +33,7 @@ return function(data, env)
 				Position = UDim2.fromOffset(5, num*30);
 				BackgroundTransparency = 1;
 				TextXAlignment = "Left";
-				Text = "  "..(if hat.Name:sub(-9) == "Accessory" then hat.Name:sub(1, -10) else hat.Name);
+				Text = `  {if hat.Name:sub(-9) == "Accessory" then hat.Name:sub(1, -10) else hat.Name}`;
 				ToolTip = hat.ClassName;
 				Children = {
 					{
@@ -44,7 +44,7 @@ return function(data, env)
 						OnClick = function(self)
 							if not self.Active then return end
 							self.Active = false
-							client.Remote.Send("ProcessCommand", data.PlayerPrefix.."removehat"..data.SplitKey..hat.Name)
+							client.Remote.Send("ProcessCommand", `{data.PlayerPrefix}removehat{data.SplitKey}{hat.Name}`)
 							self.Parent:TweenSize(UDim2.fromOffset(0, 30), "Out", "Quint", 0.4)
 							task.wait(0.3)
 							if self and not hat then
@@ -58,14 +58,14 @@ return function(data, env)
 			})
 			num += 1
 		end
-		window:SetTitle("Hats ("..num..")")
+		window:SetTitle(`Hats ({num})`)
 		if num > 0 then
 			window:Add("TextButton", {
 				Size = UDim2.new(1, -10, 0, 25);
 				Position = UDim2.fromOffset(5, num*30 + 5);
 				Text = "Remove All";
 				OnClick = function()
-					client.Remote.Send("ProcessCommand", data.PlayerPrefix.."removehats")
+					client.Remote.Send("ProcessCommand", `{data.PlayerPrefix}removehats`)
 				end
 			})
 		end

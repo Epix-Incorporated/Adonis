@@ -43,7 +43,7 @@ return function(data, env)
 					Position = UDim2.fromOffset(5, num*30);
 					BackgroundTransparency = 1;
 					TextXAlignment = "Left";
-					Text = "  "..toolName;
+					Text = `  {toolName}`;
 				}):Add("TextButton", {
 					Size = UDim2.new(0, 80, 1, -4);
 					Position = UDim2.new(1, -82, 0, 2);
@@ -60,7 +60,7 @@ return function(data, env)
 								self.AutoButtonColor = true
 								self.Text = "Spawn"
 							end)
-							client.Remote.Send("ProcessCommand", data.Prefix.."give"..data.SplitKey..data.SpecialPrefix.."me"..data.SplitKey..toolName)
+							client.Remote.Send("ProcessCommand", `{data.Prefix}give{data.SplitKey}{data.SpecialPrefix}me{data.SplitKey}{toolName}`)
 						end
 					end
 				})
@@ -80,7 +80,7 @@ return function(data, env)
 			Size = UDim2.new(1, -10, 0, 50);
 			Position = UDim2.fromOffset(5, 5);
 			TextWrapped = true;
-			Text = "Here is a list of tools saved in the server via the "..data.Prefix.."addtool command. They can be distributed normally using "..data.Prefix.."give."
+			Text = `Here is a list of tools saved in the server via the {data.Prefix}addtool command. They can be distributed normally using {data.Prefix}give.`
 		}):Add("UIPadding", {
 			PaddingLeft = UDim.new(0, 5); PaddingRight = UDim.new(0, 5); PaddingTop = UDim.new(0, 5); PaddingBottom = UDim.new(0, 5);
 		})
@@ -99,8 +99,8 @@ return function(data, env)
 					Position = UDim2.fromOffset(5, num*30);
 					BackgroundTransparency = 1;
 					TextXAlignment = "Left";
-					Text = "  "..v.ToolName;
-					ToolTip = "Added by: "..v.AddedBy;
+					Text = `  {v.ToolName}`;
+					ToolTip = `Added by: {v.AddedBy}`;
 				}):Add("TextButton", {
 					Size = UDim2.new(0, 80, 1, -4);
 					Position = UDim2.new(1, -82, 0, 2);
@@ -117,7 +117,7 @@ return function(data, env)
 								self.AutoButtonColor = true
 								self.Text = "Spawn"
 							end)
-							client.Remote.Send("ProcessCommand", data.Prefix.."give"..data.SplitKey..data.SpecialPrefix.."me"..data.SplitKey..v.ToolName)
+							client.Remote.Send("ProcessCommand", `{data.Prefix}give{data.SplitKey}{data.SpecialPrefix}me{data.SplitKey}{v.ToolName}`)
 						end
 					end
 				})
@@ -144,7 +144,7 @@ return function(data, env)
 									generateAdded()
 								end
 							end)
-							client.Remote.Send("ProcessCommand", data.Prefix.."clearaddedtools")
+							client.Remote.Send("ProcessCommand", `{data.Prefix}clearaddedtools`)
 							wait(1)
 							if not refreshed then
 								refreshed = true
@@ -204,8 +204,8 @@ return function(data, env)
 			for _, v: Tool in ipairs(tools) do
 				if v and v:IsA("BackpackItem") then
 					inv:Add("TextLabel", {
-						Text = " "..v.Name;
-						ToolTip = "Class: "..v.ClassName..(v.ToolTip ~= "" and (" | ToolTip: "..v.ToolTip) or "");
+						Text = ` {v.Name}`;
+						ToolTip = `Class: {v.ClassName}{v.ToolTip ~= "" and ` | ToolTip: {v.ToolTip}` or ""}`;
 						TextXAlignment = "Left";
 						TextColor3 = v.Parent == char and Color3.fromRGB(170, 255, 255) or Color3.new(1, 1, 1);
 						Size = UDim2.new(1, -10, 0, 26);
@@ -268,7 +268,7 @@ return function(data, env)
 			local backpack = plr:FindFirstChildOfClass("Backpack")
 			local entry = plrs:Add("TextButton", {
 				Size = UDim2.new(1, 0, 0, 35);
-				Text = "  "..plr.Name;
+				Text = `  {plr.Name}`;
 				ToolTip = service.FormatPlayer(plr);
 				TextXAlignment = "Left";
 				OnClick = function(self)
@@ -435,7 +435,7 @@ return function(data, env)
 				}) do
 				tab:Add("TextLabel", {
 					Name = "Info";
-					Text = "  "..v[1]..": ";
+					Text = `  {v[1]}: `;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -135, 0, 30);
 					Position = UDim2.new(0, 0, 0, (30*(i-1))+30);

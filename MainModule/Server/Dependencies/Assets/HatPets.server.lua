@@ -9,9 +9,9 @@ if hats then
 				local bpos = hat.bpos
 				hat.CanCollide = false
 	
-				if events[hat.Name..'hatpet'] then
-					events[hat.Name..'hatpet']:Disconnect()
-					events[hat.Name..'hatpet'] = nil
+				if events[`{hat.Name}hatpet`] then
+					events[`{hat.Name}hatpet`]:Disconnect()
+					events[`{hat.Name}hatpet`] = nil
 				end
 	
 				if mode.Value=='Follow' then
@@ -22,7 +22,7 @@ if hats then
 					hat.CanCollide = true
 				elseif mode.Value=='Attack' then
 					bpos.position = target.Value.Position+Vector3.new(math.random(-3,3),math.random(-3,3),math.random(-3,3))
-					events[hat.Name..'hatpet'] = hat.Touched:Connect(function(p) 
+					events[`{hat.Name}hatpet`] = hat.Touched:Connect(function(p) 
 						if not tonumber(p.Name) and game:GetService("Players"):GetPlayerFromCharacter(p.Parent) then 
 							p.Parent.Humanoid:TakeDamage(1) 
 						end 

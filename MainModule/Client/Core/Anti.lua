@@ -418,7 +418,7 @@ return function(Vargs, GetEnv)
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
 					elseif value then
-						Detected(action, method.." detector detected")
+						Detected(action, `{method} detector detected`)
 					end
 				end
 

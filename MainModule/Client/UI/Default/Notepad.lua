@@ -96,6 +96,6 @@ return function(data, env)
 	window:Ready()
 
 	content:GetPropertyChangedSignal("Text"):Connect(function()
-		charCount.Text = tostring(#content.Text).." characters"
+		charCount.Text = `{#content.Text} characters`
 	end)
 end

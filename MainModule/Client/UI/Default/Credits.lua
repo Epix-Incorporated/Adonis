@@ -58,7 +58,7 @@ return function(data, env)
 			for _, credit in ipairs(require(client.Shared.Credits)[tab.Name]) do
 				if (credit.Text:sub(1, #filter):lower() == filter:lower()) or (tab.Name == "GitHub" and credit.Text:sub(9, 8+#filter):lower() == filter:lower()) then
 					scroller:Add("TextLabel", {
-						Text = "  "..credit.Text.." ";
+						Text = `  {credit.Text} `;
 						ToolTip = credit.Desc;
 						BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 						Size = UDim2.new(1, 0, 0, 26);

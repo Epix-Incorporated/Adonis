@@ -373,7 +373,7 @@ return function(data, env)
 		Routine(function()
 			wait(0.5)
 			for i = 1, #message do 
-				msg.Text = msg.Text .. message:sub(i,i) 
+				msg.Text = `{msg.Text}{message:sub(i,i)}` 
 				wait(0.05) 
 			end 
 		end)
@@ -399,7 +399,7 @@ return function(data, env)
 	else
 		wait(0.5)
 		for i = 1, #message do 
-			msg.Text = msg.Text .. message:sub(i,i) 
+			msg.Text = `{msg.Text}{message:sub(i,i)}`
 			wait(0.05) 
 		end 
 		wait(tim or 5) 

@@ -474,7 +474,7 @@ return function(Vargs, GetEnv)
 		ArgsToString = function(args)
 			local str = ""
 			for i, arg in args do
-				str ..= "Arg"..tostring(i)..": "..tostring(arg).."; "
+				str ..= `Arg{i}: {arg}; `
 			end
 			return str:sub(1, -3)
 		end;
@@ -536,7 +536,7 @@ return function(Vargs, GetEnv)
 				return {plr}
 			else
 				if argument:match("^##") then
-					error("String passed to GetPlayers is filtered: ".. tostring(argument), 2)
+					error(`String passed to GetPlayers is filtered: {argument}`, 2)
 				end
 
 				for s in argument:gmatch("([^,]+)") do
@@ -569,7 +569,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match("^"..s) then
+							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{s}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -579,7 +579,7 @@ return function(Vargs, GetEnv)
 							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match("^"..s) then
+								if p and p.ClassName == "Player" and p.Name:lower():match(`^{s}`) then
 									table.insert(players, p)
 									plus()
 								end
@@ -602,8 +602,8 @@ return function(Vargs, GetEnv)
 
 								if plrCount == 0 and not options.DontError then
 									Remote.MakeGui(plr, "Output", {
-										Message = if not options.NoFakePlayer then "No user named '"..s.."' exists"
-											else "No players matching '"..s.."' were found!";
+										Message = if not options.NoFakePlayer then `No user named '{s}' exists`
+											else `No players matching '{s}' were found!`;
 									})
 								end
 							end
@@ -804,7 +804,7 @@ return function(Vargs, GetEnv)
 			local b = 'ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#'
 
 
-			data = gsub(data, '[^'..b..'=]', '')
+			data = gsub(data, `[^{b}=]`, '')
 			return (gsub(gsub(data, '.', function(x)
 				if x == '=' then
 					return ''
@@ -889,7 +889,7 @@ return function(Vargs, GetEnv)
 
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-			data = gsub(data, '[^'..b..'=]', '')
+			data = gsub(data, `[^{b}=]`, '')
 			return (gsub(gsub(data, '.', function(x)
 				if x == '=' then
 					return ''
@@ -1242,7 +1242,7 @@ return function(Vargs, GetEnv)
 			local tab = {}
 			local str = ''
 
-			for arg in string.gmatch(msg,'([^'..key..']+)') do
+			for arg in string.gmatch(msg,`([^{key}]+)`) do
 				if #tab>=num then
 					break
 				elseif #tab>=num-1 then
@@ -1258,7 +1258,7 @@ return function(Vargs, GetEnv)
 
 		BasicSplit = function(msg,key)
 			local ret = {}
-			for arg in string.gmatch(msg,"([^"..key.."]+)") do
+			for arg in string.gmatch(msg,`([^{key}]+)`) do
 				table.insert(ret,arg)
 			end
 			return ret
@@ -1345,11 +1345,11 @@ return function(Vargs, GetEnv)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
-				player:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
+				player:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
 			end)
 
 			for _, v in service.Players:GetPlayers() do
-				v:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
+				v:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
 			end
 		end;
 
@@ -1497,7 +1497,7 @@ return function(Vargs, GetEnv)
 					elseif clothingType == "Pants" then "PantsTemplate"
 					elseif clothingType == "ShirtGraphic" then "Graphic"
 					else nil, "Invalid clothing type")
-				] = "rbxassetid://"..id;
+				] = `rbxassetid://{id}`;
 			})
 		end;
 
