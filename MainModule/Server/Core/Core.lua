@@ -120,6 +120,7 @@ return function(Vargs, GetEnv)
 		Connections = {};
 		BytecodeCache = {};
 		LastEventValue = 1;
+		SavedPlayerData = {};
 
 		Variables = {
 			TimeBans = {};
@@ -654,6 +655,8 @@ return function(Vargs, GetEnv)
 								PlayerData[i] = v
 							end
 						end
+
+						Core.SavedPlayerData[p.UserId] = data
 					end
 				end
 
@@ -683,8 +686,14 @@ return function(Vargs, GetEnv)
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
-					if not Functions.LaxCheckMatch(Core.DefaultPlayerData(p), data) then
+					if Core.SavedPlayerData[p.UserId] and Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data) and Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId]) then
+						AddLog(Logs.Script, {
+							Text = "Didn't save data due to redundancy ".. p.Name;
+							Desc = "Player data was not saved to the datastore due to it being already saved.";
+						})
+					elseif not Functions.LaxCheckMatch(Core.DefaultPlayerData(p), data) or Core.SavedPlayerData[p.UserId] and not (Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data) or Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId])) then
 						Core.SetData(key, data)
+						Core.SavedPlayerData[p.UserId] = data
 						AddLog(Logs.Script, {
 							Text = `Saved data for {p.Name}`;
 							Desc = "Player data was saved to the datastore";

@@ -53,6 +53,7 @@ return function(data, env)
 	local Variables = client.Variables
 	local Deps = client.Deps
 	local Functions = client.Functions;
+	local keyCodeToName = Functions.KeyCodeToName;
 
 	local gTable
 	local window = UI.Make("Window", {
@@ -795,7 +796,6 @@ return function(data, env)
 			local inputBlock = false
 			local commandBox
 			local keyBox
-			local keyCodeToName = Functions.KeyCodeToName;
 			local binds = keyTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -1344,15 +1344,15 @@ return function(data, env)
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
 					Entry = "Keybind";
-					Value = Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode");
+					Value = Functions.KeyCodeToName(Enum.KeyCode[Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode") or "Unknown"].Value);
 					Function = function(toggle)
 						service.Debounce("CliSettingKeybinder", function()
-							local gotKey
+							local gotKey, visualName
 							toggle.Text = "Waiting..."
 							local event = service.UserInputService.InputBegan:Connect(function(InputObject)
 								local textbox = service.UserInputService:GetFocusedTextBox()
 								if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
-									gotKey = InputObject.KeyCode.Name
+									gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 								end
 							end)
 
@@ -1362,7 +1362,7 @@ return function(data, env)
 							event:Disconnect()
 							toggle.Text = "Saving.."
 							Remote.Get("UpdateClient", "CustomConsoleKey", Variables.CustomConsoleKey)
-							toggle.Text = gotKey
+							toggle.Text = visualName
 						end)
 					end
 				};

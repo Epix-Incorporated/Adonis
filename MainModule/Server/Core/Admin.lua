@@ -40,6 +40,8 @@ return function(Vargs, GetEnv)
 			--// Support for modern TextChatService
 			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and Settings.OverrideChatCallbacks then
 				local function onNewTextchannel(textchannel)
+					AddLog("Script", "Connected to textchannel: "..textchannel.Name)
+
 					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
 						if
 							chatMessage.Status == Enum.TextChatMessageStatus.Success
@@ -50,15 +52,9 @@ return function(Vargs, GetEnv)
 
 							if not player then
 								return true
-							end
-
-							-- // Hide chat commands?
-							if Admin.DoHideChatCmd(player, chatMessage.Text) then
+							elseif Admin.DoHideChatCmd(player, chatMessage.Text) then -- // Hide chat commands?
 								return false
-							end
-
-							-- // Mute handler
-							if Admin.IsMuted(player) then
+							elseif Admin.IsMuted(player) then -- // Mute handler
 								Remote.MakeGui(player, "Notification", {
 									Title = "You are muted!";
 									Message = "You are muted and cannot talk in the chat right now.";
@@ -74,6 +70,10 @@ return function(Vargs, GetEnv)
 								})
 
 								return false
+							end
+
+							if Variables.DisguiseBindings[textSource.UserId] then -- // Disguise command handler
+								chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
 							end
 
 							if Admin.SlowMode then
@@ -108,6 +108,8 @@ return function(Vargs, GetEnv)
 						task.spawn(onTextChannelsAdded, child)
 					end
 				end)
+
+				AddLog("Script", "TextChatService Handler Loaded")
 			end
 
 			--// Support for legacy Lua chat system

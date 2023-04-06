@@ -502,7 +502,7 @@ return function(Vargs, GetEnv)
 							audioLibFolder.Name = "ADONIS_AUDIOLIB"
 							audioLibFolder.Parent = service.SoundService
 						end
-						server.Functions.AudioLib = require(server.Shared.AudioLib).new(audioLibFolder)
+						server.Functions.AudioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
 					end
 
 					return server.Functions.AudioLib[args[1][1]](server.Functions.AudioLib, args[1][2])

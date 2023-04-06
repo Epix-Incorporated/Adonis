@@ -452,8 +452,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetChatService = function()
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120)
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120)
+			local isTextChat = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", isTextChat and 0.2 or 120)
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", isTextChat and 0.2 or 120)
 
 			if chatMod then
 				return require(chatMod)
@@ -1132,10 +1133,23 @@ return function(Vargs, GetEnv)
 			local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
 			local pos = torso.CFrame
 
-			local clone
+			local oldArchivable = char.Archivable
 			char.Archivable = true
-			clone = char:Clone()
-			char.Archivable = false
+			local rawClone = char:Clone()
+			char.Archivable = oldArchivable
+			local clone = Instance.new("Actor")
+
+			clone.PrimaryPart = rawClone.PrimaryPart
+			clone.WorldPivot = rawClone.WorldPivot
+			--clone:ScaleTo(rawClone:GetScale())
+
+			for k, v in ipairs(rawClone:GetAttributes()) do
+				clone:SetAttribute(k, v)
+			end
+
+			for _, v in ipairs(rawClone:GetChildren()) do
+				v.Parent = clone
+			end
 
 			for i = 1, num do
 				local new = clone:Clone()
@@ -1149,6 +1163,7 @@ return function(Vargs, GetEnv)
 				local anim = isR15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 
 				new.Name = player.Name
+				new.Archivable = false
 				new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0, math.rad((360/num)*i), 0) * CFrame.new((num*0.2)+5, 0, 0)
 
 				hum.WalkSpeed = speed
@@ -1166,7 +1181,9 @@ return function(Vargs, GetEnv)
 				brain.Disabled = false
 				new.Parent = workspace
 
-				task.wait()
+				if i % 5 == 1 then
+					task.wait()
+				end
 
 				event:Fire("SetSetting", {
 					Creator = player;
@@ -1247,14 +1264,6 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
-		CountTable = function(tab)
-			local num = 0
-			for i in tab do
-				num += 1
-			end
-			return num
-		end;
-
 		IsValidTexture = function(id)
 			local id = tonumber(id)
 			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
@@ -1277,10 +1286,6 @@ return function(Vargs, GetEnv)
 
 		Trim = function(str)
 			return string.match(str, "^%s*(.-)%s*$")
-		end;
-
-		Round = function(num)
-			return math.floor(num + 0.5)
 		end;
 
 		RoundToPlace = function(num, places)
@@ -1383,7 +1388,7 @@ return function(Vargs, GetEnv)
 					num += 1
 				end
 
-				return good and num == Functions.CountTable(match)
+				return good and num == service.CountTable(match)
 			end
 			return false
 		end;
@@ -1395,7 +1400,7 @@ return function(Vargs, GetEnv)
 				for k, v in match do
 					if type(v) == "table" and not Functions.LaxCheckMatch(check[k], v) then
 						return false
-					elseif check[k] ~= v then
+					elseif type(v) ~= "table" and check[k] ~= v then
 						return false
 					end
 				end
@@ -1541,5 +1546,7 @@ return function(Vargs, GetEnv)
 			end
 			return if allowNil then nil else BrickColor.random()
 		end;
+
+		NuclearExplode = require(server.Dependencies.FastNuke);
 	};
 end

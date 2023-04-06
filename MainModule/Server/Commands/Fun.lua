@@ -1773,67 +1773,18 @@ return function(Vargs, env)
 		Nuke = {
 			Prefix = Settings.Prefix;
 			Commands = {"nuke"};
-			Args = {"player"};
+			Args = {"player", "size"};
 			Description = "Nuke the target player(s)";
-			AdminLevel = "HeadAdmins";
+			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				local nukes = {}
-				local partsHit = {}
+				local size = tonumber(args[2]) or 100
 
-				for i, v in Functions.GetPlayers(plr, args[1]) do
-					local char = v.Character
-					local human = char and char:FindFirstChild("HumanoidRootPart")
-					if human then
-						local p = service.New("Part", {
-							Name = "ADONIS_NUKE";
-							Anchored = true;
-							CanCollide = false;
-							Shape = "Ball";
-							Size = Vector3.new(1, 1, 1);
-							Position = human.Position;
-							BrickColor = BrickColor.new("New Yeller");
-							Transparency = .5;
-							Reflectance = .2;
-							TopSurface = 0;
-							BottomSurface = 0;
-							Parent = workspace.Terrain;
-						})
-
-						p.Touched:Connect(function(hit)
-							if not partsHit[hit] then
-								partsHit[hit] = true
-								hit:BreakJoints()
-								service.New("Explosion", {
-									Position = hit.Position;
-									BlastRadius = 10000;
-									BlastPressure = math.huge;
-									Parent = workspace.Terrain;
-								})
-
-							end
-						end)
-
-						table.insert(Variables.Objects, p)
-						table.insert(nukes, p)
+				for _, v in Functions.GetPlayers(plr, args[1]) do
+					if v.Character and v.Character.PrimaryPart then
+						task.spawn(Functions.NuclearExplode, v.Character.PrimaryPart.Position, size, false, service.UnWrap(v))
 					end
 				end
-
-				for i = 1, 333 do
-					for i, v in nukes do
-						local curPos = v.CFrame
-						v.Size = v.Size + Vector3.new(3, 3, 3)
-						v.CFrame = curPos
-					end
-					task.wait(1/44)
-				end
-
-				for i, v in nukes do
-					v:Destroy()
-				end
-
-				nukes = nil
-				partsHit = nil
 			end
 		};
 

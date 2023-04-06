@@ -317,7 +317,7 @@ return function(Vargs, env)
 			Description = "Shows you the FPS (speed) of the server";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint(`The server FPS is {service.Round(service.Workspace:GetRealPhysicsFPS())}`, {plr})
+				Functions.Hint(`The server FPS is {math.round(service.Workspace:GetRealPhysicsFPS())}`, {plr})
 			end
 		};
 
@@ -1109,7 +1109,7 @@ return function(Vargs, env)
 			Hidden = true;
 			Function = function(plr: Player, args: {string})
 				local list = {}
-				for code, name in require(server.Shared.CountryRegionCodes) do
+				for code, name in require(server.Dependencies.CountryRegionCodes) do
 					table.insert(list, `{code} - {name}`)
 				end
 				table.sort(list)

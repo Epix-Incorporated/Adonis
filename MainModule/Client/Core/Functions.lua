@@ -240,10 +240,6 @@ return function(Vargs, GetEnv)
 			return table.concat(Res)
 		end;
 
-		Round = function(num)
-			return math.floor(num + 0.5)
-		end;
-
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
@@ -781,7 +777,7 @@ return function(Vargs, GetEnv)
 		MoveCapes = function()
 			service.StopLoop("CapeMover")
 			service.StartLoop("CapeMover",0.1,function()
-				if Functions.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
+				if service.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
 					for i,v in Variables.Capes do
@@ -834,12 +830,6 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end, true)
-		end;
-
-		CountTable = function(tab)
-			local count = 0
-			for _ in tab do count += 1 end
-			return count
 		end;
 
 		ClearAllInstances = function()
@@ -1041,7 +1031,13 @@ return function(Vargs, GetEnv)
 			if keyVal then
 				for _, e in Enum.KeyCode:GetEnumItems() do
 					if e.Value == keyVal then
-						return e.Name;
+						local name = service.UserInputService:GetStringForKeyCode(e)
+
+						if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
+							return e.Name
+						else
+							return name
+						end
 					end
 				end
 			end
