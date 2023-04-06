@@ -427,6 +427,92 @@ return function(Vargs)
 				"getnamecallmethod";
 				"setnamecallmethod";
 				"setfflag";
+				"getfflag";
+				"gethui";
+				"isreadonly";
+				"setreadonly";
+				"isfile";
+				"writefile";
+				"appendfile";
+				"delfile";
+				"readfile";
+				"loadfile";
+				"isfolder";
+				"makefolder";
+				"delfolder";
+				"listfiles";
+				"secure_call"; -- synapse specific (?)
+				"getsynasset"; -- synapse specific
+				"getcustomasset";
+				"cloneref";
+				"clonefunction";
+				"getspecialinfo";
+				"saveinstance";
+				"messagebox";
+				"protect_gui"; -- specific to synapse and smaller executors like sirhurt, temple, etc
+				"unprotect_gui"; -- specific to synapse and smaller executors like sirhurt, temple, etc
+				"rconsoleprint";
+				"rconsoleinfo";
+				"rconsolewarn";
+				"rconsoleerr";
+				"rconsoleclear";
+				"rconsolename";
+				"rconsoleinput";
+				"printconsole";
+				"checkcaller";
+				"dumpstring";
+				"islclosure";
+				"getscriptclosure";
+				"getscripthash";
+				"getcallingscript";
+				"getgenv";
+				"getsenv";
+				"getrenv";
+				"getmenv";
+				"gettenv"; -- script-ware specific
+				"identifyexecutor";
+				"getreg";
+				"getgc";
+				"getnilinstances";
+				"getconnections";
+				"getloadedmodules";
+				"firesignal";
+				"fireclickdetector";
+				"fireproximityprompt";
+				"firetouchinterest";
+				"setsimulationradius";
+				"getsimulationradius";
+				"sethiddenproperty";
+				"gethiddenproperty";
+				"setscriptable";
+				"isnetworkowner";
+				"setclipboard";
+				"getconstants";
+				"getconstant";
+				"setconstant";
+				"getupvalues";
+				"getupvalue";
+				"setupvalue";
+				"getprotos";
+				"getproto";
+				"setproto";
+				"getstack";
+				"setstack";
+				"getregistry";
+				"cache_replace"; -- synapse specific (?)
+				"cache_invalidate"; -- synapse specific (?)
+				"get_thread_identity"; -- synapse specific (?)
+				"set_thread_identity"; -- synapse specific (?)
+				"setthreadcontext";
+				"setidentity";
+				"is_cached"; -- synapse specific (?)
+				"write_clipboard"; -- synapse specific (?)
+				"replicatesignal";
+				"hooksignal";
+				"queue_on_teleport";
+				"is_beta"; -- synapse specific (?)
+				"create_secure_function";  -- synapse specific (?)
+				"run_secure_function";  -- synapse specific (?)
 				"Kill by Avexus#1234 initialized";
 				--"FilteringEnabled Kill"; -- // Disabled due to potential of having false flags
 				"Couldn't find target with input:";
