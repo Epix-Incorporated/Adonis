@@ -1,102 +1,181 @@
 ------------------------------------------
---------	Welcome to Adonis	----------
-------	Scroll down for settings	------
+--------   Welcome to Adonis!   ----------
+------   Scroll down for settings   ------
 ------------------------------------------
 
 
 ------------------------------------------
------------	   Help Section		----------
+-----------    Help  Section    ----------
 ------------------------------------------
 
 --[[
-	This is only here to help you when editing settings so you understand how they work.
-	And don't break something.
-	In case you don't know what Luau is; Luau is the scripting language Roblox uses...
-	so every script you see (such as this one) and pretty much any code on Roblox is
-	written in Luau.
-	Anything that looks like {} is known as a table.
-	Tables contain things, like the Luau version of a box.
-	An example of a table would be setting = {"John", "Mary", "Bill"}
-	You can have tables inside of tables, such in the case of setting = {{Group = 1234, Rank = 123, Type = "Admin"}}
-	Just like real boxes, tables can contain pretty much anything including other tables.
-	Note: Commas (,) as well as semicolons (;) can both be used to separate things inside a table.
-	Anything that looks like "Bob" is what's known as a string. Strings
-	are basically plain text; setting = "Bob" would be correct however
-	setting = Bob would not; because if it's not surrounded by quotes Luau will think
-	that Bob is a variable; Quotes indicate something is a string and therefore not a variable/number/code
-	Numbers do not use quotes. setting = 56
-	This green block of text you are reading is called a comment. It's like a message
-	from the programmer to anyone who reads their stuff. Anything in a comment will
-	not be seen by Luau when the script is run.
-	Built-In Permissions Levels:
-		Players - 0
-		Moderators - 100
-		Admins - 200
-		HeadAdmins - 300
-		Creators - 900
-	Note that when changing command permissions you MUST include the prefix;
-	So if you change the prefix to $ you would need to do $ff instead of :ff
-	------------------------------------------
-	------------	Trello		--------------
-	------------------------------------------
-	The Trello abilities of the script allow you to manage lists and permissions via
-	a Trello board; The following will guide you through the process of setting up a board;
-		1. Sign up for an account at http://trello.com
-		2. Create a new board
-			http://prntscr.com/b9xljn
-			http://prntscr.com/b9xm53
-		3. Get the board ID;
-			http://prntscr.com/b9xngo
-		4. Set settings.Trello_Primary to your board ID
-		5. Set settings.Trello.Enabled to true
-		6. Congrats! The board is ready to be used;
-		7. Create a list and add cards to it;
-			http://prntscr.com/b9xswk
-	- You can view lists in-game using :viewlist ListNameHere
-	Lists:
-		Moderators - Card Format: Same as settings.Moderators
-		Admins - Card Format: Same as settings.Admins
-		HeadAdmins - Card Format: Same as settings.HeadAdmins
-		Creators - Card Format: Same as settings.Creators
-		Banlist - Card Format: Same as settings.Banned
-		Mutelist - Card Format: Same as settings.Muted
-		Blacklist - Card Format: Same as settings.Blacklist
-		Whitelist - Card Format: Same as settings.Whitelist
-		Permissions - Card Format: Same as settings.Permissions
-		Music - Card Format: SongName:AudioID
-		Commands - Card Format: Command (e.g. :ff bob)
-	Card format refers to how card names should look.
-	------------------------------------------
-	------------	Adonis		--------------
-	------------------------------------------
-	--// How to add administrators \\--
-	Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
-	Simply place users into the respective "Users" table for whatever level/rank you want to give them.
-	Format Example:
-		settings.Ranks = {
-			["Moderators"] = {
-				Level = 100;
-				Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-			};
+
+	Welcome to the help section.
+	
+	If you are a new to Adonis, it is advised you read the help section
+	to get to know the basics.
+	
+	In case you are not a confident programmer, here are some basic definitions of Lua.
+	
+		-/-/ Lua tables \-\-
+		
+			Values (like numbers or strings) that are inside these characters { } are known as tables.
+			local MyTable = {"Hello!!", 123456; "This is my table."}
 			
-			["ExampleCustomRank"] = {
-				Level = 150;
-				Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-			};
-		}
-	If you use custom ranks, existing custom ranks will be imported with a level of 1.
-	Add all new CustomRanks to the table below with the respective level you want them to be.
-	NOTE: Changing the level of built-in ranks (Moderators, Admins, HeadAdmins, Creators)
-	- Will also change the permission level for any built-in commands associated with that rank.
-	MAKE SURE YOU SET settings.DataStoreKey TO SOMETHING ABSOLUTELY RANDOM!!
+			Values inside a table can be separated using either a comma ,  or a semi-colon ;	
+			
+			Some settings in Adonis use tables to store data. It is important the
+			format for a table is correct otherwise un-expected behaviour may occur.
+		
+		
+		-/-/ Option settings \-\-
+		
+			Settings that have either a true or a false are option settings.
+			
+			For example, if you want to enable the "HelpSystem" feature, you would set
+			the setting to true. This means the help system is active.
+			
+				HelpSystem = true
+			
+			If you want to disable the "HelpSystem" feature, you would set the setting
+			to false. This means the help system is not active.
+			
+				HelpSystem = false
+			
+
+		-/-/ String settings \-\-
+			
+			A string in Lua is a sequence of characters, like words,
+			that are stored inside quotation marks  " "
+			
+			For example, the data store key setting:
+			
+				DataStoreKey = "CHANGE_THIS"
+			
+			has the string "CHANGE_THIS" as its value. 
+			(Make sure you change the key in the actual setting!)
+			
+			
+		-/-/ Number settings \-\-
+			
+			Some settings have numbers as their value instead of tables or string.
+			It is important that these settings have a number, and not anything else.
+			
+			For example, https wait has the number 60 to it.
+			
+				HttpsWait = 60
+		
+		It must not be a string (like "60") or a table ({60}) or even a true/false value!
+		
+		
+	-/-/ Adonis help \-\-
+	
+	In this section, we will cover some information about Adonis settings.
+	
+	There are 5 built-in administrator ranks:
+	
+		Players: 0
+			[This rank is given to normal players and are not classed as admins]
+		Moderators: 100
+			[This is the next rank up from Players]
+		Admins: 200
+			[This is the next rank up from Moderators]
+		HeadAdmins: 300
+			[This is the next rank up from Admins]
+		Creators: 900
+			This is the overruling rank.
+			Anyone with this rank has full unrestricted access to Adonis commands.
+			
+		The numbers represent the hierarchy of the system.
+		Bigger numbers have access to all the smaller number's permissions.
+		
+		For example, a HeadAdmin (300) has access to all the permissions and commands of an Admin (200)
+		and a Moderator (100). But they do not have access to the Creators (900) permissions or commands.
+				
+	
+	Adonis does support the creation of custom ranks, to suit your needs.
+	
+	To create a custom rank, you will need to edit the "Ranks" table.
+		To help with organization, it is recommended you create custom ranks
+		after the "Creators" rank.
+		
+	The rank numbers are not restricted to blocks of hundreds.
+	
+	You may create numbers anywhere in between or equal to default ranks,
+	however, they must not be decimal (example: 20.5)
+		
+	Here is a snippet of the table to help demonstrate.
+	
+	
+	Ranks = {
+		["Creators"] = {
+			Level = 900;
+			Hidden = false;
+			Users = {
+				"";
+			}
+		};
+		
+		-- copy this bit below
+		
+		["ExampleRank"] = {
+			Level = 450;
+			Hidden = false;
+			Users = {
+				"";
+			}
+		};
+		
+		-- copy to here^
+		
+	} -- make sure the rank is inside the "Ranks" table!
+	
+	[NOTE: Changing the level of built-in ranks (Moderators, Admins, HeadAdmins, Creators)
+		  Will also change the permission level for any built-in commands associated with that rank.]
+		
+		
+	-/-/ How to add players to administrator ranks \-\-
+	
+		["Admins"] = {
+			Level = 200;
+			Hidden = false;
+			Users = {
+				""; -- Inside this string is where you add your players.
+			}
+		};
+		
+		It can be any of these combinations:
+		{"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+		
+		Example:
+		{"ROBLOX";      "ROBLOX:1";        1;         "Group:5:255";          "Group:5";  "Item:6878510605"; "GamePass:1348327";}
+		
+		
+		
+	If you have any questions, or need some extra help with something else, join our communications server
+	listed in our official group!
+	
+	https://www.roblox.com/groups/886423/Epix-Incorporated#!/about
+		
+		
+		
+	
+	To get started, scroll down to the "Settings" section.
+	
+	P.S. Don't forget to change your data store key to something absolutely random!!
+		(Between ideally more than 10 characters)
+
+	
+
 ]]--
 
 
 ------------------------------------------
-------------- 	Contents	 -------------
+-------------    Contents    -------------
 ------------------------------------------
 
 --[[
+
 	1. Datastore
 	2. Themes
 	3. Storage
@@ -106,11 +185,12 @@
 	7. Commands
 	8. Anti-Exploit
 	9. Custom Commands
+
 ]]--
 
 
 ------------------------------------------
---------------	SETTINGS	--------------
+--------------   SETTINGS   --------------
 ------------------------------------------
 
 local settings = {
@@ -462,6 +542,7 @@ local settings = {
 		--[[
 			REFERENCE:
 				command_full_name: The name of a command (e.g. :cmds)
+
 			[command_full_name] = {
 				Player = 0; -- Time in seconds.
 				Server = 0;
@@ -636,19 +717,15 @@ settings.Commands = {
 }
 
 ------------------------------------------
----------	END OF THE SETTINGS	----------
+---------  END OF THE SETTINGS  ----------
 ------------------------------------------
 
-
-
 ------------------------------------------
------------	DESCRIPTIONS	--------------
+-----------   DESCRIPTIONS  --------------
 ------------------------------------------
 
---// Setting descriptions used for the in-game settings editor;
-
+--// Setting descriptions used for the in-game settings editor \\--
 local descs = {}
-
 descs.HideScript = [[ When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module. ]]
 descs.DataStore = [[ The datastore to use for saving data. This is used for storing the data. Changing this will erase all saved data.]]
 descs.DataStoreKey = [[ The key to use when accessing the datastore. ]]
@@ -758,7 +835,6 @@ descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/
 descs.AntiAntiIdle  = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games. ]]
 descs.ExploitGuiDetection = [[(Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
 descs.Commands = [[ Custom commands. ]]
-
 local order = {
 	"HideScript";
 	"DataStore";
@@ -872,5 +948,4 @@ local order = {
 	"";
 	"Commands"
 }
-
 return {Settings = settings, Descriptions = descs, Order = order}
