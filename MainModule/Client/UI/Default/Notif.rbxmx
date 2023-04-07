@@ -47,10 +47,9 @@ return function(data, env)
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
 	local str = data.Message
-	local topbar = client.UI.Get("TopBar")
-	
+
 	client.UI.Remove("Notif",script.Parent.Parent)
-	
+
 	local log  = {
 		Type = "Notif";
 		Title = "Notif";
@@ -63,10 +62,11 @@ return function(data, env)
 	table.insert(client.Variables.CommunicationsHistory, log) 
 	service.Events.CommsPanel:Fire(log)
 
-	
 	if str and type(str)=="string" then
 		label.Text = str
-		label.Position = UDim2.new(0, 0, 0, ((topbar and 40) or 0) - 35)
+		label.Position = UDim2.new(0, 0, 0, 0)
+		label.Parent.IgnoreGuiInset = not client.Variables.TopBarShift
+		label.Parent.ClipToDeviceSafeArea = true
 		gTable:Ready()
 	else
 		gui:Destroy()
