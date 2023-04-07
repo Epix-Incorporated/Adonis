@@ -2062,7 +2062,7 @@ return function(Vargs, env)
 						`Question: {question}`;
 						`Total Responses: {total}`;
 						`Didn't Vote: {#players-total}`;
-						`Time Left: {math.max(0, 120 - (os.clock()-startTime))}`;
+						`Time Left: {math.floor(math.max(0, 120 - (os.clock()-startTime)))}`;
 					}
 
 					for _, v in responses do
