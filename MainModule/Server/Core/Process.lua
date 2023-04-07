@@ -1032,6 +1032,10 @@ return function(Vargs, GetEnv)
 				if Settings.TopBarShift then
 					Remote.Send(p, "SetVariables", { TopBarShift = true })
 				end
+											
+				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
+					Remote.RefreshGui(p, "Console")
+				end
 
 				--if Settings.CustomChat then
 				--	MakeGui(p, "Chat")
