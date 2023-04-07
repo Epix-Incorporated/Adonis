@@ -44,8 +44,13 @@ local CLOUD_COLOR_TEXTURE = "http://www.roblox.com/asset/?ID=1361097"
 -- // Variables
 
 local basePart = Instance.new("Part")
-basePart.Anchored, basePart.Locked, basePart.CanCollide, basePart.CanQuery, basePart.CanTouch = true, true, false, false, false
-basePart.TopSurface, basePart.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+basePart.Anchored = true
+basePart.Locked = true
+basePart.CanCollide = false
+basePart.CanQuery = false
+basePart.CanTouch = false
+basePart.TopSurface = Enum.SurfaceType.Smooth
+basePart.BottomSurface = Enum.SurfaceType.Smooth
 basePart.Size = Vector3.new(1, 1, 1)
 
 local baseMesh = Instance.new("SpecialMesh")
