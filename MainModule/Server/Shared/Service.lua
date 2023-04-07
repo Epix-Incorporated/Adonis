@@ -630,6 +630,22 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 			return new
 		end;
+				
+		DeepCopy = function(tab)
+			local new = (getmetatable(tab) ~= nil and setmetatable({},{
+				__index = function(t, ind)
+					return tab[ind]
+				end
+			})) or {}
+			for i,v in tab do
+				if typeof(v) == 'table' then 
+					new[i] = service.DeepCopy(v)
+				else
+					new[i] = v
+				end
+			end
+			return new
+		end,
 
 		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
 
