@@ -31,13 +31,13 @@ function Message:render()
 	)) and true or false
 
 	return new('Frame', {
-		AnchorPoint = Vector2.new(0, 0.5),
-		AutomaticSize = Enum.AutomaticSize.Y,
+		AnchorPoint = props.Condensed and Vector2.new(0.5, 0) or Vector2.new(0, 0.5),
+		AutomaticSize = props.Condensed and Enum.AutomaticSize.XY or Enum.AutomaticSize.Y,
 		BackgroundColor3 = Color3.fromRGB(0, 0, 0),
 		BackgroundTransparency = 0.2,
 		BorderSizePixel = 0,
-		Position = UDim2.fromScale(0, 0.5),
-		Size = UDim2.fromScale(1, 0),
+		Position = props.Condensed and UDim2.new(0.5, 0, 0, 150) or UDim2.fromScale(0, 0.5),
+		Size = props.Condensed and UDim2.fromOffset() or UDim2.fromScale(1, 0),
 	}, {
 
 		Layout = new('UIListLayout', {
@@ -50,7 +50,13 @@ function Message:render()
 		Padding = new('UIPadding', {
 			PaddingBottom = UDim.new(0, 15),
 			PaddingTop = UDim.new(0, 15),
+			PaddingLeft = UDim.new(0, props.Condensed and 15 or 50),
+			PaddingRight = UDim.new(0, props.Condensed and 15 or 50),
 		}),
+
+		Corners = props.Condensed and new('UICorner', {
+			CornerRadius = UDim.new(0, 8),
+		}) or nil,
 
 		Text = new('Frame', {
 			AutomaticSize = Enum.AutomaticSize.XY,
