@@ -308,10 +308,8 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 	task.spawn(effects, nolighting)
 
 	for _, v in ipairs(Lighting:GetChildren()) do
-		if v:IsA("Sky") and not table.find(nukeSkyboxes, v) then
-			if not table.find(realSkyboxes, v) then
-				table.insert(realSkyboxes, v)
-			end
+		if v:IsA("Sky") and not table.find(nukeSkyboxes, v) and not table.find(realSkyboxes, v) then
+			table.insert(realSkyboxes, v)
 		end
 	end
 
@@ -464,7 +462,7 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 						v.Parent = Lighting
 					end)
 				elseif table.find(realSkyboxes, v) then
-					table.remove(realSkyboxes
+					table.remove(realSkyboxes, table.find(realSkyboxes, v))
 				end
 			end
 		end
