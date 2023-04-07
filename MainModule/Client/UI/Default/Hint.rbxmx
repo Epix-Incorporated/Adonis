@@ -193,7 +193,7 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="TextScaled">true</bool>
+					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
 					<Color3 name="TextStrokeColor3">
 						<R>0</R>
