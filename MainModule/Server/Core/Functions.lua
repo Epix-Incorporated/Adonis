@@ -1394,7 +1394,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		LaxCheckMatch = function(check, match, opts)
-			local keys = if opts and typeof(opts) == 'table' and opts.IgnoreKeys then opts.IgnoreKeys else {}
+			local keys = if opts and type(opts) == 'table' and opts.IgnoreKeys then opts.IgnoreKeys else {}
 			if check == match then
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
