@@ -69,6 +69,7 @@ skybox.SkyboxFt, skybox.SkyboxBk = "http://www.roblox.com/asset/?version=1&id=10
 skybox.SkyboxLf, skybox.SkyboxRt = "http://www.roblox.com/asset/?version=1&id=1012889", "http://www.roblox.com/asset/?version=1&id=1012888"
 skybox.SkyboxDn, skybox.SkyboxUp = "http://www.roblox.com/asset/?version=1&id=1012891", "http://www.roblox.com/asset/?version=1&id=1014449"
 
+local nukeSkyboxes, realSkyboxes = setmetatable({}, {__mode = "v"}), setmetatable({}, {__mode = "v"})
 local nukeIgnore = setmetatable({}, {__mode = "v"})
 local explosionParams = OverlapParams.new()
 explosionParams.FilterDescendantsInstances = nukeIgnore
@@ -302,8 +303,17 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 
 	-- // Lighting & audio effects
 	local newSky = skybox:Clone()
+	table.insert(nukeSkyboxes, newSky)
 	newSky.Parent = Lighting
 	task.spawn(effects, nolighting)
+
+	for _, v in ipairs(Lighting:GetChildren()) do
+		if v:IsA("Sky") and not table.find(nukeSkyboxes, v) then
+			if not table.find(realSkyboxes, v) then
+				table.insert(realSkyboxes, v)
+			end
+		end
+	end
 
 	-- // Shockwave
 	task.spawn(function()
@@ -428,6 +438,39 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 	end
 	task.wait((0.9 - 0.5) / 0.01 * (1 / 60) * 2)
 
+	local skyConnection
+	skyConnection = newSky.AncestryChanged:Connect(function()
+		if newSky and newSky.Parent ~= Lighting and table.find(nukeSkyboxes, newSky) then
+			table.remove(nukeSkyboxes, table.find(nukeSkyboxes, newSky))
+		end
+
+		local hasNukeSkyboxes = false
+
+		for _, v in ipairs(nukeSkyboxes) do
+			if v.Parent == Lighting then
+				hasNukeSkyboxes = true
+				break
+			end
+		end
+
+		if not hasNukeSkyboxes then
+			for i = #realSkyboxes, 1, -1 do
+				local v = realSkyboxes[i]
+
+				if v.Parent == Lighting then
+					v.Parent = nil
+
+					task.defer(function()
+						v.Parent = Lighting
+					end)
+				elseif table.find(realSkyboxes, v) then
+					table.remove(realSkyboxes
+				end
+			end
+		end
+
+		skyConnection:Disconnect()
+	end)
 	Debris:AddItem(newSky, 10)
 
 	-- // De-heated cloud becoming natural cloud like (no longer heat or nuclear)
