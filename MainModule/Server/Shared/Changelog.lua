@@ -3,6 +3,16 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
+	"[Patch v239a 2023-04-07 11:50 UTC] @LiveFireExercise";
+	"Fixed Unity and XP themes";
+	"Reverted the :nuke command to old functionality";
+	"Fly now defaults to noclip";
+	"Teleportation command has been reverted";
+	":tp typechecks, :to is now more versatile";
+	"Data redundancy checks now function correctly";
+	"Add DeepCopy - coasterteam
+	"Fixed double command bar";
+	"";
 	"[v239 2023-04-06 21:20 UTC] @LiveFireExercise";
 	"(Git/ccuser44) Added a much better nuke (#1033)";
 	"Add nightly module & NightlyMode setting to Loader";
