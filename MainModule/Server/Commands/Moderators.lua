@@ -4557,75 +4557,163 @@ return function(Vargs, env)
 		Teleport = {
 			Prefix = Settings.Prefix;
 			Commands = {"tp", "teleport", "transport"};
-			Args = {"player", "destination ('<player>'/'waypoint-<name>'/'<x>,<y>,<z>')"};
-			Description = "Teleports the target player(s) to the specified player, waypoint or coordinates";
+			Args = {"player1", "player2"};
+			Description = "Teleport player1(s) to player2, a waypoint, or specific coords, use :tp player1 waypoint-WAYPOINTNAME to use waypoints, x,y,z for coords";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player (argument #1)")
-				assert(args[2], "Missing destination (argument #2)")
+				if string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)") then
+					local m = string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")
+					local point
 
-				local function teleportPlayers(destination: Vector3)
+					for i, v in Variables.Waypoints do
+						if string.sub(string.lower(i), 1, #m)==string.lower(m) then
+							point=v
+						end
+					end
+
 					for _, v in service.GetPlayers(plr, args[1]) do
-						local rootPart = v.Character and (v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
-						if not (rootPart and rootPart:IsA("BasePart")) then
-							continue
-						end
-
-						if workspace.StreamingEnabled then
-							v:RequestStreamAroundAsync(destination)
-						end
-
-						local hum = v.Character:FindFirstChildOfClass("Humanoid")
-						if hum then
-							if hum.SeatPart then
-								Functions.RemoveSeatWelds(hum.SeatPart)
+						if point then
+							if not v.Character then
+								continue
 							end
-							if hum.Sit then
-								hum.Sit = false
-								hum.Jump = true
+							if workspace.StreamingEnabled == true then
+								v:RequestStreamAroundAsync(point)
+							end
+							local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+							local root = (Humanoid and Humanoid.RootPart or v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
+							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
+							if Humanoid then
+								if Humanoid.SeatPart~=nil then
+									Functions.RemoveSeatWelds(Humanoid.SeatPart)
+								end
+								if Humanoid.Sit then
+									Humanoid.Sit = false
+									Humanoid.Jump = true
+								end
+							end
+							if FlightPos and FlightGyro then
+								FlightPos.Position = root.Position
+								FlightGyro.CFrame = root.CFrame
+							end
+
+							wait()
+							if root then
+								root.CFrame = CFrame.new(point)
+								if FlightPos and FlightGyro then
+									FlightPos.Position = root.Position
+									FlightGyro.CFrame = root.CFrame
+								end
 							end
 						end
+					end
 
-						local flightPosObject = rootPart:FindFirstChild("ADONIS_FLIGHT_POSITION")
-						local flightGyroObject = rootPart:FindFirstChild("ADONIS_FLIGHT_GYRO")
-						if flightPosObject and (flightPosObject:IsA("AlignPosition")) then
-							flightPosObject.Position = rootPart.Position
-						end
-						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
-							flightGyroObject.CFrame = rootPart.CFrame
-						end
+					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
+				elseif string.find(args[2], ",") then
+					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
+					for _, v in service.GetPlayers(plr, args[1]) do
+						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
 
+						if workspace.StreamingEnabled == true then
+							v:RequestStreamAroundAsync(Vector3.new(x,y,z))
+						end
+						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						local root = v.Character:FindFirstChild('HumanoidRootPart')
+						local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						if Humanoid then
+							if Humanoid.SeatPart~=nil then
+								Functions.RemoveSeatWelds(Humanoid.SeatPart)
+							end
+							if Humanoid.Sit then
+								Humanoid.Sit = false
+								Humanoid.Jump = true
+							end
+						end
+						if FlightPos and FlightGyro then
+							FlightPos.Position = root.Position
+							FlightGyro.CFrame = root.CFrame
+						end
 						wait()
-						--rootPart.Position = destination
-						v.Character:MoveTo(destination)
-
-						if flightPosObject and flightPosObject:IsA("AlignPosition") then
-							flightPosObject.Position = rootPart.Position
-						end
-						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
-							flightGyroObject.CFrame = rootPart.CFrame
+						root.CFrame = CFrame.new(Vector3.new(tonumber(x), tonumber(y), tonumber(z)))
+						if FlightPos and FlightGyro then
+							FlightPos.Position = root.Position
+							FlightGyro.CFrame = root.CFrame
 						end
 					end
-				end
-
-				local waypointName = args[2]:lower():match("^waypoint%-(.*)")
-				if waypointName then
-					for name, pos in Variables.Waypoints do
-						if name:lower() == waypointName:lower() then
-							teleportPlayers(pos)
-							return
-						end
-					end
-					error(`No waypoint named '{waypointName}' exists`, 2)
 				else
-					local x, y, z = args[2]:match("^(%d+),(%d+),(%d+)$")
-					if x then
-						teleportPlayers(Vector3.new(x, y, z))
+					local target = service.GetPlayers(plr, args[2])[1]
+					local players = service.GetPlayers(plr, args[1])
+					if #players == 1 and players[1] == target then
+						local n = players[1]
+						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
+							local Humanoid = n.Character:FindFirstChildOfClass("Humanoid")
+							local root = n.Character:FindFirstChild('HumanoidRootPart')
+							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
+
+							if workspace.StreamingEnabled == true then
+								n:RequestStreamAroundAsync((target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+							end
+
+							if Humanoid then
+								if Humanoid.SeatPart~=nil then
+									Functions.RemoveSeatWelds(Humanoid.SeatPart)
+								end
+								if Humanoid.Sit then
+									Humanoid.Sit = false
+									Humanoid.Jump = true
+								end
+							end
+							if FlightPos and FlightGyro then
+								FlightPos.Position = root.Position
+								FlightGyro.CFrame = root.CFrame
+							end
+							wait()
+							root.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+							if FlightPos and FlightGyro then
+								FlightPos.Position = root.Position
+								FlightGyro.CFrame = root.CFrame
+							end
+						end
 					else
-						local target = service.GetPlayers(plr, args[2])[1]
-						if target then
-							assert(target.Character, "Destination player has no character")
-							teleportPlayers(Vector3.new(target.Character:GetPivot()))
+						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+						if targ_root then
+							for k, n in players do
+								if n ~= target then
+									local Character = n.Character
+									if not Character then continue end
+									if workspace.StreamingEnabled == true then
+										n:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+									end
+
+									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+									local root = Character:FindFirstChild('HumanoidRootPart')
+									local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+									local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
+									if Humanoid then
+										if Humanoid.SeatPart ~= nil then
+											Functions.RemoveSeatWelds(Humanoid.SeatPart)
+										end
+										if Humanoid.Sit then
+											Humanoid.Sit = false
+											Humanoid.Jump = true
+										end
+									end
+									if FlightPos and FlightGyro then
+										FlightPos.Position = root.Position
+										FlightGyro.CFrame = root.CFrame
+									end
+									wait()
+									if root and targ_root then
+										root.CFrame = (targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+										if FlightPos and FlightGyro then
+											FlightPos.Position = root.Position
+											FlightGyro.CFrame = root.CFrame
+										end
+									end
+								end
+							end
 						end
 					end
 				end
