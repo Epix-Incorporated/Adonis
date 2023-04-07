@@ -247,7 +247,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				assert(args[2], "Missing message")
 
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
+				Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), 'HeadShot', service.GetPlayers(), true, args[1])
 			end
 		};
 
@@ -261,7 +261,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), 'HeadShot', service.GetPlayers(), true)
 			end
 		};
 
@@ -278,7 +278,7 @@ return function(Vargs, env)
 
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
+					Functions.Message(Sender, Sender, service.Filter(args[2], plr, v), 'HeadShot', {v}, true)
 				end
 			end
 		};
@@ -1895,7 +1895,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
+				Functions.Message('Adonis', "Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, 'Maticon://Hourglass empty', players, false, 10)
 			end
 		};
 

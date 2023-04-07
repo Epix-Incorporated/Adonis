@@ -416,12 +416,12 @@ return function(Vargs, env)
 							pending.Pending = false;
 
 							if not answered then
-								Functions.Message("Help System", "Sorry but no one is available to help you right now", {plr})
+								Functions.Message('HelpSystem', "Help System", "Sorry but no one is available to help you right now", 'MatIcon://Warning', {plr})
 							end
 						end)
 					end
 				else
-					Functions.Message("Help System", "The help system has been disabled by the place owner.", {plr})
+					Functions.Message('HelpSystem', "Help System", "The help system has been disabled by the place owner.", 'MatIcon://Error', {plr})
 				end
 			end
 		};
@@ -542,7 +542,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local quotes = require(Deps.Assets.Quotes)
-				Functions.Message("Random Quote", quotes[math.random(1, #quotes)], {plr})
+				Functions.Message('Command', "Random Quote", quotes[math.random(1, #quotes)], 'MatIcon://Chat', {plr})
 			end
 		};
 
