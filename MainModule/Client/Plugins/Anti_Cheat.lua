@@ -426,8 +426,8 @@ return function(Vargs)
 				"setrawmetatable";
 				"getnamecallmethod";
 				"setnamecallmethod";
-				"setfflag";
-				"getfflag";
+				--"setfflag";
+				--"getfflag";
 				"gethui";
 				"isreadonly";
 				"setreadonly";
@@ -437,7 +437,7 @@ return function(Vargs)
 				"delfile";
 				"readfile";
 				"loadfile";
-				"isfolder";
+				--"isfolder";
 				"makefolder";
 				"delfolder";
 				"listfiles";
@@ -445,10 +445,10 @@ return function(Vargs)
 				"getsynasset"; -- synapse specific
 				"getcustomasset";
 				"cloneref";
-				"clonefunction";
+				--"clonefunction";
 				"getspecialinfo";
 				"saveinstance";
-				"messagebox";
+				--"messagebox";
 				"protect_gui"; -- specific to synapse and smaller executors like sirhurt, temple, etc
 				"unprotect_gui"; -- specific to synapse and smaller executors like sirhurt, temple, etc
 				"rconsoleprint";
@@ -458,9 +458,9 @@ return function(Vargs)
 				"rconsoleclear";
 				"rconsolename";
 				"rconsoleinput";
-				"printconsole";
+				--"printconsole";
 				"checkcaller";
-				"dumpstring";
+				--"dumpstring";
 				"islclosure";
 				"getscriptclosure";
 				"getscripthash";
@@ -477,7 +477,7 @@ return function(Vargs)
 				"getconnections";
 				"getloadedmodules";
 				"firesignal";
-				"fireclickdetector";
+				--"fireclickdetector";
 				"fireproximityprompt";
 				"firetouchinterest";
 				"setsimulationradius";
@@ -485,7 +485,7 @@ return function(Vargs)
 				"sethiddenproperty";
 				"gethiddenproperty";
 				"setscriptable";
-				"isnetworkowner";
+				--"isnetworkowner";
 				"setclipboard";
 				"getconstants";
 				"getconstant";
@@ -504,13 +504,13 @@ return function(Vargs)
 				"get_thread_identity"; -- synapse specific (?)
 				"set_thread_identity"; -- synapse specific (?)
 				"setthreadcontext";
-				"setidentity";
-				"is_cached"; -- synapse specific (?)
+				--"setidentity";
+				--"is_cached"; -- synapse specific (?)
 				"write_clipboard"; -- synapse specific (?)
 				"replicatesignal";
 				"hooksignal";
 				"queue_on_teleport";
-				"is_beta"; -- synapse specific (?)
+				--"is_beta"; -- synapse specific (?)
 				"create_secure_function";  -- synapse specific (?)
 				"run_secure_function";  -- synapse specific (?)
 				"Kill by Avexus#1234 initialized";
