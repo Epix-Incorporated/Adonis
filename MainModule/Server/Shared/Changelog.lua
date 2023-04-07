@@ -10,7 +10,7 @@ return {
 	"Teleportation command has been reverted";
 	":tp typechecks, :to is now more versatile";
 	"Data redundancy checks now function correctly";
-	"Add DeepCopy - coasterteam
+	"Add DeepCopy - coasterteam";
 	"Fixed double command bar";
 	"";
 	"[v239 2023-04-06 21:20 UTC] @LiveFireExercise";
