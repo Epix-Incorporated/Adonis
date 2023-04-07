@@ -750,7 +750,7 @@ return function(Vargs)
 				end
 
 				-- // Anti RAKNET based DoS detection
-				xpcall(function()
+				--[[xpcall(function()
 					if isStudio then
 						return
 					end
@@ -760,7 +760,7 @@ return function(Vargs)
 					end
 				end, function()
 					Detected("kick", "Tamper Protection 0x11984")
-				end)
+				end)--]]
 
 				-- // Anti humanoid data spoof
 				xpcall(function()
