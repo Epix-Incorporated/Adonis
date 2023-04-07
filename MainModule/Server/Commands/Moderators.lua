@@ -5688,7 +5688,7 @@ return function(Vargs, env)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes");
+					Value = not args[3] or (args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes"));
 					Parent = scr;
 				})
 				
