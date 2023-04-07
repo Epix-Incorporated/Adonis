@@ -656,7 +656,7 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						Core.SavedPlayerData[p.UserId] = data
+						Core.SavedPlayerData[p.UserId] = service.DeepCopy(data)
 					end
 				end
 
@@ -676,22 +676,27 @@ return function(Vargs, GetEnv)
 
 			if Core.DataStore then
 				if pData and p.UserId > 0 then
-					local data = service.CloneTable(pData)
+					local data = service.DeepCopy(pData)
 
 					--// Temporary junk that will be removed on save.
 					for _, blacklistedData in ipairs({"LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
 						data[blacklistedData] = nil
 					end
+					
+					--// We want to only save data if actual user data is different
+					local CompareOptions = {
+						IgnoreKeys = {"Groups", "AdminLevel", "AdminRank", "LastLevelUpdate", "LastDataSave"}
+					}
 
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
-					if Core.SavedPlayerData[p.UserId] and Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data) and Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId]) then
+					if Core.SavedPlayerData[p.UserId] and Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data, CompareOptions) and Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId], CompareOptions) then
 						AddLog(Logs.Script, {
 							Text = "Didn't save data due to redundancy ".. p.Name;
 							Desc = "Player data was not saved to the datastore due to it being already saved.";
 						})
-					elseif not Functions.LaxCheckMatch(Core.DefaultPlayerData(p), data) or Core.SavedPlayerData[p.UserId] and not (Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data) or Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId])) then
+					elseif not Functions.LaxCheckMatch(Core.DefaultPlayerData(p), data, CompareOptions) or Core.SavedPlayerData[p.UserId] and not (Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data, CompareOptions) or Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId], CompareOptions)) then
 						Core.SetData(key, data)
 						Core.SavedPlayerData[p.UserId] = data
 						AddLog(Logs.Script, {
