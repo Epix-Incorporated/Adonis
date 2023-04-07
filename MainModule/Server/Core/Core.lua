@@ -679,7 +679,7 @@ return function(Vargs, GetEnv)
 					local data = service.DeepCopy(pData)
 
 					--// Temporary junk that will be removed on save.
-					for _, blacklistedData in ipairs({"LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
+					for _, blacklistedData in ipairs({"Groups", "LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
 						data[blacklistedData] = nil
 					end
 					
