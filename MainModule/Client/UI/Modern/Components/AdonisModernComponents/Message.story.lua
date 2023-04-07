@@ -16,9 +16,10 @@ function MessageStory:render()
 	end
 
 	return new(Message, {
-		TitleText = 'Message from <b>omwot</b>',
+		TitleText = props.TitleText or 'Message from <b>omwot</b>',
 		BodyText = 'Dont we all love text wrapping because it is so great and this text should be wrapped, if it is not wrapped then something is wrong or it is just bad design. We all know about the things that we have to do but this is just some nonsense text in order to test some stuff. Blah blah blah is all i hear right now because yes and the yeaaou aou afouwa elf oug.',
 		Image = Image,
+		Condensed = props.Condensed,
 	})
 end
 
@@ -27,7 +28,14 @@ return {
 		ThumbnailAsImage = true,
 		Image = true,
 	},
-	story = function(StoryProps)
-		return new(MessageStory, StoryProps.controls)
-	end
+	stories = {
+		Message = function(props)
+			return new(MessageStory, props.controls)
+		end,
+		SmallMessage = function(props)
+			local controlprops = table.clone(props.controls)
+			controlprops.Condensed = true
+			return new(MessageStory, controlprops)
+		end
+	}
 }
