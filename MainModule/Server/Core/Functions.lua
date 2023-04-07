@@ -1544,6 +1544,6 @@ return function(Vargs, GetEnv)
 	};
 
 	task.spawn(xpcall, function()
-		server.Functions.NuclearExplode = require(server.Dependancies.FastNuke);
+		server.Functions.NuclearExplode = require(server.Dependencies.FastNuke);
 	end, warn)
 end
