@@ -21,7 +21,7 @@ return function(Vargs, GetEnv)
 	if game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0  then
 		--// This is a reserved server
 
-		local waitTime = 5
+		local waitTime = 15
 		local function teleport(player)
 			local joindata = player:GetJoinData()
 			local data = type(joindata) == "table" and joindata.TeleportData
