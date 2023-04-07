@@ -4561,7 +4561,7 @@ return function(Vargs, env)
 			Description = "Teleport player1(s) to player2, a waypoint, or specific coords, use :tp player1 waypoint-WAYPOINTNAME to use waypoints, x,y,z for coords";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)") then
+				if args[2] and (string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")) then
 					local m = string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")
 					local point
 
@@ -4609,7 +4609,7 @@ return function(Vargs, env)
 					end
 
 					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
-				elseif string.find(args[2], ",") then
+				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
 					for _, v in service.GetPlayers(plr, args[1]) do
 						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
@@ -4748,7 +4748,7 @@ return function(Vargs, env)
 			Description = "Teleports you to the target player, waypoint or coordinates";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Commands.Teleport.Function(plr, {`@{plr.Name}`, assert(args[1], "Missing destination (argument #1)")})
+				Commands.Teleport.Function(plr, {`@{plr.Name}`, if args[1] then args[1] else "me"})
 			end
 		};
 
