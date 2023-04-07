@@ -1184,11 +1184,11 @@ return function(Vargs, env)
 			end
 		};
 
-		ShowSBL = {
+		ShowTrelloSBL = {
 			Prefix = Settings.Prefix;
-			Commands = {"sbl", "syncedbanlist", "globalbanlist", "trellobans", "trellobanlist"};
+			Commands = {"SyncedTrelloBans", "TrelloBans", "TrelloBanList"};
 			Args = {};
-			Description = "Shows Trello bans";
+			Description = "Shows bans synced from Trello.";
 			TrelloRequired = true;
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
@@ -1199,17 +1199,25 @@ return function(Vargs, env)
 						Desc = banData.Reason or "No reason specified",
 					})
 				end
-				table.insert(tab, 1, "# Banned Users: "..#HTTP.Trello.Bans)
+				table.insert(tab, 1, `# Banned Users: {#HTTP.Trello.Bans}`)
 				table.insert(tab, 2, "―――――――――――――――――――――――")
 				return tab
 			end;
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "List", {
-					Title = "Synced Ban List";
-					Icon = server.MatIcons.Gavel;
-					Tab = Logs.ListUpdaters.ShowSBL(plr);
-					Update = "ShowSBL";
-				})
+				local trello = HTTP.Trello.API
+				if not Settings.Trello_Enabled or trello == nil then
+					Remote.MakeGui(plr, "Notification", {
+						Title = "Trello Synced Ban List";
+						Message = "Trello has not been enabled.";
+					})
+				else				
+					Remote.MakeGui(plr, "List", {
+						Title = "Trello Synced Bans List";
+						Icon = server.MatIcons.Gavel;
+						Tab = Logs.ListUpdaters.ShowTrelloSBL(plr);
+						Update = "ShowTrelloSBL";
+					})
+				end
 			end;
 		};
 
