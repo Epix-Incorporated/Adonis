@@ -1359,7 +1359,12 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local trello = HTTP.Trello.API
-				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
+				if not Settings.Trello_Enabled or trello == nil then return 
+					Remote.MakeGui(plr, "Notification", {
+						Title = "Trelloban";
+						Message = "Trello has not been configured.";
+					})
+				end
 
 				local lists = trello.getLists(Settings.Trello_Primary)
 				local list = trello.getListObj(lists, {"Banlist", "Ban List", "Bans"})
@@ -1383,7 +1388,7 @@ return function(Vargs, env)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
 							Icon = server.MatIcons.Gavel;
-							Message = "Trello-banned ".. service.FormatPlayer(v, true);
+							Message = `Trello-banned {service.FormatPlayer(v, true)}`;
 							Time = 5;
 						})
 					end
