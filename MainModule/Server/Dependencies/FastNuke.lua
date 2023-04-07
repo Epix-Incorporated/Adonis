@@ -458,7 +458,8 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 				if v.Parent == Lighting then
 					v.Parent = nil
 
-					task.defer(function()
+					task.spawn(function()
+						task.wait()
 						v.Parent = Lighting
 					end)
 				elseif table.find(realSkyboxes, v) then
