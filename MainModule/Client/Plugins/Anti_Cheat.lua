@@ -749,19 +749,6 @@ return function(Vargs)
 					end
 				end
 
-				-- // Anti RAKNET based DoS detection
-				--[[xpcall(function()
-					if isStudio then
-						return
-					end
-
-					if service.Stats.DataSendKbps >= 1000 then -- // Roblox shouldn't allow this much data if im wrong though it should be made higher
-						Detected("kick", "RAKNET based volumetric DoS attack detected, or other data send unlocked DoS")
-					end
-				end, function()
-					Detected("kick", "Tamper Protection 0x11984")
-				end)--]]
-
 				-- // Anti humanoid data spoof
 				xpcall(function()
 					local eventCount = 0
