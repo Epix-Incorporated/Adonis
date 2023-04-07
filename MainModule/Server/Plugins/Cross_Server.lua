@@ -62,10 +62,17 @@ return function(Vargs, GetEnv)
 
 		Message = function(jobId, fromPlayer, message, duration)
 			server.Functions.Message(
+<<<<<<< HEAD
 				nil,
 				`Global Message from {fromPlayer or "[Unknown]"}`,
 				message,
 				nil,
+=======
+				fromPlayer,
+				"Global Message from " .. (fromPlayer or "[Unknown]"),
+				message,
+				'HeadShot',
+>>>>>>> 7e5a2e59ebbd4579d06dc1129b31969f98126943
 				service.GetPlayers(),
 				true,
 				duration

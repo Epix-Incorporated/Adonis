@@ -94,7 +94,10 @@ else
 
 	-- selene: allow(incorrect_standard_library_use)
 	script.Parent = nil --script:Destroy()
-	model.Name = math.random()
+
+	if not data.DebugMode then
+		model.Name = math.random()
+	end
 
 	local moduleId = if data.NightlyMode then data.NightlyModuleID else data.ModuleID
 	

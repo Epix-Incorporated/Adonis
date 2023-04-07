@@ -59,7 +59,11 @@ return function(Vargs, GetEnv)
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
+<<<<<<< HEAD
 			Functions.Message('Adonis', "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+=======
+			Functions.Message(nil, "Server Restart", "The server is restarting, please wait...", nil, service.GetPlayers(), false, 1000)
+>>>>>>> 7e5a2e59ebbd4579d06dc1129b31969f98126943
 			task.wait(2)
 
 			TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, Players:GetPlayers(), "", {[PARAMETER_NAME] = true})
@@ -111,7 +115,11 @@ return function(Vargs, GetEnv)
 
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
+<<<<<<< HEAD
 			Functions.Message('Adonis', "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+=======
+			Functions.Message(nil, "Server Restart", "The server is restarting, please wait...", nil, service.GetPlayers(), false, 1000)
+>>>>>>> 7e5a2e59ebbd4579d06dc1129b31969f98126943
 			task.wait(1)
 
 			TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, Players:GetPlayers(), "", {[PARAMETER_NAME] = true})

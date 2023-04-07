@@ -926,11 +926,14 @@ return function(Vargs, GetEnv)
 
 		Message = function(sender, title, message, image, players, scroll, duration)
 
+<<<<<<< HEAD
 			-- Currently not used
 			if sender == 'Adonis' or sender == 'HelpSystem' or sender == 'Command' then
 				sender = nil
 			end
 
+=======
+>>>>>>> 7e5a2e59ebbd4579d06dc1129b31969f98126943
 			-- ////////// Compatability for older plugins (before sender and image ares were introduced)
 			if sender ~= nil and typeof(sender) ~= 'Instance' and typeof(sender) ~= 'userdata' and typeof(sender) ~= 'table' then
 				title = sender
@@ -945,6 +948,7 @@ return function(Vargs, GetEnv)
 
 			duration = duration or (#tostring(message) / 19) + 2.5
 
+<<<<<<< HEAD
 			if image then
 
 				-- Support "MatIcon://" for fast access to maticons
@@ -955,6 +959,10 @@ return function(Vargs, GetEnv)
 				elseif sender and (image == 'HeadShot') then
 					image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
 				end
+=======
+			if sender and (image == 'HeadShot') then
+				image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
+>>>>>>> 7e5a2e59ebbd4579d06dc1129b31969f98126943
 			end
 
 			for _, v in players do
@@ -1382,7 +1390,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		Shutdown = function(reason)
+<<<<<<< HEAD
 			Functions.Message('Adonis', Settings.SystemTitle, "The server is shutting down...", 'MatIcon://Warning', service.Players:GetPlayers(), false, 5)
+=======
+			Functions.Message(nil, Settings.SystemTitle, "The server is shutting down...", nil, service.Players:GetPlayers(), false, 5)
+>>>>>>> 7e5a2e59ebbd4579d06dc1129b31969f98126943
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
