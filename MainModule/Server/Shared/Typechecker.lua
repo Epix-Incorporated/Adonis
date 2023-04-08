@@ -1055,7 +1055,7 @@ do
 				return false, tableErrMsg or ""
 			end
 
-			for key, check in checkTable do
+			for key, check in pairs(checkTable) do
 				local success, errMsg = check(value[key])
 				if success == false then
 					return false, string.format("[interface] bad value for %s:\n\t%s", tostring(key), errMsg or "")
