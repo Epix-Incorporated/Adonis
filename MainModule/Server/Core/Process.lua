@@ -898,7 +898,7 @@ return function(Vargs, GetEnv)
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == workspace then
 					--service.Threads.TimeoutRunTask(`{p.Name};CharacterAdded`,Process.CharacterAdded,60,p)
-					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, p, p.Character)
+					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, p, p.Character, {FinishedLoading = true})
 					if not ran then
 						logError(err)
 					end
@@ -1007,6 +1007,8 @@ return function(Vargs, GetEnv)
 		CharacterAdded = function(p, char, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key]
+										
+			local args = {...}
 
 			if keyData then
 				keyData.PlayerLoaded = true
@@ -1031,6 +1033,14 @@ return function(Vargs, GetEnv)
 				end
 				if Settings.TopBarShift then
 					Remote.Send(p, "SetVariables", { TopBarShift = true })
+				end
+											
+				if 
+					(not args[1] or 
+						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil))
+					and 
+						(Settings.Console and (not Settings.Console_AdminsOnly or level > 0)) then
+					Remote.RefreshGui(p, "Console")
 				end
 
 				--if Settings.CustomChat then

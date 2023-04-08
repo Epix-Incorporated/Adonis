@@ -1434,12 +1434,14 @@ return function(Vargs, GetEnv)
 			return false
 		end;
 
-		LaxCheckMatch = function(check, match)
+		LaxCheckMatch = function(check, match, opts)
+			local keys = if opts and type(opts) == 'table' and opts.IgnoreKeys then opts.IgnoreKeys else {}
 			if check == match then
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
 				for k, v in match do
-					if type(v) == "table" and not Functions.LaxCheckMatch(check[k], v) then
+					if table.find(keys, k) then continue end
+					if type(v) == "table" and not Functions.LaxCheckMatch(check[k], v, opts) then
 						return false
 					elseif type(v) ~= "table" and check[k] ~= v then
 						return false
@@ -1587,7 +1589,5 @@ return function(Vargs, GetEnv)
 			end
 			return if allowNil then nil else BrickColor.random()
 		end;
-
-		NuclearExplode = require(server.Dependencies.FastNuke);
 	};
 end

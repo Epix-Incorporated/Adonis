@@ -252,7 +252,7 @@ return function(Vargs, GetEnv)
 				local tab = {
 					`Question: {question}`;
 					`Total Responses: {total}`;
-					`Time Left: {math.max(0, 120 - (os.clock()-startTime))}`;
+					`Time Left: {math.floor(math.max(0, 120 - (os.clock()-startTime)))}`;
 					--`Didn't Vote: {#players-total}`;
 				}
 
