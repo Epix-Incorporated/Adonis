@@ -3,6 +3,16 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
+	"[Patch v239b 2023-04-09 14:50 UTC] @LiveFireExercise";
+	"(Git/ccuser44) Don't save groups in datastore (#1065)";
+	"(Git/ccuser44) Fix mystery error with hint (#1068)";
+	"(Git/ccuser44) Remove unecessary commented out code (#1067)";
+	"(Git/ccuser44) Update notif command (#1066)";
+	"(Git/ccuser44) Small fix for Lua vanilla type (#1064)";
+	"(Git/ccuser44) Update Anticheat (#1063)";
+	"(Git/xhayper) fix: vote command timer showing up with decimal (#1060)";
+	"Disabled DOS protection";
+	"";
 	"[Patch v239a 2023-04-07 11:50 UTC] @LiveFireExercise";
 	"Fixed Unity and XP themes";
 	"Reverted the :nuke command to old functionality";
