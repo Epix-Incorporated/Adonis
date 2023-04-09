@@ -1188,19 +1188,19 @@ return function(Vargs, GetEnv)
 		CheckKeys = function()
 			--// Check all keys for ones no longer in use for >10 minutes (so players who actually left aren't tracked forever)
 			for key, data in Remote.Clients do
-				local continue = true;
+				local continueNext = true;
 
 				if data.Player and data.Player.Parent == service.Players then
-					continue = false;
+					continueNext = false;
 				else
 					local Player = service.Players:GetPlayerByUserId(key)
 					if Player then
 						data.Player = Player
-						continue = false
+						continueNext = false
 					end
 				end
 
-				if continue and (data.LastUpdate and os.time() - data.LastUpdate > Remote.TimeUntilKeyDestroyed) then
+				if continueNext and (data.LastUpdate and os.time() - data.LastUpdate > Remote.TimeUntilKeyDestroyed) then
 					Remote.Clients[key] = nil;
 					--print(`Client key removed for UserId {key}`)
 					Logs:AddLog("Script", `Client key removed for UserId {key}`)
