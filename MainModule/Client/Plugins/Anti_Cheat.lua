@@ -846,7 +846,7 @@ return function(Vargs)
 		local time = meta(time)
 		local oldName = ""
 
-		track("Thread: TableCheck", meta(function()
+		track("Thread: Anti Cheat tamper check", meta(function()
 			while oWait(1) do
 				local success, value = pcall(function()
 					return Anti.Detectors
