@@ -471,8 +471,8 @@ return function(Vargs)
 				"getmenv";
 				"gettenv"; -- script-ware specific
 				"identifyexecutor";
-				"getreg";
-				"getgc";
+				--"getreg";
+				--"getgc";
 				"getnilinstances";
 				"getconnections";
 				"getloadedmodules";
