@@ -1397,7 +1397,7 @@ return function(Vargs, GetEnv)
 					else
 						error("Incorrect key or G_Access is disabled")
 					end
-				end);
+				end, true);
 
 				Scripts = service.ReadOnly({
 					ExecutePermission = MetaFunc(function(srcScript, code)
@@ -1433,42 +1433,42 @@ return function(Vargs, GetEnv)
 							end
 							return data.Source, module
 						end
-					end);
+					end, true);
 				}, nil, nil, true);
 
-				CheckAdmin = MetaFunc(Admin.CheckAdmin);
+				CheckAdmin = MetaFunc(Admin.CheckAdmin, true);
 
-				IsAdmin = MetaFunc(Admin.CheckAdmin);
+				IsAdmin = MetaFunc(Admin.CheckAdmin, true);
 
-				IsBanned = MetaFunc(Admin.CheckBan);
+				IsBanned = MetaFunc(Admin.CheckBan, true);
 
-				IsMuted = MetaFunc(Admin.IsMuted);
+				IsMuted = MetaFunc(Admin.IsMuted, true);
 
-				CheckDonor = MetaFunc(Admin.CheckDonor);
+				CheckDonor = MetaFunc(Admin.CheckDonor, true);
 
-				GetLevel = MetaFunc(Admin.GetLevel);
+				GetLevel = MetaFunc(Admin.GetLevel, true);
 
-				SetLighting = MetaFunc(Functions.SetLighting);
+				SetLighting = MetaFunc(Functions.SetLighting, true);
 
-				SetPlayerLighting = MetaFunc(Remote.SetLighting);
+				SetPlayerLighting = MetaFunc(Remote.SetLighting, true);
 
-				NewParticle = MetaFunc(Functions.NewParticle);
+				NewParticle = MetaFunc(Functions.NewParticle, true);
 
-				RemoveParticle = MetaFunc(Functions.RemoveParticle);
+				RemoveParticle = MetaFunc(Functions.RemoveParticle, true);
 
-				NewLocal = MetaFunc(Remote.NewLocal);
+				NewLocal = MetaFunc(Remote.NewLocal, true);
 
-				MakeLocal = MetaFunc(Remote.MakeLocal);
+				MakeLocal = MetaFunc(Remote.MakeLocal, true);
 
-				MoveLocal = MetaFunc(Remote.MoveLocal);
+				MoveLocal = MetaFunc(Remote.MoveLocal, true);
 
-				RemoveLocal = MetaFunc(Remote.RemoveLocal);
+				RemoveLocal = MetaFunc(Remote.RemoveLocal, true);
 
-				Hint = MetaFunc(Functions.Hint);
+				Hint = MetaFunc(Functions.Hint, true);
 
-				Message = MetaFunc(Functions.Message);
+				Message = MetaFunc(Functions.Message, true);
 
-				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin);
+				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin, true);
 			}
 
 			local AdonisGTable = service.NewProxy({
