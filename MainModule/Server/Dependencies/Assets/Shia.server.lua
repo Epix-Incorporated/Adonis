@@ -18,7 +18,7 @@ local frames = {
 
 while true do
 	for _, id in ipairs(frames) do
-		script.Parent.Texture = "http://www.roblox.com/asset/?id="..id
+		script.Parent.Texture = `http://www.roblox.com/asset/?id={id}`
 		task.wait(0.1)
 	end
 end

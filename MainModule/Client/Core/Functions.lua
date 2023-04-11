@@ -226,7 +226,7 @@ return function(Vargs, GetEnv)
 
 		GetRandom = function(pLen)
 			--local str = ""
-			--for i=1,math.random(5,10) do str=str..string.char(math.random(33,90)) end
+			--for i=1,math.random(5,10) do str=`{str}{string.char(math.random(33,90))}` end
 			--return str
 
 			local random = math.random
@@ -238,10 +238,6 @@ return function(Vargs, GetEnv)
 				Res[Idx] = format('%02x', random(255));
 			end;
 			return table.concat(Res)
-		end;
-
-		Round = function(num)
-			return math.floor(num + 0.5)
 		end;
 
 		SetView = function(ob)
@@ -350,7 +346,7 @@ return function(Vargs, GetEnv)
 
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-			data = gsub(data, '[^'..b..'=]', '')
+			data = gsub(data, `[^{b}=]`, '')
 
 			return (gsub(gsub(data, '.', function(x)
 				if x == '=' then
@@ -537,7 +533,7 @@ return function(Vargs, GetEnv)
 		GetParticleContainer = function(target)
 			if target then
 				for _, v in service.LocalContainer():GetChildren() do
-					if v.Name == target:GetFullName().."PARTICLES" then
+					if v.Name == `{target:GetFullName()}PARTICLES` then
 						local obj = v:FindFirstChild("_OBJECT")
 						if obj.Value == target then
 							return v
@@ -704,7 +700,7 @@ return function(Vargs, GetEnv)
 				Parent = p;
 				Name = "Decal";
 				Face = 2;
-				Texture = "rbxassetid://"..decalId;
+				Texture = `rbxassetid://{decalId}`;
 				Transparency = 0;
 			}) else nil
 
@@ -781,7 +777,7 @@ return function(Vargs, GetEnv)
 		MoveCapes = function()
 			service.StopLoop("CapeMover")
 			service.StartLoop("CapeMover",0.1,function()
-				if Functions.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
+				if service.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
 					for i,v in Variables.Capes do
@@ -836,12 +832,6 @@ return function(Vargs, GetEnv)
 			end, true)
 		end;
 
-		CountTable = function(tab)
-			local count = 0
-			for _ in tab do count += 1 end
-			return count
-		end;
-
 		ClearAllInstances = function()
 			local objects = service.GetAdonisObjects()
 			for i in objects do
@@ -860,7 +850,7 @@ return function(Vargs, GetEnv)
 
 			for _, v in animator:GetPlayingAnimationTracks() do v:Stop() end
 			local anim = service.New('Animation', {
-				AnimationId = 'rbxassetid://'..animId,
+				AnimationId = `rbxassetid://{animId}`,
 				Name = "ADONIS_Animation"
 			})
 			local track = animator:LoadAnimation(anim)
@@ -1041,7 +1031,13 @@ return function(Vargs, GetEnv)
 			if keyVal then
 				for _, e in Enum.KeyCode:GetEnumItems() do
 					if e.Value == keyVal then
-						return e.Name;
+						local name = service.UserInputService:GetStringForKeyCode(e)
+
+						if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
+							return e.Name
+						else
+							return name
+						end
 					end
 				end
 			end
@@ -1064,7 +1060,7 @@ return function(Vargs, GetEnv)
 					if time() - timer > 5 or isAdmin then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
-							Message = "[Ran] Key: "..Functions.KeyCodeToName(key).." | Command: "..tostring(Variables.KeyBinds[key])
+							Message = `[Ran] Key: {Functions.KeyCodeToName(key)} | Command: {Variables.KeyBinds[key]}`
 						})
 					end
 					timer = time()
@@ -1077,7 +1073,7 @@ return function(Vargs, GetEnv)
 			Variables.KeyBinds[tostring(key)] = command
 			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 			UI.Make("Hint",{
-				Message = 'Bound key "'..Functions.KeyCodeToName(key)..'" to command: '..command
+				Message = `Bound key "{Functions.KeyCodeToName(key)}" to command: {command}`
 			})
 		end;
 
@@ -1089,7 +1085,7 @@ return function(Vargs, GetEnv)
 				Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 				Routine(function()
 					UI.Make("Hint",{
-						Message = 'Removed key "'..Functions.KeyCodeToName(key)..'" from keybinds'
+						Message = `Removed key "{Functions.KeyCodeToName(key)}" from keybinds`
 					})
 				end)
 			end
@@ -1122,11 +1118,11 @@ return function(Vargs, GetEnv)
 		PlayAudio = function(audioId, volume, pitch, looped)
 			if Variables.localSounds[tostring(audioId)] then Variables.localSounds[tostring(audioId)]:Stop() Variables.localSounds[tostring(audioId)]:Destroy() Variables.localSounds[tostring(audioId)]=nil end
 			local sound = service.New("Sound")
-			sound.SoundId = "rbxassetid://"..audioId
+			sound.SoundId = `rbxassetid://{audioId}`
 			if looped then sound.Looped = true end
 			if volume then sound.Volume = volume end
 			if pitch then sound.Pitch = pitch end
-			sound.Name = "ADONI_LOCAL_SOUND "..audioId
+			sound.Name = `ADONIS_LOCAL_SOUND {audioId}`
 			sound.Parent = service.LocalContainer()
 			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
@@ -1225,7 +1221,7 @@ return function(Vargs, GetEnv)
 				if decal and decal~=0 then
 					local dec = service.New("Decal", p)
 					dec.Face = 2
-					dec.Texture = "http://www.roblox.com/asset/?id="..decal
+					dec.Texture = `http://www.roblox.com/asset/?id={decal}`
 					dec.Transparency=0
 				end
 				p.Size = Vector3.new(.2,.2,.2)
@@ -1270,11 +1266,11 @@ return function(Vargs, GetEnv)
 			local audioId = 296333956
 
 			local audio = Instance.new("Sound",service.LocalContainer())
-			audio.SoundId = "rbxassetid://"..audioId
+			audio.SoundId = `rbxassetid://{audioId}`
 			audio.Volume = 1
 
 			local audio2 = Instance.new("Sound",service.LocalContainer())
-			audio2.SoundId = "rbxassetid://"..audioId
+			audio2.SoundId = `rbxassetid://{audioId}`
 			audio2.Volume = 1
 
 			local phonemes = {
@@ -1591,14 +1587,14 @@ return function(Vargs, GetEnv)
 
 			}
 
-			game:service("ContentProvider"):Preload("rbxassetid://"..audioId)
+			game:service("ContentProvider"):Preload(`rbxassetid://{audioId}`)
 
 			local function getText(str)
 				local tab = {}
 				local str = str
 				local function getNext()
 					for _, v in phonemes do
-						local occ,pos = string.find(string.lower(str),"^"..v.str)
+						local occ,pos = string.find(string.lower(str), `^{v.str}`)
 						if occ then
 							if v.capture then
 								local real = v.real

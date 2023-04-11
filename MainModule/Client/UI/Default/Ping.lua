@@ -36,7 +36,7 @@ return function(data, env)
 		window:Ready()
 		
 		repeat
-			label.Text = client.Remote.Ping().."ms"
+			label.Text = `{client.Remote.Ping()}ms`
 			wait(2)
 		until not pinging or not gTable.Active
 	end

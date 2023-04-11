@@ -49,7 +49,7 @@ return function(data, env)
 	local visualiserModule = require(script:FindFirstChild("Visualizer"))
 	local sliderModule = require(script:FindFirstChild("Slider"))
 	local localAudioLib = client.Shared:FindFirstChild("AudioLib")
-	localAudioLib = require(localAudioLib).new(service.LocalContainer())
+	localAudioLib = require(localAudioLib).new(service.UnWrap(service.LocalContainer()))
 
 	local localAudioLibFunction = function(func, args)
 		return localAudioLib[func](localAudioLib, args)
@@ -194,7 +194,7 @@ return function(data, env)
 
 	local function newTrackSelected(v)
 		local sound = audioLib("UpdateSound", {
-			SoundId = "rbxassetid://"..v.ID;
+			SoundId = `rbxassetid://{v.ID}`;
 			Playing = true;
 			TimePosition = 0;
 		})
@@ -221,7 +221,7 @@ return function(data, env)
 	local visualiser = visualiserModule.new(visualiserFrame, 400)
 	visualiser:LinkToSound(audioLib("GetSound"))
 	if song then audioLib("UpdateSound", {
-		SoundId = "rbxassetid://"..song;
+		SoundId = `rbxassetid://{song}`;
 		Playing = true;
 		TimePosition = 0;
 		})
@@ -346,15 +346,15 @@ return function(data, env)
 
 		local function loop(i,v)
 			if type(v) == "table" then
-				loading.Text = "Loading tracks ("..i.."/"..#list..")";
+				loading.Text = `Loading tracks ({i}/{#list})`;
 				local success, product_info = pcall(function()
 					return service.MarketplaceService:GetProductInfo(v.ID, Enum.InfoType.Asset)
 				end)
 				if product_info.AssetTypeId == 3 then
 					table.insert(availableSongLists[tab.Name], v)
 					frame:Add("TextButton", {
-						Text = "  " .. (num + 1) .. ") " .. (success and product_info.Name or "[ERROR] "..v.Name);
-						ToolTip = "Name: ".. v.Name .." | ID: "..v.ID;
+						Text = `  {num + 1}) {success and product_info.Name or `[ERROR] {v.Name}`}`;
+						ToolTip = `Name: {v.Name} | ID: {v.ID}`;
 						Size = UDim2.new(1, 0, 0, 25);
 						Position = UDim2.new(0, 0, 0, num*25);
 						BackgroundTransparency = (num%2 == 0 and 0) or 0.2;
@@ -397,14 +397,14 @@ return function(data, env)
 						local toPlay = activeSongList[(rnum)]
 						if toPlay then
 							audioLib("UpdateSound", {
-								SoundId = "rbxassetid://"..toPlay.ID;
+								SoundId = `rbxassetid://{toPlay.ID}`;
 								Playing = true;
 								TimePosition = 0;
 							})
 							local success, product_info = pcall(function()
 								return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 							end)
-							heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+							heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 							selected = {
 								ID = toPlay.ID,
 								Name = toPlay.Name,
@@ -415,7 +415,7 @@ return function(data, env)
 					else
 						local toPlay = activeSongList[(selected.Index +1)]
 						if toPlay then
-							audioLib("UpdateSound", {SoundId = "rbxassetid://"..toPlay.ID;
+							audioLib("UpdateSound", {SoundId = `rbxassetid://{toPlay.ID}`;
 								Playing = true;
 								TimePosition = 0;
 							})
@@ -437,7 +437,7 @@ return function(data, env)
 							--	success, product_info = service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 							--	return success, product_info
 							--end) until success == true
-							heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+							heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 							selected = {
 								ID = toPlay.ID,
 								Name = toPlay.Name,
@@ -748,7 +748,7 @@ return function(data, env)
 				TextChanged = function(text, enter, new)
 					if enter then
 						audioLib("UpdateSound", {
-							SoundId = "rbxassetid://"..text;
+							SoundId = `rbxassetid://{text}`;
 							Playing = true;
 							TimePosition = 0;
 						})
@@ -1284,7 +1284,7 @@ function Slider.new(holder: any, configuration: sliderConfigDictionary, moveTwee
 	assert(configuration.Start ~= nil, "Failed to find Start in configuration table")
 	assert(configuration.End ~= nil, "Failed to find End in configuration table")
 	assert(configuration.Increment > 0, "Increment must be greater than 0")
-	assert(configuration.End > configuration.Start, "Config.End must be greater than Config.Start (" .. configuration.End .. " <= " .. configuration.Start .. ")")
+	assert(configuration.End > configuration.Start, `Config.End must be greater than Config.Start ({configuration.End} <= {configuration.Start})`)
 
 	axis = axis or "x"
 	axis = Lower(axis)

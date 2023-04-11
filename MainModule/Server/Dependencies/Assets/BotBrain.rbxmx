@@ -46,7 +46,7 @@ local props = {
 	SpecialKey = "null";
 	AttackBots = false;
 	isDead = false;
-	LastCompute = tick();
+	LastCompute = os.clock();
 }
 
 local function tagHumanoid(humanoid, attacker)
@@ -112,7 +112,7 @@ local function canSee(targCFrame)
 	
 	local rayParams = RaycastParams.new()
 	rayParams.FilterDescendantsInstances = {char, props.Target}
-	rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
 	
 	local result = workspace:Raycast(myPos, (targetPos - myPos).Unit, rayParams)
 	
@@ -141,17 +141,19 @@ validTarget = function(v)
 end
 
 local function doAttack(v)
-	if props.Attack and not props.isDead and v == props.Target and validTarget(v) then
+	if props.Attack and not props.isDead and v == props.Target then
+		task.synchronize()
 		local foundHumanoid = v:FindFirstChildOfClass("Humanoid")
-		if foundHumanoid then
+		if foundHumanoid and validTarget(v) then
 			tagHumanoid(foundHumanoid, hum)
 			foundHumanoid:TakeDamage(props.Damage)
 		end
+		task.desynchronize()
 	end
 end
 
 local function checkPath()
-	if props.AutoCompute or tick() - props.LastCompute > 1 then
+	if props.AutoCompute or os.clock() - props.LastCompute > 1 then
 		getPath()
 	end
 end
@@ -175,7 +177,7 @@ getPath = function()
 		if canSee(targetPos) then
 			props.AutoCompute = true
 			path = {getCFrame(), targetPos.Position}
-			props.LastCompute = tick()
+			props.LastCompute = os.clock()
 			current = nil
 			currentInd = 2
 		else
@@ -190,7 +192,7 @@ getPath = function()
 			
 			path = {}
 			path = pathf:GetPointCoordinates()
-			props.LastCompute = tick()
+			props.LastCompute = os.clock()
 			props.Computing = false
 			current = nil
 			currentInd = 2
@@ -243,27 +245,30 @@ local function init()
 	local str = Instance.new("StringValue",char)
 	str.Name = "isBot"
 	str.Value = props.SpecialKey
-	
+
 	hum.Died:Connect(function()
-		task.wait(1)
+		task.synchronize()
+		Debris:AddItem(char, 1)
 		props.isDead = true
-		char:Destroy()
 	end)
-	
+
+	task.desynchronize()
+
 	while task.wait(1/30) and not props.isDead do
 		if char and hum and not props.isDead then
 			updateBot()
 		else
+			task.synchronize()
 			props.isDead = true
-			task.wait(1)
-			char:Destroy()
+			Debris:AddItem(char, 1)
+			break
 		end
 	end
 end
 
-function doToucher(part)
-	part.Touched:Connect(function(hit)
-		if hit and hit:IsA("Part") or hit:IsA("BasePart") and hit.Parent:IsA("Model") and hit.Parent:FindFirstChildOfClass("Humanoid") then
+local function doToucher(part)
+	part.Touched:ConnectParallel(function(hit)
+		if hit and hit:IsA("BasePart") and hit.Parent and hit.Parent:IsA("Model") and hit.Parent:FindFirstChildOfClass("Humanoid") and hit.Parent ~= script.Parent then
 			doAttack(hit.Parent)
 		end
 	end)
@@ -276,8 +281,8 @@ doToucher(rleg)
 
 event.Event:Connect(function(command,data)
 	if command == "SetSetting" then
-		for i,v in data do
-			props[i] = v
+		for k, v in data do
+			props[k] = v
 		end
 	elseif command == "Init" then
 		init()

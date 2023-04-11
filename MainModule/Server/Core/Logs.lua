@@ -129,7 +129,7 @@ return function(Vargs, GetEnv)
 							UserId = p.UserId;
 						}
 					end
-					table.insert(temp, newTab)--{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+					table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
 				end
 
 				if oldLogs then

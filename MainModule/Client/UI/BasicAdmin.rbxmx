@@ -180,10 +180,10 @@ return function(data, env)
 	elseif waitTime <= 1 then
 		waitTime = 2
 	end]]--
-	Left.Text = waitTime..'.00'
+	Left.Text = `{waitTime}.00`
 	for i=waitTime,1,-1 do
 		if not Left then break end
-		Left.Text = i..'.00'
+		Left.Text = `{i}.00`
 		wait(1)
 	end
 	Left.Text = "Closing.."

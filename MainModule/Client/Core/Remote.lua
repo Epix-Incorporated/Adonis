@@ -318,7 +318,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			Test = function(args)
-				print("OK WE GOT COMMUNICATION!  ORGL: "..tostring(args[1]))
+				print(`OK WE GOT COMMUNICATION!  ORGL: {args[1]}`)
 			end;
 
 			TestError = function(args)

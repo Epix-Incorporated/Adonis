@@ -105,7 +105,7 @@ return function(Vargs, GetEnv)
 							})
 
 							if Settings.Trello_Token ~= "" then
-								pcall(HTTP.Trello.API.makeComment, card.id, "Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
+								pcall(HTTP.Trello.API.makeComment, card.id, `Ran Command: {cmd}\nPlace ID: {game.PlaceId}\nServer Job Id: {game.JobId}\nServer Players: {#service.GetPlayers()}\nServer Time: {service.FormatTime()}`)
 							end
 						end
 					end

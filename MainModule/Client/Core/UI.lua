@@ -173,7 +173,7 @@ return function(Vargs, GetEnv)
 				end]]
 
 				local rets = {
-					TrackTask("UI: ".. module:GetFullName(),
+					TrackTask(`UI: {module:GetFullName()}`,
 						--func,
 						setfenv(func, newEnv),
 						data,
@@ -185,7 +185,7 @@ return function(Vargs, GetEnv)
 					return unpack(rets, 2)
 				else
 					warn("Error while running module", module.Name, rets[2])
-					client.LogError("Error loading ".. module.Name .." - ".. tostring(rets[2]))
+					client.LogError(`Error loading {module.Name} - {rets[2]}`)
 				end
 			else
 				warn("Error while loading module", module.Name, tostring(func))

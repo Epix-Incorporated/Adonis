@@ -60,7 +60,7 @@ return function(data, env)
 			Text = "";
 			ToolTip = "Advanced stats";
 			OnClick = function()
-				client.Remote.Send("ProcessCommand", data.CmdPrefix.."perfstats")
+				client.Remote.Send("ProcessCommand", `{data.CmdPrefix}perfstats`)
 			end
 		}):Add("ImageLabel", {
 			Size = UDim2.new(0, 18, 0, 18);
@@ -72,7 +72,7 @@ return function(data, env)
 			Text = "";
 			ToolTip = "Game explorer";
 			OnClick = function()
-				client.Remote.Send("ProcessCommand", data.CmdPrefix.."explorer")
+				client.Remote.Send("ProcessCommand", `{data.CmdPrefix}explorer`)
 			end
 		}):Add("ImageLabel", {
 			Size = UDim2.new(0, 18, 0, 18);
@@ -101,7 +101,7 @@ return function(data, env)
 
 		local entries = {
 			{"Game ID", game.GameId},
-			{"Game Creator", service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name.." (#"..data.CreatorId..")"},
+			{"Game Creator", `{service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name} (#{data.CreatorId})`},
 			-- selene: allow(incorrect_standard_library_use)
 			{"Creator Type", game.CreatorType.Name},
 			{"Place ID", game.PlaceId},
@@ -120,7 +120,7 @@ return function(data, env)
 			table.insert(entries, 10, {"Private Server ID", data.PrivateServerId})
 		elseif serverType == "Private" then
 			table.insert(entries, 10, {"Private Server ID", data.PrivateServerId})
-			table.insert(entries, 11, {"Private Server Owner", (service.Players:GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]").." ("..data.PrivateServerOwnerId..")"})
+			table.insert(entries, 11, {"Private Server Owner", `{service.Players:GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]"} ({data.PrivateServerOwnerId})`})
 		end
 
 		local i, currentPos = 0, 0
@@ -129,7 +129,7 @@ return function(data, env)
 			if type(v) == "table" then
 				i += 1
 				displays[v[1]] = overviewtab:Add("TextLabel", {
-					Text = "  "..v[1]..":";
+					Text = `  {v[1]}:`;
 					ToolTip = v[3];
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
@@ -186,7 +186,7 @@ return function(data, env)
 			local i = 1
 			for _, v in ipairs(entries) do
 				locationtab:Add("TextLabel", {
-					Text = "  "..v[1]..":";
+					Text = `  {v[1]}:`;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
@@ -294,14 +294,14 @@ return function(data, env)
 				if not player then continue end
 				if not (playerName:sub(1, #filter):lower() == filter:lower() or (player.DisplayName:sub(1, #filter):lower() == filter:lower())) then continue end
 				local entry = scroller:Add("TextButton", {
-					Text = "           "..service.FormatPlayer(player);
-					ToolTip = "User ID: "..service.Players[playerName].UserId.." [Click to open profile]";
+					Text = `           {service.FormatPlayer(player)}`;
+					ToolTip = `User ID: {service.Players[playerName].UserId} [Click to open profile]`;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, 0, 0, 30);
 					Position = UDim2.new(0, 0, 0, (30*(i-1))+5);
 					TextXAlignment = "Left";
 					OnClicked = function()
-						client.Remote.Send("ProcessCommand", data.CmdPlayerPrefix.."profile"..data.SplitKey..playerName)
+						client.Remote.Send("ProcessCommand", `{data.CmdPlayerPrefix}profile{data.SplitKey}{playerName}`)
 						window:Close()
 					end;
 				})
@@ -315,7 +315,7 @@ return function(data, env)
 					end
 
 					entry:Add("TextLabel", {
-						Text = " "..subEntryText.."  ";
+						Text = ` {subEntryText}  `;
 						BackgroundTransparency = 1;
 						Size = UDim2.new(0, 120, 1, 0);
 						Position = UDim2.new(1, -120, 0, 0);
@@ -355,7 +355,7 @@ return function(data, env)
 				})
 			end
 			scroller:ResizeCanvas(false, true, false, false, 5, 5)
-			search.PlaceholderText = "Players: "..playerCount..(data.Refreshables.Admins and " | Admins: "..adminCount or "").." | Donors: "..#data.Refreshables.Donors
+			search.PlaceholderText = `Players: {playerCount}{data.Refreshables.Admins and ` | Admins: {adminCount}` or ""} | Donors: {#data.Refreshables.Donors}`
 		end
 
 		search:GetPropertyChangedSignal("Text"):Connect(function()
@@ -386,7 +386,7 @@ return function(data, env)
 				if type(v) == "table" then
 					i += 1
 					workspacetab:Add("TextLabel", {
-						Text = "  "..v[1]..":";
+						Text = `  {v[1]}:`;
 						ToolTip = v[3];
 						BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 						Size = UDim2.new(1, -10, 0, 25);

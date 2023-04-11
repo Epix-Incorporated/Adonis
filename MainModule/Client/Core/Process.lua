@@ -120,7 +120,7 @@ return function(Vargs, GetEnv)
 			local args = {...}
 			Remote.Received += 1
 			if type(com) == "string" then
-				if com == client.DepsName.."GIVE_KEY" then
+				if com == `{client.DepsName}GIVE_KEY` then
 					if not Core.Key then
 						log("~! Set remote key")
 						Core.Key = args[1]
@@ -132,8 +132,8 @@ return function(Vargs, GetEnv)
 					local comString = Remote.Decrypt(com,Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
-						--local ran,err = pcall(command, args) --task service.Threads.RunTask("REMOTE:"..comString,command,args)
-						local rets = {service.TrackTask("Remote: ".. comString, command, args)}
+						--local ran,err = pcall(command, args) --task service.Threads.RunTask(`REMOTE:{comString}`,command,args)
+						local rets = {service.TrackTask(`Remote: {comString}`, command, args)}
 						if not rets[1] then
 							logError(rets[2])
 						else
@@ -151,11 +151,11 @@ return function(Vargs, GetEnv)
 		ErrorMessage = function(Message, Trace, Script)
 			--service.FireEvent("ErrorMessage", Message, Trace, Script)
 			if Message and Message ~= "nil" and Message ~= "" and (string.find(Message,":: Adonis ::") or string.find(Message,script.Name) or Script == script) then
-				logError(tostring(Message).." - "..tostring(Trace))
+				logError(`{Message} - {Trace}`)
 			end
 
 			--if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
-				--Anti.Detected("log","Scriptless/Traceless error found. Script: "..tostring(Script).." - Trace: "..tostring(Trace))
+				--Anti.Detected("log",`Scriptless/Traceless error found. Script: {Script} - Trace: {Trace}`)
 			--end
 		end;
 

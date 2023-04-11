@@ -50,8 +50,8 @@ return function(Vargs, GetEnv)
 					else "No reason provided"
 				pcall(plr.Kick, plr, string.format("%s | Reason: %s", Variables.BanMessage, reason))
 				AddLog("Script", {
-					Text = "Applied ban on "..plr.Name;
-					Desc = "Ban reason: "..reason;
+					Text = `Applied ban on {plr.Name}`;
+					Desc = `Ban reason: {reason}`;
 				})
 			end
 		end)
@@ -75,8 +75,8 @@ return function(Vargs, GetEnv)
 					)
 				)
 				AddLog("Script", {
-					Text = "Applied TimeBan on ".. plr.Name;
-					Desc = "Ban reason: ".. reason;
+					Text = `Applied TimeBan on {plr.Name}`;
+					Desc = `Ban reason: {reason}`;
 				})
 			end
 		end)
@@ -111,7 +111,7 @@ return function(Vargs, GetEnv)
 						local NewChatLimit = ChatSettingsModule.MaximumMessageLength
 						if NewChatLimit and type(NewChatLimit) == "number" then
 							Process.MaxChatCharacterLimit = NewChatLimit
-							AddLog("Script", "Chat Character Limit automatically set to " .. NewChatLimit)
+							AddLog("Script", `Chat Character Limit automatically set to {NewChatLimit}`)
 						end
 					else
 						AddLog("Script", "Failed to automatically get ChatSettings Character Limit, ignore if you use a custom chat system")
@@ -272,7 +272,7 @@ return function(Vargs, GetEnv)
 		local isPlayer = type(p)=="userdata" and p:IsA"Player"
 		if isPlayer then
 			local rateData = RateLimiter[typ]
-			assert(rateData, "No rate limit data available for the given type "..typ)
+			assert(rateData, `No rate limit data available for the given type {typ}`)
 			local ratePass, didThrottle, canThrottle, curRate, maxRate = newRateLimit(rateData, p.UserId)
 			return ratePass, didThrottle, canThrottle, curRate, maxRate
 		else
@@ -307,6 +307,7 @@ return function(Vargs, GetEnv)
 					--elseif cliData and keys and cliData.Module ~= keys.Module then
 					--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
+					local keys = Remote.Clients[tostring(p.UserId)]
 					if keys and select("#", ...) <= Process.RemoteMaxArgCount then
 						local args = {...}
 						local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
@@ -315,9 +316,9 @@ return function(Vargs, GetEnv)
 						keys.Received += 1
 
 						if type(com) == "string" then
-							if com == keys.Special.."GET_KEY" then
+							if com == `{keys.Special}GET_KEY` then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
-									Remote.Fire(p, keys.Special.."GIVE_KEY", keys.Key)
+									Remote.Fire(p, `{keys.Special}GIVE_KEY`, keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 
@@ -327,7 +328,7 @@ return function(Vargs, GetEnv)
 								end
 
 								AddLog("RemoteFires", {
-									Text = p.Name.." requested key from server",
+									Text = `{p.Name} requested key from server`,
 									Desc = "Player requested key from server",
 									Player = p;
 								})
@@ -342,9 +343,9 @@ return function(Vargs, GetEnv)
 								})
 
 								if command then
-									local rets = {TrackTask("Remote: ".. p.Name ..": ".. comString, command, p, args)}
+									local rets = {TrackTask(`Remote: {p.Name}: {comString}`, command, p, args)}
 									if not rets[1] then
-										logError(p, comString .. ": ".. tostring(rets[2]))
+										logError(p, `{comString}: {rets[2]}`)
 									else
 										return {table.unpack(rets, 2)}
 									end
@@ -377,10 +378,10 @@ return function(Vargs, GetEnv)
 			msg = Functions.Trim(msg)
 
 			if string.match(msg, Settings.BatchKey) then
-				for cmd in string.gmatch(msg,'[^'..Settings.BatchKey..']+') do
+				for cmd in string.gmatch(msg,`[^{Settings.BatchKey}]+`) do
 					cmd = Functions.Trim(cmd)
 
-					local waiter = Settings.PlayerPrefix.."wait"
+					local waiter = `{Settings.PlayerPrefix}wait`
 					if string.sub(string.lower(cmd), 1, #waiter) == waiter then
 						local num = tonumber(string.sub(cmd, #waiter + 1))
 
@@ -441,7 +442,7 @@ return function(Vargs, GetEnv)
 				end
 
 				local cmdArgs = command.Args or command.Arguments
-				local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
+				local argString = string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ""
 				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 
 				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
@@ -461,18 +462,18 @@ return function(Vargs, GetEnv)
 
 				if opts.CrossServer or (not isSystem and not opts.DontLog) then
 					AddLog("Commands", {
-						Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
-						Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
+						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
+						Desc = `{matched}{Settings.SplitKey}{table.concat(args, Settings.SplitKey)}`;
 						Player = p;
 					})
 
 					if Settings.ConfirmCommands then
-						Functions.Hint("Executed Command: [ "..msg.." ]", {p})
+						Functions.Hint(`Executed Command: [ {msg} ]`, {p})
 					end
 				end
 
 				if noYield then
-					taskName = "Thread: " .. taskName
+					taskName = `Thread: {taskName}`
 				end
 
 				Admin.UpdateCooldown(pDat, command)
@@ -483,7 +484,7 @@ return function(Vargs, GetEnv)
 
 				if not opts.IgnoreErrors then
 					if type(cmdError) == "string" then
-						AddLog("Errors", "["..matched.."] "..cmdError)
+						AddLog("Errors", `[{matched}] {cmdError}`)
 
 						cmdError = cmdError:match("%d: (.+)$") or cmdError
 
@@ -494,7 +495,7 @@ return function(Vargs, GetEnv)
 						end
 					elseif cmdError ~= nil and cmdError ~= true and not isSystem then
 						Remote.MakeGui(p, "Output", {
-							Message = "There was an error but the error was not a string? : "..tostring(cmdError);
+							Message = `There was an error but the error was not a string? : {cmdError}`;
 						})
 					end
 				end
@@ -537,7 +538,7 @@ return function(Vargs, GetEnv)
 						--Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
 					end
 				else
-					local target = Settings.SpecialPrefix..'all'
+					local target = `{Settings.SpecialPrefix}all`
 					if not b then
 						b = 'Global'
 					end
@@ -604,14 +605,14 @@ return function(Vargs, GetEnv)
 					local filtered = service.LaxFilter(msg, p)
 
 					AddLog(Logs.Chats, {
-						Text = p.Name..": " .. tostring(filtered);
+						Text = `{p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
 					})
 
 					if Settings.ChatCommands then
 						if Admin.DoHideChatCmd(p, msg) then
-							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(1, 1, 1))
+							Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
 							Process.Command(p, msg, {Chat = true;})
 						elseif string.sub(msg, 1, 3) == "/e " then
 							service.Events.PlayerChatted:Fire(p, msg)
@@ -632,7 +633,7 @@ return function(Vargs, GetEnv)
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
-						Text = "[MUTED] ".. p.Name ..": "..tostring(filtered);
+						Text = `[MUTED] {p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
 					})
@@ -648,7 +649,7 @@ return function(Vargs, GetEnv)
 					--[[if c:IsA("Model") then
 						local p = service.Players:GetPlayerFromCharacter(c)
 						if p then
-							service.TrackTask(p.Name..": CharacterAdded", Process.CharacterAdded, p)
+							service.TrackTask(`{p.Name}: CharacterAdded`, Process.CharacterAdded, p)
 						end
 					end
 
@@ -671,7 +672,7 @@ return function(Vargs, GetEnv)
 		]==]
 
 		PlayerAdded = function(p)
-			AddLog("Script", "Doing PlayerAdded Event for ".. p.Name)
+			AddLog("Script", `Doing PlayerAdded Event for {p.Name}`)
 
 			local key = tostring(p.UserId)
 			local keyData = {
@@ -735,7 +736,7 @@ return function(Vargs, GetEnv)
 			end)
 
 			if not ran then
-				AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
+				AddLog("Errors", `{p.Name} PlayerAdded Failed: {err}`)
 				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:")
 				warn(tostring(err))
 			end
@@ -744,19 +745,19 @@ return function(Vargs, GetEnv)
 				Core.HookClient(p)
 
 				AddLog("Script", {
-					Text = p.Name .. " loading started";
-					Desc = p.Name .. " successfully joined the server";
+					Text = `{p.Name} loading started`;
+					Desc = `{p.Name} successfully joined the server`;
 				})
 
 				AddLog("Joins", {
 					Text = service.FormatPlayer(p);
-					Desc = p.Name.." joined the server";
+					Desc = `{p.Name} joined the server`;
 					Player = p;
 				})
 
 				--// Get chats
 				p.Chatted:Connect(function(msg)
-					local ran, err = TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
+					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, p, msg)
 					if not ran then
 						logError(err);
 					end
@@ -764,7 +765,7 @@ return function(Vargs, GetEnv)
 
 				--// Character added
 				p.CharacterAdded:Connect(function(...)
-					local ran, err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p, ...)
+					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, p, ...)
 					if not ran then
 						logError(err);
 					end
@@ -773,8 +774,8 @@ return function(Vargs, GetEnv)
 				task.delay(600, function()
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						AddLog("Script", {
-							Text = p.Name .. " Failed to Load",
-							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
+							Text = `{p.Name} Failed to Load`,
+							Desc = `{keyData.LoadingStatus}: Client failed to load in time (10 minutes?)`,
 							Player = p;
 						});
 						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
@@ -805,7 +806,7 @@ return function(Vargs, GetEnv)
 
 			AddLog("Leaves", {
 				Text = service.FormatPlayer(p);
-				Desc = p.Name .. " left the server";
+				Desc = `{p.Name} left the server`;
 				Player = p;
 			})
 
@@ -817,7 +818,7 @@ return function(Vargs, GetEnv)
 					trackTargets[p] = nil
 					local otherPlr = service.Players:FindFirstChild(otherPlrName)
 					if otherPlr then
-						task.defer(Remote.RemoveLocal, otherPlr, p.Name.."Tracker")
+						task.defer(Remote.RemoveLocal, otherPlr, `{p.Name}Tracker`)
 					end
 				end
 			end
@@ -843,10 +844,10 @@ return function(Vargs, GetEnv)
 
 			--// Run OnJoin commands
 			for i,v in Settings.OnJoin do
-				TrackTask("Thread: OnJoin_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
+				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
 				AddLog("Script", {
-					Text = "OnJoin: Executed "..tostring(v);
-					Desc = "Executed OnJoin command; "..tostring(v)
+					Text = `OnJoin: Executed {v}`;
+					Desc = `Executed OnJoin command; {v}`
 				})
 			end
 
@@ -876,6 +877,14 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
+
+					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
+						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
+					})
+
+					if Settings.ExploitGuiDetection then
+						Remote.Send(p, "LaunchAnti", "AntiCoreGui")
+					end
 				end
 
 				if Settings.AntiBuildingTools then
@@ -887,8 +896,8 @@ return function(Vargs, GetEnv)
 			if Remote.Clients[key] then
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == workspace then
-					--service.Threads.TimeoutRunTask(p.Name..";CharacterAdded",Process.CharacterAdded,60,p)
-					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p, p.Character)
+					--service.Threads.TimeoutRunTask(`{p.Name};CharacterAdded`,Process.CharacterAdded,60,p)
+					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, p, p.Character, {FinishedLoading = true})
 					if not ran then
 						logError(err)
 					end
@@ -921,7 +930,7 @@ return function(Vargs, GetEnv)
 							Message = "Click here for commands.";
 							Icon = server.MatIcons["Verified user"];
 							Time = 15;
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
 						})
 
 						task.wait(1)
@@ -932,7 +941,7 @@ return function(Vargs, GetEnv)
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
 								Time = 10;
-								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
+								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`);
 							})
 						end
 
@@ -997,6 +1006,8 @@ return function(Vargs, GetEnv)
 		CharacterAdded = function(p, char, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key]
+										
+			local args = {...}
 
 			if keyData then
 				keyData.PlayerLoaded = true
@@ -1021,6 +1032,14 @@ return function(Vargs, GetEnv)
 				end
 				if Settings.TopBarShift then
 					Remote.Send(p, "SetVariables", { TopBarShift = true })
+				end
+											
+				if 
+					(not args[1] or 
+						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil))
+					and 
+						(Settings.Console and (not Settings.Console_AdminsOnly or level > 0)) then
+					Remote.RefreshGui(p, "Console")
 				end
 
 				--if Settings.CustomChat then
@@ -1051,10 +1070,10 @@ return function(Vargs, GetEnv)
 
 				--// Run OnSpawn commands
 				for _, v in Settings.OnSpawn do
-					TrackTask("Thread: OnSpawn_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
+					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
 					AddLog("Script", {
-						Text = "OnSpawn: Executed "..tostring(v);
-						Desc = "Executed OnSpawn command; "..tostring(v);
+						Text = `OnSpawn: Executed {v}`;
+						Desc = `Executed OnSpawn command; {v}`;
 					})
 				end
 
@@ -1065,7 +1084,7 @@ return function(Vargs, GetEnv)
 				then
 					for otherPlrName, trackTargets in Variables.TrackingTable do
 						if trackTargets[p] then
-							server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
+							server.Commands.Track.Function(service.Players[otherPlrName], {`@{p.Name}`, "true"})
 						end
 					end
 				end
@@ -1081,8 +1100,8 @@ return function(Vargs, GetEnv)
 				Core.Connections[cli] = p
 
 				AddLog("Script", {
-					Text = p.Name .. " connected";
-					Desc = p.Name .. " successfully established a connection with the server";
+					Text = `{p.Name} connected`;
+					Desc = `{p.Name} successfully established a connection with the server`;
 					Player = p;
 				})
 			else
@@ -1103,8 +1122,8 @@ return function(Vargs, GetEnv)
 			if p then
 				Anti.KickedPlayers[p] = nil
 				AddLog("Script", {
-					Text = p.Name .. " disconnected";
-					Desc = p.Name .. " disconnected from the server";
+					Text = `{p.Name} disconnected`;
+					Desc = `{p.Name} disconnected from the server`;
 					Player = p;
 				})
 			else

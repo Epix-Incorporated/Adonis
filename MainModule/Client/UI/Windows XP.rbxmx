@@ -600,7 +600,7 @@ return function(data, env)
 		if c == 'Text' and text.Text ~= '' and open then
 			if string.sub(text.Text, string.len(text.Text)) == "	" then
 				if players:FindFirstChild("Entry 0") then
-					text.Text = (string.sub(text.Text, 1, (string.len(text.Text) - 1))..players["Entry 0"].Text).." "
+					text.Text = `{string.sub(text.Text, 1, (string.len(text.Text) - 1))}{players["Entry 0"].Text} `
 				elseif scroll:FindFirstChild("Entry 0") then
 					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
 				else
@@ -613,18 +613,18 @@ return function(data, env)
 			players:ClearAllChildren()
 
 			local nText = text.Text
-			if string.match(nText,".*"..batchKey.."([^']+)") then
-				nText = string.match(nText,".*"..batchKey.."([^']+)")
+			if string.match(nText,`.*{batchKey}([^']+)`) then
+				nText = string.match(nText,`.*{batchKey}([^']+)`)
 				nText = string.match(nText,"^%s*(.-)%s*$")
 			end
 
 			local pNum = 0
-			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
+			local pMatch = string.match(nText,`.+{splitKey}(.*)$`)
 			for i,v in next,service.Players:GetPlayers() do
-				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
+				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,`{splitKey}$`) then
 					local new = entry:Clone()
 					new.Text = tostring(v)
-					new.Name = "Entry "..pNum
+					new.Name = `Entry {pNum}`
 					new.TextXAlignment = "Right"
 					new.Visible = true
 					new.Parent = players
@@ -641,7 +641,7 @@ return function(data, env)
 
 			local num = 0
 			for i,v in next,commands do
-				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
+				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),`^(.-){splitKey}`) or string.lower(nText), 1, true) then
 					if not scrollOpen then
 						scrollOpenTween:Play();
 						--frame.Size = UDim2.new(1,0,0,140)
@@ -653,7 +653,7 @@ return function(data, env)
 					b.Visible = true
 					b.Parent = scroll
 					b.Text = v
-					b.Name = "Entry "..num
+					b.Name = `Entry {num}`
 					b.Position = UDim2.new(0,0,0,20*num)
 					b.MouseButton1Down:Connect(function()
 						text.Text = b.Text
@@ -2506,7 +2506,7 @@ return function(data, env)
 			if options then
 				for i,v in next,options do
 					local button = scroller:Add("TextButton", {
-						Text = "  ".. tostring(v);
+						Text = `  {v}`;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, 30*(i-1));
 						ZIndex = menu.ZIndex;
@@ -2660,7 +2660,7 @@ return function(data, env)
 					end
 
 					local label = create("TextLabel",{
-						Text = " "..tostring(text);
+						Text = ` {text}`;
 						ToolTip = desc;
 						Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 						Visible = true;

@@ -26,7 +26,7 @@ return function(data, env)
 
 	function newEntry(obj, name, isBack, top, color)
 		local new = scroller:Add("TextLabel", {
-			Text = "  "..tostring(name);
+			Text = `  {name}`;
 			ToolTip = ("Class: %s | Children%s"):format(obj.ClassName or "Unknown", if #obj:GetChildren() ~= 0 then ": "..#obj:GetChildren().." | Descendants: "..#obj:GetDescendants() else "/Descendants: 0");
 			TextXAlignment = "Left";
 			Size = UDim2.new(1, 0, 0, 26);
@@ -87,7 +87,7 @@ return function(data, env)
 		if obj == game then
 			navText.Text = game.Name
 		else
-			navText.Text = game.Name.."."..obj:GetFullName()
+			navText.Text = `{game.Name}.{obj:GetFullName()}`
 			newEntry(obj.Parent or lastObject or game, "Previous Parent (Go Up..)", true, true, Color3.new(0.666667, 1, 1))
 		end
 		

@@ -62,7 +62,7 @@ return function(Vargs, GetEnv)
 
 		Message = function(jobId, fromPlayer, message, duration)
 			server.Functions.Message(
-				"Global Message from " .. (fromPlayer or "[Unknown]"),
+				`Global Message from {fromPlayer or "[Unknown]"}`,
 				message,
 				service.GetPlayers(),
 				true,
@@ -95,7 +95,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Event = function(jobId, eventId, ...)
-			service.Events["CRSSRV:".. eventId]:Fire(...)
+			service.Events[`CRSSRV:{eventId}`]:Fire(...)
 		end;
 
 		CrossServerVote = function(jobId, data)
@@ -106,7 +106,7 @@ return function(Vargs, GetEnv)
 			local start = os.clock()
 
 			Logs.AddLog("Commands", {
-				Text = "[CRS_SERVER] Vote initiated by "..data.Initiator,
+				Text = `[CRS_SERVER] Vote initiated by {data.Initiator}`,
 				Desc = question
 			})
 
@@ -122,7 +122,7 @@ return function(Vargs, GetEnv)
 	}
 
 	local function CrossEvent(eventId)
-		return service.Events["CRSSRV".. eventId]
+		return service.Events[`CRSSRV{eventId}`]
 	end
 
 	--// User Commands
@@ -160,7 +160,7 @@ return function(Vargs, GetEnv)
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
 			local disced = false
-			local updateKey = "SERVERPING_".. math.random()
+			local updateKey = `SERVERPING_{math.random()}`
 			local replyList = {}
 			local listener = service.Events.ServerPingReplyReceived:Connect(function(jobId, data)
 				if jobId then
@@ -177,13 +177,13 @@ return function(Vargs, GetEnv)
 					totalServers += 1
 					totalPlayers = totalPlayers + (data.NumPlayers or 0)
 					table.insert(tab, {
-						Text = "Players: ".. (data.NumPlayers or 0) .. " | JobId: ".. jobId;
-						Desc = "JobId: ".. jobId;
+						Text = `Players: {data.NumPlayers or 0} | JobId: {jobId}`;
+						Desc = `JobId: {jobId}`;
 					})
 				end
 
 				table.insert(tab, 1, {
-					Text = "Total Servers: ".. totalServers .." | Total Players: ".. totalPlayers;
+					Text = `Total Servers: {totalServers} | Total Players: {totalPlayers}`;
 					Desc = "The total number of servers and players";
 				})
 
@@ -213,7 +213,7 @@ return function(Vargs, GetEnv)
 					Tab = listUpdate(),
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
-					OnClose = "client.Remote.PlayerEvent('".. updateKey .."')",
+					OnClose = `client.Remote.PlayerEvent('{updateKey}')`,
 					AutoUpdate = 1,
 				})
 
@@ -237,7 +237,7 @@ return function(Vargs, GetEnv)
 			local answers = args[1]
 			local anstab = {}
 			local responses = {}
-			local voteKey = "ADONISVOTE".. math.random()
+			local voteKey = `ADONISVOTE{math.random()}`
 			local startTime = os.clock()
 
 			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
@@ -248,10 +248,10 @@ return function(Vargs, GetEnv)
 				local results = {}
 				local total = #responses
 				local tab = {
-					"Question: "..question;
-					"Total Responses: "..total;
-					"Time Left: ".. math.max(0, 120 - (os.clock()-startTime));
-					--"Didn't Vote: "..#players-total;
+					`Question: {question}`;
+					`Total Responses: {total}`;
+					`Time Left: {math.ceil(math.max(0, 120 - (os.clock()-startTime)))}`;
+					--`Didn't Vote: {#players-total}`;
 				}
 
 				for _, v in responses do
@@ -271,8 +271,8 @@ return function(Vargs, GetEnv)
 					end
 
 					table.insert(tab, {
-						Text = ans.." | "..percent.."% - "..num.."/"..total,
-						Desc = "Number: "..num.."/"..total.." | Percent: "..percent
+						Text = `{ans} | {percent}% - {num}/{total}`,
+						Desc = `Number: {num}/{total} | Percent: {percent}`
 					})
 				end
 
@@ -339,13 +339,13 @@ return function(Vargs, GetEnv)
 
 	Process.CrossServerMessage = function(msg)
 		local data = msg.Data
-		assert(data and type(data) == "table", "CrossServer: Invalid data type ".. type(data))
+		assert(data and type(data) == "table", `CrossServer: Invalid data type {type(data)}`)
 
 		local serverId, command = data[1], data[2]
 
 		Logs:AddLog("Script", {
-			Text = "Cross-server message received: "..(command or "[NO COMMAND]");
-			Desc = "Origin JobId: "..(serverId or "[MISSING]")
+			Text = `Cross-server message received: {command or "[NO COMMAND]"}`;
+			Desc = `Origin JobId: {serverId or "[MISSING]"}`
 		})
 
 		if not (serverId and command) then return end

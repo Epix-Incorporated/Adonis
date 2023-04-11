@@ -16,6 +16,7 @@ return function(data, env)
 	local UI = client.UI
 	local Remote = client.Remote
 	local Variables = client.Variables
+	local Functions = client.Functions
 	local Deps = client.Deps
 
 	local window = UI.Make("Window",{
@@ -97,14 +98,14 @@ return function(data, env)
 			Text = "Console Key: ";
 			Desc = "Key used to open the console";
 			Entry = "Button";
-			Value = Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode");
+			Value = Functions.KeyCodeToName(Enum.KeyCode[Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode") or "Unknown"].Value);
 			Function = function(toggle)
-				local gotKey
+				local gotKey, visualName
 				toggle.Text = "Waiting..."
 				local event = service.UserInputService.InputBegan:Connect(function(InputObject)
 					local textbox = service.UserInputService:GetFocusedTextBox()
 					if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
-						gotKey = InputObject.KeyCode.Name
+						gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 					end
 				end)
 
@@ -114,7 +115,7 @@ return function(data, env)
 				event:Disconnect()
 				toggle.Text = "Saving.."
 				Remote.Get("UpdateClient","CustomConsoleKey",Variables.CustomConsoleKey)
-				toggle.Text = gotKey
+				toggle.Text = visualName
 			end
 		};
 		{

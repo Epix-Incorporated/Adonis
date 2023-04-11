@@ -17,8 +17,8 @@ return function(data, env)
 	local player: Player = data.Target
 
 	local window = client.UI.Make("Window", {
-		Name  = "Profile_"..player.UserId;
-		Title = "Profile (@"..player.Name..")";
+		Name  = `Profile_{player.UserId}`;
+		Title = `Profile (@{player.Name})`;
 		Icon = client.MatIcons["Account circle"];
 		Size  = {400, 400};
 		AllowMultiple = false;
@@ -87,10 +87,10 @@ return function(data, env)
 			{"Display Name", player.DisplayName, "The player's custom display name"},
 			{"Username", player.Name, "The player's unique Roblox username"},
 			{"User ID", player.UserId, "The player's unique Roblox user ID"},
-			{"Acc. Age", player.AccountAge .. " days ("..string.format("%.2f", player.AccountAge/365).." years)", "How long the player has been registered on Roblox"},
+			{"Acc. Age", `{player.AccountAge} days ({string.format("%.2f", player.AccountAge/365)} years)`, "How long the player has been registered on Roblox"},
 			}) do
 			generaltab:Add("TextLabel", {
-				Text = "  "..v[1]..": ";
+				Text = `  {v[1]}: `;
 				ToolTip = v[3];
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				Size = UDim2.new(1, -135, 0, 30);
@@ -111,7 +111,7 @@ return function(data, env)
 			{"Safe Chat Enabled", data.SafeChat, "[Admins Only] Does the player have safe chat applied?"},
 			}) do
 			generaltab:Add("TextLabel", {
-				Text = "  "..v[1]..": ";
+				Text = `  {v[1]}: `;
 				ToolTip = v[3];
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				Size = UDim2.new(1, -10, 0, 30);
@@ -231,11 +231,11 @@ return function(data, env)
 						if friendName == friendInfo.displayName then
 							entryText = friendName
 						else
-							entryText = friendInfo.displayName.." (@"..friendName..")"
+							entryText = `{friendInfo.displayName} (@{friendName})`
 						end
 						local entry = scroller:Add("TextLabel", {
-							Text = "             "..entryText;
-							ToolTip = "User ID: "..friendInfo.id;
+							Text = `             {entryText}`;
+							ToolTip = `User ID: {friendInfo.id}`;
 							BackgroundTransparency = ((i-1)%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, 0, 0, 30);
 							Position = UDim2.new(0, 0, 0, (30*(i-1)));
@@ -395,7 +395,7 @@ return function(data, env)
 		local i = 1
 		for _, v in ipairs(gameplayDataToDisplay) do
 			local entry = gametab:Add("TextLabel", {
-				Text = "  "..v[1]..": ";
+				Text = `  {v[1]}: `;
 				ToolTip = v[3];
 				BackgroundTransparency = i%2 == 0 and 0 or 0.2;
 				Size = UDim2.new(1, -10, 0, 25);
