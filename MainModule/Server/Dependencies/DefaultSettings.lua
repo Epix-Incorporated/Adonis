@@ -362,7 +362,7 @@ settings.Allowed_API_Calls = {
 ---------------------------
 
 --// IF YOU EXPERIENCE ISSUES WITH FALSE POSITIVES/RANDOM KICKING/CRASHING DISABLE ALL OF THESE!
-settings.Detection = true			-- (Default: true) A global toggle for built-in anti-exploit detections that do not have their own settings.
+settings.Detection = true			-- (Default: true) 	If true: enables built-in anti-exploit detections that do not have their own settings.
 settings.CheckClients = true		-- (Default: true) 	Checks clients every minute or two to make sure they are still active.
 
 settings.ExploitNotifications = true        -- (Default: true)	Notify all moderators and higher-ups when a player is kicked or crashed from the AntiExploit.
