@@ -4930,7 +4930,7 @@ return function(Vargs, env)
 		
 		CreateLeaderstats = {
 			Prefix = Settings.Prefix;
-			Commands = {"createstat", "cstat", "cs"};
+			Commands = {"createstat", "cstat"};
 			Args = {"name"};
 			Description = "Creates a new leaderstat";
 			AdminLevel = "Moderators";
@@ -4962,7 +4962,7 @@ return function(Vargs, env)
 		
 		RemoveLeaderstats = {
 			Prefix = Settings.Prefix;
-			Commands = {"removestat", "rstat", "rs"};
+			Commands = {"removestat", "rstat"};
 			Args = {"name"};
 			Description = "Removes a leaderstat";
 			AdminLevel = "Moderators";
