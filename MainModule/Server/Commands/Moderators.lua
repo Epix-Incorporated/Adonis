@@ -4994,7 +4994,7 @@ return function(Vargs, env)
 		RemoveAllStats = {
 			Prefix = Settings.Prefix;
 			Commands = {"removestats", "rstats"};
-			Description = "Removes all the stats";
+			Description = "Removes all the leaderstats";
 			AdminLevel = "Moderators";
 			Function = function(plr)
 				local thestats = plr.leaderstats:GetChildren()
