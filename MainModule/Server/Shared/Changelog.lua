@@ -1,9 +1,9 @@
 return {
-	"Version: 239";
+	"Version: 240";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
-	"[Patch v239c 2023-04-09 20:40 UTC] @LiveFireExercise";
+	"[v240 2023-04-15 20:40 UTC] @LiveFireExercise";
 	"Minor settings desc change";
 	"Added section headers";
 	"Disabled anti-speed by default";
