@@ -8890,6 +8890,22 @@ local Vendor = Tool:WaitForChild('Vendor')
 local UI = Tool:WaitForChild('UI')
 local Libraries = Tool:WaitForChild('Libraries')
 
+local ASSET_ID_MATCHES = {
+	"^(%d+)$",
+	-- CDN asset links
+	"^rbxassetid://(%d+)",
+	"^%w*%.?roblox%.com%.?/asset/%?id=(%d+)",
+	-- Website asset links
+	"^%w*%.?roblox%.com%.?/library/(%d+)",
+	"^%w*%.?roblox%.com%.?/catalog/(%d+)",
+	"^%w*%.?roblox%.com%.?/[%w_%-]+%-item%?[&=%w%-_%%%+]*id=(%d+)",
+	"^%w*%.?roblox%.com%.?/[Mm]y/[Ii]tem%.aspx%?[&=%w%-_%%%+]*[Ii][Dd]=(%d+)",
+	"^create%.roblox%.com%.?/dashboard/creations/catalog/(%d+)",
+	"^create%.roblox%.com%.?/dashboard/creations/marketplace/(%d+)",
+	"^create%.roblox%.com%.?/marketplace/asset/(%d+)",
+	"^%w*%.?roblox%.com%.?/plugins/(%d+)",
+}
+
 -- Libraries
 local ListenForManualWindowTrigger = require(Tool.Core:WaitForChild('ListenForManualWindowTrigger'))
 local Roact = require(Vendor:WaitForChild('Roact'))
@@ -9241,17 +9257,35 @@ function GetMeshes()
 	return Meshes;
 end;
 
+local function stripBom(str: string): string
+	-- Remove unnecessary Unicode BOM character from provided string
+
+	return string.gsub(string.gsub(str, "^\226\129\160", ""), "^\239\187\191", "")
+end
+
+local function sanitiseLink(link: string): string
+	-- Remove crutch from provided link for easier parsing
+
+	return string.gsub(string.match(stripBom(link) :: string, "^%s*(.-)%s*$") :: string, "^https?://", "")
+end
+
 function ParseAssetId(Input)
 	-- Returns the intended asset ID for the given input
 
-	-- Get the ID number from the input
-	local Id = tonumber(Input)
-		or tonumber(Input:lower():match('%?id=([0-9]+)'))
-		or tonumber(Input:match('/([0-9]+)/'))
-		or tonumber(Input:lower():match('rbxassetid://([0-9]+)'));
+	-- Remove crutch from link to 
+	Input = sanitiseLink(Input)
 
-	-- Return the ID
-	return Id;
+	-- Check if the asset ID matches to a legitimate input and extract the asset id
+	for _, v in ipairs(ASSET_ID_MATCHES) do
+		local assetId = tonumber(string.match(Input, v) :: string)
+
+		-- If asset id is found return found asset id
+		if assetId then
+			return assetId
+		end
+	end
+
+	return nil
 end;
 
 function VectorToColor(Vector)
