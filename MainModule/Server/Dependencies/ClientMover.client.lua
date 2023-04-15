@@ -23,6 +23,80 @@ do
 		while true do end
 	end
 
+	local proxyDetector = newproxy(true)
+
+	do
+		local proxyMt = getmetatable(proxyDetector)
+
+		proxyMt.__index = function()
+			loadingDetected("Proxy methamethod 0xEC7E1")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__newindex = function()
+			loadingDetected("Proxy methamethod 0x28AEC")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__tostring = function()
+			loadingDetected("Proxy methamethod 0x36F14")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__unm = function()
+			loadingDetected("Proxy methamethod 0x50B7F")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__add = function()
+			loadingDetected("Proxy methamethod 0xCD67D")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__sub = function()
+			loadingDetected("Proxy methamethod 0x8110D")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__mul = function()
+			loadingDetected("Proxy methamethod 0x6A01B")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__div = function()
+			loadingDetected("Proxy methamethod 0x5A975")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__mod = function()
+			loadingDetected("Proxy methamethod 0x6CFEB")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__pow = function()
+			loadingDetected("Proxy methamethod 0x20A50")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__len = function()
+			loadingDetected("Proxy methamethod 0x3B96C")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__metatable = "The metatable is locked"
+	end
+
 	task_spawn(xpcall, function()
 		local exampleService = game:GetService("Workspace") or game:GetService("ReplicatedStorage")
 		local success, err = pcall(require, game)
@@ -36,6 +110,8 @@ do
 			task_spawn(xpcall, function() loadingDetected(`Require load fail. {err}`) end, function(err) loadingDetected(err) end)
 			while true do end
 		end
+
+		task.spawn(pcall, require, proxyDetector)
 
 		triggered = true
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
