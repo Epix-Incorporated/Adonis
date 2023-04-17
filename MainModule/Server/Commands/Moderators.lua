@@ -4942,19 +4942,22 @@ return function(Vargs, env)
 					local leaderstats = plr:FindFirstChild("leaderstats")
 
 					if leaderstats and (leaderstats:IsA("Folder") or leaderstats:IsA("StringValue")) then
-						local statName = Instance.new("IntValue")
-						statName.Name = args[1]
-						statName.Value = 0
-						statName.Parent = leaderstats
+						service.New("IntValue", {
+							Parent = leaderstats,
+							Name = args[1],
+							Value = 0
+						}
 					else
-						local newStats = Instance.new("Folder")
-						newStats.Name = "leaderstats"
-						newStats.Parent = plr
+						service.New("Folder", {
+							Parent = plr,
+							Name = "leaderstats"
+						}
 
-						local statName = Instance.new("IntValue")
-						statName.Name = args[1]
-						statName.Value = 0
-						statName.Parent = newStats
+						service.New("IntValue", {
+							Parent = newStats,
+							Name = args[1],
+							Value = 0
+						}
 					end
 				end
 			end
