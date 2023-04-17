@@ -25,7 +25,7 @@ return {
 		{Text = "@GitHub Awesomewebm", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub TheLegendarySpark",Desc = "GitHub Contributor"};
 		{Text = "@GitHub DaEnder",			Desc = "GitHub Contributor"};
-		{Text = "@GitHub pbstFusion",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub LiveFireExercise",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub policetonyR",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub enescglyn",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub EpicFazbear",		Desc = "GitHub Contributor"};
