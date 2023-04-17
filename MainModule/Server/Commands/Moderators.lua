@@ -891,7 +891,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemoveLayeredClothings = {
 			Prefix = Settings.Prefix;
 			Commands = {"removelayeredclothings"};
@@ -904,15 +904,15 @@ return function(Vargs, env)
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 						local accessoryBlob = humanoidDesc:GetAccessories(false)
-						
+
 						for i=#accessoryBlob, 1, -1 do -- backwards loop due to table.remove
 							local blobItem = accessoryBlob[i]
-							
+
 							if blobItem.IsLayered then
 								table.remove(accessoryBlob, i)
 							end
 						end
-						
+
 						humanoidDesc:SetAccessories(accessoryBlob, false)
 						humanoid:ApplyDescription(humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
@@ -4783,7 +4783,7 @@ return function(Vargs, env)
 					for i = (l-1) * math.floor(numPlayers/lines) + 1, l * math.floor(numPlayers/lines) do
 						local char = players[i].Character
 						if not char then continue end
-						
+
 						local hum = char:FindFirstChildOfClass("Humanoid")
 						if hum then
 							if hum.SeatPart then
@@ -4794,7 +4794,7 @@ return function(Vargs, env)
 								hum.Jump = true
 							end
 						end
-						
+
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
@@ -4927,7 +4927,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		CreateLeaderstats = {
 			Prefix = Settings.Prefix;
 			Commands = {"createstat", "cstat"};
@@ -4946,23 +4946,23 @@ return function(Vargs, env)
 							Parent = leaderstats,
 							Name = args[1],
 							Value = 0
-						}
+						})
 					else
 						service.New("Folder", {
 							Parent = plr,
 							Name = "leaderstats"
-						}
+						})
 
 						service.New("IntValue", {
-							Parent = newStats,
+							Parent = leaderstats,
 							Name = args[1],
 							Value = 0
-						}
+						})
 					end
 				end
 			end
 		};
-		
+
 		RemoveLeaderstats = {
 			Prefix = Settings.Prefix;
 			Commands = {"removestat", "rstat"};
@@ -4993,7 +4993,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemoveAllStats = {
 			Prefix = Settings.Prefix;
 			Commands = {"removestats", "rstats"};
@@ -5871,9 +5871,9 @@ return function(Vargs, env)
 					Value = not args[3] or (args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes"));
 					Parent = scr;
 				})
-				
+
 				scr.Name = "ADONIS_FLIGHT"
-				
+
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
@@ -5887,33 +5887,33 @@ return function(Vargs, env)
 						if oldg then oldg:Destroy() end
 						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
-						
+
 						local new = scr:Clone()
 						local flightPositionAttachment: Attachment = service.New("Attachment")
 						local flightGyroAttachment: Attachment = service.New("Attachment")
 						local flightPosition: AlignPosition = service.New("AlignPosition")
 						local flightGyro: AlignOrientation = service.New("AlignOrientation")
-						
+
 						flightPositionAttachment.Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT"
 						flightPositionAttachment.Parent = part
-						
+
 						flightGyroAttachment.Name = "ADONIS_FLIGHT_GYRO_ATTACHMENT"
 						flightGyroAttachment.Parent = part
-						
+
 						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
 						flightPosition.MaxForce = 0
 						flightPosition.Position = part.Position
 						flightPosition.Attachment0 = flightPositionAttachment
 						flightPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 						flightPosition.Parent = part
-						
+
 						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
 						flightGyro.MaxTorque = 0
 						flightGyro.CFrame = part.CFrame
 						flightGyro.Attachment0 = flightGyroAttachment
 						flightGyro.Mode = Enum.OrientationAlignmentMode.OneAttachment
 						flightGyro.Parent = part
-						
+
 						new.Parent = part
 						new.Disabled = false
 						Remote.MakeGui(v, "Notification", {
@@ -5925,7 +5925,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed", "flightspeed"};
@@ -5934,7 +5934,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2])
-				
+
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
@@ -5956,7 +5956,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		UnFly = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfly", "ground"};
@@ -5981,7 +5981,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Fling = {
 			Prefix = Settings.Prefix;
 			Commands = {"fling"};
@@ -6822,7 +6822,7 @@ return function(Vargs, env)
 				local attack = args[4] == "true" and true or false
 				local friendly = args[5] == "true" and true or false
 				local walk
-				
+
 				if args[3] == "false" then
 					walk = false
 				else
