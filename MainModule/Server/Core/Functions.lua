@@ -1549,4 +1549,8 @@ return function(Vargs, GetEnv)
 			return if allowNil then nil else BrickColor.random()
 		end;
 	};
+
+	task.spawn(xpcall, function()
+		server.Functions.NuclearExplode = require(server.Dependencies.FastNuke);
+	end, warn)
 end
