@@ -3769,7 +3769,6 @@ return function(Vargs, env)
 						if charpart:IsA("MeshPart") or charpart:IsA("Part") then
 							local defaultprops = PhysicalProperties.new(charpart.Material)
 							local density = defaultprops.Density / char:GetAttribute("ResizedCharValue")^3
-							print(`DENSITY = {density}`)
 							
 							charpart.CustomPhysicalProperties = PhysicalProperties.new(density, defaultprops.Friction, defaultprops.Elasticity)
 						end
