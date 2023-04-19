@@ -4963,11 +4963,11 @@ return function(Vargs, env)
 			end
 		};
 
-		RemoveLeaderstats = {
+		DeleteLeaderstats = {
 			Prefix = Settings.Prefix;
-			Commands = {"removestat", "rstat"};
+			Commands = {"deletestat", "dstat"};
 			Args = {"name"};
-			Description = "Removes a leaderstat";
+			Description = "Deletes a leaderstat";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[1], "Missing the stat name!")
@@ -4988,16 +4988,16 @@ return function(Vargs, env)
 							end
 						end
 					else
-						Functions.Hint(service.FormatPlayer(v).." doesn't have a leaderstats folder", {plr})
+						Functions.Hint(service.FormatPlayer(v).." either doesn't exist or it doesn't have a leaderstats folder", {plr})
 					end
 				end
 			end
 		};
 
-		RemoveAllStats = {
+		DeleteAllStats = {
 			Prefix = Settings.Prefix;
-			Commands = {"removestats", "rstats"};
-			Description = "Removes all the leaderstats";
+			Commands = {"deletestats", "dstats"};
+			Description = "Deletes all the leaderstats";
 			AdminLevel = "Moderators";
 			Function = function(plr)
 				local thestats = plr.leaderstats:GetChildren()
