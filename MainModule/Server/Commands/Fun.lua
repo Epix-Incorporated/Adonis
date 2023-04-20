@@ -3790,7 +3790,7 @@ return function(Vargs, env)
 					elseif ResizedCharValue and ResizedCharValue*num < sizeLimit then
 						char:SetAttribute("ResizedCharValue", ResizedCharValue * num)
 					else
-						Functions.Hint(`Cannot resize {service.FormatPlayer(v)}'s character by {tonumber(args[2] or 1)}: size limit exceeded.`, {plr})
+						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", service.FormatPlayer(v), num), {plr})
 						continue
 					end
 
