@@ -578,5 +578,6 @@ return function(Vargs, env)
 					end
 				end
 			end
+		};
 	}
 end
