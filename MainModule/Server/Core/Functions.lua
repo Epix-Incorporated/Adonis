@@ -569,7 +569,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{s}`) then
+							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{s:lower()}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -579,7 +579,7 @@ return function(Vargs, GetEnv)
 							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match(`^{s}`) then
+								if p and p.ClassName == "Player" and p.Name:lower():match(`^{s:lower()}`) then
 									table.insert(players, p)
 									plus()
 								end
