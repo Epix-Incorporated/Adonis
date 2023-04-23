@@ -548,7 +548,8 @@ return function(Vargs, env)
 				local badgeId = assert(tonumber(args[2]), "Invalid badge ID specified!")
 				local badgeInfo = Variables.BadgeInfoCache[tostring(badgeId)]
 				if not badgeInfo then
-					local success, badgeInfo = nil, nil
+					local success
+					badgeInfo = nil
 					local tries = 0
 					repeat
 						tries += 1
@@ -577,6 +578,5 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};
 	}
 end
