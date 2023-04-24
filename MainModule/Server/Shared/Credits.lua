@@ -9,6 +9,7 @@ return {
 		{Text = "Coasterteam",				Desc = "Community Maintainer & Development contributions (Kronos developer)"};
 		{Text = "Expertcoderz",				Desc = "Community Maintainer & GitHub Contributor"};
 	};
+
 	GitHub = {
 		{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub TheCakeChicken", 	Desc = "GitHub Contributor"};
@@ -69,6 +70,7 @@ return {
 		{Text = "@GitHub RoyallyFlushed",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
 	};
+
 	Misc = {
 		{Text = "Kein-Hong Man",			Desc = "Creator of the Yueliang (Lua bytecode compiler in loadstring module). Also created LuLu VM, the first Lua bytecode interpreter used in Adonis (no longer used)"};
 		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used)"};
