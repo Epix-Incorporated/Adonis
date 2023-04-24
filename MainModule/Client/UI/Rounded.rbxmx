@@ -1320,7 +1320,6 @@ end]]></ProtectedString>
 							<Style>Normal</Style>
 							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
 						</Font>
-						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
