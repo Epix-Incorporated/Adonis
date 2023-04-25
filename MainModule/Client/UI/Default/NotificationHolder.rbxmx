@@ -2,16 +2,18 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX1B8D7F2048E846C0A345F3D775272CF8">
+	<Item class="ScreenGui" referent="RBXbd7f0230767a4ef2a9aec0508751da2e">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
+			<bool name="ClipToDeviceSafeArea">false</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">true</bool>
-			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">NotificationHolder</string>
 			<bool name="ResetOnSpawn">true</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
+			<token name="SafeAreaCompatibility">1</token>
+			<token name="ScreenInsets">2</token>
 			<token name="SelectionBehaviorDown">0</token>
 			<token name="SelectionBehaviorLeft">0</token>
 			<token name="SelectionBehaviorRight">0</token>
@@ -21,19 +23,19 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">1</token>
 		</Properties>
-		<Item class="Folder" referent="RBXED6CC453FC29433AB34D0ABD1D61E8D9">
+		<Item class="Folder" referent="RBX3cd588030fb34523bea672d037c61dce">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBXB8C8CA4AC7C94542B5ADB1627705A18A">
+			<Item class="ModuleScript" referent="RBX9b8a085d90c844caa203e0065e6acc72">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{0BABDE93-813F-47C3-86D6-F0D21A18F71C}</string>
+					<string name="ScriptGuid">{33e1aaed-1742-4280-9cd7-89c88809c490}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -96,7 +98,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX40B2C0BB56A947959C91F70DF5D86054">
+			<Item class="BoolValue" referent="RBXbaf52fb3419f47ed8710e06fbb9c7fdd">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -105,7 +107,7 @@ end]]></ProtectedString>
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXBF61279984024F7D8F93EB70AB956107">
+			<Item class="BoolValue" referent="RBXdb575d5dff1e41798bd5e5b8458fc7da">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -115,7 +117,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ScrollingFrame" referent="RBX13CD2A134604459C90541595F232C0BC">
+		<Item class="ScrollingFrame" referent="RBXf838422d4ce44fd1b49b55923d71d508">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -201,7 +203,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UIListLayout" referent="RBX6C86649C26334524BDE8FED20B7C0972">
+			<Item class="UIListLayout" referent="RBX1f624b7cf3e24fdc81969ed2a5e9e3a6">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<token name="FillDirection">1</token>
