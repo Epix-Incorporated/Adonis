@@ -1070,23 +1070,25 @@ return function(Vargs, env)
 
 		CreateStarterScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"starterscript","starters"};
+			Commands = {"starterscript", "clientstarterscript", "starterclientscript"};
 			Args = {"code"};
-			Description = "Executes the given code on the client when each player respawns";
+			Description = "Executes the given code on everyone's client upon respawn";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
+				assert(args[2], "Missing LocalScript code (argument #1)")
+
 				local bytecode = Core.Bytecode(args[1])
 				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local new = Core.NewScript("LocalScript", args[1], true)
-				new.Name = "AdonisStarterScript"
+				new.Name = "[Adonis] StarterScript"
+				new.Parent = service.StarterGui
 				new.Disabled = false
-				new.Parent = game:GetService("StarterGui")
-				Functions.Hint(`Created starter script`, {plr})
+				Functions.Hint("Created starter script", {plr})
 			end
 		};
-		
+
 		Note = {
 			Prefix = Settings.Prefix;
 			Commands = {"note", "writenote", "makenote"};
