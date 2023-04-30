@@ -115,8 +115,6 @@ return function(Vargs, GetEnv)
 
 		LocalEffects = {};
 
-		SizedCharacters = {};
-
 		BundleCache = {};
 
 		TrackingTable = {};
