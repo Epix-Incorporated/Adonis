@@ -1,7 +1,15 @@
 return {
-	"Version: 239";
+	"Version: 240";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
+	"";
+	"[v240 2023-04-15 20:40 UTC] @LiveFireExercise";
+	"Minor settings desc change";
+	"Added section headers";
+	"Disabled anti-speed by default";
+	"(Git/ccuser44) Re add better nuke (#1062)";
+	"(Git/ccuser44) Fixes potential issue with :commands erroring (#1069)";
+	"(Git/ccuser44) Replaced DEX Properties API dump with a minified API dump (#1081)";
 	"";
 	"[Patch v239b 2023-04-09 14:50 UTC] @LiveFireExercise";
 	"(Git/ccuser44) Don't save groups in datastore (#1065)";
