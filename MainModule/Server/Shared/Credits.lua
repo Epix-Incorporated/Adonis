@@ -89,6 +89,7 @@ return {
 		{Text = "meafers",					Desc = "Suggested some stuff"};
 		{Text = "Osyris",					Desc = "Wrote 't', an open-source typechecking library"};
 		{Text = "buildthomas",				Desc = "Wrote 'MockDataStoreService', an open-source mock DataStoreService replacement library"};
+		{Text = "Tiffany352",				Desc = "Wrote an improved base64 implementation"};
 		{Text = "",							Desc = ""};
 		{Text = "~ :) ~",					Desc = ""};
 		{Text = "Donors",					Desc = "Donors keep the wheels turning ;)"};
