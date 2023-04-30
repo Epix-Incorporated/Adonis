@@ -69,6 +69,7 @@ return {
 		{Text = "@GitHub Lethalitics",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub RoyallyFlushed",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub AlexanderDarmody",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub watameln",			Desc = "GitHub Contributor"};
 	};
 
