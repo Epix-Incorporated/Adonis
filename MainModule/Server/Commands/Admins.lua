@@ -1076,7 +1076,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[2], "Missing LocalScript code (argument #1)")
+				assert(args[1], "Missing LocalScript code (argument #1)")
 
 				local bytecode = Core.Bytecode(args[1])
 				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
