@@ -3765,12 +3765,12 @@ return function(Vargs, env)
 				end
 
 				local function fixDensity(char)
-					for _, charpart in char:GetChildren() do
-						if charpart:IsA("MeshPart") or charpart:IsA("Part") then
-							local defaultprops = PhysicalProperties.new(charpart.Material)
-							local density = defaultprops.Density / char:GetAttribute("ResizedCharValue") ^ 3
+					for _, charPart in char:GetChildren() do
+						if charPart:IsA("MeshPart") or charPart:IsA("Part") then
+							local defaultprops = PhysicalProperties.new(charPart.Material)
+							local density = defaultprops.Density / char:GetAttribute("Adonis_Resize") ^ 3
 
-							charpart.CustomPhysicalProperties = PhysicalProperties.new(density, defaultprops.Friction, defaultprops.Elasticity)
+							charPart.CustomPhysicalProperties = PhysicalProperties.new(density, defaultprops.Friction, defaultprops.Elasticity)
 						end
 					end
 				end
