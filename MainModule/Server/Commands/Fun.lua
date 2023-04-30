@@ -3756,25 +3756,25 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local sizeLimit = Settings.SizeLimit or 20
 				local num = math.clamp(tonumber(args[2]) or 1, 0.001, sizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
-				
+
 				if not args[2] or not tonumber(args[2]) then
 					num = 1
 					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
 				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
 					Functions.Hint(`Size changed to the maximum {num} [Argument #2 (size multiplier) went over the size limit]`, {plr})
 				end
-				
+
 				local function fixDensity(char)
 					for _, charpart in char:GetChildren() do
 						if charpart:IsA("MeshPart") or charpart:IsA("Part") then
 							local defaultprops = PhysicalProperties.new(charpart.Material)
-							local density = defaultprops.Density / char:GetAttribute("ResizedCharValue")^3
-							
+							local density = defaultprops.Density / char:GetAttribute("ResizedCharValue") ^ 3
+
 							charpart.CustomPhysicalProperties = PhysicalProperties.new(density, defaultprops.Friction, defaultprops.Elasticity)
 						end
 					end
 				end
-				
+
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local human = char and char:FindFirstChildOfClass("Humanoid")
@@ -3784,11 +3784,11 @@ return function(Vargs, env)
 						continue
 					end
 					
-					local ResizedCharValue = char:GetAttribute("ResizedCharValue")
-					if not ResizedCharValue then
-						char:SetAttribute("ResizedCharValue", num)
-					elseif ResizedCharValue and ResizedCharValue*num < sizeLimit then
-						char:SetAttribute("ResizedCharValue", ResizedCharValue * num)
+					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
+					if not resizeAttributeValue then
+						char:SetAttribute("Adonis_Resize", num)
+					elseif resizeAttributeValue * num < sizeLimit then
+						char:SetAttribute("Adonis_Resize", resizeAttributeValue * num)
 					else
 						Functions.Hint(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
 						continue
