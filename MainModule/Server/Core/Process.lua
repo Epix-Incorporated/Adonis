@@ -461,10 +461,12 @@ return function(Vargs, GetEnv)
 				end
 
 				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
 						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
 						Desc = `{matched}{Settings.SplitKey}{table.concat(args, Settings.SplitKey)}`;
 						Player = p;
+						NoSave = noSave;
 					})
 
 					if Settings.ConfirmCommands then
