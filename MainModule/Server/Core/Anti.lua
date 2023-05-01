@@ -125,7 +125,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Detected = function(player, action, info)
-			local info = string.gsub(tostring(info), "\n", "")
+			local info = string.sub(string.gsub(tostring(info), "\n", ""), 1, 50)
 
 			if Anti.KickedPlayers[player] then
 				player:Kick(`:: Adonis Anti Cheat ::\n{info}`)
@@ -138,7 +138,7 @@ return function(Vargs, GetEnv)
 						Anti.KickedPlayers[player] = true
 
 						Anti.RemovePlayer(player, info)
-					elseif string.lower(action) == "kill" then
+					elseif string.lower(action) == "kill" and player.Character then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
 
 						if humanoid then
@@ -150,6 +150,7 @@ return function(Vargs, GetEnv)
 						Anti.KickedPlayers[player] = true
 
 						Remote.Send(player, "Function", "Kill")
+						Remote.Clients[tostring(player.UserId)] = nil
 						task.wait(5)
 						pcall(function()
 							local scr = Core.NewScript("LocalScript", [[while true do end]])

@@ -35,8 +35,8 @@ return function(Vargs, GetEnv)
 
 	local Anti, Process, UI, Variables
 	local script = script
-	local service = service
-	local client = client
+	local service = env.service
+	local client = env.client
 	local Core = client.Core
 	local Remote = client.Remote
 	local Functions = client.Functions

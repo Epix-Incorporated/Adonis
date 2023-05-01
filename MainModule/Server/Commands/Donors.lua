@@ -343,7 +343,7 @@ return function(Vargs, env)
 					hat:Destroy()
 					Functions.Hint(`{args[1]} has been removed.`, {plr})
 				else
-					Functions.Hint(`{args[1]} is not a valid accessory. Run \`{Settings.PlayerPrefix}myhats\` for a list of accessories you are wearing.`, {plr})
+					Functions.Hint(`{args[1]} is not a valid accessory. Run {Settings.PlayerPrefix}myhats for a list of accessories you are wearing.`, {plr})
 				end
 
 			end

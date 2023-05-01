@@ -891,7 +891,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemoveLayeredClothings = {
 			Prefix = Settings.Prefix;
 			Commands = {"removelayeredclothings"};
@@ -904,15 +904,15 @@ return function(Vargs, env)
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 						local accessoryBlob = humanoidDesc:GetAccessories(false)
-						
+
 						for i=#accessoryBlob, 1, -1 do -- backwards loop due to table.remove
 							local blobItem = accessoryBlob[i]
-							
+
 							if blobItem.IsLayered then
 								table.remove(accessoryBlob, i)
 							end
 						end
-						
+
 						humanoidDesc:SetAccessories(accessoryBlob, false)
 						humanoid:ApplyDescription(humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
@@ -1237,7 +1237,7 @@ return function(Vargs, env)
 						Title = "Trello Synced Ban List";
 						Message = "Trello has not been enabled.";
 					})
-				else				
+				else
 					Remote.MakeGui(plr, "List", {
 						Title = "Trello Synced Bans List";
 						Icon = server.MatIcons.Gavel;
@@ -4340,7 +4340,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing team name")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					for a, tm in service.Teams:GetChildren() do
 						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
@@ -4579,7 +4579,7 @@ return function(Vargs, env)
 						end
 					end
 
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if point then
 							if not v.Character then
 								continue
@@ -4619,7 +4619,7 @@ return function(Vargs, env)
 					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
 
 						if workspace.StreamingEnabled == true then
@@ -4650,8 +4650,8 @@ return function(Vargs, env)
 						end
 					end
 				else
-					local target = service.GetPlayers(plr, args[2])[1]
-					local players = service.GetPlayers(plr, args[1])
+					local target = service.GetPlayers(plr, args[2], { NoFakePlayer = true })[1]
+					local players = service.GetPlayers(plr, args[1], { NoFakePlayer = true })
 					if #players == 1 and players[1] == target then
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
@@ -4690,12 +4690,15 @@ return function(Vargs, env)
 							for k, n in players do
 								if n ~= target then
 									local Character = n.Character
-									if not Character then continue end
+									if not Character or not Character:FindFirstChild("HumanoidRootPart") then
+										continue
+									end
+
 									if workspace.StreamingEnabled == true then
 										n:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
 									end
 
-									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+									local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 									local root = Character:FindFirstChild('HumanoidRootPart')
 									local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
 									local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
@@ -4783,7 +4786,7 @@ return function(Vargs, env)
 					for i = (l-1) * math.floor(numPlayers/lines) + 1, l * math.floor(numPlayers/lines) do
 						local char = players[i].Character
 						if not char then continue end
-						
+
 						local hum = char:FindFirstChildOfClass("Humanoid")
 						if hum then
 							if hum.SeatPart then
@@ -4794,7 +4797,7 @@ return function(Vargs, env)
 								hum.Jump = true
 							end
 						end
-						
+
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
@@ -4850,7 +4853,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[2], "Missing stat name (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						local absoluteMatch = leaderstats:FindFirstChild(statName)
@@ -5787,9 +5790,9 @@ return function(Vargs, env)
 					Value = not args[3] or (args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes"));
 					Parent = scr;
 				})
-				
+
 				scr.Name = "ADONIS_FLIGHT"
-				
+
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
@@ -5803,33 +5806,33 @@ return function(Vargs, env)
 						if oldg then oldg:Destroy() end
 						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
-						
+
 						local new = scr:Clone()
 						local flightPositionAttachment: Attachment = service.New("Attachment")
 						local flightGyroAttachment: Attachment = service.New("Attachment")
 						local flightPosition: AlignPosition = service.New("AlignPosition")
 						local flightGyro: AlignOrientation = service.New("AlignOrientation")
-						
+
 						flightPositionAttachment.Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT"
 						flightPositionAttachment.Parent = part
-						
+
 						flightGyroAttachment.Name = "ADONIS_FLIGHT_GYRO_ATTACHMENT"
 						flightGyroAttachment.Parent = part
-						
+
 						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
 						flightPosition.MaxForce = 0
 						flightPosition.Position = part.Position
 						flightPosition.Attachment0 = flightPositionAttachment
 						flightPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 						flightPosition.Parent = part
-						
+
 						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
 						flightGyro.MaxTorque = 0
 						flightGyro.CFrame = part.CFrame
 						flightGyro.Attachment0 = flightGyroAttachment
 						flightGyro.Mode = Enum.OrientationAlignmentMode.OneAttachment
 						flightGyro.Parent = part
-						
+
 						new.Parent = part
 						new.Disabled = false
 						Remote.MakeGui(v, "Notification", {
@@ -5841,7 +5844,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed", "flightspeed"};
@@ -5850,7 +5853,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2])
-				
+
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
@@ -5872,7 +5875,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		UnFly = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfly", "ground"};
@@ -5897,7 +5900,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Fling = {
 			Prefix = Settings.Prefix;
 			Commands = {"fling"};
@@ -6738,7 +6741,7 @@ return function(Vargs, env)
 				local attack = args[4] == "true" and true or false
 				local friendly = args[5] == "true" and true or false
 				local walk
-				
+
 				if args[3] == "false" then
 					walk = false
 				else

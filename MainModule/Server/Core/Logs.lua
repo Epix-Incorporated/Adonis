@@ -93,7 +93,7 @@ return function(Vargs, GetEnv)
 				table.remove(tab, #tab)
 			end
 
-			service.Events.LogAdded:Fire(server.Logs.TabToType(tab), log, tab)
+			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 		end;
 
 		SaveCommandLogs = function()
