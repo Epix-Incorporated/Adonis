@@ -114,6 +114,7 @@ return function(Vargs, GetEnv)
 
 			--// Support for legacy Lua chat system
 			--// ChatService mute handler (credit to Coasterteam)
+			AddLog("Script", "Starting loading of legacy chatservice handler")
 			local chatService = Functions.GetChatService(300)
 			if chatService then
 				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
