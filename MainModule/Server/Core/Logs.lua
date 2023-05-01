@@ -121,10 +121,10 @@ return function(Vargs, GetEnv)
 				local temp = {}
 
 				for _, m in logsToSave do
-					local isTable = (type(m) == "table")
-					local newTab = isTable and service.CloneTable(m) or m
+					local isTable = type(m) == "table"
+					local newTab = if isTable then service.CloneTable(m) else m
 
-					if isTable and not newTab.NoSave or not isTable then
+					if (isTable and not newTab.NoSave) or not isTable then
 						if isTable and newTab.Player then
 							local p = newTab.Player
 							newTab.Player = {
