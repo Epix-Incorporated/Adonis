@@ -829,13 +829,19 @@ return function(Vargs)
 	end
 
 	-- // The tamper checks below are quite bad but they are sufficient for now
-	local lastChanged1, lastChanged2, lastChanged3 = os.clock(), os.clock(), os.clock()
+	local lastChanged1, lastChanged2, lastChanged3, lastWindowSelect = os.clock(), os.clock(), os.clock(), os.clock()
 	local checkEvent = service.UnWrap(script).Changed:Connect(function(prop)
 		if prop == "Name" and string.match(script.Name, "^\n\n+ModuleScript$") then
 			lastChanged1 = os.clock()
 		elseif not isStudio then
 			Detected("kick", "Tamper Protection 0xC1E7")
 		end
+	end)
+	service.UserInputService.WindowFocused:Connect(function()
+		lastWindowSelect = os.clock()
+	end)
+	service.UserInputService.WindowFocusReleased:Connect(function()
+		lastWindowSelect = os.clock()
 	end)
 
 	do
@@ -854,8 +860,8 @@ return function(Vargs)
 				if
 					not success or
 					script.Archivable ~= false or
-					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60) or
-					os.clock() - lastChanged3 > 60 or
+					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60 and os.clock() - lastWindowSelect > 2) or
+					os.clock() - lastChanged3 > 60 and os.clock() - lastWindowSelect > 2 or
 					not checkEvent or
 					typeof(checkEvent) ~= "RBXScriptConnection" or
 					checkEvent.Connected ~= true
@@ -868,7 +874,7 @@ return function(Vargs)
 				end
 
 				if not isStudio then
-					local newName = "\n\n"..string.rep("\n", math.random(1, 50)).."ModuleScript"
+					local newName = "\n\n"..string.rep("\n", math.random(1, 40)).."ModuleScript"
 
 					if newName == oldName then
 						lastChanged1 = os.clock()
