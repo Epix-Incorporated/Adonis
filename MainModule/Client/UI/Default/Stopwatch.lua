@@ -65,11 +65,10 @@ return function(data, env)
 	
 	local ctime = 0
 
-	while wait() do
+	while task.wait(1) do
 		if not gTable.Active then break end
 		tock:Play()
 		ctime += 1
 		label.Text = ctime
-		task.wait(1)
 	end
 end
