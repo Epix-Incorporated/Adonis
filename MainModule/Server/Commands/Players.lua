@@ -855,6 +855,17 @@ return function(Vargs, env)
 			end
 		};
 
+		PersonalStopwatch = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"stopwatch"};
+			Args = {};
+			Description = "Makes a stopwatch on your screen";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "Stopwatch")
+			end
+		};
+
 		ViewProfile = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
