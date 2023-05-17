@@ -12,6 +12,8 @@ end
 local player = players.LocalPlayer
 local char = player.Character
 
+local MoveVector = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
+
 local human = char:FindFirstChildOfClass("Humanoid")
 local bPos: AlignPosition = part:WaitForChild("ADONIS_FLIGHT_POSITION")
 local bGyro: AlignOrientation = part:WaitForChild("ADONIS_FLIGHT_GYRO")
@@ -24,7 +26,7 @@ local flying = true
 local keyTab = {}
 local dir = {}
 
-local antiLoop, humChanged, conn
+local antiLoop, conn
 local Check, getCF, dirToCom, Start, Stop, Toggle, HandleInput, listenConnection
 
 local RBXConnections = {}
@@ -45,23 +47,6 @@ function getCF(part, isFor)
 	local noRot = CFrame.new(cframe.p)
 	local x, y, z = workspace.CurrentCamera.CFrame.Rotation:toEulerAnglesXYZ()
 	return noRot * CFrame.Angles(isFor and z or x, y, z)
-end
-
-function dirToCom(part, mdir)
-	local dirs = {
-		Forward = ((getCF(part, true)*CFrame.new(0, 0, -1)) - part.CFrame.p).p;
-		Backward = ((getCF(part, true)*CFrame.new(0, 0, 1)) - part.CFrame.p).p;
-		Right = ((getCF(part)*CFrame.new(1, 0, 0)) - part.CFrame.p).p;
-		Left = ((getCF(part)*CFrame.new(-1, 0, 0)) - part.CFrame.p).p;
-	}
-
-	for i,v in dirs do
-		if (v - mdir).Magnitude <= 1.05 and mdir ~= Vector3.new(0,0,0) then
-			dir[i] = true
-		elseif not keyTab[i] then
-			dir[i] = false
-		end
-	end
 end
 
 function Start()
@@ -160,10 +145,6 @@ function Stop()
 	flying = false
 	human.PlatformStand = false
 
-	if humChanged then
-		humChanged:Disconnect()
-	end
-
 	if bPos then
 		bPos.MaxForce = 0
 	end
@@ -194,8 +175,12 @@ function Toggle()
 end
 
 function HandleInput(input, isGame, bool)
-	if not isGame then
-		if input.UserInputType == Enum.UserInputType.Keyboard then
+	if input.UserInputType and (input.UserInputType == Enum.UserInputType.Keyboard or input.UserInputType == Enum.UserInputType.Gamepad1) then
+		if input.KeyCode == Enum.KeyCode.ButtonA then
+			keyTab.Up = bool
+			dir.Up = bool
+		end
+		if not isGame then
 			if input.KeyCode == Enum.KeyCode.W then
 				keyTab.Forward = bool
 				dir.Forward = bool
@@ -208,17 +193,49 @@ function HandleInput(input, isGame, bool)
 			elseif input.KeyCode == Enum.KeyCode.D then
 				keyTab.Right = bool
 				dir.Right = bool
-			elseif input.KeyCode == Enum.KeyCode.Q then
+			elseif input.KeyCode == Enum.KeyCode.Q or input.KeyCode == Enum.KeyCode.DPadDown or input.KeyCode == Enum.KeyCode.ButtonB then
 				keyTab.Down = bool
 				dir.Down = bool
-			elseif input.KeyCode == Enum.KeyCode.Space then
+			elseif input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.DPadUp then
 				keyTab.Up = bool
 				dir.Up = bool
-			elseif input.KeyCode == Enum.KeyCode.E and bool == true then
+			elseif input.KeyCode == Enum.KeyCode.E or input.KeyCode == Enum.KeyCode.ButtonL3 then
 				Toggle()
 			end
 		end
+	else
+		if input == "Forward" then
+			keyTab.Forward = bool
+			dir.Forward = bool
+		elseif input == "Backward" then
+			keyTab.Backward = bool
+			dir.Backward = bool
+		elseif input == "Left" then
+			keyTab.Left = bool
+			dir.Left = bool
+		elseif input == "Right" then
+			keyTab.Right = bool
+			dir.Right = bool
+		end
 	end
+end
+
+function DPadifyInput(direction, isGame)
+	-- DPadify input for mobile and controller thumbsticks
+	if direction.Magnitude == 0 then
+		HandleInput("Forward", false, false)
+		HandleInput("Backward", false, false)
+		HandleInput("Left", false, false)
+		HandleInput("Right", false, false)
+	end
+
+	local xDir, yDir, zDir = math.round(direction.X), math.round(direction.Y), math.round(direction.Z)
+	if xDir == 1 then HandleInput("Right", isGame, true) end
+	if xDir == -1 then HandleInput("Left", isGame, true) end
+	if xDir == 0 then HandleInput("Right", isGame, false); HandleInput("Left", isGame, false) end
+	if yDir == 1 then HandleInput("Forward", isGame, true) end
+	if yDir == -1 then HandleInput("Backward", isGame, true) end
+	if yDir == 0 then HandleInput("Forward", isGame, false); HandleInput("Backward", isGame, false) end
 end
 
 listenConnection(part.DescendantRemoving, function(Inst)
@@ -230,6 +247,8 @@ listenConnection(part.DescendantRemoving, function(Inst)
 		for _, Signal in pairs(RBXConnections) do
 			Signal:Disconnect()
 		end
+		
+		contextService:UnbindAction("Toggle Flight")
 
 		Stop()
 	end
@@ -243,22 +262,44 @@ listenConnection(inputService.InputEnded, function(input, isGame)
 	HandleInput(input, isGame, false)
 end)
 
+listenConnection(inputService.InputChanged, function(input, isGame)
+	if input.KeyCode == Enum.KeyCode.Thumbstick1 then
+		if input.Position.Magnitude < .2 then DPadifyInput(Vector3.new(0,0,0)) return end
+		DPadifyInput(input.Position, isGame)
+	end
+end)
+
 task.defer(Start)
 
-if not inputService.KeyboardEnabled then
-	listenConnection(human.Changed, function()
-		dirToCom(part, human.MoveDirection)
+if inputService.TouchEnabled then
+	listenConnection(inputService.TouchMoved, function(input, isGame)
+		local dir = MoveVector:GetMoveVector()
+		if dir.Magnitude < .2 then DPadifyInput(Vector3.new(0,0,0)) return end
+
+		local newDirOrder = Vector3.new(dir.X, -dir.Z, 0)
+		DPadifyInput(newDirOrder, isGame)
 	end)
 
-	contextService:BindAction("Toggle Flight", Toggle, true)
+	listenConnection(inputService.TouchEnded, function(input, isGame)
+		DPadifyInput(Vector3.new(0,0,0))
+	end)
+	
+	if not inputService.KeyboardEnabled then
+		contextService:BindAction("Toggle Flight", Toggle, true)
+		contextService:SetTitle("Toggle Flight", "Toggle Flight")
+		
+		listenConnection(human.Died, function()
+			contextService:UnbindAction("Toggle Flight")
+		end)
 
-	while true do
-		if not Check() then
-			break
+		while true do
+			if not Check() then
+				break
+			end
+
+			runService.Stepped:Wait()
 		end
 
-		runService.Stepped:Wait()
+		contextService:UnbindAction("Toggle Flight")
 	end
-
-	contextService:UnbindAction("Toggle Flight")
 end
