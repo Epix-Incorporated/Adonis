@@ -854,8 +854,8 @@ return function(Vargs)
 				if
 					not success or
 					script.Archivable ~= false or
-					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60) or
-					os.clock() - lastChanged3 > 60 or
+					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or lastChanged2 - lastChanged1 > 60) or
+					lastChanged2 - lastChanged3 > 60 or
 					not checkEvent or
 					typeof(checkEvent) ~= "RBXScriptConnection" or
 					checkEvent.Connected ~= true
@@ -885,9 +885,8 @@ return function(Vargs)
 		task.spawn(xpcall, function()
 			while true do
 				if
-					not isStudio and math.abs(os.clock() - lastChanged1) > 60 or
-					math.abs(os.clock() - lastChanged2) > 60 or
-					math.abs(os.clock() - lastChanged3) > 60
+					not isStudio and math.abs(lastChanged3 - lastChanged1) > 60 or
+					math.abs(lastChanged3 - lastChanged2) > 60 or
 				then
 					opcall(Detected, "crash", "Tamper Protection 0xE28D")
 					oWait(1)
