@@ -533,6 +533,7 @@ return function(Vargs)
 					then
 						return true
 					end
+					task.wait()
 				end
 			end
 
@@ -698,9 +699,12 @@ return function(Vargs)
 					Detected("kick", "Bypass detected 0x48248")
 				else
 					for _, v in ipairs(Logs) do
-						if check(v.message) then
-							Detected("crash", "Exploit detected; "..v.message)
-						end
+						task.spawn(function()
+							if check(v.message) then
+								Detected("crash", "Exploit detected; "..v.message)
+							end
+							task.wait()
+						end)
 					end
 				end
 
