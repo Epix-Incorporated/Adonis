@@ -7,6 +7,10 @@ return {
 	"Minor settings desc change";
 	"Added section headers";
 	"Disabled anti-speed by default";
+	"Temp disable log history check";
+	"Update foreman";
+	"Update Server-Dex";
+	"Update UI rbxmx files for FontFace";
 	"(Git/ccuser44) Fix mystery error with hint (#1068)";
 	"(Git/ccuser44) Remove unecessary commented out code (#1067)";
 	"(Git/ccuser44) Update notif command (#1066)";
@@ -39,6 +43,13 @@ return {
 	"(Git/karl-police) Added New Dex Plugin (#1019)";
 	"(Git/ccuser44) Update rojo to latest version (#1108)";
 	"(Git/ccuser44) Made player and donor commands not save in oldlogs (#1107)";
+	"(Git/ccuser44) Fix for Tamper Protection 0x16471 (#1111)";
+	"(Git/RealEthanPlayzDev) Update Anti_Cheat.lua (#1120)";
+	"(Git/NoobBucket) Update Credits.lua (#1121)";
+	"(Git/jun022222222) Update Fly.client.lua (#1115)";
+	"(Git/AlexanderDarmody) Fix :fly on mobile and console (#1113)";
+	"(Git/DaRealGandhi20) Add - !stopwatch (#1112)";
+	"(Git/omwot) Add Modern UI Theme (#1056)";
 	"";
 	"[Patch v239b 2023-04-09 14:50 UTC] @LiveFireExercise";
 	"(Git/ccuser44) Fixes potential issue with :commands erroring (#1069)";
