@@ -660,6 +660,8 @@ return function(Vargs)
 				end
 
 				--// Check Log History
+				--// TEMP DISABLED WHILE INVESTIGATING LAG SOURCE
+				--[[
 				local Logs = service.LogService.GetLogHistory(service.LogService)
 				local rawLogService = service.UnWrap(service.LogService)
 				local First = Logs[1]
@@ -702,7 +704,7 @@ return function(Vargs)
 							Detected("crash", "Exploit detected; "..v.message)
 						end
 					end
-				end
+				end--]]
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
