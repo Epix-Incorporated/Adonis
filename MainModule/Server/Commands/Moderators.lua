@@ -247,7 +247,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				assert(args[2], "Missing message")
 
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
+				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
 			end
 		};
 
@@ -261,7 +261,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -327,7 +327,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr)), service.GetPlayers())
+				Functions.Hint(service.BroadcastFilter(args[1], plr), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
@@ -342,7 +342,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be a number)")
 				assert(args[2], "Missing message")
 
-				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr)), service.GetPlayers(), tonumber(args[1]))
+				Functions.Hint(service.BroadcastFilter(args[1], plr), service.GetPlayers(), tonumber(args[2]), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
@@ -1903,7 +1903,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
+				Functions.Message("Adonis", "Teleporting to server \""..args[2].."\"\nPlease wait...", players, false, 10)
 			end
 		};
 
