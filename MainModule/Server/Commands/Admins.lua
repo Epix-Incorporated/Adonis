@@ -599,46 +599,29 @@ return function(Vargs, env)
 		};
 
 		BuildingTools = {
-			Prefix = Settings.Prefix;
-			Commands = {"btools", "f3x", "buildtools", "buildingtools", "buildertools"};
-			Args = {"player"};
-			Description = "Gives the target player(s) F3X building tools.";
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				local F3X = service.New("Tool", {
-					GripPos = Vector3.new(0, 0, 0.4),
-					CanBeDropped = false,
-					ManualActivationOnly = false,
-					ToolTip = "Building Tools by F3X",
-					Name = "Building Tools"
-				}, true)
-				do
-					service.New("StringValue", {
-						Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
-						Parent = F3X
-					})
+            Prefix = Settings.Prefix;
+            Commands = {"btools", "f3x", "buildtools", "buildingtools", "buildertools"};
+            Args = {"player"};
+            Description = "Gives the target player(s) F3X building tools.";
+            AdminLevel = "Admins";
+            Function = function(plr: Player, args: {string})
+                local F3X = require(580330877)()
+                do
+                    service.New("StringValue", {
+                        Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
+                        Parent = F3X
+                    })
+                end
 
-					local clonedDeps = Deps.Assets:FindFirstChild("F3X Deps"):Clone()
-					for _, BaseScript in clonedDeps:GetDescendants() do
-						if BaseScript:IsA("BaseScript") then
-							BaseScript.Disabled = false
-						end
-					end
-					for _, Child in clonedDeps:GetChildren() do
-						Child.Parent = F3X
-					end
-					clonedDeps:Destroy()
-				end
+                for _, v in service.GetPlayers(plr, args[1]) do
+                    local Backpack = v:FindFirstChildOfClass("Backpack")
 
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local Backpack = v:FindFirstChildOfClass("Backpack")
-
-					if Backpack then
-						F3X:Clone().Parent = Backpack
-					end
-				end
-			end
-		};
+                    if Backpack then
+                        F3X:Clone().Parent = Backpack
+                    end
+                end
+            end
+        };
 
 		Insert = {
 			Prefix = Settings.Prefix;
