@@ -50,6 +50,7 @@ return {
 	"(Git/AlexanderDarmody) Fix :fly on mobile and console (#1113)";
 	"(Git/DaRealGandhi20) Add - !stopwatch (#1112)";
 	"(Git/omwot) Add Modern UI Theme (#1056)";
+	"(Git/LiveFireExercise) v240 changelog (3) (#1122)";
 	"";
 	"[Patch v239b 2023-04-09 14:50 UTC] @LiveFireExercise";
 	"(Git/ccuser44) Fixes potential issue with :commands erroring (#1069)";
