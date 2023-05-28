@@ -4935,11 +4935,10 @@ return function(Vargs, env)
 			Description = "Creates a new leaderstat";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-
 				local statName = assert(args[1], "Missing stat name")
 
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local leaderstats = plr:FindFirstChild("leaderstats")
+				for _, v in service.GetPlayers() do
+					local leaderstats = v:FindFirstChild("leaderstats")
 
 					if leaderstats and (leaderstats:IsA("Folder") or leaderstats:IsA("StringValue")) then
 						service.New("IntValue", {
@@ -4949,7 +4948,7 @@ return function(Vargs, env)
 						})
 					else
 						service.New("Folder", {
-							Parent = plr,
+							Parent = v,
 							Name = "leaderstats"
 						})
 
@@ -4972,9 +4971,9 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[1], "Missing the stat name!")
 
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local children = plr:GetChildren()
-					local leaderstats = plr.leaderstats -- This checks if there is a leaderstats folder/string value [Don't change it unless you know what you are doing]
+				for _, v in service.GetPlayers() do
+					local children = v:GetChildren()
+					local leaderstats = v.leaderstats -- This checks if there is a leaderstats folder/string value [Don't change it unless you know what you are doing]
 
 					if table.find(children, leaderstats) and (leaderstats:IsA("Folder") or leaderstats:IsA("StringValue")) then
 						local absoluteMatch = leaderstats:FindFirstChild(statName)
@@ -5001,13 +5000,15 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr)
 				local thestats = plr.leaderstats:GetChildren()
-
-				if thestats then
-					plr.leaderstats:ClearAllChildren()
-					task.wait(1)
-					Functions.Hint("All leaderstats have been cleared!", {plr})
-				else
-					Functions.Hint("There are no leaderstats to remove!", {plr})
+				
+				for i, v in service.GetPlayers() do
+					if thestats then
+						v.leaderstats:ClearAllChildren()
+						task.wait(1)
+						Functions.Hint("All leaderstats have been cleared!", {plr})
+					else
+						Functions.Hint("There are no leaderstats to remove!", {plr})
+					end
 				end
 			end
 		};
