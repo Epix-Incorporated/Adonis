@@ -886,7 +886,7 @@ return function(Vargs)
 			while true do
 				if
 					not isStudio and math.abs(lastChanged3 - lastChanged1) > 60 or
-					math.abs(lastChanged3 - lastChanged2) > 60 or
+					math.abs(lastChanged3 - lastChanged2) > 60
 				then
 					opcall(Detected, "crash", "Tamper Protection 0xE28D")
 					oWait(1)
