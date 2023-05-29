@@ -7,13 +7,13 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local Commands, Decrypt, Encrypt, AddLog, TrackTask, Pcall
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
+	local Functions, Admin, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local logError = env.logError
 	local Routine = env.Routine
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
-		Anti = server.Anti;
+		-- Anti = server.Anti;
 		Core = server.Core;
 		HTTP = server.HTTP;
 		Logs = server.Logs;
@@ -124,7 +124,7 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
 
-	local function newRateLimit(rateLimit: table, rateKey: string|number|userdata|any)
+	local function newRateLimit(rateLimit: table, rateKey: string|number)
 		-- Ratelimit: table
 		-- Ratekey: string or number
 
@@ -287,6 +287,7 @@ return function(Vargs, GetEnv)
 		newRateLimit = newRateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
+		RemoteMaxArgCount = 5; --// The maximum argument count Adonis will take from Remote (alter if your script requires more arguments)
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -296,23 +297,12 @@ return function(Vargs, GetEnv)
 		};
 
 		Remote = function(p, cliData, com, ...)
-			local key = tostring(p.UserId)
-			local keys = Remote.Clients[key]
-
 			if p and p:IsA("Player") then
-				if Anti.KickedPlayers[p] then
-					p:Kick(":: Adonis :: Communication following disconnect.")
-				elseif not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
-					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
-				elseif cliData and type(cliData) ~= "table" then
-					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
-					--elseif cliData and keys and cliData.Module ~= keys.Module then
-					--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
-				else
-					local args = {...}
-					local rateLimitCheck, didThrottleRL, canThrottleRL, curRemoteRate = RateLimit(p, "Remote")
+				local keys = Remote.Clients[tostring(p.UserId)]
+					if keys and select("#", ...) <= Process.RemoteMaxArgCount then
+						local args = {...}
+						local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
 
-					if keys then
 						keys.LastUpdate = os.time()
 						keys.Received += 1
 
@@ -338,7 +328,7 @@ return function(Vargs, GetEnv)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
-									Text = string.format("%s fired %s; Arg1: %s", tostring(p), comString, tostring(args[1]));
+									Text = string.format("%s fired %s; Arg1: %s", p.Name, comString, service.MaxLen(tostring(args[1]), 50));
 									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args));
 									Player = p;
 								})
@@ -348,20 +338,19 @@ return function(Vargs, GetEnv)
 									if not rets[1] then
 										logError(p, `{comString}: {rets[2]}`)
 									else
-										return {unpack(rets, 2)}
+										return {table.unpack(rets, 2)}
 									end
 								else
-									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
+									-- Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
 							elseif rateLimitCheck and RateLimit(p, "RateLog") then
-								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate));
+								-- Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate));
 								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate));
 							end
 						else
-							Anti.Detected(p, "Log", "Out of Sync (r10005)")
+							-- Anti.Detected(p, "Log", "Out of Sync (r10005)")
 						end
 					end
-				end
 			end
 		end;
 
@@ -462,10 +451,12 @@ return function(Vargs, GetEnv)
 				end
 
 				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
 						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
 						Desc = `{matched}{Settings.SplitKey}{table.concat(args, Settings.SplitKey)}`;
 						Player = p;
+						NoSave = noSave;
 					})
 
 					if Settings.ConfirmCommands then
@@ -590,7 +581,7 @@ return function(Vargs, GetEnv)
 
 				service.Events.CustomChat:Fire(p,a,b)
 			elseif not didPassRate and RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", curRate))
+				-- Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", curRate))
 				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, curRate))
 			end
 		end;
@@ -600,7 +591,7 @@ return function(Vargs, GetEnv)
 			if didPassRate then
 				local isMuted = Admin.IsMuted(p);
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
-					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
+					-- Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit)
 					local filtered = service.LaxFilter(msg, p)
@@ -640,7 +631,7 @@ return function(Vargs, GetEnv)
 					})
 				end
 			elseif not didPassRate and RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", curRate))
+				-- Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", curRate))
 				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, curRate))
 			end
 		end;
@@ -694,12 +685,12 @@ return function(Vargs, GetEnv)
 			Remote.Clients[key] = keyData
 
 			local ran, err = Pcall(function()
-				Routine(function()
-					if Anti.UserSpoofCheck(p) then
-						Remote.Clients[key] = nil;
-						Anti.Detected(p, "kick", "Username Spoofing");
-					end
-				end)
+				-- Routine(function()
+				-- 	if Anti.UserSpoofCheck(p) then
+				-- 		Remote.Clients[key] = nil;
+				-- 		Anti.Detected(p, "kick", "Username Spoofing");
+				-- 	end
+				-- end)
 
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
@@ -751,7 +742,7 @@ return function(Vargs, GetEnv)
 				})
 
 				AddLog("Joins", {
-					Text = p.Name;
+					Text = service.FormatPlayer(p);
 					Desc = `{p.Name} joined the server`;
 					Player = p;
 				})
@@ -783,7 +774,7 @@ return function(Vargs, GetEnv)
 					end
 				end)
 			elseif ran and err ~= "REMOVED" then
-				Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
+				-- Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 			end
 		end;
 
@@ -806,7 +797,7 @@ return function(Vargs, GetEnv)
 			})
 
 			AddLog("Leaves", {
-				Text = p.Name;
+				Text = service.FormatPlayer(p);
 				Desc = `{p.Name} left the server`;
 				Player = p;
 			})
@@ -869,29 +860,29 @@ return function(Vargs, GetEnv)
 			Functions.LoadEffects(p)
 
 			--// Load admin or non-admin specific things
-			if level < 1 then
-				if Settings.AntiSpeed then
-					Remote.Send(p, "LaunchAnti", "Speed", {
-						Speed = tostring(60.5 + math.random(9e8)/9e8)
-					})
-				end
+			-- if level < 1 then
+			-- 	if Settings.AntiSpeed then
+			-- 		Remote.Send(p, "LaunchAnti", "Speed", {
+			-- 			Speed = tostring(60.5 + math.random(9e8)/9e8)
+			-- 		})
+			-- 	end
 
-				if Settings.Detection then
-					Remote.Send(p, "LaunchAnti", "MainDetection")
+			-- 	if Settings.Detection then
+			-- 		Remote.Send(p, "LaunchAnti", "MainDetection")
 
-					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
-						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
-					})
+			-- 		Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
+			-- 			Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
+			-- 		})
 
-					if Settings.ExploitGuiDetection then
-						Remote.Send(p, "LaunchAnti", "AntiCoreGui")
-					end
-				end
+			-- 		if Settings.ExploitGuiDetection then
+			-- 			Remote.Send(p, "LaunchAnti", "AntiCoreGui")
+			-- 		end
+			-- 	end
 
-				if Settings.AntiBuildingTools then
-					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
-				end
-			end
+			-- 	if Settings.AntiBuildingTools then
+			-- 		Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
+			-- 	end
+			-- end
 
 			--// Finish things up
 			if Remote.Clients[key] then
@@ -902,7 +893,7 @@ return function(Vargs, GetEnv)
 					if not ran then
 						logError(err)
 					end
-				else 
+				else
 					--// probably could make this RefreshGui instead of MakeGui down the road
 					if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
 						Remote.MakeGui(p, "Console")
@@ -923,7 +914,7 @@ return function(Vargs, GetEnv)
 
 				if level > 0 then
 					local oldVer = (level > 300) and Core.GetData("VersionNumber")
-					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
+					-- local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
 						Remote.MakeGui(p, "Notification", {
@@ -935,16 +926,6 @@ return function(Vargs, GetEnv)
 						})
 
 						task.wait(1)
-
-						if oldVer and newVer and newVer > oldVer then
-							Remote.MakeGui(p, "Notification", {
-								Title = "Updated!";
-								Message = "Click to view the changelog.";
-								Icon = server.MatIcons.Description;
-								Time = 10;
-								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`);
-							})
-						end
 
 						task.wait(1)
 
@@ -1051,11 +1032,11 @@ return function(Vargs, GetEnv)
 				--	MakeGui(p, "PlayerList")
 				--end
 
-				if level < 1 then
-					if Settings.AntiNoclip then
-						Remote.Send(p, "LaunchAnti", "HumanoidState")
-					end
-				end
+				-- if level < 1 then
+				-- 	if Settings.AntiNoclip then
+				-- 		Remote.Send(p, "LaunchAnti", "HumanoidState")
+				-- 	end
+				-- end
 
 				--// Check muted
 				--[=[for ind,admin in Settings.Muted do
@@ -1121,7 +1102,7 @@ return function(Vargs, GetEnv)
 			Core.Connections[cli] = nil
 
 			if p then
-				Anti.KickedPlayers[p] = nil
+				-- Anti.KickedPlayers[p] = nil
 				AddLog("Script", {
 					Text = `{p.Name} disconnected`;
 					Desc = `{p.Name} disconnected from the server`;

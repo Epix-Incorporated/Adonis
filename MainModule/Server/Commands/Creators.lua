@@ -80,84 +80,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GlobalPlace = {
-			Prefix = Settings.Prefix;
-			Commands = {"globalplace", "gplace", "globalforceplace"};
-			Args = {"placeId"};
-			Description = "Force all game-players to teleport to a desired place";
-			AdminLevel = "Creators";
-			CrossServerDenied = true;
-			IsCrossServer = true;
-			NoStudio = true;
-			Function = function(plr: Player, args: {string})
-				local placeId = assert(tonumber(args[1]), "Invalid/missing PlaceId (argument #2)")
-
-				local ans = Remote.GetGui(plr, "YesNoPrompt", {
-					Title = "Force-teleport all users?";
-					Icon = server.MatIcons.Warning;
-					Question = `Would you really like to force all game-players to teleport to place '{placeId}'?`;
-				})
-				if ans == "Yes" then
-					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, `{Settings.Prefix}forceplace all {placeId}`) then
-						error("CrossServer handler not ready; please try again later")
-					end
-				else
-					Functions.Hint("Operation cancelled", {plr})
-				end
-			end;
-		};
-
-		ForcePlace = {
-			Prefix = Settings.Prefix;
-			Commands = {"forceplace"};
-			Args = {"player", "placeId/serverName"};
-			Description = "Force the target player(s) to teleport to the desired place";
-			NoStudio = true;
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				local reservedServerInfo = (Core.GetData("PrivateServers") or {})[args[2]]
-				local placeId = assert(if reservedServerInfo then reservedServerInfo.ID else tonumber(args[2]), "Invalid place ID or server name (argument #2)")
-				local players = service.GetPlayers(plr, args[1])
-				local teleportOptions = if reservedServerInfo then service.New("TeleportOptions", {
-					ReservedServerAccessCode = reservedServerInfo.Code
-				}) else nil
-
-				local teleportValidation = service.TeleportService.TeleportInitFailed:Connect(function(p: Player, teleportResult: Enum.TeleportResult, errorMessage: string)
-					Functions.Hint(string.format("Failed to teleport %s: [%s] %s", service.FormatPlayer(p), teleportResult.Name, errorMessage or "???"), {plr})
-				end)
-				local success, fault = pcall(service.TeleportService.TeleportAsync, service.TeleportService, placeId, players, teleportOptions)
-				teleportValidation:Disconnect()
-				if success and plr and plr.Parent == service.Players then
-					Functions.Hint("Teleport success", {plr})
-				elseif not success then
-					error(fault)
-				end
-			end
-		};
-
-		GivePlayerPoints = { --// obsolete since ROBLOX discontinued player points
-			Prefix = Settings.Prefix;
-			Commands = {"giveppoints", "giveplayerpoints", "sendplayerpoints"};
-			Args = {"player", "amount"};
-			Hidden = true;
-			Description = "Lets you give <player> <amount> player points";
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
-					if ran and service.PointsService:GetAwardablePoints() >= amount then
-						Functions.Hint(`Gave {amount} points to {service.FormatPlayer(v)}`, {plr})
-					elseif service.PointsService:GetAwardablePoints() < amount then
-						Functions.Hint(`You don't have {amount} points to give to {service.FormatPlayer(v)}`, {plr})
-					else
-						Functions.Hint(`(Unknown Error) Failed to give {amount} points to {service.FormatPlayer(v)}`, {plr})
-					end
-					Functions.Hint(`Available Player Points: {service.PointsService:GetAwardablePoints()}`, {plr})
-				end
-			end
-		};
-
 		Settings = {
 			Prefix = "";
 			Commands = {":adonissettings", `{Settings.Prefix}settings`, `{Settings.Prefix}adonissettings`};
@@ -223,21 +145,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Sudo = {
-			Prefix = Settings.Prefix;
-			Commands = {"sudo"};
-			Args = {"player", "command"};
-			Description = "Runs a command as the target player(s)";
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing target player (argument #1)")
-				assert(args[2], "Missing command string (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1], {NoFakePlayer = true}) do
-					task.defer(Process.Command, v, args[2], {isSystem = true})
-				end
-			end
-		};
-
 		ClearPlayerData = {
 			Prefix = Settings.Prefix;
 			Commands = {"clearplayerdata", "clrplrdata", "clearplrdata", "clrplayerdata"};
@@ -271,29 +178,5 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		Terminal = {
-			Prefix = "";
-			Commands = {`{Settings.Prefix}terminal`, `{Settings.Prefix}console`, ":terminal", ":console"};
-			Description = "Opens the debug terminal";
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "Terminal")
-			end
-		};
-
-		--[[
-		TaskManager = { --// Unfinished
-			Prefix = Settings.Prefix;
-			Commands = {"taskmgr", "taskmanager"};
-			Args = {};
-			Description = "Task manager";
-			Hidden = true;
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "TaskManager", {})
-			end
-		};
-		--]]
 	}
 end

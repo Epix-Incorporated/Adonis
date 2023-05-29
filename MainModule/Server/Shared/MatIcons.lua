@@ -1,15 +1,3 @@
---[[
-	════════════════════════════════════════════
-	Material Icons Collection for Roblox
-		Uploaded painstakingly by @Expertcoderz
-		Images are licensed under Apache 2.0 license
-		Sourced from Google LLC:
-			https://fonts.google.com/icons
-			('Sharp' style, white colored)
-	════════════════════════════════════════════
-	https://www.roblox.com/library/7646623585
-]]
-
 return { -- Decal IDs
 	["Account circle"] = 7495451175,
 	["Add"] = 7541498082,
