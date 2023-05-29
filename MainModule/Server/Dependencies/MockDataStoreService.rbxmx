@@ -29,7 +29,7 @@ end
 return function(forceMockDatastore)
 	-- Return the mock or actual service depending on environment:
 	if shouldUseMock or forceMockDatastore then
-		warn(":: Adonis :: Using MockDataStoreService instead of DataStoreService")
+		warn(":: ADONIS CRITICAL INCIDENT :: Using MockDataStoreService instead of DataStoreService")
 		return require(MockDataStoreServiceModule)
 	else
 		return game:GetService("DataStoreService")

@@ -579,36 +579,36 @@ return function(Vargs, GetEnv)
 			return buff
 		end;
 
-		NewScript = function(scriptType: string, source: string, allowCodes: boolean?, noCache: boolean?, runLimit: number?)
-			local scr = assert(
-				if scriptType == "Script" then Deps.ScriptBase:Clone()
-					elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
-					else nil,
-				`Invalid script type '{scriptType}'`
-			)
+		-- NewScript = function(scriptType: string, source: string, allowCodes: boolean?, noCache: boolean?, runLimit: number?)
+		-- 	local scr = assert(
+		-- 		if scriptType == "Script" then Deps.ScriptBase:Clone()
+		-- 			elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
+		-- 			else nil,
+		-- 		`Invalid script type '{scriptType}'`
+		-- 	)
 
-			local execCode = Functions.GetRandom()
+		-- 	local execCode = Functions.GetRandom()
 
-			scr.Name = `[Adonis] {scriptType}`
+		-- 	scr.Name = `[Adonis] {scriptType}`
 
-			if allowCodes then
-				service.New("StringValue", {
-					Name = "Execute",
-					Value = execCode,
-					Parent = scr,
-				})
-			end
+		-- 	if allowCodes then
+		-- 		service.New("StringValue", {
+		-- 			Name = "Execute",
+		-- 			Value = execCode,
+		-- 			Parent = scr,
+		-- 		})
+		-- 	end
 
-			local wrapped = Core.RegisterScript({
-				Script = scr;
-				Code = execCode;
-				Source = Core.Bytecode(source);
-				noCache = noCache;
-				runLimit = runLimit;
-			})
+		-- 	local wrapped = Core.RegisterScript({
+		-- 		Script = scr;
+		-- 		Code = execCode;
+		-- 		Source = Core.Bytecode(source);
+		-- 		noCache = noCache;
+		-- 		runLimit = runLimit;
+		-- 	})
 
-			return wrapped or scr, scr, execCode
-		end;
+		-- 	return wrapped or scr, scr, execCode
+		-- end;
 
 		SavePlayer = function(p, data)
 			local key = tostring(p.UserId)
@@ -1299,216 +1299,5 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end,
-
-		StartAPI = function()
-			local _G = _G
-			local setmetatable = setmetatable
-			local rawset = rawset
-			local rawget = rawget
-			local type = type
-			local error = error
-			local print = print
-			local warn = warn
-			local pairs = pairs
-			local next = next
-			local table = table
-			local getfenv = getfenv
-			local setfenv = setfenv
-			local require = require
-			local tostring = tostring
-			local server = server
-			local service = service
-			local Routine = env.Routine
-			local cPcall = env.cPcall
-			local MetaFunc = service.MetaFunc
-			local StartLoop = service.StartLoop
-			local API_Special = {
-				AddAdmin = Settings.Allowed_API_Calls.DataStore;
-				RemoveAdmin = Settings.Allowed_API_Calls.DataStore;
-				RunCommand = Settings.Allowed_API_Calls.Core;
-				SaveTableAdd = Settings.Allowed_API_Calls.DataStore and Settings.Allowed_API_Calls.Settings;
-				SaveTableRemove = Settings.Allowed_API_Calls.DataStore and Settings.Allowed_API_Calls.Settings;
-				SaveSetSetting = Settings.Allowed_API_Calls.DataStore and Settings.Allowed_API_Calls.Settings;
-				ClearSavedSettings = Settings.Allowed_API_Calls.DataStore and Settings.Allowed_API_Calls.Settings;
-				SetSetting = Settings.Allowed_API_Calls.Settings;
-			}
-
-			setfenv(1,setmetatable({}, {__metatable = getmetatable(getfenv())}))
-
-			local API_Specific = {
-				API_Specific = {
-					Test = function()
-						print("We ran the api specific stuff")
-					end
-				};
-				Settings = Settings;
-				Service = service;
-			}
-
-			local API = {
-				Access = MetaFunc(function(...)
-					local args = {...}
-					local key = args[1]
-					local ind = args[2]
-					local targ
-
-					if API_Specific[ind] then
-						targ = API_Specific[ind]
-					elseif server[ind] and Settings.Allowed_API_Calls[ind] then
-						targ = server[ind]
-					end
-
-					if Settings.G_Access and key == Settings.G_Access_Key and targ and Settings.Allowed_API_Calls[ind] == true then
-						if type(targ) == "table" then
-							return service.NewProxy {
-								__index = function(tab,inde)
-									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
-										AddLog(Logs.Script, {
-											Text = `Access to {inde} was granted`;
-											Desc = `A server script was granted access to {inde}`;
-										})
-
-										if targ[inde]~=nil and type(targ[inde]) == "table" and Settings.G_Access_Perms == "Read" then
-											return service.ReadOnly(targ[inde])
-										else
-											return targ[inde]
-										end
-									elseif API_Special[inde] == false then
-										AddLog(Logs.Script, {
-											Text = `Access to {inde} was denied`;
-											Desc = `A server script attempted to access {inde} via _G.Adonis.Access`;
-										})
-
-										error(`Access Denied: {inde}`)
-									else
-										error(`Could not find {inde}`)
-									end
-								end;
-								__newindex = function(tabl, inde, valu)
-									if Settings.G_Access_Perms == "Read" then
-										error("Read-only")
-									elseif Settings.G_Access_Perms == "Write" then
-										tabl[inde] = valu
-									end
-								end;
-								__metatable = true;
-							}
-						end
-					else
-						error("Incorrect key or G_Access is disabled")
-					end
-				end, true);
-
-				Scripts = service.ReadOnly({
-					ExecutePermission = MetaFunc(function(srcScript, code)
-						local exists;
-
-						for _, v in Core.ScriptCache do
-							if v.Script == srcScript then
-								exists = v
-							end
-						end
-
-						if exists and exists.noCache ~= true and (not exists.runLimit or (exists.runLimit and exists.Executions <= exists.runLimit)) then
-							exists.Executions += 1
-							return exists.Source, exists.Loadstring
-						end
-
-						local data = Core.ExecutePermission(srcScript, code)
-						if data and data.Source then
-							local module;
-							if not exists then
-								module = require(server.Shared.FiOne:Clone())
-								table.insert(Core.ScriptCache, {
-									Script = srcScript;
-									Source = data.Source;
-									Loadstring = module;
-									noCache = data.noCache;
-									runLimit = data.runLimit;
-									Executions = data.Executions;
-								})
-							else
-								module = exists.Loadstring
-								exists.Source = data.Source
-							end
-							return data.Source, module
-						end
-					end, true);
-				}, nil, nil, true);
-
-				CheckAdmin = MetaFunc(Admin.CheckAdmin, true);
-
-				IsAdmin = MetaFunc(Admin.CheckAdmin, true);
-
-				IsBanned = MetaFunc(Admin.CheckBan, true);
-
-				IsMuted = MetaFunc(Admin.IsMuted, true);
-
-				CheckDonor = MetaFunc(Admin.CheckDonor, true);
-
-				GetLevel = MetaFunc(Admin.GetLevel, true);
-
-				SetLighting = MetaFunc(Functions.SetLighting, true);
-
-				SetPlayerLighting = MetaFunc(Remote.SetLighting, true);
-
-				NewParticle = MetaFunc(Functions.NewParticle, true);
-
-				RemoveParticle = MetaFunc(Functions.RemoveParticle, true);
-
-				NewLocal = MetaFunc(Remote.NewLocal, true);
-
-				MakeLocal = MetaFunc(Remote.MakeLocal, true);
-
-				MoveLocal = MetaFunc(Remote.MoveLocal, true);
-
-				RemoveLocal = MetaFunc(Remote.RemoveLocal, true);
-
-				Hint = MetaFunc(Functions.Hint, true);
-
-				Message = MetaFunc(Functions.Message, true);
-
-				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin, true);
-			}
-
-			local AdonisGTable = service.NewProxy({
-				__index = function(tab,ind)
-					if Settings.G_API then
-						return API[ind]
-					elseif ind == "Scripts" then
-						return API.Scripts
-					else
-						error("_G API is disabled")
-					end
-				end;
-				__newindex = function()
-					error("Read-only")
-				end;
-				__metatable = true;
-			})
-
-			if not rawget(_G, "Adonis") then
-				if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
-					rawset(_G, "Adonis", AdonisGTable)
-					StartLoop("APICheck", 1, function()
-						if rawget(_G, "Adonis") ~= AdonisGTable then
-							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
-								rawset(_G, "Adonis", AdonisGTable)
-							else
-								warn("⚠️ ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")
-							end
-						end
-					end, true)
-				else
-					warn("The _G table was locked and the Adonis _G API could not be loaded")
-				end
-			end
-
-
-			AddLog(Logs.Script, {
-				Text = "Started _G API";
-				Desc = "The Adonis _G API was initialized and is ready to use";
-			})
-		end;
 	};
 end

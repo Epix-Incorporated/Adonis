@@ -1,16 +1,3 @@
--------------------
--- Adonis Client --
--------------------
---!nocheck
-																																																																																						  --[[
-This module is part of Adonis 1.0 and contains lots of old code;
-future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
-
-If you find bugs or similar issues, please submit an issue report
-on our GitHub repository here: https://github.com/Epix-Incorporated/Adonis/issues/new/choose
-																																																																																						]]
-
---// Load Order List
 local CORE_LOADING_ORDER = table.freeze({
 	--// Required by most modules
 	"Variables",
@@ -23,10 +10,8 @@ local CORE_LOADING_ORDER = table.freeze({
 	"Process",
 
 	--// Misc
-	"Anti",
+	-- "Anti",
 })
-
---// Loccalllsssss
 local _G, game, script, getfenv, setfenv, workspace, getmetatable, setmetatable, loadstring, coroutine, rawequal, typeof, print, math, warn, error, pcall, xpcall, select, rawset, rawget, ipairs, pairs, next, Rect, Axes, os, time, Faces, unpack, string, Color3, newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, NumberSequenceKeypoint, PhysicalProperties, Region3int16, Vector3int16, require, table, type, wait, Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick, assert =
 	_G,
 game,
@@ -119,10 +104,10 @@ local SERVICES_WE_USE = table.freeze({
 --// Logging
 local clientLog = {}
 local dumplog = function()
-	warn(":: Adonis :: Dumping client log...")
+	warn(":: ADONIS CRITICAL INCIDENT :: Dumping client log...")
 
 	for _, v in clientLog do
-		warn(":: Adonis ::", v)
+		warn(":: ADONIS CRITICAL INCIDENT ::", v)
 	end
 end
 local log = function(...)
@@ -162,7 +147,7 @@ local function isModule(module)
 end
 
 local function logError(...)
-	warn("ERROR: ", ...)
+	warn("ADONIS CRITICAL INCIDENT ERROR: ", ...)
 
 	if client and client.Remote then
 		client.Remote.Send("LogError", table.concat({ ... }, " "))
@@ -171,7 +156,7 @@ end
 
 local oldPrint = print
 print = function(...)
-	oldPrint(":: Adonis ::", ...)
+	oldPrint(":: ADONIS CRITICAL INCIDENT ::", ...)
 end
 
 --[[
@@ -183,7 +168,7 @@ local cPcall = function(func, ...)
 	local ran, err = pcall(coroutine.resume, coroutine.create(func), ...)
 
 	if err then
-		warn(":: ADONIS_ERROR ::", err)
+		warn(":: ADONIS CRITICAL INCIDENT ::", err)
 		logError(tostring(err))
 	end
 
@@ -562,7 +547,7 @@ return service.NewProxy({
 		client.RemoteName = remoteName
 
 		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
-		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
+		-- client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
 			client.MatIcons = setmetatable({}, {
@@ -612,17 +597,6 @@ return service.NewProxy({
 				ServiceSpecific.PlayerGui = PlayerGui
 			end)
 		end
-
-		--[[
-		-- // Doesn't seem to be used anymore
-
-		ServiceSpecific.SafeTweenSize = function(obj, ...)
-			pcall(obj.TweenSize, obj, ...)
-		end;
-		ServiceSpecific.SafeTweenPos = function(obj, ...)
-			pcall(obj.TweenPosition, obj, ...)
-		end;
-		]]
 
 		ServiceSpecific.Filter = function(str, from, to)
 			return client.Remote.Get("Filter", str, (to and from) or service.Player, to or from)
@@ -765,37 +739,6 @@ return service.NewProxy({
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
 		client.AllModulesLoaded = true
 		service.Events.AllModulesLoaded:Fire(os.time())
-
-		--[[client = service.ReadOnly(client, {
-			[client.Variables] = true;
-			[client.Handlers] = true;
-			G_API = true;
-			G_Access = true;
-			G_Access_Key = true;
-			G_Access_Perms = true;
-			Allowed_API_Calls = true;
-			HelpButtonImage = true;
-			Finish_Loading = true;
-			RemoteEvent = true;
-			ScriptCache = true;
-			Returns = true;
-			PendingReturns = true;
-			EncodeCache = true;
-			DecodeCache = true;
-			Received = true;
-			Sent = true;
-			Service = true;
-			Holder = true;
-			GUIs = true;
-			LastUpdate = true;
-			RateLimits = true;
-
-			Init = true;
-			RunAfterInit = true;
-			RunAfterLoaded = true;
-			RunAfterPlugins = true;
-		}, true)--]]
-
 		service.Events.ClientInitialized:Fire()
 
 		log("~! Return success")

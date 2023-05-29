@@ -1,45 +1,15 @@
--------------------
--- Adonis Server --
--------------------
---!nocheck
-																																																																																						  --[[
-This module is part of Adonis 1.0 and contains lots of old code;
-future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
-
-If you find bugs or similar issues, please submit an issue report
-on our GitHub repository here: https://github.com/Epix-Incorporated/Adonis/issues/new/choose
-																																																																																						]]
-
---// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
 local CORE_LOADING_ORDER = table.freeze {
-	--// Nearly all modules rely on these to function
 	"Logs";
 	"Variables";
 	"Functions";
-
-	--// Core functionality
 	"Core";
 	"Remote";
 	"Process";
-
-	--// Misc
 	"Admin";
 	"HTTP";
-	"Anti";
+	-- "Anti";
 	"Commands";
 }
-
---// Todo:
---//   Fix a loooootttttttt of bugged commands
---//   Probably a lot of other stuff idk
---//   Transform from Sceleratis into Dr. Sceleratii; Evil alter-ego; Creator of bugs, destroyer of all code that is good
---//   Maybe add a celery command at some point (wait didn't we do this?)
---//   Say hi to people reading the script
---//   ...
---//   "Hi." - Me
---//	Your mom
-
---// Holiday roooaaAaaoooAaaooOod
 local _G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
@@ -60,7 +30,6 @@ NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, require, table, type, task.wait,
 Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
-
 local SERVICES_WE_USE = table.freeze {
 	"Workspace";
 	"Players";
@@ -85,7 +54,6 @@ local SERVICES_WE_USE = table.freeze {
 	"InsertService";
 	"NetworkServer";
 }
-
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local locals = {}
@@ -114,7 +82,7 @@ local logError = function(plr, err)
 	end
 
 	if server.Core and server.Core.DebugMode then
-		warn(`::Adonis:: Error: {plr}: {err}`)
+		warn(`:: ADONIS CRITICAL INCIDENT :: Error: {plr}: {err}`)
 	end
 
 	if server and server.Logs then
@@ -127,11 +95,11 @@ local logError = function(plr, err)
 end
 
 local print = function(...)
-	print(":: Adonis ::", ...)
+	print(":: ADONIS CRITICAL INCIDENT ::", ...)
 end
 
 local warn = function(...)
-	warn(":: Adonis ::", ...)
+	warn(":: ADONIS CRITICAL INCIDENT ::", ...)
 end
 
 local function CloneTable(tab, recursive)
@@ -271,7 +239,7 @@ end;
 local function CleanUp()
 	--local env = getfenv(2)
 	--local ran,ret = pcall(function() return env.script:GetFullName() end)
-	warn("Beginning Adonis cleanup & shutdown process...")
+	warn("Beginning ADONIS CRITICAL INCIDENT cleanup & shutdown process...")
 	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
 	--local loader = server.Core.ClientLoader
 	local data = service.UnWrap(server.Data)
@@ -571,10 +539,6 @@ return service.NewProxy({
 			module:Clone().Parent = server.Client.Plugins
 		end
 
-		for _, theme in pairs(data.Themes or {}) do
-			theme:Clone().Parent = server.Client.UI
-		end
-
 		for _, pkg in pairs(data.Packages or {}) do
 			LoadPackage(pkg, Folder.Parent, false)
 		end
@@ -597,8 +561,8 @@ return service.NewProxy({
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
-		server.Changelog = require(server.Shared.Changelog)
-		server.Credits = require(server.Shared.Credits)
+		-- server.Changelog = require(server.Shared.Changelog)
+		-- server.Credits = require(server.Shared.Credits)
 		do
 			local MaterialIcons = require(server.Shared.MatIcons)
 			server.MatIcons = setmetatable({}, {
@@ -701,15 +665,15 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			warn(`Loading Complete; Required by {data.Loader:GetFullName()}`)
+			warn(`ADONIS CRITICAL INCIDENT: Loading Complete; Required by {data.Loader:GetFullName()}`)
 		else
-			warn("Loading Complete; No loader location provided")
+			warn("ADONIS CRITICAL INCIDENT: Loading Complete; No loader location provided")
 		end
 
 		if server.Logs then
 			server.Logs.AddLog(server.Logs.Script, {
-				Text = "Finished Loading";
-				Desc = "Adonis has finished loading";
+				Text = "ADONIS CRITICAL INCIDENT: Finished Loading";
+				Desc = "ADONIS CRITICAL INCIDENT has finished loading";
 			})
 		else
 			warn("SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
