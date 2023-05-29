@@ -4987,7 +4987,7 @@ return function(Vargs, env)
 							end
 						end
 					else
-						Functions.Hint(service.FormatPlayer(v).." either doesn't exist or it doesn't have a leaderstats folder", {plr})
+						Functions.Hint(service.FormatPlayer(v).." doesn't exist", {plr})
 					end
 				end
 			end
@@ -4999,15 +4999,13 @@ return function(Vargs, env)
 			Description = "Deletes all the leaderstats";
 			AdminLevel = "Moderators";
 			Function = function(plr)
-				local thestats = plr.leaderstats:GetChildren()
-				
 				for i, v in service.GetPlayers() do
+					local thestats = v.leaderstats:GetChildren()
+					
 					if thestats then
 						v.leaderstats:ClearAllChildren()
-						task.wait(1)
-						Functions.Hint("All leaderstats have been cleared!", {plr})
 					else
-						Functions.Hint("There are no leaderstats to remove!", {plr})
+						return;
 					end
 				end
 			end
