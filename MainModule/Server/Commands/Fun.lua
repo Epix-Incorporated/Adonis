@@ -5269,7 +5269,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"pipe"};
 			Args = {"player"};
-			Description = "Drops a metal pipe on a player.";
+			Description = "Drops a metal pipe on the target player(s).";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
