@@ -5277,27 +5277,16 @@ return function(Vargs, env)
 					task.defer(function()
 						local Person = v.Character
 						if not Person then return end
-
-						local piv = Person:GetPivot()
-
-						local CollidePart = Instance.new("Part")
-						CollidePart.Name = "CollidePart"
-						CollidePart.Parent = workspace
-						CollidePart.Anchored = true
-						CollidePart.Transparency = 1
-						CollidePart.CanCollide = false
-						CollidePart.Size = Vector3.new(5, 55, 5)
-						CollidePart:PivotTo(piv * CFrame.new(0, 57, 0))
 		
 						local pipe = Deps.Assets.Pipe:Clone()
 						pipe.Name = "Pipe"
 						pipe.Parent = workspace
-						pipe:PivotTo(piv * CFrame.new(0, 50, 0))
+						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
 		
 						local deb = false
 						local HitCon
 						HitCon = pipe.Touched:Connect(function(hit)
-							if deb or hit.Name == "CollidePart" or hit.Name == "Pipe" then return end
+							if deb or hit.Name == "Pipe" then return end
 							deb = true
 							
 							pipe.MetalPipeSound:Play()
