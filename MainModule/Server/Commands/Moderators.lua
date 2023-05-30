@@ -6251,6 +6251,44 @@ return function(Vargs, env)
 			end
 		};
 
+		LoadAvatar = {
+			Prefix = Settings.Prefix;
+			Commands = {"loadavatar", "loadchar", "loadcharacter"};
+			Args = {"player", "username", "avatar type(R6/R15)"};
+			Description = "Loads the target character in front of you. If you want to supply a UserId, supply with 'userid-<PlayerID>'";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player name")
+				assert(args[2], "Missing username or UserId")
+				assert(args[3], "Invalid argument #3 (avatar type expected)")
+
+				local AvatarType = string.upper(args[3])
+				if AvatarType == "R6" or AvatarType == "R15" then
+					local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
+					if target then
+						local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
+
+						if success then
+							for _, v in service.GetPlayers(plr, args[1]) do
+								task.defer(function()
+									local char = Deps.Assets["Rig"..AvatarType]:Clone()
+									char.Name = Functions.GetNameFromUserIdAsync(target)
+									char.Parent = workspace
+									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[AvatarType.."Animate"]:Clone() Anima.Parent = char Anima.Disabled = false end
+									char.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
+									char.HumanoidRootPart.CFrame = (v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(5, 0, 0)) * CFrame.Angles(0, math.rad(90), 0)
+								end)
+							end
+						else
+							error("Unable to get avatar for target user")
+						end
+					end
+				else
+					error("Invalid argument #3 (valid avatar type expected)")
+				end
+			end
+		};
+
 		LoopHeal = {
 			Prefix = Settings.Prefix;
 			Commands = {"loopheal"};

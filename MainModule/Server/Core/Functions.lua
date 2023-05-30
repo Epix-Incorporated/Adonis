@@ -1403,6 +1403,20 @@ return function(Vargs, GetEnv)
 			return cache
 		end;
 
+		GetNameFromUserIdAsync = function(id)
+			local cache = Admin.UsernameCache[id]
+			if not cache then
+				local success, Username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, id)
+
+				if success then
+					Admin.UsernameCache[id] = Username
+					return Username
+				end
+			end
+
+			return cache
+		end;
+
 		Shutdown = function(reason)
 			Functions.Message('Adonis', Settings.SystemTitle, "The server is shutting down...", 'MatIcon://Warning', service.Players:GetPlayers(), false, 5)
 			task.wait(1)
