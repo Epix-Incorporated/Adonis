@@ -5264,5 +5264,58 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		Pipe = {
+			Prefix = Settings.Prefix;
+			Commands = {"pipe"};
+			Args = {"player"};
+			Description = "Drops a metal pipe on a player.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					task.defer(function()
+						local Person = v.Character
+						if not Person then return end
+
+						local piv = Person:GetPivot()
+
+						local CollidePart = Instance.new("Part")
+						CollidePart.Name = "CollidePart"
+						CollidePart.Parent = workspace
+						CollidePart.Anchored = true
+						CollidePart.Transparency = 1
+						CollidePart.CanCollide = false
+						CollidePart.Size = Vector3.new(5, 55, 5)
+						CollidePart:PivotTo(piv * CFrame.new(0, 57, 0))
+		
+						local pipe = Deps.Assets.Pipe:Clone()
+						pipe.Name = "Pipe"
+						pipe.Parent = workspace
+						pipe:PivotTo(piv * CFrame.new(0, 50, 0))
+		
+						local deb = false
+						local HitCon
+						HitCon = pipe.Touched:Connect(function(hit)
+							if deb or hit.Name == "CollidePart" or hit.Name == "Pipe" then return end
+							deb = true
+							
+							pipe.MetalPipeSound:Play()
+
+							if hit.Parent:FindFirstChild("Humanoid") then
+								hit.Parent.Humanoid.Health = 0
+							elseif hit.Parent.Parent:FindFirstChild("Humanoid") then
+								hit.Parent.Parent.Humanoid.Health = 0
+							end
+		
+							HitCon:Disconnect()
+						end)
+
+						service.Debris:AddItem(pipe, 10)
+						service.Debris:AddItem(CollidePart, 10)
+					end)
+				end
+			end
+		};
 	}
 end
