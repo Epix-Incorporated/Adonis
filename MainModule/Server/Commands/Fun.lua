@@ -5296,10 +5296,11 @@ return function(Vargs, env)
 						local deb = false
 						local HitCon
 						HitCon = pipe.Touched:Connect(function(hit)
-							if deb or hit.Name == "Pipe" or (hit.CanCollide == false and not FindHumanoidFromTouch(hit)) then return end
+							local Humanoid = FindHumanoidFromTouch(hit)
+							if deb or hit.Name == "Pipe" or (hit.CanCollide == false and not Humanoid) then return end
 							deb = true
 							pipe.MetalPipeSound:Play()
-							FindHumanoidFromTouch(hit).Health = 0
+							Humanoid.Health = 0
 							HitCon:Disconnect()
 						end)
 
