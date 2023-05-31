@@ -67,6 +67,7 @@ return {
 		{Text = "@GitHub Lethalitics",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub RoyallyFlushed",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
+		{Text = "@Github WalkerOfBacon",    Desc = "GitHub Contributor"};
 	};
 	Misc = {
 		{Text = "Kein-Hong Man",		Desc = "Creator of the Yueliang (Lua bytecode compiler in loadstring module). Also created LuLu VM, the first Lua bytecode interpreter used in Adonis (no longer used)"};
