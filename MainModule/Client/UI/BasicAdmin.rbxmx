@@ -22,12 +22,14 @@
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
+				<bool name="ClipToDeviceSafeArea">true</bool>
 				<int name="DisplayOrder">0</int>
 				<bool name="Enabled">false</bool>
-				<bool name="IgnoreGuiInset">true</bool>
 				<string name="Name">Message</string>
 				<bool name="ResetOnSpawn">false</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SafeAreaCompatibility">1</token>
+				<token name="ScreenInsets">1</token>
 				<token name="SelectionBehaviorDown">0</token>
 				<token name="SelectionBehaviorLeft">0</token>
 				<token name="SelectionBehaviorRight">0</token>
@@ -439,8 +441,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">4</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>700</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -523,8 +529,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">3</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>400</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -607,8 +617,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">3</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>400</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -752,8 +766,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">3</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>400</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -838,8 +856,12 @@ end]]></ProtectedString>
 							<int name="BorderSizePixel">0</int>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
-							<Font name="FontFace"></Font>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -907,12 +929,14 @@ end]]></ProtectedString>
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
+				<bool name="ClipToDeviceSafeArea">true</bool>
 				<int name="DisplayOrder">0</int>
 				<bool name="Enabled">false</bool>
-				<bool name="IgnoreGuiInset">true</bool>
 				<string name="Name">Hint</string>
 				<bool name="ResetOnSpawn">false</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SafeAreaCompatibility">1</token>
+				<token name="ScreenInsets">1</token>
 				<token name="SelectionBehaviorDown">0</token>
 				<token name="SelectionBehaviorLeft">0</token>
 				<token name="SelectionBehaviorRight">0</token>
@@ -1255,8 +1279,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">4</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>700</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -1400,8 +1428,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">3</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>400</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -1486,8 +1518,12 @@ end]]></ProtectedString>
 							<int name="BorderSizePixel">0</int>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
-							<Font name="FontFace"></Font>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -1555,12 +1591,14 @@ end]]></ProtectedString>
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
+				<bool name="ClipToDeviceSafeArea">true</bool>
 				<int name="DisplayOrder">0</int>
 				<bool name="Enabled">false</bool>
-				<bool name="IgnoreGuiInset">true</bool>
 				<string name="Name">YesNoPrompt</string>
 				<bool name="ResetOnSpawn">false</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SafeAreaCompatibility">1</token>
+				<token name="ScreenInsets">1</token>
 				<token name="SelectionBehaviorDown">0</token>
 				<token name="SelectionBehaviorLeft">0</token>
 				<token name="SelectionBehaviorRight">0</token>
@@ -1915,8 +1953,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">4</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>700</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -2060,8 +2102,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">3</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>400</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>
@@ -2205,8 +2251,12 @@ end]]></ProtectedString>
 									<int name="BorderSizePixel">0</int>
 									<bool name="ClipsDescendants">false</bool>
 									<bool name="Draggable">false</bool>
-									<token name="Font">3</token>
-									<Font name="FontFace"></Font>
+									<Font name="FontFace">
+										<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+										<Weight>400</Weight>
+										<Style>Normal</Style>
+										<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+									</Font>
 									<int name="LayoutOrder">0</int>
 									<float name="LineHeight">1</float>
 									<int name="MaxVisibleGraphemes">-1</int>
@@ -2293,8 +2343,12 @@ end]]></ProtectedString>
 									<int name="BorderSizePixel">0</int>
 									<bool name="ClipsDescendants">false</bool>
 									<bool name="Draggable">false</bool>
-									<token name="Font">4</token>
-									<Font name="FontFace"></Font>
+									<Font name="FontFace">
+										<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+										<Weight>700</Weight>
+										<Style>Normal</Style>
+										<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
+									</Font>
 									<int name="LayoutOrder">0</int>
 									<float name="LineHeight">1</float>
 									<int name="MaxVisibleGraphemes">-1</int>
@@ -2381,8 +2435,12 @@ end]]></ProtectedString>
 								<int name="BorderSizePixel">0</int>
 								<bool name="ClipsDescendants">false</bool>
 								<bool name="Draggable">false</bool>
-								<token name="Font">4</token>
-								<Font name="FontFace"></Font>
+								<Font name="FontFace">
+									<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+									<Weight>700</Weight>
+									<Style>Normal</Style>
+									<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
+								</Font>
 								<int name="LayoutOrder">0</int>
 								<float name="LineHeight">1</float>
 								<int name="MaxVisibleGraphemes">-1</int>

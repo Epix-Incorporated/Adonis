@@ -93,7 +93,7 @@ return function(Vargs, GetEnv)
 				table.remove(tab, #tab)
 			end
 
-			service.Events.LogAdded:Fire(server.Logs.TabToType(tab), log, tab)
+			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 		end;
 
 		SaveCommandLogs = function()
@@ -121,15 +121,19 @@ return function(Vargs, GetEnv)
 				local temp = {}
 
 				for _, m in logsToSave do
-					local newTab = type(m) == "table" and service.CloneTable(m) or m
-					if type(m) == "table" and newTab.Player then
-						local p = newTab.Player
-						newTab.Player = {
-							Name = p.Name;
-							UserId = p.UserId;
-						}
+					local isTable = type(m) == "table"
+					local newTab = if isTable then service.CloneTable(m) else m
+
+					if (isTable and not newTab.NoSave) or not isTable then
+						if isTable and newTab.Player then
+							local p = newTab.Player
+							newTab.Player = {
+								Name = p.Name;
+								UserId = p.UserId;
+							}
+						end
+						table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
 					end
-					table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
 				end
 
 				if oldLogs then

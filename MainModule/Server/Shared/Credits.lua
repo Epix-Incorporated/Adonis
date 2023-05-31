@@ -9,10 +9,12 @@ return {
 		{Text = "Coasterteam",				Desc = "Community Maintainer & Development contributions (Kronos developer)"};
 		{Text = "Expertcoderz",				Desc = "Community Maintainer & GitHub Contributor"};
 	};
+
 	GitHub = {
 		{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub TheCakeChicken", 	Desc = "GitHub Contributor"};
 		{Text = "@GitHub NNickey", 			Desc = "GitHub Contributor"};
+		{Text = "@GitHub FungusGenerator", 	Desc = "GitHub Contributor"};
 		{Text = "@GitHub ItsGJK", 			Desc = "GitHub Contributor"};
 		{Text = "@GitHub Kan18", 			Desc = "GitHub Contributor"};
 		{Text = "@GitHub Brandon-Beck", 	Desc = "GitHub Contributor"};
@@ -25,7 +27,7 @@ return {
 		{Text = "@GitHub Awesomewebm", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub TheLegendarySpark",Desc = "GitHub Contributor"};
 		{Text = "@GitHub DaEnder",			Desc = "GitHub Contributor"};
-		{Text = "@GitHub pbstFusion",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub LiveFireExercise",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub policetonyR",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub enescglyn",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub EpicFazbear",		Desc = "GitHub Contributor"};
@@ -60,17 +62,21 @@ return {
 		{Text = "@GitHub NoUserSet", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub xvarmkorv2",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Quantify_RBLX",	Desc = "GitHub Contributor"};
-		{Text = "@GitHub xhayper",		Desc = "GitHub Contributor"};
-		{Text = "@GitHub GGshor",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub xhayper",			Desc = "GitHub Contributor"};
+		{Text = "@GitHub NoobBucket",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub GGshor",			Desc = "GitHub Contributor"};
 		{Text = "@GitHub WideManHost",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub autodoorsdev",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Lethalitics",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub RoyallyFlushed",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
-		{Text = "@Github WalkerOfBacon",    Desc = "GitHub Contributor"};
+		{Text = "@GitHub AlexanderDarmody",	Desc = "GitHub Contributor"};
+		{Text = "@GitHub watameln",			Desc = "GitHub Contributor"};
+    {Text = "@Github WalkerOfBacon",    Desc = "GitHub Contributor"};
 	};
+
 	Misc = {
-		{Text = "Kein-Hong Man",		Desc = "Creator of the Yueliang (Lua bytecode compiler in loadstring module). Also created LuLu VM, the first Lua bytecode interpreter used in Adonis (no longer used)"};
+		{Text = "Kein-Hong Man",			Desc = "Creator of the Yueliang (Lua bytecode compiler in loadstring module). Also created LuLu VM, the first Lua bytecode interpreter used in Adonis (no longer used)"};
 		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used)"};
 		{Text = "darkelementallord",		Desc = "Updated some guis"};
 		{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
@@ -84,7 +90,8 @@ return {
 		{Text = "Bubby4j",					Desc = "Used their \"Refresh Icon\" image (default theme)"};
 		{Text = "meafers",					Desc = "Suggested some stuff"};
 		{Text = "Osyris",					Desc = "Wrote 't', an open-source typechecking library"};
-		{Text = "buildthomas",					Desc = "Wrote 'MockDataStoreService', an open-source mock DataStoreService replacement library"};
+		{Text = "buildthomas",				Desc = "Wrote 'MockDataStoreService', an open-source mock DataStoreService replacement library"};
+		{Text = "Tiffany352",				Desc = "Wrote an improved base64 implementation"};
 		{Text = "",							Desc = ""};
 		{Text = "~ :) ~",					Desc = ""};
 		{Text = "Donors",					Desc = "Donors keep the wheels turning ;)"};

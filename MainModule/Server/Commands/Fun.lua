@@ -3764,6 +3764,17 @@ return function(Vargs, env)
 					Functions.Hint(`Size changed to the maximum {num} [Argument #2 (size multiplier) went over the size limit]`, {plr})
 				end
 
+				local function fixDensity(char)
+					for _, charPart in char:GetChildren() do
+						if charPart:IsA("MeshPart") or charPart:IsA("Part") then
+							local defaultprops = PhysicalProperties.new(charPart.Material)
+							local density = defaultprops.Density / char:GetAttribute("Adonis_Resize") ^ 3
+
+							charPart.CustomPhysicalProperties = PhysicalProperties.new(density, defaultprops.Friction, defaultprops.Elasticity)
+						end
+					end
+				end
+
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local human = char and char:FindFirstChildOfClass("Humanoid")
@@ -3772,13 +3783,14 @@ return function(Vargs, env)
 						Functions.Hint(`Cannot resize {service.FormatPlayer(v)}'s character: humanoid and/or character doesn't exist!`, {plr})
 						continue
 					end
-
-					if not Variables.SizedCharacters[char] then
-						Variables.SizedCharacters[char] = num
-					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
-						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
+					
+					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
+					if not resizeAttributeValue then
+						char:SetAttribute("Adonis_Resize", num)
+					elseif resizeAttributeValue * num < sizeLimit then
+						char:SetAttribute("Adonis_Resize", resizeAttributeValue * num)
 					else
-						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
+						Functions.Hint(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
 						continue
 					end
 
@@ -3788,6 +3800,7 @@ return function(Vargs, env)
 								val.Value *= num
 							end
 						end
+						fixDensity(char)
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
 						local motors = {}
 						table.insert(motors, char.HumanoidRootPart:FindFirstChild("RootJoint"))
@@ -3814,6 +3827,7 @@ return function(Vargs, env)
 								v.Scale *= num
 							end
 						end
+						fixDensity(char)
 					end
 				end
 			end

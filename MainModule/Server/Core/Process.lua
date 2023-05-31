@@ -124,7 +124,7 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
 
-	local function newRateLimit(rateLimit: table, rateKey: string|number|userdata|any)
+	local function newRateLimit(rateLimit: table, rateKey: string|number)
 		-- Ratelimit: table
 		-- Ratekey: string or number
 
@@ -287,6 +287,7 @@ return function(Vargs, GetEnv)
 		newRateLimit = newRateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
+		RemoteMaxArgCount = 5; --// The maximum argument count Adonis will take from Remote (alter if your script requires more arguments)
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -296,23 +297,21 @@ return function(Vargs, GetEnv)
 		};
 
 		Remote = function(p, cliData, com, ...)
-			local key = tostring(p.UserId)
-			local keys = Remote.Clients[key]
-
 			if p and p:IsA("Player") then
 				if Anti.KickedPlayers[p] then
 					p:Kick(":: Adonis :: Communication following disconnect.")
 				elseif not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
-					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
+					Anti.Detected(p, "Kick", service.MaxLen((tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)), 150))
 				elseif cliData and type(cliData) ~= "table" then
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
 					--elseif cliData and keys and cliData.Module ~= keys.Module then
 					--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
-					local args = {...}
-					local rateLimitCheck, didThrottleRL, canThrottleRL, curRemoteRate = RateLimit(p, "Remote")
+					local keys = Remote.Clients[tostring(p.UserId)]
+					if keys and select("#", ...) <= Process.RemoteMaxArgCount then
+						local args = {...}
+						local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
 
-					if keys then
 						keys.LastUpdate = os.time()
 						keys.Received += 1
 
@@ -338,7 +337,7 @@ return function(Vargs, GetEnv)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
-									Text = string.format("%s fired %s; Arg1: %s", tostring(p), comString, tostring(args[1]));
+									Text = string.format("%s fired %s; Arg1: %s", p.Name, comString, service.MaxLen(tostring(args[1]), 50));
 									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args));
 									Player = p;
 								})
@@ -348,7 +347,7 @@ return function(Vargs, GetEnv)
 									if not rets[1] then
 										logError(p, `{comString}: {rets[2]}`)
 									else
-										return {unpack(rets, 2)}
+										return {table.unpack(rets, 2)}
 									end
 								else
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
@@ -462,10 +461,12 @@ return function(Vargs, GetEnv)
 				end
 
 				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
 						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
 						Desc = `{matched}{Settings.SplitKey}{table.concat(args, Settings.SplitKey)}`;
 						Player = p;
+						NoSave = noSave;
 					})
 
 					if Settings.ConfirmCommands then
@@ -751,7 +752,7 @@ return function(Vargs, GetEnv)
 				})
 
 				AddLog("Joins", {
-					Text = p.Name;
+					Text = service.FormatPlayer(p);
 					Desc = `{p.Name} joined the server`;
 					Player = p;
 				})
@@ -806,7 +807,7 @@ return function(Vargs, GetEnv)
 			})
 
 			AddLog("Leaves", {
-				Text = p.Name;
+				Text = service.FormatPlayer(p);
 				Desc = `{p.Name} left the server`;
 				Player = p;
 			})
@@ -902,7 +903,7 @@ return function(Vargs, GetEnv)
 					if not ran then
 						logError(err)
 					end
-				else 
+				else
 					--// probably could make this RefreshGui instead of MakeGui down the road
 					if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
 						Remote.MakeGui(p, "Console")

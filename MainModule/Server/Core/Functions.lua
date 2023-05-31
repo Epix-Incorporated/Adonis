@@ -330,7 +330,7 @@ return function(Vargs, GetEnv)
 					end
 				end;
 			};
-			
+
 			["+name"] = {
 				Match = "+";
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
@@ -349,7 +349,7 @@ return function(Vargs, GetEnv)
 					end
 				end;
 			};
-			
+
 			["#number"] = {
 				Match = "#";
 				Function = function(msg, plr, ...)
@@ -451,10 +451,10 @@ return function(Vargs, GetEnv)
 			return fakePlayer
 		end;
 
-		GetChatService = function()
+		GetChatService = function(waitTime)
 			local isTextChat = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", isTextChat and 0.2 or 120)
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", isTextChat and 0.2 or 120)
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", waitTime or isTextChat and 0.2 or 145)
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", waitTime or isTextChat and 0.2 or 145)
 
 			if chatMod then
 				return require(chatMod)
@@ -476,7 +476,7 @@ return function(Vargs, GetEnv)
 			for i, arg in args do
 				str ..= `Arg{i}: {arg}; `
 			end
-			return str:sub(1, -3)
+			return string.sub(str, 1, -3)
 		end;
 
 		GetPlayers = function(plr, argument, options)
@@ -569,7 +569,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{s}`) then
+							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{s:lower()}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -579,7 +579,7 @@ return function(Vargs, GetEnv)
 							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match(`^{s}`) then
+								if p and p.ClassName == "Player" and p.Name:lower():match(`^{s:lower()}`) then
 									table.insert(players, p)
 									plus()
 								end
@@ -615,7 +615,7 @@ return function(Vargs, GetEnv)
 			--// The following is intended to prevent name spamming (eg. :re scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel...)
 			--// It will also prevent situations where a player falls within multiple player finders (eg. :re group-1928483,nonadmins,radius-50 (one player can match all 3 of these))
 			--// Edited to adjust removals and randomizers.
-			
+
 			local filteredList = {}
 			local checkList = {}
 
@@ -795,135 +795,189 @@ return function(Vargs, GetEnv)
 			if mode == "dec" then return cipher(data,-47) end
 		end;
 
-		-- CUSTOM BASE64 ALPHABET ENCODING
-		Base64_A_Decode = function(data)
-			local sub = string.sub
-			local gsub = string.gsub
-			local find = string.find
-			local char = string.char
-			local b = 'ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#'
-
-
-			data = gsub(data, `[^{b}=]`, '')
-			return (gsub(gsub(data, '.', function(x)
-				if x == '=' then
-					return ''
-				end
-				local r, f = '', (find(b, x) - 1)
-				for i = 6, 1, -1 do
-					r ..= (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
-				end
-				return r;
-			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if #x ~= 8 then
-					return ''
-				end
-				local c = 0
-				for i = 1, 8 do
-					c += (sub(x, i, i) == '1' and 2 ^ (8 - i) or 0)
-				end
-				return char(c)
-			end))
-		end;
-
-		Base64_A_Encode = function(data)
-			local sub = string.sub
-			local byte = string.byte
-			local gsub = string.gsub
-
-			return (gsub(gsub(data, '.', function(x)
-				local r, b = "", byte(x)
-				for i = 8, 1, -1 do
-					r ..= (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
-				end
-				return r;
-			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
-				if #(x) < 6 then
-					return ''
-				end
-				local c = 0
-				for i = 1, 6 do
-					c += (sub(x, i, i) == '1' and 2 ^ (6 - i) or 0)
-				end
-				return sub('ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#', c + 1, c + 1)
-			end)..({
-				'',
-				'==',
-				'='
-			})[#(data) % 3 + 1])
-		end;
 		--
 
-		Base64Encode = function(data)
-			local sub = string.sub
-			local byte = string.byte
-			local gsub = string.gsub
+		-- Thanks to Tiffany352 for this base64 implementation!
 
-			return (gsub(gsub(data, '.', function(x)
-				local r, b = "", byte(x)
-				for i = 8, 1, -1 do
-					r ..= (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
-				end
-				return r;
-			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
-				if #(x) < 6 then
-					return ''
-				end
-				local c = 0
-				for i = 1, 6 do
-					c += (sub(x, i, i) == '1' and 2 ^ (6 - i) or 0)
-				end
-				return sub('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', c + 1, c + 1)
-			end)..({
-				'',
-				'==',
-				'='
-			})[#(data) % 3 + 1])
-		end;
-
-		Base64Decode = function(data)
-			local sub = string.sub
-			local gsub = string.gsub
-			local find = string.find
+		Base64Encode = function(str)
+			local floor = math.floor
 			local char = string.char
+			local nOut = 0
+			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+			local strLen = #str
+			local out = table.create(math.ceil(strLen / 0.75))
 
-			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+			-- 3 octets become 4 hextets
+			for i = 1, strLen - 2, 3 do
+				local b1, b2, b3 = str:byte(i, i + 3)
+				local word = b3 + b2 * 256 + b1 * 256 * 256
 
-			data = gsub(data, `[^{b}=]`, '')
-			return (gsub(gsub(data, '.', function(x)
-				if x == '=' then
-					return ''
-				end
-				local r, f = '', (find(b, x) - 1)
-				for i = 6, 1, -1 do
-					r ..= (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
-				end
-				return r;
-			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if #x ~= 8 then
-					return ''
-				end
-				local c = 0
-				for i = 1, 8 do
-					c += (sub(x, i, i) == '1' and 2 ^ (8 - i) or 0)
-				end
-				return char(c)
-			end))
+				local h4 = word % 64 + 1
+				word = floor(word / 64)
+				local h3 = word % 64 + 1
+				word = floor(word / 64)
+				local h2 = word % 64 + 1
+				word = floor(word / 64)
+				local h1 = word % 64 + 1
+
+				out[nOut + 1] = alphabet:sub(h1, h1)
+				out[nOut + 2] = alphabet:sub(h2, h2)
+				out[nOut + 3] = alphabet:sub(h3, h3)
+				out[nOut + 4] = alphabet:sub(h4, h4)
+				nOut = nOut + 4
+			end
+
+			local remainder = strLen % 3
+
+			if remainder == 2 then
+				-- 16 input bits -> 3 hextets (2 full, 1 partial)
+				local b1, b2 = str:byte(-2, -1)
+				-- partial is 4 bits long, leaving 2 bits of zero padding ->
+				-- offset = 4
+				local word = b2 * 4 + b1 * 4 * 256
+
+				local h3 = word % 64 + 1
+				word = floor(word / 64)
+				local h2 = word % 64 + 1
+				word = floor(word / 64)
+				local h1 = word % 64 + 1
+
+				out[nOut + 1] = alphabet:sub(h1, h1)
+				out[nOut + 2] = alphabet:sub(h2, h2)
+				out[nOut + 3] = alphabet:sub(h3, h3)
+				out[nOut + 4] = "="
+			elseif remainder == 1 then
+				-- 8 input bits -> 2 hextets (2 full, 1 partial)
+				local b1 = str:byte(-1, -1)
+				-- partial is 2 bits long, leaving 4 bits of zero padding ->
+				-- offset = 16
+				local word = b1 * 16
+
+				local h2 = word % 64 + 1
+				word = floor(word / 64)
+				local h1 = word % 64 + 1
+
+				out[nOut + 1] = alphabet:sub(h1, h1)
+				out[nOut + 2] = alphabet:sub(h2, h2)
+				out[nOut + 3] = "="
+				out[nOut + 4] = "="
+			end
+			-- if the remainder is 0, then no work is needed
+
+			return table.concat(out, "")
 		end;
 
-		Hint = function(message, players, duration)
+		Base64Decode = function(str)
+			local floor = math.floor
+			local char = string.char
+			local nOut = 0
+			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+			local strLen = #str
+			local out = table.create(math.ceil(strLen * 0.75))
+			local acc = 0
+			local nAcc = 0
+
+			local alphabetLut = {}
+			for i = 1, #alphabet do
+				alphabetLut[alphabet:sub(i, i)] = i - 1
+			end
+
+			-- 4 hextets become 3 octets
+			for i = 1, strLen do
+				local ch = str:sub(i, i)
+				local byte = alphabetLut[ch]
+				if byte then
+					acc = acc * 64 + byte
+					nAcc += 1
+				end
+
+				if nAcc == 4 then
+					local b3 = acc % 256
+					acc = floor(acc / 256)
+					local b2 = acc % 256
+					acc = floor(acc / 256)
+					local b1 = acc % 256
+
+					out[nOut + 1] = char(b1)
+					out[nOut + 2] = char(b2)
+					out[nOut + 3] = char(b3)
+					nOut += 3
+					nAcc = 0
+					acc = 0
+				end
+			end
+
+			if nAcc == 3 then
+				-- 3 hextets -> 16 bit output
+				acc *= 64
+				acc = floor(acc / 256)
+				local b2 = acc % 256
+				acc = floor(acc / 256)
+				local b1 = acc % 256
+
+				out[nOut + 1] = char(b1)
+				out[nOut + 2] = char(b2)
+			elseif nAcc == 2 then
+				-- 2 hextets -> 8 bit output
+				acc *= 64
+				acc = floor(acc / 256)
+				acc *= 64
+				acc = floor(acc / 256)
+				local b1 = acc % 256
+
+				out[nOut + 1] = char(b1)
+			elseif nAcc == 1 then
+				error("Base64 has invalid length")
+			end
+
+			return table.concat(out, "")
+		end;
+
+		Hint = function(message, players, duration, title, image)
 			duration = duration or (#tostring(message) / 19 + 2.5)
 
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
 					Message = message;
 					Time = duration;
+					Title = title;
+					Image = image;
 				})
 			end
 		end;
 
-		Message = function(title, message, players, scroll, duration)
+		Message = function(sender, title, message, image, players, scroll, duration)
+
+			-- Currently not used
+			if sender == 'Adonis' or sender == 'HelpSystem' or sender == 'Command' then
+				sender = nil
+			end
+
+			-- ////////// Compatability for older plugins (before sender and image ares were introduced)
+			if sender ~= nil and typeof(sender) ~= 'Instance' and typeof(sender) ~= 'userdata' and typeof(sender) ~= 'table' then
+				title = sender
+				message = title
+				players = message
+				scroll = image
+				duration = players
+
+				sender = nil
+				image = nil
+			end
+
 			duration = duration or (#tostring(message) / 19) + 2.5
+
+			if image then
+
+				-- Support "MatIcon://" for fast access to maticons
+				local MatIcon = image:match('MatIcon://(.+)')
+
+				if MatIcon then
+					image = server.MatIcons[MatIcon]
+				elseif sender and (image == 'HeadShot') then
+					image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
+				end
+			end
 
 			for _, v in players do
 				task.defer(function()
@@ -933,6 +987,7 @@ return function(Vargs, GetEnv)
 						Message = message;
 						Scroll = scroll;
 						Time = duration;
+						Image = image;
 					})
 				end)
 			end
@@ -1264,6 +1319,14 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
+		CountTable = function(tab)
+			local num = 0
+			for i in tab do
+				num += 1
+			end
+			return num
+		end;
+
 		IsValidTexture = function(id)
 			local id = tonumber(id)
 			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
@@ -1341,7 +1404,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Shutdown = function(reason)
-			Functions.Message(Settings.SystemTitle, "The server is shutting down...", service.Players:GetPlayers(), false, 5)
+			Functions.Message('Adonis', Settings.SystemTitle, "The server is shutting down...", 'MatIcon://Warning', service.Players:GetPlayers(), false, 5)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)

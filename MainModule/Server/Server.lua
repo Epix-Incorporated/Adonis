@@ -274,10 +274,20 @@ local function CleanUp()
 	warn("Beginning Adonis cleanup & shutdown process...")
 	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
 	--local loader = server.Core.ClientLoader
+	local data = service.UnWrap(server.Data)
+	if type(data) == "table" and typeof(service.UnWrap(data.Config)) == "Instance" then
+		local Settings: ModuleScript = service.UnWrap(data.Config):FindFirstChild("Settings")
+		if typeof(Settings) == "Instance" and Settings:IsA("ModuleScript") then
+			pcall(function()
+				table.clear(require(Settings))
+			end)
+		end
+	end
+
 	server.Model.Name = "Adonis_Loader"
 	server.Model.Parent = service.ServerScriptService
 	server.Running = false
-	
+
 	server.Logs.SaveCommandLogs()
 	server.Core.GAME_CLOSING = true;
 	server.Core.SaveAllPlayerData()

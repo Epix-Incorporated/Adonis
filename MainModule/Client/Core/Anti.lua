@@ -35,8 +35,8 @@ return function(Vargs, GetEnv)
 
 	local Anti, Process, UI, Variables
 	local script = script
-	local service = service
-	local client = client
+	local service = env.service
+	local client = env.client
 	local Core = client.Core
 	local Remote = client.Remote
 	local Functions = client.Functions
@@ -78,23 +78,33 @@ return function(Vargs, GetEnv)
 
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
-			pcall(Send, "Detected", action, info)
+			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, info)
 			task.wait(0.5)
-			if action == "kick" then
+			if action == "k".."i".."c".."k" then
 				if not isStudio then
 					if nocrash then
-						Player:Kick(":: Adonis Anti Cheat::\n".. tostring(info)); -- service.Players.LocalPlayer
+						Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
 					else
 						Disconnect(info)
 					end
 				end
-			elseif action == "crash" then
+			elseif action == "c".."r".."a".."s".."h" then
 				Kill(info)
 			end
 		end
 		return true
 	end;
 
+	local detectFuncName, detectSource, detectLine
+	task.spawn(xpcall, function()
+		detectFuncName, detectSource, detectLine = debug.info(Detected, "nsl")
+	end, function()
+		Detected("crash", "Tamper Protection 0xCCD44")
+		task.wait(1)
+		pcall(Disconnect, "Adonis_0xCCD44")
+		pcall(Kill, "Adonis_0xCCD44")
+		pcall(Kick, Player, "Adonis_0xCCD44")
+	end)
 
 	local function compareTables(t1, t2)
 		if service.CountTable(t1) ~= service.CountTable(t2) then
@@ -403,8 +413,19 @@ return function(Vargs, GetEnv)
 
 		Routine(function()
 			while true do
-				if not Detected("_", "_", true) then -- detects the current bypass
-					while true do end
+				do
+					local source, line, argN, isVararg, name, closure = debug.info(Detected, "slanf")
+					if
+						source ~= detectSource or
+						line ~= detectLine or
+						name ~= detectFuncName or
+						argN ~= 3 or
+						isVararg or
+						closure ~= Detected or
+						not Detected("_", "_", true)
+					then -- detects the current bypass
+						while true do end
+					end
 				end
 
 				for method, detector in detectors do
@@ -412,11 +433,11 @@ return function(Vargs, GetEnv)
 
 					local success, value = pcall(callback)
 					if not success or value ~= false and value ~= true then
-						Detected("crash", "Tamper Protection 906287")
+						Detected("crash", "Tamper Protection 0xDD42F")
 						task.wait(1)
-						pcall(Disconnect, "Adonis_906287")
-						pcall(Kill, "Adonis_906287")
-						pcall(Kick, Player, "Adonis_906287")
+						pcall(Disconnect, "Adonis_0xDD42F")
+						pcall(Kill, "Adonis_0xDD42F")
+						pcall(Kick, Player, "Adonis_0xDD42F")
 					elseif value then
 						Detected(action, `{method} detector detected`)
 					end

@@ -247,7 +247,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				assert(args[2], "Missing message")
 
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
+				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
 			end
 		};
 
@@ -261,7 +261,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -327,7 +327,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr)), service.GetPlayers())
+				Functions.Hint(service.BroadcastFilter(args[1], plr), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
@@ -342,7 +342,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be a number)")
 				assert(args[2], "Missing message")
 
-				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr)), service.GetPlayers(), tonumber(args[1]))
+				Functions.Hint(service.BroadcastFilter(args[1], plr), service.GetPlayers(), tonumber(args[2]), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
@@ -1237,7 +1237,7 @@ return function(Vargs, env)
 						Title = "Trello Synced Ban List";
 						Message = "Trello has not been enabled.";
 					})
-				else				
+				else
 					Remote.MakeGui(plr, "List", {
 						Title = "Trello Synced Bans List";
 						Icon = server.MatIcons.Gavel;
@@ -1903,7 +1903,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
+				Functions.Message("Adonis", "Teleporting to server \""..args[2].."\"\nPlease wait...", players, false, 10)
 			end
 		};
 
@@ -4340,7 +4340,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing team name")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					for a, tm in service.Teams:GetChildren() do
 						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
@@ -4579,7 +4579,7 @@ return function(Vargs, env)
 						end
 					end
 
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if point then
 							if not v.Character then
 								continue
@@ -4619,7 +4619,7 @@ return function(Vargs, env)
 					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
 
 						if workspace.StreamingEnabled == true then
@@ -4650,8 +4650,8 @@ return function(Vargs, env)
 						end
 					end
 				else
-					local target = service.GetPlayers(plr, args[2])[1]
-					local players = service.GetPlayers(plr, args[1])
+					local target = service.GetPlayers(plr, args[2], { NoFakePlayer = true })[1]
+					local players = service.GetPlayers(plr, args[1], { NoFakePlayer = true })
 					if #players == 1 and players[1] == target then
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
@@ -4690,12 +4690,15 @@ return function(Vargs, env)
 							for k, n in players do
 								if n ~= target then
 									local Character = n.Character
-									if not Character then continue end
+									if not Character or not Character:FindFirstChild("HumanoidRootPart") then
+										continue
+									end
+
 									if workspace.StreamingEnabled == true then
 										n:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
 									end
 
-									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+									local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 									local root = Character:FindFirstChild('HumanoidRootPart')
 									local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
 									local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
@@ -4850,7 +4853,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[2], "Missing stat name (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						local absoluteMatch = leaderstats:FindFirstChild(statName)

@@ -595,12 +595,14 @@ return function(data, env)
 		TextXAlignment = "Center";
 		OnClicked = function()
 			personalTab:FocusTab();
-			if (client.Variables.Playlist.Playlist ~= nil) and (client.Variables.Playlist.Playlist ~= {}) then
+			local Playlist = type(client.Variables.Playlist) == "table" and client.Variables.Playlist.Playlist
+			if Playlist and next(Playlist) then
 				client.Functions.UpdatePlaylist(client.Variables.Playlist)
 				getSongs(personalTab, ((client.Functions.Playlist()).Playlist or {}))
 			else
 				warn("[ERROR] Cannot update empty Playlist")
 			end
+
 			activeSongList = availableSongLists["Personal"] or {}
 		end
 	})
@@ -646,9 +648,11 @@ return function(data, env)
 		Position = UDim2.new(0, 145, 0, 5);
 		TextXAlignment = "Center";
 		OnClick = function()
-			audioLib("UpdateSound", {
-				Playing = not audioLib("GetSound").Playing
-			})
+			if audioLib("GetSound") then
+				audioLib("UpdateSound", {
+					Playing = not audioLib("GetSound").Playing
+				})
+			end
 		end
 	})
 

@@ -746,9 +746,17 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return string.gsub(x, "([^%w])", "%%%1")
 		end;
 
-		MetaFunc = function(func)
+		MetaFunc = function(func, filterArgs: boolean?)
 			return service.NewProxy({
 				__call = function(tab,...)
+					if filterArgs then
+						for _, v in {...} do
+							if (type(v) == "table" or typeof(v) == "userdata") and getmetatable(v) ~= nil then
+								return nil
+							end
+						end
+					end
+
 					local args = {pcall(func, ...)}
 					local success = args[1]
 					if not success then
@@ -1140,7 +1148,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		CheckAssetOwnership = function(player, assetId)				
+		CheckAssetOwnership = function(player, assetId)
 			if type(player) == "number" then
 				player = service.Players:GetPlayerByUserId(player)
 			end
