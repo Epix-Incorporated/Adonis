@@ -5305,7 +5305,6 @@ return function(Vargs, env)
 						end)
 
 						service.Debris:AddItem(pipe, 10)
-						service.Debris:AddItem(CollidePart, 10)
 					end)
 				end
 			end
