@@ -6277,6 +6277,10 @@ return function(Vargs, env)
 									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[AvatarType.."Animate"]:Clone() Anima.Parent = char Anima.Disabled = false end
 									char.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 									char.HumanoidRootPart.CFrame = (v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(5, 0, 0)) * CFrame.Angles(0, math.rad(90), 0)
+
+									char.Humanoid.Died:Once(function()
+										service.Debris:AddItem(char, service.Players.RespawnTime)
+									end)
 								end)
 							end
 						else

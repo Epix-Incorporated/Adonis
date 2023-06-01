@@ -72,6 +72,7 @@ return {
 		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub AlexanderDarmody",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub watameln",			Desc = "GitHub Contributor"};
+		{Text = "@GitHub bigbenster702",	Desc = "GitHub Contributor"};
 	};
 
 	Misc = {
