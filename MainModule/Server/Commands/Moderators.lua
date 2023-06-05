@@ -6869,10 +6869,17 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player, selection: string?)
 				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
 				local tab = {
-					`Specified: "{selection or `{Settings.SpecialPrefix}me`}"`,
-					`# Players: {#players}`,
-					"―――――――――――――――――――――――",
+					{
+						Text = `Specified: "{selection or `{Settings.SpecialPrefix}me`}"`;
+					},
+					{
+						Text = `# Players: {#players}`;
+					},
+					{
+						Text = `―――――――――――――――――――――――`;
+					}
 				}
+
 				for _, v: Player in players do
 					table.insert(tab, {
 						Text = `[{v.UserId}] {service.FormatPlayer(v)}`;
