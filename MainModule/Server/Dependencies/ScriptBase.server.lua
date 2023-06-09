@@ -5,7 +5,7 @@ local code, lbi = rawget(_G, "Adonis").Scripts.ExecutePermission(script, execute
 local canUseLoadstring = loadstring and pcall(loadstring, "local a = 5 local b = a + 5") or false
 
 if code then
-	local func = canUseLoadstring and loadstring(code) or lbi(code, getfenv())
+	local func = canUseLoadstring and loadstring(code)
 	if func then
 		func()
 	end
