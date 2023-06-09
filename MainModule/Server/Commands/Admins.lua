@@ -989,10 +989,8 @@ return function(Vargs, env)
 			NoFilter = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-			if pcall(loadstring, "return 1") then
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
 				assert(args[1], "Missing Script code (argument #2)")
-
 				--[[Remote.RemoveGui(plr, "Prompt_MakeScript")
 				if
 					plr == false
@@ -1017,7 +1015,6 @@ return function(Vargs, env)
 				--[[else
 					Functions.Hint("Operation cancelled", {plr})
 				end]]
-				else assert("Loadstring must be enabled to use script!")
 			end
 		};
 
