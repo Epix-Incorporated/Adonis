@@ -295,6 +295,7 @@ return function(Vargs)
 						local coreUrls = {}
 						local backpack = Player:FindFirstChildOfClass("Backpack")
 						local character = Player.Character
+						local startergear = service.StarterPack
 						local screenshotHud = service.GuiService:FindFirstChildOfClass("ScreenshotHud")
 
 						if character then
@@ -313,6 +314,14 @@ return function(Vargs)
 							end
 						end
 
+						if startergear then
+							for _, v in ipairs(startergear:GetChildren()) do
+								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
+									table.insert(coreUrls, service.Trim(v.TextureId))
+								end
+							end
+						end
+								
 						if screenshotHud and service.Trim(screenshotHud.CameraButtonIcon) ~= "" then
 							table.insert(coreUrls, service.Trim(screenshotHud.CameraButtonIcon))
 						end
