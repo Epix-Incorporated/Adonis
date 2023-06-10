@@ -1068,26 +1068,30 @@ return function(Vargs, env)
 			end
 		};
 
-		CreateStarterScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"starterscript", "clientstarterscript", "starterclientscript"};
-			Args = {"code"};
-			Description = "Executes the given code on everyone's client upon respawn";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing LocalScript code (argument #1)")
+        CreateStarterScript = {
+            Prefix = Settings.Prefix;
+            Commands = {"starterscript"};
+            Args = {"localscript/script","code"};
+            Description = "Executes the given code on everyone's client upon respawn";
+            AdminLevel = "Admins";
+            NoFilter = true;
+            Function = function(plr: Player, args: {string})
+                local class = args[1]
+                if string.lower(class) == "script" or string.lower(class) == "s" then
+                    class = "Script"
+                else
+                    class = "LocalScript"
+                end
+                local bytecode = Core.Bytecode(args[2])
+                assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
-				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
-
-				local new = Core.NewScript("LocalScript", args[1], true)
-				new.Name = "[Adonis] StarterScript"
-				new.Parent = service.StarterGui
-				new.Disabled = false
-				Functions.Hint("Created starter script", {plr})
-			end
-		};
+                local new = Core.NewScript(class, args[2], true)
+                new.Name = "AdonisStarterScript"
+                new.Disabled = false
+                new.Parent = game:GetService("StarterGui")
+                Functions.Hint(`Created starter script`, {plr})
+            end
+        };
 
 		Note = {
 			Prefix = Settings.Prefix;
