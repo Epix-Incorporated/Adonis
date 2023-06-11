@@ -1087,8 +1087,8 @@ return function(Vargs, env)
 
                 local new = Core.NewScript(class, args[2], true)
                 new.Name = "AdonisStarterScript"
-                new.Disabled = false
-                new.Parent = game:GetService("StarterGui")
+                new.Parent = service.StarterGui
+				new.Disabled = false
                 Functions.Hint(`Created starter script`, {plr})
             end
         };
