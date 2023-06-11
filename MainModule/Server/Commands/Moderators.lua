@@ -4932,38 +4932,59 @@ return function(Vargs, env)
 		};
 
 		CreateLeaderstats = {
-			Prefix = Settings.Prefix;
-			Commands = {"createstat", "cstat"};
-			Args = {"name"};
-			Description = "Creates a new leaderstat";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local statName = assert(args[1], "Missing stat name")
-
-				for _, v in service.GetPlayers() do
-					local leaderstats = v:FindFirstChild("leaderstats")
-
-					if leaderstats and (leaderstats:IsA("Folder") or leaderstats:IsA("StringValue")) then
+		Prefix = Settings.Prefix;
+		Commands = {"createstat", "cstat"};
+		Args = {"name", "num/text", "value (optional)"};
+		Description = "Creates a new leaderstat";
+		AdminLevel = "Moderators";
+		Function = function(plr: Player, args: {string})
+			local statName = assert(args[1], "Missing stat name")
+			local statType = assert(args[2], "Missing stat type")
+			
+			for _, v in service.GetPlayers() do
+				local leaderstats = v:FindFirstChild("leaderstats")
+				
+				if leaderstats and (leaderstats:IsA("Folder") or leaderstats:IsA("StringValue")) then
+					if statType == "num" then
 						service.New("IntValue", {
 							Parent = leaderstats,
 							Name = args[1],
-							Value = 0
+							Value = args[3] or 0
+						})
+					elseif statType == "text" then
+						service.New("StringValue", {
+							Parent = leaderstats,
+							Name = args[1],
+							Value = args[3] or "N/A"
 						})
 					else
-						service.New("Folder", {
-							Parent = v,
-							Name = "leaderstats"
-						})
-
+						return Functions.Hint("The stat has to be either a num value or a text value!", {plr})
+					end
+				else
+					service.New("Folder", {
+						Parent = v,
+						Name = "leaderstats"
+					})
+					
+					if statType == "num" then
 						service.New("IntValue", {
 							Parent = leaderstats,
 							Name = args[1],
-							Value = 0
+							Value = args[3] or 0
 						})
+					elseif statType == "text" then
+						service.New("StringValue", {
+							Parent = leaderstats,
+							Name = args[1],
+							Value = args[3] or "N/A"
+						})
+					else
+						return Functions.Hint("The stat has to be either a num value or a text value!", {plr})
 					end
 				end
 			end
-		};
+		end
+	};
 
 		DeleteLeaderstats = {
 			Prefix = Settings.Prefix;
@@ -4980,11 +5001,11 @@ return function(Vargs, env)
 
 					if table.find(children, leaderstats) and (leaderstats:IsA("Folder") or leaderstats:IsA("StringValue")) then
 						local absoluteMatch = leaderstats:FindFirstChild(statName)
-						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
+						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue") or absoluteMatch:IsA("StringValue") then
 							absoluteMatch:Destroy()
 						else
 							for _, st in leaderstats:GetChildren() do
-								if (st:IsA("IntValue") or st:IsA("NumberValue")) then
+								if (st:IsA("IntValue") or st:IsA("NumberValue") or st:Isa("StringValue") then
 									st:Destroy()
 								end
 							end
