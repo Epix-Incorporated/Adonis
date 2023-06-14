@@ -3989,11 +3989,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
+				
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-						Remote.SetAtmosphere(color)
+							Remote.SetAtmosphere(color)
+				end
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
 						Remote.SetLighting(v, "FogColor", color)
