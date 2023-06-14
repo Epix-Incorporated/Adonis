@@ -2382,15 +2382,16 @@ return function(Vargs, env)
 			Description = "Resets atmosphere back to the setting it had on server start";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-			if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
-				for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
-					v.Name = Variables.OriginalAtmosphereSettings.Name
-					v.Density = Variables.OriginalAtmosphereSettings.Density
-					v.Offset = Variables.OriginalAtmosphereSettings.Offset
-					v.Color = Variables.OriginalAtmosphereSettings.Color
-					v.Decay = Variables.OriginalAtmosphereSettings.Decay
-					v.Glare = Variables.OriginalAtmosphereSettings.Glare
-					v.Haze = Variables.OriginalAtmosphereSettings.Haze
+				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
+					for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
+						v.Name = Variables.OriginalAtmosphereSettings.Name
+						v.Density = Variables.OriginalAtmosphereSettings.Density
+						v.Offset = Variables.OriginalAtmosphereSettings.Offset
+						v.Color = Variables.OriginalAtmosphereSettings.Color
+						v.Decay = Variables.OriginalAtmosphereSettings.Decay
+						v.Glare = Variables.OriginalAtmosphereSettings.Glare
+						v.Haze = Variables.OriginalAtmosphereSettings.Haze
+					end
 				end
 			end
 		};
