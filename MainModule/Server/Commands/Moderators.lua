@@ -3993,8 +3993,7 @@ return function(Vargs, env)
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-					Remote.SetAtmosphere(v, "FogColor", color)
-				end
+						Remote.SetAtmosphere(color)
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
 						Remote.SetLighting(v, "FogColor", color)
