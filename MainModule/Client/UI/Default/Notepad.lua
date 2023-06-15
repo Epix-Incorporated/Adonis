@@ -36,8 +36,8 @@ return function(data, env)
 	local content = container:Add("TextBox", {
 		Size = UDim2.new(1, -4, 1, 0);
 		Position = UDim2.new(0, 0, 0, 0);
-		BackgroundColor3 = Color3.new(1, 1, 1);
-		TextColor3 = Color3.new(0,0,0);
+		BackgroundColor3 = Color3.new(0.121569, 0.121569, 0.121569);
+		TextColor3 = Color3.new(1, 1, 1);
 		Font = "Code";
 		TextSize = 18;
 		TextXAlignment = "Left";
