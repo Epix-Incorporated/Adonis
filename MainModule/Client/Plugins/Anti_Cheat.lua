@@ -529,6 +529,7 @@ return function(Vargs)
 					if
 						not string.find(string.lower(Message), "failed to load", 1, true) and
 						not string.find(string.lower(Message), "meshcontentprovider failed to process", 1, true) and
+						not string.find(string.lower(Message), string.lower("GetCollisionGroups is deprecated, please use GetRegisteredCollisionGroups instead."))
 						(string.match(string.lower(Message), string.lower(v)) or string.match(Message, v))
 					then
 						return true
