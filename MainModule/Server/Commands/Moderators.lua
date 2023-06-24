@@ -3676,6 +3676,8 @@ return function(Vargs, env)
 								obj.Transparency = 1
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 1
+								elseif obj:FindFirstChildOfClass("BillboardGui") then
+									obj:FindFirstChildOfClass("BillboardGui").Enabled = false
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 1
@@ -3707,6 +3709,8 @@ return function(Vargs, env)
 								obj.Transparency = 0
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 0
+								elseif obj:FindFirstChildOfClass("BillboardGui") then
+									obj:FindFirstChildOfClass("BillboardGui").Enabled = true
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
