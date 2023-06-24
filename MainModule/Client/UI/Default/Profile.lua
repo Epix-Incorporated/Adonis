@@ -109,6 +109,8 @@ return function(data, env)
 			{"Membership", player.MembershipType.Name, "The player's Roblox membership type (Premium)"},
 			{"Can Chat", data.CanChatGet[1] and boolToStr(data.CanChatGet[2]) or "[Error]", "Does the player's account settings allow them to chat?"},
 			{"Safe Chat Enabled", data.SafeChat, "[Admins Only] Does the player have safe chat applied?"},
+			{"Mail Verified", data.MailVerified, "[Admins Only] Does the player have verified their mail?"},
+			{"Phone/ID Verified", data.IDVerified, "[Admins Only] Does the player have verified their non-VoIP phone / ID?"},
 			}) do
 			generaltab:Add("TextLabel", {
 				Text = `  {v[1]}: `;
