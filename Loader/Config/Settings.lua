@@ -107,17 +107,13 @@ local descs = {};			--// Contains settings descriptions
 			The Trello abilities of the script allow you to manage lists and permissions via
 			a Trello board; The following will guide you through the process of setting up a board;
 
-				1. Sign up for an account at http://trello.com
+				1. Sign up for an account at trello
 				2. Create a new board
-					http://prntscr.com/b9xljn
-					http://prntscr.com/b9xm53
 				3. Get the board ID;
-					http://prntscr.com/b9xngo
 				4. Set settings.Trello_Primary to your board ID
 				5. Set settings.Trello.Enabled to true
 				6. Congrats! The board is ready to be used;
 				7. Create a list and add cards to it;
-					http://prntscr.com/b9xswk
 
 				- You can view lists in-game using :viewlist ListNameHere
 
@@ -327,8 +323,8 @@ settings.HttpWait = 60					-- How long things that use the HttpService will wait
 settings.Trello_Enabled = false			-- Are the Trello features enabled?
 settings.Trello_Primary = ""			-- Primary Trello board
 settings.Trello_Secondary = {}			-- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
-settings.Trello_AppKey = ""				-- Your Trello AppKey						  	Link: https://trello.com/app-key
-settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
+settings.Trello_AppKey = ""				-- Your Trello AppKey
+settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Get API key: /1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
 settings.Trello_HideRanks = false		-- If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins)
 
 
@@ -436,8 +432,8 @@ descs.HttpWait = [[ How long things that use the HttpService will wait before up
 descs.Trello_Enabled = [[ Are the Trello features enabled? ]]
 descs.Trello_Primary = [[ Primary Trello board ]]
 descs.Trello_Secondary = [[ Secondary Trello boards; Format: {"BoardID";"BoardID2","etc"} ]]
-descs.Trello_AppKey = [[ Your Trello AppKey; Link: https://trello.com/app-key ]]
-descs.Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!); Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE ]]
+descs.Trello_AppKey = [[ Your Trello AppKey; ]]
+descs.Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!) ]]
 descs.Trello_HideRanks = [[ If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins) ]]
 
 descs.G_API = [[ If true, allows other server scripts to access certain functions described in the API module through _G.Adonis ]]
