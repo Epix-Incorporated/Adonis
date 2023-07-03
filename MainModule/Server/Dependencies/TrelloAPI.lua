@@ -171,7 +171,6 @@ return function(AppKey, Token)
 	AppKey = AppKey or ""
 	Token = Token or ""
 
-	local Base = "https://trello.com/1/"
 	local Arguments = `key={AppKey}&token={Token}`
 
 	local GetUrl = function(str)
@@ -181,7 +180,7 @@ return function(AppKey, Token)
 		else
 			Token=`?{Arguments}`
 		end
-		return `{Base}{str}{Token}`
+		return `https://trello.com/1/{str}{Token}`
 	end;
 	
 	local CheckHttp = function()
