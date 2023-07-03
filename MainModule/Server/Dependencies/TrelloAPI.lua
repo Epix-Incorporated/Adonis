@@ -1,11 +1,10 @@
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Trello API Documentation: 	https://trello.com/docs/																									     --
---								https://developers.trello.com/advanced-reference																			     --
+-- Trello API Documentation: 																							     --
 --																																							     --
--- App Key Link: 			 	https://trello.com/app-key																						    			 --
+-- App Key Link: 			 	/app-key																						    			 --
 --																																				  				 --
--- Token Link:   			 	https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE     --
--- Replace "YOUR_APP_KEY_HERE" with the App Key from https://trello.com/app-key																					 --
+-- Token Link:   			 	/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE     --
+-- Replace "YOUR_APP_KEY_HERE" with the App Key from /app-key																					 --
 -- Trello API Remade by imskyyc for Kronos and Adonis - original by Sceleratis / Davey_Bones for Adonis.																	 --
 -- It is requested that existing credits remain here.																											 --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
