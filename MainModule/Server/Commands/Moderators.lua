@@ -6894,14 +6894,20 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player, selection: string?)
 				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
 				local tab = {
-					`Specified: "{selection or `{Settings.SpecialPrefix}me`}"`,
-					`# Players: {#players}`,
-					"―――――――――――――――――――――――",
+					{
+						Text = `Specified: "{selection or `{Settings.SpecialPrefix}me`}"`;
+					},
+					{
+						Text = `# Players: {#players}`;
+					},
+					{
+						Text = `―――――――――――――――――――――――`;
+					}
 				}
+
 				for _, v: Player in players do
 					table.insert(tab, {
-						Text = service.FormatPlayer(v);
-						Desc = `ID: {v.UserId}`;
+						Text = `[{v.UserId}] {service.FormatPlayer(v)}`;
 					})
 				end
 				return tab
@@ -6911,6 +6917,7 @@ return function(Vargs, env)
 					Title = "Selected Players";
 					Icon = server.MatIcons.People;
 					Tab = Logs.ListUpdaters.SelectPlayers(plr, args[1]);
+					TextSelectable = true;
 					Update = "SelectPlayers";
 					UpdateArg = args[1];
 					AutoUpdate = if args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes") then 1 else nil;
