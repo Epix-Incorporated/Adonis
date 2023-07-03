@@ -2374,6 +2374,27 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		ResetAtmosphere = {
+			Prefix = Settings.Prefix;
+			Commands = {"resetatmosphere", "fixatmosphere"};
+			Args = {};
+			Description = "Resets atmosphere back to the setting it had on server start";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
+					for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
+						v.Name = Variables.OriginalAtmosphereSettings.Name
+						v.Density = Variables.OriginalAtmosphereSettings.Density
+						v.Offset = Variables.OriginalAtmosphereSettings.Offset
+						v.Color = Variables.OriginalAtmosphereSettings.Color
+						v.Decay = Variables.OriginalAtmosphereSettings.Decay
+						v.Glare = Variables.OriginalAtmosphereSettings.Glare
+						v.Haze = Variables.OriginalAtmosphereSettings.Haze
+					end
+				end
+			end
+		};
 
 		ClearLighting = {
 			Prefix = Settings.Prefix;
@@ -3676,6 +3697,8 @@ return function(Vargs, env)
 								obj.Transparency = 1
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 1
+								elseif obj:FindFirstChildOfClass("BillboardGui") then
+									obj:FindFirstChildOfClass("BillboardGui").Enabled = false
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 1
@@ -3707,6 +3730,8 @@ return function(Vargs, env)
 								obj.Transparency = 0
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 0
+								elseif obj:FindFirstChildOfClass("BillboardGui") then
+									obj:FindFirstChildOfClass("BillboardGui").Enabled = true
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
@@ -3968,10 +3993,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
-
+				
+				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
+							Remote.SetAtmosphere(color)
+				end
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
 						Remote.SetLighting(v, "FogColor", color)
@@ -4000,8 +4027,6 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-
 
 		StarterGive = {
 			Prefix = Settings.Prefix;
@@ -6251,6 +6276,48 @@ return function(Vargs, env)
 			end
 		};
 
+		LoadAvatar = {
+			Prefix = Settings.Prefix;
+			Commands = {"loadavatar", "loadchar", "loadcharacter"};
+			Args = {"player", "username", "avatar type(R6/R15)"};
+			Description = "Loads the target character in front of you. If you want to supply a UserId, supply with 'userid-<PlayerID>'";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player name")
+				assert(args[2], "Missing username or UserId")
+				assert(args[3], "Invalid argument #3 (avatar type expected)")
+
+				local AvatarType = string.upper(args[3])
+				if AvatarType == "R6" or AvatarType == "R15" then
+					local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
+					if target then
+						local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
+
+						if success then
+							for _, v in service.GetPlayers(plr, args[1]) do
+								task.defer(function()
+									local char = Deps.Assets["Rig"..AvatarType]:Clone()
+									char.Name = Functions.GetNameFromUserIdAsync(target)
+									char.Parent = workspace
+									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[AvatarType.."Animate"]:Clone() Anima.Parent = char Anima.Disabled = false end
+									char.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
+									char.HumanoidRootPart.CFrame = (v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(5, 0, 0)) * CFrame.Angles(0, math.rad(90), 0)
+
+									char.Humanoid.Died:Once(function()
+										service.Debris:AddItem(char, service.Players.RespawnTime)
+									end)
+								end)
+							end
+						else
+							error("Unable to get avatar for target user")
+						end
+					end
+				else
+					error("Invalid argument #3 (valid avatar type expected)")
+				end
+			end
+		};
+
 		LoopHeal = {
 			Prefix = Settings.Prefix;
 			Commands = {"loopheal"};
@@ -6869,14 +6936,20 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player, selection: string?)
 				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
 				local tab = {
-					`Specified: "{selection or `{Settings.SpecialPrefix}me`}"`,
-					`# Players: {#players}`,
-					"―――――――――――――――――――――――",
+					{
+						Text = `Specified: "{selection or `{Settings.SpecialPrefix}me`}"`;
+					},
+					{
+						Text = `# Players: {#players}`;
+					},
+					{
+						Text = `―――――――――――――――――――――――`;
+					}
 				}
+
 				for _, v: Player in players do
 					table.insert(tab, {
-						Text = service.FormatPlayer(v);
-						Desc = `ID: {v.UserId}`;
+						Text = `[{v.UserId}] {service.FormatPlayer(v)}`;
 					})
 				end
 				return tab
@@ -6886,6 +6959,7 @@ return function(Vargs, env)
 					Title = "Selected Players";
 					Icon = server.MatIcons.People;
 					Tab = Logs.ListUpdaters.SelectPlayers(plr, args[1]);
+					TextSelectable = true;
 					Update = "SelectPlayers";
 					UpdateArg = args[1];
 					AutoUpdate = if args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes") then 1 else nil;

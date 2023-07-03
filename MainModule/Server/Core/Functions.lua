@@ -1037,6 +1037,16 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
+																									
+		SetAtmosphere = function(prop,value)
+			if service:FindFirstChildWhichIsA("Atmosphere")[prop] ~= nil then
+				service:FindFirstChildWhichIsA("Atmosphere")[prop] = value
+				Variables.AtmosphereSettings[prop] = value
+				for _, p in service.GetPlayers() do
+					Remote.SetAtmosphere(p, prop, value)
+				end
+			end
+		end;
 
 		LoadEffects = function(plr)
 			for i, v in Variables.LocalEffects do
@@ -1397,6 +1407,20 @@ return function(Vargs, GetEnv)
 				if success then
 					Admin.UserIdCache[name] = UserId
 					return UserId
+				end
+			end
+
+			return cache
+		end;
+
+		GetNameFromUserIdAsync = function(id)
+			local cache = Admin.UsernameCache[id]
+			if not cache then
+				local success, Username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, id)
+
+				if success then
+					Admin.UsernameCache[id] = Username
+					return Username
 				end
 			end
 

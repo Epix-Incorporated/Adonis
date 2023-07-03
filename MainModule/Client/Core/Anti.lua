@@ -459,7 +459,7 @@ return function(Vargs, GetEnv)
 						success or err ~= "Expected ':' not '.' calling member function Kick" or
 						success2 or (string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 					then
-						Detected("kick", "Anti kick found! Method 0x1")
+						Detected("kick", "Anti kick found! Method 0x3")
 						warn(success, err, "|", success2, err2)
 					end
 
@@ -481,7 +481,7 @@ return function(Vargs, GetEnv)
 									success2 or
 									err2 ~= "Cannot kick a non-local Player from a LocalScript"
 								then
-									Detected("kick", "Anti kick found! Method 0x2")
+									Detected("kick", "Anti kick found! Method 0x6")
 									warn(success, err, "|", success2, err2)
 								end
 							end
@@ -545,7 +545,7 @@ return function(Vargs, GetEnv)
 							success2 or err2 ~= "Expected ':' not '.' calling member function GetLogHistory" or
 							success3 or (string.match(err3, "^GetLogHistory is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 						then
-							Detected("kick", "GetLogHistory function hooks detected")
+							Detected("kick", "0x7D3C GetLogHistory function hooks detected")
 						end
 					end
 

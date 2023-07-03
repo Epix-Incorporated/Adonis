@@ -56,6 +56,7 @@ return {
 		{Text = "@GitHub jun022222222",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub sea4h",			Desc = "GitHub Contributor"};
 		{Text = "@GitHub Tj33rd",			Desc = "GitHub Contributor"};
+		{Text = "@GitHub DaRealGandhi20",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub L8X",				Desc = "GitHub Contributor"};
 		{Text = "@GitHub Honzzzox",			Desc = "GitHub Contributor"};
 		{Text = "@GitHub Smaltin", 			Desc = "GitHub Contributor"};
@@ -68,10 +69,12 @@ return {
 		{Text = "@GitHub WideManHost",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub autodoorsdev",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Lethalitics",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub Deniernal354",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub RoyallyFlushed",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub AlexanderDarmody",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub watameln",			Desc = "GitHub Contributor"};
+		{Text = "@GitHub bigbenster702",	Desc = "GitHub Contributor"};
 	};
 
 	Misc = {

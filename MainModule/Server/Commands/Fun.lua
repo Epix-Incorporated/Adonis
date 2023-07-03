@@ -941,16 +941,15 @@ return function(Vargs, env)
 						if v.Character:FindFirstChild("Pants") then
 							v.Character.Pants:Destroy()
 						end
-
-						for _, prt in v.Character:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
-								prt.Transparency = 0
-								prt.Reflectance = 1
-								prt.BrickColor = BrickColor.new("Institutional white")
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = 0
-								prt.Head.Reflectance = 1
-								prt.Head.BrickColor = BrickColor.new("Institutional white")
+						for _, m in v.Character:GetChildren() do
+							if m:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+								m.Transparency = 0
+								m.Reflectance = 1
+								m.BrickColor = BrickColor.new("Institutional white")
+							elseif m:FindFirstChild("NameTag") then
+								m.Head.Transparency = 0
+								m.Head.Reflectance = 1
+								m.Head.BrickColor = BrickColor.new(1001)
 							end
 						end
 					end
@@ -991,16 +990,6 @@ return function(Vargs, env)
 				audio.Looped = false
 				audio.Volume = 1
 				audio.PlayOnRemove = true
-
-				--[[local thanos = audio:Clone()
-				thanos.Name = "Adonis_Thanos"
-				thanos.SoundId = "rbxassetid://2231229572"
-
-				thanos.Parent = service.SoundService
-				audio.Parent = service.SoundService
-
-				task.wait()
-				thanos:Destroy()--]]
 				task.wait()
 				audio:Destroy()
 
@@ -1092,18 +1081,6 @@ return function(Vargs, env)
 									end
 								end
 							end
-
-							--[[local root = p.Character:FindFirstChild("HumanoidRootPart")
-							if root then
-								local part = Instance.new("Part")
-								part.Anchored = false
-								part.CanCollide = true
-								part.BrickColor = BrickColor.new("Burnt Sienna")
-								part.Size = Vector3.new(0.1, 0.1, 0.1)
-								part.CFrame = root.CFrame*CFrame.new(math.random(-3, 3), math.random(-3, 3), math.random(-3, 3))
-								part.Parent = workspace
-								service.Debris:AddItem(part, 5)
-							end--]]
 							task.wait(0.2)
 						end
 
@@ -2055,7 +2032,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+			assert(settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
+				for i, v in service.GetPlayers(plr, args[1]) do	
 					cPcall(function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
 						local run = true
@@ -2441,11 +2419,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local bunnyScript = Deps.Assets.BunnyHop
-				bunnyScript.Name = "HippityHopitus"
 				local hat = service.Insert(110891941)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					hat:Clone().Parent = v.Character
 					local clone = bunnyScript:Clone()
+					clone.Name = "HippityHopitus"
 					clone.Parent = v.Character
 					clone.Disabled = false
 				end
@@ -5261,6 +5239,51 @@ return function(Vargs, env)
 					sound.Parent = spart
 					spart.Parent = workspace
 					spart.Archivable = false
+				end
+			end
+		};
+
+		Pipe = {
+			Prefix = Settings.Prefix;
+			Commands = {"pipe"};
+			Args = {"player"};
+			Description = "Drops a metal pipe on the target player(s).";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					task.defer(function()
+						local Person = v.Character
+						if not Person then return end
+		
+						local pipe = Deps.Assets.Pipe:Clone()
+						pipe.Name = "Pipe"
+						pipe.Parent = workspace
+						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
+
+						local function FindHumanoidFromTouch(hit)
+							if hit.Parent:FindFirstChild("Humanoid") then
+								return hit.Parent.Humanoid
+							elseif hit.Parent.Parent:FindFirstChild("Humanoid") then --//Due to hats.
+								return hit.Parent.Parent.Humanoid
+							else
+								return nil
+							end
+						end
+		
+						local deb = false
+						local HitCon
+						HitCon = pipe.Touched:Connect(function(hit)
+							local Humanoid = FindHumanoidFromTouch(hit)
+							if deb or hit.Name == "Pipe" or (hit.CanCollide == false and not Humanoid) then return end
+							deb = true
+							pipe.MetalPipeSound:Play()
+							Humanoid.Health = 0
+							HitCon:Disconnect()
+						end)
+
+						service.Debris:AddItem(pipe, 10)
+					end)
 				end
 			end
 		};

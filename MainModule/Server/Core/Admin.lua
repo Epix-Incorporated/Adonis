@@ -356,6 +356,7 @@ return function(Vargs, GetEnv)
 		CommandCache = {};
 		SlowCache = {};
 		UserIdCache = {};
+		UsernameCache = {};
 		GroupsCache = {};
 
 		BlankPrefix = false;
