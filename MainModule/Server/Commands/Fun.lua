@@ -5265,5 +5265,50 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		Pipe = {
+			Prefix = Settings.Prefix;
+			Commands = {"pipe"};
+			Args = {"player"};
+			Description = "Drops a metal pipe on the target player(s).";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					task.defer(function()
+						local Person = v.Character
+						if not Person then return end
+		
+						local pipe = Deps.Assets.Pipe:Clone()
+						pipe.Name = "Pipe"
+						pipe.Parent = workspace
+						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
+
+						local function FindHumanoidFromTouch(hit)
+							if hit.Parent:FindFirstChild("Humanoid") then
+								return hit.Parent.Humanoid
+							elseif hit.Parent.Parent:FindFirstChild("Humanoid") then --//Due to hats.
+								return hit.Parent.Parent.Humanoid
+							else
+								return nil
+							end
+						end
+		
+						local deb = false
+						local HitCon
+						HitCon = pipe.Touched:Connect(function(hit)
+							local Humanoid = FindHumanoidFromTouch(hit)
+							if deb or hit.Name == "Pipe" or (hit.CanCollide == false and not Humanoid) then return end
+							deb = true
+							pipe.MetalPipeSound:Play()
+							Humanoid.Health = 0
+							HitCon:Disconnect()
+						end)
+
+						service.Debris:AddItem(pipe, 10)
+					end)
+				end
+			end
+		};
 	}
 end
