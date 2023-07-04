@@ -4,9 +4,9 @@
 
 --------------
 -- SETTINGS --
---------------																																																																--[[
+--------------
 
-	--// Basic Luau Info
+	--[[ Basic Luau Info
 
 		This is only here to help you when editing settings so you understand how they work
 		and don't break something.
