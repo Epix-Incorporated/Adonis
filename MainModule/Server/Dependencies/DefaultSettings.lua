@@ -274,6 +274,7 @@ CommandCooldowns = {
 
 FunCommands = true;			-- Are fun commands enabled?
 PlayerCommands = true;			-- Are player-level utility commands enabled?
+AgeRestrictedCommands = true;	-- Are age-locked commands enabled?
 CommandFeedback = false;		-- Should players be notified when commands with non-obvious effects are run on them?
 CrossServerCommands = true;	-- Are commands which affect more than one server enabled?
 ChatCommands = true;			-- If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands
