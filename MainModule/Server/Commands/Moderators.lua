@@ -6060,42 +6060,13 @@ return function(Vargs, env)
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local name = args[2] == "hide" and " " or args[2]
+
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character and v.Character:FindFirstChild("Head") then
-						for a, mod in v.Character:GetChildren() do
-							if mod:FindFirstChild("NameTag") then
-								v.Character.Head.Transparency = 0
-								mod:Destroy()
-							end
-						end
+					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
-						local char = v.Character
-						local head = char:FindFirstChild("Head")
-						local mod = service.New("Model", char)
-						local cl = char.Head:Clone()
-						local hum = service.New("Humanoid", mod)
-						mod.Name = args[2] or ""
-						cl.Parent = mod
-						hum.Name = "NameTag"
-						hum.MaxHealth=v.Character.Humanoid.MaxHealth
-						wait()
-						hum.Health=v.Character.Humanoid.Health
-
-						if string.lower(args[2])=="hide" then
-							mod.Name = ""
-							hum.MaxHealth = 0
-							hum.Health = 0
-						else
-							v.Character.Humanoid.Changed:Connect(function(c)
-								hum.MaxHealth = v.Character.Humanoid.MaxHealth
-								wait()
-								hum.Health = v.Character.Humanoid.Health
-							end)
-						end
-
-						cl.CanCollide = false
-						local weld = service.New("Weld", cl) weld.Part0 = cl weld.Part1 = char.Head
-						char.Head.Transparency = 1
+					if humanoid then
+						humanoid.DisplayName = name
 					end
 				end
 			end
@@ -6109,13 +6080,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character and v.Character:FindFirstChild("Head") then
-						for a, mod in v.Character:GetChildren() do
-							if mod:FindFirstChild("NameTag") then
-								v.Character.Head.Transparency = 0
-								mod:Destroy()
-							end
-						end
+					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if humanoid then
+						humanoid.DisplayName = v.DisplayName
 					end
 				end
 			end
