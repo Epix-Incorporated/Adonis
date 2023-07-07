@@ -1,7 +1,7 @@
 return {
 	"Version: 240";
 	"*Drag edges to expand*";
-	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
+	"*Report bugs/issues on our code repository*";
 	"";
 	"[v240 2023-04-15 20:40 UTC] @LiveFireExercise&@ccuser44";
 	"Minor settings desc change";
@@ -127,7 +127,7 @@ return {
 	"(Git/ccuser44) Markdown instead of HTML fix (#1024)";
 	"(Git/ccuser44) Fix lint error (#1025)";
 	"(Git/ccuser44) Fix selene lint (#1027)";
-	"(Git/ccuser44) Updated outdated links in github pages (#1028)";
+	"(Git/ccuser44) Updated outdated links in repo pages (#1028)";
 	"(Git/ccuser44) Made mutex not save and removed unnecessary stuff (#1029)";
 	"(Git/xhayper) refactor: use interpolated string (#1030)";
 	"(Git/ccuser44)Super small markdown fix  (#1031)";
@@ -197,7 +197,7 @@ return {
 	"Implemented 'No players matching XXX were found' errors";
 	"";
 	"[Patch v237k 2022-07-25 22:35 EST] @Expertcoderz";
-	"*The Adonis GitHub repository has been moved to the Epix Incorporated organization; Sceleratis/Adonis will now redirect to Epix-Incorporated/Adonis*";
+	"*The Adonis code repository has been moved to the Epix Incorporated organization; Sceleratis/Adonis will now redirect to Epix-Incorporated/Adonis*";
 	"Fixed :unpermban not saving";
 	"General improvements for some ban/admin-related commands";
 	":permban renamed to :globalban by default";
@@ -315,7 +315,7 @@ return {
 	"(Git/Expertcoderz) Enhancement towards how commands are registered/handled (#852)";
 	"";
 	"[v236 6.12.2022 12:30 EST]";
-	"*Refer to GitHub repository for more information. (https://github.com/Epix-Incorporated/Adonis)";
+	"*Refer to code repository for more information.";
 	"";
 	"[v235 3.29.2022 01:38 EST]";
 	"(Git/L8X) Remove math.randomseed() due to Luau optimizations (#624)";
@@ -495,7 +495,7 @@ return {
 	"(Git/alau740) Notifications for some commands, add some music #513";
 	"(Git/alau740) Add missing icons, add '@username' to ':usage' #508";
 	"(Git/ccuser44) Removed some pre-fe code #507";
-	"(Git/jaydensar, joritochip, LolloDev5123) Various GitHub repo-specific changes";
+	"(Git/jaydensar, joritochip, LolloDev5123) Various repo-specific changes";
 	"(Git/Expertcoderz) Notification icons #505";
 	"(Git/ccuser44) Reintroduced vanilla loadstring usage (when available) #504";
 	"(Git/alau740) :cmdinfo now shows admin rank for command, fix cmd alias typo #499";
@@ -755,7 +755,7 @@ return {
 	"(Git/GalacticInspired) Removed content deleted audios from !wat";
 	"(Git/ccuser44) Some code improvements";
 	"(Git/flgx16) Correct math in ping measurement";
-	"(Git/jaydensar) Setup GitHub auto build";
+	"(Git/jaydensar) Setup repo auto build";
 	"(Git/Kw6m) Finished :fullshutdown";
 	"";
 	"[v220.1 5.28.2021 19:21 EST]";
@@ -768,7 +768,7 @@ return {
 	"(Git/fxeP1 #354) Update Fly.client.lua & /Server/Core/Functions.lua";
 	"(Git/GalacticInspired #353) Changed 'server.Settings.Prefix' to 'Settings.Prefix'";
 	"(Git/GalacticInspired #348) Added AntiBuildingTools; Updated AntiTools";
-	"(Git/pbstFusion #350) GitHub contibutors are labeled as such in :inspect";
+	"(Git/pbstFusion #350) Open source contibutors are labeled as such in :inspect";
 	"";
 	"[v219 5.16.2021 15:30 EST]";
 	"* Minor UI changes";
@@ -1110,7 +1110,7 @@ return {
 	"*+Added :nocollide to disable player to player character collisions";
 	"";
 	"[6.24.2020 10:31 EST]";
-	"*Git merges (Refer to GitHub repo /Epix-Incorporated/Adonis for changes)";
+	"*Git merges (Refer to code repo /Epix-Incorporated/Adonis for changes)";
 	"";
 	"[6.23.2020 7:49 EST]";
 	"*Git merges";
@@ -1139,11 +1139,11 @@ return {
 	"[04.27.2020 15:36 EST]";
 	"*Client will now queue Remote.Send and Remote.Get requests based on Process.RateLimits.Remote so the server doesn't drop them";
 	"*Minor performance changes to client loading process";
-	"*Added missing GitHub contributers to credits";
+	"*Added missing open source contributers to credits";
 	"*Fixed warnings and admin notes not saving";
-	"@GitHub Merged changes from NNickey:";
+	"Merged open-source changes from NNickey:";
 	"-Merge: PlayerGui preferred for loading over Backpack due to replication (15 second timeout)";
-	"@GitHub Merged changes from ItsGJK:";
+	"Merged open-source changes from ItsGJK:";
 	"-Merge: Added :notifypm and :countdownpm";
 	"-Merge: Fixed a typo";
 	"";
@@ -1152,7 +1152,7 @@ return {
 	"*GetLevel will now return 0.5 for custom ranks";
 	"";
 	"[04.10.2020 12:50 EST]";
-	"*Merged GitHub changes";
+	"*Merged open-source changes changes";
 	"*Fully removed ypcall (fixes stuff like :jail)";
 	"*Fixed UIKeepAlive";
 	"";
@@ -1218,7 +1218,7 @@ return {
 	"Sorry for the lack of updates... I've been busy with non-roblox stuff and haven't had as much time to fix bugs. Bit overdue.";
 	"";
 	"1.2.42b [9/29/19; 1:43PM/13:43]";
-	"*Merged GitHub changes";
+	"*Merged open-source changes";
 	"*Out of Sync will now log instead of kick";
 	"*Partially disabled Out of Sync check";
 	"";
@@ -1240,9 +1240,9 @@ return {
 	"";
 	"1.2.37b [1/13/2019; 3:46PM/15:46]";
 	"*First update of the new year (!!!)";
-	"*Updated gamepass checking method (Merged from Brandon-Beck on GitHub)";
+	"*Updated gamepass checking method (Merged from Brandon-Beck)";
 	"*Donor perks purchase will take effect immediately upon purchase";
-	"*Fixed :mutelist (Merged from TheCakeChicken on GitHub)";
+	"*Fixed :mutelist (Merged from TheCakeChicken)";
 	"";
 	"1.2.36b [12/29/2018; 4:09PM/16:09]";
 	"*settings.Permissions now supports multiple custom ranks per command (eg \":view:Staff,Guards,Helpers\")";
@@ -1296,21 +1296,20 @@ return {
 	"*LogAdded event will now have a string for the type of log as first arg (eg \"Chat\" when a chat log is added)";
 	"";
 	"1.2.25b [6/27/2018]";
-	"*Merged GitHub pull requests";
+	"*Merged open-source pull requests";
 	"*Changed a bunch of stuff (localized some tables in server in each core module; server.TableHere.Whatever is now just TableHere.Whatever";
 	"*Stopped enforcing server-side instancce wrapping; May improve server performance";
 	"";
 	"1.2.24b [6/13/2018]";
 	"*Updated team commands";
 	"*Updated Rerubi";
-	"*Merged some changes from GitHub";
+	"*Merged some open-source changes";
 	"";
 	"1.2.23b [6/10/2018]";
 	"*Fixed an issue where messages wouldn't go away if spammed";
 	"*FlyNoclip now uses GetService(\"Players\")";
 	"*Invisible now makes faces and forcefields invisible";
 	"*Set 1-120 limit on FOV cmd";
-	"*Also Adonis is now on Github https://github.com/Epix-Incorporated/Adonis";
 	"";
 	"1.2.22b [6/7/2018]";
 	"*Killed some datastore error spam";
