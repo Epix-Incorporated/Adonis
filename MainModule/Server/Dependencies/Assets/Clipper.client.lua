@@ -1,7 +1,7 @@
 local Character = script.Parent
 
 game:GetService("RunService").Stepped:Connect(function()
-	for _, Object in pairs(script.Parent:GetDescendants()) do
+	for _, Object in pairs(Character:GetDescendants()) do
 		if Object:IsA("BasePart") and Object.CanCollide then
 			Object.CanCollide = false
 		end
