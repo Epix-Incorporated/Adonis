@@ -6,6 +6,6 @@ for _,v in pairs(script.Parent:GetDescendants()) do
 	end
 end
 
-Humanoid:ChangeState(18)
+Humanoid:ChangeState(18)		--| Enum.HumanoidStateType.None (Used so we can remove the Enum.HumanoidStateType.StrafingNoPhysics)
 task.wait()
 script:Destroy()
