@@ -137,6 +137,7 @@ return function(data, env)
 			else
 				PageCounter = PageNumber
 				search.Text = ""
+				search.PlaceholderText = `Search ({#Tab} Items)`
 				gotList = getListTab(Tab)
 			end
 
