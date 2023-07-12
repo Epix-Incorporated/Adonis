@@ -2506,16 +2506,14 @@ return function(Vargs, env)
 			Description = "NoClips the target player(s); allowing them to walk through walls";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local clipper = Deps.Assets.Clipper:Clone()
-				clipper.Name = "ADONIS_NoClip"
-
-				for i, p in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(`{Settings.Prefix}clip`, p.Name)
-					local new = clipper:Clone()
-					new.Parent = p.Character.Humanoid
-					new.Disabled = false
+				for _,player in service.GetPlayers(plr,args[1]) do
+					Admin.RunCommand(`{Settings.Prefix}clip`, player.Name)
+					local Clipper = Deps.Assets.Clipper:Clone()
+					Clipper.Name = "ADONIS_NoClip"
+					Clipper.Parent = player.Character
+					Clipper.Disabled = false
 					if Settings.CommandFeedback then
-						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
 			end
@@ -2543,19 +2541,15 @@ return function(Vargs, env)
 			Description = "Un-NoClips the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, p in service.GetPlayers(plr, args[1]) do
-					local old = p.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
+				for _, player in service.GetPlayers(plr, args[1]) do
+					local old = player.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
 					if old then
-						local enabled = old:FindFirstChild("Enabled")
-						if enabled then
-							enabled.Value = false
-							wait(0.5)
-						end
-						old.Parent = nil
-						wait(0.5)
 						old:Destroy()
+						local Clip = script.Clip:Clone()
+						Clip.Parent = player.Character.Humanoid
+						Clip.Enabled = true
 						if Settings.CommandFeedback then
-							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 						end
 					end
 				end
