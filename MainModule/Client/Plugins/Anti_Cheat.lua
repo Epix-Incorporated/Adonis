@@ -406,8 +406,6 @@ return function(Vargs)
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
 
 			local lookFor = {
-				"electron";
-				"celery"; -- // Not sure - someone check
 				"current identity is [0789]";
 				"gui made by kujo";
 				"tetanus reloaded hooked";
