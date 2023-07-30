@@ -1007,28 +1007,27 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			})
 		end;
 
+		GetCurrentLocale = function()
+			if service.RunService:IsClient() then
+				local accountLocale = service.LocalizationService.RobloxLocaleId
+				return (accountLocale ~= "en-us" and accountLocale ~= "en") and accountLocale or service.LocalizationService.SystemLocaleId
+			else
+				return "en-us"
+			end
+		end,
+
 		GetTime = os.time;
 
 		FormatTime = function(optTime, options)
-			if options == true then options = {WithDate = true} end
-			if not options then options = {} end
-
+			options = (options == true) and {WithDate = true} or options or {}
 			local formatString = options.FormatString
 			if not formatString then
 				formatString = options.WithWrittenDate and "LL HH:mm:ss" or (options.WithDate and "L HH:mm:ss" or "HH:mm:ss")
 			end
 
-			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
-
-			if service.RunService:IsServer() then
-				return tim:FormatUniversalTime(formatString, "en-us")
-			else
-				local locale = service.Players.LocalPlayer.LocaleId
-				local success, str = pcall(function()
-					return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
-				end)
-				return success and str or tim:FormatLocalTime(formatString, "en-us") -- Fallback if locale is not supported by DateTime
-			end
+			local timeObj = DateTime.fromUnixTimestamp(optTime or service.GetTime())
+			local success, value = pcall(timeObj.FormatLocalTime, timeObj, formatString, service.GetCurrentLocale())
+			return success and value or timeObj:ToIsoDate()
 		end;
 
 		FormatPlayer = function(plr, withUserId)
