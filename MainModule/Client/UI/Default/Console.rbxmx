@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX540AA26FBF754A76BDF9E3E2A230C804">
+	<Item class="ScreenGui" referent="RBX2301E89A182C4A29A8A317CA325109D3">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -23,7 +23,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Frame" referent="RBX81BF4FCCEC4C429B983A68AEC317E8D0">
+		<Item class="Frame" referent="RBXBB2AB6D097064807B0A084DE21D1B5B5">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -83,7 +83,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="ScrollingFrame" referent="RBXFDB1256FA4B84B828D54806F5BFCC577">
+			<Item class="ScrollingFrame" referent="RBXCAD58FE9AE85435CB7D331FCDAC7055C">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -170,7 +170,7 @@
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextBox" referent="RBX572A9B8FDAD44DD6B6F3F09DC91666F3">
+			<Item class="TextBox" referent="RBX91EB47877E5C474EA1DD2182AC28EB76">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -269,7 +269,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX34EFBBA95ACE4D528DE9894738967A9B">
+			<Item class="Frame" referent="RBXF724A454860F40D29871A4F7DDC974CE">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -330,7 +330,7 @@
 					<int name="ZIndex">5</int>
 				</Properties>
 			</Item>
-			<Item class="ScrollingFrame" referent="RBX676C178736F14F47BA74F6D6D3F603D2">
+			<Item class="ScrollingFrame" referent="RBXF43C44E636F54A918C03DBC086B0EC8C">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -418,7 +418,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextButton" referent="RBXB27376807C414B058B07DBD2BC90589D">
+		<Item class="TextButton" referent="RBX6A85C01399694BF29C0685D67D3AB627">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -511,14 +511,14 @@
 				<int name="ZIndex">3</int>
 			</Properties>
 		</Item>
-		<Item class="Folder" referent="RBX6932B67E8B9F49E4812E95A298D50D30">
+		<Item class="Folder" referent="RBXE60030A72D0B485CA7934EF2167DB7D0">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBXCE6613A658084A9FB77420443E391D5D">
+			<Item class="BoolValue" referent="RBX7B9405DC665A41F4AAD651D137B01229">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -527,12 +527,12 @@
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX664AC8BB8CA34A30A4D7C891972412D5">
+			<Item class="ModuleScript" referent="RBX650BA9DFA61640CDB4ECFC7A77A9419C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{A498B0DF-7292-49E2-B329-C1BFA0FD3078}</string>
+					<string name="ScriptGuid">{B657D7B2-F9BE-4DCF-9B3B-B447F129FD08}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -819,7 +819,7 @@ end
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX25FB3D1BF955498785A324A9AE261618">
+			<Item class="BoolValue" referent="RBX9160A5A45AF74D6EB2DD7F939D7CD004">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
