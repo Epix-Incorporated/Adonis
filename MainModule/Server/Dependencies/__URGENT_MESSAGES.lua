@@ -5,7 +5,7 @@ return {
 	MessageAdminType = 2;  				--// Minimum admin level to be notified (Or Donors or Players or nil to not notify)
 	MessageDate = "1596318516";			--// Time of message creation
 	MessageDuration = 60*60*24 * 7; 	--// How long should we notify people about this message
-	LastDateTime = "8.1.2020 18:38 EST";
+	LastDateTime = "2020-08-01T21:48:36Z";
 	Messages = {
 		"YOU WILL ONLY BE NOTIFIED ONCE PER GAME ON JOIN WHEN THERE'S NEW MESSAGES.";
 		"THESE ARE IMPORTANT ANNOUNCEMENTS RELATED TO ADONIS AND ADONIS USERS.";
@@ -14,7 +14,7 @@ return {
 		"PLEASE READ THE MOST RECENT MESSAGE CAREFULLY AS IT LIKELY AFFECTS YOU AND YOUR USERS!";
 		"";
 		"";
-		"[IMPORTANCE LEVEL: HIGH - DATE: 8.1.2020 18:38 EST]";
+		"[IMPORTANCE LEVEL: HIGH - DATE: 2020-08-01T21:48:36Z]";
 		"[NOTIFY DURATION: 7 DAYS]";
 		"[NOTIFYING ALL RANK \"ADMIN\" AND HIGHER]";
 		"A ROBLOX (NOT ADONIS) EXPLOIT ALLOWED USERS TO SPOOF USERNAMES, IMPERSONATING OTHER USERS.";
@@ -43,6 +43,6 @@ return {
 		"Again, the cause of this was entirely out of my control and was not caused by anything Adonis did.";
 		"Personally, I'd prefer not to do this but the risk and severity is high enough to warrant it.";
 		"- Davey_Bones (Sceleratis)";
-		"[END_OF_MESSAGE 8.1.2020 18:38 EST]";
+		"[END_OF_MESSAGE 2020-08-01T21:48:36Z]";
 	}
 }
