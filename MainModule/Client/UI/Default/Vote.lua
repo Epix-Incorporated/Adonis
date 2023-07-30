@@ -13,6 +13,8 @@ return function(data, env)
 	local question = data.Question
 	local answers = data.Answers
 	
+	local bRandomOrder = data.bRandomOrder
+	
 	local window = client.UI.Make("Window",{
 		Name  = "Vote";
 		Title = "Vote";
@@ -37,6 +39,16 @@ return function(data, env)
 		Size = UDim2.new(1, -10, 1, -60);
 		Position = UDim2.new(0, 5, 0, 55);
 	})
+	
+	if (bRandomOrder) then
+		local shuffled = {}
+		for i, v in ipairs(answers) do
+			local pos = math.random(1, #shuffled+1)
+			table.insert(shuffled, pos, v)
+		end
+		
+		answers = shuffled
+	end
 	
 	for i,ans in answers do
 		ansList:Add("TextButton",{
