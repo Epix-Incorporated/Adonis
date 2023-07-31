@@ -2545,7 +2545,7 @@ return function(Vargs, env)
 					local old = player.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
 					if old then
 						old:Destroy()
-						local Clip = script.Clip:Clone()
+						local Clip = Deps.Assets.Clip:Clone()
 						Clip.Parent = player.Character.Humanoid
 						Clip.Enabled = true
 						if Settings.CommandFeedback then
