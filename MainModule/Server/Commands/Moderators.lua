@@ -2546,7 +2546,7 @@ return function(Vargs, env)
 					if old then
 						old:Destroy()
 						local Clip = Deps.Assets.Clip:Clone()
-						Clip.Parent = player.Character.Humanoid
+						Clip.Parent = player.Character
 						Clip.Enabled = true
 						if Settings.CommandFeedback then
 							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
