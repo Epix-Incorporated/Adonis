@@ -2542,7 +2542,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, player in service.GetPlayers(plr, args[1]) do
-					local old = player.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
+					local old = plr.Character:FindFirstChild("ADONIS_NoClip")
 					if old then
 						old:Destroy()
 						local Clip = Deps.Assets.Clip:Clone()
