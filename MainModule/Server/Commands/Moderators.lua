@@ -2542,10 +2542,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, player in service.GetPlayers(plr, args[1]) do
-					local old = plr.Character:FindFirstChild("ADONIS_NoClip")
+					local old = player.Character:FindFirstChild("ADONIS_NoClip")
 					if old then
 						old:Destroy()
-						local Clip = Deps.Assets.Clip:Clone()
+						local Clip = Deps.Assets.DisableNoclip:Clone()
 						Clip.Parent = player.Character
 						Clip.Enabled = true
 						if Settings.CommandFeedback then
