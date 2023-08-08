@@ -13,7 +13,6 @@
 
 </div>
 
-
 ---
 
 Adonis is a community-maintained server moderation and management system created for use on the Roblox platform.
