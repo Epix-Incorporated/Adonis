@@ -368,7 +368,7 @@ settings.AntiNoclip = false					-- (Default: false)	Attempts to detect noclippin
 settings.AntiRootJointDeletion = false		-- (Default: false)	Attempts to detect paranoid and kills the player if found.
 settings.AntiMultiTool = false 				-- (Default: false)	Prevents multitool and because of that many other exploits.
 settings.AntiGod = false 					-- (Default: false)	If a player does not respawn when they should have they get respawned.
--- settings.AntiHumanoidDeletion and settings.ProtectHats have been superseded Workspace.RejectCharacterDeletions.
+-- settings.AntiHumanoidDeletion and settings.ProtectHats have been superseeded by Workspace.RejectCharacterDeletions.
 
 settings.AntiSpeed = false 				-- (Default: false)	(Client-Sided) Attempts to detect speed exploits.
 settings.AntiBuildingTools = false		-- (Default: false)	(Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
