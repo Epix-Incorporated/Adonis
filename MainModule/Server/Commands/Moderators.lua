@@ -300,12 +300,12 @@ return function(Vargs, env)
 		CustomNotify = {
 			Prefix = Settings.Prefix;
 			Commands = {"cn", "customsmallmessage", "cnmessage"};
-			Args = {"Upper message", "message"};
+			Args = {"title", "message"};
 			Filter = true;
-			Description = "Same as :n but says whatever you want upper message to be instead of your name.";
+			Description = "Same as :n but says whatever you want the title to be instead of your name.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing upper message")
+				assert(args[1], "Missing title")
 				assert(args[2], "Missing message")	
 
 				Functions.Notify(service.BroadcastFilter(args[1], plr), service.BroadcastFilter(args[2], plr), service.GetPlayers())
