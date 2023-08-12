@@ -194,6 +194,13 @@ return function(Vargs, GetEnv)
 		proxyMt.__metatable = "The metatable is locked"
 	end
 
+
+	local tableAddress = tonumber(string.sub(tostring{}, 8))
+	if #tostring(tableAddress) <= 10 then -- If the memory address for the table is less than 512 bits then it's a 32-bit memory address
+		Detected("kick", "You must use a 64-bit version of Roblox to play this experience 0xDEADBEEF")
+		return
+	end
+
 	do
 		local callStacks = {
 			indexInstance = {},
