@@ -1012,9 +1012,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				local accountLocale = service.LocalizationService.RobloxLocaleId
 				return if accountLocale ~= "en-us" and accountLocale ~= "en" then accountLocale
 							else service.LocalizationService.SystemLocaleId
-			else
-				return "en-us"
 			end
+			return "en-us"
 		end,
 
 		GetTime = os.time;
