@@ -2048,7 +2048,7 @@ return function(Vargs, env)
 		Vote = {
 			Prefix = Settings.Prefix;
 			Commands = {"vote", "makevote", "startvote", "question", "survey"};
-			Args = {"player", "RandomOrder? (true/false)","answer1,answer2,etc (NO SPACES)", "question"};
+			Args = {"player", "random order? (true/false)","answer1,answer2,etc (NO SPACES)", "question"};
 			Filter = true;
 			Description = "Lets you ask players a question with a list of answers and get the results";
 			AdminLevel = "Moderators";
@@ -2061,8 +2061,9 @@ return function(Vargs, env)
 				local voteKey = `ADONISVOTE{math.random()}`;
 				local players = service.GetPlayers(plr, args[1])
 				local startTime = os.clock();
-				
-				local bRandomOrder = if args[2] and args[2]:lower() == "false" then false else true
+
+				local isRandomOrder = if args[2] and args[2]:lower() == "false" then false
+					else true
 
 				local function voteUpdate()
 					local total = #responses
@@ -2091,7 +2092,10 @@ return function(Vargs, env)
 							percent = math.floor((num/total)*100)
 						end
 
-						table.insert(tab, {Text=`{ans} | {percent}% - {num}/{total}`, Desc=`Number: {num}/{total} | Percent: {percent}`})
+						table.insert(tab, {
+							Text=`{ans} | {percent}% - {num}/{total}`,
+							Desc=`Number: {num}/{total} | Percent: {percent}`
+						})
 					end
 
 					return tab;
@@ -2109,7 +2113,11 @@ return function(Vargs, env)
 
 				for i, v in players do
 					Routine(function()
-						local response = Remote.GetGui(v, "Vote", {Question = question; Answers = anstab; bRandomOrder = bRandomOrder;})
+						local response = Remote.GetGui(v, "Vote", {
+							Question = question;
+							Answers = anstab;
+							IsRandomOrder = isRandomOrder;
+						})
 						if response then
 							table.insert(responses, response)
 						end
@@ -2376,7 +2384,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ResetAtmosphere = {
 			Prefix = Settings.Prefix;
 			Commands = {"resetatmosphere", "fixatmosphere"};
@@ -3997,9 +4005,9 @@ return function(Vargs, env)
 				assert(args[1], "Argument 1 missing")
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
-				
+
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-							Remote.SetAtmosphere(color)
+					Remote.SetAtmosphere(color)
 				end
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
