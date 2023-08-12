@@ -302,7 +302,7 @@ return function(Vargs, env)
 			Commands = {"cn", "customsmallmessage", "cnmessage"};
 			Args = {"title", "message"};
 			Filter = true;
-			Description = "Same as :n but says whatever you want the title to be instead of your name.";
+			Description = `Same as {Settings.Prefix}n but says whatever you want the title to be instead of your name.`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing title")
