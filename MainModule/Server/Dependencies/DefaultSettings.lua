@@ -374,6 +374,7 @@ settings.AntiSpeed = false 				-- (Default: false)	(Client-Sided) Attempts to de
 settings.AntiBuildingTools = false		-- (Default: false)	(Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
 settings.AntiAntiIdle = false 			-- (Default: false)	(Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games.
 settings.ExploitGuiDetection = false 	-- (Default: false)	(Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you).
+settings.Anti32bit = false 				-- (Default: false)	(Client-Sided) Prevent anybody using the Microsoft Store version (UWP/32-bit) of Roblox which is primarily being used for exploiting.
 
 ---------------------
 -- END OF SETTINGS --
@@ -523,6 +524,7 @@ descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games ]]
 descs.ExploitGuiDetection = [[ (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
+descs.Anti32bit = [[ (Client-Sided) Prevent anybody using the Microsoft Store version (UWP/32-bit) of Roblox which is primarily being used for exploiting. ]]
 
 order = {
 	"HideScript";
