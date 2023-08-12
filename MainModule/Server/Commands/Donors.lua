@@ -311,7 +311,7 @@ return function(Vargs, env)
 			Args = {"ID"};
 			Description = "Gives yourself the avatar item that belongs to <ID>";
 			Donors = true;
-			AdminLevel = "Donors";
+			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string}, data: {})
 				return Commands.AvatarItem.Function(plr, {`@{plr.Name}`, args[1]}, data)
 			end
