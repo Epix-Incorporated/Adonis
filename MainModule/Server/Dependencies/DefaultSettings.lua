@@ -234,7 +234,7 @@ ConsoleKeyCode = "Quote";	-- Keybind to open the console; Rebindable per player 
 --// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)
 Commands = {
 	ExampleCommand1 = {								--// The index & table of the command
-		Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
+		Prefix = Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
 		Commands = {"examplecommand1", "examplealias1", "examplealias2"};	--// A table containing the command strings (the things you chat in-game to run the command, the 'ff' in ':ff me')
 		Args = {"arg1", "arg2", "etc"};	--// Command arguments, these will be available in order as args[1], args[2], args[3], etc; This is the 'me' in ':ff me'
 		Description = "Example command";--// The description of the command
@@ -326,7 +326,7 @@ Trello_HideRanks = false;		-- If true, Trello-assigned ranks won't be shown in t
 ---------------------
 
 G_API = true;					-- If true, allows other server scripts to access certain functions described in the API module through _G.Adonis
-G_Access = false				-- If enabled, allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
+G_Access = false;				-- If enabled, allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
 G_Access_Key = "Example_Key";	-- Key required to use the _G access API; Example_Key will not work for obvious reasons
 G_Access_Perms = "Read"; 		-- Access perms
 Allowed_API_Calls = {
@@ -483,32 +483,6 @@ HelpButtonImage = [[ Change this to change the help button's image ]];
 Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]];
 CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]];
 
-SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]];
-TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is achieved by offsetting them by -35 into the transparent region where Roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifications to appear in that region. ]];
-
-Messages = [[ A list of notification messages to show HeadAdmins and above on join ]];
-
-AutoClean = [[ Will auto clean workspace of things like hats and tools ]];
-AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]];
-AutoCleanDelay = [[ Time between auto cleans ]];
-
-CustomChat = [[ Custom chat ]];
-PlayerList = [[ Custom playerlist ]];
-
-Console = [[ Command console ]];
-Console_AdminsOnly = [[ Makes it so if the console is enabled, only admins will see it ]];
-
-DonorCommands = [[ Show your support for the script and let donors use commands like !sparkles ]];
-DonorCapes = [[ Determines if donors have capes ]];
-LocalCapes = [[ Makes Donor capes local instead of removing them ]];
-
-HelpSystem = [[ Allows players to call admins for help using !help ]];
-HelpButton = [[ Shows a little help button in the bottom right corner ]];
-HelpButtonImage = [[ Sets the image used for the Adonis help button above. ]];
-
-Detection = [[ Attempts to detect certain known exploits ]];
-CheckClients = [[ Checks clients every minute or two to make sure they are still active ]];
-
 ExploitNotifications = [[ Notify all moderators and higher-ups when a player is kicked or crashed from the AntiExploit ]];
 CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]];
 AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]];
@@ -516,7 +490,7 @@ AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if f
 AntiMultiTool = [[ Prevents multitool and because of that many other exploits ]];
 AntiGod = [[ If a player does not respawn when they should have they get respawned ]];
 
-AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
+AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]];
 AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]];
 AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games ]];
 ExploitGuiDetection = [[ (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]];
@@ -634,4 +608,4 @@ order = {
 };
 };
 
-return {Settings = settings, Descriptions = descs, Order = order}
+return {Settings = settings, Descriptions = descs, Order = Settings.order}
