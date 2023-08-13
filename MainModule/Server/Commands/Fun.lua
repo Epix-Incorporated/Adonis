@@ -623,7 +623,7 @@ return function(Vargs, env)
 						cl.Parent = char
 
 						for _, prt in char:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
 								prt.Transparency = 0
 								prt.Reflectance = 0
 								prt.BrickColor = BrickColor.new("Dark green")
@@ -643,10 +643,6 @@ return function(Vargs, env)
 										tconn:Disconnect()
 									end
 								end)
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = 0
-								prt.Head.Reflectance = 0
-								prt.Head.BrickColor = BrickColor.new("Dark green")
 							end
 						end
 					end
@@ -675,16 +671,11 @@ return function(Vargs, env)
 						local char = script.Parent.Parent
 						local clr = BrickColor.random() 
 						for i, v in next, char:GetChildren() do 
-							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" and (v.Name ~= "Head" or not v.Parent:FindFirstChild("NameTag", true)) then
+							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
 								if not restore[v] then
 									restore[v] = v.Color
 								end
 								v.Color = Color3.fromHSV(tick() % 1, 1, 1)
-							elseif v:FindFirstChild("NameTag") then
-								if not restore[v.Head] then
-									restore[v.Head] = v.Head.Color
-								end
-								v.Head.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							end
 						end
 					until not char or script.Name == "Stop" -- signal to unrainbowify
@@ -873,17 +864,13 @@ return function(Vargs, env)
 						end
 
 						for _, prt in v.Character:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
 								prt.Transparency = .5
 								prt.Reflectance = 0
 								prt.BrickColor = BrickColor.new("Institutional white")
 								if prt.Name:find("Leg") then
 									prt.Transparency = 1
 								end
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = .5
-								prt.Head.Reflectance = 0
-								prt.Head.BrickColor = BrickColor.new("Institutional white")
 							end
 						end
 					end
@@ -910,14 +897,10 @@ return function(Vargs, env)
 						end
 
 						for _, prt in v.Character:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
 								prt.Transparency = 0
 								prt.Reflectance = .4
 								prt.BrickColor = BrickColor.new("Bright yellow")
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = 0
-								prt.Head.Reflectance = .4
-								prt.Head.BrickColor = BrickColor.new("Bright yellow")
 							end
 						end
 					end
@@ -942,14 +925,10 @@ return function(Vargs, env)
 							v.Character.Pants:Destroy()
 						end
 						for _, m in v.Character:GetChildren() do
-							if m:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+							if m:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
 								m.Transparency = 0
 								m.Reflectance = 1
 								m.BrickColor = BrickColor.new("Institutional white")
-							elseif m:FindFirstChild("NameTag") then
-								m.Head.Transparency = 0
-								m.Head.Reflectance = 1
-								m.Head.BrickColor = BrickColor.new(1001)
 							end
 						end
 					end
@@ -3656,8 +3635,6 @@ return function(Vargs, env)
 									if part.Name == "FAKETORSO" then
 										part:Destroy()
 									end
-								elseif part:FindFirstChild("NameTag") then
-									part.Head.BrickColor = BrickColor.new("Bright green")
 								end
 							end
 						end

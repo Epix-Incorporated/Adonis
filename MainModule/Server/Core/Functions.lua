@@ -1329,6 +1329,33 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
+		ExtractArgs = function(text, numArgs)
+			local arguments = {}
+
+			local lastArgs = {}
+
+			for argument in 
+				('""'..text:gsub("\\?.", {['\\"']="\\\6ADONIS]\6"}))
+				:gsub('"(.-)"([^"]*)', function(q,n) return "\\\2ADONIS]"..q..n:gsub("%s+", "\0") end)
+				:sub(10) -- matches lenght of first temporary replace
+				:gmatch"%Z+" 
+			do
+				argument = argument:gsub("\\\6ADONIS]\6", '"'):gsub("\\\2ADONIS]", ""):gsub("\\(.)", "%1")
+
+				if not (numArgs <= (#arguments + 1) ) then
+					arguments[#arguments+1] = argument
+				else
+					table.insert(lastArgs, argument)
+				end
+			end
+
+			if (lastArgs and next(lastArgs)) then
+				arguments[#arguments + 1] = table.concat(lastArgs, " ")
+			end
+
+			return arguments
+		end;
+
 		CountTable = function(tab)
 			local num = 0
 			for i in tab do
@@ -1432,11 +1459,11 @@ return function(Vargs, GetEnv)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
-				player:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
+				player:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
 			end)
 
 			for _, v in service.Players:GetPlayers() do
-				v:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
+				v:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
 			end
 		end;
 
