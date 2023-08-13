@@ -137,6 +137,7 @@ return function(data, env)
 			else
 				PageCounter = PageNumber
 				search.Text = ""
+				search.PlaceholderText = "Search (" .. (#Tab == 1 and "1 Item" or #Tab .. " Items") .. ")";
 				gotList = getListTab(Tab)
 			end
 
