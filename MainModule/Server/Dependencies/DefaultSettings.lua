@@ -101,24 +101,20 @@
 			The Trello abilities of the script allow you to manage lists and permissions via
 			a Trello board; The following will guide you through the process of setting up a board;
 
-				1. Sign up for an account at http://trello.com
+				1. Sign up for an account at Trello
 				2. Create a new board
-					http://prntscr.com/b9xljn
-					http://prntscr.com/b9xm53
-				3. Get the board ID;
-					http://prntscr.com/b9xngo
-				4. Set Trello_Primary to your board ID
-				5. Set Trello.Enabled to true
-				6. Congrats! The board is ready to be used;
-				7. Create a list and add cards to it;
-					http://prntscr.com/b9xswk
+				3. Get the board ID
+				4. Set settings.Trello_Primary to your board ID
+				5. Set settings.Trello.Enabled to true
+				6. Congrats! The board is ready to be used
+				7. Create a list and add cards to it
 
 				- You can view lists in-game using :viewlist ListNameHere
 
 			Lists:
 				Moderators			- Card Format: Same as settings.Moderators
 				Admins				- Card Format: Same as settings.Admins
-				HeadAdmins				- Card Format: Same as settings.HeadAdmins
+				HeadAdmins			- Card Format: Same as settings.HeadAdmins
 				Creators			- Card Format: Same as settings.Creators
 				Banlist				- Card Format: Same as settings.Banned
 				Mutelist			- Card Format: Same as settings.Muted
@@ -321,8 +317,8 @@ HttpWait = 60;					-- How long things that use the HttpService will wait before 
 Trello_Enabled = false;			-- Are the Trello features enabled?
 Trello_Primary = "";			-- Primary Trello board
 Trello_Secondary = {};			-- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
-Trello_AppKey = "";				-- Your Trello AppKey						  	Link: https://trello.com/app-key
-Trello_Token = "";				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
+Trello_AppKey = "";				-- Your Trello AppKey						  	Link: trello.com/app-key
+Trello_Token = "";				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
 Trello_HideRanks = false;		-- If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins)
 
 ---------------------
@@ -379,7 +375,6 @@ ExploitGuiDetection = false; 	-- (Default: false)	(Client-Sided) If any exploit 
 local Settings = settings; 	--// For custom commands that use 'Settings' rather than the lowercase 'settings'
 
 --// Setting descriptions used for the in-game settings editor;
-
 	
 local descs = {			--// Contains settings descriptions
 HideScript = [[ Disable if your game saves; When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module ]];
@@ -433,8 +428,8 @@ HttpWait = [[ How long things that use the HttpService will wait before updating
 Trello_Enabled = [[ Are the Trello features enabled? ]];
 Trello_Primary = [[ Primary Trello board ]];
 Trello_Secondary = [[ Secondary Trello boards; Format: {"BoardID";"BoardID2","etc"} ]];
-Trello_AppKey = [[ Your Trello AppKey; Link: https://trello.com/app-key ]];
-Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!); Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE ]];
+Trello_AppKey = [[ Your Trello AppKey; Link: trello.com/app-key ]];
+Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!); Link: trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE ]];
 Trello_HideRanks = [[ If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins) ]];
 
 G_API = [[ If true, allows other server scripts to access certain functions described in the API module through _G.Adonis ]];

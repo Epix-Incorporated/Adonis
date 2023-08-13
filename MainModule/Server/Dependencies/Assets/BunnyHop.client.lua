@@ -1,6 +1,7 @@
 local hum = script.Parent:FindFirstChildOfClass("Humanoid")
 
-while true do
+hum.Jump = true
+hum:GetPropertyChangedSignal("Jump"):Connect(function()
 	hum.Jump = true
-	task.wait()
-end
+end)
+hum.Jump = not hum.Jump -- in some unreliable cases this line might be needed to make GetPropertyChangedSignal trigger immediately
