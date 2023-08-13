@@ -2048,6 +2048,87 @@ return function(Vargs, env)
 		Vote = {
 			Prefix = Settings.Prefix;
 			Commands = {"vote", "makevote", "startvote", "question", "survey"};
+			Args = {"player", "answer1,answer2,etc (NO SPACES)", "question"};
+			Filter = true;
+			Description = "Lets you ask players a question with a list of answers and get the results";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local question = args[3]
+				if not question then error("You forgot to supply a question!") end
+				local answers = args[2]
+				local anstab = {}
+				local responses = {}
+				local voteKey = `ADONISVOTE{math.random()}`;
+				local players = service.GetPlayers(plr, args[1])
+				local startTime = os.clock();
+
+				local function voteUpdate()
+					local total = #responses
+					local results = table.create(total)
+
+					local tab = {
+						`Question: {question}`;
+						`Total Responses: {total}`;
+						`Didn't Vote: {#players-total}`;
+						`Time Left: {math.ceil(math.max(0, 120 - (os.clock()-startTime)))}`;
+					}
+
+					for _, v in responses do
+						if not results[v] then results[v] = 0 end
+						results[v] += 1
+					end
+
+					for _, v in anstab do
+						local ans = v
+						local num = results[v]
+						local percent
+						if not num then
+							num = 0
+							percent = 0
+						else
+							percent = math.floor((num/total)*100)
+						end
+
+						table.insert(tab, {Text=`{ans} | {percent}% - {num}/{total}`, Desc=`Number: {num}/{total} | Percent: {percent}`})
+					end
+
+					return tab;
+				end
+
+				Logs.TempUpdaters[voteKey] = voteUpdate;
+
+				if not answers then
+					anstab = {"Yes", "No"}
+				else
+					for ans in string.gmatch(answers, "([^,]+)") do
+						table.insert(anstab, ans)
+					end
+				end
+
+				for i, v in players do
+					Routine(function()
+						local response = Remote.GetGui(v, "Vote", {Question = question; Answers = anstab;})
+						if response then
+							table.insert(responses, response)
+						end
+					end)
+				end
+
+				Remote.MakeGui(plr, "List", {
+					Title = "Results";
+					Tab = voteUpdate();
+					Update = "TempUpdate";
+					UpdateArgs = {{UpdateKey = voteKey}};
+					AutoUpdate = 1;
+				})
+
+				delay(120, function() Logs.TempUpdaters[voteKey] = nil end)
+			end
+		};
+
+		VoteAdvanced = {
+			Prefix = Settings.Prefix;
+			Commands = {"voteadvanced"};
 			Args = {"player", "random order? (true/false)","answer1,answer2,etc (NO SPACES)", "question"};
 			Filter = true;
 			Description = "Lets you ask players a question with a list of answers and get the results";
