@@ -524,13 +524,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message (argument #1)")
-				for _, v in service.Players:GetPlayers() do
-					Remote.RemoveGui(v, "Message")
-					Remote.MakeGui(v, "Message", {
-						Title = Settings.SystemTitle;
-						Message = args[1];
-					})
-				end
+				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
