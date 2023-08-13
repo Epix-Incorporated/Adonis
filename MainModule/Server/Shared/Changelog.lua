@@ -1,7 +1,7 @@
 return {
 	"Version: 240";
 	"*Drag edges to expand*";
-	"*Report bugs/issues on our code repository*";
+	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v240 2023-07-04 09:50 UTC] @LiveFireExercise&@ccuser44";
 	"Minor settings desc change";
@@ -342,7 +342,7 @@ return {
 	"(Git/Expertcoderz) Enhancement towards how commands are registered/handled (#852)";
 	"";
 	"[v236 6.12.2022 12:30 EST]";
-	"*Refer to code repository for more information.";
+	"*Refer to GitHub repository for more information.";
 	"";
 	"[v235 3.29.2022 01:38 EST]";
 	"(Git/L8X) Remove math.randomseed() due to Luau optimizations (#624)";
@@ -1337,6 +1337,7 @@ return {
 	"*FlyNoclip now uses GetService(\"Players\")";
 	"*Invisible now makes faces and forcefields invisible";
 	"*Set 1-120 limit on FOV cmd";
+	"*Also Adonis is now on Github";
 	"";
 	"1.2.22b [6/7/2018]";
 	"*Killed some datastore error spam";

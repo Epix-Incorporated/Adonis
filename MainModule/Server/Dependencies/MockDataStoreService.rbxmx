@@ -7,7 +7,7 @@
 	This module decides whether to use actual datastores or mock datastores depending on the environment.
 
 	This module is licensed under APLv2, refer to the LICENSE file or:
-	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+	buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 local MockDataStoreServiceModule = script.MockDataStoreService
@@ -45,7 +45,7 @@ end
 	This module implements the API and functionality of Roblox's DataStoreService class.
 
 	This module is licensed under APLv2, refer to the LICENSE file or:
-	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+	buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 local MockDataStoreService = {}
@@ -226,7 +226,7 @@ return MockDataStoreService
     Contains all constants used by the entirety of MockDataStoreService and its sub-classes.
 
     This module is licensed under APLv2, refer to the LICENSE file or:
-    https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+    buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 return {
@@ -309,7 +309,7 @@ return {
 	This module does bookkeeping of data, interfaces and request limits used by MockDataStoreService and its sub-classes.
 
 	This module is licensed under APLv2, refer to the LICENSE file or:
-	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+	buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 local MockDataStoreManager = {}
@@ -739,7 +739,7 @@ return MockDataStoreManager
 	This module implements the API and functionality of Roblox's DataStorePages class.
 
 	This module is licensed under APLv2, refer to the LICENSE file or:
-	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+	buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 local MockDataStorePages = {}
@@ -801,7 +801,7 @@ return MockDataStorePages
 	Contains helper and utility functions used by other classes.
 
 	This module is licensed under APLv2, refer to the LICENSE file or:
-	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+	buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 local MockDataStoreUtils = {}
@@ -1088,7 +1088,7 @@ return MockDataStoreUtils
 	This module implements the API and functionality of Roblox's GlobalDataStore class.
 
 	This module is licensed under APLv2, refer to the LICENSE file or:
-	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+	buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 local MockGlobalDataStore = {}
@@ -1542,7 +1542,7 @@ return MockGlobalDataStore
 	This module implements the API and functionality of Roblox's OrderedDataStore class.
 
 	This module is licensed under APLv2, refer to the LICENSE file or:
-	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+	buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
 local MockOrderedDataStore = {}

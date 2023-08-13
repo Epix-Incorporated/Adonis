@@ -1,6 +1,6 @@
 --[[
 t: a runtime typechecker for Roblox 
-https://github.com/osyrisrblx/t 
+by osyrisrblx
 								]]
 
 local t = {}
