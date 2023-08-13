@@ -640,12 +640,14 @@ return function(Vargs, GetEnv)
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					service.Events.MutedPlayerChat_UnFiltered:Fire(p, msg)
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
 						Text = `[MUTED] {p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
 					})
+					service.Events.MutedPlayerChat_Filtered:Fire(p, filtered)
 				end
 			elseif not didPassRate and RateLimit(p, "RateLog") then
 				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", curRate))
