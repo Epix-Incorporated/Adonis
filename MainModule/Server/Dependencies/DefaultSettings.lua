@@ -234,7 +234,7 @@ local settings = {
 	--// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)
 	Commands = {
 		ExampleCommand1 = {								--// The index & table of the command
-			Prefix = ":";				--// The prefix the command will use, this is the ':' in ':ff me'
+			Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
 			Commands = {"examplecommand1", "examplealias1", "examplealias2"};	--// A table containing the command strings (the things you chat in-game to run the command, the 'ff' in ':ff me')
 			Args = {"arg1", "arg2", "etc"};	--// Command arguments, these will be available in order as args[1], args[2], args[3], etc; This is the 'me' in ':ff me'
 			Description = "Example command";--// The description of the command
