@@ -297,6 +297,21 @@ return function(Vargs, env)
 			end
 		};
 
+		CustomNotify = {
+			Prefix = Settings.Prefix;
+			Commands = {"cn", "customsmallmessage", "cnmessage"};
+			Args = {"title", "message"};
+			Filter = true;
+			Description = `Same as {Settings.Prefix}n but says whatever you want the title to be instead of your name.`;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing title")
+				assert(args[2], "Missing message")	
+
+				Functions.Notify(service.BroadcastFilter(args[1], plr), service.BroadcastFilter(args[2], plr), service.GetPlayers())
+			end
+		};
+
 		NotifyPM = {
 			Prefix = Settings.Prefix;
 			Commands = {"npm", "smallmessagepm", "nmessagepm", "nmsgpm", "npmmsg", "smsgpm", "spmmsg", "smessagepm"};

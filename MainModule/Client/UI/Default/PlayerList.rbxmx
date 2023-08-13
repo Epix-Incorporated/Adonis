@@ -6,19 +6,12 @@
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
-			<bool name="ClipToDeviceSafeArea">true</bool>
 			<int name="DisplayOrder">900000</int>
 			<bool name="Enabled">false</bool>
+			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">PlayerList</string>
 			<bool name="ResetOnSpawn">true</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
-			<token name="SafeAreaCompatibility">1</token>
-			<token name="ScreenInsets">2</token>
-			<token name="SelectionBehaviorDown">0</token>
-			<token name="SelectionBehaviorLeft">0</token>
-			<token name="SelectionBehaviorRight">0</token>
-			<token name="SelectionBehaviorUp">0</token>
-			<bool name="SelectionGroup">false</bool>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
@@ -486,13 +479,7 @@ end]]></ProtectedString>
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
-				<token name="SelectionBehaviorDown">0</token>
-				<token name="SelectionBehaviorLeft">0</token>
-				<token name="SelectionBehaviorRight">0</token>
-				<token name="SelectionBehaviorUp">0</token>
-				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
-				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>0</XS>
 					<XO>150</XO>
@@ -546,13 +533,7 @@ end]]></ProtectedString>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
-					<token name="SelectionBehaviorDown">0</token>
-					<token name="SelectionBehaviorLeft">0</token>
-					<token name="SelectionBehaviorRight">0</token>
-					<token name="SelectionBehaviorUp">0</token>
-					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
-					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>0</XO>
@@ -630,13 +611,7 @@ end]]></ProtectedString>
 						<token name="ScrollingDirection">2</token>
 						<bool name="ScrollingEnabled">true</bool>
 						<bool name="Selectable">true</bool>
-						<token name="SelectionBehaviorDown">0</token>
-						<token name="SelectionBehaviorLeft">0</token>
-						<token name="SelectionBehaviorRight">0</token>
-						<token name="SelectionBehaviorUp">0</token>
-						<bool name="SelectionGroup">true</bool>
 						<Ref name="SelectionImageObject">null</Ref>
-						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>1</XS>
 							<XO>-10</XO>
@@ -693,13 +668,7 @@ end]]></ProtectedString>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
-						<token name="SelectionBehaviorDown">0</token>
-						<token name="SelectionBehaviorLeft">0</token>
-						<token name="SelectionBehaviorRight">0</token>
-						<token name="SelectionBehaviorUp">0</token>
-						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
-						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>20</XO>
@@ -766,18 +735,11 @@ end]]></ProtectedString>
 							<YS>1</YS>
 							<YO>-20</YO>
 						</UDim2>
-						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">90</float>
 						<token name="ScaleType">0</token>
 						<bool name="Selectable">false</bool>
-						<token name="SelectionBehaviorDown">0</token>
-						<token name="SelectionBehaviorLeft">0</token>
-						<token name="SelectionBehaviorRight">0</token>
-						<token name="SelectionBehaviorUp">0</token>
-						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
-						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>20</XO>
@@ -850,13 +812,7 @@ end]]></ProtectedString>
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
-				<token name="SelectionBehaviorDown">0</token>
-				<token name="SelectionBehaviorLeft">0</token>
-				<token name="SelectionBehaviorRight">0</token>
-				<token name="SelectionBehaviorUp">0</token>
-				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
-				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>1</XS>
 					<XO>0</XO>
@@ -919,13 +875,7 @@ end]]></ProtectedString>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
-					<token name="SelectionBehaviorDown">0</token>
-					<token name="SelectionBehaviorLeft">0</token>
-					<token name="SelectionBehaviorRight">0</token>
-					<token name="SelectionBehaviorUp">0</token>
-					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
-					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>70</XO>
@@ -941,7 +891,6 @@ end]]></ProtectedString>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
 					<Color3 name="TextStrokeColor3">
@@ -1008,13 +957,7 @@ end]]></ProtectedString>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
-					<token name="SelectionBehaviorDown">0</token>
-					<token name="SelectionBehaviorLeft">0</token>
-					<token name="SelectionBehaviorRight">0</token>
-					<token name="SelectionBehaviorUp">0</token>
-					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
-					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>100</XO>
@@ -1030,7 +973,6 @@ end]]></ProtectedString>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
 					<Color3 name="TextStrokeColor3">
@@ -1100,18 +1042,11 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>3</YO>
 					</UDim2>
-					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">0</token>
 					<bool name="Selectable">false</bool>
-					<token name="SelectionBehaviorDown">0</token>
-					<token name="SelectionBehaviorLeft">0</token>
-					<token name="SelectionBehaviorRight">0</token>
-					<token name="SelectionBehaviorUp">0</token>
-					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
-					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>20</XO>
@@ -1182,13 +1117,7 @@ end]]></ProtectedString>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
-					<token name="SelectionBehaviorDown">0</token>
-					<token name="SelectionBehaviorLeft">0</token>
-					<token name="SelectionBehaviorRight">0</token>
-					<token name="SelectionBehaviorUp">0</token>
-					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
-					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>-125</XO>

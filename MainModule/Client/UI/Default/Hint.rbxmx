@@ -193,7 +193,6 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
 					<Color3 name="TextStrokeColor3">

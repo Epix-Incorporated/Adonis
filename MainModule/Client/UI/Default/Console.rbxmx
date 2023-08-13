@@ -9,11 +9,11 @@
 			<bool name="ClipToDeviceSafeArea">true</bool>
 			<int name="DisplayOrder">9000000</int>
 			<bool name="Enabled">false</bool>
+			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">Console</string>
 			<bool name="ResetOnSpawn">false</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
 			<token name="SafeAreaCompatibility">1</token>
-			<token name="ScreenInsets">2</token>
 			<token name="SelectionBehaviorDown">0</token>
 			<token name="SelectionBehaviorLeft">0</token>
 			<token name="SelectionBehaviorRight">0</token>
@@ -196,6 +196,7 @@
 					<bool name="ClearTextOnFocus">false</bool>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
+					<token name="Font">16</token>
 					<Font name="FontFace">
 						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 						<Weight>600</Weight>
@@ -250,7 +251,6 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<token name="TextDirection">0</token>
 					<bool name="TextEditable">true</bool>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">22</float>
@@ -444,6 +444,7 @@
 				<int name="BorderSizePixel">0</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
+				<token name="Font">3</token>
 				<Font name="FontFace">
 					<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 					<Weight>400</Weight>
@@ -493,7 +494,6 @@
 					<G>1</G>
 					<B>1</B>
 				</Color3>
-				<token name="TextDirection">0</token>
 				<bool name="TextScaled">false</bool>
 				<float name="TextSize">18</float>
 				<Color3 name="TextStrokeColor3">
