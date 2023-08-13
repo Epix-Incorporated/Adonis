@@ -42,7 +42,7 @@ return function(Vargs, GetEnv)
 				local function onNewTextchannel(textchannel: TextChannel)
 					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
 					
-					if Settings.OverrideChatCallbacks then 
+					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
 						AddLog("Script", "Overriding ShouldDeliverCallback for " .. textchannel.Name)
 						textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
 							if
