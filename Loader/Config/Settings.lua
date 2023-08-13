@@ -367,6 +367,7 @@ AntiSpeed = false; 				-- (Default: false)	(Client-Sided) Attempts to detect spe
 AntiBuildingTools = false;		-- (Default: false)	(Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
 AntiAntiIdle = false; 			-- (Default: false)	(Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games.
 ExploitGuiDetection = false; 	-- (Default: false)	(Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you).
+Anti32bit = false; 				-- (Default: false)	(Client-Sided) Prevent anybody using the Microsoft Store version (UWP/32-bit) of Roblox which is primarily being used for exploiting.
 };
 
 ---------------------
@@ -519,6 +520,7 @@ AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]];
 AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games ]];
 ExploitGuiDetection = [[ (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]];
+Anti32bit = [[ (Client-Sided) Prevent anybody using the Microsoft Store version (UWP/32-bit) of Roblox which is primarily being used for exploiting. ]];
 
 order = {
 	"HideScript";
