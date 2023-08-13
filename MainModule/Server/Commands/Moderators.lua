@@ -6657,6 +6657,10 @@ return function(Vargs, env)
 
 						if check then
 							table.insert(Settings.Muted, `{v.Name}:{v.UserId}`)
+							service.Events.PlayerMuted:Fire({
+								Target = v.UserId;
+								Moderator = plr.UserId;
+							})
 						end
 					end
 				end
@@ -6677,6 +6681,10 @@ return function(Vargs, env)
 							--Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat", true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
 						end
 					end
+					service.Events.PlayerUnMuted:Fire({
+						Target = v.UserId;
+						Moderator = plr.UserId;
+					})
 				end
 			end
 		};
