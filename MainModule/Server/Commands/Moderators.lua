@@ -595,9 +595,21 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a message in the target player(s)'s chat window";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
+					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+						local TextToUse = args[2]
+						if data.Options.Chat ~= true then
+							TextToUse = server.Functions.EscapeRichTextTags(args[2] or "Hello world!")
+						end 
+						Remote.Send(
+							v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{
+							service.Filter(TextToUse, plr, v)
+							}</font>`)
+					else 
+						Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
+					end
+					
 				end
 			end
 		};
@@ -6657,6 +6669,10 @@ return function(Vargs, env)
 
 						if check then
 							table.insert(Settings.Muted, `{v.Name}:{v.UserId}`)
+							service.Events.PlayerMuted:Fire({
+								Target = v.UserId;
+								Moderator = plr.UserId;
+							})
 						end
 					end
 				end
@@ -6677,6 +6693,10 @@ return function(Vargs, env)
 							--Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat", true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
 						end
 					end
+					service.Events.PlayerUnMuted:Fire({
+						Target = v.UserId;
+						Moderator = plr.UserId;
+					})
 				end
 			end
 		};

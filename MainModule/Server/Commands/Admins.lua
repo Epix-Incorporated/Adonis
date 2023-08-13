@@ -333,9 +333,21 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a message in the chat window";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers() do
-					Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+					--Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+						local TextToUse = args[1]
+						if data.Options.Chat ~= true then
+							TextToUse = server.Functions.EscapeRichTextTags(args[1] or "Hello world!")
+						end 
+						Remote.Send(
+							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
+							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, Settings.SystemTitle, service.Filter(TextToUse), plr, v)
+							}`)
+					else 
+						Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+					end
 				end
 			end
 		};

@@ -451,6 +451,20 @@ return function(Vargs, GetEnv)
 			return fakePlayer
 		end;
 
+		EscapeRichTextTags = function(text)
+			local EscapedText = {
+				["<"] = "&lt;";
+				[">"] = "&gt;";
+				['"'] = "&quot;";
+				["'"] =  "&apos;";
+				["%&"] = "&amp;";
+			}
+			for strToReplace,replacementStr in EscapedText do 
+				text = text:gsub(strToReplace, replacementStr)
+			end
+			return text
+		end;
+
 		GetChatService = function(waitTime)
 			local isTextChat = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
 			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", waitTime or isTextChat and 0.2 or 145)
