@@ -2131,7 +2131,7 @@ return function(Vargs, env)
 			Commands = {"voteadvanced"};
 			Args = {"player", "random order? (true/false)","answer1,answer2,etc (NO SPACES)", "question"};
 			Filter = true;
-			Description = `Same as {Settings.Prefix}vote, but with more options, such as randomizing the orders.`;
+			Description = `Same as {Settings.Prefix}vote, but with more options, such as randomizing the order of the choices.`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local question = args[4]
