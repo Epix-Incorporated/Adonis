@@ -893,9 +893,6 @@ return function(Vargs, GetEnv)
 						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})
 
-					if Settings.Anti32bit then
-						Remote.Send(p, "LaunchAnti", "Anti32bit")
-					end
 					if Settings.ExploitGuiDetection then
 						Remote.Send(p, "LaunchAnti", "AntiCoreGui")
 					end
