@@ -151,15 +151,6 @@ return function(Vargs)
 	end
 
 	local Detectors = {
-		Anti32bit = function()
-			if service.UserInputService.TouchEnabled and not service.UserInputService.KeyboardEnabled and not service.UserInputService.MouseEnabled or service.GuiService:IsTenFootInterface() then return end -- Do not detect on mobile
-			local tableAddress = tonumber(string.sub(tostring{}, 8))
-			if #tostring(tableAddress) <= 10 then -- If the memory address for the table is less than 512 bits then it's a 32-bit memory address
-				Detected("kick", "32-bit Roblox client detected. Please ensure you are using the Roblox Player downloaded from the website and not from the Microsoft Store. 0xDEADBEEF")
-				return
-			end
-		end;
-
 		Speed = function(data)
 			service.StartLoop("AntiSpeed", 1, function()
 				if workspace:GetRealPhysicsFPS() > tonumber(data.Speed) then
