@@ -1525,7 +1525,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		service:SetSpecial("IsA", function(i, check) return check == name end)
 	end
 
-	if RunService:IsClient() then
+	if service.RunService:IsClient() then
 		task.spawn(xpcall, function()
 			local translator = service.LocalizationService:GetTranslatorForPlayerAsync(service.Players.LocalPlayer)
 
