@@ -73,6 +73,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local assetOwnershipCache = {}
 	local assetInfoCache = {}
 	local groupInfoCache = {}
+	local changedLocale = nil -- This has to be nil at start, it will only be set once the user changes it in the game
 	local toBoolean = function(stat: any): boolean
 		return stat and true or false
 	end
@@ -1009,9 +1010,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		GetCurrentLocale = function()
 			if service.RunService:IsClient() then
-				local accountLocale = service.LocalizationService.RobloxLocaleId
-				return if accountLocale ~= "en-us" and accountLocale ~= "en" then accountLocale
-							else service.LocalizationService.SystemLocaleId
+				local accountLocale, systemLocale = service.LocalizationService.RobloxLocaleId, service.LocalizationService.SystemLocaleId
+				return changedLocale or (accountLocale ~= "en-us" and accountLocale ~= "en") and accountLocale or systemLocale ~= "" and systemLocale or "en-us"
 			end
 			return "en-us"
 		end,
@@ -1523,6 +1523,16 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		service:SetSpecial("ClassName", name)
 		service:SetSpecial("ToString", name)
 		service:SetSpecial("IsA", function(i, check) return check == name end)
+	end
+
+	if RunService:IsClient() then
+		task.spawn(xpcall, function()
+			local translator = service.LocalizationService:GetTranslatorForPlayerAsync(service.Players.LocalPlayer)
+
+			translator:GetPropertyChangedSignal("LocaleId"):Connect(function()
+				changedLocale = translator.LocaleId
+			end)
+		end, warn)
 	end
 
 	return service
