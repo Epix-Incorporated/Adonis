@@ -94,26 +94,6 @@ return function(Vargs, GetEnv)
 			Name = Lighting.Name,
 			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
 		},
-		
-		AtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
-
-		OriginalAtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
 
 		PMtickets = {};
 

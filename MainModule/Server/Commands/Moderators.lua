@@ -2401,27 +2401,6 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
-		ResetAtmosphere = {
-			Prefix = Settings.Prefix;
-			Commands = {"resetatmosphere", "fixatmosphere"};
-			Args = {};
-			Description = "Resets atmosphere back to the setting it had on server start";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
-					for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
-						v.Name = Variables.OriginalAtmosphereSettings.Name
-						v.Density = Variables.OriginalAtmosphereSettings.Density
-						v.Offset = Variables.OriginalAtmosphereSettings.Offset
-						v.Color = Variables.OriginalAtmosphereSettings.Color
-						v.Decay = Variables.OriginalAtmosphereSettings.Decay
-						v.Glare = Variables.OriginalAtmosphereSettings.Glare
-						v.Haze = Variables.OriginalAtmosphereSettings.Haze
-					end
-				end
-			end
-		};
 
 		ClearLighting = {
 			Prefix = Settings.Prefix;
@@ -4020,12 +3999,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
+
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
-				
-				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-							Remote.SetAtmosphere(color)
-				end
+
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
 						Remote.SetLighting(v, "FogColor", color)
@@ -4054,6 +4031,8 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+
 
 		StarterGive = {
 			Prefix = Settings.Prefix;
