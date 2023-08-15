@@ -4032,8 +4032,6 @@ return function(Vargs, env)
 			end
 		};
 
-
-
 		StarterGive = {
 			Prefix = Settings.Prefix;
 			Commands = {"startergive"};
