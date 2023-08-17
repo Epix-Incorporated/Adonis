@@ -339,7 +339,7 @@ return function(Vargs, env)
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[1]
 						if data.Options.Chat ~= true then
-							TextToUse = server.Functions.EscapeRichTextTags(args[1] or "Hello world!")
+							TextToUse = service.SanitizeXML(args[1] or "Hello world!")
 						end 
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
