@@ -102,10 +102,10 @@ return function(Vargs, GetEnv)
 				return
 			end
 
-			warn("Saving command logs...")
+			print("Saving command logs...")
 
 			if Settings.SaveCommandLogs ~= true or Settings.DataStoreEnabled ~= true then
-				warn("Skipped saving command logs.")
+				print("Skipped saving command logs.")
 				return
 			end
 
@@ -162,7 +162,7 @@ return function(Vargs, GetEnv)
 				return temp
 			end)
 
-			warn("Command logs saved!")
+			print("Command logs saved!")
 		end;
 
 		ListUpdaters = {
