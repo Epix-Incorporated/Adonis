@@ -271,7 +271,7 @@ end;
 local function CleanUp()
 	--local env = getfenv(2)
 	--local ran,ret = pcall(function() return env.script:GetFullName() end)
-	warn("Beginning Adonis cleanup & shutdown process...")
+	print("Beginning Adonis cleanup & shutdown process...")
 	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
 	--local loader = server.Core.ClientLoader
 	local data = service.UnWrap(server.Data)
@@ -307,7 +307,7 @@ local function CleanUp()
 		pcall(server.Core.DisconnectEvent)
 	end
 
-	warn("Unloading complete")
+	print("Unloading complete")
 end;
 
 server = {
@@ -701,9 +701,9 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			warn(`Loading Complete; Required by {data.Loader:GetFullName()}`)
+			print(`Loading Complete; Required by {data.Loader:GetFullName()}`)
 		else
-			warn("Loading Complete; No loader location provided")
+			print("Loading Complete; No loader location provided")
 		end
 
 		if server.Logs then
