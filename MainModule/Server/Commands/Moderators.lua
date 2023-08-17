@@ -3002,11 +3002,11 @@ return function(Vargs, env)
 			end
 		};
 
-		Clone = {
+		LoadAvatar = {
 			Prefix = Settings.Prefix;
-			Commands = {"clone", "cloneplayer", "duplicate", "loadavatar", "loadchar", "loadcharacter"};
-			Args = {"player", "copies (max: 50 | default: 1)", "appearenceid", "avatar type(R6/R15)"};
-			Description = "Loads the target character in front of you. If you give a  If you want to supply a UserId, supply with 'userid-<PlayerID>'";
+			Commands = {"loadavatar", "loadchar", "loadcharacter", "clone", "cloneplayer", "duplicate"};
+			Args = {"player", "copies (max: 50 | default: 1)", "appearence (optional)", "avatar type(R6/R15) (optional)"};
+			Description = "Loads the target character in front of you. You can give an optional appearence name for the avatar. If you want to supply a UserId, supply with 'userid-<PlayerID>'";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local count = tonumber(args[2] or 1)
@@ -3023,9 +3023,8 @@ return function(Vargs, env)
 					end
 
 					task.spawn(function()
-						local oldArchivable = character.Archivable
+						local oldArchivable, charPivot = character.Archivable, character:GetPivot()
 						character.Archivable = true
-						local charPivot = character:GetPivot() * CFrame.Angles(0, math.rad(90), 0)
 
 						for i = 1, num do
 							local clone = avatarType and service.Players:CreateHumanoidModelFromDescription(description, avatarType, Enum.AssetTypeVerification.Always) or character:Clone()
@@ -3042,7 +3041,7 @@ return function(Vargs, env)
 								animate.Parent = clone
 							end
 
-							clone:PivotTo(charPivot * CFrame.new(5, 0, 0) * CFrame.Angles(0, math.rad((90 + (i - 1) * 5) % 360), 0))
+							clone:PivotTo(charPivot * CFrame.Angles(0, math.rad((360/num)*i), 0) * CFrame.new((num*0.2)+5, 0, 0))
 
 							if animate then
 								animate.Disabled = false
@@ -3056,9 +3055,11 @@ return function(Vargs, env)
 								service.Debris:AddItem(clone, service.Players.RespawnTime)
 							end)
 
-							clone.Archivable, character.Archivable = oldArchivable, oldArchivable
+							clone.Archivable = oldArchivable
 							clone.Parent = workspace
 						end
+
+						character.Archivable = oldArchivable
 					end)
 				end
 			end
