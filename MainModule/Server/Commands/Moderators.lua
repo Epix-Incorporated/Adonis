@@ -3012,12 +3012,12 @@ return function(Vargs, env)
 				local count = tonumber(args[2] or 1)
 				assert(count <= 50, "Cannot make more than 50 clones")
 				local appearenceId = (args[3] and string.lower(args[3]) ~= "me") and (tonumber(string.match(args[3], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[3]), "Unable to fetch user."))
-				local description = appearenceId and assert(select(xpcall(service.Players.GetHumanoidDescriptionFromUserId, warn, service.Players, target), 2), "Unable to get avatar for target appearence.")
-				local avatarType = args[5] and assert(Enum.HumanoidRigType[string.upper(args[5]), "Invalid avatar type given")
+				local description = appearenceId and assert(select(2, xpcall(service.Players.GetHumanoidDescriptionFromUserId, warn, service.Players, appearenceId)), "Unable to get avatar for target appearence.")
+				local avatarType = args[5] and assert(Enum.HumanoidRigType[string.upper(args[5])], "Invalid avatar type given")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local character = v.Character
-					local humanoid = character and char:FindFirstChildOfClass("Humanoid")
+					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 					if not humanoid then
 						continue
 					end
@@ -3026,13 +3026,13 @@ return function(Vargs, env)
 						local oldArchivable, charPivot = character.Archivable, character:GetPivot()
 						character.Archivable = true
 
-						for i = 1, num do
+						for i = 1, count do
 							local clone = avatarType and service.Players:CreateHumanoidModelFromDescription(description, avatarType, Enum.AssetTypeVerification.Always) or character:Clone()
 							table.insert(Variables.Objects, clone)
 
 							local oldAnimate, animate = clone:FindFirstChild("Animate"), nil
 							if oldAnimate and oldAnimate:IsA("LocalScript") then
-								animate = hum.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+								animate = humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 								animate:ClearAllChildren()
 								for _, v in oldAnimate:GetChildren() do
 									v.Parent = animate
@@ -3041,13 +3041,13 @@ return function(Vargs, env)
 								animate.Parent = clone
 							end
 
-							clone:PivotTo(charPivot * CFrame.Angles(0, math.rad((360/num)*i), 0) * CFrame.new((num*0.2)+5, 0, 0))
+							clone:PivotTo(charPivot * CFrame.Angles(0, math.rad((360/count)*i+90), 0) * CFrame.new((count*0.2)+5, 0, 0) * CFrame.Angles(0, math.pi / 2, 0))
 
 							if animate then
 								animate.Disabled = false
 							end
 							if appearenceId and not avatarType then
-								clone.Name = Functions.GetNameFromUserIdAsync(target)
+								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
 								clone:FindFirstChildOfClass("Humanoid"):ApplyDescription(description, Enum.AssetTypeVerification.Always)
 							end
 
