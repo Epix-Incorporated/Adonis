@@ -28,7 +28,11 @@ local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
-warn("Loading...")
+local print = function(...)
+	print(":: Adonis ::", ...)
+end
+
+print("Loading...")
 
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
@@ -153,7 +157,7 @@ else
 	end
 
 	if tonumber(moduleId) then
-		warn(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
+		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
 	local module = require(moduleId)
