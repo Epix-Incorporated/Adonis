@@ -3011,9 +3011,9 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local count = tonumber(args[2] or 1)
 				assert(count <= 50, "Cannot make more than 50 clones")
-				local appearenceId = (args[3] and string.lower(args[3]) ~= "me") and (tonumber(string.match(args[3], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[3]), "Unable to fetch user."))
+				local avatarType = args[4] and assert(Enum.HumanoidRigType[string.upper(args[4])], "Invalid avatar type given")
+				local appearenceId = (args[3] and string.lower(args[3]) ~= "me") and (tonumber(string.match(args[3], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[3]), "Unable to fetch user.")) or avatarType and plr.UserId
 				local description = appearenceId and assert(select(2, xpcall(service.Players.GetHumanoidDescriptionFromUserId, warn, service.Players, appearenceId)), "Unable to get avatar for target appearence.")
-				local avatarType = args[5] and assert(Enum.HumanoidRigType[string.upper(args[5])], "Invalid avatar type given")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local character = v.Character
@@ -3022,11 +3022,11 @@ return function(Vargs, env)
 						continue
 					end
 
-					task.spawn(function()
-						local oldArchivable, charPivot = character.Archivable, character:GetPivot()
-						character.Archivable = true
+					local oldArchivable, charPivot = character.Archivable, character:GetPivot()
+					character.Archivable = true
 
-						for i = 1, count do
+					for i = 1, count do
+						task.spawn(function()
 							local clone = avatarType and service.Players:CreateHumanoidModelFromDescription(description, avatarType, Enum.AssetTypeVerification.Always) or character:Clone()
 							table.insert(Variables.Objects, clone)
 
@@ -3046,10 +3046,6 @@ return function(Vargs, env)
 							if animate then
 								animate.Disabled = false
 							end
-							if appearenceId and not avatarType then
-								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
-								clone:FindFirstChildOfClass("Humanoid"):ApplyDescription(description, Enum.AssetTypeVerification.Always)
-							end
 
 							clone:FindFirstChildOfClass("Humanoid").Died:Once(function()
 								service.Debris:AddItem(clone, service.Players.RespawnTime)
@@ -3057,10 +3053,14 @@ return function(Vargs, env)
 
 							clone.Archivable = oldArchivable
 							clone.Parent = workspace
-						end
+							if appearenceId and not avatarType then
+								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
+								clone:FindFirstChildOfClass("Humanoid"):ApplyDescription(description, Enum.AssetTypeVerification.Always)
+							end
+						end)
+					end
 
-						character.Archivable = oldArchivable
-					end)
+					character.Archivable = oldArchivable
 				end
 			end
 		};
