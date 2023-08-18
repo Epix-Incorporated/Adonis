@@ -371,7 +371,7 @@ return function(Vargs, GetEnv)
 
 		--// Run OnStartup Commands
 		for i,v in Settings.OnStartup do
-			warn(`Running startup command {v}`)
+			print(`Running startup command {v}`)
 			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
 			AddLog("Script", {
 				Text = `Startup: Executed {v}`;
