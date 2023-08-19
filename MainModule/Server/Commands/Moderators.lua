@@ -2409,16 +2409,30 @@ return function(Vargs, env)
 			Description = "Resets atmosphere back to the setting it had on server start";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
-					for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
-						v.Name = Variables.OriginalAtmosphereSettings.Name
-						v.Density = Variables.OriginalAtmosphereSettings.Density
-						v.Offset = Variables.OriginalAtmosphereSettings.Offset
-						v.Color = Variables.OriginalAtmosphereSettings.Color
-						v.Decay = Variables.OriginalAtmosphereSettings.Decay
-						v.Glare = Variables.OriginalAtmosphereSettings.Glare
-						v.Haze = Variables.OriginalAtmosphereSettings.Haze
+				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
+					Variables.OriginalAtmosphereSettings = {
+						Name = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Name,
+						Density = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Density,
+						Offset = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Offset,
+						Color = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Color,
+						Decay = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Decay,
+						Glare = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Glare,
+						Haze = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Haze,
+					}
+					
+					if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
+						for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
+							v.Name = Variables.OriginalAtmosphereSettings.Name
+							v.Density = Variables.OriginalAtmosphereSettings.Density
+							v.Offset = Variables.OriginalAtmosphereSettings.Offset
+							v.Color = Variables.OriginalAtmosphereSettings.Color
+							v.Decay = Variables.OriginalAtmosphereSettings.Decay
+							v.Glare = Variables.OriginalAtmosphereSettings.Glare
+							v.Haze = Variables.OriginalAtmosphereSettings.Haze
+						end
 					end
+				else
+					Functions.Hint("Atmosphere doesn't exist!", {plr})
 				end
 			end
 		};
