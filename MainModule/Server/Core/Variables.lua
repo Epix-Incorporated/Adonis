@@ -46,10 +46,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local Lighting = service.Lighting
-
-	if not service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-		Instance.new("Atmosphere", service.Lighting)
-	end
 	
 	server.Variables = {
 		Init = Init,
