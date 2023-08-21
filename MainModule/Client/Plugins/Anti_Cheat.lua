@@ -292,7 +292,7 @@ return function(Vargs)
 			service.StartLoop("AntiCoreGui", 15, function()
 				xpcall(function()
 					local function getCoreUrls()
-						local coreUrls = {}
+						local coreUrls = {"rbxassetid://0","rbxassetid://10066921516"}	-- Whitelist for Roblox Camera SFX
 						local backpack = Player:FindFirstChildOfClass("Backpack")
 						local character = Player.Character
 						local starterPack = service.StarterPack
