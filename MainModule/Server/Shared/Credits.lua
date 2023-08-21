@@ -76,6 +76,7 @@ return {
 		{Text = "@watameln",			Desc = "Open Source Contributor"};
 		{Text = "@bigbenster702",	Desc = "Open Source Contributor"};
 		{Text = "@WalkerOfBacon", 	Desc = "Open Source Contributor"};
+		{Text = "@wilsontulus", 	Desc = "Open Source Contributor"};
 	};
 
 	Misc = {
