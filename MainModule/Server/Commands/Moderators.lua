@@ -247,7 +247,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				assert(args[2], "Missing message")
 
-				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
 			end
 		};
 
@@ -261,7 +261,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -1930,7 +1930,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", "Teleporting to server \""..args[2].."\"\nPlease wait...", players, false, 10)
+				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
 			end
 		};
 
@@ -4668,7 +4668,7 @@ return function(Vargs, env)
 						end
 					end
 
-					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
+					if not point then Functions.Hint(`Waypoint {m} was not found.`, {plr}) end
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
 					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
@@ -6291,10 +6291,10 @@ return function(Vargs, env)
 						if success then
 							for _, v in service.GetPlayers(plr, args[1]) do
 								task.defer(function()
-									local char = Deps.Assets["Rig"..AvatarType]:Clone()
+									local char = Deps.Assets[`Rig{AvatarType}`]:Clone()
 									char.Name = Functions.GetNameFromUserIdAsync(target)
 									char.Parent = workspace
-									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[AvatarType.."Animate"]:Clone() Anima.Parent = char Anima.Disabled = false end
+									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[`AvatarType{Animate}`]:Clone() Anima.Parent = char Anima.Disabled = false end
 									char.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 									char.HumanoidRootPart.CFrame = (v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(5, 0, 0)) * CFrame.Angles(0, math.rad(90), 0)
 
