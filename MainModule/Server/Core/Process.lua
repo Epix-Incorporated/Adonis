@@ -1062,7 +1062,7 @@ return function(Vargs, GetEnv)
 				--end
 
 				if level < 1 then
-					if Settings.AntiNoclip then
+					if Settings.AntiNoclip and Settings.AllowClientAntiExploit then
 						Remote.Send(p, "LaunchAnti", "HumanoidState")
 					end
 				end
