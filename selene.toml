@@ -1,4 +1,6 @@
 std = "roblox"
+# Packages external to Adonis, such as Roact.
+exclude = ["MainModule/Client/UI/Modern/Components/Packages/**"]
 
 exclude = ["*.spec.lua"]
 

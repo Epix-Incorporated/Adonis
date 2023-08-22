@@ -2011,7 +2011,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-			assert(settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
+			assert(Settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
 				for i, v in service.GetPlayers(plr, args[1]) do	
 					cPcall(function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end

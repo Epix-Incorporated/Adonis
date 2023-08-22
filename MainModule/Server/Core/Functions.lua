@@ -1329,6 +1329,7 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
+		--TODO: This "very good addition to commands" doesn't even work from when I do try using the \"long text\" syntax with teams or messages, and this logic is terribly flawed (and failed linting with a warning), replace with a proper lua pattern.
 		ExtractArgs = function(text, numArgs)
 			local arguments = {}
 
@@ -1349,7 +1350,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			if (lastArgs and next(lastArgs)) then
+			if lastArgs and next(lastArgs) then
 				arguments[#arguments + 1] = table.concat(lastArgs, " ")
 			end
 
