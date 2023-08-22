@@ -359,10 +359,10 @@ settings.Allowed_API_Calls = {
 ---------------------------
 
 --// IF YOU EXPERIENCE ISSUES WITH FALSE POSITIVES/RANDOM KICKING/CRASHING DISABLE ALL OF THESE!
-settings.AllowClientAntiExploit = false 	-- (Default: false) Enables anti exploit functionality if true
 
-settings.Detection = false			-- (Default: false) 	If true: enables built-in anti-exploit detections that do not have their own settings.
-settings.CheckClients = true		-- (Default: true) 	Checks clients every minute or two to make sure they are still active.
+settings.AllowClientAntiExploit = false 	-- (Default: false) Allows use of client-sided anti exploit functionality if true
+settings.Detection = false					-- (Default: false) If true: enables built-in anti-exploit detections that do not have their own settings.
+settings.CheckClients = true				-- (Default: true) 	Checks clients every minute or two to make sure they are still active.
 
 settings.ExploitNotifications = true        -- (Default: true)	Notify all moderators and higher-ups when a player is kicked or crashed from the AntiExploit.
 settings.CharacterCheckLogs = false			-- (Default: false)	If the character checks appear in exploit logs and exploit notifications.
@@ -485,7 +485,7 @@ descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
 descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
-descs.AllowClientAntiExploit = [[ Enables anti-exploit functionality if enabled ]]
+descs.AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionality ]]
 descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
 descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
 
