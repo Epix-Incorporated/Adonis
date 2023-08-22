@@ -880,7 +880,7 @@ return function(Vargs, GetEnv)
 
 			--// Load admin or non-admin specific things
 			if level < 1 then
-				if Settings.AntiSpeed then
+				if Settings.AntiSpeed and Settings.AllowAntiExploit then
 					Remote.Send(p, "LaunchAnti", "Speed", {
 						Speed = tostring(60.5 + math.random(9e8)/9e8)
 					})
@@ -893,12 +893,12 @@ return function(Vargs, GetEnv)
 						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})
 
-					if Settings.ExploitGuiDetection then
+					if Settings.ExploitGuiDetection and Settings.AllowAntiExploit then
 						Remote.Send(p, "LaunchAnti", "AntiCoreGui")
 					end
 				end
 
-				if Settings.AntiBuildingTools then
+				if Settings.AntiBuildingTools and Settings.AllowAntiExploit then
 					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
 				end
 			end
