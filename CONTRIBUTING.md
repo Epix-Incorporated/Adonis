@@ -51,6 +51,15 @@ Also, try to double-check any text for spelling issues. Some of us frequently ma
 
 Finally, ***be sure to make file changes based on the latest version of the ``master`` branch, not ``release``!*** Outdated and conflicting code is often a pain to deal with.
 
+## Q: How can I sync the Rojo project with Roblox Studio?
+
+**A:** Please check for [Rojo Documentation for full details](https://rojo.space/docs/v7/getting-started/installation/), but in short, you'll need to install the Rojo CLI if you don't already have it. If you don't have the Aftman toolchain manager, [install it](https://github.com/LPGhatguy/aftman#installation). Then, inside the Adonis folder, run `aftman install`. Finally, run `rojo plugin install` to add the plugin to your studio.
+
+**Please note, that if you have installed a plugin from the Roblox Plugin Marketplace created by LPGhatguy, it will not work correctly and has been deprecated, please use this method instead.**
+***You may also have a Roblox Plugin Marketplace plugin created by Boatbomber, while this currently works as it's the current one, we highly recommend you use the above method instead, as the current plugin often changes.***
+
+After installing Rojo, you can serve it by running `rojo serve` or by using the optional VSCode plugin. Then, connect thru the Rojo Plugin in Studio and accept the changes.
+
 ## Q: What can I contribute to the Wiki?
 
 **A:** Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when developing plugins for Adonis. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.)
