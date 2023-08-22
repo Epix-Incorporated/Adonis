@@ -3,6 +3,7 @@ client = nil
 Pcall = nil
 cPcall = nil
 Routine = nil
+logError = nil
 
 local main
 local ErrorHandler
@@ -100,7 +101,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
 	local Events, Threads, Wrapper, Helpers = {
-		TrackTask = function(name, func, ...)
+		TrackTask = function(name, func, errHandler, ...)
+			local overrflowArgs = {...}
+			if type(errHandler) ~= "function" or #overrflowArgs == 0 and errHandler == nil then
+				errHandler = function(err)
+					logError(err.."\n"..debug.traceback())
+				end
+			end
 			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
@@ -116,7 +123,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local function taskFunc(...)
 				TrackedTasks[index] = data
 				data.Status = "Running"
-				data.Returns = {pcall(func, ...)}
+				data.Returns = {xpcall(func, errHandler, ...)}
 
 				if not data.Returns[1] then
 					data.Status = "Errored"
@@ -139,7 +146,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		EventTask = function(name, func)
 			local newTask = service.TrackTask
 			return function(...)
-				return newTask(name, func, ...)
+				return newTask(name, func, false, ...)
 			end
 		end;
 
@@ -834,7 +841,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			table.insert(queue.Functions, tab);
 
 			if not queue.Processing then
-				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, queue, key);
+				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, false, queue, key);
 			end
 
 			if doYield and not tab.Finished then
@@ -875,12 +882,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 
 						service.TrackTask(`Thread: {key or "Unknown"}_QueuedFunction`, function()
-							local r,e = pcall(func.Function);
-
-							if not r then
+							local r,e = xpcall(func.Function,function(e)
 								func.Error = e;
-								warn(`Queue Error: {key}: {e}`)
-							end
+								warn(`Queue Error: {key}: {e} \n {debug.traceback()}`)
+							end);
 
 							func.Running = false;
 							func.Finished = true
@@ -890,7 +895,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 							end
 
 							Yield:Release();
-						end)
+						end,false)
 
 						if func.Running then
 							Yield:Wait();
@@ -1290,9 +1295,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 
 			if noYield then
-				service.TrackTask(`Thread: Loop: {name}`, loop)
+				service.TrackTask(`Thread: Loop: {name}`, false, loop)
 			else
-				service.TrackTask(`Loop: {name}`, loop)
+				service.TrackTask(`Loop: {name}`, false, loop)
 			end
 
 			--[[local task = service.Threads.RunTask(`LOOP:{name}`, loop)

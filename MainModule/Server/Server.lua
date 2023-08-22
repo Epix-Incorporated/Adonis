@@ -203,31 +203,34 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if type(plug) == "function" then
 		if isCore then
-			local ran,err = service.TrackTask(`CoreModule: {module}`, plug, GetVargTable(), GetEnv)
-			if not ran then
-				warn("Core Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
-		elseif yield then
+			local ran, err = service.TrackTask(
+				`CoreModule: {module}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				function(err)
+					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+				end,
+				GetVargTable(),
+				GetEnv
+			)
+			return err
+
+		 --[[elseif yield then (all pcalls yield by default for a quite a while time now)
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
-			if not ran then
-				warn("Plugin Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
+			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),function(err)
+				warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+			end, GetVargTable())
+			return err;]]
 		else
 			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask(`Thread: Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
-			if not ran then
-				warn("Plugin Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
+			local ran, err = service.TrackTask(
+				`Plugin: {module}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				function(err)
+					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+				end,
+				GetVargTable()
+			)
+			return err
 		end
 	else
 		server[module.Name] = plug
@@ -239,7 +242,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			Desc = "Adonis loaded a core module or plugin";
 		})
 	end
-end;
+end
 
 --// WIP
 local function LoadPackage(package, folder, runNow)

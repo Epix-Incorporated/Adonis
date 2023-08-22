@@ -721,7 +721,7 @@ return function(Vargs, GetEnv)
 				local id = tonumber(key);
 				local player = id and service.Players:GetPlayerByUserId(id);
 				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
-					TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, player);
+					TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, false, player);
 				end
 			end
 			--[[ --// OLD METHOD (Kept in case this messes anything up)

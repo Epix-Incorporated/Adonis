@@ -286,27 +286,23 @@ local LoadModule = function(module, yield, envVars, noEnv)
 				local ran, err = service.TrackTask(
 					`Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					function(err)
+						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					end,
 					GetVargTable(),
 					GetEnv
 				)
-
-				if not ran then
-					warn(`Module encountered an error while loading: {module}`)
-					warn(tostring(err))
-				end
 			else
 				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
 				local ran, err = service.TrackTask(
 					`Thread: Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					function(err)
+						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					end,
 					GetVargTable(),
 					GetEnv
 				)
-
-				if not ran then
-					warn(`Module encountered an error while loading: {module}`)
-					warn(tostring(err))
-				end
 			end
 		else
 			client[module.Name] = plug

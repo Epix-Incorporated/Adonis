@@ -343,7 +343,7 @@ return function(Vargs, GetEnv)
 								})
 
 								if command then
-									local rets = {TrackTask(`Remote: {p.Name}: {comString}`, command, p, args)}
+									local rets = {TrackTask(`Remote: {p.Name}: {comString}`, command, false, p, args)}
 									if not rets[1] then
 										logError(p, `{comString}: {rets[2]}`)
 									else
@@ -486,28 +486,29 @@ return function(Vargs, GetEnv)
 				end
 
 				Admin.UpdateCooldown(pDat, command)
-				local ran, cmdError = TrackTask(taskName, command.Function, p, args, {
+				local ran, cmdError = TrackTask(taskName, command.Function, function(cmdError)
+					if not opts.IgnoreErrors then
+						if type(cmdError) == "string" then
+							AddLog("Errors", `[{matched}] {cmdError}`)
+	
+							cmdError = cmdError:match("%d: (.+)$") or cmdError
+	
+							if not isSystem then
+								Remote.MakeGui(p, "Output", {
+									Message = cmdError,
+								})
+								warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+							end
+						elseif cmdError ~= nil and cmdError ~= true and not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = `There was an error but the error was not a string? : {cmdError}`;
+							})
+						end
+					end
+				end, p, args, {
 					PlayerData = pDat,
 					Options = opts
 				})
-
-				if not opts.IgnoreErrors then
-					if type(cmdError) == "string" then
-						AddLog("Errors", `[{matched}] {cmdError}`)
-
-						cmdError = cmdError:match("%d: (.+)$") or cmdError
-
-						if not isSystem then
-							Remote.MakeGui(p, "Output", {
-								Message = cmdError,
-							})
-						end
-					elseif cmdError ~= nil and cmdError ~= true and not isSystem then
-						Remote.MakeGui(p, "Output", {
-							Message = `There was an error but the error was not a string? : {cmdError}`;
-						})
-					end
-				end
 
 				service.Events.CommandRan:Fire(p, {
 					Message = msg,
@@ -768,7 +769,7 @@ return function(Vargs, GetEnv)
 
 				--// Get chats
 				p.Chatted:Connect(function(msg)
-					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, p, msg)
+					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, false, p, msg)
 					if not ran then
 						logError(err);
 					end
@@ -776,7 +777,7 @@ return function(Vargs, GetEnv)
 
 				--// Character added
 				p.CharacterAdded:Connect(function(...)
-					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, p, ...)
+					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, false, p, ...)
 					if not ran then
 						logError(err);
 					end
@@ -855,7 +856,7 @@ return function(Vargs, GetEnv)
 
 			--// Run OnJoin commands
 			for i,v in Settings.OnJoin do
-				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
+				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
 				AddLog("Script", {
 					Text = `OnJoin: Executed {v}`;
 					Desc = `Executed OnJoin command; {v}`
@@ -908,7 +909,7 @@ return function(Vargs, GetEnv)
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == workspace then
 					--service.Threads.TimeoutRunTask(`{p.Name};CharacterAdded`,Process.CharacterAdded,60,p)
-					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, p, p.Character, {FinishedLoading = true})
+					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, false, p, p.Character, {FinishedLoading = true})
 					if not ran then
 						logError(err)
 					end
@@ -1081,7 +1082,7 @@ return function(Vargs, GetEnv)
 
 				--// Run OnSpawn commands
 				for _, v in Settings.OnSpawn do
-					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
+					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
 					AddLog("Script", {
 						Text = `OnSpawn: Executed {v}`;
 						Desc = `Executed OnSpawn command; {v}`;
