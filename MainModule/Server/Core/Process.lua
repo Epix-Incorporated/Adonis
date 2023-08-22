@@ -886,7 +886,7 @@ return function(Vargs, GetEnv)
 					})
 				end
 
-				if Settings.Detection then
+				if Settings.Detection and Settings.AllowAntiExploit then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
 					
 					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
