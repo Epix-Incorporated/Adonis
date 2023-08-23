@@ -48,6 +48,8 @@ return function(Vargs, GetEnv)
 	local Player = service.Players.LocalPlayer
 	local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 	local Kick = Player.Kick
+	local isMobile = service.UserInputService.TouchEnabled and not service.UserInputService.KeyboardEnabled and not service.UserInputService.MouseEnabled
+	local hyperionEnabled = not service.GuiService:IsTenFootInterface() and not isMobile and (#tostring(tonumber(string.sub(tostring{}, 8))) > 10)
 
 	local function Init()
 		UI = client.UI;
@@ -78,18 +80,20 @@ return function(Vargs, GetEnv)
 
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
-			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, info)
+			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", hyperionEnabled and "log" or action, tostring(info)..(hyperionEnabled and " (Hyperion is enabled, not giving punishment)"))
 			task.wait(0.5)
-			if action == "k".."i".."c".."k" then
-				if not isStudio then
-					if nocrash then
-						Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
-					else
-						Disconnect(info)
+			if not hyperionEnabled then
+				if action == "k".."i".."c".."k" then
+					if not isStudio then
+						if nocrash then
+							Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
+						else
+							Disconnect(info)
+						end
 					end
+				elseif action == "c".."r".."a".."s".."h" then
+					Kill(info)
 				end
-			elseif action == "c".."r".."a".."s".."h" then
-				Kill(info)
 			end
 		end
 		return true
