@@ -3053,7 +3053,7 @@ return function(Vargs, env)
 
 							clone.Archivable = oldArchivable
 							clone.Parent = workspace
-							if appearenceId and not avatarType then
+							if appearenceId and not avatarType and appearenceId ~= plr.UserId then
 								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
 								clone:FindFirstChildOfClass("Humanoid"):ApplyDescription(description, Enum.AssetTypeVerification.Always)
 							end
