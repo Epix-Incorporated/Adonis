@@ -1269,11 +1269,11 @@ return function(Vargs, GetEnv)
 						local command1, command2 = nil, nil
 
 						for _, v in data.Commands do
-							if not blacklistedCommands[data.Prefix..v] then
+							if not blacklistedCommands["/"..data.Prefix..v] then
 								if not command1 then
-									command1 = data.Prefix..v
+									command1 = "/"..data.Prefix..v
 								else
-									command2 = data.Prefix..v
+									command2 = "/"..data.Prefix..v
 								end
 							end
 						end
@@ -1285,14 +1285,13 @@ return function(Vargs, GetEnv)
 							command.PrimaryAlias = command1
 							command.SecondaryAlias = command2 or ""
 							command.Parent = container
-							-- Currently player.Chatted is used so hooking this is not needed. This may change in the future so don't remove the commented code
-							--[[command.Triggered:Connect(function(textSource, text)
+							command.Triggered:Connect(function(textSource, text)
 								local player = service.Players:GetPlayerByUserId(textSource.UserId)
 
 								if player then
 									Process.Command(player, text)
 								end
-							end)]]
+							end)
 						end
 					end
 				end
