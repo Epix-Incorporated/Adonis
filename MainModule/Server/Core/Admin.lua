@@ -1289,7 +1289,7 @@ return function(Vargs, GetEnv)
 								local player = service.Players:GetPlayerByUserId(textSource.UserId)
 
 								if player then
-									Process.Command(player, sring.sub(text, 2))
+									Process.Command(player, string.sub(text, 2))
 								end
 							end)
 						end
