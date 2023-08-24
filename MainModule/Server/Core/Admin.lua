@@ -1244,6 +1244,58 @@ return function(Vargs, GetEnv)
 
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
+
+			-- // Support for commands to be ran via TextChat
+			if service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+				local container = service.TextChatService:FindFirstChild("TextChatCommands")
+
+				if container then
+					for _, v in container:GetChildren() do
+						if string.sub(v.Name, 1, 7) == "Adonis_" then
+							v:Destroy()
+						end
+					end
+
+					local blacklistedCommands = {}
+
+					for _, v in container:GetDescendants() do
+						if v:IsA("TextChatCommand") then
+							blacklistedCommands[v.PrimaryAlias] = true
+							blacklistedCommands[v.SecondaryAlias] = true
+						end
+					end
+
+					for name, data in Commands do
+						local command1, command2 = nil, nil
+
+						for _, v in data.Commands do
+							if not blacklistedCommands[data.Prefix..v] then
+								if not command1 then
+									command1 = data.Prefix..v
+								else
+									command2 = data.Prefix..v
+								end
+							end
+						end
+
+						if command1 then
+							local command = Instance.new("TextChatCommand")
+
+							command.Name = name
+							command.PrimaryAlias = command1
+							command.SecondaryAlias = command2 or ""
+							command.Parent = container
+							command.Triggered:Connect(function(textSource, text)
+								local player = service.Players:GetPlayerByUserId(textSource.UserId)
+
+								if player then
+									process.Command(player, text)
+								end
+							end)
+						end
+					end
+				end
+			end
 		end;
 
 		GetCommand = function(Command)
