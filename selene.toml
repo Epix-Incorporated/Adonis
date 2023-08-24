@@ -3,6 +3,8 @@ std = "roblox"
 [rules]
 if_same_then_else = "allow"
 
+exclude = ["*.spec.lua"]
+
 # Because Adonis is a large and old codebase, there are too many warnings for anyone to 
 # realistically clear out, so lints that are not code-breaking and trigger often are set to be
 # allowed so that code-breaking errors can be shown properly in the CI.
