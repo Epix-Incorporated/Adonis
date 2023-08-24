@@ -1246,8 +1246,8 @@ return function(Vargs, GetEnv)
 			Admin.CommandCache = tempTable
 
 			-- // Support for commands to be ran via TextChat
-			if service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-				local container = service.TextChatService:FindFirstChild("TextChatCommands")
+			task.spawn(function()
+				local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands")
 
 				if container then
 					for _, v in container:GetChildren() do
@@ -1285,17 +1285,18 @@ return function(Vargs, GetEnv)
 							command.PrimaryAlias = command1
 							command.SecondaryAlias = command2 or ""
 							command.Parent = container
-							command.Triggered:Connect(function(textSource, text)
+							-- Currently player.Chatted is used so hooking this is not needed. This may change in the future so don't remove the commented code
+							--[[command.Triggered:Connect(function(textSource, text)
 								local player = service.Players:GetPlayerByUserId(textSource.UserId)
 
 								if player then
-									process.Command(player, text)
+									Process.Command(player, text)
 								end
-							end)
+							end)]]
 						end
 					end
 				end
-			end
+			end)
 		end;
 
 		GetCommand = function(Command)
