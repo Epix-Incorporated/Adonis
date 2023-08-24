@@ -1281,7 +1281,7 @@ return function(Vargs, GetEnv)
 						if command1 then
 							local command = Instance.new("TextChatCommand")
 
-							command.Name = name
+							command.Name = "Adonis_"..name
 							command.PrimaryAlias = command1
 							command.SecondaryAlias = command2 or ""
 							command.Parent = container
