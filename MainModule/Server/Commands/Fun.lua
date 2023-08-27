@@ -925,7 +925,7 @@ return function(Vargs, env)
 							v.Character.Pants:Destroy()
 						end
 						for _, m in v.Character:GetChildren() do
-							if m:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
+							if m:IsA("BasePart") and m.Name ~= "HumanoidRootPart" then
 								m.Transparency = 0
 								m.Reflectance = 1
 								m.BrickColor = BrickColor.new("Institutional white")
