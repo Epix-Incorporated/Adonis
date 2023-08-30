@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v240 2023-07-04 09:50 UTC] @LiveFireExercise&@ccuser44";
+	"Add TextChatService support";
 	"Minor settings desc change";
 	"Added section headers";
 	"Disabled anti-speed by default";
@@ -11,6 +12,8 @@ return {
 	"Temp disable log history check";
 	"Update Server-Dex";
 	"Update UI rbxmx files for FontFace";
+	"Fix DefaultSettings";
+	"Update :sm to use Functions.Message";
 	"";
 	"(Git/ccuser44) Fix mystery error with hint (#1068)";
 	"(Git/ccuser44) Remove unecessary commented out code (#1067)";
@@ -66,6 +69,17 @@ return {
 	"(Git/LiveFireExercise) Add age restriction settings (#1149)";
 	"(Git/LiveFireExercise) Remove GitHub link (#1150)";
 	"(Git/LiveFireExercise) v240 changelog (3) (#1156)";
+	"(Git/ccuser44) Made Yuenliang compiler work with Luau code (#793)";
+	"(Git/ccuser44) Fix selene linting about TestEz files (#1207)";
+	"(Git/wilsontulus) Whitelist RBLX Camera SFX - Update Anti_Cheat.lua (#1203)";
+	"(Git/ccuser44) Fix system messages appearing in general instead of in system messages (#1209)";
+	"(Git/ccuser44) Fix broken shiney command (#1210)";
+	"(Git/Redfuire) Use string interpolation in favor of concatenation";
+	"(Git/karl-police) Re-save UI files to convert old properties to new ones";
+	"(Git/ccuser44) Convert improper usage of warn to print (#1200)";
+	"(Git/ccuser44) Remove useless duplicate functions (#1199)";
+	"(Git/ccuser44) Add support for in game locale changing (#1195)";
+	"(Git/Expertcoderz) Remove Anti32bit (#1193)";
 	"";
 	"[Patch v239b 2023-04-09 14:50 UTC] @LiveFireExercise";
 	"(Git/ccuser44) Fixes potential issue with :commands erroring (#1069)";
