@@ -17,7 +17,7 @@
 
 Adonis is a community-maintained server moderation and management system created for use on the Roblox platform.
 
-## ✨ Installation {#installation}
+## ✨ Installation
 
 📢 **New to Adonis? Take a look at our [official quick start video](https://youtu.be/1f9x9gdxLjw) or read [the unofficial setup guide](https://devforum.roblox.com/t/1535122).**
 
