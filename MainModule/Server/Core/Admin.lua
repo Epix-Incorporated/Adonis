@@ -1268,6 +1268,10 @@ return function(Vargs, GetEnv)
 					for name, data in Commands do
 						local command1, command2 = nil, nil
 
+						if data.Hidden then
+							continue
+						end
+
 						for _, v in data.Commands do
 							if not blacklistedCommands["/"..data.Prefix..v] then
 								if not command1 then
