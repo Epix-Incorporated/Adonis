@@ -3011,13 +3011,15 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local count = tonumber(args[2] or 1)
 				assert(count <= 50, "Cannot make more than 50 clones")
+				local isSelf = args[3] and string.lower(args[3]) == "me"
 				local avatarType = args[4] and assert(Enum.HumanoidRigType[string.upper(args[4])], "Invalid avatar type given")
-				local appearenceId = (args[3] and string.lower(args[3]) ~= "me") and (tonumber(string.match(args[3], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[3]), "Unable to fetch user.")) or avatarType and plr.UserId
+				local appearenceId = not isSelf and args[3] and (tonumber(string.match(args[3], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[3]), "Unable to fetch user."))
 				local description = appearenceId and assert(select(2, xpcall(service.Players.GetHumanoidDescriptionFromUserId, warn, service.Players, appearenceId)), "Unable to get avatar for target appearence.")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local character = v.Character
 					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+					local localDescription = humanoid and humanoid:GetAppliedDescription()
 					if not humanoid then
 						continue
 					end
@@ -3027,7 +3029,7 @@ return function(Vargs, env)
 
 					for i = 1, count do
 						task.spawn(function()
-							local clone = avatarType and service.Players:CreateHumanoidModelFromDescription(description, avatarType, Enum.AssetTypeVerification.Always) or character:Clone()
+							local clone = avatarType and service.Players:CreateHumanoidModelFromDescription(description or localDescription, avatarType, Enum.AssetTypeVerification.Always) or character:Clone()
 							table.insert(Variables.Objects, clone)
 
 							local oldAnimate, animate = clone:FindFirstChild("Animate"), nil
@@ -3053,7 +3055,7 @@ return function(Vargs, env)
 
 							clone.Archivable = oldArchivable
 							clone.Parent = workspace
-							if appearenceId and not avatarType and appearenceId ~= plr.UserId then
+							if appearenceId and not avatarType then
 								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
 								clone:FindFirstChildOfClass("Humanoid"):ApplyDescription(description, Enum.AssetTypeVerification.Always)
 							end
