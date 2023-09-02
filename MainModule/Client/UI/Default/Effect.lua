@@ -8,7 +8,11 @@ gTable = nil
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed using client.Functions.GetRandom()
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = service.New("ScreenGui")
 	local mode = data.Mode
 	local gTable = client.UI.Register(gui, {Name = "Effect"})
@@ -20,45 +24,52 @@ return function(data)
 	if mode == "Off" or not mode then
 		gTable:Destroy()
 	elseif mode == "Pixelize" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
+		frame.Parent = gui
 		local camera = workspace.CurrentCamera
 		local pixels = {}
 
 		local resY = data.Resolution or 20
 		local resX = data.Resolution or 20
 		local depth = 0
-		local distance = data.Distance or 80
+		local distance = data.Distance or 128
 
 		local function renderScreen()
-			for i,pixel in pairs(pixels) do
-				local ray = camera:ScreenPointToRay(pixel.X,pixel.Y,depth)
-				local part, endPoint = workspace:FindPartOnRay(Ray.new(ray.Origin,ray.Direction*distance))
-				if part and part.Transparency < 1 then
-					pixel.Pixel.BackgroundColor3 = part.BrickColor.Color
+			for _, pixel in pixels do
+				local ray = camera:ScreenPointToRay(pixel.X, pixel.Y, depth)
+				local result = workspace:Raycast(ray.Origin, ray.Direction * distance)
+				
+				if result then
+					local part, endPoint = result.Instance, result.Position
+					pixel.Pixel.BackgroundColor3 = if part and part.Transparency < 1
+						then part.BrickColor.Color
+						else Color3.fromRGB(105, 170, 255)
+					
 				else
 					pixel.Pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
 				end
 			end
 		end
 
-		frame.Size = UDim2.new(1,0,1,40)
-		frame.Position = UDim2.new(0,0,0,-35)
-		for y = 0,gui.AbsoluteSize.Y+50,resY do
-			for x = 0,gui.AbsoluteSize.X+30,resX do
-				local pixel = Instance.new("TextLabel")
-				pixel.Text = ""
-				pixel.BorderSizePixel = 0
-				pixel.Size = UDim2.new(0,resX,0,resY)
-				pixel.Position = UDim2.new(0,x-(resX/2),0,y-(resY/2))
-				pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
-				pixel.Parent = frame
-				table.insert(pixels,{Pixel = pixel,X = x, Y = y})
+		frame.Size = UDim2.new(1, 0, 1, 40)
+		frame.Position = UDim2.new(0, 0, 0, -35)
+		for y = 0, gui.AbsoluteSize.Y+50, resY do
+			for x = 0, gui.AbsoluteSize.X+30, resX do
+				local pixel = service.New("TextLabel", {
+					Parent = frame;
+					Text = "";
+					BorderSizePixel = 0;
+					Size = UDim2.fromOffset(resX, resY);
+					Position = UDim2.fromOffset(x-(resX/2), y-(resY/2));
+					BackgroundColor3 = Color3.fromRGB(105, 170, 255);
+				})
+				table.insert(pixels, {Pixel = pixel, X = x, Y = y})
 			end
 		end
 
-		while wait() and not gTable.Destroyed and gui.Parent do
+		while task.wait() and not gTable.Destroyed and gui.Parent do
 			if not gTable.Destroyed and not gTable.Active then
-				wait(5)
+				task.wait(5)
 			else
 				renderScreen()
 			end
@@ -69,8 +80,8 @@ return function(data)
 		service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 		service.UserInputService.MouseIconEnabled = false
 
-		for i,v in pairs(service.PlayerGui:GetChildren()) do
-			pcall(function() if v~=gui then v:Destroy() end end)
+		for _, v in service.PlayerGui:GetChildren() do
+			pcall(function() if v ~= gui then v:Destroy() end end)
 		end
 
 		local blur = service.New("BlurEffect", {
@@ -87,39 +98,42 @@ return function(data)
 			Position = UDim2.new(-0.5,0,-0.5,0);
 		})
 
-		for i = 1,0,-0.01 do
+		for i = 1, 0, -0.01 do
 			bg.BackgroundTransparency = i
 			blur.Size = 56 * (1 - i);
-			wait(0.1)
+			task.wait(0.1)
 		end
 
 		bg.BackgroundTransparency = 0
 	elseif mode == "Trippy" then
 		local v = service.Player
-		local bg = Instance.new("Frame", gui)
+		local bg = Instance.new("Frame")
 
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(10,0,10,0)
 		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 
 		while gui and gui.Parent do
-			wait(1/44)
-			bg.BackgroundColor3 = Color3.new(math.random(255)/255,math.random(255)/255,math.random(255)/255)
+			task.wait(1/44)
+			bg.BackgroundColor3 = Color3.new(math.random(255)/255, math.random(255)/255, math.random(255)/255)
 		end
 
 		if gui then gui:Destroy() end
 	elseif mode == "Spooky" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
 		frame.BackgroundColor3=Color3.new(0,0,0)
 		frame.Size=UDim2.new(1,0,1,50)
 		frame.Position=UDim2.new(0,0,0,-50)
-		local img = Instance.new("ImageLabel",frame)
+		frame.Parent = gui
+		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.new(0,0,0,0)
 		img.Size = UDim2.new(1,0,1,0)
 		img.BorderSizePixel = 0
 		img.BackgroundColor3 = Color3.new(0,0,0)
+		img.Parent = frame
 		local textures = {
 			299735022;
 			299735054;
@@ -140,28 +154,31 @@ return function(data)
 			299735379;
 		}
 
-		local sound = Instance.new("Sound",gui)
+		local sound = Instance.new("Sound")
 		sound.SoundId = "rbxassetid://174270407"
 		sound.Looped = true
+		sound.Parent = gui
 		sound:Play()
 
 		while gui and gui.Parent do
 			for i=1,#textures do
-				img.Image = "rbxassetid://"..textures[i]
-				wait(0.1)
+				img.Image = `rbxassetid://{textures[i]}`
+				task.wait(0.1)
 			end
 		end
 		sound:Stop()
 	elseif mode == "lifeoftheparty" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
 		frame.BackgroundColor3 = Color3.new(0,0,0)
 		frame.Size = UDim2.new(1,0,1,50)
 		frame.Position = UDim2.new(0,0,0,-50)
-		local img = Instance.new("ImageLabel",frame)
+		frame.Parent = gui
+		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.new(0,0,0,0)
 		img.Size = UDim2.new(1,0,1,0)
 		img.BorderSizePixel = 0
 		img.BackgroundColor3 = Color3.new(0,0,0)
+		img.Parent = frame
 		local textures = {
 			299733203;
 			299733248;
@@ -191,29 +208,32 @@ return function(data)
 			299733694;
 
 		}
-		local sound = Instance.new("Sound",gui)
+		local sound = Instance.new("Sound")
 		sound.SoundId = "rbxassetid://172906410"
 		sound.Looped = true
+		sound.Parent = gui
 		sound:Play()
 
 		while gui and gui.Parent do
 			for i=1,#textures do
-				img.Image = "rbxassetid://"..textures[i]
-				wait(0.1)
+				img.Image = `rbxassetid://{textures[i]}`
+				task.wait(0.1)
 			end
 		end
 
 		sound:Stop()
 	elseif mode == "trolling" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
 		frame.BackgroundColor3 = Color3.new(0,0,0)
 		frame.Size = UDim2.new(1,0,1,50)
 		frame.Position = UDim2.new(0,0,0,-50)
-		local img = Instance.new("ImageLabel",frame)
+		frame.Parent = gui
+		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.new(0,0,0,0)
 		img.Size = UDim2.new(1,0,1,0)
 		img.BorderSizePixel = 0
 		img.BackgroundColor3 = Color3.new(0,0,0)
+		img.Parent = frame
 		local textures = {
 			"6172043688";
 			"6172044478";
@@ -243,57 +263,62 @@ return function(data)
 			"6172043688";
 
 		}
-		local sound = Instance.new("Sound",gui)
+		local sound = Instance.new("Sound")
 		sound.SoundId = "rbxassetid://229681899"
 		sound.Looped = true
+		sound.Parent = gui
 		sound:Play()
 
 		while gui and gui.Parent do
 			for i=1,#textures do
-				img.Image = "rbxassetid://"..textures[i]
-				wait(0.13)
+				img.Image = `rbxassetid://{textures[i]}`
+				task.wait(0.13)
 			end
 		end
 
 		sound:Stop()
 	elseif mode == "Strobe" then
-		local bg = Instance.new("Frame", gui)
+		local bg = Instance.new("Frame")
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(10,0,10,0)
 		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 
 		while gui and gui.Parent do
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(1,1,1)
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(0,0,0)
 		end
 		if gui then gui:Destroy() end
 	elseif mode == "Blind" then
-		local bg = Instance.new("Frame", gui)
+		local bg = Instance.new("Frame")
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(10,0,10,0)
 		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 	elseif mode == "ScreenImage" then
-		local bg = Instance.new("ImageLabel", gui)
-		bg.Image="rbxassetid://"..data.Image
+		local bg = Instance.new("ImageLabel")
+		bg.Image=`rbxassetid://{data.Image}`
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(1,0,1,0)
 		bg.Position = UDim2.new(0,0,0,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 	elseif mode == "ScreenVideo" then
-		local bg = Instance.new("VideoFrame", gui)
-		bg.Video="rbxassetid://"..data.Video
+		local bg = Instance.new("VideoFrame")
+		bg.Video=`rbxassetid://{data.Video}`
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(1,0,1,0)
 		bg.Position = UDim2.new(0,0,0,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 		bg:Play()
 	end
 end

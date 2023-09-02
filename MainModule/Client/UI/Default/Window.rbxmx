@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX04A887A5820D412089758B39D07B13F0">
+	<Item class="ScreenGui" referent="RBX7BDA71CBBD904B7CA8DE70052C383768">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -16,7 +16,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="TextLabel" referent="RBX635A8861248E4153810312E79FEE0142">
+		<Item class="TextLabel" referent="RBXA669DA2E6CEC4D8DAC8F660F77CD050F">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -41,7 +41,12 @@
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -92,7 +97,7 @@
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="TextBox" referent="RBX9D981547DED74B978CDCAB5825AB3916">
+			<Item class="TextBox" referent="RBX161C87544BED462996F2042EC0FD041D">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -118,7 +123,12 @@
 					<bool name="ClearTextOnFocus">true</bool>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -179,7 +189,7 @@
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="StringValue" referent="RBX683924E741B54993987CFE861B5FA7AA">
+			<Item class="StringValue" referent="RBX3BAF8FECA3F644C2ACFC912FDE644DB8">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Desc</string>
@@ -189,7 +199,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBXF41AAAB3CB4D427EA66E174F3CC39F6B">
+		<Item class="Frame" referent="RBXF44CCF79299446388C411A7A1D1209C7">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -243,7 +253,7 @@
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="NumberValue" referent="RBX9615599C1CF54B7B8781F947F3D82BF1">
+			<Item class="NumberValue" referent="RBX2E83D09A3DF14EE4B7B81554EBB09B87">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Percentage</string>
@@ -252,7 +262,7 @@
 					<double name="Value">0</double>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBXBF4D904D40BC476E8FD004341C3A2071">
+			<Item class="Frame" referent="RBX7ADDEDAC54334C0988B8A6F2A4D233A0">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -307,7 +317,7 @@
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="ImageLabel" referent="RBX8EBFF1E341EF429EA25A6E39BCE7F655">
+			<Item class="ImageLabel" referent="RBX2F7E29E864EA4A39A496A56E0A2F44C1">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -359,6 +369,7 @@
 						<YS>0.5</YS>
 						<YO>-10</YO>
 					</UDim2>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">0</token>
@@ -394,7 +405,7 @@
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="ImageLabel" referent="RBXF676B4C7898840B4BD67B72D1A33664A">
+			<Item class="ImageLabel" referent="RBX5244D7675D5C47FD8322B8D417369924">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -446,6 +457,7 @@
 						<YS>0.5</YS>
 						<YO>-10</YO>
 					</UDim2>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">1</token>
@@ -482,7 +494,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX73E646CF683E42B792EC78DFAAEAAEC0">
+		<Item class="Frame" referent="RBXE867E168834B42A88F0D94FE7FAD1108">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -536,7 +548,7 @@
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="TextButton" referent="RBX8D5598112A574C15825F56212E29DB70">
+			<Item class="TextButton" referent="RBXCCE267B10AF4466BBB7885E374433249">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -562,7 +574,12 @@
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">16</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>600</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Semibold.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -617,7 +634,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="ImageButton" referent="RBXEE3A6B7879434D0B9A76ABE8335341C5">
+			<Item class="ImageButton" referent="RBX339D1916404441A5A6C170BCEFE77A19">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -673,6 +690,7 @@
 						<YO>-10</YO>
 					</UDim2>
 					<Content name="PressedImage"><null></null></Content>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">0</token>
@@ -710,7 +728,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX250360C14E2E417082A56C67807EF6C9">
+			<Item class="Frame" referent="RBX64B2F29554C14B19BE05170C8914D795">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -766,14 +784,14 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Folder" referent="RBX47CD620B95CA4780ACC7CC5F8D92C40E">
+		<Item class="Folder" referent="RBXA04A5B73AD7D4D99A4A83C01CC8674D1">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBXD0B08482CE4C40238B4B91D367280C4C">
+			<Item class="BoolValue" referent="RBXF996DC21D8C047FBB9CE3D6A3E6B3C04">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -782,7 +800,7 @@
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX5C3F664BDE114C6FABD56B037681354F">
+			<Item class="BoolValue" referent="RBX7BCD58171A504CE1807C2E42C8629022">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -791,13 +809,14 @@
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBXC59FE0507F5948F8B01C7DF5A8955B8F">
+			<Item class="ModuleScript" referent="RBX8EADC14EC2174F8886CD2FF455D63CCC">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
-					<string name="Name">Code</string>
-					<string name="ScriptGuid">{0438BE1E-CCDB-4442-A532-B46D59DFE6D2}</string>
+					<string name="Name">NoEnv-Code</string>
+					<string name="ScriptGuid">{375DAD5C-E915-48E5-BAC3-C821A0ACFE7D}</string>
 					<ProtectedString name="Source"><![CDATA[																																																				--[[
+																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -889,9 +908,9 @@
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 																																																				--]]
 
-	--// Todo:
-	--//	Window frame support for fullscreen/scale (pseudo-scale)
-	--//	Optimize/fix some stuff
+--// Todo:
+--//	Window frame support for fullscreen/scale (pseudo-scale)
+--//	Optimize/fix some stuff
 
 --/////////////////////////////////////////////////////////--
 
@@ -949,7 +968,11 @@ local function isGui(child)
 end
 
 --// All global vars will be wiped/replaced except script
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	--local client = service.GarbleTable(client)
 	local Player = service.Players.LocalPlayer
 	local Mouse = Player:GetMouse()
@@ -994,6 +1017,7 @@ return function(data)
 	local addTitleButton
 	local LoadChildren
 	local BringToFront
+	local functionify
 
 	local Drag = GUI.Drag
 	local Close = Drag.Close
@@ -1027,26 +1051,24 @@ return function(data)
 			end)
 
 			ent.MouseMoved:Connect(function(x,y)
-				local sizeText = text or ent.Desc.Value
+				inExpandable = ent
 
-				inExpandable = ent;
-				label.Text = sizeText;
-				label.RichText = richText;
+				local text = text or ent.Desc.Value
+				label.Text = text
+				label.RichText = richText
+				label.TextScaled = richText
 
-				if richText then
-					sizeText = string.gsub(sizeText, '\<[^>]+\>', '');
-					label.TextScaled = true;
-				end
+				local sizeText = label.ContentText
 
-				--point.Size = UDim2.new(0, 10000, 0, 10000)
-				local newx = 500
-				local bounds = service.TextService:GetTextSize(sizeText, label.TextSize, label.Font, Vector2.new(1000,1000)).X-- point.Label.TextBounds.X
-				local rows = math.floor(bounds/500)
-				rows = rows+1
-				if rows < 1 then rows = 1 end
-				if bounds<500 then newx = bounds end
-				point.Size = UDim2.new(0, newx+10, 0, (rows*20)+10)
-				point.Position = UDim2.new(0, x+6, 0, y-40-((rows*20)+10))
+				local maxWidth = 400
+				local bounds = service.TextService:GetTextSize(sizeText, label.TextSize, label.Font, Vector2.new(maxWidth, math.huge))
+
+				local sizeX, sizeY = bounds.X + 10, bounds.Y + 10
+				local posX = (x + 6 + sizeX) < GUI.AbsoluteSize.X and (x + 6) or (x - 6 - sizeX)
+				local posY = (y - 6 - sizeY) > 0 and (y - 6 - sizeY) or (y)
+
+				point.Size = UDim2.fromOffset(sizeX, sizeY)
+				point.Position = UDim2.fromOffset(posX, posY)
 				point.Visible = true
 			end)
 		end
@@ -1054,7 +1076,7 @@ return function(data)
 
 	function getNextPos(frame)
 		local farXChild, farYChild
-		for i,v in next,frame:GetChildren() do
+		for i,v in ipairs(frame:GetChildren()) do
 			if checkProperty(v, "Size") then
 				if not farXChild or (v.AbsolutePosition.X + v.AbsoluteSize.X) > (farXChild.AbsolutePosition.X + farXChild.AbsoluteSize.X) then
 					farXChild = v
@@ -1072,7 +1094,7 @@ return function(data)
 	function LoadChildren(Obj, Children)
 		if Children then
 			local runWhenDone = Children.RunWhenDone and functionify(Children.RunWhenDone, Obj)
-			for class,data in next,Children do
+			for class,data in pairs(Children) do
 				if type(data) == "table" then
 					if not data.Parent then data.Parent = Obj end
 					create(data.Class or data.ClassName or class, data)
@@ -1168,33 +1190,33 @@ return function(data)
 				data.ClassName = nil
 			end
 
-			if not data.BorderColor3 and checkProperty(new,"BorderColor3") then
+			if not data.BorderColor3 and checkProperty(new, "BorderColor3") then
 				new.BorderColor3 = dBorder
 			end
 
-			if not data.CanvasSize and checkProperty(new,"CanvasSize") then
+			if not data.CanvasSize and checkProperty(new, "CanvasSize") then
 				new.CanvasSize = dCanvasSize
 			end
 
-			if not data.BorderSizePixel and checkProperty(new,"BorderSizePixel") then
+			if not data.BorderSizePixel and checkProperty(new, "BorderSizePixel") then
 				new.BorderSizePixel = dPixelSize
 			end
 
-			if not data.BackgroundColor3 and checkProperty(new,"BackgroundColor3") then
+			if not data.BackgroundColor3 and checkProperty(new, "BackgroundColor3") then
 				new.BackgroundColor3 = dBackground
 			end
 
-			if not data.PlaceholderColor3 and checkProperty(new,"PlaceholderColor3") then
+			if not data.PlaceholderColor3 and checkProperty(new, "PlaceholderColor3") then
 				new.PlaceholderColor3 = dPlaceholderColor
 			end
 
-			if not data.Transparency and not data.BackgroundTransparency and checkProperty(new,"Transparency") then
+			if not data.Transparency and not data.BackgroundTransparency and checkProperty(new, "Transparency") and checkProperty(new, "BackgroundTransparency")  then
 				new.BackgroundTransparency = dTransparency
-			elseif data.Transparency then
+			elseif data.Transparency and checkProperty(new, "BackgroundTransparency") then
 				new.BackgroundTransparency = data.Transparency
 			end
 
-			if not data.TextColor3 and not data.TextColor and checkProperty(new,"TextColor3") then
+			if not data.TextColor3 and not data.TextColor and checkProperty(new, "TextColor3") then
 				new.TextColor3 = dTextColor
 			elseif data.TextColor then
 				new.TextColor3 = data.TextColor
@@ -1214,15 +1236,15 @@ return function(data)
 				new.TopImage = dScrollImage
 			end
 
-			if not data.Size and checkProperty(new,"Size") then
+			if not data.Size and checkProperty(new, "Size") then
 				new.Size = dSize
 			end
 
-			if not data.Position and checkProperty(new,"Position") then
+			if not data.Position and checkProperty(new, "Position") then
 				new.Position = dPosition
 			end
 
-			if not data.ZIndex and checkProperty(new,"ZIndex") then
+			if not data.ZIndex and checkProperty(new, "ZIndex") then
 				new.ZIndex = dZIndex
 				if parent and checkProperty(parent, "ZIndex") then
 					new.ZIndex = parent.ZIndex
@@ -1236,7 +1258,7 @@ return function(data)
 				end)
 			end
 
-			if (data.OnClicked or data.OnClick) and class == "TextButton" then
+			if (data.OnClicked or data.OnClick) and (class == "TextButton" or class == "ImageButton") then
 				local debounce = false;
 				local doDebounce = data.Debounce;
 				local onClick = functionify((data.OnClicked or data.OnClick), new)
@@ -1246,9 +1268,9 @@ return function(data)
 							debounce = true
 						end
 
-						onClick(new);
+						onClick(new)
 
-						debounce = false;
+						debounce = false
 					end
 				end)
 			end
@@ -1363,7 +1385,7 @@ return function(data)
 			end
 
 			if data.BoxProperties then
-				for i,v in next,data.BoxProperties do
+				for i,v in pairs(data.BoxProperties) do
 					if checkProperty(box, i) then
 						box[i] = v
 					end
@@ -1412,8 +1434,8 @@ return function(data)
 			end
 
 			bar.InputBegan:Connect(function(input)
-				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
-					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
+				if not moving and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+					value = ((input.Position.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
 
 					if value < 0 then
 						value = 0
@@ -1479,8 +1501,8 @@ return function(data)
 			local textProps = data.TextProperties
 			local scroller = create("ScrollingFrame", {
 				Parent = menu;
-				Size = UDim2.new(1, 0, 1, 0);
-				Position = UDim2.new(0, 0, 0, 0);
+				Size = UDim2.fromScale(1, 1);
+				Position = UDim2.new();
 				BackgroundTransparency = 1;
 				ZIndex = 100;
 			})
@@ -1493,7 +1515,7 @@ return function(data)
 
 			if data.TextAlignment then
 				selected.TextXAlignment = data.TextAlignment
-				selected.Position = UDim2.new(0, 30, 0, 0);
+				selected.Position = UDim2.fromOffset(30, 0);
 			end
 
 			if data.NoArrow then
@@ -1504,12 +1526,12 @@ return function(data)
 
 			new.Changed:Connect(function(p)
 				if p == "AbsolutePosition" and menu.Visible then
-					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
+					menu.Position = UDim2.fromOffset(new.AbsolutePosition.X, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
 				elseif p == "AbsoluteSize" or p == "Parent" then
 					downImg.Size = UDim2.new(0, new.AbsoluteSize.Y, 1, 0);
 					if data.TextAlignment == "Right" then
 						downImg.Position = UDim2.new(0, 0, 0.5, -(downImg.AbsoluteSize.X/2))
-						selected.Position = UDim2.new(0, new.AbsoluteSize.Y, 0, 0);
+						selected.Position = UDim2.fromOffset(new.AbsoluteSize.Y, 0);
 					else
 						downImg.Position = UDim2.new(1, -downImg.AbsoluteSize.X, 0.5, -(downImg.AbsoluteSize.X/2))
 					end
@@ -1517,9 +1539,9 @@ return function(data)
 					selected.Size = UDim2.new(1, -downImg.AbsoluteSize.X, 1, 0);
 
 					if options and #options <= 6 then
-						menu.Size = UDim2.new(0, new.AbsoluteSize.X, 0, 30*#options);
+						menu.Size = UDim2.fromOffset(new.AbsoluteSize.X, 30*#options);
 					else
-						menu.Size = UDim2.new(0, new.AbsoluteSize.X, 0, 30*6);
+						menu.Size = UDim2.fromOffset(new.AbsoluteSize.X, 30*6);
 						scroller:ResizeCanvas(false, true);
 					end
 				end
@@ -1529,15 +1551,15 @@ return function(data)
 			downImg.ZIndex = new.ZIndex
 
 			if textProps then
-				for i,v in next,textProps do
+				for i,v in pairs(textProps) do
 					selected[i] = v
 				end
 			end
 
 			if options then
-				for i,v in next,options do
+				for i,v in pairs(options) do
 					local button = scroller:Add("TextButton", {
-						Text = "  ".. tostring(v);
+						Text = `  {v}`;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, 30*(i-1));
 						ZIndex = menu.ZIndex;
@@ -1550,7 +1572,7 @@ return function(data)
 					})
 
 					if textProps then
-						for i,v in next,textProps do
+						for i,v in pairs(textProps) do
 							button[i] = v
 						end
 					end
@@ -1563,7 +1585,7 @@ return function(data)
 				end
 
 				local function showMenu()
-					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
+					menu.Position = UDim2.fromOffset(new.AbsolutePosition.X, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
 					menu.Visible = not menu.Visible
 				end
 
@@ -1597,8 +1619,8 @@ return function(data)
 				local disabled = false
 				local tabFrame = create("ScrollingFrame",{
 					Name = name;
-					Size = UDim2.new(1, 0, 1, 0);
-					Position = UDim2.new(0, 0, 0, 0);
+					Size = UDim2.fromScale(1, 1);
+					Position = UDim2.new();
 					BorderSizePixel = 0;
 					BackgroundTransparency = data.FrameTransparency or data.Transparency;
 					BackgroundColor3 = data.Color or dSecondaryBackground;
@@ -1620,14 +1642,14 @@ return function(data)
 				})
 
 				tabFrame:SetSpecial("FocusTab",function()
-					for i,v in next,buttonsTab do
+					for i,v in ipairs(buttonsTab) do
 						if isGui(v) then
 							v.BackgroundTransparency = (v:IsDisabled() and 0.9) or 0.7
 							v.TextTransparency = (v:IsDisabled() and 0.9) or 0.7
 						end
 					end
 
-					for i,v in next,frames:GetChildren() do
+					for i,v in ipairs(frames:GetChildren()) do
 						if isGui(v) then
 							v.Visible = false
 						end
@@ -1695,8 +1717,18 @@ return function(data)
 				genning = genHold
 				new:ClearAllChildren()
 
+				new.AutomaticCanvasSize = "Y"
+
+				local layout = service.New("UIListLayout", {
+					Parent = new;
+					Name = "LayoutOrder";
+					FillDirection = data.Layout_FillDirection or "Vertical";
+					VerticalAlignment = data.Layout_VerticalAlignment or "Top";
+					HorizontalAlignment = data.Layout_HorizontalAlignment or "Left";
+				})
+
 				local num = 0
-				for i,v in next,list do
+				for i,v in pairs(list) do
 					local text = v;
 					local desc;
 					local color
@@ -1712,26 +1744,45 @@ return function(data)
 						end
 					end
 
-					local label = create("TextLabel",{
-						Text = " "..tostring(text);
-						ToolTip = desc;
-						Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
-						Visible = true;
-						BackgroundTransparency = 1;
-						Font = "Arial";
-						TextSize = 14;
-						TextStrokeTransparency = 0.8;
-						TextXAlignment = "Left";
-						Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
-						RichText = richText or false;
-					})
+					local label
+					if v.TextSelectable or entProps.TextSelectable then
+						label = create("TextBox",{
+							Text = ` {text}`;
+							ToolTip = desc;
+							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
+							Visible = true;
+							BackgroundTransparency = 1;
+							Font = "Arial";
+							TextSize = 14;
+							TextStrokeTransparency = 0.8;
+							TextXAlignment = "Left";
+							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
+							RichText = richText or false;
+							TextEditable = false;
+							ClearTextOnFocus = false;
+						})
+					else
+						label = create("TextLabel",{
+							Text = ` {text}`;
+							ToolTip = desc;
+							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
+							Visible = true;
+							BackgroundTransparency = 1;
+							Font = "Arial";
+							TextSize = 14;
+							TextStrokeTransparency = 0.8;
+							TextXAlignment = "Left";
+							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
+							RichText = richText or false;
+						})
+					end
 
 					if color then
 						label.TextColor3 = color
 					end
 
 					if labelProperties then
-						for i,v in next,entProps do
+						for i,v in pairs(entProps) do
 							if checkProperty(label, i) then
 								label[i] = v
 							end
@@ -1756,7 +1807,11 @@ return function(data)
 					end
 				end
 
-				new:ResizeCanvas(false, true, false, bottom, 5, 5, 50)
+				--new:ResizeCanvas(false, true, false, bottom, 5, 5, 50)
+				if bottom then
+					new.CanvasPosition = Vector2.new(0, layout.AbsoluteContentSize.Y);
+				end
+
 				genning = nil
 			end)
 
@@ -1765,7 +1820,7 @@ return function(data)
 				local newY, newX = 0,0
 
 				if not onX and not onY then onX = false onY = true end
-				for i,v in next,new:GetChildren() do
+				for i,v in ipairs(new:GetChildren()) do
 					if v:IsA("GuiObject") then
 						if onY then
 							v.Size = UDim2.new(v.Size.X.Scale, v.Size.X.Offset, 0, v.AbsoluteSize.Y)
@@ -1814,7 +1869,7 @@ return function(data)
 		data.Children = nil
 		data.Content = nil
 
-		for i,v in next,data do
+		for i,v in pairs(data) do
 			if checkProperty(new, i) then
 				new[i] = v
 			end
@@ -1841,11 +1896,11 @@ return function(data)
 			local newData = {}
 			local new
 
-			for i,v in next,data do
+			for i,v in pairs(data) do
 				newData[i] = v
 			end
 
-			for i,v in next,gotData do
+			for i,v in pairs(gotData) do
 				newData[i] = v
 			end
 
@@ -2004,6 +2059,9 @@ return function(data)
 	if Icon then
 		Iconf.Visible = true
 		Iconf.Image = Icon
+		Iconf.Size = UDim2.new(0, 16, 0, 16)
+		Iconf.Position = UDim2.new(0, 6, 0, 5)
+		Iconf.ImageTransparency = 0
 	end
 
 	if CanvasSize then
@@ -2267,18 +2325,20 @@ return function(data)
 
 		Event(InputService.InputBegan, function(input, gameHandled)
 			if not gameHandled and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-				inputStart(Mouse.X, Mouse.Y)
+				local Position = input.Position
+				inputStart(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputChanged, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch) then
-				inputMoved(input.Position.X, input.Position.Y)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				local Position = input.Position
+				inputMoved(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				inputEnd()
 			end
 		end)
@@ -2331,7 +2391,7 @@ return function(data)
 		service.UnWrap(GUI):Destroy()
 	end
 
-	for i,child in next,GUI:GetChildren() do
+	for i,child in ipairs(GUI:GetChildren()) do
 		if child.Name ~= "Desc" and child.Name ~= "Drag" then
 			specialInsts[child.Name] = child
 			child.Parent = nil
@@ -2357,7 +2417,7 @@ return function(data)
 			if gTable.Active then
 				inFrame = true
 
-				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					BringToFront()
 				end
 			end
@@ -2383,12 +2443,12 @@ return function(data)
 
 		Event(InputService.InputChanged, function(input)
 			if dragDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-				Drag.Position = UDim2.new(0, dragOffset.X + input.Position.X, 0, dragOffset.Y + input.Position.Y)
+				Drag.Position = UDim2.fromOffset(dragOffset.X + input.Position.X, dragOffset.Y + input.Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input)
-			if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				dragDragging = false
 			end
 		end)
@@ -2449,7 +2509,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBX22187866AA684CCDA0B1F1FBEC162440">
+		<Item class="TextLabel" referent="RBX5A8E190B7A3E4BB4BC6CF94A03F36467">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -2474,7 +2534,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -2525,7 +2590,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="TextButton" referent="RBXDDA6A736AA6C4C52B2FA31B9478F4AED">
+			<Item class="TextButton" referent="RBX66E5FE9FE05E48F18D0C4E80809B8977">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -2551,7 +2616,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -2606,7 +2676,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="StringValue" referent="RBXC6B73B82C65149378D936C55F5761666">
+			<Item class="StringValue" referent="RBX8D98AB577E6541BBB9C95EE2B0DCE8AD">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Desc</string>
@@ -2616,7 +2686,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBXAB4859BF50B24AC78079754537D7360E">
+		<Item class="TextLabel" referent="RBX93E60605F2794F96B13EB016FEBA6DEB">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -2641,7 +2711,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -2692,7 +2767,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="TextButton" referent="RBX5F4C30280A37424F920FAD653CEBC0BC">
+			<Item class="TextButton" referent="RBXC6D500FBFB794585826DFF5882B48C49">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -2718,7 +2793,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -2773,7 +2853,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="StringValue" referent="RBX8C86A265A7E845279D77B0EFF7B99163">
+			<Item class="StringValue" referent="RBXB776605699744D0AB80CE84110796387">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Desc</string>
@@ -2783,7 +2863,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextButton" referent="RBX987577F1D7F449A085E0D2EB19552C67">
+		<Item class="TextButton" referent="RBX58505B06122B47D891DEC47A64461E75">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -2863,7 +2943,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="TextButton" referent="RBXE7B9B57077024208916CD36FDFD211FF">
+			<Item class="TextButton" referent="RBXFBE38F77C10C4A1F8DC4C0A975F512BB">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -2889,7 +2969,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">2</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>700</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arialbd.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -2943,7 +3028,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="ImageLabel" referent="RBX0C2832E5F0A04FD9A771D3F7C6FD26FC">
+				<Item class="ImageLabel" referent="RBXA6D74D6475DA4424998FC182A50A21F1">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -2995,6 +3080,7 @@ end]]></ProtectedString>
 							<YS>0</YS>
 							<YO>3</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -3031,7 +3117,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="ImageButton" referent="RBX46B6B49E60034D48A5A50C3AC96E4956">
+			<Item class="ImageButton" referent="RBX85B521DB5E064D8EA5E852CE2B760EFA">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -3087,6 +3173,7 @@ end]]></ProtectedString>
 						<YO>6</YO>
 					</UDim2>
 					<Content name="PressedImage"><null></null></Content>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">0</token>
@@ -3124,7 +3211,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextButton" referent="RBX0747927425ED40BEA29315383DAF70B0">
+			<Item class="TextButton" referent="RBXF55414A10F494C18B6147612E6661F5B">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -3150,7 +3237,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">2</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>700</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arialbd.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3205,7 +3297,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextButton" referent="RBX013E9CEEF0EC40AF8A3AE6C160D42FA7">
+			<Item class="TextButton" referent="RBX1DAC4B833E6545F4B17B42267D429560">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -3231,7 +3323,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">9</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/ComicNeueAngular.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/ComicNeue-Angular-Bold.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3285,7 +3382,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBXD8E5830C910B4025870A453F7063DAB0">
+				<Item class="TextLabel" referent="RBXE991B109AF7F4ED099CF8910ED5F112F">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3310,7 +3407,12 @@ end]]></ProtectedString>
 						<int name="BorderSizePixel">1</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">9</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/ComicNeueAngular.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/ComicNeue-Angular-Bold.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -3363,7 +3465,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBX0FAF199BDFF144EEA5B3E70FC408EAF5">
+			<Item class="TextLabel" referent="RBX25E5498CB65E45D1A6546277F8E40926">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -3388,7 +3490,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">5</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>300</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Light.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3440,7 +3547,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">9</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX6F1C2C7468C140D7A4A1CB2EF0CCFC8B">
+			<Item class="Frame" referent="RBX2517A56D19ED4FA4A342DF84ADCF82F6">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -3494,7 +3601,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ImageButton" referent="RBXD86E3035CBF34257BFEE4C800CEF04F3">
+				<Item class="ImageButton" referent="RBXF7C2803C16A649D1A75849D8EEF1AD03">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3550,6 +3657,7 @@ end]]></ProtectedString>
 							<YO>-5</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -3587,7 +3695,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBXA24F08E6968D445CB32126D88D6C9F39">
+				<Item class="ImageButton" referent="RBX1BA58D3B38EC43A29A9D01F2F38768C5">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3643,6 +3751,7 @@ end]]></ProtectedString>
 							<YO>20</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -3680,7 +3789,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX99D04DABAB2444D3A086E77A2BB1308A">
+				<Item class="ImageLabel" referent="RBX583717C2B0DC4CE0BF17E3D0F9E8AF74">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3732,6 +3841,7 @@ end]]></ProtectedString>
 							<YS>1</YS>
 							<YO>-20</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -3767,7 +3877,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBXAED31282EF1B4E4FBDFAC895C0C8D89F">
+				<Item class="ImageLabel" referent="RBXA74D15DFFDED4203BB94327A6CB8D951">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3819,6 +3929,7 @@ end]]></ProtectedString>
 							<YS>1</YS>
 							<YO>-20</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -3854,7 +3965,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBX25AF32BB04E84B0B93D0B93EC433F7E6">
+				<Item class="ImageButton" referent="RBX2B34F7382E1740169F2C6073A1A76596">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3910,6 +4021,7 @@ end]]></ProtectedString>
 							<YO>20</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -3947,7 +4059,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBX702AC17A66DC4B2C9A4E070745F7326B">
+				<Item class="ImageButton" referent="RBX25D9075B21F241B4B10C2F3F6AB5473D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4003,6 +4115,7 @@ end]]></ProtectedString>
 							<YO>-20</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -4040,7 +4153,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBXE010FE26B73F4DA49B77B6B7633F67FB">
+				<Item class="ImageButton" referent="RBX019B8976B80D43B38DA7D26A66A815EC">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4096,6 +4209,7 @@ end]]></ProtectedString>
 							<YO>-5</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -4133,7 +4247,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBX398E15C340EE4E788556618A9800446D">
+				<Item class="ImageButton" referent="RBXD3D5A9BAE0984E5BAC2F74128593125D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4189,6 +4303,7 @@ end]]></ProtectedString>
 							<YO>-20</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -4226,7 +4341,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ScrollingFrame" referent="RBX249E2CFCE61E45319F237813C1C21115">
+				<Item class="ScrollingFrame" referent="RBX7AB8E4F6FDA64ED2AA5173BF1E6939DB">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -4307,7 +4422,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBXC6F86D4EB210410094C5C249D17CE57B">
+				<Item class="ImageButton" referent="RBXFE6381F8D2FF4AEC95BDB8BD032016B4">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4363,6 +4478,7 @@ end]]></ProtectedString>
 							<YO>-5</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -4400,7 +4516,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBX25C0C1544E074FBAAA821F89EE742BCA">
+				<Item class="ImageButton" referent="RBXD1BAB294D1324CEFA9708FC59897D815">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4456,6 +4572,7 @@ end]]></ProtectedString>
 							<YO>-5</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -4495,7 +4612,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="BoolValue" referent="RBX03EE6756DFBD468F93353EE6C31F2217">
+		<Item class="BoolValue" referent="RBX328FC99CCA1643CCA4F762B9A9969B4C">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Check</string>
@@ -4504,7 +4621,7 @@ end]]></ProtectedString>
 				<bool name="Value">true</bool>
 			</Properties>
 		</Item>
-		<Item class="Frame" referent="RBX2ADBEA749A6847D8A6634E9274DADB68">
+		<Item class="Frame" referent="RBXB99382C20A2C4D62953D39044E287C04">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -4558,7 +4675,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="ScrollingFrame" referent="RBX8D349DF6E08E4E9D83589868F808219B">
+			<Item class="ScrollingFrame" referent="RBXBB37F9E46DCB49CFAE5D73F05E593F3F">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4593,7 +4710,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>0</YO>
 					</UDim2>
-					<bool name="ClipsDescendants">true</bool>
+					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="ElasticBehavior">0</token>
 					<token name="HorizontalScrollBarInset">0</token>
@@ -4617,9 +4734,9 @@ end]]></ProtectedString>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<float name="ScrollBarImageTransparency">0</float>
+					<float name="ScrollBarImageTransparency">1</float>
 					<int name="ScrollBarThickness">3</int>
-					<token name="ScrollingDirection">2</token>
+					<token name="ScrollingDirection">1</token>
 					<bool name="ScrollingEnabled">true</bool>
 					<bool name="Selectable">true</bool>
 					<Ref name="SelectionImageObject">null</Ref>
@@ -4639,7 +4756,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBXE9BD8671ED6B4F8ABE74D05087BE4CFC">
+			<Item class="Frame" referent="RBX1644059519894C7FBFCE4F1B5629A502">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4695,7 +4812,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBX786B9239EAE34D62989FAA21D05EFC62">
+		<Item class="TextLabel" referent="RBXDFD77D499FB54DF9B9242833B4921992">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -4720,7 +4837,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -4771,7 +4893,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="TextButton" referent="RBX2A1117C60164448193E77BBE97EEE928">
+			<Item class="TextButton" referent="RBX76BB0F6CD35240E38594918D012978E9">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -4797,7 +4919,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -4852,7 +4979,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="StringValue" referent="RBX5BCC5CFF776F4CECAF03948D75669357">
+			<Item class="StringValue" referent="RBX9CB130F5A0F7457999D753A9F06B19A6">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Desc</string>
@@ -4862,7 +4989,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX1A088791378E4802984A6CD2191B87D5">
+		<Item class="Frame" referent="RBX2726D7EA07CC4B59B6112072FE781601">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -4916,7 +5043,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="StringValue" referent="RBX070CC2E2C71C400D9C85FA92350A0E18">
+			<Item class="StringValue" referent="RBX8C4307046A8C4E76B717A2F79BFC4E0C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Desc</string>
@@ -4925,7 +5052,7 @@ end]]></ProtectedString>
 					<string name="Value">TestDesc</string>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX09569C709CB74CEEB605F067B2CF298C">
+			<Item class="TextLabel" referent="RBX5243CC35911B4250AE84ECBE511F41E6">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4950,7 +5077,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -5002,7 +5134,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBXB81B3CD58D2B46EBB05E4AF90CFF8698">
+			<Item class="TextLabel" referent="RBX7E066A9AF7C54619B99CF0C7FA79263F">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -5027,7 +5159,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -5080,7 +5217,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextButton" referent="RBX197CDB9A7556450896305B427434603B">
+		<Item class="TextButton" referent="RBX7924CA186D694152868A1FCB807A92D4">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -5106,7 +5243,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">0</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -5161,7 +5303,7 @@ end]]></ProtectedString>
 				<int name="ZIndex">2</int>
 			</Properties>
 		</Item>
-		<Item class="Frame" referent="RBX841818413B1C42E0ACAC4FC61EA0DDF4">
+		<Item class="Frame" referent="RBX463F7F0000FF4D9AB4F33BB417B132F1">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -5215,7 +5357,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">999999</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBXD3362CBD1BC5462D9851EC18CB8FAEAE">
+			<Item class="TextLabel" referent="RBX31DBA2BA49FC4A619A6774BEAC51F150">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -5240,7 +5382,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -5292,7 +5439,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">999999</int>
 				</Properties>
 			</Item>
-			<Item class="UICorner" referent="RBX10FCAEAF4BD2404994FF1025A8225B08">
+			<Item class="UICorner" referent="RBXD077DB9618654E0E9AAA443A944D3986">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<UDim name="CornerRadius">

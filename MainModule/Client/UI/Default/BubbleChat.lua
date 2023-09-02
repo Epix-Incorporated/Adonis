@@ -2,7 +2,11 @@
 client = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gTable
 	local color = data.Color
 	
@@ -12,6 +16,7 @@ return function(data)
 		local window = client.UI.Make("Window",{
 			Name  = "BubbleChat";
 			Title = "Bubble Chat";
+			Icon = client.MatIcons.Chat;
 			Size  = {260,57};
 			Position = UDim2.new(0, 10, 1, -80);
 			AllowMultiple = false;

@@ -1,95 +1,180 @@
+--!nonstrict
 --[[
 
+	DEVELOPMENT HAS BEEN MOVED FROM DAVEY_BONES/SCELERATIS TO THE EPIX INCORPORATED GROUP
+
 	CURRENT LOADER:
-	https://www.roblox.com/library/2373505175/Adonis-Loader-BETA
+	https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated
+
+	CURRENT MODULE:
+	https://www.roblox.com/library/7510592873/Adonis-MainModule
+
+	NIGHTLY MODULE:
+	https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
 
 --]]
 
+----------------------------------------------------------------------------------
+--                                Adonis Loader                                 --
+--                            By Epix Incorporated                              --
+----------------------------------------------------------------------------------
+--          Edit settings using the Settings module in the Config folder        --
+----------------------------------------------------------------------------------
+--       This script loads the Adonis source (MainModule) into the game.        --
+--            Only edit this script if you know what you're doing!              --
+----------------------------------------------------------------------------------
 
+local warn = function(...)
+	warn(":: Adonis ::", ...)
+end
 
+local print = function(...)
+	print(":: Adonis ::", ...)
+end
 
-----------------------------------------------------------------------------------------
---                                  Adonis Loader                                     --
-----------------------------------------------------------------------------------------
---		   	  Epix Incorporated. Not Everything is so Black and White.		   		  --
-----------------------------------------------------------------------------------------
---	    Edit settings in-game or using the settings module in the Config folder	      --
-----------------------------------------------------------------------------------------
---	                  This is not designed to work in solo mode                       --
-----------------------------------------------------------------------------------------
+print("Loading...")
 
-warn(":: Adonis :: Loading...");
+local ServerScriptService = game:GetService("ServerScriptService")
+local RunService = game:GetService("RunService")
 
-if _G["__Adonis_MUTEX"] and type(_G["__Adonis_MUTEX"])=="string" then
-	warn("\n-----------------------------------------------"
-		.."\nAdonis is already running! Aborting..."
-		.."\nRunning Location: ".._G["__Adonis_MUTEX"]
-		.."\nThis Location: "..script:GetFullName()
-		.."\n-----------------------------------------------")
-	--script:Destroy()
+local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
+if mutex then
+	if mutex:IsA("StringValue") then
+		warn("Adonis is already running! Aborting...; Running Location:", mutex.Value, "This Location:", script:GetFullName())
+	else
+		warn("Adonis mutex detected but is not a StringValue! Aborting anyway...; This Location:", script:GetFullName())
+	end
 else
-	_G["__Adonis_MUTEX"] = script:GetFullName()
+	mutex = Instance.new("StringValue")
+	mutex.Name = "__Adonis_MUTEX"
+	mutex.Archivable = false
+	mutex.Value = script:GetFullName()
+	mutex.Parent = RunService
 
 	local model = script.Parent.Parent
-	local config = model.Config
-	local core = model.Loader
+	local configFolder = model.Config
+	local loaderFolder = model.Loader
 
-	local dropper = core.Dropper
-	local loader = core.Loader
+	local dropper = loaderFolder.Dropper
+	local loader = loaderFolder.Loader
 	local runner = script
 
-	local settings = config.Settings
-	local plugins = config.Plugins
-	local themes = config.Themes
+	local settingsModule = configFolder.Settings
+	local pluginsFolder = configFolder.Plugins
+	local themesFolder = configFolder.Themes
 
 	local backup = model:Clone()
 
 	local data = {
-		Settings = {};
-		Descriptions = {};
-		ServerPlugins = {};
-		ClientPlugins = {};
-		Themes = {};
+		Settings = {} :: {[string]: any};
+		Descriptions = {} :: {[string]: string};
+		Messages = {} :: {string|{[string]: any}};
+		ServerPlugins = {} :: {ModuleScript};
+		ClientPlugins = {} :: {ModuleScript};
+		Packages = {} :: {Folder};
+		Themes = {} :: {Instance};
 
 		ModelParent = model.Parent;
 		Model = model;
-		Config = config;
-		Core = core;
+		Config = configFolder;
+		Core = loaderFolder;
 
 		Loader = loader;
 		Dopper = dropper;
 		Runner = runner;
 
-		ModuleID = tonumber('23735'..'01710'); --// Trying to break existing (unupdatable) malicious plugins that replace the ModuleID from studio on insertion
-		LoaderID = tonumber('23735'..'05175');
+		ModuleID = 7510592873;  		--// https://www.roblox.com/library/7510592873/Adonis-MainModule
+		LoaderID = 7510622625;			--// https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
+		
+		--// Note: The nightly module is updated frequently with ever commit merged to the master branch on the Adonis repo.
+		--// It is prone to breaking, unstable, untested, and should not be used for anything other than testing/feature preview.
+		NightlyMode = false;			--// If true, uses the nightly module instead of the current release module.
+		NightlyModuleID = 8612978896; 	--// https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
 
 		DebugMode = true;
 	}
 
 	--// Init
-	script:Destroy()
-	model.Name = math.random()
-	local moduleId = data.ModuleID
-	local a,setTab = pcall(require,settings)
-	if not a then
-		warn'::Adonis:: Settings module errored while loading; Using defaults;'
+
+	-- selene: allow(incorrect_standard_library_use)
+	script.Parent = nil --script:Destroy()
+
+	if not data.DebugMode then
+		model.Name = math.random()
+	end
+
+	local moduleId = if data.NightlyMode then data.NightlyModuleID else data.ModuleID
+	
+	if data.DebugMode then
+		for _, v in model.Parent:GetChildren() do
+			if v.Name == "MainModule" and v:IsA("ModuleScript") then
+				moduleId = v
+				break
+			end
+		end
+		if not moduleId then
+			error(`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent:GetFullName()}`)
+		end
+	end
+
+	local success, setTab = pcall(require, settingsModule)
+	if success then
+		data.Messages = setTab.Settings.Messages
+	else
+		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Icon = "rbxassetid://7495468117";
+			Message = "Settings module error detected; using default settings.";
+			Time = 15;
+		})
 		setTab = {}
 	end
-	data.Settings, data.Descriptions, data.Order = setTab.Settings,setTab.Descriptions,setTab.Order
-	for _,Plugin in next,plugins:GetChildren()do if Plugin.Name:lower():sub(1,7)=="client:" or Plugin.Name:lower():sub(1,7) == "client-" then table.insert(data.ClientPlugins,Plugin) elseif Plugin.Name:lower():sub(1,7)=="server:" or Plugin.Name:lower():sub(1,7)=="server-" then table.insert(data.ServerPlugins,Plugin) else warn("Unknown Plugin Type for "..tostring(Plugin)) end end
-	for _,Theme in next,themes:GetChildren()do table.insert(data.Themes,Theme) end
-	if data.DebugMode then moduleId = model.Parent.MainModule end
+
+	data.Settings = setTab.Settings
+	data.Descriptions = setTab.Description
+	data.Order = setTab.Order
+
+	for _, module in pluginsFolder:GetChildren() do
+		local name = string.lower(module.Name)
+		
+		if module:IsA("Folder") then
+			table.insert(data.Packages, module)
+			
+		elseif string.match(name, "^client[%-:]") then
+			table.insert(data.ClientPlugins, module)
+			
+		elseif string.match(name, "^server[%-:]") then
+			table.insert(data.ServerPlugins, module)
+			
+		else
+			warn(`[DEVELOPER ERROR] Unknown Plugin Type for {module}; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'`)
+		end
+	end
+
+	for _, theme in themesFolder:GetChildren() do
+		table.insert(data.Themes, theme)
+	end
+
+	if tonumber(moduleId) then
+		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
+	end
+
 	local module = require(moduleId)
 	local response = module(data)
+
 	if response == "SUCCESS" then
-		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not game:GetService("RunService"):IsStudio() then
+		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not RunService:IsStudio() then
 			model.Parent = nil
-			game:BindToClose(function() model.Parent = game:GetService("ServerScriptService") model.Name = "Adonis_Loader" end)
+			game:BindToClose(function()
+				model.Parent = ServerScriptService
+				model.Name = "Adonis_Loader"
+			end)
 		end
 
 		model.Name = "Adonis_Loader"
 	else
-		error("MainModule failed to load")
+		error(" !! Adonis MainModule failed to load !! ")
 	end
 end
 

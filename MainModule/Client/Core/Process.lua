@@ -6,33 +6,37 @@ Routine = nil
 GetEnv = nil
 origEnv = nil
 logError = nil
+log = nil
 
 --// Processing
-return function()
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local _G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
+		Vector3int16, require, table, type, wait,
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
 		_G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
+		Vector3int16, require, table, type, wait,
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
-	local service = service
-	local client = client
+	local service = Vargs.Service
+	local client = Vargs.Client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;
@@ -112,11 +116,11 @@ return function()
 			RateLog = 10;
 		};
 
-		Remote = function(data,com,...)
+		Remote = function(data, com, ...)
 			local args = {...}
-			Remote.Received = Remote.Received+1
+			Remote.Received += 1
 			if type(com) == "string" then
-				if com == client.DepsName.."GIVE_KEY" then
+				if com == `{client.DepsName}GIVE_KEY` then
 					if not Core.Key then
 						log("~! Set remote key")
 						Core.Key = args[1]
@@ -124,14 +128,12 @@ return function()
 						log("~! Call Finish_Loading()")
 						client.Finish_Loading()
 					end
-				elseif Remote.UnEncrypted[com] then
-					return {Remote.UnEncrypted[com](...)}
 				elseif Core.Key then
 					local comString = Remote.Decrypt(com,Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
-						--local ran,err = pcall(command, args) --task service.Threads.RunTask("REMOTE:"..comString,command,args)
-						local rets = {service.TrackTask("Remote: ".. comString, command, args)}
+						--local ran,err = pcall(command, args) --task service.Threads.RunTask(`REMOTE:{comString}`,command,args)
+						local rets = {service.TrackTask(`Remote: {comString}`, command, args)}
 						if not rets[1] then
 							logError(rets[2])
 						else
@@ -148,13 +150,13 @@ return function()
 
 		ErrorMessage = function(Message, Trace, Script)
 			--service.FireEvent("ErrorMessage", Message, Trace, Script)
-			if Message and Message ~= "nil" and Message ~= "" and (string.find(Message,"::Adonis::") or string.find(Message,script.Name) or Script == script) then
-				logError(tostring(Message).." - "..tostring(Trace))
+			if Message and Message ~= "nil" and Message ~= "" and (string.find(Message,":: Adonis ::") or string.find(Message,script.Name) or Script == script) then
+				logError(`{Message} - {Trace}`)
 			end
 
-			if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
-				--Anti.Detected("log","Scriptless/Traceless error found. Script: "..tostring(Script).." - Trace: "..tostring(Trace))
-			end
+			--if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
+				--Anti.Detected("log",`Scriptless/Traceless error found. Script: {Script} - Trace: {Trace}`)
+			--end
 		end;
 
 		Chat = function(msg)
@@ -164,14 +166,16 @@ return function()
 			end
 		end;
 
-		CharacterAdded = function()
+		CharacterAdded = function(...)
+			service.Events.CharacterAdded:Fire(...)
+
+			task.wait()
 			UI.GetHolder()
-			service.Events.CharacterAdded:fire()
 		end;
 
 		CharacterRemoving = function()
 			if Variables.UIKeepAlive then
-				for ind,g in next,client.GUIs do
+				for ind,g in client.GUIs do
 					if g.Class == "ScreenGui" or g.Class == "GuiMain" or g.Class == "TextLabel" then
 						if not (g.Object:IsA("ScreenGui") and not g.Object.ResetOnSpawn) and g.CanKeepAlive then
 							g.KeepAlive = true
@@ -190,11 +194,11 @@ return function()
 			end
 
 			if Variables.ChatEnabled then
-				service.StarterGui:SetCoreGuiEnabled("Chat",true)
+				service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
 			end
 
 			if Variables.PlayerListEnabled then
-				service.StarterGui:SetCoreGuiEnabled('PlayerList',true)
+				service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
 			end
 
 			local textbox = service.UserInputService:GetFocusedTextBox()
@@ -202,7 +206,7 @@ return function()
 				textbox:ReleaseFocus()
 			end
 
-			service.Events.CharacterRemoving:fire()
+			service.Events.CharacterRemoving:Fire()
 		end
 	}
 end

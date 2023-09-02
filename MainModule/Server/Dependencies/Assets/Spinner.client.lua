@@ -1,6 +1,6 @@
 local torso = script.Parent
-local bg = torso:FindFirstChild("SPINNER_GYRO")
+local bg = torso:FindFirstChild("ADONIS_SPIN_GYRO")
 repeat
-  wait(1/44)
-  bg.cframe = bg.cframe * CFrame.Angles(0,math.rad(30),0)
+  task.wait(1/44)
+  bg.CFrame *= CFrame.Angles(0,math.rad(12),0)
 until not bg or bg.Parent ~= torso

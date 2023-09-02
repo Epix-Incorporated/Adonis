@@ -1,83 +1,122 @@
--- Expertcoder2
--- Created: 26/03/2021
--- Updated: 28/03/2021
+client, service = nil, nil
 
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
+	local generate = nil
 
-client = nil
-service = nil
-
-return function(data)
-
-	local window = client.UI.Make("Window",{
-		Name  = "OnlineFriends";
+	local window = client.UI.Make("Window", {
+		Name = "OnlineFriends";
 		Title = "Online Friends";
-		Size  = {390, 320};
+		Icon = client.MatIcons.People;
+		Size = {390, 320};
 		MinSize = {180, 120};
 		AllowMultiple = false;
+		OnRefresh = function()
+			generate()
+		end
 	})
 
-	do
-		local function locationTypeToStr(int)
-			return ({
-				[0] = "Mobile Website";
-				[1] = "Mobile InGame";
-				[2] = "Webpage";
-				[3] = "Studio";
-				[4] = "InGame";
-				[5] = "Xbox";
-				[6] = "Team Create";
-			})[int]
-		end;
+	local function locationTypeToStr(int)
+		return ({
+			[0] = "Mobile Website"; [1] = "Mobile InGame"; [2] = "Website"; [3] = "Studio"; [4] = "InGame"; [5] = "Xbox"; [6] = "Team Create";
+		})[int]
+	end;
 
-		local friendDictionary = game:GetService("Players").LocalPlayer:GetFriendsOnline()
-		local sortedFriends = {}
-		local friendInfo = {}
+	local scroller = window:Add("ScrollingFrame", {
+		List = {};
+		ScrollBarThickness = 3;
+		BackgroundTransparency = 1;
+		Position = UDim2.new(0, 5, 0, 35);
+		Size = UDim2.new(1, -10, 1, -40);
+	})
+	scroller:Add("UIListLayout", {
+		SortOrder = "LayoutOrder";
+		FillDirection = "Vertical";
+		VerticalAlignment = "Top";
+	})
 
-		for _, item in pairs(friendDictionary) do
-			table.insert(sortedFriends, item.UserName)
-			friendInfo[item.UserName] = {id=item.VisitorId;displayName=item.DisplayName;lastLocation=item.LastLocation;locationType=item.LocationType;}
-		end
+	local search = window:Add("TextBox", {
+		Position = UDim2.new(0, 5, 0, 5);
+		Size = UDim2.new(1, -10, 0, 25);
+		BackgroundTransparency = 0.25;
+		BorderSizePixel = 0;
+		TextColor3 = Color3.new(1, 1, 1);
+		Text = "";
+		PlaceholderText = "Search";
+		TextStrokeTransparency = 0.8;
+	})
+	search:Add("ImageLabel", {
+		Image = client.MatIcons.Search;
+		Position = UDim2.new(1, -21, 0, 3);
+		Size = UDim2.new(0, 18, 0, 18);
+		ImageTransparency = 0.2;
+		BackgroundTransparency = 1;
+	})
 
-		table.sort(sortedFriends)
-		
-		local i = 1
-		local friendCount = 0
-		for _, friendName in ipairs(sortedFriends) do
-			friendCount = friendCount + 1
-			local entryText = ""
-			if friendName == friendInfo[friendName].displayName then
-				entryText = friendName
-			else
-				entryText = friendInfo[friendName].displayName.." (@"..friendName..")"
+	function generate()
+		local friendDictionary = service.Players.LocalPlayer:GetFriendsOnline()
+		table.sort(friendDictionary, function(a, b)
+			return a.UserName < b.UserName
+		end)
+
+		local filter = search.Text
+
+		for _, child in ipairs(scroller:GetChildren()) do 
+			if not child:IsA("UIListLayout") then
+				child:Destroy()
 			end
-			local entry = window:Add("TextLabel", {
-				Text = "             "..entryText;
-				ToolTip = "Location: "..friendInfo[friendName].lastLocation;
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 30);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
-				TextXAlignment = "Left";
-			})
-			entry:Add("TextLabel", {
-				Text = " "..locationTypeToStr(friendInfo[friendName].locationType).."  ";
-				BackgroundTransparency = 1;
-				Size = UDim2.new(0, 120, 1, 0);
-				Position = UDim2.new(1, -120, 0, 0);
-				TextXAlignment = "Right";
-			})
-			spawn(function()
-				entry:Add("ImageLabel", {
-					Image = game:GetService("Players"):GetUserThumbnailAsync(friendInfo[friendName].id, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
-					BackgroundTransparency = 1;
-					Size = UDim2.new(0, 30, 0, 30);
-					Position = UDim2.new(0, 0, 0, 0);
-				})
-			end)
-			i = i + 1
 		end
-		window:SetTitle("Online Friends ("..friendCount..")")
+		
+		for i, friend in ipairs(friendDictionary) do
+			if friend.UserName:sub(1, #filter):lower() == filter:lower() or friend.DisplayName:sub(1, #filter):lower() == filter:lower() then
+				local entry = scroller:Add("TextLabel", {
+					Text = `             {if friend.UserName == friend.DisplayName then friend.UserName else `{friend.DisplayName} (@{friend.UserName})`}`;
+					ToolTip = `Location: {friend.LastLocation}`;
+					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+					Size = UDim2.new(1, 0, 0, 30);
+					LayoutOrder = i;
+					TextXAlignment = "Left";
+				})
+				entry:Add("TextLabel", {
+					Text = ` {locationTypeToStr(friend.LocationType)}  `;
+					BackgroundTransparency = 1;
+					Size = UDim2.new(0, 120, 1, 0);
+					Position = UDim2.new(1, -120, 0, 0);
+					TextXAlignment = "Right";
+				})
+				spawn(function()
+					entry:Add("ImageLabel", {
+						Image = service.Players:GetUserThumbnailAsync(friend.VisitorId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
+						BackgroundTransparency = 1;
+						Size = UDim2.new(0, 30, 0, 30);
+						Position = UDim2.new(0, 0, 0, 0);
+					})
+				end)
+			end
+		end
+		
+		scroller:ResizeCanvas(false, true, false, false, 5, 5)
+		window:SetTitle(`Online Friends ({#friendDictionary})`)
 	end
 
-	window:ResizeCanvas(false, true, false, false, 5, 5)
+	search:GetPropertyChangedSignal("Text"):Connect(generate)
+	generate()
+
 	window:Ready()
+
+	window:AddTitleButton({
+		Text = "";
+		ToolTip = "Invite";
+		OnClick = function()
+			service.SocialService:PromptGameInvite(service.Players.LocalPlayer)
+		end
+	}):Add("ImageLabel", {
+		Size = UDim2.new(0, 16, 0, 16);
+		Position = UDim2.new(0, 8, 0, 2);
+		Image = client.MatIcons.Send;
+		BackgroundTransparency = 1;
+	})
 end

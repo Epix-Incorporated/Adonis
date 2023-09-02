@@ -2,13 +2,18 @@
 client = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local termLines = {}
 	local gTable
 	
 	local window = client.UI.Make("Window",{
 		Name  = "Terminal";
 		Title = "Terminal";
+		Icon = client.MatIcons.Code;
 		Size  = {500,300};
 		AllowMultiple = false;
 		OnClose = function()
@@ -26,10 +31,11 @@ return function(data)
 		Text = "";
 		Size = UDim2.new(1, 0, 0, 30);
 		Position = UDim2.new(0, 0, 1, -30);
-		--Text = "";
 		PlaceholderText = "Enter command";
-		TextXAlignment = "Left"
+		TextXAlignment = "Left";
+		ClearTextOnFocus = false;
 	})
+	textbox:Add("UIPadding", {PaddingLeft = UDim.new(0, 6);})
 	
 	local function out(put, lines)
 		table.insert(lines,put)
@@ -51,9 +57,9 @@ return function(data)
 				local com = textbox.Text
 				local ret
 				textbox.Text = ""
-				out(">"..com,termLines)
+				out(`>{com}`,termLines)
 				ret = client.Remote.Get("Terminal",com,{
-					Time = tick();
+					Time = time();
 				})
 				
 				if ret and type(ret) == "table" then
@@ -70,6 +76,8 @@ return function(data)
 			wait(0.1)
 		end)
 	end)
+
+	out(string.format("Adonis Terminal [%s]", string.match(client.Changelog[5], "%[(.+)%].+")), termLines)
 	
 	gTable = window.gTable
 	window:Ready()

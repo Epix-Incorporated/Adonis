@@ -95,7 +95,12 @@
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">2</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>700</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arialbd.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -172,7 +177,12 @@
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -237,7 +247,7 @@
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid"></string>
+					<string name="ScriptGuid">{E318B6EF-F5D9-405E-90C1-C64145CD174B}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -246,7 +256,11 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = client.UI.Prepare(script.Parent.Parent) -- Change it to a TextLabel to avoid chat clearing
 	local playergui = service.PlayerGui
 	local frame = gui.Frame
@@ -271,11 +285,23 @@ return function(data)
 	msg.TextStrokeTransparency = 1
 	frame.BackgroundTransparency = 1
 	
+	local log  = {
+		Type = "Full Screen Message";
+		Title = title;
+		Message = message;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsPanel:Fire(log)
+	
 	
 	local blur = service.New("BlurEffect")
 	blur.Enabled = false
 	blur.Size = 0
-	blur.Parent = service.Workspace.CurrentCamera
+	blur.Parent = workspace.CurrentCamera
 	
 	local fadeSteps = 10
 	local blurSize = 10
@@ -357,7 +383,7 @@ return function(data)
 		Routine(function()
 			wait(0.5)
 			for i = 1, #message do 
-				msg.Text = msg.Text .. message:sub(i,i) 
+				msg.Text = `{msg.Text}{message:sub(i,i)}` 
 				wait(0.05) 
 			end 
 		end)
@@ -383,7 +409,7 @@ return function(data)
 	else
 		wait(0.5)
 		for i = 1, #message do 
-			msg.Text = msg.Text .. message:sub(i,i) 
+			msg.Text = `{msg.Text}{message:sub(i,i)}`
 			wait(0.05) 
 		end 
 		wait(tim or 5) 

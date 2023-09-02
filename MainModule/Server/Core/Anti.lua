@@ -7,9 +7,14 @@ origEnv = nil
 logError = nil
 
 --// Anti-Exploit
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
+	local antiNotificationDebounce = {}
+	local antiNotificationResetTick = os.clock() + 60
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
@@ -25,16 +30,13 @@ return function(Vargs)
 		Settings = server.Settings;
 
 		--// Client check
-		service.StartLoop("ClientCheck",30, Anti.CheckAllClients, true)
+		service.StartLoop("ClientCheck", 30, Anti.CheckAllClients, true)
 
 		Anti.Init = nil;
 		Logs:AddLog("Script", "AntiExploit Module Initialized")
 	end
 
 	local function RunAfterPlugins(data)
-		--// Fake finder
-		--service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
-
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
 	end
@@ -44,37 +46,39 @@ return function(Vargs)
 		RunAfterPlugins = RunAfterPlugins;
 		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
 		SpoofCheckCache = {};
+		KickedPlayers = setmetatable({}, {__mode = "k"});
+
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick("::Adonis::\n".. tostring(info)) end)
+			pcall(function()service.UnWrap(p):Kick(`:: Adonis Anti Cheat ::\n{info}`) end)
 
-			wait(1)
+			task.wait(1)
 
 			pcall(p.Destroy, p)
 			pcall(service.Delete, p)
 
 			Logs.AddLog("Script",{
-				Text = "Server removed "..tostring(p);
+				Text = `Server removed {p}`;
 				Desc = info;
 			})
 		end;
-
+    
 		CheckAllClients = function()
 			--// Check if clients are alive
-			if Settings.CheckClients and (not Core.PanicMode) and server.Running then
+			if Settings.CheckClients and server.Running then
 				Logs.AddLog(Logs.Script,{
 					Text = "Checking Clients";
 					Desc = "Making sure all clients are active";
 				})
 
-				for ind,p in ipairs(service.Players:GetPlayers()) do
+				for ind,p in service.Players:GetPlayers() do
 					if p and p:IsA("Player") then
 						local key = tostring(p.UserId)
 						local client = Remote.Clients[key]
 						if client and client.LastUpdate and client.PlayerLoaded then
 							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-								Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
+								Anti.Detected(p, "Kick", `Client Not Responding [>{Anti.ClientTimeoutLimit} seconds]`)
 							end
 						end
 					end
@@ -97,7 +101,7 @@ return function(Vargs)
 							return true
 						end
 					else
-						for i,user in next,userInfo do
+						for i,user in userInfo do
 							if user.Id == p.UserId then
 								if p.Name ~= user.Username or p.DisplayName ~= user.DisplayName then
 									return true
@@ -108,125 +112,54 @@ return function(Vargs)
 				end)
 
 				if not success then
-					warn("Failed to check validity of player's name, reason: ".. tostring(err))
+					warn(`Failed to check validity of player's name, reason: {err}`)
 				end
 			end
 		end;
 
-		Sanitize = function(obj, classList)
-			if Anti.RLocked(obj) then
-				pcall(service.Delete, obj)
-			else
-				for i,child in next,obj:GetChildren() do
-					if Anti.RLocked(child) or Functions.IsClass(child, classList) then
-						pcall(service.Delete, child)
-					else
-						pcall(Anti.Sanitize, child, classList)
-					end
-				end
-			end
-		end;
-
-		isFake = function(p)
-			if Anti.ObjRLocked(p) or not p:IsA("Player") then
-				return true,1
-			else
-				local players = service.Players:GetPlayers()
-				local found = 0
-
-				if service.NetworkServer then
-					local net = false
-					for i,v in pairs(service.NetworkServer:GetChildren()) do
-						if v:IsA("NetworkReplicator") and v:GetPlayer() == p then
-							net = true
-						end
-					end
-					if not net then
-						return true,1
-					end
-				end
-
-				for i,v in pairs(players) do
-					if tostring(v) == tostring(p) then
-						found = found+1
-					end
-				end
-
-				if found>1 then
-					return true,found
-				else
-					return false
-				end
-			end
-		end;
-
-		RemoveIfFake = function(p)
-			local isFake
-			local ran,err = pcall(function() isFake = Anti.isFake(p) end)
-			if isFake or not ran then
-				Anti.RemovePlayer(p)
-			end
-		end;
-
-		FindFakePlayers = function()
-			for i,v in pairs(service.Players:GetPlayers()) do
-				if Anti.isFake(v) then
-					Anti.RemovePlayer(v, "Fake")
-				end
-			end
-		end;
-
-		GetClassName = function(obj)
-			local testName = tostring(math.random()..math.random())
-			local ran,err = pcall(function()
-				local test = obj[testName]
+		CheckBackpack = function(p, obj)
+			local ran, err = pcall(function()
+				return p:WaitForChild("Backpack", 60):FindFirstChild(obj)
 			end)
-			if err then
-				local class = err:match(testName.." is not a valid member of (.*)")
-				if class then
-					return class
-				end
-			end
+			return if ran then ran else false
 		end;
 
-		RLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
-		end;
+		Detected = function(player, action, info)
+			local info = string.sub(string.gsub(tostring(info), "\n", ""), 1, 50)
 
-		ObjRLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
-		end;
-
-		AssignName = function()
-			local name = math.random(100000,999999)
-			return name
-		end;
-
-		Detected = function(player,action,info)
-			local info = string.gsub(tostring(info), "\n", "")
-
-			if service.RunService:IsStudio() then
-				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
+			if Anti.KickedPlayers[player] then
+				player:Kick(`:: Adonis Anti Cheat ::\n{info}`)
+				return
+			elseif service.RunService:IsStudio() then
+				warn(`ANTI-EXPLOIT: {player.Name} {action} {info}`)
 			elseif service.NetworkServer then
 				if player then
-					if action:lower() == 'log' then
-						-- yay?
-					elseif action:lower() == 'kick' then
+					if string.lower(action) == "kick" then
+						Anti.KickedPlayers[player] = true
+
 						Anti.RemovePlayer(player, info)
-						--player:Kick("Adonis; Disconnected by server; \n"..tostring(info))
-					elseif action:lower() == 'kill' then
+					elseif string.lower(action) == "kill" and player.Character then
+						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+
+						if humanoid then
+							humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+							humanoid.Health = 0
+						end
 						player.Character:BreakJoints()
-					elseif action:lower() == 'crash' then
-						Remote.Send(player,'Function','Kill')
-						wait(5)
+					elseif string.lower(action) == "crash" then
+						Anti.KickedPlayers[player] = true
+
+						Remote.Send(player, "Function", "Kill")
+						Remote.Clients[tostring(player.UserId)] = nil
+						task.wait(5)
 						pcall(function()
-							local scr = Core.NewScript("LocalScript",[[while true do end]])
+							local scr = Core.NewScript("LocalScript", [[while true do end]])
 							scr.Parent = player.Backpack
 							scr.Disabled = false
 						end)
 
 						Anti.RemovePlayer(player, info)
-					else
+					elseif string.lower(action) ~= "log" then
 						-- fake log (thonk?)
 						Anti.Detected(player, "Kick", "Spoofed log")
 						return;
@@ -235,29 +168,48 @@ return function(Vargs)
 			end
 
 			Logs.AddLog(Logs.Script,{
-				Text = "AE Detected "..tostring(player);
-				Desc = "The Anti-Exploit system detected strange activity from "..tostring(player);
+				Text = `AE Detected {player}`;
+				Desc = `The Anti-Exploit system detected strange activity from {player}`;
 				Player = player;
 			})
 
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 50)) .. " (Mouse over full info)";
+				Text = `[Action: {action} User: ({player})] {string.sub(info, 1, 50)} (Mouse over for full info)`;
 				Desc = tostring(info);
 				Player = player;
 			})
-		end;
 
-		CheckNameID = function(p)
-			if p.userId > 0 and p.userId ~= game.CreatorId and p.Character then
-				local realId = service.Players:GetUserIdFromNameAsync(p.Name) or p.userId
-				local realName = service.Players:GetNameFromUserIdAsync(p.userId) or p.Name
+			if Settings.AENotifs == true or Settings.ExploitNotifications == true then -- AENotifs for old loaders
+				local debounceIndex = `{action}{player}{info}`
+				if os.clock() < antiNotificationResetTick then
+					antiNotificationDebounce = {}
+					antiNotificationResetTick = os.clock() + 60
+				end
 
-				if realName and realId then
-					if (tonumber(realId) and realId~=p.userId) or (tostring(realName)~="nil" and realName~=p.Name) then
-						Anti.Detected(p,'log','Name/UserId does not match')
+				if not antiNotificationDebounce[debounceIndex] then
+					antiNotificationDebounce[debounceIndex] = 1
+				elseif
+					(string.lower(action) == "log" or string.lower(action) == "kill") and
+					antiNotificationDebounce[debounceIndex] > 3
+				then
+					return
+				end
+
+				for _, plr in service.Players:GetPlayers() do
+					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
+						Remote.MakeGui(plr, "Notification", {
+							Title = "Notification",
+							Icon = server.MatIcons["Notification important"];
+							Message = string.format(
+								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
+								player.Name,
+								action,
+								string.sub(info, 1, 50)
+							);
+							Time = 30;
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}exploitlogs')`);
+						})
 					end
-
-					Remote.Send(p,"LaunchAnti","NameId",{RealID = realId; RealName = realName})
 				end
 			end
 		end;

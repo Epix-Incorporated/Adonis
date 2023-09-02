@@ -1,107 +1,175 @@
 -------------------
 -- Adonis Client --
 -------------------
+--!nocheck
+																																																																																						  --[[
+This module is part of Adonis 1.0 and contains lots of old code;
+future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
 
-math.randomseed(os.time())
+If you find bugs or similar issues, please submit an issue report to us!
 
+]]
 --// Load Order List
-local LoadingOrder = {
+local CORE_LOADING_ORDER = table.freeze({
 	--// Required by most modules
-	"Variables";
-	"Functions";
+	"Variables",
+	"Functions",
 
 	--// Core functionality
-	"Core";
-	"Remote";
-	"UI";
-	"Process";
+	"Core",
+	"Remote",
+	"UI",
+	"Process",
 
 	--// Misc
-	"Anti";
-}
+	"Anti",
+})
 
 --// Loccalllsssss
-local _G, game, script, getfenv, setfenv, workspace,
-getmetatable, setmetatable, loadstring, coroutine,
-rawequal, typeof, print, math, warn, error,  pcall,
-xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn =
-	_G, game, script, getfenv, setfenv, workspace,
-getmetatable, setmetatable, loadstring, coroutine,
-rawequal, typeof, print, math, warn, error,  pcall,
-xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn;
+local _G, game, script, getfenv, setfenv, workspace, getmetatable, setmetatable, loadstring, coroutine, rawequal, typeof, print, math, warn, error, pcall, xpcall, select, rawset, rawget, ipairs, pairs, next, Rect, Axes, os, time, Faces, unpack, string, Color3, newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, NumberSequenceKeypoint, PhysicalProperties, Region3int16, Vector3int16, require, table, type, wait, Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick, assert =
+	_G,
+game,
+script,
+getfenv,
+setfenv,
+workspace,
+getmetatable,
+setmetatable,
+loadstring,
+coroutine,
+rawequal,
+typeof,
+print,
+math,
+warn,
+error,
+pcall,
+xpcall,
+select,
+rawset,
+rawget,
+ipairs,
+pairs,
+next,
+Rect,
+Axes,
+os,
+time,
+Faces,
+table.unpack,
+string,
+Color3,
+newproxy,
+tostring,
+tonumber,
+Instance,
+TweenInfo,
+BrickColor,
+NumberRange,
+ColorSequence,
+NumberSequence,
+ColorSequenceKeypoint,
+NumberSequenceKeypoint,
+PhysicalProperties,
+Region3int16,
+Vector3int16,
+require,
+table,
+type,
+task.wait,
+Enum,
+UDim,
+UDim2,
+Vector2,
+Vector3,
+Region3,
+CFrame,
+Ray,
+task.delay,
+task.defer,
+task,
+tick,
+function(cond, errMsg)
+	return cond or error(errMsg or "assertion failed!", 2)
+end
 
-local ServicesWeUse = {
-	"Workspace";
-	"Players";
-	"Lighting";
-	"ReplicatedStorage";
-	"ReplicatedFirst";
-	"ScriptContext";
-	"JointsService";
-	"LogService";
-	"Teams";
-	"SoundService";
-	"StarterGui";
-	"StarterPack";
-	"StarterPlayers";
-	"TestService";
-	"NetworkClient";
-};
+local SERVICES_WE_USE = table.freeze({
+	"Workspace",
+	"Players",
+	"Lighting",
+	"ReplicatedStorage",
+	"ReplicatedFirst",
+	"ScriptContext",
+	"JointsService",
+	"LogService",
+	"Teams",
+	"SoundService",
+	"StarterGui",
+	"StarterPack",
+	"StarterPlayer",
+	"GroupService",
+	"MarketplaceService",
+	"HttpService",
+	"TestService",
+	"RunService",
+	"NetworkClient",
+})
 
 --// Logging
-local clientLog = {};
-local dumplog = function() warn("::Adonis:: Dumping client log...") for i,v in ipairs(clientLog) do warn("::Adonis::", v) end end;
-local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
+local clientLog = {}
+local dumplog = function()
+	warn(":: Adonis :: Dumping client log...")
+
+	for _, v in clientLog do
+		warn(":: Adonis ::", v)
+	end
+end
+local log = function(...)
+	table.insert(clientLog, table.concat({ ... }, " "))
+end
 
 --// Dump log on disconnect
---[[game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
-	warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
-	dumplog();
-end)--]]
+local isStudio = game:GetService("RunService"):IsStudio()
+game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
+	if not isStudio then
+		warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
+		dumplog()
+	end
+end)
 
 local unique = {}
-local origEnv = getfenv();
-setfenv(1,setmetatable({}, {__metatable = unique}))
+local origEnv = getfenv()
+setfenv(1, setmetatable({}, { __metatable = unique }))
 --local origWarn = warn
-local startTime = tick()
+local startTime = time()
 local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
-local Folder = script.Parent;
+local Folder = script.Parent
 local locals = {}
 local client = {}
 local service = {}
 local ServiceSpecific = {}
 
 local function isModule(module)
-	for ind, modu in next, client.Modules do
+	for _, modu in client.Modules do
 		if rawequal(module, modu) then
 			return true
 		end
 	end
+	return false
 end
 
 local function logError(...)
 	warn("ERROR: ", ...)
 
 	if client and client.Remote then
-		client.Remote.Send("LogError", table.concat({...}, " "))
+		client.Remote.Send("LogError", table.concat({ ... }, " "))
 	end
 end
-local oldPrint = print;
-local print = function(...)
+
+local oldPrint = print
+print = function(...)
 	oldPrint(":: Adonis ::", ...)
 end
 
@@ -114,7 +182,7 @@ local cPcall = function(func, ...)
 	local ran, err = pcall(coroutine.resume, coroutine.create(func), ...)
 
 	if err then
-		warn(':: ADONIS_ERROR ::',err)
+		warn(":: ADONIS_ERROR ::", err)
 		logError(tostring(err))
 	end
 
@@ -145,47 +213,55 @@ local Immutable = function(...)
 	return mut
 end
 
-local player = game:GetService("Players").LocalPlayer
-local Fire, Detected
-local wrap = coroutine.wrap
-local Kill; Kill = Immutable(function(info)
-	--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
-	wrap(function() pcall(function()
-			if Detected then
-				Detected("kick", info)
-			elseif Fire then
-				Fire("BadMemes", info)
-			end
-		end) end)()
+local Kill
+local Fire, Detected = nil, nil
+do
+	local wrap = coroutine.wrap
+	Kill = Immutable(function(info)
+		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
+		wrap(function()
+			pcall(function()
+				if Detected then
+					Detected("kick", info)
+				elseif Fire then
+					Fire("BadMemes", info)
+				end
+			end)
+		end)()
 
-	wrap(function() pcall(function()
-			wait(1)
-			service.Player:Kick(info)
-		end) end)()
+		wrap(function()
+			pcall(function()
+				task.wait(1)
+				service.Player:Kick(info)
+			end)
+		end)()
 
-	wrap(function() pcall(function()
-			wait(5)
-			while true do
-				pcall(spawn,function()
-					spawn(Kill())
-					-- memes
-				end)
-			end
-		end) end)()
-end);
+		wrap(function()
+			pcall(function()
+				task.wait(5)
+				while true do
+					pcall(task.spawn, function()
+						task.spawn(Kill())
+						-- memes
+					end)
+				end
+			end)
+		end)()
+	end)
+end
 
-local GetEnv;
+local GetEnv
 GetEnv = function(env, repl)
-	local scriptEnv = setmetatable({},{
-		__index = function(tab,ind)
+	local scriptEnv = setmetatable({}, {
+		__index = function(tab, ind)
 			return (locals[ind] or (env or origEnv)[ind])
-		end;
+		end,
 
-		__metatable = unique;
+		__metatable = unique,
 	})
 
-	if repl and type(repl)=="table" then
-		for ind, val in next,repl do
+	if repl and type(repl) == "table" then
+		for ind, val in repl do
 			scriptEnv[ind] = val
 		end
 	end
@@ -193,97 +269,119 @@ GetEnv = function(env, repl)
 	return scriptEnv
 end
 
-local LoadModule = function(plugin, yield, envVars)
-	local plugran, plug = pcall(require, plugin)
+local GetVargTable = function()
+	return {
+		Client = client,
+		Service = service,
+	}
+end
+
+local LoadModule = function(module, yield, envVars, noEnv)
+	local plugran, plug = pcall(require, module)
 
 	if plugran then
 		if type(plug) == "function" then
 			if yield then
 				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+				local ran, err = service.TrackTask(
+					`Plugin: {module}`,
+					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					GetVargTable(),
+					GetEnv
+				)
 
 				if not ran then
-					warn("Module encountered an error while loading: "..tostring(plugin))
+					warn(`Module encountered an error while loading: {module}`)
 					warn(tostring(err))
 				end
 			else
-				--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
+				local ran, err = service.TrackTask(
+					`Thread: Plugin: {module}`,
+					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					GetVargTable(),
+					GetEnv
+				)
 
 				if not ran then
-					warn("Module encountered an error while loading: "..tostring(plugin))
+					warn(`Module encountered an error while loading: {module}`)
 					warn(tostring(err))
 				end
 			end
 		else
-			client[plugin.Name] = plug
+			client[module.Name] = plug
 		end
 	else
-		warn("Error while loading client module", plugin, plug)
+		warn("Error while loading client module", module, plug)
 	end
-end;
+end
 
-log("Client setmetatable");
+log("Client setmetatable")
 
 client = setmetatable({
-	Handlers = {};
-	Modules = {};
-	Service = service;
-	Module = script;
-	Print = print;
-	Warn = warn;
-	Deps = {};
-	Pcall = Pcall;
-	cPcall = cPcall;
-	Routine = Routine;
-	OldPrint = oldPrint;
-	LogError = logError;
-	TestEvent = Instance.new("RemoteEvent");
+	Handlers = {},
+	Modules = {},
+	Service = service,
+	Module = script,
+	Print = print,
+	Warn = warn,
+	Deps = {},
+	Pcall = Pcall,
+	cPcall = cPcall,
+	Routine = Routine,
+	OldPrint = oldPrint,
+	LogError = logError,
+	TestEvent = Instance.new("RemoteEvent"),
 
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
 		--wait(30)
 		--client.Kill()(info)
-	end;
+	end,
 
 	--Kill = Kill;
 }, {
 	__index = function(self, ind)
 		if ind == "Kill" then
-			local ran,func = pcall(function() return Kill() end);
+			local ran, func = pcall(function()
+				return Kill()
+			end)
 
 			if not ran or type(func) ~= "function" then
-				service.Players.LocalPlayer:Kick("Adonis (PlrClientIndexKlErr)");
-				while true do end
+				service.Players.LocalPlayer:Kick("Adonis (PlrClientIndexKlErr)")
+				while true do
+				end
 			end
 
-			return func;
+			return func
 		end
-	end
-});
+	end,
+})
 
 locals = {
-	Pcall = Pcall;
-	GetEnv = GetEnv;
-	cPcall = cPcall;
-	client = client;
-	Folder = Folder;
-	Routine = Routine;
-	service = service;
-	logError = logError;
-	origEnv = origEnv;
-	log = log;
-	dumplog = dumplog;
+	Pcall = Pcall,
+	GetEnv = GetEnv,
+	cPcall = cPcall,
+	client = client,
+	Folder = Folder,
+	Routine = Routine,
+	service = service,
+	logError = logError,
+	origEnv = origEnv,
+	log = log,
+	dumplog = dumplog,
 }
 
-log("Create service metatable");
+log("Create service metatable")
 
-service = setfenv(require(Folder.Shared.Service), GetEnv(nil, {client = client}))(function(eType, msg, desc, ...)
-	local extra = {...}
-	if eType == "MethodError" and service.Detected then
-		Kill()("Shananigans denied")
+service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
+	--warn(eType, msg, desc, ...)
+	local extra = { ... }
+	if eType == "MethodError" then
+		--Kill()("Shananigans denied")
 		--player:Kick("Method error")
 		--service.Detected("kick", "Method change detected")
+		logError("Client", `Method Error Occured: {msg}`)
 	elseif eType == "ServerError" then
 		logError("Client", tostring(msg))
 	elseif eType == "ReadError" then
@@ -301,149 +399,160 @@ end, function(c, parent, tab)
 	if not isModule(c) and c ~= script and c ~= Folder and parent == nil then
 		tab.UnHook()
 	end
-end, ServiceSpecific)
+end, ServiceSpecific, GetEnv(nil, { client = client }))
 
 --// Localize
-log("Localize");
-os = service.Localize(os)
-math = service.Localize(math)
-table = service.Localize(table)
-string = service.Localize(string)
-coroutine = service.Localize(coroutine)
-Instance = service.Localize(Instance)
-Vector2 = service.Localize(Vector2)
-Vector3 = service.Localize(Vector3)
-CFrame = service.Localize(CFrame)
-UDim2 = service.Localize(UDim2)
-UDim = service.Localize(UDim)
-Ray = service.Localize(Ray)
-Rect = service.Localize(Rect)
-Faces = service.Localize(Faces)
-Color3 = service.Localize(Color3)
-NumberRange = service.Localize(NumberRange)
-NumberSequence = service.Localize(NumberSequence)
-NumberSequenceKeypoint = service.Localize(NumberSequenceKeypoint)
-ColorSequenceKeypoint = service.Localize(ColorSequenceKeypoint)
-PhysicalProperties = service.Localize(PhysicalProperties)
-ColorSequence = service.Localize(ColorSequence)
-Region3int16 = service.Localize(Region3int16)
-Vector3int16 = service.Localize(Vector3int16)
-BrickColor = service.Localize(BrickColor)
-TweenInfo = service.Localize(TweenInfo)
-Axes = service.Localize(Axes)
+log("Localize")
+local Localize = service.Localize
+os = Localize(os)
+math = Localize(math)
+table = Localize(table)
+string = Localize(string)
+coroutine = Localize(coroutine)
+Instance = Localize(Instance)
+Vector2 = Localize(Vector2)
+Vector3 = Localize(Vector3)
+CFrame = Localize(CFrame)
+UDim2 = Localize(UDim2)
+UDim = Localize(UDim)
+Ray = Localize(Ray)
+Rect = Localize(Rect)
+Faces = Localize(Faces)
+Color3 = Localize(Color3)
+NumberRange = Localize(NumberRange)
+NumberSequence = Localize(NumberSequence)
+NumberSequenceKeypoint = Localize(NumberSequenceKeypoint)
+ColorSequenceKeypoint = Localize(ColorSequenceKeypoint)
+PhysicalProperties = Localize(PhysicalProperties)
+ColorSequence = Localize(ColorSequence)
+Region3int16 = Localize(Region3int16)
+Vector3int16 = Localize(Vector3int16)
+BrickColor = Localize(BrickColor)
+TweenInfo = Localize(TweenInfo)
+Axes = Localize(Axes)
+task = Localize(task)
 
 --// Wrap
 log("Wrap")
 
-local service_wrap = service.Wrap
-local service_unwrap = service.UnWrap
+local service_Wrap = service.Wrap
+local service_UnWrap = service.UnWrap
 
-for i,val in next,service do if type(val) == "userdata" then service[i] = service_wrap(val, true) end end
+for i, val in service do
+	if type(val) == "userdata" then
+		service[i] = service_Wrap(val, true)
+	end
+end
 
 --// Folder Wrap
-Folder = service_wrap(Folder, true)
+Folder = service_Wrap(Folder, true)
 
 --// Global Wrapping
-Enum = service_wrap(Enum, true)
+Enum = service_Wrap(Enum, true)
 rawequal = service.RawEqual
-script = service_wrap(script, true)
-game = service_wrap(game, true)
-workspace = service_wrap(workspace, true)
+script = service_Wrap(script, true)
+game = service_Wrap(game, true)
+workspace = service_Wrap(workspace, true)
 Instance = {
 	new = function(obj, parent)
-		local nobj = oldInstNew(obj)
-		local par = parent and service_unwrap(parent)
-		if par then nobj.Parent = par end
-		return service_wrap(nobj, true)
-	end
+		return service_Wrap(oldInstNew(obj, service_UnWrap(parent)), true)
+	end,
 }
-require = function(obj)
-	return service_wrap(oldReq(service_unwrap(obj)), true)
+require = function(obj, noWrap: boolean?)
+	return if noWrap == true then oldReq(service_UnWrap(obj)) else service_Wrap(oldReq(service_UnWrap(obj)), true)
 end
 
 client.Service = service
-client.Module = service_wrap(client.Module, true)
+client.Module = service_Wrap(client.Module, true)
 
 --// Setting things up
 log("Setting things up")
-for ind,loc in next,{
-	_G = _G;
-	game = game;
-	spawn = spawn;
-	script = script;
-	getfenv = getfenv;
-	setfenv = setfenv;
-	workspace = workspace;
-	getmetatable = getmetatable;
-	setmetatable = setmetatable;
-	loadstring = loadstring;
-	coroutine = coroutine;
-	rawequal = rawequal;
-	typeof = typeof;
-	print = print;
-	math = math;
-	warn = warn;
-	error = error;
-	pcall = pcall;
-	xpcall = xpcall;
-	select = select;
-	rawset = rawset;
-	rawget = rawget;
-	ipairs = ipairs;
-	pairs = pairs;
-	next = next;
-	Rect = Rect;
-	Axes = Axes;
-	os = os;
-	tick = tick;
-	Faces = Faces;
-	delay = delay;
-	unpack = unpack;
-	string = string;
-	Color3 = Color3;
-	newproxy = newproxy;
-	tostring = tostring;
-	tonumber = tonumber;
-	Instance = Instance;
-	TweenInfo = TweenInfo;
-	BrickColor = BrickColor;
-	NumberRange = NumberRange;
-	ColorSequence = ColorSequence;
-	NumberSequence = NumberSequence;
-	ColorSequenceKeypoint = ColorSequenceKeypoint;
-	NumberSequenceKeypoint = NumberSequenceKeypoint;
-	PhysicalProperties = PhysicalProperties;
-	Region3int16 = Region3int16;
-	Vector3int16 = Vector3int16;
-	elapsedTime = elapsedTime;
-	require = require;
-	table = table;
-	type = type;
-	wait = wait;
-	Enum = Enum;
-	UDim = UDim;
-	UDim2 = UDim2;
-	Vector2 = Vector2;
-	Vector3 = Vector3;
-	Region3 = Region3;
-	CFrame = CFrame;
-	Ray = Ray;
-	service = service;
-	} do locals[ind] = loc end
+for ind, loc in
+	{
+		_G = _G,
+		game = game,
+		spawn = spawn,
+		script = script,
+		getfenv = getfenv,
+		setfenv = setfenv,
+		workspace = workspace,
+		getmetatable = getmetatable,
+		setmetatable = setmetatable,
+		loadstring = loadstring,
+		coroutine = coroutine,
+		rawequal = rawequal,
+		typeof = typeof,
+		print = print,
+		math = math,
+		warn = warn,
+		error = error,
+		assert = assert,
+		pcall = pcall,
+		xpcall = xpcall,
+		select = select,
+		rawset = rawset,
+		rawget = rawget,
+		ipairs = ipairs,
+		pairs = pairs,
+		next = next,
+		Rect = Rect,
+		Axes = Axes,
+		os = os,
+		time = time,
+		Faces = Faces,
+		delay = delay,
+		unpack = unpack,
+		string = string,
+		Color3 = Color3,
+		newproxy = newproxy,
+		tostring = tostring,
+		tonumber = tonumber,
+		Instance = Instance,
+		TweenInfo = TweenInfo,
+		BrickColor = BrickColor,
+		NumberRange = NumberRange,
+		ColorSequence = ColorSequence,
+		NumberSequence = NumberSequence,
+		ColorSequenceKeypoint = ColorSequenceKeypoint,
+		NumberSequenceKeypoint = NumberSequenceKeypoint,
+		PhysicalProperties = PhysicalProperties,
+		Region3int16 = Region3int16,
+		Vector3int16 = Vector3int16,
+		require = require,
+		table = table,
+		type = type,
+		wait = wait,
+		Enum = Enum,
+		UDim = UDim,
+		UDim2 = UDim2,
+		Vector2 = Vector2,
+		Vector3 = Vector3,
+		Region3 = Region3,
+		CFrame = CFrame,
+		Ray = Ray,
+		task = task,
+		tick = tick,
+		service = service,
+	}
+do
+	locals[ind] = loc
+end
 
 --// Init
-log("Return init function");
+log("Return init function")
 return service.NewProxy({
 	__call = function(self, data)
-		log("Begin init");
+		log("Begin init")
 
-		local remoteName,depsName = string.match(data.Name, "(.*)\\(.*)")
-		Folder = service.Wrap(data.Folder or folder and folder:Clone() or Folder)
+		local remoteName, depsName = string.match(data.Name, "(.*)\\(.*)")
+		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
-		setfenv(1,setmetatable({}, {__metatable = unique}))
-		client.Folder = Folder;
-		client.UIFolder = Folder:WaitForChild("UI");
-		client.Shared = Folder:WaitForChild("Shared");
+		setfenv(1, setmetatable({}, { __metatable = unique }))
+
+		client.Folder = Folder
+		client.UIFolder = Folder:WaitForChild("UI", 9e9)
+		client.Shared = Folder:WaitForChild("Shared", 9e9)
+
 		client.Loader = data.Loader
 		client.Module = data.Module
 		client.DepsName = depsName
@@ -451,57 +560,106 @@ return service.NewProxy({
 		client.LoadingTime = data.LoadingTime
 		client.RemoteName = remoteName
 
+		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
+		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
+		do
+			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
+			client.MatIcons = setmetatable({}, {
+				__index = function(self, ind)
+					local materialIcon = MaterialIcons[ind]
+					if materialIcon then
+						self[ind] = `rbxassetid://{materialIcon}`
+						return self[ind]
+					end
+				end,
+				__metatable = "Adonis_MatIcons",
+			})
+		end
+
 		--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
 		log("Get dependencies")
-		for ind,obj in next,Folder:WaitForChild("Dependencies"):GetChildren() do client.Deps[obj.Name] = obj end
+		for _, obj in Folder:WaitForChild("Dependencies", 9e9):GetChildren() do
+			client.Deps[obj.Name] = obj
+		end
 
 		--// Do this before we start hooking up events
 		log("Destroy script object")
 		--folder:Destroy()
-		script:Destroy()
+		script.Parent = nil --script:Destroy()
 
 		--// Intial setup
 		log("Initial services caching")
-		for ind, serv in next,ServicesWeUse do local temp = service[serv] end
+		for _, serv in SERVICES_WE_USE do
+			local _ = service[serv]
+		end
 
 		--// Client specific service variables/functions
 		log("Add service specific")
-		ServiceSpecific.Player = service.Players.LocalPlayer;
-		ServiceSpecific.PlayerGui = service.Player:FindFirstChild("PlayerGui");
-		ServiceSpecific.SafeTweenSize = function(obj,...) pcall(obj.TweenSize,obj,...) end;
-		ServiceSpecific.SafeTweenPos = function(obj,...) pcall(obj.TweenPosition,obj,...) end;
-		ServiceSpecific.Filter = function(str,from,to)
-			return client.Remote.Get("Filter",str,(to and from) or service.Player,to or from)
-		end;
+		ServiceSpecific.Player = service.Players.LocalPlayer
+			or (function()
+				service.Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+				return service.Players.LocalPlayer
+			end)()
+		ServiceSpecific.PlayerGui = ServiceSpecific.Player:FindFirstChildWhichIsA("PlayerGui")
+		if not ServiceSpecific.PlayerGui then
+			Routine(function()
+				local PlayerGui = ServiceSpecific.Player:WaitForChild("PlayerGui", 120)
+				if not PlayerGui then
+					logError("PlayerGui unable to be fetched? [Waited 120 Seconds]")
+					return
+				end
+				ServiceSpecific.PlayerGui = PlayerGui
+			end)
+		end
 
-		ServiceSpecific.LaxFilter = function(str,from)
-			return service.Filter(str,from or service.Player,from or service.Player)
-		end;
+		--[[
+		-- // Doesn't seem to be used anymore
 
-		ServiceSpecific.BroadcastFilter = function(str,from)
-			return client.Remote.Get("BroadcastFilter",str,from or service.Player)
+		ServiceSpecific.SafeTweenSize = function(obj, ...)
+			pcall(obj.TweenSize, obj, ...)
 		end;
+		ServiceSpecific.SafeTweenPos = function(obj, ...)
+			pcall(obj.TweenPosition, obj, ...)
+		end;
+		]]
+
+		ServiceSpecific.Filter = function(str, from, to)
+			return client.Remote.Get("Filter", str, (to and from) or service.Player, to or from)
+		end
+		ServiceSpecific.LaxFilter = function(str, from)
+			return service.Filter(str, from or service.Player, from or service.Player)
+		end
+		ServiceSpecific.BroadcastFilter = function(str, from)
+			return client.Remote.Get("BroadcastFilter", str, from or service.Player)
+		end
 
 		ServiceSpecific.IsMobile = function()
-			return service.UserInputService.TouchEnabled and not service.UserInputService.MouseEnabled and not service.UserInputService.KeyboardEnabled
-		end;
+			return service.UserInputService.TouchEnabled
+				and not service.UserInputService.MouseEnabled
+				and not service.UserInputService.KeyboardEnabled
+		end
 
 		ServiceSpecific.LocalContainer = function()
-			if not client.Variables.LocalContainer or not client.Variables.LocalContainer.Parent then
-				client.Variables.LocalContainer = service.New("Folder")
-				client.Variables.LocalContainer.Name = "__ADONIS_LOCALCONTAINER_" .. client.Functions.GetRandom()
-				client.Variables.LocalContainer.Parent = service.Workspace
+			local Variables = client.Variables
+			if not (Variables.LocalContainer and Variables.LocalContainer.Parent) then
+				Variables.LocalContainer = service.New("Folder", {
+					Parent = workspace,
+          Archivable = false,
+					Name = `__ADONIS_LOCALCONTAINER_{client.Functions.GetRandom()}`,
+				})
 			end
-			return client.Variables.LocalContainer
-		end;
+			return Variables.LocalContainer
+		end
+
+		ServiceSpecific.IncognitoPlayers = {}
 
 		--// Load Core Modules
 		log("Loading core modules")
-		for ind,load in next,LoadingOrder do
+		for _, load in CORE_LOADING_ORDER do
 			local modu = Folder.Core:FindFirstChild(load)
 			if modu then
-				log("~! Loading Core Module: ".. tostring(load))
-				LoadModule(modu, true, {script = script})
+				log(`~! Loading Core Module: {load}`)
+				LoadModule(modu, true, { script = script }, true)
 			end
 		end
 
@@ -517,21 +675,21 @@ return service.NewProxy({
 			if client.Core.Key then
 				--// Run anything from core modules that needs to be done after the client has finished loading
 				log("~! Doing run after loaded")
-				for i,f in next,runAfterLoaded do
-					Pcall(f, data);
+				for _, f in runAfterLoaded do
+					Pcall(f, data)
 				end
 
 				--// Stuff to run after absolutely everything else
 				log("~! Doing run last")
-				for i,f in next,runLast do
-					Pcall(f, data);
+				for _, f in runLast do
+					Pcall(f, data)
 				end
 
 				--// Finished loading
 				log("Finish loading")
 				clientLocked = true
 				client.Finish_Loading = function() end
-				client.LoadingTime() --origWarn(tostring(tick()-(client.TrueStart or startTime)))
+				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
 				service.Events.FinishedLoading:Fire(os.time())
 
 				log("~! FINISHED LOADING!")
@@ -542,37 +700,37 @@ return service.NewProxy({
 		end
 
 		--// Initialize Cores
-		log("~! Init cores");
-		for i,name in next,LoadingOrder do
+		log("~! Init cores")
+		for _, name in CORE_LOADING_ORDER do
 			local core = client[name]
-			log("~! INIT: ".. tostring(name))
+			log(`~! INIT: {name}`)
 
 			if core then
 				if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
 					if core.RunLast then
-						table.insert(runLast, core.RunLast);
-						core.RunLast = nil;
+						table.insert(runLast, core.RunLast)
+						core.RunLast = nil
 					end
 
 					if core.RunAfterInit then
-						table.insert(runAfterInit, core.RunAfterInit);
-						core.RunAfterInit = nil;
+						table.insert(runAfterInit, core.RunAfterInit)
+						core.RunAfterInit = nil
 					end
 
 					if core.RunAfterPlugins then
-						table.insert(runAfterPlugins, core.RunAfterPlugins);
-						core.RunAfterPlugins = nil;
+						table.insert(runAfterPlugins, core.RunAfterPlugins)
+						core.RunAfterPlugins = nil
 					end
 
 					if core.RunAfterLoaded then
-						table.insert(runAfterLoaded, core.RunAfterLoaded);
-						core.RunAfterLoaded = nil;
+						table.insert(runAfterLoaded, core.RunAfterLoaded)
+						core.RunAfterLoaded = nil
 					end
 
 					if core.Init then
-						log("Run init for ".. tostring(name))
-						Pcall(core.Init, data);
-						core.Init = nil;
+						log(`Run init for {name}`)
+						Pcall(core.Init, data)
+						core.Init = nil
 					end
 				end
 			end
@@ -580,27 +738,32 @@ return service.NewProxy({
 
 		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
 		log("~! Running after init")
-		for i,f in next,runAfterInit do
-			Pcall(f, data);
+		for _, f in runAfterInit do
+			Pcall(f, data)
 		end
 
 		--// Load Plugins
 		log("~! Running plugins")
-		for index,plugin in next,Folder.Plugins:GetChildren() do
-			LoadModule(plugin, false, {script = plugin}); --noenv
+		for _, module in Folder.Plugins:GetChildren() do
+			--// Pass example/README plugins.
+			if module.Name == "README" then
+				continue
+			end
+
+			LoadModule(module, false, { script = module }) --noenv
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
 		log("~! Running after plugins")
-		for i,f in next,runAfterPlugins do
-			Pcall(f, data);
+		for _, f in runAfterPlugins do
+			Pcall(f, data)
 		end
 
 		log("Initial loading complete")
 
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
-		client.AllModulesLoaded = true;
-		service.Events.AllModulesLoaded:Fire(os.time());
+		client.AllModulesLoaded = true
+		service.Events.AllModulesLoaded:Fire(os.time())
 
 		--[[client = service.ReadOnly(client, {
 			[client.Variables] = true;
@@ -632,11 +795,13 @@ return service.NewProxy({
 			RunAfterPlugins = true;
 		}, true)--]]
 
-		service.Events.ClientInitialized:Fire();
+		service.Events.ClientInitialized:Fire()
 
-		log("~! Return success");
+		log("~! Return success")
 		return "SUCCESS"
-	end;
-	__metatable = "Adonis";
-	__tostring = function() return "Adonis" end;
+	end,
+	__metatable = "Adonis",
+	__tostring = function()
+		return "Adonis"
+	end,
 })

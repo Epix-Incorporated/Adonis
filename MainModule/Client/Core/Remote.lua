@@ -6,33 +6,37 @@ Routine = nil
 GetEnv = nil
 origEnv = nil
 logError = nil
+log = nil
 
 --// Remote
-return function()
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local _G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
 		_G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
-	local service = service
-	local client = client
+	local service = Vargs.Service
+	local client = Vargs.Client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;
@@ -53,7 +57,7 @@ return function()
 
 		--// Ping loop
 		log("~! Start ClientCheck loop");
-		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
+		task.delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
 		log("Get settings");
@@ -105,7 +109,7 @@ return function()
 				RunAfterPlugins = true;
 			}, true)--]]
 
-			Remote.RunLast = nil;
+		Remote.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -149,7 +153,7 @@ return function()
 				local action = args[1]
 				if action == "GetTasks" then
 					local tab = {}
-					for i,v in next,service.GetTasks() do
+					for _, v in service.GetTasks() do
 						local new = {}
 						new.Status = v.Status
 						new.Name = v.Name
@@ -187,7 +191,7 @@ return function()
 
 			UIKeepAlive = function(args)
 				if Variables.UIKeepAlive then
-					for ind,g in next,client.GUIs do
+					for _, g in client.GUIs do
 						if g.KeepAlive then
 							if g.Class == "ScreenGui" or g.Class == "GuiMain" then
 								g.Object.Parent = service.Player.PlayerGui
@@ -215,7 +219,7 @@ return function()
 			InstanceList = function(args)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
-				for i,v in next,objects do
+				for _, v in objects do
 					table.insert(temp, {
 						Text = v:GetFullName();
 						Desc = v.ClassName;
@@ -225,43 +229,52 @@ return function()
 			end;
 
 			ClientLog = function(args)
-				local temp={}
-				local function toTab(str, desc, color)
-					for i,v in next,service.ExtractLines(str) do
-						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
+				local MESSAGE_TYPE_COLORS = {
+					[Enum.MessageType.MessageWarning] = Color3.fromRGB(221, 187, 13),
+					[Enum.MessageType.MessageError] = Color3.fromRGB(255, 50, 14),
+					[Enum.MessageType.MessageInfo] = Color3.fromRGB(14, 78, 255)
+				}
+				local tab = {}
+				local logHistory: {{message: string, messageType: Enum.MessageType, timestamp: number}} = service.LogService:GetLogHistory()
+				for i = #logHistory, 1, -1 do
+					local log = logHistory[i]
+					for i, v in service.ExtractLines(log.message) do
+						table.insert(tab, {
+							Text = v;
+							Time = if i == 1 then log.timestamp else nil;
+							Desc = log.messageType.Name:match("^Message(.+)$");
+							Color = MESSAGE_TYPE_COLORS[log.messageType];
+						})
 					end
 				end
+				return tab
+			end;
 
-				for i,v in next,service.LogService:GetLogHistory() do
-					local mType = v.messageType
-					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
+			LocallyFormattedTime = function(args)
+				if type(args[1]) == "table" then
+					local results = {}
+					for i, t in args[1] do
+						results[i] = service.FormatTime(t, select(2, unpack(args)))
+					end
+					return results
 				end
-
-				return temp
-			end
+				return service.FormatTime(unpack(args))
+			end;
 		};
 
-		UnEncrypted = {
-			LightingChange = function(prop,val)
-				print(prop,"TICKLE ME!?")
-				Variables.LightingChanged = true
-				service.Lighting[prop] = val
-				Anti.LastChanges.Lighting = prop
-				wait(.1)
-				Variables.LightingChanged = false
-				print("TICKLED :)",Variables.LightingChanged)
-				if Anti.LastChanges.Lighting == prop then
-					Anti.LastChanges.Lighting = nil
-				end
+		UnEncrypted = setmetatable({}, {
+			__newindex = function(_, ind, val)
+				warn("Remote.UnEncrypted is deprecated; moving", ind, "to Remote.Commands")
+				Remote.Commands[ind] = val
 			end
-		};
+		});
 
 		Commands = {
 			GetReturn = function(args)
 				print("THE SERVER IS ASKING US FOR A RETURN");
 				local com = args[1]
 				local key = args[2]
-				local parms = {unpack(args,3)}
+				local parms = {unpack(args, 3)}
 				local retfunc = Remote.Returnables[com]
 				local retable = (retfunc and {pcall(retfunc,parms)}) or {}
 				if retable[1] ~= true then
@@ -278,20 +291,20 @@ return function()
 				if Remote.PendingReturns[args[1]] then
 					print("VALID PENDING RETURN")
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:fire(unpack(args,2))
+					service.Events[args[1]]:Fire(unpack(args, 2))
 				end
 			end;
 
 			SessionData = function(args)
 				local sessionKey = args[1];
 				if sessionKey then
-					service.Events.SessionData:Fire(sessionKey, table.unpack(args, 2));
+					service.Events.SessionData:Fire(sessionKey, table.unpack(args, 2))
 				end
 			end;
 
 			SetVariables = function(args)
 				local vars = args[1]
-				for var,val in next,vars do
+				for var, val in vars do
 					Variables[var] = val
 				end
 			end;
@@ -305,7 +318,7 @@ return function()
 			end;
 
 			Test = function(args)
-				print("OK WE GOT COMMUNICATION!  ORGL: "..tostring(args[1]))
+				print(`OK WE GOT COMMUNICATION!  ORGL: {args[1]}`)
 			end;
 
 			TestError = function(args)
@@ -341,6 +354,19 @@ return function()
 				UI.Remove(args[1],args[2])
 			end;
 
+			RefreshUI = function(args)
+				local guiName = args[1]
+				local ignore = args[2]
+
+				UI.Remove(guiName,ignore)
+
+				local themeData = args[3]
+				local guiData = args[4]
+
+				Variables.LastServerTheme = themeData or Variables.LastServerTheme;
+				UI.Make(guiName,guiData,themeData)
+			end;
+
 			StartLoop = function(args)
 				local name = args[1]
 				local delay = args[2]
@@ -367,7 +393,7 @@ return function()
 				if handler and type(handler) == "function" then
 					Pcall(handler, unpack(args, 2))
 				end
-			end
+			end;
 		};
 
 		Fire = function(...)
@@ -380,7 +406,7 @@ return function()
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
 					RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra));
-					wait(limit);
+					task.wait(limit);
 				end)
 			end
 		end;
@@ -402,7 +428,7 @@ return function()
 
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
-					delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
+					task.delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
 						returns = {
 							RemoteEvent.Function:InvokeServer({
 								Mode = "Get",
@@ -416,7 +442,7 @@ return function()
 						Yield:Release(returns);
 					end)
 
-					wait(limit)
+					task.wait(limit)
 				end)
 
 				if not returns then
@@ -454,7 +480,7 @@ return function()
 			local returns
 			local key = Functions:GetRandom()
 			local waiter = service.New("BindableEvent");
-			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
+			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
 
 			Remote.PendingReturns[key] = true
 			Remote.Send("GetReturn",com,key,...)
@@ -477,10 +503,10 @@ return function()
 		end;
 
 		Ping = function()
-			local t = tick()
+			local t = time()
 			local ping = Remote.Get("Ping")
 			if not ping then return false end
-			local t2 = tick()
+			local t2 = time()
 			local mult = 10^3
 			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*1000)
 			return ms
@@ -502,7 +528,7 @@ return function()
 				local sub = string.sub
 				local char = string.char
 
-				local keyCache = cache[key] or {}				
+				local keyCache = cache[key] or {}
 				local endStr = {}
 
 				for i = 1, #str do

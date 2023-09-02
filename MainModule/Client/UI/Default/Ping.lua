@@ -1,17 +1,21 @@
+client, service = nil, nil
 
-client = nil
-service = nil
-
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local pinging = true
 	local gTable
 	
 	local window = client.UI.Make("Window",{
 		Name  = "Ping";
 		Title = "Ping";
-		Size  = {150,70};
+		Icon = client.MatIcons.Leaderboard;
+		Size  = {150, 70};
 		Position = UDim2.new(0, 10, 1, -80);
 		AllowMultiple = false;
+		NoHide = true;
 		OnClose = function()
 			pinging = false
 		end
@@ -32,7 +36,7 @@ return function(data)
 		window:Ready()
 		
 		repeat
-			label.Text = client.Remote.Ping().."ms"
+			label.Text = `{client.Remote.Ping()}ms`
 			wait(2)
 		until not pinging or not gTable.Active
 	end

@@ -1,3 +1,4 @@
+--# selene: allow(incorrect_standard_library_use, multiple_statements, shadowing, unused_variable, empty_if, divide_by_zero, unbalanced_assignments)
 --[[--------------------------------------------------------------------
 
   lopcodes.lua

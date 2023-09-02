@@ -2,7 +2,11 @@
 client = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gTable
 	local answer
 
@@ -13,9 +17,9 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = name or "SelectionPrompt";
 		Title = name or "Selection Prompt";
+		Icon = client.MatIcons["Format list bulleted"];
 		Size  = {225,150};
 		SizeLocked = true;
-		--Icon = "rbxassetid://136615916";
 		OnClose = function()
 			if not answer then
 				answer = nil
@@ -39,7 +43,7 @@ return function(data)
 		VerticalAlignment = "Top";
 	})
 
-	for i,v in next,options do
+	for i,v in options do
 		frame:Add("TextButton", {
 			Text = v.Text;
 			Size = UDim2.new(1, 0, 0, 30);

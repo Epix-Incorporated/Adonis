@@ -6,33 +6,37 @@ Routine = nil
 GetEnv = nil
 origEnv = nil
 logError = nil
+log = nil
 
 --// Core
-return function()
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local _G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
+		Vector3int16, require, table, type, wait,
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
 		_G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
+		Vector3int16, require, table, type, wait,
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
-	local service = service
-	local client = client
+	local service = Vargs.Service
+	local client = Vargs.Client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;
@@ -106,7 +110,7 @@ return function()
 	client.Core = {
 		Init = Init;
 		RunLast = RunLast;
-		RunAfterLoaded = RunAfterLoaded;
+		--RunAfterLoaded = RunAfterLoaded;
 		RunAfterPlugins = RunAfterPlugins;
 		Name = script.Name;
 		Special = script.Name;
@@ -116,7 +120,7 @@ return function()
 			if Core.RemoteEvent then
 				log("Disconnect old RemoteEvent")
 
-				for name,event in next,Core.RemoteEvent.Events do
+				for name,event in Core.RemoteEvent.Events do
 					event:Disconnect()
 				end
 
@@ -150,7 +154,7 @@ return function()
 
 					events.ProcessRemote = event.OnClientEvent:Connect(Process.Remote)
 					events.ParentChildRemoved = remoteParent.ChildRemoved:Connect(function(child)
-						if (Core.RemoteEvent == eventData) and child == event and wait() then
+						if (Core.RemoteEvent == eventData) and child == event and task.wait() then
 							warn("::ADONIS:: REMOTE EVENT REMOVED? RE-GRABBING");
 							log("~! REMOTEEVENT WAS REMOVED?")
 							Core.GetEvent();
@@ -161,7 +165,7 @@ return function()
 
 					if not Core.Key then
 						log("~! Getting key from server")
-						Remote.Fire(client.DepsName.."GET_KEY")
+						Remote.Fire(`{client.DepsName}GET_KEY`)
 					end
 				end
 			end
@@ -259,9 +263,9 @@ return function()
 											return targ[inde]
 										end
 									elseif API_Special[inde] == false then
-										error("Access Denied: "..tostring(inde))
+										error(`Access Denied: {inde}`)
 									else
-										error("Could not find "..tostring(inde))
+										error(`Could not find {inde}`)
 									end
 								end;
 								__newindex = function(tabl,inde,valu)
@@ -280,7 +284,7 @@ return function()
 					ExecutePermission = (function(srcScript, code)
 						local exists;
 
-						for i,v in next,ScriptCache do
+						for i,v in ScriptCache do
 							if UnWrap(v.Script) == srcScript then
 								exists = v
 							end
@@ -311,16 +315,10 @@ return function()
 							return data.Source, module
 						end
 					end);
-
-					ReportLBI = MetaFunc(function(scr, origin)
-						if origin == "Local" then
-							return true
-						end
-					end);
 				}, nil, nil, true);
 			}
 
-			AdonisGTable = NewProxy{
+			local AdonisGTable = NewProxy({
 				__index = function(tab,ind)
 					if ind == "Scripts" then
 						return API.Scripts
@@ -334,17 +332,27 @@ return function()
 						error("_G API is disabled")
 					end
 				end;
-				__newindex = function(tabl,ind,new)
+				__newindex = function()
 					error("Read-only")
 				end;
 				__metatable = "API";
-			}
+			})
 
-			if not _G.Adonis then
-				rawset(_G,"Adonis",AdonisGTable)
-				StartLoop("APICheck",1,function()
-					rawset(_G,"Adonis",AdonisGTable)
-				end, true)
+			if not rawget(_G, "Adonis") then
+				if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+					rawset(_G, "Adonis", AdonisGTable)
+					StartLoop("APICheck", 1, function()
+						if rawget(_G, "Adonis") ~= AdonisGTable then
+							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+								rawset(_G, "Adonis", AdonisGTable)
+							else
+								warn("⚠️ ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")
+							end
+						end
+					end, true)
+				else
+					warn("The _G table was locked and the Adonis _G API could not be loaded")
+				end
 			end
 		end;
 	};

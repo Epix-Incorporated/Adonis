@@ -2,7 +2,11 @@
 client = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gTable
 	local selected
 	
@@ -13,7 +17,7 @@ return function(data)
 		Name  = "Vote";
 		Title = "Vote";
 		Size  = {300,200};
-		AllowMultiple = false;
+		Icon = client.MatIcons.Poll;
 		OnClose = function()
 			if not selected then
 				selected = false
@@ -34,9 +38,9 @@ return function(data)
 		Position = UDim2.new(0, 5, 0, 55);
 	})
 	
-	for i,ans in next,answers do
+	for i,ans in answers do
 		ansList:Add("TextButton",{
-			Text = i..". "..ans;
+			Text = `{i}. {ans}`;
 			Size = UDim2.new(1, -10, 0, 25);
 			Position = UDim2.new(0, 5, 0, 25*(i-1));
 			TextXAlignment = "Left";
@@ -53,6 +57,6 @@ return function(data)
 	gTable = window.gTable
 	window:Ready()
 	
-	repeat wait() until selected or not gTable.Active
+	repeat task.wait() until selected or not gTable.Active
 	return selected
 end

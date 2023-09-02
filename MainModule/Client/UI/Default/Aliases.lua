@@ -3,7 +3,11 @@ service = nil
 
 --// Ported from Kronos
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gTable
 	
 	local window = client.UI.Make("Window",{
@@ -19,7 +23,7 @@ return function(data)
 		Command = "",
 		Description = ""
 	}
-	for i,v in pairs(template) do
+	for i,v in template do
 		if not data[i] then
 			data[i] = v
 		end
@@ -144,7 +148,7 @@ return function(data)
 
 			local i = 1
 			content:Add("TextLabel", {
-				Text = "  ".."Alias"..": ";
+				Text = "  Alias: ";
 				ToolTip = "Set the alias Adonis should check for in chat";
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				Size = UDim2.new(1, -10, 0, 30);
@@ -164,7 +168,7 @@ return function(data)
 			})
 			i = i + 1
 			content:Add("TextLabel", {
-				Text = "  ".."Command"..": ";
+				Text = "  Command: ";
 				ToolTip = "Set the command(s) Adonis should execute when finding the alias";
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				Size = UDim2.new(1, -10, 0, 30);
@@ -184,7 +188,7 @@ return function(data)
 			})
 			i = i + 1
 			content:Add("TextLabel", {
-				Text = "  ".."Description"..": ";
+				Text = "  Description: ";
 				ToolTip = "What does the alias do?";
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				Size = UDim2.new(1, -10, 0, 30);
@@ -216,7 +220,7 @@ return function(data)
 			for index,arg in ipairs(data.Args.Names) do
 				i = i + 1
 				content:Add("TextButton", {
-					Text = "Argument: ".. arg .." | Default: "..data.Args.Defaults[index];
+					Text = `Argument: {arg} | Default: {data.Args.Defaults[index]}`;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (30*(i-1))+5);

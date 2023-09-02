@@ -1,16 +1,17 @@
 -------------------
 -- Adonis Server --
 -------------------
+--!nocheck
 																																																																																						  --[[
-If you find bugs, typos, or ways to improve something please message me (Sceleratis/Davey_Bones) with
-what you found so the script can be better.
+This module is part of Adonis 1.0 and contains lots of old code;
+future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
 
-Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.
-																																																																																							]]
-math.randomseed(os.time())
+If you find bugs or similar issues, please submit an issue report
+on our GitHub repository.
+																																																																																						]]
 
 --// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
-local LoadingOrder = {
+local CORE_LOADING_ORDER = table.freeze {
 	--// Nearly all modules rely on these to function
 	"Logs";
 	"Variables";
@@ -36,30 +37,31 @@ local LoadingOrder = {
 --//   Say hi to people reading the script
 --//   ...
 --//   "Hi." - Me
+--//	Your mom
 
 --// Holiday roooaaAaaoooAaaooOod
 local _G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
 xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn =
+Vector3int16, require, table, type, wait,
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert =
 	_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, elapsedTime, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
+getmetatable, setmetatable, loadstring, coroutine,
+rawequal, typeof, print, math, warn, error,  pcall,
+xpcall, select, rawset, rawget, ipairs, pairs,
+next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
+newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+Vector3int16, require, table, type, task.wait,
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
 
-local ServicesWeUse = {
+local SERVICES_WE_USE = table.freeze {
 	"Workspace";
 	"Players";
 	"Lighting";
@@ -74,38 +76,35 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayers";
+	"StarterPlayer";
+	"GroupService";
+	"MarketplaceService";
 	"TestService";
 	"HttpService";
+	"RunService";
 	"InsertService";
-	"NetworkServer"
+	"NetworkServer";
 }
 
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local locals = {}
 local server = {}
-local Queues = {}
 local service = {}
 local RbxEvents = {}
-local Debounces = {}
-local LoopQueue = {}
 local ErrorLogs = {}
-local RealMethods = {}
-local RunningLoops = {}
 local HookedEvents = {}
-local WaitingEvents = {}
 local ServiceSpecific = {}
-local ServiceVariables = {}
 local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
 local isModule = function(module)
-	for ind, modu in next, server.Modules do
+	for ind, modu in pairs(server.Modules) do
 		if module == modu then
 			return true
 		end
 	end
+	return false
 end
 
 local logError = function(plr, err)
@@ -115,7 +114,7 @@ local logError = function(plr, err)
 	end
 
 	if server.Core and server.Core.DebugMode then
-		warn("Error: "..tostring(plr)..": "..tostring(err))
+		warn(`::Adonis:: Error: {plr}: {err}`)
 	end
 
 	if server and server.Logs then
@@ -127,7 +126,6 @@ local logError = function(plr, err)
 	end
 end
 
---local message = function(...) local Str = "" game:GetService("TestService"):Message(Str) end
 local print = function(...)
 	print(":: Adonis ::", ...)
 end
@@ -136,26 +134,41 @@ local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
-local Pcall = function(func, ...)
-	local ran,error = pcall(func,...)
-	if error then
-		warn(error)
-		logError(error)
+local function CloneTable(tab, recursive)
+	local clone = table.clone(tab)
+
+	if recursive then
+		for i,v in pairs(clone) do
+			if type(v) == "table" then
+				clone[i] = CloneTable(v, recursive)
+			end
+		end
 	end
-	return ran,error
+
+	return clone
 end
 
-local cPcall = function(func, ...)
+local function Pcall(func, ...)
+	local pSuccess, pError = pcall(func, ...)
+	if not pSuccess then
+		warn(pError)
+		logError(pError)
+	end
+
+	return pSuccess, pError
+end
+
+local function cPcall(func, ...)
 	return Pcall(function(...)
-		coroutine.resume(coroutine.create(func),...)
+		return coroutine.resume(coroutine.create(func), ...)
 	end, ...)
 end
 
-local Routine = function(func, ...)
-	coroutine.resume(coroutine.create(func),...)
+local function Routine(func, ...)
+	return coroutine.resume(coroutine.create(func), ...)
 end
 
-local GetEnv; GetEnv = function(env, repl)
+local function GetEnv(env, repl)
 	local scriptEnv = setmetatable({}, {
 		__index = function(tab, ind)
 			return (locals[ind] or (env or origEnv)[ind])
@@ -164,75 +177,124 @@ local GetEnv; GetEnv = function(env, repl)
 		__metatable = unique;
 	})
 	if repl and type(repl) == "table" then
-		for ind, val in next, repl do
+		for ind, val in pairs(repl) do
 			scriptEnv[ind] = val
 		end
 	end
 	return scriptEnv
 end
 
-local GetVargTable = function()
+local function GetVargTable()
 	return {
 		Server = server;
 		Service = service;
 	}
 end
 
-local LoadModule = function(plugin, yield, envVars, noEnv)
+local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
-	local isFunc = type(plugin) == "function"
-	local plugin = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or plugin
-	local plug = (isFunc and plugin) or require(plugin)
+	local isFunc = type(module) == "function"
+	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
+	local plug = (isFunc and module) or require(module)
 
-	if server.Modules and type(plugin) ~= "function" then
-		table.insert(server.Modules,plugin)
+	if server.Modules and type(module) ~= "function" then
+		table.insert(server.Modules,module)
 	end
 
 	if type(plug) == "function" then
-		if yield then
-			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+		if isCore then
+			local ran,err = service.TrackTask(`CoreModule: {module}`, plug, GetVargTable(), GetEnv)
 			if not ran then
-				warn("Module encountered an error while loading: "..tostring(plugin))
-				warn(tostring(err))
+				warn("Core Module encountered an error while loading:", module)
+				warn(err)
+			else
+				return err;
+			end
+		elseif yield then
+			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
+			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			if not ran then
+				warn("Plugin Module encountered an error while loading:", module)
+				warn(err)
 			else
 				return err;
 			end
 		else
-			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
+			local ran, err = service.TrackTask(`Thread: Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
-				warn("Module encountered an error while loading: "..tostring(plugin))
-				warn(tostring(err))
+				warn("Plugin Module encountered an error while loading:", module)
+				warn(err)
 			else
 				return err;
 			end
 		end
 	else
-		server[plugin.Name] = plug
+		server[module.Name] = plug
 	end
 
 	if server.Logs then
 		server.Logs.AddLog(server.Logs.Script,{
-			Text = "Loaded "..tostring(plugin).." Module";
+			Text = `Loaded Module: {module}`;
 			Desc = "Adonis loaded a core module or plugin";
 		})
 	end
 end;
 
-local CleanUp = function()
+--// WIP
+local function LoadPackage(package, folder, runNow)
+	--// runNow - Run immediately after unpacking (default behavior is to just unpack (((only needed if loading after startup))))
+	--// runNow currently not used (limitations) so all packages must be present at server startup
+	local function unpackFolder(curFolder, unpackInto)
+		if unpackInto then
+			for _, obj in ipairs(curFolder:GetChildren()) do
+				local clone = obj:Clone()
+				if obj:IsA("Folder") then
+					local realFolder = unpackInto:FindFirstChild(obj.Name)
+					if not realFolder then
+						clone.Parent = unpackInto
+					else
+						unpackFolder(obj, realFolder)
+					end
+				else
+					clone.Parent = unpackInto
+				end
+			end
+		else
+			warn(`Missing parent to unpack into for {curFolder}`)
+		end
+	end
+
+	unpackFolder(package, folder)
+end;
+
+local function CleanUp()
 	--local env = getfenv(2)
 	--local ran,ret = pcall(function() return env.script:GetFullName() end)
-	warn("Beginning Adonis cleanup & shutdown process...")
-	--warn("CleanUp called from "..tostring((ran and ret) or "Unknown"))
+	print("Beginning Adonis cleanup & shutdown process...")
+	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
 	--local loader = server.Core.ClientLoader
-	server.Model.Parent = service.ServerScriptService
+	local data = service.UnWrap(server.Data)
+	if type(data) == "table" and typeof(service.UnWrap(data.Config)) == "Instance" then
+		local Settings: ModuleScript = service.UnWrap(data.Config):FindFirstChild("Settings")
+		if typeof(Settings) == "Instance" and Settings:IsA("ModuleScript") then
+			pcall(function()
+				table.clear(require(Settings))
+			end)
+		end
+	end
+
 	server.Model.Name = "Adonis_Loader"
+	server.Model.Parent = service.ServerScriptService
 	server.Running = false
+
+	server.Logs.SaveCommandLogs()
+	server.Core.GAME_CLOSING = true;
+	server.Core.SaveAllPlayerData()
 
 	pcall(service.Threads.StopAll)
 	pcall(function()
-		for i,v in next,RbxEvents do
+		for i, v in pairs(RbxEvents) do
 			print("Disconnecting event")
 			v:Disconnect()
 			table.remove(RbxEvents, i)
@@ -242,16 +304,10 @@ local CleanUp = function()
 	--loader.Disabled = true
 	--loader:Destroy()
 	if server.Core and server.Core.RemoteEvent then
-		pcall(server.Core.DisconnectEvent);
+		pcall(server.Core.DisconnectEvent)
 	end
 
-	--[[delay(0, function()
-		for i,v in next,server do
-			server[i] = nil; --// Try to break it to prevent any potential hanging issues; Not very graceful...
-		end
-	--end)--]]
-
-	warn("Unloading complete")
+	print("Unloading complete")
 end;
 
 server = {
@@ -262,7 +318,6 @@ server = {
 	Routine = Routine;
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
-	FilteringEnabled = workspace.FilteringEnabled;
 	ServerStartTime = os.time();
 	CommandCache = {};
 };
@@ -280,29 +335,27 @@ locals = {
 	GetEnv = GetEnv;
 	cPcall = cPcall;
 	Pcall = Pcall;
-}
+};
 
-service = setfenv(require(Folder.Shared.Service), GetEnv(nil, {server = server}))(function(eType, msg, desc, ...)
+service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 	local extra = {...}
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog("Script", {
-				Text = "Cached method doesn't match found method: "..tostring(extra[1]);
-				Desc = "Method: "..tostring(extra[1])
+				Text = `Cached method doesn't match found method: {extra[1]}`;
+				Desc = `Method: {extra[1]}`
 			})
 		end
 	elseif eType == "ServerError" then
-		--print("Server error")
 		logError("Server", msg)
 	elseif eType == "TaskError" then
-		--print("Task error")
 		logError("Task", msg)
 	end
 end, function(c, parent, tab)
 	if not isModule(c) and c ~= server.Loader and c ~= server.Dropper and c ~= server.Runner and c ~= server.Model and c ~= script and c ~= Folder and parent == nil then
 		tab.UnHook()
 	end
-end, ServiceSpecific)
+end, ServiceSpecific, GetEnv(nil, {server = server}))
 
 --// Localize
 os = service.Localize(os)
@@ -331,10 +384,18 @@ Vector3int16 = service.Localize(Vector3int16)
 BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
+task = service.Localize(task)
 
---// Wrap                                                                                                                                                                                                                                                                                                                                                    require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
-Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
-require = function(obj) return oldReq(service.UnWrap(obj)) end
+--// Wrap
+Instance = {
+	new = function(obj, parent)
+		return oldInstNew(obj, service.UnWrap(parent))
+	end
+}
+
+function require(obj)
+	return oldReq(service.UnWrap(obj))
+end
 rawequal = service.RawEqual
 --service.Players = service.Wrap(service.Players)
 --Folder = service.Wrap(Folder)
@@ -347,7 +408,7 @@ server.PluginsFolder = Folder.Plugins;
 server.Service = service
 
 --// Setting things up
-for ind,loc in next,{
+for ind, loc in pairs({
 	_G = _G;
 	game = game;
 	spawn = spawn;
@@ -365,6 +426,7 @@ for ind,loc in next,{
 	math = math;
 	warn = warn;
 	error = error;
+	assert = assert;
 	pcall = pcall;
 	xpcall = xpcall;
 	select = select;
@@ -376,7 +438,7 @@ for ind,loc in next,{
 	Rect = Rect;
 	Axes = Axes;
 	os = os;
-	tick = tick;
+	time = time;
 	Faces = Faces;
 	unpack = unpack;
 	string = string;
@@ -395,7 +457,6 @@ for ind,loc in next,{
 	PhysicalProperties = PhysicalProperties;
 	Region3int16 = Region3int16;
 	Vector3int16 = Vector3int16;
-	elapsedTime = elapsedTime;
 	require = require;
 	table = table;
 	type = type;
@@ -408,199 +469,257 @@ for ind,loc in next,{
 	Region3 = Region3;
 	CFrame = CFrame;
 	Ray = Ray;
+	task = task;
 	service = service
-	}do locals[ind] = loc end
+	})
+do
+	locals[ind] = loc
+end
 
 --// Init
-return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab, data)
-	if _G["__Adonis_MODULE_MUTEX"] and type(_G["__Adonis_MODULE_MUTEX"])=="string" then
-		warn("\n-----------------------------------------------"
-			.."\nAdonis server-side is already running! Aborting..."
-			.."\n-----------------------------------------------")
-		script:Destroy()
-		return "FAILED"
-	else
-		_G["__Adonis_MODULE_MUTEX"] = "Running"
-	end
-
-	if not data or not data.Loader then
-		warn("WARNING: MainModule loaded without using the loader;")
-	end
-
-	--// Begin Script Loading
-	setfenv(1,setmetatable({}, {__metatable = unique}))
-	data = service.Wrap(data or {})
-
-	--// Warn if possibly malicious
-	if data.PremiumID or data.PremiumId then
-		warn("You might be using a malicious version of the Adonis loader!")
-	end
-
-	--// Server Variables
-	local setTab = require(server.Deps.DefaultSettings)
-	server.Defaults = setTab
-	server.Settings = data.Settings or setTab.Settings or {}
-	server.Descriptions = data.Descriptions or setTab.Descriptions or {}
-	server.Order = data.Order or setTab.Order or {}
-	server.Data = data or {}
-	server.Model = data.Model or service.New("Model")
-	server.ModelParent = data.ModelParent or service.ServerScriptService;
-	server.Dropper = data.Dropper or service.New("Script")
-	server.Loader = data.Loader or service.New("Script")
-	server.Runner = data.Runner or service.New("Script")
-	server.LoadModule = LoadModule
-	server.ServiceSpecific = ServiceSpecific
-
-	server.Shared = Folder.Shared
-	server.ServerPlugins = data.ServerPlugins
-	server.ClientPlugins = data.ClientPlugins
-	server.Client = Folder.Parent.Client
-
-	locals.Settings = server.Settings
-	locals.CodeName = server.CodeName
-
-	--// THIS NEEDS TO BE DONE **BEFORE** ANY EVENTS ARE CONNECTED
-	if server.Settings.HideScript and data.Model then
-		data.Model.Parent = nil
-		script:Destroy()
-	end
-
-	--// Copy client themes, plugins, and shared modules to the client folder
-	local shared = service.New("Folder", {
-		Name = "Shared";
-		Parent = server.Client;
-	})
-
-	for index, module in next,Folder.Shared:GetChildren() do
-		module:Clone().Parent = shared;
-	end
-
-	for index,plugin in next,(data.ClientPlugins or {}) do
-		plugin:Clone().Parent = server.Client.Plugins;
-	end
-
-	for index,theme in next,(data.Themes or {}) do
-		theme:Clone().Parent = server.Client.UI;
-	end
-
-	for setting,value in next, server.Defaults.Settings do
-		if server.Settings[setting] == nil then
-			server.Settings[setting] = value
+return service.NewProxy({
+	__call = function(tab, data)
+		local mutex = service.RunService:FindFirstChild("__Adonis_MODULE_MUTEX")
+		if mutex then
+			warn("\n-----------------------------------------------"
+				.."\nAdonis server-side is already running! Aborting..."
+				.."\n-----------------------------------------------")
+			script:Destroy()
+			return "FAILED"
+		else
+			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Archivable = false, Value = "Running"})
+			local mutexBackup = mutex:Clone()
+			local function makePersistent(m)
+				local connection1, connection2 = nil, nil
+				connection1 = m:GetPropertyChangedSignal("Parent"):Connect(function()
+					if not m or m.Parent ~= service.RunService then
+						connection1:Disconnect()
+						connection2:Disconnect()
+						warn("Adonis module mutex removed; Regenerating...")
+						makePersistent(mutexBackup)
+						mutexBackup.Parent = service.RunService
+						mutexBackup = mutexBackup:Clone()
+					end
+				end)
+				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
+					if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+						warn("Adonis module mutex renamed; Refreshing...")
+						m.Name = "__Adonis_MODULE_MUTEX"
+					end
+				end)
+			end
+			makePersistent(mutex)
+			mutex.Parent = service.RunService
 		end
-	end
 
-	for desc,value in next, server.Defaults.Descriptions do
-		if server.Descriptions[desc] == nil then
-			server.Descriptions[desc] = value
+		--// Begin Script Loading
+		setfenv(1, setmetatable({}, {__metatable = unique}))
+		data = service.Wrap(data or {})
+
+		if not (data and data.Loader) then
+			warn("WARNING: MainModule loaded without using the loader!")
 		end
-	end
 
-	--// Bind cleanup
-	service.DataModel:BindToClose(CleanUp)
-	--server.CleanUp = CleanUp;
-
-	--// Require some dependencies
-	server.Threading = require(server.Deps.ThreadHandler)
-	server.Changelog = require(server.Shared.Changelog)
-	server.Credits = require(server.Shared.Credits)
-
-	--// Load services
-	for ind, serv in next,ServicesWeUse do local temp = service[serv] end
-
-	--// Load core modules
-	for ind,load in next,LoadingOrder do
-		local modu = Folder.Core:FindFirstChild(load)
-		if modu then
-			LoadModule(modu,true,{script = script}, true) --noenv
+		if data and data.ModuleID == 8612978896 then
+			warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
 		end
-	end
 
-	--// Server Specific Service Functions
-	ServiceSpecific.GetPlayers = server.Functions.GetPlayers
+		--// Server Variables
+		local setTab = require(server.Deps.DefaultSettings)
+		server.Defaults = setTab
+		server.Settings = data.Settings or setTab.Settings or {}
+		server.OriginalSettings = CloneTable(server.Settings, true)
+		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
+		server.Messages = data.Messages or setTab.Settings.Messages or {}
+		server.Order = data.Order or setTab.Order or {}
+		server.Data = data or {}
+		server.Model = data.Model or service.New("Model")
+		server.ModelParent = data.ModelParent or service.ServerScriptService;
+		server.Dropper = data.Dropper or service.New("Script")
+		server.Loader = data.Loader or service.New("Script")
+		server.Runner = data.Runner or service.New("Script")
+		server.LoadModule = LoadModule
+		server.LoadPackage = LoadPackage
+		server.ServiceSpecific = ServiceSpecific
 
-	--// Initialize Cores
-	local runLast = {}
-	local runAfterInit = {}
-	local runAfterPlugins = {}
+		server.Shared = Folder.Shared
+		server.ServerPlugins = data.ServerPlugins
+		server.ClientPlugins = data.ClientPlugins
+		server.Client = Folder.Parent.Client
 
-	for i,name in next,LoadingOrder do
-		local core = server[name]
+		locals.Settings = server.Settings
+		locals.CodeName = server.CodeName
 
-		if core then
-			if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
-				if core.RunLast then
-					table.insert(runLast, core.RunLast);
-					core.RunLast = nil;
-				end
+		--// THIS NEEDS TO BE DONE **BEFORE** ANY EVENTS ARE CONNECTED
+		if server.Settings.HideScript and data.Model then
+			data.Model.Parent = nil
+			script:Destroy()
+		end
 
-				if core.RunAfterInit then
-					table.insert(runAfterInit, core.RunAfterInit);
-					core.RunAfterInit = nil;
-				end
+		--// Copy client themes, plugins, and shared modules to the client folder
+		local packagesToRunWithPlugins = {}
+		local shared = service.New("Folder", {
+			Name = "Shared";
+			Parent = server.Client;
+		})
 
-				if core.RunAfterPlugins then
-					table.insert(runAfterPlugins, core.RunAfterPlugins);
-					core.RunAfterPlugins = nil;
-				end
+		for _, module in ipairs(Folder.Shared:GetChildren()) do
+			module:Clone().Parent = shared
+		end
 
-				if core.Init then
-					core.Init(data);
-					core.Init = nil;
+		for _, module in pairs(data.ClientPlugins or {}) do
+			module:Clone().Parent = server.Client.Plugins
+		end
+
+		for _, theme in pairs(data.Themes or {}) do
+			theme:Clone().Parent = server.Client.UI
+		end
+
+		for _, pkg in pairs(data.Packages or {}) do
+			LoadPackage(pkg, Folder.Parent, false)
+		end
+
+		for setting, value in pairs(server.Defaults.Settings) do
+			if server.Settings[setting] == nil then
+				server.Settings[setting] = value
+			end
+		end
+
+		for desc, value in pairs(server.Defaults.Descriptions) do
+			if server.Descriptions[desc] == nil then
+				server.Descriptions[desc] = value
+			end
+		end
+
+		--// Bind cleanup
+		service.DataModel:BindToClose(CleanUp)
+		--server.CleanUp = CleanUp;
+
+		--// Require some dependencies
+		server.Typechecker = require(server.Shared.Typechecker)
+		server.Changelog = require(server.Shared.Changelog)
+		server.Credits = require(server.Shared.Credits)
+		do
+			local MaterialIcons = require(server.Shared.MatIcons)
+			server.MatIcons = setmetatable({}, {
+				__index = function(self, ind)
+					local materialIcon = MaterialIcons[ind]
+					if materialIcon then
+						self[ind] = `rbxassetid://{materialIcon}`
+						return self[ind]
+					end
+					return ""
+				end,
+				__metatable = "Adonis_MatIcons"
+			})
+		end
+
+
+		--// Load services
+		for ind, serv in ipairs(SERVICES_WE_USE) do
+			local temp = service[serv]
+		end
+
+		--// Load core modules
+		for _, load in ipairs(CORE_LOADING_ORDER) do
+			local CoreModule = Folder.Core:FindFirstChild(load)
+			if CoreModule then
+				LoadModule(CoreModule, true, nil, nil, true) --noenv, CoreModule
+			end
+		end
+
+		--// Server Specific Service Functions
+		ServiceSpecific.GetPlayers = server.Functions.GetPlayers
+		--// Experimental, may have issues with Adonis tables that are protected metatables
+		--ServiceSpecific.CloneTable = CloneTable
+
+		--// Initialize Cores
+		local runLast = {}
+		local runAfterInit = {}
+		local runAfterPlugins = {}
+
+		for _, name in ipairs(CORE_LOADING_ORDER) do
+			local core = server[name]
+
+			if core then
+				if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
+					if core.RunLast then
+						table.insert(runLast, core.RunLast)
+						core.RunLast = nil
+					end
+
+					if core.RunAfterInit then
+						table.insert(runAfterInit, core.RunAfterInit)
+						core.RunAfterInit = nil
+					end
+
+					if core.RunAfterPlugins then
+						table.insert(runAfterPlugins, core.RunAfterPlugins)
+						core.RunAfterPlugins = nil
+					end
+
+					if core.Init then
+						core.Init(data)
+						core.Init = nil
+					end
 				end
 			end
 		end
-	end
 
-	--// Variables that rely on core modules being initialized
-	server.Logs.Errors = ErrorLogs
+		--// Variables that rely on core modules being initialized
+		server.Logs.Errors = ErrorLogs
 
-	--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
-	for i,f in next,runAfterInit do
-		f(data);
-	end
+		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
+		for _, f in pairs(runAfterInit) do
+			f(data)
+		end
 
-	--// Load Plugins
-	for index,plugin in next,server.PluginsFolder:GetChildren() do
-		LoadModule(plugin, false, {script = plugin}, true); --noenv
-	end
+		--// Load Plugins; enforced NoEnv policy, make sure your plugins has the 2nd argument defined!
+		for _, module in ipairs(server.PluginsFolder:GetChildren()) do
+			LoadModule(module, false, {script = module}, true, true) --noenv
+		end
 
-	for index,plugin in next,(data.ServerPlugins or {}) do
-		LoadModule(plugin, false, {script = plugin});
-	end
+		for _, module in pairs(data.ServerPlugins or {}) do
+			LoadModule(module, false, {script = module})
+		end
 
-	--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
-	for i,f in next,runAfterPlugins do
-		f(data);
-	end
+		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
+		for _, f in pairs(runAfterPlugins) do
+			f(data)
+		end
 
-	--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
-	server.AllModulesLoaded = true;
-	service.Events.AllModulesLoaded:Fire(os.time());
+		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
+		server.AllModulesLoaded = true
+		service.Events.AllModulesLoaded:Fire(os.time())
 
-	--// Queue handler
-	--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
+		--// Queue handler
+		--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
 
-	--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
-	for i,f in next,runLast do
-		f(data);
-	end
+		--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
+		for _, f in pairs(runLast) do
+			f(data)
+		end
 
-	if data.Loader then
-		warn("Loading Complete; Required by "..tostring(data.Loader:GetFullName()))
-	else
-		warn("Loading Complete; No loader location provided")
-	end
+		if data.Loader then
+			print(`Loading Complete; Required by {data.Loader:GetFullName()}`)
+		else
+			print("Loading Complete; No loader location provided")
+		end
 
-	if server.Logs then
-		server.Logs.AddLog(server.Logs.Script, {
-			Text = "Finished Loading";
-			Desc = "Adonis finished loading";
-		})
-	else
-		warn("SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
-	end
+		if server.Logs then
+			server.Logs.AddLog(server.Logs.Script, {
+				Text = "Finished Loading";
+				Desc = "Adonis has finished loading";
+			})
+		else
+			warn("SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
+		end
+		service.Events.ServerInitialized:Fire();
 
-	service.Events.ServerInitialized:Fire();
-
-	return "SUCCESS"
-end})
+		return "SUCCESS"
+	end;
+	__tostring = function()
+		return "Adonis"
+	end;
+	__metatable = "Adonis";
+})

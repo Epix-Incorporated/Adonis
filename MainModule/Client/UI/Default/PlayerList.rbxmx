@@ -37,7 +37,7 @@
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{7D95AD0C-73F8-4E5A-A391-69274D730E5A}</string>
+					<string name="ScriptGuid">{FF9CD312-BAED-4C80-A556-CDB411097412}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -47,7 +47,11 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	
@@ -81,7 +85,7 @@ return function(data)
 	}
 	
 	local mouse=service.Players.LocalPlayer:GetMouse()
-	local nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--350,300
+	local nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y,nil--350,300
 	local defx,defy,defp=nx,ny,drag.Position.X.Offset
 	local dragging=false
 	local dontSize=false
@@ -255,18 +259,18 @@ return function(data)
 					nameb.TextScaled = true
 				end
 				
-				local custom = specialPeople[tostring(p.userId)]
+				local custom = specialPeople[tostring(p.UserId)]
 				if image then
 					if custom then
-						image.Image = 'http://www.roblox.com/asset/?id='..custom
+						image.Image = `http://www.roblox.com/asset/?id={custom}`
 						image.Visible = true
-					elseif p.userId==game.CreatorId then
+					elseif p.UserId==game.CreatorId then
 						image.Image = 'rbxasset://textures/ui/icon_placeowner.png'
 						image.Visible = true
 					elseif p:IsInGroup(1200769) then
 						image.Image = 'http://www.roblox.com/asset/?id=99727663'
 						image.Visible = true
-					elseif localplayer:IsFriendsWith(p.userId) and p~=localplayer then
+					elseif localplayer:IsFriendsWith(p.UserId) and p~=localplayer then
 						image.Image = 'http://www.roblox.com/asset/?id=99749771'
 						image.Visible = true
 					elseif p.MembershipType==Enum.MembershipType.BuildersClub then
@@ -381,7 +385,7 @@ return function(data)
 	
 	dragger.DragStopped:Connect(function(x,y)
 		dragging = false
-		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--350,300
+		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y,nil--350,300
 		defx,defy,defp=nx,ny,drag.Position.X.Offset
 		dragger.Position = UDim2.new(0,0,1,-20)
 		--populate()
@@ -847,7 +851,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -924,7 +933,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>

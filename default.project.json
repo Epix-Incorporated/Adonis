@@ -1,23 +1,30 @@
 {
-	"name": "Adonis",
-	"tree": {
-		"$className": "DataModel",
+  "name": "Adonis",
+  "tree": {
+    "$className": "DataModel",
 
-		"ServerScriptService": {
-			"$className": "ServerScriptService",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
 
-			"Adonis_Rojo": {
-				"$className": "Folder",
+      "Adonis_Rojo": {
+        "$className": "Folder",
+        "MainModule": {
+          "$path": "MainModule"
+        },
 
-				"MainModule": {
-					"$path": "MainModule"
-				},
+        "LICENSE": {
+          "$path": "LICENSE.lua"
+        },
+        
+        "Adonis_Loader": {
+          "$className": "Model",
+          "$path": "Loader",
 
-				"Adonis_Loader": {
-					"$className": "Model",
-					"$path": "Loader"
-				}
-			}
-		}
-	}
+          "LICENSE": {
+            "$path": "LICENSE.lua"
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,5 +1,4 @@
 --[[
-	
 	Notice:
 		All themes MUST include a StringValue named "Base_Theme" that tells the script where to pull GUIs and Configs from
 		if they aren't found in the selected theme. Generally this should have it's value set to "Default" unless
@@ -73,49 +72,25 @@
 		client.UI.Prepare(gui) 
 			- If gui is a ScreenGui; Transfers content to a new TextLabel and returns the new TextLabel; Else returns gui
 			
-		client.UI.Make(guiName,guiData,themeData)
+		client.UI.Make(guiName, guiData, themeData)
 			- Responsible for handling the creation and registering of new UI elements
 			- guiName is the name of the GUI to find/create
 			- guiData is the data table passed to the GUI's code module function
 			- themeData is a table containing information about what theme to use
 			- Returns whatever GUI's code module returns
 			
-		client.UI.Get(Name,Ignore,returnOne)
+		client.UI.Get(Name, Ignore, returnOne)
 			- Finds and returns registered GUI gTables matching name
 			- Name is the name of the GUI to find
 			- Ignore is a GUI to ignore when trying to find the target
 			- if returnOne is true, return a single found gTable instead of a table containing all found ones
 			
-		client.UI.Remove(Name,Ignore)
+		client.UI.Remove(Name, Ignore)
 			- Finds registered GUIs matching Name and removes them
 			- If Ignore is set to a GUI; don't remove it when/if found
 			
 		client.UI.Register(gui)
 			- Handles the registration of new GUIs
 			- Returns gTable,gIndex
-		
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 --]]
 return function() end

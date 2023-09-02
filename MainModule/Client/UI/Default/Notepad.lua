@@ -1,12 +1,15 @@
-client = nil
-service = nil
+client, service = nil, nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 
 	local window = client.UI.Make("Window", {
 		Name  = "Notepad";
 		Title = "Notepad";
-		AllowMultiple = false;
+		Icon = client.MatIcons.Description;
 	})
 
 	local topbar = window:Add("Frame", {
@@ -33,17 +36,17 @@ return function(data)
 	local content = container:Add("TextBox", {
 		Size = UDim2.new(1, -4, 1, 0);
 		Position = UDim2.new(0, 0, 0, 0);
-		BackgroundColor3 = Color3.new(1, 1, 1);
-		TextColor3 = Color3.new(0,0,0);
+		BackgroundColor3 = Color3.new(0, 0, 0);
+		TextColor3 = Color3.new(1, 1, 1);
 		Font = "Code";
-		FontSize = "Size18";
+		TextSize = 18;
 		TextXAlignment = "Left";
 		TextYAlignment = "Top";
 		TextWrapped = true;
 		TextScaled = false;
 		ClearTextOnFocus = false;
 		MultiLine = true;
-		Text = "";
+		Text = data.Text or "";
 	})
 	
 	local fonts = {}
@@ -78,8 +81,12 @@ return function(data)
 				TextXAlignment = "Right";
 				ClipsDescendants = true;
 				TextChanged = function(text, enter, new)
-					if enter and tonumber(text) and text < 1000 then
-						content.TextSize = text;
+					if tonumber(text) then
+						if tonumber(text) < 100 then
+							content.TextSize = text
+						else
+							content.TextSize = 99
+						end
 					end
 				end
 			}
@@ -89,6 +96,6 @@ return function(data)
 	window:Ready()
 
 	content:GetPropertyChangedSignal("Text"):Connect(function()
-		charCount.Text = tostring(#content.Text).." characters"
+		charCount.Text = `{#content.Text} characters`
 	end)
 end

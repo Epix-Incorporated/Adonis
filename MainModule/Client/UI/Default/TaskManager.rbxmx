@@ -6,12 +6,19 @@
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
+			<bool name="ClipToDeviceSafeArea">true</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">false</bool>
-			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">TaskManager</string>
 			<bool name="ResetOnSpawn">false</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
+			<token name="SafeAreaCompatibility">1</token>
+			<token name="ScreenInsets">2</token>
+			<token name="SelectionBehaviorDown">0</token>
+			<token name="SelectionBehaviorLeft">0</token>
+			<token name="SelectionBehaviorRight">0</token>
+			<token name="SelectionBehaviorUp">0</token>
+			<bool name="SelectionGroup">false</bool>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
@@ -51,7 +58,12 @@
 				<int name="BorderSizePixel">0</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">true</bool>
-				<token name="Font">0</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/LegacyArial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -72,7 +84,13 @@
 				<float name="Rotation">0</float>
 				<bool name="Selectable">true</bool>
 				<bool name="Selected">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>0</XS>
 					<XO>525</XO>
@@ -89,6 +107,7 @@
 					<G>0.164705887</G>
 					<B>0.207843155</B>
 				</Color3>
+				<token name="TextDirection">0</token>
 				<bool name="TextScaled">false</bool>
 				<float name="TextSize">8</float>
 				<Color3 name="TextStrokeColor3">
@@ -145,7 +164,13 @@
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>0</XO>
@@ -223,7 +248,13 @@
 						<token name="ScrollingDirection">2</token>
 						<bool name="ScrollingEnabled">true</bool>
 						<bool name="Selectable">true</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">true</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>1</XS>
 							<XO>-10</XO>
@@ -280,7 +311,13 @@
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>20</XO>
@@ -347,11 +384,18 @@
 							<YS>1</YS>
 							<YO>-20</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
 						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>20</XO>
@@ -446,7 +490,13 @@
 						<token name="ScrollingDirection">2</token>
 						<bool name="ScrollingEnabled">true</bool>
 						<bool name="Selectable">true</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">true</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>1</XS>
 							<XO>-10</XO>
@@ -489,7 +539,12 @@
 						<int name="BorderSizePixel">0</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">1</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -510,7 +565,13 @@
 						<float name="Rotation">0</float>
 						<bool name="Selectable">true</bool>
 						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>50</XO>
@@ -527,6 +588,7 @@
 							<G>1</G>
 							<B>1</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">12</float>
 						<Color3 name="TextStrokeColor3">
@@ -570,7 +632,12 @@
 						<int name="BorderSizePixel">0</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">1</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -591,7 +658,13 @@
 						<float name="Rotation">0</float>
 						<bool name="Selectable">true</bool>
 						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>50</XO>
@@ -608,6 +681,7 @@
 							<G>1</G>
 							<B>1</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">12</float>
 						<Color3 name="TextStrokeColor3">
@@ -651,7 +725,12 @@
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -670,7 +749,13 @@
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>-145</XO>
@@ -686,6 +771,7 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">14</float>
 					<Color3 name="TextStrokeColor3">
@@ -729,7 +815,12 @@
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -750,7 +841,13 @@
 					<float name="Rotation">0</float>
 					<bool name="Selectable">true</bool>
 					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>15</XO>
@@ -767,6 +864,7 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">12</float>
 					<Color3 name="TextStrokeColor3">
@@ -810,7 +908,12 @@
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -831,7 +934,13 @@
 					<float name="Rotation">0</float>
 					<bool name="Selectable">true</bool>
 					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>15</XO>
@@ -848,6 +957,7 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">12</float>
 					<Color3 name="TextStrokeColor3">
@@ -891,7 +1001,12 @@
 					<bool name="ClearTextOnFocus">true</bool>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -917,7 +1032,13 @@
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">true</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<bool name="ShowNativeInput">true</bool>
 					<UDim2 name="Size">
 						<XS>0</XS>
@@ -934,6 +1055,7 @@
 						<G>0.862745166</G>
 						<B>0.862745166</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextEditable">true</bool>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">14</float>
@@ -978,7 +1100,12 @@
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -999,7 +1126,13 @@
 					<float name="Rotation">0</float>
 					<bool name="Selectable">true</bool>
 					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>15</XO>
@@ -1016,6 +1149,7 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">12</float>
 					<Color3 name="TextStrokeColor3">
@@ -1059,7 +1193,12 @@
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -1078,7 +1217,13 @@
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>1</XS>
 					<XO>-10</XO>
@@ -1094,6 +1239,7 @@
 					<G>1</G>
 					<B>1</B>
 				</Color3>
+				<token name="TextDirection">0</token>
 				<bool name="TextScaled">true</bool>
 				<float name="TextSize">24</float>
 				<Color3 name="TextStrokeColor3">
@@ -1145,7 +1291,12 @@
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -1166,7 +1317,13 @@
 					<float name="Rotation">0</float>
 					<bool name="Selectable">true</bool>
 					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>100</XO>
@@ -1183,6 +1340,7 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
 					<Color3 name="TextStrokeColor3">
@@ -1226,7 +1384,12 @@
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -1245,7 +1408,13 @@
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>1</XS>
 					<XO>-10</XO>
@@ -1261,6 +1430,7 @@
 					<G>1</G>
 					<B>1</B>
 				</Color3>
+				<token name="TextDirection">0</token>
 				<bool name="TextScaled">true</bool>
 				<float name="TextSize">24</float>
 				<Color3 name="TextStrokeColor3">
@@ -1312,7 +1482,12 @@
 					<bool name="ClearTextOnFocus">true</bool>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -1338,7 +1513,13 @@
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">true</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<bool name="ShowNativeInput">true</bool>
 					<UDim2 name="Size">
 						<XS>0</XS>
@@ -1355,6 +1536,7 @@
 						<G>0.960784376</G>
 						<B>0.960784376</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextEditable">true</bool>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
@@ -1399,7 +1581,12 @@
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -1418,7 +1605,13 @@
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>1</XS>
 					<XO>-10</XO>
@@ -1434,6 +1627,7 @@
 					<G>1</G>
 					<B>1</B>
 				</Color3>
+				<token name="TextDirection">0</token>
 				<bool name="TextScaled">true</bool>
 				<float name="TextSize">24</float>
 				<Color3 name="TextStrokeColor3">
@@ -1485,7 +1679,12 @@
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -1506,7 +1705,13 @@
 					<float name="Rotation">0</float>
 					<bool name="Selectable">true</bool>
 					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>50</XO>
@@ -1523,6 +1728,7 @@
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
 					<Color3 name="TextStrokeColor3">
@@ -1580,7 +1786,13 @@
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>150</XO>
@@ -1634,7 +1846,13 @@
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>1</XS>
 							<XO>-10</XO>
@@ -1674,7 +1892,12 @@
 							<bool name="ClearTextOnFocus">false</bool>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -1700,7 +1923,13 @@
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">true</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<bool name="ShowNativeInput">true</bool>
 							<UDim2 name="Size">
 								<XS>0</XS>
@@ -1717,6 +1946,7 @@
 								<G>1</G>
 								<B>1</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextEditable">true</bool>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">18</float>
@@ -1760,7 +1990,12 @@
 							<int name="BorderSizePixel">0</int>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -1779,7 +2014,13 @@
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<UDim2 name="Size">
 								<XS>0</XS>
 								<XO>40</XO>
@@ -1795,6 +2036,7 @@
 								<G>1</G>
 								<B>1</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">18</float>
 							<Color3 name="TextStrokeColor3">
@@ -1838,7 +2080,12 @@
 							<bool name="ClearTextOnFocus">false</bool>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -1864,7 +2111,13 @@
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">true</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<bool name="ShowNativeInput">true</bool>
 							<UDim2 name="Size">
 								<XS>0</XS>
@@ -1881,6 +2134,7 @@
 								<G>1</G>
 								<B>1</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextEditable">true</bool>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">18</float>
@@ -1925,7 +2179,12 @@
 							<bool name="ClearTextOnFocus">false</bool>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -1951,7 +2210,13 @@
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">true</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<bool name="ShowNativeInput">true</bool>
 							<UDim2 name="Size">
 								<XS>0</XS>
@@ -1968,6 +2233,7 @@
 								<G>1</G>
 								<B>1</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextEditable">true</bool>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">18</float>
@@ -2011,7 +2277,12 @@
 							<int name="BorderSizePixel">0</int>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -2030,7 +2301,13 @@
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<UDim2 name="Size">
 								<XS>0</XS>
 								<XO>40</XO>
@@ -2046,6 +2323,7 @@
 								<G>1</G>
 								<B>1</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">18</float>
 							<Color3 name="TextStrokeColor3">
@@ -2088,7 +2366,12 @@
 							<int name="BorderSizePixel">0</int>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -2107,7 +2390,13 @@
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<UDim2 name="Size">
 								<XS>0</XS>
 								<XO>40</XO>
@@ -2123,6 +2412,7 @@
 								<G>1</G>
 								<B>1</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">18</float>
 							<Color3 name="TextStrokeColor3">
@@ -2180,7 +2470,13 @@
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<UDim2 name="Size">
 								<XS>1</XS>
 								<XO>-10</XO>
@@ -2221,7 +2517,12 @@
 							<int name="BorderSizePixel">0</int>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
-							<token name="Font">3</token>
+							<Font name="FontFace">
+								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+								<Weight>400</Weight>
+								<Style>Normal</Style>
+								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+							</Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -2242,7 +2543,13 @@
 							<float name="Rotation">0</float>
 							<bool name="Selectable">true</bool>
 							<bool name="Selected">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<UDim2 name="Size">
 								<XS>1</XS>
 								<XO>-10</XO>
@@ -2259,6 +2566,7 @@
 								<G>1</G>
 								<B>1</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">18</float>
 							<Color3 name="TextStrokeColor3">
@@ -2291,7 +2599,7 @@
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid"></string>
+					<string name="ScriptGuid">{8A117246-F894-4E2A-BC81-DA79139EC24A}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -2320,7 +2628,11 @@ local function Expand(ent, point)
 end
 
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gTable = data.gTable
 	local gui = gTable.Object
 	local drag = gui.Drag
@@ -2548,7 +2860,13 @@ end
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">true</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>0</XS>
 					<XO>110</XO>
@@ -2587,7 +2905,12 @@ end
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -2606,7 +2929,13 @@ end
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>-4</XO>
@@ -2622,6 +2951,7 @@ end
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">18</float>
 					<Color3 name="TextStrokeColor3">
@@ -2680,7 +3010,13 @@ end
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>1</XS>
 					<XO>-5</XO>
@@ -2719,7 +3055,12 @@ end
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -2738,7 +3079,13 @@ end
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>10</XO>
@@ -2754,6 +3101,7 @@ end
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">14</float>
 					<Color3 name="TextStrokeColor3">
@@ -2820,7 +3168,13 @@ end
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>0</XO>
@@ -2859,7 +3213,12 @@ end
 						<int name="BorderSizePixel">1</int>
 						<bool name="ClipsDescendants">true</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">1</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -2878,7 +3237,13 @@ end
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>1</XS>
 							<XO>-310</XO>
@@ -2894,6 +3259,7 @@ end
 							<G>1</G>
 							<B>1</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">14</float>
 						<Color3 name="TextStrokeColor3">
@@ -2937,7 +3303,12 @@ end
 						<int name="BorderSizePixel">0</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">1</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -2958,7 +3329,13 @@ end
 						<float name="Rotation">0</float>
 						<bool name="Selectable">true</bool>
 						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>70</XO>
@@ -2975,6 +3352,7 @@ end
 							<G>1</G>
 							<B>1</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">12</float>
 						<Color3 name="TextStrokeColor3">
@@ -3018,7 +3396,12 @@ end
 						<int name="BorderSizePixel">0</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">1</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -3039,7 +3422,13 @@ end
 						<float name="Rotation">0</float>
 						<bool name="Selectable">true</bool>
 						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>55</XO>
@@ -3056,6 +3445,7 @@ end
 							<G>1</G>
 							<B>1</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">12</float>
 						<Color3 name="TextStrokeColor3">
@@ -3099,7 +3489,12 @@ end
 						<int name="BorderSizePixel">0</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">1</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -3120,7 +3515,13 @@ end
 						<float name="Rotation">0</float>
 						<bool name="Selectable">true</bool>
 						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>105</XO>
@@ -3137,6 +3538,7 @@ end
 							<G>1</G>
 							<B>1</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">12</float>
 						<Color3 name="TextStrokeColor3">
@@ -3179,7 +3581,12 @@ end
 						<int name="BorderSizePixel">1</int>
 						<bool name="ClipsDescendants">true</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">1</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -3198,7 +3605,13 @@ end
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>0</XS>
 							<XO>80</XO>
@@ -3214,6 +3627,7 @@ end
 							<G>1</G>
 							<B>1</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">14</float>
 						<Color3 name="TextStrokeColor3">
@@ -3257,7 +3671,12 @@ end
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3276,7 +3695,13 @@ end
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>0</XO>
@@ -3292,6 +3717,7 @@ end
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">14</float>
 					<Color3 name="TextStrokeColor3">

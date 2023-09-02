@@ -6,33 +6,24 @@ Routine = nil
 GetEnv = nil
 logError = nil
 
---// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Core = server.Core;
-	local Admin = server.Admin;
-	local Process = server.Process;
-	local Settings = server.Settings;
-	local Functions = server.Functions;
-	local Commands = server.Commands;
-	local Remote = server.Remote;
-	local Logs = server.Logs;
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
-	--// *Try?* to enable AllowThirdPartySales (honestly, this obviously wouldn't work but roblox be kinda weird sometimes so yolo)
-	pcall(function() service.Workspace.AllowThirdPartySales = true end)
-
-	--// Worksafe
-	if Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then
-		local ancsafe = server.Deps.Assets.WorkSafe:Clone()
-		ancsafe.Mode.Value = "AntiLeak"
-		ancsafe.Name = "ADONIS_AntiLeak"
-		ancsafe.Archivable = false
-		ancsafe.Parent = service.ServerScriptService
-		ancsafe.Disabled = false
+	-- // Remove legacy trello board
+	local epix_board_index = type(Settings.Trello_Secondary) == "table" and table.find(Settings.Trello_Secondary, "9HH6BEX2")
+	if epix_board_index then
+		table.remove(Settings.Trello_Secondary, epix_board_index)
+		Logs:AddLog("Script", "Removed legacy trello board")
 	end
 
-	Logs:AddLog("Script", "Misc Features Module Loaded");
-end;
+	Logs:AddLog("Script", "Misc Features Module Loaded")
+end

@@ -1,3 +1,4 @@
+--# selene: allow(incorrect_standard_library_use, multiple_statements, shadowing, unused_variable, empty_if, divide_by_zero, unbalanced_assignments)
 --[[--------------------------------------------------------------------
 
   lcode.lua
@@ -56,6 +57,7 @@
 ----------------------------------------------------------------------]]
 
 -- requires luaP, luaX, luaY
+local luaY
 local luaK = {}
 local luaP = require(script.Parent.LuaP)
 local luaX = require(script.Parent.LuaX)

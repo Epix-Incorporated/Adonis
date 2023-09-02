@@ -1,8 +1,10 @@
+client, service = nil, nil
 
-client = nil
-service = nil
-
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local Owner = data.FromPlayer;
 	local SessionKey = data.SessionKey;
 	local SessionName = data.SessionName;
@@ -19,18 +21,18 @@ return function(data)
 	local selectedPlayer = nil;
 
 	local function sendIt()
-		local text = service.Trim(reply.Text);
+		local text = service.Trim(reply.Text)
 
 		if text ~= "" then
-			client.Remote.Send("Session", SessionKey, "SendMessage", text);
+			client.Remote.Send("Session", SessionKey, "SendMessage", text)
 		end
 	end
 
 	local function promptAddUser()
 		local list = {}
-		for i,v in next,service.Players:GetPlayers() do
+		for _,v in service.Players:GetPlayers() do
 			local good = true;
-			for k, peer in next,peerList do
+			for _, peer in peerList do
 				if peer.UserId == v.UserId then
 					good = false;
 					break;
@@ -39,9 +41,9 @@ return function(data)
 
 			if good then
 				table.insert(list, {
-					Text = string.format("%s (%s)", v.Name, v.DisplayName);
+					Text = service.FormatPlayer(v);
 					Data = service.UnWrap(v);
-				});
+				})
 			end
 		end
 
@@ -51,13 +53,13 @@ return function(data)
 		});
 
 		if answer then
-			client.Remote.Send("Session", SessionKey, "AddPlayerToSession", answer);
+			client.Remote.Send("Session", SessionKey, "AddPlayerToSession", answer)
 		end
 	end;
 
 	local function updatePeerList(peers)
-		playerList:ClearAllChildren();
-		peerList = peers;
+		playerList:ClearAllChildren()
+		peerList = peers
 
 		local lObj = service.New("UIListLayout", {
 			Parent = playerList;
@@ -67,29 +69,30 @@ return function(data)
 			SortOrder = "LayoutOrder";
 		})
 
-		for i,peer in next,peers do
+		for i,peer in peers do
 			local pBut = playerList:Add("TextButton", {
-				Text = string.format("%s (%s)", peer.Name, peer.DisplayName);
+				Text = service.FormatPlayer(peer);
 				Size = UDim2.new(1, 0, 0, 25);
-				TextSize = 12;
+				TextScaled = true;
+				TextWarped = true;
 				BackgroundTransparency = 1;
 			})
 
 			if CanManageUsers then
-				local ogColor = pBut.BackgroundColor3;
-				local lerpColor = ogColor:Lerp(Color3.new(0, 0, 150), 0.1);
+				local ogColor = pBut.BackgroundColor3
+				local lerpColor = ogColor:Lerp(Color3.fromRGB(9, 67, 255), 0.1)
 
 				if peer.UserId and peer.UserId ~= service.Players.LocalPlayer.UserId then
 					pBut.MouseButton1Down:Connect(function()
 						for i,v in ipairs(playerList:GetChildren()) do
 							if v:IsA("TextButton") or v:IsA("Frame") then
-								v.BackgroundTransparency = 1;
+								v.BackgroundTransparency = 1
 							end
 						end
 
-						selectedPlayer = peer;
-						pBut.BackgroundTransparency = 0;
-						pBut.BackgroundColor3 = lerpColor;
+						selectedPlayer = peer
+						pBut.BackgroundTransparency = 0
+						pBut.BackgroundColor3 = lerpColor
 					end)
 				end
 			end
@@ -104,87 +107,133 @@ return function(data)
 		local msg = data.Message;
 		local icon = data.Icon or 0;
 
-		local newMsg = chatlog:Add("Frame", {
-			Size = UDim2.new(1, 0, 0, 50);
-			BackgroundTransparency = 1;
-			AutomaticSize = "Y";
-			Children = {
-				{ClassName = "Frame";
-					Name = "CHATFRAME";
-					Size = UDim2.new(1, -10, 1, -10);
-					Position = UDim2.new(0, 5, 0, 5);
-					BackgroundTransparency = 0.5;
-					AutomaticSize = "Y";
-					Children = {
-						{ClassName = "ImageButton";
-							Name = "Icon";
-							Size = UDim2.new(0, 48, 0, 48);
-							Position = UDim2.new(0, 1, 0, 1);
-							Image = icon;
-						};
+		local newMsg
 
-						{ClassName = "TextLabel";
-							Name = "PlayerName";
-							Size = UDim2.new(1, -55, 0, 15);
-							Position = UDim2.new(0, 55, 0, 0);
-							Text = not pDisplayName and pName or string.format("%s (%s)", pName, pDisplayName);
-							TextSize = "12";
-							TextXAlignment = "Left";
-							BackgroundTransparency = 1;
-						};
+		if pName == "* SYSTEM *" then
+			newMsg = chatlog:Add("Frame", {
+				Size = UDim2.new(1, 0, 0, 25);
+				BackgroundTransparency = 1;
+				AutomaticSize = "Y";
+				Children = {
+					{ClassName = "Frame";
+						Name = "CHATFRAME";
+						Size = UDim2.new(1, -10, 1, -10);
+						Position = UDim2.new(0, 5, 0, 5);
+						BackgroundTransparency = 0.5;
+						AutomaticSize = "Y";
+						Children = {
 
-						{ClassName = "TextLabel";
-							Name = "Message";
-							Size = UDim2.new(1, -55, 0, 10);
-							Position = UDim2.new(0, 55, 0, 15);
-							Text = msg;
-							TextXAlignment = "Left";
-							TextYAlignment = "Top";
-							AutomaticSize = "Y";
-							TextWrapped = true;
-							TextScaled = false;
-							RichText = true;
-							BackgroundTransparency = 1;
-						};
+							{ClassName = "TextLabel";
+								Name = "PlayerName";
+								Size = UDim2.new(0, 0, 0, 14);
+								Position = UDim2.new(0, 1, 0, 1);
+								Text = `   {pName}`;
+								TextSize = "14";
+								TextXAlignment = "Left";
+								BackgroundTransparency = 1;
+							};
+
+							{ClassName = "TextLabel";
+								Name = "Message";
+								Size = UDim2.new(1, 0, 0, 10);
+								Position = UDim2.new(0, 0, 0, 14);
+								Text = `   {msg or "<font color='rgb(230,0,0)'>An error has occured</font>"}`;
+								TextXAlignment = "Left";
+								TextYAlignment = "Top";
+								AutomaticSize = "Y";
+								TextWrapped = true;
+								TextScaled = false;
+								RichText = true;
+								BackgroundTransparency = 1;
+							};
+						}
 					}
 				}
-			}
-		})
+			})
+		else
+			chatlog:Add("Frame", {
+				Size = UDim2.new(1, 0, 0, 50);
+				BackgroundTransparency = 1;
+				AutomaticSize = "Y";
+				Children = {
+					{ClassName = "Frame";
+						Name = "CHATFRAME";
+						Size = UDim2.new(1, -10, 1, -10);
+						Position = UDim2.new(0, 5, 0, 5);
+						BackgroundTransparency = 0.5;
+						AutomaticSize = "Y";
+						Children = {
+							{ClassName = "ImageButton";
+								Name = "Icon";
+								Size = UDim2.new(0, 48, 0, 48);
+								Position = UDim2.new(0, 1, 0, 1);
+								Image = icon;
+							};
 
-		table.insert(messageObjs, newMsg);
+							{ClassName = "TextLabel";
+								Name = "PlayerName";
+								Size = UDim2.new(1, -55, 0, 15);
+								Position = UDim2.new(0, 55, 0, 0);
+								Text = if pDisplayName then pDisplayName == pName and (`@{pName}`) or string.format("%s (@%s)", pDisplayName, pName) else pName;
+								TextSize = "14";
+								TextXAlignment = "Left";
+								BackgroundTransparency = 1;
+							};
+
+							{ClassName = "TextLabel";
+								Name = "Message";
+								Size = UDim2.new(1, -55, 0, 10);
+								Position = UDim2.new(0, 55, 0, 15);
+								Text = msg;
+								TextXAlignment = "Left";
+								TextYAlignment = "Top";
+								AutomaticSize = "Y";
+								TextWrapped = true;
+								TextScaled = false;
+								RichText = true;
+								BackgroundTransparency = 1;
+							};
+						}
+					}
+				}
+			})
+		end
+
+		table.insert(messageObjs, newMsg)
 
 		if #messageObjs > 200 then
-			messageObjs[1]:Destroy();
-			table.remove(messageObjs, 1);
+			messageObjs[1]:Destroy()
+			table.remove(messageObjs, 1)
 		end
 	end
 
 	local function systemMessage(msg)
 		newMessage({
-			PlayerName = "*SYSTEM*";
+			PlayerName = "* SYSTEM *";
 			Message = msg;
 			Icon = 0;
 		})
 	end;
 
-	if client.UI.Get("PrivateChat".. SessionName) then
+	if client.UI.Get(`PrivateChat{SessionName}`) then
 		return
 	end
 
-	window = client.UI.Make("Window",{
-		Name  = "PrivateChat".. SessionName;
+	window = client.UI.Make("Window", {
+		Name  = `"PrivateChat{SessionName}`;
 		Title = "Private Chat";
+		Icon = client.MatIcons.Forum;
 		Size  = {500,300};
 		OnClose = function()
 			if sessionEvent then
 				sessionEvent:Disconnect()
 			end
 
-			client.Remote.Send("Session", SessionKey, "LeaveSession");
+			client.Remote.Send("Session", SessionKey, "LeaveSession")
 		end;
 	})
 
-	chatlog = window:Add("ScrollingFrame",{
+	chatlog = window:Add("ScrollingFrame", {
 		Size = UDim2.new(1, -105, 1, -45);
 		CanvasSize = UDim2.new(0, 0, 0, 0);
 		BackgroundTransparency = 0.9;
@@ -200,38 +249,38 @@ return function(data)
 		TextScaled = true;
 	})
 
-	playerList = window:Add("ScrollingFrame",{
+	playerList = window:Add("ScrollingFrame", {
 		Size = UDim2.new(0, 100, 1, -75);
 		Position = UDim2.new(1, -100, 0, 0);
 		BackgroundTransparency = 0.5;
 		AutomaticCanvasSize = "Y";
 	})
 
-	add = window:Add("TextButton", {
+	local add = window:Add("TextButton", {
 		Text = "+";
 		Size = UDim2.new(0, 30, 0, 30);
 		Position = UDim2.new(1, -100, 1, -70);
 		OnClick = function()
 			if CanManageUsers then
-				promptAddUser();
+				promptAddUser()
 			else
-				systemMessage("<i>You are not allowed to manage users</i>");
+				systemMessage("<i>You are not allowed to manage users</i>")
 			end
 		end
 	})
 
-	remove = window:Add("TextButton", {
+	local remove = window:Add("TextButton", {
 		Text = "-";
 		Size = UDim2.new(0, 30, 0, 30);
 		Position = UDim2.new(1, -35, 1, -70);
 		OnClick = function()
 			if CanManageUsers then
 				if selectedPlayer then
-					client.Remote.Send("Session", SessionKey, "RemovePlayerFromSession", selectedPlayer);
-					selectedPlayer = nil;
+					client.Remote.Send("Session", SessionKey, "RemovePlayerFromSession", selectedPlayer)
+					selectedPlayer = nil
 				end
 			else
-				systemMessage("<i>You are not allowed to manage users</i>");
+				systemMessage("<i>You are not allowed to manage users</i>")
 			end
 		end
 	})
@@ -242,7 +291,7 @@ return function(data)
 		Position = UDim2.new(1, -65, 1, -35);
 		OnClick = function()
 			sendIt()
-			reply.Text = "";
+			reply.Text = ""
 		end
 	})
 
@@ -257,9 +306,9 @@ return function(data)
 	send.BackgroundColor3 = send.BackgroundColor3:lerp(Color3.new(0,0,0), 0.1)
 	reply.FocusLost:Connect(function(isEnter)
 		if isEnter then
-			sendIt();
-			reply.Text = "";
-			reply:CaptureFocus();
+			sendIt()
+			reply.Text = ""
+			reply:CaptureFocus()
 		end
 	end)
 
@@ -284,8 +333,8 @@ return function(data)
 		local vargs = {...};
 		if SessionKey == sessionKey then
 			if cmd == "PlayerSentMessage" then
-				local p = vargs[1];
-				local message = vargs[2];
+				local p = vargs[1]
+				local message = vargs[2]
 
 				if newMessage then
 					newMessage({
@@ -296,16 +345,16 @@ return function(data)
 					})
 				end
 			elseif cmd == "UpdatePeerList" then
-				updatePeerList(vargs[1]);
+				updatePeerList(vargs[1])
 			elseif cmd == "RemovedFromSession" then
-				systemMessage("<i>You have been removed from this chat session</i>");
+				systemMessage("<i>You have been removed from this chat session</i>")
 			elseif cmd == "AddedToSession" then
-				systemMessage("<i>You have been added to this chat session</i>");
+				systemMessage("<i>You have been added to this chat session</i>")
 			end
 		end
 	end)
 
-	client.Remote.Send("Session", SessionKey, "GetPeerList");
+	client.Remote.Send("Session", SessionKey, "GetPeerList")
 	gTable = window.gTable
-	window:Ready();
+	window:Ready()
 end
