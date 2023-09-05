@@ -1,7 +1,6 @@
 <div align="center">
 
 # 📜 Adonis Contribution Guidelines
-*Updated on 2022-06-25 18:35 UTC by Expertcoderz*
 
 ![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png")
 
@@ -9,7 +8,7 @@ Adonis is an ever-expanding, frequently updated, slightly complicated, system. T
 
 ## Q: Who's in charge of handling pull requests (PRs)?
 
-**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip) and [@Expertcoderz](https://github.com/Expertcoderz)) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
+**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz)) and [@LiveFireExercise](https://github.com/LiveFireExercise) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
 
 Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
 
@@ -55,10 +54,10 @@ Finally, ***be sure to make file changes based on the latest version of the ``ma
 
 **A:** Please check for [Rojo Documentation for full details](https://rojo.space/docs/v7/getting-started/installation/), but in short, you'll need to install the Rojo CLI if you don't already have it. If you don't have the Aftman toolchain manager, [install it](https://github.com/LPGhatguy/aftman#installation). Then, inside the Adonis folder, run `aftman install`. Finally, run `rojo plugin install` to add the plugin to your studio.
 
-**Please note, that if you have installed a plugin from the Roblox Plugin Marketplace created by LPGhatguy, it will not work correctly and has been deprecated, please use this method instead.**
-***You may also have a Roblox Plugin Marketplace plugin created by Boatbomber, while this currently works as it's the current one, we highly recommend you use the above method instead, as the current plugin often changes.***
+**Please note, that if you have installed a plugin from the Roblox Plugin Marketplace created by LPGhatguy, it will not work correctly and has been deprecated, DO NOT use this plugin, it WILL cause side effects, such as UI font size issues.**
+Alternatively, if you prefer, you may also download the plugin from the [Creator Marketplace](https://create.roblox.com/marketplace/asset/13916111004/Rojo), but do note your version may get out of sync without warning.
 
-After installing Rojo, you can serve it by running `rojo serve` or by using the optional VSCode plugin. Then, connect thru the Rojo Plugin in Studio and accept the changes.
+After installing Rojo, you can serve it by running `rojo serve` or by using the [optional VSCode plugin](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo). Then, connect thru the Rojo Plugin in Studio and accept the changes.
 
 ## Q: What can I contribute to the Wiki?
 
