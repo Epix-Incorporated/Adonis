@@ -443,14 +443,7 @@ return function(Vargs, GetEnv)
 
 				local cmdArgs = command.Args or command.Arguments
 				local argString = string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ""
-				local args
-				if (command.NoFilter) or (#cmdArgs == 1) then
-					-- Default
-					args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
-				else
-					-- Quotation Support
-					args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.ExtractArgs(argString, #cmdArgs)) or {}
-				end
+				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 
 				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
 

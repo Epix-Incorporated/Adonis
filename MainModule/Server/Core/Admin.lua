@@ -86,7 +86,7 @@ return function(Vargs, GetEnv)
 							return true
 						end
 					else 
-						AddLog("Script", `Using the \`CanSend\` method of handling chat connectivity in channel {textchannel.Name}`)
+						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
 						server.Variables.TextChatSpeakers = {}
 						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
 							if not server.Variables.TextChatSpeakers[player] then

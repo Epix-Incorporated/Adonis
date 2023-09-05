@@ -955,11 +955,21 @@ return function(Vargs, GetEnv)
 
 			-- ////////// Compatability for older plugins (before sender and image ares were introduced)
 			if sender ~= nil and typeof(sender) ~= 'Instance' and typeof(sender) ~= 'userdata' and typeof(sender) ~= 'table' then
-				title = sender
-				message = title
-				players = message
-				scroll = image
-				duration = players
+				local oldVars = {
+					sender = sender,
+					title = title,
+					message = message,
+					image = image,
+					players = players,
+					scroll = scroll,
+					duration = duration,
+				}
+
+				title = oldVars.sender
+				message = oldVars.title
+				players = oldVars.message
+				scroll = oldVars.image
+				duration = oldVars.players
 
 				sender = nil
 				image = nil
@@ -1300,21 +1310,28 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Split = function(msg,key,num)
+		Split = function(msg, key, num)
+			-- Rebuilt revamped version (the old one was broken) which supports quotation is based off Paul's answer to stackoverflow question #28664139, with the addition of better escaping support, thanks Paul! I hate lua patterns with a passion ngl, this is a one line regex...
 			if not msg or not key or not num or num <= 0 then return {} end
 			if key=="" then key = " " end
 
 			local tab = {}
 			local str = ''
 
-			for arg in string.gmatch(msg,`([^{key}]+)`) do
-				if #tab>=num then
-					break
-				elseif #tab>=num-1 then
-					table.insert(tab,string.sub(msg,#str+1,#msg))
-				else
-					str ..= arg..key
-					table.insert(tab,arg)
+			local spat, epat, escquotpat, buf, quoted = [=[^(['"])]=], [=[(['"])$]=], [=[(\(['"]))]=]
+			for str in msg:gmatch("%S+") do
+				local squoted = str:match(spat)
+				local equoted = str:match(epat)
+				local escaped = str:match([=[(\*)['"]$]=])
+				if squoted and not quoted and not equoted then
+					buf, quoted = str, squoted
+				elseif buf and equoted == quoted and #escaped % 2 == 0 then
+					str, buf, quoted = buf .. " " .. str, nil, nil
+				elseif buf then
+					buf = buf .. " " .. str
+				end
+				if not buf then
+					table.insert(tab,(str:gsub(spat, ""):gsub(epat, ""):gsub(escquotpat,"%2")))
 				end
 			end
 
@@ -1327,34 +1344,6 @@ return function(Vargs, GetEnv)
 				table.insert(ret,arg)
 			end
 			return ret
-		end;
-
-		--TODO: This "very good addition to commands" doesn't even work from when I do try using the \"long text\" syntax with teams or messages, and this logic is terribly flawed (and failed linting with a warning), replace with a proper lua pattern.
-		ExtractArgs = function(text, numArgs)
-			local arguments = {}
-
-			local lastArgs = {}
-
-			for argument in 
-				('""'..text:gsub("\\?.", {['\\"']="\\\6ADONIS]\6"}))
-				:gsub('"(.-)"([^"]*)', function(q,n) return "\\\2ADONIS]"..q..n:gsub("%s+", "\0") end)
-				:sub(10) -- matches lenght of first temporary replace
-				:gmatch"%Z+" 
-			do
-				argument = argument:gsub("\\\6ADONIS]\6", '"'):gsub("\\\2ADONIS]", ""):gsub("\\(.)", "%1")
-
-				if not (numArgs <= (#arguments + 1) ) then
-					arguments[#arguments+1] = argument
-				else
-					table.insert(lastArgs, argument)
-				end
-			end
-
-			if lastArgs and next(lastArgs) then
-				arguments[#arguments + 1] = table.concat(lastArgs, " ")
-			end
-
-			return arguments
 		end;
 
 		IsValidTexture = function(id)
