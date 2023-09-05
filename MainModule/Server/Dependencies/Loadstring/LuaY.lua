@@ -1385,7 +1385,7 @@ function luaY:continuestat(ls)
 	if upval then
 		luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
 	end
-	luaK:codeAsBx(fs, "OP_JMP", 0, INSERTTHELOOPINSTRUCTIONOFFSETHERE) -- // Is bl.breaklist.previous the loop instruction? I have to test
+	luaK:codeAsBx(fs, "OP_JMP", 0, bl.breaklist.previous) -- This is correct from what I can tell from compiling Luau bytecode and testing it
 end
 
 ------------------------------------------------------------------------

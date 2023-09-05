@@ -994,7 +994,7 @@ return function(Vargs, env)
 					}) == "Yes"
 				then]]
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), `Script unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("Script", args[1], true)
 				cl.Name = "[Adonis] Script"
@@ -1019,7 +1019,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[1]}`, true)
 				cl.Name = "[Adonis] LocalScript"
@@ -1042,7 +1042,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[2])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local new = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[2]}`, true)
 				for i, v in service.GetPlayers(plr, args[1]) do
@@ -1068,7 +1068,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing LocalScript code (argument #1)")
 
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local new = Core.NewScript("LocalScript", args[1], true)
 				new.Name = "[Adonis] StarterScript"

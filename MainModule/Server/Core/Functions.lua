@@ -1310,19 +1310,26 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Split = function(msg, key, num)
+		Split = function(msg, key, disablequotesupport)
 			-- Rebuilt revamped version (the old one was broken) which supports quotation is based off Paul's answer to stackoverflow question #28664139, with the addition of better escaping support, thanks Paul! I hate lua patterns with a passion ngl, this is a one line regex...
-			if not msg or not key or not num or num <= 0 then return {} end
+			if not msg or not key then return {} end
 			if key=="" then key = " " end
 
 			local tab = {}
 			local str = ''
 
-			local spat, epat, escquotpat, buf, quoted = [=[^(['"])]=], [=[(['"])$]=], [=[(\(['"]))]=]
+			local spat, epat, escquotpat, buf, quoted = [=[^(['"])]=], [=[(['"])$]=], [=[(\(['"]))]=], nil, nil
 			for str in msg:gmatch("%S+") do
 				local squoted = str:match(spat)
 				local equoted = str:match(epat)
 				local escaped = str:match([=[(\*)['"]$]=])
+
+				if disablequotesupport == true then
+					squoted = false
+					equoted = false
+					escaped = false
+				end
+
 				if squoted and not quoted and not equoted then
 					buf, quoted = str, squoted
 				elseif buf and equoted == quoted and #escaped % 2 == 0 then
