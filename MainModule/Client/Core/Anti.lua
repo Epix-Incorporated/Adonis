@@ -569,7 +569,7 @@ return function(Vargs, GetEnv)
 							Detected("kick", "FireServer function hooks detected")
 						end
 					end
-					pcall(remEventCheck.FireServer, remEventCheck, proxyDetector)
+					pcall(remEventCheck.FireServer, proxyDetector, remEventCheck)
 
 					-- // RemoteFunction hook detection
 					do
@@ -591,7 +591,7 @@ return function(Vargs, GetEnv)
 							Detected("kick", "InvokeServer function hooks detected")
 						end
 					end
-					--pcall(remFuncCheck.InvokeServer, remFuncCheck, proxyDetector)
+					pcall(remFuncCheck.InvokeServer, proxyDetector, remEventCheck)
 
 					hasCompleted = true
 				end, function()
