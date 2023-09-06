@@ -5264,5 +5264,113 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		Sing = {
+			Prefix = server.Settings.Prefix;
+			Commands = {"sing";};
+			Args = {"player","soundid"};	
+			Description = "Sings the song";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				local id = string.lower(assert(args[2], "Missing soundid!"))
+	
+				for i, v in Variables.MusicList do
+					if id == string.lower(v.Name) then
+						id = v.ID
+					end
+				end
+	
+				for i, v in HTTP.Trello.Music do
+					if id == string.lower(v.Name) then
+						id = v.ID
+					end
+				end
+	
+				for _, player in service.GetPlayers(plr, args[1]) do
+					local character = player.Character
+					local head = character.Head
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+					local isR15 = humanoid and humanoid.RigType == Enum.HumanoidRigType.R15 or false
+					local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
+	
+					local sound = character:FindFirstChild("ADONIS_SOUND") or Instance.new("Sound")
+					sound.SoundId = `rbxassetid://{id}`
+					sound.Volume = 2
+					sound.Name = "ADONIS_SOUND"
+					sound.Looped = true
+					sound:Play()
+	
+					if head:FindFirstChild("face") then
+						head.face:Destroy()
+					end
+	
+					if head:FindFirstChildOfClass("FaceControls") then
+						head:FindFirstChildOfClass("FaceControls"):Destroy()
+					end
+	
+					if not character:FindFirstChild("ADONIS_MOUTH") then
+						local leftEye = Instance.new("Part")
+						leftEye.Anchored = false
+						leftEye.CanCollide = false
+						leftEye.Massless = true
+						leftEye.BrickColor = BrickColor.new("Black")
+						leftEye.TopSurface = Enum.SurfaceType.Smooth
+						leftEye.BottomSurface = Enum.SurfaceType.Smooth
+						leftEye.Name = "ADONIS_LEFTEYE"
+						local leftMesh = Instance.new("SpecialMesh", leftEye)
+						leftMesh.MeshType = Enum.MeshType.Sphere
+						leftMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
+						local weld = Instance.new("Weld", leftEye)
+						weld.Part0 = leftEye
+						weld.Part1 = head
+						weld.C1 = CFrame.new(Vector3.new(-.17, .14, -.57) * relativeSize)
+	
+						local rightEye = Instance.new("Part")
+						rightEye.Anchored = false
+						rightEye.CanCollide = false
+						rightEye.Massless = true
+						rightEye.Name = "ADONIS_RIGHTEYE"
+						rightEye.BrickColor = BrickColor.new("Black")
+						rightEye.TopSurface = Enum.SurfaceType.Smooth
+						rightEye.BottomSurface = Enum.SurfaceType.Smooth
+						local rightMesh = Instance.new("SpecialMesh", rightEye)
+						rightMesh.MeshType = Enum.MeshType.Sphere
+						rightMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
+						local weld = Instance.new("Weld", rightEye)
+						weld.Part0 = rightEye
+						weld.Part1 = head
+						weld.C1 = CFrame.new(Vector3.new(.17, .14, -.57) * relativeSize)
+	
+						local mouth = Instance.new("Part")
+						mouth.Anchored = false
+						mouth.CanCollide = false
+						mouth.Massless = true
+						mouth.Name = "ADONIS_MOUTH"
+						mouth.BrickColor = BrickColor.new("Black")
+						mouth.TopSurface = Enum.SurfaceType.Smooth
+						mouth.BottomSurface = Enum.SurfaceType.Smooth
+						mouth.Material = Enum.Material.SmoothPlastic
+						local mouthMesh = Instance.new("SpecialMesh", mouth)
+						mouthMesh.MeshType = Enum.MeshType.Sphere
+						mouthMesh.Scale = Vector3.new(.13, 0.1, 0.05) * relativeSize
+						local weld = Instance.new("Weld", mouth)
+						weld.Part0 = mouth
+						weld.Part1 = head
+						weld.C1 = CFrame.new(Vector3.new(0, -.25, -.6) * relativeSize)
+	
+						leftEye.Parent = character
+						rightEye.Parent = character
+						mouth.Parent = character
+					end
+	
+					sound.Parent = head
+	
+					if not sound:FindFirstChild("Singer") then
+						Deps.Assets.Singer:Clone().Parent = sound
+					end
+				end
+			end
+		};
 	}
 end
