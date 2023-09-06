@@ -50,5 +50,5 @@ game:GetService("RunService").Heartbeat:connect(function()
 	local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
 	local loudness = script.Parent.PlaybackLoudness
 	mouthMesh.Scale = mouthMesh.Scale:Lerp(Vector3.new(originalSize.X + loudness/WIDTH_SUPRESS * relativeSize.X, loudness/HEIGHT_SUPRESS * relativeSize.Y, originalSize.Z), SIZE_SMOOTHNESS)
-	neck.C0 = neck.C0:Lerp(orgC0 * CFrame.Angles(math.rad(mouthMesh.Scale.Y / relativeSize.Y * ANGLE_MULTIPLY) + math.rad(isR15 and 0 or -90), 0, math.rad(isR15 and 0 or 180)), ANGLE_SMOOTHNESS)
+	neck.C0 = neck.C0:Lerp(orgC0 * CFrame.Angles(math.rad(mouthMesh.Scale.Y / relativeSize.Y * ANGLE_MULTIPLY) * (isR15 and 1 or -1), 0, 0), ANGLE_SMOOTHNESS)
 end)
