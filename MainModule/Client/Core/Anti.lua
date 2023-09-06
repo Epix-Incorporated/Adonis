@@ -569,7 +569,7 @@ return function(Vargs, GetEnv)
 							Detected("kick", "FireServer function hooks detected")
 						end
 					end
-					pcall(remEventCheck.FireServer, remEventCheck, proxyDetector)
+					pcall(remEventCheck.FireServer, proxyDetector, proxyDetector)
 
 					-- // RemoteFunction hook detection
 					do
