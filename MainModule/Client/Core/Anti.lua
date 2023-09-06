@@ -83,18 +83,16 @@ return function(Vargs, GetEnv)
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", hyperionEnabled and "log" or action, tostring(info)..(hyperionEnabled and " - Hyperion is enabled, not giving punishment" or isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
-			if not hyperionEnabled then
-				if action == "k".."i".."c".."k" then
-					if not isStudio then
-						if nocrash then
-							Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
-						else
-							Disconnect(info)
-						end
+			if action == "k".."i".."c".."k" then
+				if not isStudio then
+					if nocrash then
+						Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
+					else
+						Disconnect(info)
 					end
-				elseif action == "c".."r".."a".."s".."h" then
-					Kill(info)
 				end
+			elseif action == "c".."r".."a".."s".."h" then
+				Kill(info)
 			end
 		end
 		return true
