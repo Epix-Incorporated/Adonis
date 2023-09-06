@@ -40,7 +40,8 @@ local originalSize = mouthMesh.Scale
 local orgC0 = neck.C0
 local isR15 = humanoid and humanoid.RigType == Enum.HumanoidRigType.R15 or false
 
-local SMOOTHNESS = 0.8
+local SIZE_SMOOTHNESS = 0.8
+local ANGLE_SMOOTHNESS = 0.1
 local WIDTH_SUPRESS = 20000
 local HEIGHT_SUPRESS = 1000
 local ANGLE_MULTIPLY = 100
@@ -48,6 +49,6 @@ local ANGLE_MULTIPLY = 100
 game:GetService("RunService").Heartbeat:connect(function()
 	local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
 	local loudness = script.Parent.PlaybackLoudness
-	mouthMesh.Scale = mouthMesh.Scale:Lerp(Vector3.new(originalSize.X + loudness/WIDTH_SUPRESS * relativeSize.X, loudness/HEIGHT_SUPRESS * relativeSize.Y, originalSize.Z), SMOOTHNESS)
-	neck.C0 = neck.C0:Lerp(orgC0 * CFrame.Angles(math.rad(mouthMesh.Scale.Y / relativeSize.Y * ANGLE_MULTIPLY) + math.rad(isR15 and 0 or -90), 0, math.rad(isR15 and 0 or 180)), 0.1)
+	mouthMesh.Scale = mouthMesh.Scale:Lerp(Vector3.new(originalSize.X + loudness/WIDTH_SUPRESS * relativeSize.X, loudness/HEIGHT_SUPRESS * relativeSize.Y, originalSize.Z), SIZE_SMOOTHNESS)
+	neck.C0 = neck.C0:Lerp(orgC0 * CFrame.Angles(math.rad(mouthMesh.Scale.Y / relativeSize.Y * ANGLE_MULTIPLY) + math.rad(isR15 and 0 or -90), 0, math.rad(isR15 and 0 or 180)), ANGLE_SMOOTHNESS)
 end)
