@@ -283,6 +283,7 @@ settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictl
 settings.CodeExecution = false			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
+settings.DisableBuyItem = true			-- Disable a security vulnerability related to UGCs being able to be taken for free using adonis.
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
