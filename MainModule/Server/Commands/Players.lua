@@ -1150,6 +1150,7 @@ return function(Vargs, env)
 			Args = {"id"};
 			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
 			AdminLevel = "Players";
+			Disabled = Settings.DisableBuyItem ~= false;
 			Function = function(plr: Player, args: {string})
 				local assetId = assert(tonumber(args[1]), "Missing asset ID (argument #1)")
 				local success, assetAlreadyOwned = pcall(service.MarketplaceService.PlayerOwnsAsset, service.MarketplaceService, plr, assetId)
