@@ -158,6 +158,18 @@ luaY.VARARG_NEEDSARG = 4
 
 luaY.LUA_MULTRET = -1  -- (lua.h)
 
+-- // Luau compound operator translation
+-- Also the concat operator is an odd one out, concatting uses a different type of operation
+-- because concatting concats a range of operators, I guess its an optimisation or something
+luaY.COMPOUND_OP_TRANSLATE = {
+	TK_ASSIGN_ADD = "OP_ADD",
+	TK_ASSIGN_SUB = "OP_SUB",
+	TK_ASSIGN_MUL = "OP_MUL",
+	TK_ASSIGN_DIV = "OP_DIV",
+	TK_ASSIGN_MOD = "OP_MOD",
+	TK_ASSIGN_POW = "OP_POW",
+}
+
 --[[--------------------------------------------------------------------
 -- other functions
 ----------------------------------------------------------------------]]
@@ -1355,6 +1367,28 @@ function luaY:breakstat(ls)
 end
 
 ------------------------------------------------------------------------
+-- parse a continue statement
+-- * used in statements()
+------------------------------------------------------------------------
+function luaY:continuestat(ls)
+	-- stat -> CONTINUE
+	local fs = ls.fs
+	local bl = fs.bl
+	local upval = false
+	while bl and not bl.isbreakable do
+		if bl.upval then upval = true end
+		bl = bl.previous
+	end
+	if not bl then
+		luaX:syntaxerror(ls, "no loop to continue")
+	end
+	if upval then
+		luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
+	end
+	luaK:codeAsBx(fs, "OP_JMP", 0, INSERTTHELOOPINSTRUCTIONOFFSETHERE) -- // Is bl.breaklist.previous the loop instruction? I have to test
+end
+
+------------------------------------------------------------------------
 -- parse a while-do control structure, body processed by block()
 -- * with dynamic array sizes, MAXEXPWHILE + EXTRAEXP limits imposed by
 --   the function's implementation can be removed
@@ -1724,6 +1758,10 @@ function luaY:statement(ls)
   elseif c == "TK_BREAK" then  -- stat -> breakstat
     luaX:next(ls)  -- skip BREAK
     self:breakstat(ls)
+    return true  -- must be last statement
+  elseif c == "TK_CONTINUE" then  -- stat -> continuestat
+    luaX:next(ls)  -- skip CONTINUE
+    self:continuestat(ls)
     return true  -- must be last statement
   else
     self:exprstat(ls)

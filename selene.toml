@@ -1,5 +1,7 @@
 std = "roblox"
 
+exclude = ["*.spec.lua"]
+
 [rules]
 if_same_then_else = "allow"
 
