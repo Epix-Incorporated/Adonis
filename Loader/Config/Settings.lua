@@ -593,6 +593,7 @@ order = {
 	"CodeExecution";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
+	"DisableBuyItem";
 	" ";
 	"BanMessage";
 	"LockMessage";
