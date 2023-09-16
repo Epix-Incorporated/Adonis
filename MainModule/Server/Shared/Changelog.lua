@@ -14,6 +14,7 @@ return {
 	"Update UI rbxmx files for FontFace";
 	"Fix DefaultSettings";
 	"Update :sm to use Functions.Message";
+	"!buyitem is now disabled by default due to a Roblox change";
 	"";
 	"(Git/ccuser44) Fix mystery error with hint (#1068)";
 	"(Git/ccuser44) Remove unecessary commented out code (#1067)";
