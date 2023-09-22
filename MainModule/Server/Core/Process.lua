@@ -952,7 +952,16 @@ return function(Vargs, GetEnv)
 
 						task.wait(1)
 
-						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
+						if level > 300 and Core.DebugMode == true then
+							Remote.MakeGui(p, "Notification", {
+								Title = "Debug Mode Enabled";
+								Message = "Adonis is currently running in Debug Mode.";
+								Icon = server.MatIcons["Bug report"];
+								Time = 10;
+							})
+						end
+
+						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Warning!";
 								Message = "Using default datastore key!";

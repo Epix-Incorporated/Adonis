@@ -12,33 +12,6 @@ return function(Vargs, env)
 	local Routine = env.Routine
 
 	return {
-		--[[
-		--// Unfortunately not viable
-		Reboot = {
-			Prefix = ":";
-			Commands = {"rebootadonis", "reloadadonis"};
-			Args = {};
-			Description = "Attempts to force Adonis to reload";
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {any})
-				local rebootHandler = server.Deps.RebootHandler:Clone();
-
-				if server.Runner then
-					rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
-					rebootHandler.Dropper.Value = service.UnWrap(server.Dropper);
-					rebootHandler.Runner.Value = service.UnWrap(server.Runner);
-					rebootHandler.Model.Value = service.UnWrap(server.Model);
-					rebootHandler.Mode.Value = "REBOOT";
-					task.wait(0.03)
-					rebootHandler.Parent = service.ServerScriptService;
-					rebootHandler.Disabled = false;
-					task.wait(0.03)
-					server.CleanUp();
-				else
-					error("Unable to reload: Runner missing");
-				end
-			end;
-		};--]]
 
 		SetRank = {
 			Prefix = Settings.Prefix;

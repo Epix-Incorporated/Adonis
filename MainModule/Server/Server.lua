@@ -516,7 +516,6 @@ return service.NewProxy({
 		end
 
 		--// Begin Script Loading
-		setfenv(1, setmetatable({}, {__metatable = unique}))
 		data = service.Wrap(data or {})
 
 		if not (data and data.Loader) then
@@ -526,6 +525,23 @@ return service.NewProxy({
 		if data and data.ModuleID == 8612978896 then
 			warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
 		end
+
+		if data and data.DebugMode == true then
+			warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
+			local AdonisDebugEnabled = service.New("BoolValue")
+			AdonisDebugEnabled.Name = "ADONIS_DEBUGMODE_ENABLED"
+			AdonisDebugEnabled.Value = true
+			AdonisDebugEnabled.Parent = Folder.Parent.Client
+		else
+			local serverMetatable = getmetatable(tab)
+			serverMetatable.__metatable = "Adonis"
+			setmetatable(tab, serverMetatable)
+			local serviceMetatable = getmetatable(service)
+			serverMetatable.__metatable = "Service"
+			setmetatable(service, serviceMetatable)
+		end
+		
+		setfenv(1, setmetatable({}, {__metatable = data.DebugMode and nil or unique}))
 
 		--// Server Variables
 		local setTab = require(server.Deps.DefaultSettings)
@@ -613,7 +629,7 @@ return service.NewProxy({
 					end
 					return ""
 				end,
-				__metatable = "Adonis_MatIcons"
+				__metatable = data.DebugMode and nil or "Adonis_MatIcons"
 			})
 		end
 
@@ -724,5 +740,5 @@ return service.NewProxy({
 	__tostring = function()
 		return "Adonis"
 	end;
-	__metatable = "Adonis";
+	__metatable = nil; -- This is now set in __call if DebugMode isn't enabled.
 })

@@ -139,13 +139,13 @@ end)
 
 local unique = {}
 local origEnv = getfenv()
-setfenv(1, setmetatable({}, { __metatable = unique }))
+local Folder = script.Parent
+setfenv(1, setmetatable({}, { __metatable = Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") and nil or unique }))
 --local origWarn = warn
 local startTime = time()
 local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
-local Folder = script.Parent
 local locals = {}
 local client = {}
 local service = {}
@@ -257,7 +257,7 @@ GetEnv = function(env, repl)
 			return (locals[ind] or (env or origEnv)[ind])
 		end,
 
-		__metatable = unique,
+		__metatable = Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") and nil or unique,
 	})
 
 	if repl and type(repl) == "table" then
@@ -543,7 +543,11 @@ return service.NewProxy({
 		local remoteName, depsName = string.match(data.Name, "(.*)\\(.*)")
 		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
-		setfenv(1, setmetatable({}, { __metatable = unique }))
+		if Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
+			data.DebugMode = true
+		end
+
+		setfenv(1, setmetatable({}, { __metatable = data.DebugMode and nil or unique }))
 
 		client.Folder = Folder
 		client.UIFolder = Folder:WaitForChild("UI", 9e9)
@@ -568,7 +572,7 @@ return service.NewProxy({
 						return self[ind]
 					end
 				end,
-				__metatable = "Adonis_MatIcons",
+				__metatable = data.DebugMode and nil or "Adonis_MatIcons",
 			})
 		end
 
@@ -796,7 +800,7 @@ return service.NewProxy({
 		log("~! Return success")
 		return "SUCCESS"
 	end,
-	__metatable = "Adonis",
+	__metatable = Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") and nil or unique,
 	__tostring = function()
 		return "Adonis"
 	end,

@@ -1310,12 +1310,17 @@ return function(Vargs, GetEnv)
 			local print = print
 			local warn = warn
 			local pairs = pairs
+			local ipairs = ipairs
 			local next = next
 			local table = table
 			local getfenv = getfenv
 			local setfenv = setfenv
 			local require = require
 			local tostring = tostring
+			local tonumber = tonumber
+			local getmetatable = getmetatable
+			local debug = debug
+			local math = math
 			local server = server
 			local service = service
 			local Routine = env.Routine
@@ -1470,6 +1475,71 @@ return function(Vargs, GetEnv)
 
 				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin, true);
 			}
+
+			if Core.DebugMode == true then
+				local DebugAPI = {
+					Env = Vargs
+				}
+
+				API.Debug = service.ReadOnly(DebugAPI) -- Allows fetching of the Debug API from within the _G API
+
+				if not service.ReplicatedStorage:FindFirstChild("Adonis_Debug_API") then -- Allows fetching from outside of _G Env (such as the command bar)
+					local pointers = {}
+
+					local function getRealEnvResult(PointerOrPath)
+						if tonumber(PointerOrPath) and pointers[PointerOrPath] then
+							return pointers[PointerOrPath], true
+						else
+							local envPath = PointerOrPath:split('/.\\')
+							local RealEnvResult = Vargs
+							for i, pathArg in ipairs(envPath) do
+								RealEnvResult = RealEnvResult[pathArg]
+							end
+							return RealEnvResult, false
+						end
+					end	
+					
+					local AdonisDebugAPIBindable = service.New("BindableFunction")
+					AdonisDebugAPIBindable.Name = "Adonis_Debug_API"
+					AdonisDebugAPIBindable.Parent = service.ReplicatedStorage
+					AdonisDebugAPIBindable.OnInvoke = function(DebugCommand,...)
+						local args = {...}
+
+						if DebugCommand == "RunEnvFunc" then
+							local FunctionInEnvToRunPath = args[1]
+							if FunctionInEnvToRunPath and type(FunctionInEnvToRunPath) == "string" then
+								local realEnvResult, isResultPointer = getRealEnvResult(FunctionInEnvToRunPath)
+								return realEnvResult(table.unpack(args,2,#args))
+							end
+						elseif DebugCommand == "GetEnvTableMeta" then
+							local TableInEnvPath = args[1]
+							if TableInEnvPath and type(TableInEnvPath) == "string" then
+								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
+								return getmetatable(realEnvResult)
+							end
+						elseif DebugCommand == "RunEnvTableMetaFunc" then
+							local TableInEnvPath = args[1]
+							local FuncToRun = args[2]
+							if TableInEnvPath and type(TableInEnvPath) == "string" then
+								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
+								local metaTableInEnv = getmetatable(realEnvResult)
+								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args,3,#args))
+								local resultPointer = tostring(math.random())
+								pointers[resultPointer] = result
+
+								return service.UnWrap(result), resultPointer
+							end
+						elseif DebugCommand == "GetApi" or not DebugCommand then
+							return DebugAPI
+						end
+					end
+				end
+
+				AddLog(Logs.Script, {
+					Text = "Enabled Debug API";
+					Desc = "DebugMode is enabled on this Adonis instance, the debug API is now accessible thru the bindable and _G (if enabled).";
+				})
+			end
 
 			local AdonisGTable = service.NewProxy({
 				__index = function(tab,ind)
