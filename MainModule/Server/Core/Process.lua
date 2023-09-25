@@ -917,14 +917,6 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
-					Remote.MakeGui(p, "Console")
-				end
-
-				if Settings.HelpButton then
-					Remote.MakeGui(p, "HelpButton")
-				end
-
 				if level > 0 then
 					local oldVer = (level > 300) and Core.GetData("VersionNumber")
 					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
@@ -1050,7 +1042,7 @@ return function(Vargs, GetEnv)
 											
 				if 
 					(not args[1] or 
-						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil))
+						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil or args[1].FinishedLoading == true))
 					and 
 						(Settings.Console and (not Settings.Console_AdminsOnly or level > 0)) then
 					Remote.RefreshGui(p, "Console")
