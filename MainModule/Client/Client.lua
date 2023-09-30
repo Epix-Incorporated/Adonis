@@ -140,7 +140,7 @@ end)
 local unique = {}
 local origEnv = getfenv()
 local Folder = script.Parent
-setfenv(1, setmetatable({}, { __metatable = Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") and nil or unique }))
+setfenv(1, setmetatable({}, { __metatable = unique }))
 --local origWarn = warn
 local startTime = time()
 local clientLocked = false
@@ -257,7 +257,7 @@ GetEnv = function(env, repl)
 			return (locals[ind] or (env or origEnv)[ind])
 		end,
 
-		__metatable = Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") and nil or unique,
+		__metatable = if not Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then "Adonis" else unique,
 	})
 
 	if repl and type(repl) == "table" then
@@ -547,7 +547,7 @@ return service.NewProxy({
 			data.DebugMode = true
 		end
 
-		setfenv(1, setmetatable({}, { __metatable = data.DebugMode and nil or unique }))
+		setfenv(1, setmetatable({}, { __metatable = unique }))
 
 		client.Folder = Folder
 		client.UIFolder = Folder:WaitForChild("UI", 9e9)
@@ -572,7 +572,7 @@ return service.NewProxy({
 						return self[ind]
 					end
 				end,
-				__metatable = data.DebugMode and nil or "Adonis_MatIcons",
+				__metatable = if not data.DebugMode then "Adonis" else unique,
 			})
 		end
 
@@ -800,7 +800,7 @@ return service.NewProxy({
 		log("~! Return success")
 		return "SUCCESS"
 	end,
-	__metatable = Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") and nil or unique,
+	__metatable = if not Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then "Adonis" else unique,
 	__tostring = function()
 		return "Adonis"
 	end,

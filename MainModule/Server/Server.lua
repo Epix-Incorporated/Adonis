@@ -541,7 +541,7 @@ return service.NewProxy({
 			setmetatable(service, serviceMetatable)
 		end
 		
-		setfenv(1, setmetatable({}, {__metatable = data.DebugMode and nil or unique}))
+		setfenv(1, setmetatable({}, {__metatable = unique}))
 
 		--// Server Variables
 		local setTab = require(server.Deps.DefaultSettings)
@@ -629,7 +629,7 @@ return service.NewProxy({
 					end
 					return ""
 				end,
-				__metatable = data.DebugMode and nil or "Adonis_MatIcons"
+				__metatable = if data.DebugMode then unique else "Adonis_MatIcons"
 			})
 		end
 

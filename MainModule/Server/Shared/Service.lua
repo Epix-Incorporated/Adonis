@@ -1386,7 +1386,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end;
 
-				__metatable = main.Core and main.Core.DebugMode and nil or "ReadOnly_Table"; -- Allow ReadOnly table's metadata to be modified if DebugMode is enabled
+				__metatable = if main.Core and main.Core.DebugMode then unique else "ReadOnly_Table"; -- Allow ReadOnly table's metadata to be modified if DebugMode is enabled
 			}
 		end;
 		Wait = function(mode)
