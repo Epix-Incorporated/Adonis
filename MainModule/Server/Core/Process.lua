@@ -950,6 +950,7 @@ return function(Vargs, GetEnv)
 								Message = "Adonis is currently running in Debug Mode.";
 								Icon = server.MatIcons["Bug report"];
 								Time = 10;
+								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`);
 							})
 						end
 

@@ -54,6 +54,35 @@ return function(Vargs, GetEnv)
 		end;
 	};--]]
 
+	Commands.DebugUsage = {
+		Prefix = Settings.PlayerPrefix;
+		Commands = {"debugusage"};
+		Args = {};
+		Description = "Shows you how to use some syntax related things";
+		Hidden = true;
+		AdminLevel = "Players";
+		Function = function(plr: Player, args: {string})
+			local usage = {
+				"This instance of Adonis is in DebugMode";
+				"Meaning, you have access to various debug commands, as shown in the list below.";
+				"You can also run scripts thru the env in the command or devconsole with :debugadonisenvscript";
+				"or directly in game thru :debugloadstring"
+			}
+			Remote.MakeGui(plr, "List", {
+				Title = "Usage";
+				Tab = usage;
+				Size = {300, 250};
+				RichText = true;
+				TitleButtons = {
+					{
+						Text = "?";
+						OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`)
+					}
+				};
+			})
+		end
+	};
+
 	Commands.ViewDebugCommands = {
 		Prefix = Settings.Prefix;
 		Commands = {"debugcmds", "debugcommands", "debugcmdlist"};
@@ -87,7 +116,7 @@ return function(Vargs, GetEnv)
 				TitleButtons = {
 					{
 						Text = "?";
-						OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`)
+						OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}debugusage')`)
 					}
 				};
 			})
