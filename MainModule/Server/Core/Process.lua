@@ -1049,6 +1049,10 @@ return function(Vargs, GetEnv)
 					Remote.RefreshGui(p, "Console")
 				end
 
+				if Settings.HelpButton then
+					Remote.MakeGui(p, "HelpButton")
+				end
+
 				--if Settings.CustomChat then
 				--	MakeGui(p, "Chat")
 				--end
