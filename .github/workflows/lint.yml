@@ -19,7 +19,7 @@ jobs:
       with:
           token: ${{ SECRETS.GITHUB_TOKEN }}
 
-    - name: Update standard library
+    - name: Update standard roblox library
       run: |
         selene generate-roblox-std
 

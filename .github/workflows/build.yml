@@ -3,6 +3,8 @@ name: rojo
 on:
   push:
     branches: [master]
+    tags: 
+      - v**
   pull_request:
     branches: [master]
 jobs:
@@ -16,12 +18,26 @@ jobs:
         id: naming
         env:
           GIT_HASH: ${{ github.sha }}
-          GIT_REF: ${{ github.ref }}
+          GITHUB_REPO: ${{ github.repository }}
+          GIT_REF: ${{ github.ref_name }}
+          GIT_REF_TYPE: ${{ github.ref_type }}}
           GITHUB_ACTION_EVENT_NAME: ${{ github.event_name }}
         run: |
-         CURDATETIME = $(date +'%Y-%m-%d')
-         echo "output_name=Adonis_Nightly_${CURDATETIME}_${GIT_REF}_${GIT_HASH}" >> $GITHUB_OUTPUT
-      # TODO: Make 'nightly' dynamic
+         CUR_DATE_TIME=$(date +'%Y-%m-%d')
+         if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "release" ]
+         then
+           BUILD_TYPE="Stable"
+         elif [ "$GIT_REF_TYPE" =="tag" ]
+          then
+            BUILD_TYPE="Release"
+         elif [ "$GITHUB_ACTION_EVENT_NAME" == "pull_request" ] || [ "$GITHUB_REPO" != "Epix-Incorporated/Adonis" ]
+         then
+           BUILD_TYPE="PRSnapshot"
+         else
+           BUILD_TYPE="Nightly"
+         fi
+         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_${GIT_HASH}" >> $GITHUB_OUTPUT
+
       - uses: ok-nick/setup-aftman@v0.3.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
