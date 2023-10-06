@@ -19,6 +19,10 @@ jobs:
       with:
           token: ${{ SECRETS.GITHUB_TOKEN }}
 
+    - name: Update standard library
+      run: |
+        selene generate-roblox-std
+
     - name: Lint
       run: |
         selene ./MainModule ./Loader

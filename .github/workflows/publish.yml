@@ -34,7 +34,6 @@ jobs:
 
       - name: Send Standalone Release to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         with:
           webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
           filename: Adonis_Release_${{ steps.date.outputs.date }}.rbxm
@@ -58,23 +57,3 @@ jobs:
           files: '{ "file": "module.rbxm" }'
           customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
           timeout: 10000
-        
-      #- name: Publish Loader
-      #  uses: fjogeleit/http-request-action@v1
-      #  with:
-      #    url: "${{ secrets.PUBLISH_URL }}/${{ secrets.LOADER_ID }}"
-      #    method: "POST"
-      #    contentType: "multipart/form-data"
-      #    files: '{ "file": "loader.rbxm" }'
-      #    customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
-      #    timeout: 10000
-      #  
-      #- name: Publish MainModule
-      #  uses: fjogeleit/http-request-action@v1
-      #  with:
-      #    url: "${{ secrets.PUBLISH_URL }}/${{ secrets.MODULE_ID }}"
-      #    method: "POST"
-      #    contentType: "multipart/form-data"
-      #    files: '{ "file": "module.rbxm" }'
-      #    customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
-      #    timeout: 10000
