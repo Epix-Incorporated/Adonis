@@ -20,7 +20,7 @@ body:
         - GitHub Repository
         - Other
     validations:
-      required: false
+      required: true
   - type: textarea
     id: suggestion
     attributes:
