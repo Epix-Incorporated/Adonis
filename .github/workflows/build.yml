@@ -7,6 +7,10 @@ on:
       - v**
   pull_request:
     branches: [master]
+  release:
+    types: [published]
+  workflow_dispatch:
+
 jobs:
   build:
     name: build
@@ -22,14 +26,21 @@ jobs:
           GIT_REF: ${{ github.ref_name }}
           GIT_REF_TYPE: ${{ github.ref_type }}}
           GITHUB_ACTION_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.isPrerelease }}
         run: |
          CUR_DATE_TIME=$(date +'%Y-%m-%d')
          if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "release" ]
          then
-           BUILD_TYPE="Stable"
-         elif [ "$GIT_REF_TYPE" =="tag" ]
+           BUILD_TYPE="DebugStable"
+         elif [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] &&  [ "$GIT_REF_TYPE" =="tag" ]
           then
-            BUILD_TYPE="Release"
+            BUILD_TYPE="DebugRelease"
+         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" =="false" ]
+          then
+            BUILD_TYPE="DebugRelease"
+         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" =="true" ]
+          then
+            BUILD_TYPE="DebugBeta"
          elif [ "$GITHUB_ACTION_EVENT_NAME" == "pull_request" ] || [ "$GITHUB_REPO" != "Epix-Incorporated/Adonis" ]
          then
            BUILD_TYPE="PRSnapshot"
@@ -45,7 +56,7 @@ jobs:
       - name: Build
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
@@ -53,19 +64,19 @@ jobs:
     # The following are ran for pushes, not pull requests, only.
           
       - name: Build Nightly MainModule
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         run: rojo build -o module.rbxm .github/module.deploy.project.json
 
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
       - name: Publish Nightly MainModule
         uses: fjogeleit/http-request-action@v1
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.NIGHTLY_MODULE_ID }}"
           method: "POST"
