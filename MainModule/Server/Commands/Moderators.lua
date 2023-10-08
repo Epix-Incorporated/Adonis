@@ -5274,6 +5274,10 @@ return function(Vargs, env)
 				local success, productInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, itemId)
 				assert(success and productInfo, "Invalid item ID")
 
+				local AssetTypeNameDescriptionOverides = {
+					DynamicHead = "Head"
+				}
+
 				local typeId = productInfo.AssetTypeId
 				local typeEnum
 
@@ -5295,8 +5299,6 @@ return function(Vargs, env)
 
 						if typeEnum == Enum.AvatarAssetType.EmoteAnimation then
 							humanoidDesc:AddEmote(productInfo.Name, itemId)
-						elseif typeEnum == Enum.AvatarAssetType.DynamicHead then
-							error("DynamicHeads are not yet supported.")
 						else
 							local accessoryType = service.AvatarEditorService:GetAccessoryType(typeEnum)
 							if accessoryType and accessoryType ~= Enum.AccessoryType.Unknown then
@@ -5307,8 +5309,16 @@ return function(Vargs, env)
 									AccessoryType = accessoryType
 								})
 								humanoidDesc:SetAccessories(accessories, true)
-							else
-								error("Item not supported")
+							elseif accessoryType == Enum.AccessoryType.Unknown then
+								local typeName = typeEnum.Name
+								if AssetTypeNameDescriptionOverides[typeName] then
+									typeName = AssetTypeNameDescriptionOverides[typeName]
+								end
+								if humanoidDesc[typeName] then
+									humanoidDesc[typeName] = itemId
+								else
+									error("Item not supported")
+								end
 							end
 						end
 
