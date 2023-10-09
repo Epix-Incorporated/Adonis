@@ -5289,7 +5289,7 @@ return function(Vargs, env)
 				end
 
 				if not typeEnum then
-					error("Item not supported")
+					error(`Asset type of {productInfo.Name} ({itemId}) not supported`)
 				end
 
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
@@ -5317,7 +5317,7 @@ return function(Vargs, env)
 								if humanoidDesc[typeName] then
 									humanoidDesc[typeName] = itemId
 								else
-									error("Item not supported")
+									error(`Asset type of {productInfo.Name} ({itemId}) not supported`)
 								end
 							end
 						end
@@ -6094,44 +6094,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		RemovePackage = {
-			Prefix = Settings.Prefix;
-			Commands = {"removepackage", "nopackage", "rpackage"};
-			Args = {"player"};
-			Description = "Removes the target player(s)'s Package";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						if humanoid then
-							local rigType = humanoid.RigType
-							if rigType == Enum.HumanoidRigType.R6 then
-								for _, x in v.Character:GetChildren() do
-									if x:IsA("CharacterMesh") then
-										x:Destroy()
-									end
-								end
-							elseif rigType == Enum.HumanoidRigType.R15 then
-								local rig = Deps.Assets.RigR15
-								local rigHumanoid = rig.Humanoid
-								local validParts = table.create(#Enum.BodyPartR15:GetEnumItems())
-								for _, x in Enum.BodyPartR15:GetEnumItems() do
-									validParts[x.Name] = x.Value
-								end
-								for _, x in rig:GetChildren() do
-									if x:IsA("BasePart") and validParts[x.Name] then
-										humanoid:ReplaceBodyPartR15(validParts[x.Name], x:Clone())
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-		};
-
+		
 		GivePackage = {
 			Prefix = Settings.Prefix;
 			Commands = {"package", "givepackage", "setpackage", "bundle"};
@@ -6143,55 +6106,19 @@ return function(Vargs, env)
 				assert(args[1] and args[2] and tonumber(args[2]), "Missing or invalid package ID")
 
 				local id = tonumber(args[2])
-				local assetHD = Variables.BundleCache[id]
 
-				if assetHD == false then
-					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} is not supported.`})
+				local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
+
+				if suc then
+					for _, item in ers.Items do
+						if item.Type == "Asset" then
+							Commands.AvatarItem.Function(plr, {`@{plr.Name}`, item.Id})
+							break
+						end
+					end
+				else
+					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} doesn't exist.`})
 					return
-				end
-
-				if not assetHD then
-					local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
-
-					if suc then
-						for _, item in ers.Items do
-							if item.Type == "UserOutfit" then
-								local _, Outfit = pcall(function() return service.Players:GetHumanoidDescriptionFromOutfitId(item.Id) end)
-								Variables.BundleCache[id] = Outfit
-								assetHD = Outfit
-								break
-							end
-						end
-					end
-
-					if not suc or not assetHD then
-						Variables.BundleCache[id] = false
-
-						Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} is not supported.`})
-						return
-					end
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local char = v.Character
-
-					if char then
-						local humanoid = char:FindFirstChildOfClass("Humanoid")
-
-						if not humanoid then
-							Functions.Hint(`Could not transfer bundle to {v.Name}`, {plr})
-						else
-							local newDescription = humanoid:GetAppliedDescription()
-							local defaultDescription = Instance.new("HumanoidDescription")
-							for _, property in {"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"} do
-								if assetHD[property] ~= defaultDescription[property] then
-									newDescription[property] = assetHD[property]
-								end
-							end
-
-							humanoid:ApplyDescription(newDescription, Enum.AssetTypeVerification.Always)
-						end
-					end
 				end
 			end
 		};
