@@ -1145,8 +1145,22 @@ luaY.getbinopr_table = {
   ["TK_AND"] = "OPR_AND",
   ["TK_OR"] = "OPR_OR",
 }
+------------------------------------------------------------------------
+-- // Luau compound operator translation
+-- Also the concat operator is an odd one out, concatting uses a different type of operation
+-- because concatting concats a range of operators, I guess its an optimisation or something
+-- ccuser44 added this array, but never actually implemented it (?), so moo1210 did. 
+------------------------------------------------------------------------
+luaY.COMPOUND_OP_TRANSLATE = {
+	TK_ASSIGN_ADD = "OP_ADD",
+	TK_ASSIGN_SUB = "OP_SUB",
+	TK_ASSIGN_MUL = "OP_MUL",
+	TK_ASSIGN_DIV = "OP_DIV",
+	TK_ASSIGN_MOD = "OP_MOD",
+	TK_ASSIGN_POW = "OP_POW",
+}
 function luaY:getbinopr(op)
-  local opr = self.getbinopr_table[op]
+  local opr = self.getbinopr_table[op] or self.COMPOUND_OP_TRANSLATE[op] 
   if opr then return opr else return "OPR_NOBINOPR" end
 end
 
