@@ -1310,47 +1310,58 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Split = function(msg, key, disablequotesupport)
+		Split = function(msg, key, num, useMagicChars)
 			-- Rebuilt revamped version (the old one was broken) which supports quotation is based off Paul's answer to stackoverflow question #28664139, with the addition of better escaping support, thanks Paul! I hate lua patterns with a passion ngl, this is a one line regex...
 			if not msg or not key then return {} end
-			if key=="" then key = " " end
+			if key=="" or key == nil then key = " " end
+			if num==nil then num = math.huge end
+			if useMagicChars==nil then useMagicChars = true end
 
 			local tab = {}
 			local str = ''
 
 			local spat, epat, escquotpat, buf, quoted = [=[^(['"])]=], [=[(['"])$]=], [=[(\(['"]))]=], nil, nil
-			for str in msg:gmatch("%S+") do
-				local squoted = str:match(spat)
-				local equoted = str:match(epat)
-				local escaped = str:match([=[(\*)['"]$]=])
 
-				if disablequotesupport == true then
-					squoted = false
-					equoted = false
-					escaped = false
+			if useMagicChars == false then
+				spat = ""
+				epat = ""
+				escquotpat = ""
+			end
+
+			local keyPattern = "[^"..key.."]+"
+
+			if key:match("%s") then
+				keyPattern = "%S+" -- If the key is a whitespace character, use any whitespace character as the pattern
+			end
+
+			for arg in msg:gmatch(keyPattern) do
+				local squoted = arg:match(spat)
+				local equoted = arg:match(epat)
+				local escaped = arg:match([=[(\*)['"]$]=])
+
+				if #tab>=num then
+					break
+				elseif #tab>=num-1 then
+					table.insert(tab,string.sub(msg,#str+1,#msg))
+					continue
 				end
 
 				if squoted and not quoted and not equoted then
-					buf, quoted = str, squoted
+					buf, quoted = arg, squoted
 				elseif buf and equoted == quoted and #escaped % 2 == 0 then
-					str, buf, quoted = buf .. " " .. str, nil, nil
+					arg, buf, quoted = buf .. key .. arg, nil, nil
 				elseif buf then
-					buf = buf .. " " .. str
+					buf = buf .. key .. arg
 				end
+
 				if not buf then
-					table.insert(tab,(str:gsub(spat, ""):gsub(epat, ""):gsub(escquotpat,"%2")))
+					local result = arg:gsub(spat, ""):gsub(epat, ""):gsub(escquotpat,"%2")
+					str ..= result .. key
+					table.insert(tab,result)
 				end
 			end
 
 			return tab
-		end;
-
-		BasicSplit = function(msg,key)
-			local ret = {}
-			for arg in string.gmatch(msg,`([^{key}]+)`) do
-				table.insert(ret,arg)
-			end
-			return ret
 		end;
 
 		IsValidTexture = function(id)

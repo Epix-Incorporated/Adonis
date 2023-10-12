@@ -488,7 +488,7 @@ return function(Vargs, GetEnv)
 					local argString = string.match(message, "^.- (.+)") or ""
 					local comTable = Remote.Terminal.GetCommand(command)
 					if comTable then
-						local cArgs = Functions.Split(argString, " ", true)
+						local cArgs = Functions.Split(argString, " ", comTable.Arguments)
 						local ran,ret = pcall(comTable.Function,p,cArgs,data)
 						if ran then
 							return ret
