@@ -992,10 +992,11 @@ return function(Vargs, GetEnv)
 		SetFPS = function(fps)
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
+
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
-					local fpslockint = time() +1 /fps
-					repeat until time()>=fpslockint
+					local cat = tick()
+					repeat while cat + 1/fps > tick() do end task.wait() cat = tick() until service.IsLooped("SetFPS") == false
 				end)
 			end
 		end;
