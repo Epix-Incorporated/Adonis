@@ -966,6 +966,22 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		DisplaySystemMessageInTextChat = function(channel: TextChannel?, message, meta)
+			if service.TextChatService then
+				if not channel then
+					--// we wanna get the default channel because the new ChatSystem sucks
+					--// Please fix it Roblox
+					--// we need less strict ways to filter & receive messages
+					if service.TextChatService:FindFirstChild("TextChannels") and service.TextChatService.TextChannels:FindFirstChild("RBXSystem") then
+						channel = service.TextChatService.TextChannels.RBXSystem
+					end
+				end
+				if channel then
+					channel:DisplaySystemMessage(message, meta)
+				end
+			end
+		end;
+
 		SetCamProperty = function(prop,value)
 			local cam = workspace.CurrentCamera
 			if cam[prop] then

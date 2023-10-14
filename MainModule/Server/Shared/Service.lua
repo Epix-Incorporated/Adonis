@@ -73,6 +73,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local assetOwnershipCache = {}
 	local assetInfoCache = {}
 	local groupInfoCache = {}
+	local changedLocale = nil -- This has to be nil at start, it will only be set once the user changes it in the game
 	local toBoolean = function(stat: any): boolean
 		return stat and true or false
 	end
@@ -1007,28 +1008,27 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			})
 		end;
 
+		GetCurrentLocale = function()
+			if service.RunService:IsClient() then
+				local accountLocale, systemLocale = service.LocalizationService.RobloxLocaleId, service.LocalizationService.SystemLocaleId
+				return changedLocale or (accountLocale ~= "en-us" and accountLocale ~= "en") and accountLocale or systemLocale ~= "" and systemLocale or "en-us"
+			end
+			return "en-us"
+		end,
+
 		GetTime = os.time;
 
 		FormatTime = function(optTime, options)
-			if options == true then options = {WithDate = true} end
-			if not options then options = {} end
+			options = if options == true then {WithDate = true} else options or {}
 
 			local formatString = options.FormatString
 			if not formatString then
 				formatString = options.WithWrittenDate and "LL HH:mm:ss" or (options.WithDate and "L HH:mm:ss" or "HH:mm:ss")
 			end
 
-			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
-
-			if service.RunService:IsServer() then
-				return tim:FormatUniversalTime(formatString, "en-us")
-			else
-				local locale = service.Players.LocalPlayer.LocaleId
-				local success, str = pcall(function()
-					return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
-				end)
-				return success and str or tim:FormatLocalTime(formatString, "en-us") -- Fallback if locale is not supported by DateTime
-			end
+			local timeObj = DateTime.fromUnixTimestamp(optTime or service.GetTime())
+			local success, value = pcall(timeObj.FormatLocalTime, timeObj, formatString, service.GetCurrentLocale())
+			return if success then value else timeObj:ToIsoDate()
 		end;
 
 		FormatPlayer = function(plr, withUserId)
@@ -1523,6 +1523,16 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		service:SetSpecial("ClassName", name)
 		service:SetSpecial("ToString", name)
 		service:SetSpecial("IsA", function(i, check) return check == name end)
+	end
+
+	if service.RunService:IsClient() then
+		task.spawn(xpcall, function()
+			local translator = service.LocalizationService:GetTranslatorForPlayerAsync(service.Players.LocalPlayer)
+
+			translator:GetPropertyChangedSignal("LocaleId"):Connect(function()
+				changedLocale = translator.LocaleId
+			end)
+		end, warn)
 	end
 
 	return service

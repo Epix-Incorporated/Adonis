@@ -900,12 +900,24 @@ return function(Vargs, env)
 						local hasSafeChat = if policyInfo then
 							type(policyInfo) == "string" and policyInfo or table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes"
 							else "[Redacted]"
+						
+						local mailVerif = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
+						local hasVerifiedMail = if elevated then
+							type(mailVerif) == "string" and mailVerif or mailVerif and "Yes" or "No"
+							else "[Redacted]"
+						
+						local idVerif = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v))
+						local hasVerifiedId = if elevated then
+							type(idVerif) == "string" and idVerif or idVerif and "Yes" or "No"
+							else "[Redacted]"
 
 						Remote.RemoveGui(plr, `Profile_{v.UserId}`)
 						Remote.MakeGui(plr, "Profile", {
 							Target = v;
 							SafeChat = hasSafeChat;
 							CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
+							MailVerified = hasVerifiedMail;
+							IDVerified = hasVerifiedId;
 							IsDonor = Admin.CheckDonor(v);
 							GameData = gameData;
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
@@ -1138,6 +1150,7 @@ return function(Vargs, env)
 			Args = {"id"};
 			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
 			AdminLevel = "Players";
+			Disabled = Settings.DisableBuyItem ~= false;
 			Function = function(plr: Player, args: {string})
 				local assetId = assert(tonumber(args[1]), "Missing asset ID (argument #1)")
 				local success, assetAlreadyOwned = pcall(service.MarketplaceService.PlayerOwnsAsset, service.MarketplaceService, plr, assetId)

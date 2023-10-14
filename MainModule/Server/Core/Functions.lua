@@ -1037,6 +1037,16 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
+																									
+		SetAtmosphere = function(prop,value)
+			if service:FindFirstChildWhichIsA("Atmosphere")[prop] ~= nil then
+				service:FindFirstChildWhichIsA("Atmosphere")[prop] = value
+				Variables.AtmosphereSettings[prop] = value
+				for _, p in service.GetPlayers() do
+					Remote.SetAtmosphere(p, prop, value)
+				end
+			end
+		end;
 
 		LoadEffects = function(plr)
 			for i, v in Variables.LocalEffects do
@@ -1319,12 +1329,31 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
-		CountTable = function(tab)
-			local num = 0
-			for i in tab do
-				num += 1
+		ExtractArgs = function(text, numArgs)
+			local arguments = {}
+
+			local lastArgs = {}
+
+			for argument in 
+				('""'..text:gsub("\\?.", {['\\"']="\\\6ADONIS]\6"}))
+				:gsub('"(.-)"([^"]*)', function(q,n) return "\\\2ADONIS]"..q..n:gsub("%s+", "\0") end)
+				:sub(10) -- matches lenght of first temporary replace
+				:gmatch"%Z+" 
+			do
+				argument = argument:gsub("\\\6ADONIS]\6", '"'):gsub("\\\2ADONIS]", ""):gsub("\\(.)", "%1")
+
+				if not (numArgs <= (#arguments + 1) ) then
+					arguments[#arguments+1] = argument
+				else
+					table.insert(lastArgs, argument)
+				end
 			end
-			return num
+
+			if (lastArgs and next(lastArgs)) then
+				arguments[#arguments + 1] = table.concat(lastArgs, " ")
+			end
+
+			return arguments
 		end;
 
 		IsValidTexture = function(id)
@@ -1403,16 +1432,30 @@ return function(Vargs, GetEnv)
 			return cache
 		end;
 
+		GetNameFromUserIdAsync = function(id)
+			local cache = Admin.UsernameCache[id]
+			if not cache then
+				local success, Username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, id)
+
+				if success then
+					Admin.UsernameCache[id] = Username
+					return Username
+				end
+			end
+
+			return cache
+		end;
+
 		Shutdown = function(reason)
 			Functions.Message('Adonis', Settings.SystemTitle, "The server is shutting down...", 'MatIcon://Warning', service.Players:GetPlayers(), false, 5)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
-				player:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
+				player:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
 			end)
 
 			for _, v in service.Players:GetPlayers() do
-				v:Kick(`Server Shutdown\n\n{reason or "No Reason Given"}`)
+				v:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
 			end
 		end;
 

@@ -443,7 +443,14 @@ return function(Vargs, GetEnv)
 
 				local cmdArgs = command.Args or command.Arguments
 				local argString = string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ""
-				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+				local args
+				if (command.NoFilter) or (#cmdArgs == 1) then
+					-- Default
+					args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+				else
+					-- Quotation Support
+					args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.ExtractArgs(argString, #cmdArgs)) or {}
+				end
 
 				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
 
@@ -633,12 +640,14 @@ return function(Vargs, GetEnv)
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					service.Events.MutedPlayerChat_UnFiltered:Fire(p, msg)
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
 						Text = `[MUTED] {p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
 					})
+					service.Events.MutedPlayerChat_Filtered:Fire(p, filtered)
 				end
 			elseif not didPassRate and RateLimit(p, "RateLog") then
 				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", curRate))
@@ -879,7 +888,7 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
-
+					
 					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
 						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})

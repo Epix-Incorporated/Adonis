@@ -247,7 +247,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				assert(args[2], "Missing message")
 
-				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
 			end
 		};
 
@@ -261,7 +261,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -294,6 +294,21 @@ return function(Vargs, env)
 				assert(args[1], "Missing message")
 
 				Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers())
+			end
+		};
+
+		CustomNotify = {
+			Prefix = Settings.Prefix;
+			Commands = {"cn", "customsmallmessage", "cnmessage"};
+			Args = {"title", "message"};
+			Filter = true;
+			Description = `Same as {Settings.Prefix}n but says whatever you want the title to be instead of your name.`;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing title")
+				assert(args[2], "Missing message")	
+
+				Functions.Notify(service.BroadcastFilter(args[1], plr), service.BroadcastFilter(args[2], plr), service.GetPlayers())
 			end
 		};
 
@@ -580,9 +595,21 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a message in the target player(s)'s chat window";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
+					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+						local TextToUse = args[2]
+						if data.Options.Chat ~= true then
+							TextToUse = service.SanitizeXML(args[2] or "Hello world!")
+						end 
+						Remote.Send(
+							v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{
+							service.Filter(TextToUse, plr, v)
+							}</font>`)
+					else 
+						Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
+					end
+					
 				end
 			end
 		};
@@ -1903,7 +1930,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", "Teleporting to server \""..args[2].."\"\nPlease wait...", players, false, 10)
+				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
 			end
 		};
 
@@ -2371,6 +2398,27 @@ return function(Vargs, env)
 				end
 				if Variables.OriginalLightingSettings.Sky then
 					Variables.OriginalLightingSettings.Sky:Clone().Parent = service.Lighting
+				end
+			end
+		};
+		
+		ResetAtmosphere = {
+			Prefix = Settings.Prefix;
+			Commands = {"resetatmosphere", "fixatmosphere"};
+			Args = {};
+			Description = "Resets atmosphere back to the setting it had on server start";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
+					for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
+						v.Name = Variables.OriginalAtmosphereSettings.Name
+						v.Density = Variables.OriginalAtmosphereSettings.Density
+						v.Offset = Variables.OriginalAtmosphereSettings.Offset
+						v.Color = Variables.OriginalAtmosphereSettings.Color
+						v.Decay = Variables.OriginalAtmosphereSettings.Decay
+						v.Glare = Variables.OriginalAtmosphereSettings.Glare
+						v.Haze = Variables.OriginalAtmosphereSettings.Haze
+					end
 				end
 			end
 		};
@@ -3676,6 +3724,8 @@ return function(Vargs, env)
 								obj.Transparency = 1
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 1
+								elseif obj:FindFirstChildOfClass("BillboardGui") then
+									obj:FindFirstChildOfClass("BillboardGui").Enabled = false
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 1
@@ -3707,6 +3757,8 @@ return function(Vargs, env)
 								obj.Transparency = 0
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 0
+								elseif obj:FindFirstChildOfClass("BillboardGui") then
+									obj:FindFirstChildOfClass("BillboardGui").Enabled = true
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
@@ -3968,10 +4020,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
-
+				
+				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
+							Remote.SetAtmosphere(color)
+				end
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
 						Remote.SetLighting(v, "FogColor", color)
@@ -4000,8 +4054,6 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-
 
 		StarterGive = {
 			Prefix = Settings.Prefix;
@@ -4616,7 +4668,7 @@ return function(Vargs, env)
 						end
 					end
 
-					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
+					if not point then Functions.Hint(`Waypoint {m} was not found.`, {plr}) end
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
 					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
@@ -6035,42 +6087,13 @@ return function(Vargs, env)
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local name = args[2] == "hide" and " " or args[2]
+
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character and v.Character:FindFirstChild("Head") then
-						for a, mod in v.Character:GetChildren() do
-							if mod:FindFirstChild("NameTag") then
-								v.Character.Head.Transparency = 0
-								mod:Destroy()
-							end
-						end
+					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
-						local char = v.Character
-						local head = char:FindFirstChild("Head")
-						local mod = service.New("Model", char)
-						local cl = char.Head:Clone()
-						local hum = service.New("Humanoid", mod)
-						mod.Name = args[2] or ""
-						cl.Parent = mod
-						hum.Name = "NameTag"
-						hum.MaxHealth=v.Character.Humanoid.MaxHealth
-						wait()
-						hum.Health=v.Character.Humanoid.Health
-
-						if string.lower(args[2])=="hide" then
-							mod.Name = ""
-							hum.MaxHealth = 0
-							hum.Health = 0
-						else
-							v.Character.Humanoid.Changed:Connect(function(c)
-								hum.MaxHealth = v.Character.Humanoid.MaxHealth
-								wait()
-								hum.Health = v.Character.Humanoid.Health
-							end)
-						end
-
-						cl.CanCollide = false
-						local weld = service.New("Weld", cl) weld.Part0 = cl weld.Part1 = char.Head
-						char.Head.Transparency = 1
+					if humanoid then
+						humanoid.DisplayName = name
 					end
 				end
 			end
@@ -6084,13 +6107,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character and v.Character:FindFirstChild("Head") then
-						for a, mod in v.Character:GetChildren() do
-							if mod:FindFirstChild("NameTag") then
-								v.Character.Head.Transparency = 0
-								mod:Destroy()
-							end
-						end
+					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if humanoid then
+						humanoid.DisplayName = v.DisplayName
 					end
 				end
 			end
@@ -6247,6 +6267,48 @@ return function(Vargs, env)
 							end
 						end
 					end)
+				end
+			end
+		};
+
+		LoadAvatar = {
+			Prefix = Settings.Prefix;
+			Commands = {"loadavatar", "loadchar", "loadcharacter"};
+			Args = {"player", "username", "avatar type(R6/R15)"};
+			Description = "Loads the target character in front of you. If you want to supply a UserId, supply with 'userid-<PlayerID>'";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player name")
+				assert(args[2], "Missing username or UserId")
+				assert(args[3], "Invalid argument #3 (avatar type expected)")
+
+				local AvatarType = string.upper(args[3])
+				if AvatarType == "R6" or AvatarType == "R15" then
+					local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
+					if target then
+						local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
+
+						if success then
+							for _, v in service.GetPlayers(plr, args[1]) do
+								task.defer(function()
+									local char = Deps.Assets[`Rig{AvatarType}`]:Clone()
+									char.Name = Functions.GetNameFromUserIdAsync(target)
+									char.Parent = workspace
+									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[`AvatarType{Animate}`]:Clone() Anima.Parent = char Anima.Disabled = false end
+									char.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
+									char.HumanoidRootPart.CFrame = (v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(5, 0, 0)) * CFrame.Angles(0, math.rad(90), 0)
+
+									char.Humanoid.Died:Once(function()
+										service.Debris:AddItem(char, service.Players.RespawnTime)
+									end)
+								end)
+							end
+						else
+							error("Unable to get avatar for target user")
+						end
+					end
+				else
+					error("Invalid argument #3 (valid avatar type expected)")
 				end
 			end
 		};
@@ -6607,6 +6669,10 @@ return function(Vargs, env)
 
 						if check then
 							table.insert(Settings.Muted, `{v.Name}:{v.UserId}`)
+							service.Events.PlayerMuted:Fire({
+								Target = v.UserId;
+								Moderator = plr.UserId;
+							})
 						end
 					end
 				end
@@ -6627,6 +6693,10 @@ return function(Vargs, env)
 							--Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat", true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
 						end
 					end
+					service.Events.PlayerUnMuted:Fire({
+						Target = v.UserId;
+						Moderator = plr.UserId;
+					})
 				end
 			end
 		};
@@ -6869,14 +6939,20 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player, selection: string?)
 				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
 				local tab = {
-					`Specified: "{selection or `{Settings.SpecialPrefix}me`}"`,
-					`# Players: {#players}`,
-					"―――――――――――――――――――――――",
+					{
+						Text = `Specified: "{selection or `{Settings.SpecialPrefix}me`}"`;
+					},
+					{
+						Text = `# Players: {#players}`;
+					},
+					{
+						Text = `―――――――――――――――――――――――`;
+					}
 				}
+
 				for _, v: Player in players do
 					table.insert(tab, {
-						Text = service.FormatPlayer(v);
-						Desc = `ID: {v.UserId}`;
+						Text = `[{v.UserId}] {service.FormatPlayer(v)}`;
 					})
 				end
 				return tab
@@ -6886,6 +6962,7 @@ return function(Vargs, env)
 					Title = "Selected Players";
 					Icon = server.MatIcons.People;
 					Tab = Logs.ListUpdaters.SelectPlayers(plr, args[1]);
+					TextSelectable = true;
 					Update = "SelectPlayers";
 					UpdateArg = args[1];
 					AutoUpdate = if args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes") then 1 else nil;

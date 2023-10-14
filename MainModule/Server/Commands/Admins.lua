@@ -333,9 +333,21 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a message in the chat window";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers() do
-					Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+					--Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+						local TextToUse = args[1]
+						if data.Options.Chat ~= true then
+							TextToUse = service.SanitizeXML(args[1] or "Hello world!")
+						end 
+						Remote.Send(
+							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
+							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, Settings.SystemTitle, service.Filter(TextToUse), plr, v)
+							}`)
+					else 
+						Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+					end
 				end
 			end
 		};
@@ -524,13 +536,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message (argument #1)")
-				for _, v in service.Players:GetPlayers() do
-					Remote.RemoveGui(v, "Message")
-					Remote.MakeGui(v, "Message", {
-						Title = Settings.SystemTitle;
-						Message = args[1];
-					})
-				end
+				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -599,46 +605,29 @@ return function(Vargs, env)
 		};
 
 		BuildingTools = {
-			Prefix = Settings.Prefix;
-			Commands = {"btools", "f3x", "buildtools", "buildingtools", "buildertools"};
-			Args = {"player"};
-			Description = "Gives the target player(s) F3X building tools.";
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				local F3X = service.New("Tool", {
-					GripPos = Vector3.new(0, 0, 0.4),
-					CanBeDropped = false,
-					ManualActivationOnly = false,
-					ToolTip = "Building Tools by F3X",
-					Name = "Building Tools"
-				}, true)
-				do
-					service.New("StringValue", {
-						Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
-						Parent = F3X
-					})
+            Prefix = Settings.Prefix;
+            Commands = {"btools", "f3x", "buildtools", "buildingtools", "buildertools"};
+            Args = {"player"};
+            Description = "Gives the target player(s) F3X building tools.";
+            AdminLevel = "Admins";
+            Function = function(plr: Player, args: {string})
+                local F3X = require(580330877)()
+                do
+                    service.New("StringValue", {
+                        Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
+                        Parent = F3X
+                    })
+                end
 
-					local clonedDeps = Deps.Assets:FindFirstChild("F3X Deps"):Clone()
-					for _, BaseScript in clonedDeps:GetDescendants() do
-						if BaseScript:IsA("BaseScript") then
-							BaseScript.Disabled = false
-						end
-					end
-					for _, Child in clonedDeps:GetChildren() do
-						Child.Parent = F3X
-					end
-					clonedDeps:Destroy()
-				end
+                for _, v in service.GetPlayers(plr, args[1]) do
+                    local Backpack = v:FindFirstChildOfClass("Backpack")
 
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local Backpack = v:FindFirstChildOfClass("Backpack")
-
-					if Backpack then
-						F3X:Clone().Parent = Backpack
-					end
-				end
-			end
-		};
+                    if Backpack then
+                        F3X:Clone().Parent = Backpack
+                    end
+                end
+            end
+        };
 
 		Insert = {
 			Prefix = Settings.Prefix;

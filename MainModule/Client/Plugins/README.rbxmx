@@ -9,10 +9,8 @@
 			<string name="Name">README</string>
 			<string name="ScriptGuid">{2AC9A9AE-EC1D-4D52-99E3-42ED7D665AC9}</string>
 			<ProtectedString name="Source"><![CDATA[--[[
-	This is just a placeholder file so GitHub doesn't ignore the folder. 
-	
-	Current Documentation:
-	https://github.com/Epix-Incorporated/Adonis/wiki
+	This is just a placeholder file so Rojo doesn't ignore the folder. 
+
 --]]
 
 return function()
