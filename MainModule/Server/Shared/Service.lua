@@ -1317,6 +1317,16 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			end
 		end;
+														
+		IsLooped = function(name)
+			for cat,loop in RunningLoops do
+				if name == loop.Function or name == loop.Name then
+					return loop.Running
+				end
+			end
+			return false
+		end;
+														
 		Immutable = function(...)
 			local co = coroutine.wrap(function(...) while true do coroutine.yield(...) end end)
 			co(...)
