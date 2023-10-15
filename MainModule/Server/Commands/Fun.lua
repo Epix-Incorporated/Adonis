@@ -2827,7 +2827,7 @@ return function(Vargs, env)
 				local decal1 = service.New("Decal")
 				decal1.Face = "Back"
 				decal1.Texture = "http://www.roblox.com/asset/?id=183747890"
-				decal1.Name = "Snoop"
+				decal1.Name = "Sp00ks"
 
 				local decal2 = decal1:Clone()
 				decal2.Face = "Front"
@@ -3111,7 +3111,7 @@ return function(Vargs, env)
 				local sound = service.New("Sound")
 				sound.SoundId = "rbxassetid://4792468132" -- Old audio of 259702986 was ate by the private audio update.
 				sound.Looped = true
-				--sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
+				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local humRootPart = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
