@@ -158,18 +158,6 @@ luaY.VARARG_NEEDSARG = 4
 
 luaY.LUA_MULTRET = -1  -- (lua.h)
 
--- // Luau compound operator translation
--- Also the concat operator is an odd one out, concatting uses a different type of operation
--- because concatting concats a range of operators, I guess its an optimisation or something
-luaY.COMPOUND_OP_TRANSLATE = {
-	TK_ASSIGN_ADD = "OP_ADD",
-	TK_ASSIGN_SUB = "OP_SUB",
-	TK_ASSIGN_MUL = "OP_MUL",
-	TK_ASSIGN_DIV = "OP_DIV",
-	TK_ASSIGN_MOD = "OP_MOD",
-	TK_ASSIGN_POW = "OP_POW",
-}
-
 --[[--------------------------------------------------------------------
 -- other functions
 ----------------------------------------------------------------------]]
@@ -1145,6 +1133,11 @@ luaY.getbinopr_table = {
   ["TK_AND"] = "OPR_AND",
   ["TK_OR"] = "OPR_OR",
 }
+function luaY:getbinopr(op)
+  local opr = self.getbinopr_table[op]
+  if opr then return opr else return "OPR_NOBINOPR" end
+end
+
 ------------------------------------------------------------------------
 -- // Luau compound operator translation
 -- Also the concat operator is an odd one out, concatting uses a different type of operation
@@ -1159,10 +1152,7 @@ luaY.COMPOUND_OP_TRANSLATE = {
 	TK_ASSIGN_MOD = "OP_MOD",
 	TK_ASSIGN_POW = "OP_POW",
 }
-function luaY:getbinopr(op)
-  local opr = self.getbinopr_table[op] or self.COMPOUND_OP_TRANSLATE[op] 
-  if opr then return opr else return "OPR_NOBINOPR" end
-end
+
 
 ------------------------------------------------------------------------
 -- the following priority table consists of pairs of left/right values
