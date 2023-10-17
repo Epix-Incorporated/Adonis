@@ -5887,9 +5887,8 @@ return function(Vargs, env)
 
 						new.Parent = part
 						new.Disabled = false
-						Remote.MakeGui(v, "Notification", {
-							Title = "Flight";
-							Message = "You are now flying. Press E to toggle flight.";
+						Remote.MakeGui(v, "Hint", {
+							Message = "You are now flying - press E to toggle flight";
 							Time = 10;
 						})
 					end
