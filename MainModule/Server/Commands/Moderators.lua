@@ -5285,7 +5285,7 @@ return function(Vargs, env)
 								end
 							end
 
-							service.OutfitCache[plr] = v.CharacterAdded:Connect(function(char)
+							service.OutfitCache[v] = v.CharacterAdded:Connect(function(char)
 								char:SetAttribute("LoadingSavedOutfit", true)
 								local newHum = char:WaitForChild("Humanoid")
 								newHum:WaitForChild("HumanoidDescription")
