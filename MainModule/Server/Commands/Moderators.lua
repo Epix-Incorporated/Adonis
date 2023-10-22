@@ -5261,6 +5261,76 @@ return function(Vargs, env)
 			end
 		};
 
+		SaveOutfit = {
+			Prefix = Settings.Prefix;
+			Commands = {"saveoutfit", "savefit"};
+			Args = {"player"};
+			Description = "Saves your current character's appearance when respawning";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local connection = service.OutfitCache[v]
+					if connection then
+						connection:Disconnect()
+					end
+
+					if v.Character then
+						local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription():Clone()
+							local customAccessories = {}
+							for i,x in v.Character:GetChildren() do
+								if x.Name == "CustomAdonisAccessory" then
+									table.insert(customAccessories, x:GetAttribute("AssetId"))
+								end
+							end
+
+							service.OutfitCache[plr] = v.CharacterAdded:Connect(function(char)
+								char:SetAttribute("LoadingSavedOutfit", true)
+								local newHum = char:WaitForChild("Humanoid")
+								newHum:WaitForChild("HumanoidDescription")
+								task.defer(newHum.ApplyDescription, newHum, humanoidDesc, Enum.AssetTypeVerification.Always)
+								for i,x in customAccessories do
+									service.SecureAccessory(v, x)
+								end
+								char:SetAttribute("LoadingSavedOutfit", nil)
+							end)
+						end
+					end
+				end
+			end,
+		},
+
+		RemoveSavedOutfit = {
+			Prefix = Settings.Prefix;
+			Commands = {"removesavedoutfit", "removeoutfit", "removefit", "defaultavatar"};
+			Args = {"player"};
+			Description = "Removes any currently saved outfits and reverts your character to its original look";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local connection = service.OutfitCache[v]
+					if connection then
+						connection:Disconnect()
+					end
+
+					if v.Character then
+						local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local humdesc = service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
+							humanoid:ApplyDescription(humdesc)
+						end
+
+						for i,x in v.Character:GetChildren() do
+							if x.Name == "CustomAdonisAccessory" then
+								x:Destroy()
+							end
+						end
+					end
+				end
+			end,
+		},
+		
 		AvatarItem = {
 			Prefix = Settings.Prefix;
 			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
@@ -5340,7 +5410,22 @@ return function(Vargs, env)
 						elseif typeId == 61 then
 							humanoidDesc:AddEmote(productInfo.Name, itemId)
 						else
-							error("Item not supported")
+							-- Prevent players from having an amount of hats over the limit
+							if v.Character:GetAttribute("LoadingSavedOutfit") then return end
+
+							local customHats = 0
+							for _,x in v.Character:GetChildren() do
+								if x.Name == "CustomAdonisAccessory" then
+									customHats += 1
+								end
+							end
+
+							if customHats > 7 then
+								error("You can only have 8 custom accessories at a time")
+							end
+
+							service.SecureAccessory(v, itemId)
+							continue
 						end
 
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
@@ -5348,7 +5433,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		RemoveTShirt = {
 			Prefix = Settings.Prefix;
 			Commands = {"removetshirt", "untshirt", "notshirt"};
