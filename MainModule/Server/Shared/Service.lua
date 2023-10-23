@@ -3,6 +3,7 @@ client = nil
 Pcall = nil
 cPcall = nil
 Routine = nil
+logError = nil
 
 local main
 local ErrorHandler
@@ -100,7 +101,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
 	local Events, Threads, Wrapper, Helpers = {
-		TrackTask = function(name, func, ...)
+		TrackTask = function(name, func, errHandler, ...)
+			local overrflowArgs = {...}
+			if type(errHandler) ~= "function" or #overrflowArgs == 0 and errHandler == nil then
+				errHandler = function(err)
+					logError(err.."\n"..debug.traceback())
+				end
+			end
 			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
@@ -116,7 +123,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local function taskFunc(...)
 				TrackedTasks[index] = data
 				data.Status = "Running"
-				data.Returns = {pcall(func, ...)}
+				data.Returns = {xpcall(func, errHandler, ...)}
 
 				if not data.Returns[1] then
 					data.Status = "Errored"
@@ -139,7 +146,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		EventTask = function(name, func)
 			local newTask = service.TrackTask
 			return function(...)
-				return newTask(name, func, ...)
+				return newTask(name, func, false, ...)
 			end
 		end;
 
@@ -476,7 +483,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Remove = function(thread) service.Threads.Stop(thread) for ind,th in service.Threads.Threads do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
 		StopAll = function() for ind,th in service.Threads.Threads do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in service.Threads.Threads do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
 	},{
-		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = "Ignore"}) end;
+		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = main.Core and main.Core.DebugMode and nil or "Ignore"}) end;
 		CheckWrappers = function()
 			for obj,wrap in Wrappers do
 				if service.IsDestroyed(obj) then
@@ -485,7 +492,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		Wrapped = function(object)
-			return getmetatable(object) == "Adonis_Proxy"
+			return getmetatable(object) == "Adonis_Proxy" or type(object) == ("table" or "userdata") and object.IsProxy and object:IsProxy() or false
 		end;
 		UnWrap = function(object)
 			local OBJ_Type = typeof(object)
@@ -569,6 +576,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						return sWrap(new)
 					end;
 
+					IsWrapped = function()
+						return true -- Cannot fully depend on __metatable if DebugMode is enabled
+					end;
+
 					connect = function(ignore, func)
 						return Wrap(object:Connect(function(...)
 							local packedResult = table.pack(...)
@@ -611,7 +622,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				--newMeta.__gc = function(tab)
 				--	custom:RemoveFromCache()
 				--end
-				newMeta.__metatable = "Adonis_Proxy"
+				newMeta.__metatable = main.Core and  main.Core.DebugMode and nil or "Adonis_Proxy"
 
 				custom:AddToCache()
 				return newObj
@@ -772,7 +783,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
 			local metatable = getmetatable(newProxy)
-			metatable.__metatable = false
+			metatable.__metatable = main.Core and main.Core.DebugMode and nil or false
 			for i,v in meta do metatable[i] = v end
 			return newProxy
 		end;
@@ -834,7 +845,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			table.insert(queue.Functions, tab);
 
 			if not queue.Processing then
-				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, queue, key);
+				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, false, queue, key);
 			end
 
 			if doYield and not tab.Finished then
@@ -875,12 +886,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 
 						service.TrackTask(`Thread: {key or "Unknown"}_QueuedFunction`, function()
-							local r,e = pcall(func.Function);
-
-							if not r then
+							local r,e = xpcall(func.Function,function(e)
 								func.Error = e;
-								warn(`Queue Error: {key}: {e}`)
-							end
+								warn(`Queue Error: {key}: {e} \n {debug.traceback()}`)
+							end);
 
 							func.Running = false;
 							func.Finished = true
@@ -890,7 +899,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 							end
 
 							Yield:Release();
-						end)
+						end,false)
 
 						if func.Running then
 							Yield:Wait();
@@ -1290,9 +1299,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 
 			if noYield then
-				service.TrackTask(`Thread: Loop: {name}`, loop)
+				service.TrackTask(`Thread: Loop: {name}`, false, loop)
 			else
-				service.TrackTask(`Loop: {name}`, loop)
+				service.TrackTask(`Loop: {name}`, false, loop)
 			end
 
 			--[[local task = service.Threads.RunTask(`LOOP:{name}`, loop)
@@ -1377,7 +1386,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end;
 
-				__metatable = "ReadOnly_Table";
+				__metatable = if main.Core and main.Core.DebugMode then unique else "ReadOnly_Table"; -- Allow ReadOnly table's metadata to be modified if DebugMode is enabled
 			}
 		end;
 		Wait = function(mode)
@@ -1466,7 +1475,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		__tostring = "Service";
-		__metatable = "Service";
+		__metatable = nil; -- This is set later within initialization in Core.lua
 	})
 
 	WrapService = Wrapper.Wrap(WrapService)

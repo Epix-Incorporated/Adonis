@@ -112,7 +112,7 @@ else
 				break
 			end
 		end
-		if not moduleId then
+		if not moduleId and not data.NightlyMode then
 			error(`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent:GetFullName()}`)
 		end
 	end

@@ -2,10 +2,10 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="UnionOperation" referent="RBX2FDCAA2249DD465981ECD38D3DCC9070">
+	<Item class="MeshPart" referent="RBXC6DA53461726445F914B6D22E09D008F">
 		<Properties>
+			<SharedString name="AeroMeshData">PDngqZF1DvwVfbsTeIEdtg==</SharedString>
 			<bool name="Anchored">false</bool>
-			<Content name="AssetId"><url>https://www.roblox.com//asset/?id=12897011604</url></Content>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<float name="BackParamA">-0.5</float>
 			<float name="BackParamB">0.5</float>
@@ -19,22 +19,20 @@
 				<X>33.4028244</X>
 				<Y>15.1013622</Y>
 				<Z>3.64479065</Z>
-				<R00>0</R00>
+				<R00>-4.37113883e-08</R00>
 				<R01>0</R01>
 				<R02>1</R02>
 				<R10>0</R10>
 				<R11>1</R11>
-				<R12>-0</R12>
+				<R12>0</R12>
 				<R20>-1</R20>
 				<R21>0</R21>
-				<R22>0</R22>
+				<R22>-4.37113883e-08</R22>
 			</CoordinateFrame>
 			<bool name="CanCollide">true</bool>
 			<bool name="CanQuery">true</bool>
 			<bool name="CanTouch">true</bool>
 			<bool name="CastShadow">true</bool>
-			<BinaryString name="ChildData"></BinaryString>
-			<SharedString name="ChildData2">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<string name="CollisionGroup">Default</string>
 			<int name="CollisionGroupId">0</int>
 			<Color3uint8 name="Color3uint8">4288914085</Color3uint8>
@@ -46,15 +44,23 @@
 				<FrictionWeight>0.5</FrictionWeight>
 				<ElasticityWeight>0.5</ElasticityWeight>
 			</PhysicalProperties>
-			<token name="FormFactor">3</token>
+			<bool name="DoubleSided">true</bool>
+			<bool name="EnableFluidForces">true</bool>
 			<float name="FrontParamA">-0.5</float>
 			<float name="FrontParamB">0.5</float>
 			<token name="FrontSurface">0</token>
 			<token name="FrontSurfaceInput">0</token>
+			<bool name="HasJointOffset">false</bool>
+			<bool name="HasSkinnedMesh">false</bool>
 			<Vector3 name="InitialSize">
-				<X>4.72529602</X>
-				<Y>1.20270848</Y>
-				<Z>1.20000076</Z>
+				<X>168.895706</X>
+				<Y>31.5590935</Y>
+				<Z>29.9966087</Z>
+			</Vector3>
+			<Vector3 name="JointOffset">
+				<X>0</X>
+				<Y>0</Y>
+				<Z>0</Z>
 			</Vector3>
 			<float name="LeftParamA">-0.5</float>
 			<float name="LeftParamB">0.5</float>
@@ -64,10 +70,9 @@
 			<bool name="Massless">false</bool>
 			<token name="Material">1088</token>
 			<string name="MaterialVariantSerialized"></string>
-			<BinaryString name="MeshData"></BinaryString>
-			<SharedString name="MeshData2">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
+			<Content name="MeshId"><url>rbxassetid://431163037</url></Content>
 			<string name="Name">Pipe</string>
-			<SharedString name="PhysicalConfigData">uk3JN9K9cotfIIqRoak1dA==</SharedString>
+			<SharedString name="PhysicalConfigData">1A9RVwHspygpi/hfdEVOxA==</SharedString>
 			<BinaryString name="PhysicsData"></BinaryString>
 			<CoordinateFrame name="PivotOffset">
 				<X>0</X>
@@ -95,27 +100,27 @@
 				<Y>0</Y>
 				<Z>0</Z>
 			</Vector3>
-			<float name="SmoothingAngle">0</float>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
+			<Content name="TextureID"><url>rbxassetid://431163071</url></Content>
 			<float name="TopParamA">-0.5</float>
 			<float name="TopParamB">0.5</float>
 			<token name="TopSurface">0</token>
 			<token name="TopSurfaceInput">0</token>
 			<float name="Transparency">0</float>
-			<bool name="UsePartColor">false</bool>
 			<Vector3 name="Velocity">
 				<X>0</X>
 				<Y>0</Y>
 				<Z>0</Z>
 			</Vector3>
+			<int name="VertexCount">600</int>
 			<Vector3 name="size">
-				<X>4.72529602</X>
-				<Y>1.20270848</Y>
-				<Z>1.20000076</Z>
+				<X>4.7249999</X>
+				<Y>1.20299995</Y>
+				<Z>1.20000005</Z>
 			</Vector3>
 		</Properties>
-		<Item class="Sound" referent="RBXF27DC9AB70F04BC293C21E8DEDA2ABB4">
+		<Item class="Sound" referent="RBXB77EBC8AEAD945D399EFE5EE4568DE2B">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<float name="EmitterSize">10</float>
@@ -130,7 +135,7 @@
 				<token name="RollOffMode">0</token>
 				<Ref name="SoundGroup">null</Ref>
 				<Content name="SoundId"><url>rbxassetid://6729922069</url></Content>
-				<int64 name="SourceAssetId">6729922069</int64>
+				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<double name="TimePosition">0</double>
 				<float name="Volume">1</float>

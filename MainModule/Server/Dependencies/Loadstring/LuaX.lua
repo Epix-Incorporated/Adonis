@@ -424,7 +424,7 @@ function luaX:str2d(s)
 		local sum = 0
 
 		for i = 1, string.len(bin) do
-			num = string.sub(bin, i, i) == "1" and 1 or 0
+			local num = string.sub(bin, i, i) == "1" and 1 or 0
 			sum = sum + num * math.pow(2, i - 1)
 		end
 
@@ -670,7 +670,8 @@ function luaX:llex(ls, Token)
     ----------------------------------------------------------------
     elseif c == "-" then
       c = self:nextc(ls)
-      if c ~= "-" then return "-" end
+      if c == "=" then self:nextc(ls); return "TK_ASSIGN_SUB" -- Luau Compound 
+      elseif c ~= "-" then return "-" end
       -- else is a comment
       local sep = -1
       if self:nextc(ls) == '[' then
@@ -696,7 +697,34 @@ function luaX:llex(ls, Token)
       else
         self:lexerror(ls, "invalid long string delimiter", "TK_STRING")
       end
+    ---------------------Luau Compound Start------------------------
+    elseif c == "+" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "+"
+      else self:nextc(ls); return "TK_ASSIGN_ADD" end
     ----------------------------------------------------------------
+    elseif c == "*" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "*"
+      else self:nextc(ls); return "TK_ASSIGN_MUL" end
+    ----------------------------------------------------------------
+    elseif c == "/" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "/"
+      else self:nextc(ls); return "TK_ASSIGN_DIV" end
+    ----------------------------------------------------------------
+    elseif c == "%" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "%"
+      else self:nextc(ls); return "TK_ASSIGN_MOD" end
+    ----------------------------------------------------------------
+    elseif c == "^" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "^"
+      else self:nextc(ls); return "TK_ASSIGN_POW" end
+    ----------------------------------------------------------------
+    --             TODO: TK_ASSIGN_CONCAT support                 --
+    ----------------------Luau Compound End-------------------------
     elseif c == "=" then
       c = self:nextc(ls)
       if c ~= "=" then return "="
