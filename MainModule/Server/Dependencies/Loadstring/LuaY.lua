@@ -1337,9 +1337,9 @@ function luaY:assignment(ls, lh, nvars)
     else
       luaK:setoneret(ls.fs, e)  -- close last expression
       if compOpr ~= "OP_NOCOMOPR" then
-        -- TODO: use luaK:discharge2reg to load proper values
-        --luaK:constfolding(compOpr)
-        print("Ex Compounding! (maybe if not constant)",compOpr, ls.fs.f.k[lh.v.info].value, e.nval, lh.v, e)
+        luaK:exp2val(ls.fs, lh.v)
+        luaK:exp2val(ls.fs, e)
+        luaK:codearith(ls.fs, compOpr, lh.v, e)
       end
       luaK:storevar(ls.fs, lh.v, e)
       return  -- avoid default

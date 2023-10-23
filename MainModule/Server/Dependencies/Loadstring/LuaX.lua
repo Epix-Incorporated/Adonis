@@ -670,7 +670,8 @@ function luaX:llex(ls, Token)
     ----------------------------------------------------------------
     elseif c == "-" then
       c = self:nextc(ls)
-      if c ~= "-" then return "-" end
+      if c == "=" then self:nextc(ls); return "TK_ASSIGN_SUB" -- Luau Compound 
+      elseif c ~= "-" then return "-" end
       -- else is a comment
       local sep = -1
       if self:nextc(ls) == '[' then
@@ -701,11 +702,6 @@ function luaX:llex(ls, Token)
       c = self:nextc(ls)
       if c ~= "=" then return "+"
       else self:nextc(ls); return "TK_ASSIGN_ADD" end
-    ----------------------------------------------------------------
-    elseif c == "-" then
-      c = self:nextc(ls)
-      if c ~= "=" then return "+"
-      else self:nextc(ls); return "TK_ASSIGN_SUB" end
     ----------------------------------------------------------------
     elseif c == "*" then
       c = self:nextc(ls)
