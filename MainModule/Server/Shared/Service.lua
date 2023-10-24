@@ -1423,7 +1423,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			if not plr.Character then return end
 
 			local function reject()
-				table.insert(service.UnallowedCache, tonumber(itemId))
+				service.UnallowedCache[tonumber(itemId)] = true
 				error("Item not supported")
 			end
 
