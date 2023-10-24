@@ -37,7 +37,7 @@ function Message:render()
 		BackgroundTransparency = 0.2,
 		BorderSizePixel = 0,
 		Position = props.Condensed and UDim2.new(0.5, 0, 0, 150) or UDim2.fromScale(0, 0.5),
-		Size = props.Condensed and UDim2.fromOffset() or UDim2.fromScale(1, 0),
+		Size = props.Condensed and UDim2.fromScale(0.5, 0.5) or UDim2.fromScale(1, 0),
 	}, {
 
 		Layout = new('UIListLayout', {

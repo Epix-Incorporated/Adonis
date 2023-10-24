@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: Roblox/setup-foreman@v2.1
+    - uses: ok-nick/setup-aftman@v0.3.0
       with:
           token: ${{ SECRETS.GITHUB_TOKEN }}
 

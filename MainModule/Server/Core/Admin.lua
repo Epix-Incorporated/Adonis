@@ -86,7 +86,7 @@ return function(Vargs, GetEnv)
 							return true
 						end
 					else 
-						AddLog("Script", `Using the \`CanSend\` method of handling chat connectivity in channel {textchannel.Name}`)
+						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
 						server.Variables.TextChatSpeakers = {}
 						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
 							if not server.Variables.TextChatSpeakers[player] then
@@ -1174,7 +1174,9 @@ return function(Vargs, GetEnv)
 					--logError("SERVER","Command",error)
 				end]]
 
-				TrackTask(`Command: {coma}`, com.Function, false, args)
+				TrackTask(`Command: {coma}`, com.Function, function(err)
+					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+				end, args)
 			end
 		end;
 
@@ -1186,25 +1188,30 @@ return function(Vargs, GetEnv)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
-				local ran, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {
-					PlayerData = {
-						Player = plr;
-						Level = adminLvl;
-						isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false;
+				local ran, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{
+						PlayerData = {
+							Player = plr,
+							Level = adminLvl,
+							isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false,
+						},
 					}
-				})
+				)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask(`COMMAND:{plr.Name}: {coma}`,com.Function,60*5,plr,args)
-				if error then
-					--logError(plr,"Command",error)
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = '';
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-					return;
-				end
 			end
 		end;
 
@@ -1212,20 +1219,27 @@ return function(Vargs, GetEnv)
 			local ind, com = Admin.GetCommand(coma)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local _, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {PlayerData = {
-					Player = plr;
-					Level = 0;
-					isDonor = false;
-				}})
-				if error then
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = "";
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-				end
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
+				local _, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{ PlayerData = {
+						Player = plr,
+						Level = 0,
+						isDonor = false,
+					} }
+				)
 			end
 		end;
 

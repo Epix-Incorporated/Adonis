@@ -139,13 +139,13 @@ end)
 
 local unique = {}
 local origEnv = getfenv()
+local Folder = script.Parent
 setfenv(1, setmetatable({}, { __metatable = unique }))
 --local origWarn = warn
 local startTime = time()
 local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
-local Folder = script.Parent
 local locals = {}
 local client = {}
 local service = {}
@@ -257,7 +257,7 @@ GetEnv = function(env, repl)
 			return (locals[ind] or (env or origEnv)[ind])
 		end,
 
-		__metatable = unique,
+		__metatable = if not Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then "Adonis" else unique,
 	})
 
 	if repl and type(repl) == "table" then
@@ -286,27 +286,23 @@ local LoadModule = function(module, yield, envVars, noEnv)
 				local ran, err = service.TrackTask(
 					`Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					function(err)
+						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					end,
 					GetVargTable(),
 					GetEnv
 				)
-
-				if not ran then
-					warn(`Module encountered an error while loading: {module}`)
-					warn(tostring(err))
-				end
 			else
 				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
 				local ran, err = service.TrackTask(
 					`Thread: Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					function(err)
+						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					end,
 					GetVargTable(),
 					GetEnv
 				)
-
-				if not ran then
-					warn(`Module encountered an error while loading: {module}`)
-					warn(tostring(err))
-				end
 			end
 		else
 			client[module.Name] = plug
@@ -547,6 +543,10 @@ return service.NewProxy({
 		local remoteName, depsName = string.match(data.Name, "(.*)\\(.*)")
 		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
+		if Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
+			data.DebugMode = true
+		end
+
 		setfenv(1, setmetatable({}, { __metatable = unique }))
 
 		client.Folder = Folder
@@ -572,7 +572,7 @@ return service.NewProxy({
 						return self[ind]
 					end
 				end,
-				__metatable = "Adonis_MatIcons",
+				__metatable = if not data.DebugMode then "Adonis" else unique,
 			})
 		end
 
@@ -800,7 +800,7 @@ return service.NewProxy({
 		log("~! Return success")
 		return "SUCCESS"
 	end,
-	__metatable = "Adonis",
+	__metatable = if not Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then "Adonis" else unique,
 	__tostring = function()
 		return "Adonis"
 	end,
