@@ -2419,17 +2419,17 @@ return function(Vargs, env)
 						Glare = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Glare,
 						Haze = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Haze,
 					}
-					
+
 					if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
-						for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
-							v.Name = Variables.OriginalAtmosphereSettings.Name
-							v.Density = Variables.OriginalAtmosphereSettings.Density
-							v.Offset = Variables.OriginalAtmosphereSettings.Offset
-							v.Color = Variables.OriginalAtmosphereSettings.Color
-							v.Decay = Variables.OriginalAtmosphereSettings.Decay
-							v.Glare = Variables.OriginalAtmosphereSettings.Glare
-							v.Haze = Variables.OriginalAtmosphereSettings.Haze
-						end
+						local Atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+						
+						Atmosphere.Name = Variables.OriginalAtmosphereSettings.Name
+						Atmosphere.Density = Variables.OriginalAtmosphereSettings.Density
+						Atmosphere.Offset = Variables.OriginalAtmosphereSettings.Offset
+						Atmosphere.Color = Variables.OriginalAtmosphereSettings.Color
+						Atmosphere.Decay = Variables.OriginalAtmosphereSettings.Decay
+						Atmosphere.Glare = Variables.OriginalAtmosphereSettings.Glare
+						Atmosphere.Haze = Variables.OriginalAtmosphereSettings.Haze
 					end
 				else
 					Functions.Hint("Atmosphere doesn't exist!", {plr})
