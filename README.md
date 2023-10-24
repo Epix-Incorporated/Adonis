@@ -1,6 +1,6 @@
 <div align="center">
 
-![The Epix-Incorporated logo](https://images-ext-2.discordapp.net/external/aIBRjVfZJAGn2awfso3GY3kadhMQlVupqLEwnKGD3OE/https/repository-images.githubusercontent.com/55325103/2bed6800-bfef-11eb-835b-99b981918623?width=300&height=260)
+<img src="https://repository-images.githubusercontent.com/55325103/2bed6800-bfef-11eb-835b-99b981918623?width=300&height=260" alt="The Epix-Incorporated logo" width="300" height="260">
 
 <div>&nbsp;</div>
 
@@ -17,7 +17,7 @@
 
 Adonis is a community-maintained server moderation and management system created for use on the Roblox platform.
 
-## ✨ Installation
+<h2 id="install"> ✨ Installation </h2>
 
 📢 **New to Adonis? Take a look at our [official quick start video](https://youtu.be/1f9x9gdxLjw) or read [the unofficial setup guide](https://devforum.roblox.com/t/1535122).**
 
@@ -42,19 +42,26 @@ If you get stuck, feel free to ask for assistance on our [Discord server](https:
     If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build an `rbxmx`.
 3. Import the compiled model file into Studio.
 
-ℹ️ **Note:** By default, loaders compiled from the repository have [`DebugMode`](#debug-mode) enabled.
+🔐 **Warning:** By default, loaders compiled from the repository have [`DebugMode`](#debug-mode) enabled.
 
 **⚠️ Method 3 compiles the *bleeding edge* version of Adonis, which may be not fully tested and is highly unstable.**
 
-### ⚙️ Configuring Adonis
+<h3 id="configuring-adonis">⚙️ Configuring Adonis</h3>
 
 Once you've inserted the Adonis loader into your game, open `Adonis_Loader` > `Config` > `Settings`, and change `settings.DataStoreKey` to something absolutely random (eg. `"2fgi02e)^Q"`). This is for security as it prevents serverside tampering with Adonis's datastores.
 
 You may then edit the Settings module to configure Adonis to suit your game. Instructions and elaboration are provided within the Settings module.
 
-### 🔧 Debug Mode
+<h3 id="debug-mode">🔧 Debug Mode</h3>
 
-The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the `MainModule`, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in releases have `DebugMode` enabled.**
+#### **PLEASE NOTE THAT THIS FEATURE IS INTENDED FOR DEVELOPMENT/DEBUGGING PURPOSES ONLY, PLEASE CHANGE `ModuleID` FOR CUSTOM MODULES**
+The `DebugModule` feature enables a number of debug features, including but not limited to:
+
+1. Not protecting the Adonis model (such as parenting it to nil)
+2. Exposes a debugging API
+3. Enables debugging commands for Creators
+
+The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the `MainModule`. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in releases have `DebugMode` enabled.**
 
 #### Toggling debug mode
 

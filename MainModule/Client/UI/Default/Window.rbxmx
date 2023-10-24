@@ -1749,6 +1749,7 @@ return function(data, env)
 						label = create("TextBox",{
 							Text = ` {text}`;
 							ToolTip = desc;
+							AutomaticSize = if not entProps.ySize then Enum.AutomaticSize.Y else nil;
 							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 							Visible = true;
 							BackgroundTransparency = 1;
@@ -1765,6 +1766,7 @@ return function(data, env)
 						label = create("TextLabel",{
 							Text = ` {text}`;
 							ToolTip = desc;
+							AutomaticSize = if not entProps.ySize then Enum.AutomaticSize.Y else nil;
 							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 							Visible = true;
 							BackgroundTransparency = 1;

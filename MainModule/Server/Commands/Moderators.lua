@@ -5288,73 +5288,52 @@ return function(Vargs, env)
 				local success, productInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, itemId)
 				assert(success and productInfo, "Invalid item ID")
 
-				local typeId = productInfo.AssetTypeId
+				local AssetTypeNameDescriptionOverides = {
+					DynamicHead = "Head"
+				}
 
-				--// Roblox doesn't expose a good way to insert into a HumanoidDescription from the Enum.AssetType, so we're mapping them out instead.
-				local SingleAssetIds = {
-					[2] = "GraphicTShirt",
-					[11] = "Shirt",
-					[12] = "Pants",
-					[17] = "Head",
-					[18] = "Face",
-					[27] = "Torso",
-					[28] = "RightArm",
-					[29] = "LeftArm",
-					[30] = "LeftLeg",
-					[31] = "RightLeg",
-					[48] = "ClimbAnimation",
-					[49] = "DeathAnimation",
-					[50] = "FallAnimation",
-					[51] = "IdleAnimation",
-					[52] = "JumpAnimation",
-					[53] = "RunAnimation",
-					[54] = "SwimAnimation",
-					[55] = "WalkAnimation",
-				}
-				local AccessoryAssetIds = { -- AssetTypes that are comma-seperated (accessories)
-					[8] = "HatAccessory",
-					[41] = "HairAccessory",
-					[42] = "FaceAccessory",
-					[43] = "NeckAccessory",
-					[44] = "ShouldersAccessory",
-					[45] = "FrontAccessory",
-					[46] = "BackAccessory",
-					[47] = "WaistAccessory",
-				}
-				local LayeredAccessoryAssetIds = {
-					[64] = Enum.AccessoryType.TShirt,
-					[65] = Enum.AccessoryType.Shirt,
-					[66] = Enum.AccessoryType.Pants,
-					[67] = Enum.AccessoryType.Jacket,
-					[68] = Enum.AccessoryType.Sweater,
-					[69] = Enum.AccessoryType.Shorts,
-					[70] = Enum.AccessoryType.LeftShoe,
-					[71] = Enum.AccessoryType.RightShoe,
-					[72] = Enum.AccessoryType.DressSkirt,
-				}
+				local typeId = productInfo.AssetTypeId
+				local typeEnum
+
+				for _, enum in pairs(Enum.AvatarAssetType:GetEnumItems()) do
+					if enum.Value == typeId then
+						typeEnum = enum
+						break
+					end
+				end
+
+				if not typeEnum then
+					error(`Asset type of {productInfo.Name} ({itemId}) not supported`)
+				end
 
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 
-						if SingleAssetIds[typeId] then
-							humanoidDesc[SingleAssetIds[typeId]] = itemId
-						elseif AccessoryAssetIds[typeId] then
-							if string.find(humanoidDesc[AccessoryAssetIds[typeId]], tostring(itemId)) then continue end
-							humanoidDesc[AccessoryAssetIds[typeId]] ..= `,{itemId}`
-						elseif LayeredAccessoryAssetIds[typeId] then
-							local accessories = humanoidDesc:GetAccessories(true)
-							table.insert(accessories, {
-								Order = #accessories,
-								AssetId = itemId,
-								AccessoryType = LayeredAccessoryAssetIds[typeId]
-							})
-							humanoidDesc:SetAccessories(accessories, true)
-						elseif typeId == 61 then
+						if typeEnum == Enum.AvatarAssetType.EmoteAnimation then
 							humanoidDesc:AddEmote(productInfo.Name, itemId)
 						else
-							error("Item not supported")
+							local accessoryType = service.AvatarEditorService:GetAccessoryType(typeEnum)
+							if accessoryType and accessoryType ~= Enum.AccessoryType.Unknown then
+								local accessories = humanoidDesc:GetAccessories(true)
+								table.insert(accessories, {
+									Order = #accessories,
+									AssetId = itemId,
+									AccessoryType = accessoryType
+								})
+								humanoidDesc:SetAccessories(accessories, true)
+							elseif accessoryType == Enum.AccessoryType.Unknown then
+								local typeName = typeEnum.Name
+								if AssetTypeNameDescriptionOverides[typeName] then
+									typeName = AssetTypeNameDescriptionOverides[typeName]
+								end
+								if humanoidDesc[typeName] then
+									humanoidDesc[typeName] = itemId
+								else
+									error(`Asset type of {productInfo.Name} ({itemId}) not supported`)
+								end
+							end
 						end
 
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
@@ -5901,9 +5880,8 @@ return function(Vargs, env)
 
 						new.Parent = part
 						new.Disabled = false
-						Remote.MakeGui(v, "Notification", {
-							Title = "Flight";
-							Message = "You are now flying. Press E to toggle flight.";
+						Remote.MakeGui(v, "Hint", {
+							Message = "You are now flying - press E to toggle flight";
 							Time = 10;
 						})
 					end
@@ -6129,44 +6107,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		RemovePackage = {
-			Prefix = Settings.Prefix;
-			Commands = {"removepackage", "nopackage", "rpackage"};
-			Args = {"player"};
-			Description = "Removes the target player(s)'s Package";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						if humanoid then
-							local rigType = humanoid.RigType
-							if rigType == Enum.HumanoidRigType.R6 then
-								for _, x in v.Character:GetChildren() do
-									if x:IsA("CharacterMesh") then
-										x:Destroy()
-									end
-								end
-							elseif rigType == Enum.HumanoidRigType.R15 then
-								local rig = Deps.Assets.RigR15
-								local rigHumanoid = rig.Humanoid
-								local validParts = table.create(#Enum.BodyPartR15:GetEnumItems())
-								for _, x in Enum.BodyPartR15:GetEnumItems() do
-									validParts[x.Name] = x.Value
-								end
-								for _, x in rig:GetChildren() do
-									if x:IsA("BasePart") and validParts[x.Name] then
-										humanoid:ReplaceBodyPartR15(validParts[x.Name], x:Clone())
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-		};
-
+		
 		GivePackage = {
 			Prefix = Settings.Prefix;
 			Commands = {"package", "givepackage", "setpackage", "bundle"};
@@ -6178,55 +6119,19 @@ return function(Vargs, env)
 				assert(args[1] and args[2] and tonumber(args[2]), "Missing or invalid package ID")
 
 				local id = tonumber(args[2])
-				local assetHD = Variables.BundleCache[id]
 
-				if assetHD == false then
-					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} is not supported.`})
+				local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
+
+				if suc then
+					for _, item in ers.Items do
+						if item.Type == "Asset" then
+							Commands.AvatarItem.Function(plr, {`@{plr.Name}`, item.Id})
+							break
+						end
+					end
+				else
+					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} doesn't exist.`})
 					return
-				end
-
-				if not assetHD then
-					local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
-
-					if suc then
-						for _, item in ers.Items do
-							if item.Type == "UserOutfit" then
-								local _, Outfit = pcall(function() return service.Players:GetHumanoidDescriptionFromOutfitId(item.Id) end)
-								Variables.BundleCache[id] = Outfit
-								assetHD = Outfit
-								break
-							end
-						end
-					end
-
-					if not suc or not assetHD then
-						Variables.BundleCache[id] = false
-
-						Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} is not supported.`})
-						return
-					end
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local char = v.Character
-
-					if char then
-						local humanoid = char:FindFirstChildOfClass("Humanoid")
-
-						if not humanoid then
-							Functions.Hint(`Could not transfer bundle to {v.Name}`, {plr})
-						else
-							local newDescription = humanoid:GetAppliedDescription()
-							local defaultDescription = Instance.new("HumanoidDescription")
-							for _, property in {"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"} do
-								if assetHD[property] ~= defaultDescription[property] then
-									newDescription[property] = assetHD[property]
-								end
-							end
-
-							humanoid:ApplyDescription(newDescription, Enum.AssetTypeVerification.Always)
-						end
-					end
 				end
 			end
 		};
@@ -6289,16 +6194,24 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"loadavatar", "loadchar", "loadcharacter"};
 			Args = {"player", "username", "avatar type(R6/R15)"};
-			Description = "Loads the target character in front of you. If you want to supply a UserId, supply with 'userid-<PlayerID>'";
+			Description = "Loads the target character in front of you.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing username or UserId")
-				assert(args[3], "Invalid argument #3 (avatar type expected)")
+				local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
+				
+				if not args[3] then
+					local success, appearanceInfo = pcall(service.Players.GetCharacterAppearanceInfoAsync, service.Players, target)
+					if success then
+						args[3] = appearanceInfo.playerAvatarType
+					else
+						error("Unable to get default avatar type for target user")
+					end
+				end
 
 				local AvatarType = string.upper(args[3])
 				if AvatarType == "R6" or AvatarType == "R15" then
-					local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
 					if target then
 						local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
 
@@ -6308,7 +6221,7 @@ return function(Vargs, env)
 									local char = Deps.Assets[`Rig{AvatarType}`]:Clone()
 									char.Name = Functions.GetNameFromUserIdAsync(target)
 									char.Parent = workspace
-									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[`AvatarType{Animate}`]:Clone() Anima.Parent = char Anima.Disabled = false end
+									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[`{AvatarType}Animate`]:Clone() Anima.Parent = char Anima.Disabled = false end
 									char.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 									char.HumanoidRootPart.CFrame = (v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(5, 0, 0)) * CFrame.Angles(0, math.rad(90), 0)
 
@@ -6321,8 +6234,6 @@ return function(Vargs, env)
 							error("Unable to get avatar for target user")
 						end
 					end
-				else
-					error("Invalid argument #3 (valid avatar type expected)")
 				end
 			end
 		};

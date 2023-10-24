@@ -120,8 +120,6 @@ return function(Vargs, GetEnv)
 
 		LocalEffects = {};
 
-		BundleCache = {};
-
 		TrackingTable = {};
 
 		DisguiseBindings = {};

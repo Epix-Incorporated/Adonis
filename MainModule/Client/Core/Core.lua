@@ -38,7 +38,7 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 	local client = Vargs.Client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
-	local function Init()
+	local function Init(data)
 		UI = client.UI;
 		Anti = client.Anti;
 		Core = client.Core;
@@ -52,6 +52,10 @@ return function(Vargs, GetEnv)
 		Core.MakeGui = UI.Make;
 		Core.GetGui = UI.Get;
 		Core.RemoveGui = UI.Remove;
+
+		if data.DebugMode == true then
+			Core.DebugMode = true
+		end
 
 		Core.Init = nil;
 	end
@@ -193,6 +197,7 @@ return function(Vargs, GetEnv)
 			local G_API = client.G_API
 			local Allowed_API_Calls = client.Allowed_API_Calls
 			local NewProxy = service.NewProxy
+			local ReplicatedStorage = service.ReplicatedStorage
 			local MetaFunc = service.MetaFunc
 			local ReadOnly = service.ReadOnly
 			local StartLoop = service.StartLoop
@@ -206,6 +211,7 @@ return function(Vargs, GetEnv)
 			local print = print
 			local error = error
 			local pairs = pairs
+			local ipairs = ipairs
 			local warn = warn
 			local next = next
 			local table = table
@@ -317,6 +323,62 @@ return function(Vargs, GetEnv)
 					end);
 				}, nil, nil, true);
 			}
+
+			if Core.DebugMode == true then
+				local DebugAPI = {
+					Env = Vargs
+				}
+				API.Debug = DebugAPI -- Allows fetching of the Debug API from within the _G API
+
+				local pointers = {}
+
+				local function getRealEnvResult(PointerOrPath)
+					if tonumber(PointerOrPath) and pointers[PointerOrPath] then
+						return pointers[PointerOrPath], true
+					else
+						local envPath = PointerOrPath:split('/.\\')
+						local RealEnvResult = Vargs
+						for i, pathArg in ipairs(envPath) do
+							RealEnvResult = RealEnvResult[pathArg]
+						end
+						return RealEnvResult, false
+					end
+				end	
+
+				local AdonisDebugAPIBindable = ReplicatedStorage:FindFirstChild("Adonis_Debug_API")
+				if AdonisDebugAPIBindable then
+					AdonisDebugAPIBindable.OnInvoke = function(DebugCommand,...)
+						local args = {...}
+						if DebugCommand == "RunEnvFunc" then
+							local FunctionInEnvToRunPath = args[1]
+							if FunctionInEnvToRunPath and type(FunctionInEnvToRunPath) == "string" then
+								local realEnvResult, isResultPointer = getRealEnvResult(FunctionInEnvToRunPath)
+								return realEnvResult(table.unpack(args,2,#args))
+							end
+						elseif DebugCommand == "GetEnvTableMeta" then
+							local TableInEnvPath = args[1]
+							if TableInEnvPath and type(TableInEnvPath) == "string" then
+								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
+								return getmetatable(realEnvResult)
+							end
+						elseif DebugCommand == "RunEnvTableMetaFunc" then
+							local TableInEnvPath = args[1]
+							local FuncToRun = args[2]
+							if TableInEnvPath and type(TableInEnvPath) == "string" then
+								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
+								local metaTableInEnv = getmetatable(realEnvResult)
+								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args,3,#args))
+								local resultPointer = tostring(math.random())
+								pointers[resultPointer] = result
+
+								return UnWrap(result), resultPointer
+							end
+						elseif DebugCommand == "GetApi" or not DebugCommand then
+							return DebugAPI
+						end
+					end
+				end
+			end
 
 			local AdonisGTable = NewProxy({
 				__index = function(tab,ind)

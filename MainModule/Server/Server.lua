@@ -203,31 +203,34 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if type(plug) == "function" then
 		if isCore then
-			local ran,err = service.TrackTask(`CoreModule: {module}`, plug, GetVargTable(), GetEnv)
-			if not ran then
-				warn("Core Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
-		elseif yield then
+			local ran, err = service.TrackTask(
+				`CoreModule: {module}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				function(err)
+					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+				end,
+				GetVargTable(),
+				GetEnv
+			)
+			return err
+
+		 --[[elseif yield then (all pcalls yield by default for a quite a while time now)
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
-			if not ran then
-				warn("Plugin Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
+			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),function(err)
+				warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+			end, GetVargTable())
+			return err;]]
 		else
 			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask(`Thread: Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
-			if not ran then
-				warn("Plugin Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
+			local ran, err = service.TrackTask(
+				`Plugin: {module}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				function(err)
+					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+				end,
+				GetVargTable()
+			)
+			return err
 		end
 	else
 		server[module.Name] = plug
@@ -239,7 +242,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			Desc = "Adonis loaded a core module or plugin";
 		})
 	end
-end;
+end
 
 --// WIP
 local function LoadPackage(package, folder, runNow)
@@ -513,7 +516,6 @@ return service.NewProxy({
 		end
 
 		--// Begin Script Loading
-		setfenv(1, setmetatable({}, {__metatable = unique}))
 		data = service.Wrap(data or {})
 
 		if not (data and data.Loader) then
@@ -523,6 +525,23 @@ return service.NewProxy({
 		if data and data.ModuleID == 8612978896 then
 			warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
 		end
+
+		if data and data.DebugMode == true then
+			warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
+			local AdonisDebugEnabled = service.New("BoolValue")
+			AdonisDebugEnabled.Name = "ADONIS_DEBUGMODE_ENABLED"
+			AdonisDebugEnabled.Value = true
+			AdonisDebugEnabled.Parent = Folder.Parent.Client
+		else
+			local serverMetatable = getmetatable(tab)
+			serverMetatable.__metatable = "Adonis"
+			setmetatable(tab, serverMetatable)
+			local serviceMetatable = getmetatable(service)
+			serverMetatable.__metatable = "Service"
+			setmetatable(service, serviceMetatable)
+		end
+		
+		setfenv(1, setmetatable({}, {__metatable = unique}))
 
 		--// Server Variables
 		local setTab = require(server.Deps.DefaultSettings)
@@ -610,7 +629,7 @@ return service.NewProxy({
 					end
 					return ""
 				end,
-				__metatable = "Adonis_MatIcons"
+				__metatable = if data.DebugMode then unique else "Adonis_MatIcons"
 			})
 		end
 
@@ -721,5 +740,5 @@ return service.NewProxy({
 	__tostring = function()
 		return "Adonis"
 	end;
-	__metatable = "Adonis";
+	__metatable = nil; -- This is now set in __call if DebugMode isn't enabled.
 })
