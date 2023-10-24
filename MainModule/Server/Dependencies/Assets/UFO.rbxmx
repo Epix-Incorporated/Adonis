@@ -1337,7 +1337,7 @@
 				<Properties>
 					<float name="Angle">54</float>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<float name="Brightness">10000</float>
+					<float name="Brightness">80</float>
 					<Color3 name="Color">
 						<R>0.0941176564</R>
 						<G>0.305882365</G>

@@ -186,7 +186,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220012</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220012</url></Content>
 				<string name="Name">LeftFoot</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -408,7 +407,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532219986</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532219986</url></Content>
 				<string name="Name">LeftHand</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -630,7 +628,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532219991</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532219991</url></Content>
 				<string name="Name">LeftLowerArm</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -852,7 +849,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220017</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220017</url></Content>
 				<string name="Name">LeftLowerLeg</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -1074,7 +1070,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532219996</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532219996</url></Content>
 				<string name="Name">LeftUpperArm</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -1332,7 +1327,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220018</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220018</url></Content>
 				<string name="Name">LeftUpperLeg</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -1554,7 +1548,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220036</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220036</url></Content>
 				<string name="Name">LowerTorso</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -2119,7 +2112,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220020</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220020</url></Content>
 				<string name="Name">RightFoot</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -2341,7 +2333,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532219997</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532219997</url></Content>
 				<string name="Name">RightHand</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -2563,7 +2554,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532219999</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532219999</url></Content>
 				<string name="Name">RightLowerArm</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -2785,7 +2775,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220027</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220027</url></Content>
 				<string name="Name">RightLowerLeg</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -3007,7 +2996,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220004</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220004</url></Content>
 				<string name="Name">RightUpperArm</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -3265,7 +3253,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220031</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220031</url></Content>
 				<string name="Name">RightUpperLeg</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>
@@ -4099,7 +4086,6 @@
 				<Content name="MeshID"><url>http://www.roblox.com/asset/?id=532220007</url></Content>
 				<Content name="MeshId"><url>http://www.roblox.com/asset/?id=532220007</url></Content>
 				<string name="Name">UpperTorso</string>
-				<SharedString name="PhysicalConfigData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 				<BinaryString name="PhysicsData"></BinaryString>
 				<float name="Reflectance">0</float>
 				<token name="RenderFidelity">1</token>

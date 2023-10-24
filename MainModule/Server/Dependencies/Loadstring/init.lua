@@ -38,13 +38,15 @@ return function(str,env)
 	local f, writer, buff
 	env = env or getfenv(2)
 	local name = (env.script and env.script:GetFullName())
-	local ran, error = pcall(function()
+	local ran, error = xpcall(function()
 		local zio = luaZ:init(luaZ:make_getS(str), nil)
 		if not zio then return error() end
 		local func = luaY:parser(LuaState, zio, nil, name or "::Adonis::Loadstring::")
 		writer, buff = luaU:make_setS()
 		luaU:dump(LuaState, func, writer, buff)
 		f = fiOne(buff.data, env)
+	end, function(err)
+		return `{err}\n\n--- Loadstring Stacktrace Begin --- \n{debug.traceback("",2)}\n--- Loadstring Stacktrace End --- \n`
 	end)
 	
 	if ran then

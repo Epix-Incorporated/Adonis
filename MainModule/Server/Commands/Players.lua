@@ -396,7 +396,7 @@ return function(Vargs, env)
 										if ret then
 											if not answered then
 												answered = true
-												Commands.Teleport.Function(plr, {`@{plr.Name}`, p.Name})
+												Commands.Teleport.Function(plr, {p.Name, `@{plr.Name}`})
 											else
 												Remote.MakeGui(p, "Notification", {
 													Title = "Help Request";
