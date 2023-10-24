@@ -5344,74 +5344,27 @@ return function(Vargs, env)
 				local success, productInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, itemId)
 				assert(success and productInfo, "Invalid item ID")
 
-				local typeId = productInfo.AssetTypeId
+				local AssetTypeNameDescriptionOverides = {
+					DynamicHead = "Head"
+				}
 
-				--// Roblox doesn't expose a good way to insert into a HumanoidDescription from the Enum.AssetType, so we're mapping them out instead.
-				local SingleAssetIds = {
-					[2] = "GraphicTShirt",
-					[11] = "Shirt",
-					[12] = "Pants",
-					[17] = "Head",
-					[18] = "Face",
-					[27] = "Torso",
-					[28] = "RightArm",
-					[29] = "LeftArm",
-					[30] = "LeftLeg",
-					[31] = "RightLeg",
-					[48] = "ClimbAnimation",
-					[49] = "DeathAnimation",
-					[50] = "FallAnimation",
-					[51] = "IdleAnimation",
-					[52] = "JumpAnimation",
-					[53] = "RunAnimation",
-					[54] = "SwimAnimation",
-					[55] = "WalkAnimation",
-				}
-				local AccessoryAssetIds = { -- AssetTypes that are comma-seperated (accessories)
-					[8] = "HatAccessory",
-					[41] = "HairAccessory",
-					[42] = "FaceAccessory",
-					[43] = "NeckAccessory",
-					[44] = "ShouldersAccessory",
-					[45] = "FrontAccessory",
-					[46] = "BackAccessory",
-					[47] = "WaistAccessory",
-				}
-				local LayeredAccessoryAssetIds = {
-					[64] = Enum.AccessoryType.TShirt,
-					[65] = Enum.AccessoryType.Shirt,
-					[66] = Enum.AccessoryType.Pants,
-					[67] = Enum.AccessoryType.Jacket,
-					[68] = Enum.AccessoryType.Sweater,
-					[69] = Enum.AccessoryType.Shorts,
-					[70] = Enum.AccessoryType.LeftShoe,
-					[71] = Enum.AccessoryType.RightShoe,
-					[72] = Enum.AccessoryType.DressSkirt,
-				}
+				local typeId = productInfo.AssetTypeId
+				local typeEnum
+
+				for _, enum in pairs(Enum.AvatarAssetType:GetEnumItems()) do
+					if enum.Value == typeId then
+						typeEnum = enum
+						break
+					end
+				end
 
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-
-						if SingleAssetIds[typeId] then
-							humanoidDesc[SingleAssetIds[typeId]] = itemId
-						elseif AccessoryAssetIds[typeId] then
-							if string.find(humanoidDesc[AccessoryAssetIds[typeId]], tostring(itemId)) then continue end
-							humanoidDesc[AccessoryAssetIds[typeId]] ..= `,{itemId}`
-						elseif LayeredAccessoryAssetIds[typeId] then
-							local accessories = humanoidDesc:GetAccessories(true)
-							table.insert(accessories, {
-								Order = #accessories,
-								AssetId = itemId,
-								AccessoryType = LayeredAccessoryAssetIds[typeId]
-							})
-							humanoidDesc:SetAccessories(accessories, true)
-						elseif typeId == 61 then
-							humanoidDesc:AddEmote(productInfo.Name, itemId)
-						else
-							-- Prevent players from having an amount of hats over the limit
-							if v.Character:GetAttribute("LoadingSavedOutfit") then return end
+						
+						if not typeEnum then
+							if v.Character:GetAttribute("LoadingSavedOutfit") then continue end
 
 							local customHats = 0
 							for _,x in v.Character:GetChildren() do
@@ -5421,11 +5374,36 @@ return function(Vargs, env)
 							end
 
 							if customHats > 7 then
-								error("You can only have 8 custom accessories at a time")
+								continue
 							end
 
 							service.SecureAccessory(v, itemId)
 							continue
+						end
+						
+						if typeEnum == Enum.AvatarAssetType.EmoteAnimation then
+							humanoidDesc:AddEmote(productInfo.Name, itemId)
+						else
+							local accessoryType = service.AvatarEditorService:GetAccessoryType(typeEnum)
+							if accessoryType and accessoryType ~= Enum.AccessoryType.Unknown then
+								local accessories = humanoidDesc:GetAccessories(true)
+								table.insert(accessories, {
+									Order = #accessories,
+									AssetId = itemId,
+									AccessoryType = accessoryType
+								})
+								humanoidDesc:SetAccessories(accessories, true)
+							elseif accessoryType == Enum.AccessoryType.Unknown then
+								local typeName = typeEnum.Name
+								if AssetTypeNameDescriptionOverides[typeName] then
+									typeName = AssetTypeNameDescriptionOverides[typeName]
+								end
+								if humanoidDesc[typeName] then
+									humanoidDesc[typeName] = itemId
+								else
+									error(`Asset type of {productInfo.Name} ({itemId}) not supported`)
+								end
+							end
 						end
 
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
