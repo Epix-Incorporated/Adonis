@@ -46,6 +46,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local Lighting = service.Lighting
+	
 	server.Variables = {
 		Init = Init,
 		RunAfterInit = AfterInit,
@@ -95,25 +96,9 @@ return function(Vargs, GetEnv)
 			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
 		},
 		
-		AtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
+		AtmosphereSettings = {},
 
-		OriginalAtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
+		OriginalAtmosphereSettings = {},
 
 		PMtickets = {};
 

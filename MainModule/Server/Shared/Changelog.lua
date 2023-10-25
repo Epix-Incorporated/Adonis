@@ -58,6 +58,7 @@ return {
 	"(Git/LiveFireExercise) F3X quickfix (#1123)";
 	"(Git/bigbenster702) :pipe and :loadavatar (#1125)";
 	"(Git/WalkerOfBacon) :customsmallmessage or ':cn' (#1181)";
+	"(Git/WalkerOfBacon) Fix atmosphere support (#1201)";
 	"(Git/wilsontulus) Fix :bunnyhop command not executing more than once (#1126)";
 	"(Git/LiveFireExercise) Misc Fun command fixes (#1127)";
 	"(Git/LiveFireExercise) Anti error codes added (#1128)";
