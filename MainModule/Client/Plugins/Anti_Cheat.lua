@@ -566,7 +566,7 @@ return function(Vargs)
 			end
 
 			local function soundIdCheck(Sound)
-				for _,v in pairs(soundIds) do
+				for _,v in ipairs(soundIds) do
 					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
 					end
@@ -590,14 +590,13 @@ return function(Vargs)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
-					if soundIdCheck(child) then
-						Detected("crash", "CMDx Detected; "..tostring(child))
-					else
-						wait()
+					local idChange = child:GetPropertyChangedSignal("SoundId"):Connect(function()
 						if soundIdCheck(child) then
 							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
-					end
+					end)
+					task.wait(1)
+					idChange:Disconnect()
 				end
 			end)
 
