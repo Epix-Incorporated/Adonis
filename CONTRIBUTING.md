@@ -2,7 +2,7 @@
 
 # 📜 Adonis Contribution Guidelines
 
-![Logo of Epix Incorporated]([https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png")
+![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png")
 
 Adonis is an ever-expanding, frequently updated, slightly complicated, system. To keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
