@@ -3,8 +3,8 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v240 2023-07-04 09:50 UTC] @LiveFireExercise&@ccuser44";
-	"Add TextChatService support";
+	"[v240 2023-XX-XX XX:XX UTC] @LiveFireExercise&@ccuser44";
+	"Add TextChatService command support";
 	"Minor settings desc change";
 	"Added section headers";
 	"Disabled anti-speed by default";
@@ -14,7 +14,7 @@ return {
 	"Update UI rbxmx files for FontFace";
 	"Fix DefaultSettings";
 	"Update :sm to use Functions.Message";
-	"!buyitem is now disabled by default due to a Roblox change";
+	"!buyitem is now disabled by default to protect Limited items";
 	"";
 	"(Git/ccuser44) Fix mystery error with hint (#1068)";
 	"(Git/ccuser44) Remove unecessary commented out code (#1067)";
@@ -82,6 +82,11 @@ return {
 	"(Git/ccuser44) Remove useless duplicate functions (#1199)";
 	"(Git/ccuser44) Add support for in game locale changing (#1195)";
 	"(Git/Expertcoderz) Remove Anti32bit (#1193)";
+	"(Git/watameln) Fixed :setfps (#1231)";
+	"(Git/alau740) Disable client-side anti-exploit by default, even for old loaders (#1205)";
+	"(Git/moo1210) Mass fix of bugs (#1216)";
+	"(Git/EasternBloxxer) Flight notification is now a hint (#1229)";
+	"(Git/karl-police) Dex no longer lags during search (#1022)";
 	"";
 	"[Patch v239b 2023-04-09 14:50 UTC] @LiveFireExercise";
 	"(Git/ccuser44) Fixes potential issue with :commands erroring (#1069)";
