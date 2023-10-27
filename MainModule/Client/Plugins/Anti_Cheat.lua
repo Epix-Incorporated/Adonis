@@ -590,13 +590,12 @@ return function(Vargs)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
-					local idChange = child:GetPropertyChangedSignal("SoundId"):Connect(function()
+					for i = 1, 5 do
 						if soundIdCheck(child) then
 							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
-					end)
-					task.wait(1)
-					idChange:Disconnect()
+						task.wait(0.1)
+					end
 				end
 			end)
 
