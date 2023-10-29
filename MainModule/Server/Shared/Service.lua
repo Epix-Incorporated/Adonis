@@ -1423,7 +1423,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 			return false
 		end;
+		OutfitCache = {},
+		UnallowedCache = {},
 		Insert = function(id, rawModel)
+			if service.UnallowedCache and service.UnallowedCache[id] then return end
 			local model = service.InsertService:LoadAsset(id)
 			if not rawModel and model:IsA("Model") and model.Name == "Model" then
 				local asset = model:GetChildren()[1]
@@ -1432,7 +1435,64 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return asset
 			end
 			return model
-		end;
+		end,
+		SecureAccessory = function(plr, itemId)
+			if not plr.Character then return end
+
+			local function reject()
+				service.UnallowedCache[tonumber(itemId)] = true
+				error("Item not supported")
+			end
+
+			local success, item = pcall(function() return service.Insert(tonumber(itemId)) end)
+			if not success then return reject() end
+			if not item then return reject() end
+			if not item:IsA("Accoutrement") then return reject() end
+			if not item:FindFirstChild("Handle") then return reject() end
+			if #item:GetDescendants() > 250 then return reject() end
+			item.Name = "CustomAdonisAccessory"
+			item:SetAttribute("AssetId", itemId)
+
+			-- No classes except those in whitelistedClasses are allowed
+			local whitelistedClasses = {"Accoutrement", "BasePart", "SpecialMesh", "Attachment", "Weld", "WeldConstraint", "Motor6D", "Folder", "ValueBase", "ParticleEmitter", "Sparkles", "Fire"}
+			local blacklistedClasses = {"LuaSourceContainer", "Model", "Tool", "Hopperbin"} -- extra security
+			
+			for i,v in item:GetDescendants() do
+				if v:IsA("BasePart") then
+					v.CanCollide = false
+				end
+			end
+			
+			-- If a blacklisted class is found, cancel the command
+			for i,v in item:GetDescendants() do
+				local blacklisted = false
+				for _,x in blacklistedClasses do
+					if v:IsA(x) then
+						blacklisted = true
+						break
+					end
+				end
+				if blacklisted then
+					return reject()
+				end
+			end
+			
+			-- If a non-whitelisted class is found, delete it
+			for i,v in item:GetDescendants() do 
+				local allowed = false
+				for _,x in whitelistedClasses do
+					if v:IsA(x) then
+						allowed = true
+						break
+					end
+				end
+				if not allowed then
+					v:Destroy()
+				end
+			end
+
+			plr.Character.Humanoid:AddAccessory(item)
+		end,
 		GetPlayers = function() return service.Players:GetPlayers() end;
 		IsAdonisObject = function(obj) for i,v in CreatedItems do if v == obj then return true end end end;
 		GetAdonisObjects = function() return CreatedItems end;
