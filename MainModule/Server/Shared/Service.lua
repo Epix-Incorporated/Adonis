@@ -703,7 +703,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
 			local metatable = getmetatable(newProxy)
-			print(if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy")
 			metatable.__metatable = if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy"
 			metatable.__ADONIS_WRAPPED = true
 			for i,v in meta do metatable[i] = v end

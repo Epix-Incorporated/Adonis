@@ -91,7 +91,7 @@ return function(Vargs, env)
 						plr.Character.Humanoid.Jump = true
 					end
 					wait()
-					plr.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90), 0)*CFrame.new(5+.2, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, -5))
 				end
 			end
 		};
@@ -4804,7 +4804,11 @@ return function(Vargs, env)
 			Description = "Teleports the target player(s) to your position";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local players = service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"))
+				local players = service.GetPlayers(plr, if args[1] then args[1] else "me")
+				if #players == 1 and players[1] == plr then
+					Commands.Thru.Function(plr, {`@{plr.Name}`})
+					return
+				end
 				if #players < 10 or not Commands.MassBring or Remote.GetGui(plr, "YesNoPrompt", {
 					Title = "Suggestion";
 					Icon = server.MatIcons.Feedback;
