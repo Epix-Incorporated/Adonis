@@ -619,6 +619,7 @@ return service.NewProxy({
 		server.Changelog = require(server.Shared.Changelog)
 		server.Credits = require(server.Shared.Credits)
 		server.DLL = require(server.Shared.DoubleLinkedList)
+
 		do
 			local MaterialIcons = require(server.Shared.MatIcons)
 			server.MatIcons = setmetatable({}, {
