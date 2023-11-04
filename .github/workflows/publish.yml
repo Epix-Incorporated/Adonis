@@ -22,7 +22,7 @@ jobs:
           GIT_HASH: ${{ github.sha }}
           GITHUB_REPO: ${{ github.repository }}
           GIT_REF: ${{ github.ref_name }}
-          GIT_REF_TYPE: ${{ github.ref_type }}}
+          GIT_REF_TYPE: ${{ github.ref_type }}
           GITHUB_ACTION_EVENT_NAME: ${{ github.event_name }}
           GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.isPrerelease }}
         run: |
@@ -30,13 +30,13 @@ jobs:
          if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "release" ]
          then
            BUILD_TYPE="Stable"
-         elif [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] &&  [ "$GITHUB_ACTION_EVENT_NAME" =="tag" ]
+         elif [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] &&  [ "$GITHUB_ACTION_EVENT_NAME" == "tag" ]
           then
             BUILD_TYPE="Release"
-         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" =="false" ]
+         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "false" ]
           then
             BUILD_TYPE="Release"
-         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" =="true" ]
+         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "true" ]
           then
             BUILD_TYPE="Beta"
          else

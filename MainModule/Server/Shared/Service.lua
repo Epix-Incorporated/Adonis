@@ -397,7 +397,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Remove = function(thread) service.Threads.Stop(thread) for ind,th in service.Threads.Threads do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
 		StopAll = function() for ind,th in service.Threads.Threads do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in service.Threads.Threads do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
 	},{
-		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = main.Core and main.Core.DebugMode and nil or "Ignore"}) end;
+		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = if main.Core and main.Core.DebugMode then "Ignore" else nil}) end; -- Unused
 		CheckWrappers = function()
 			for obj,wrap in Wrappers do
 				if service.IsDestroyed(obj) then
@@ -406,7 +406,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		Wrapped = function(object)
-			return getmetatable(object) == "Adonis_Proxy" or type(object) == ("table" or "userdata") and object.IsProxy and object:IsProxy() or false
+			if getmetatable(object) and getmetatable(object).__ADONIS_WRAPPED or getmetatable(object) == "Adonis_Proxy" then
+				return true
+			elseif type(object) == ("table" or "userdata") and object.IsProxy and object:IsProxy() then
+				return true
+			else
+				return false
+			end
 		end;
 		UnWrap = function(object)
 			local OBJ_Type = typeof(object)
@@ -536,8 +542,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				--newMeta.__gc = function(tab)
 				--	custom:RemoveFromCache()
 				--end
-				newMeta.__metatable = main.Core and  main.Core.DebugMode and nil or "Adonis_Proxy"
-
+				newMeta.__metatable = if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy"
+				newMeta.__ADONIS_WRAPPED = true
 				custom:AddToCache()
 				return newObj
 			else
@@ -697,7 +703,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
 			local metatable = getmetatable(newProxy)
-			metatable.__metatable = main.Core and main.Core.DebugMode and nil or false
+			metatable.__metatable = if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy"
+			metatable.__ADONIS_WRAPPED = true
 			for i,v in meta do metatable[i] = v end
 			return newProxy
 		end;
