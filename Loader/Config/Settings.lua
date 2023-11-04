@@ -291,6 +291,7 @@ settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
+settings.UseLinkedListsInLogs = true -- If true then log system uses a linked-list system to store logs instead of tables - serverely improves server performance & allows for large logs with little to no impact except slightly increased memory usage
 settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
