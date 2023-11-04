@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v240 2023-XX-XX XX:XX UTC] @LiveFireExercise&@ccuser44";
+	"[v240 2023-11-04 14:05 UTC] @LiveFireExercise&@ccuser44";
 	"Add TextChatService command support";
 	"Minor settings desc change";
 	"Added section headers";
