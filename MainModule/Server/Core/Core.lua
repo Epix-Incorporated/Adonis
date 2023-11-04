@@ -948,6 +948,10 @@ return function(Vargs, GetEnv)
 						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then
 							return nil
 						end
+						--// Prevent loading from DB to Trello ranks
+						if curName:match("Trello") and curTable and curTable.IsExternal then
+							return nil
+						end
 					end
 
 					if not curTable then
