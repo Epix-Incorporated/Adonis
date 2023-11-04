@@ -815,6 +815,13 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
+			for _,rateLimit in RateLimiter do 
+				if not rateLimit.Caches then 
+					continue
+				end
+				rateLimit.Caches[p.UserId] = nil
+			end
+
 			Core.SavePlayerData(p, data)
 
 			Variables.TrackingTable[p.Name] = nil
