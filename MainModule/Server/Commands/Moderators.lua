@@ -4938,7 +4938,76 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		RemoveLeaderstat = {
+			Prefix = Settings.Prefix;
+			Commands = {"removestats", "delstat"};
+			Args = {"name"};
+			Description = "Removes a leaderstat entirely";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local statName = assert(args[1], "Missing the stat name!")
 
+				for _, v in service.GetPlayers(plr) do
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						leaderstats.Name = "leaderstats"
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
+							absoluteMatch:Destroy()
+						else
+							for _, st in leaderstats:GetChildren() do
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{statName:lower()}`) then
+									st:Destroy()
+								end
+							end
+						end
+						if #leaderstats:GetChildren() == 0 then
+							leaderstats:Destroy()
+						end
+					else
+						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a leaderstats folder`, {plr})
+					end
+				end
+			end
+		};
+		
+		NewStat = {
+			Prefix = Settings.Prefix;
+			Commands = {"newstat", "createstat", "cstat"};
+			Args = {"statname", "type (string/number [default: number])"};
+			Description = "Creates a new stat on the leaderboard";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local statName = args[1]
+				if not statName then
+					error("Not statname provided!")
+				end
+				local statType = if args[2] then args[2]:lower() else "number"
+				local FilteredStatName = service.BroadcastFilter(statName, plr)
+				
+				if FilteredStatName ~= statName then
+					error("Stat name is filtered! Sorry!")
+				end
+				
+				for _,p in service.GetPlayers() do 
+					local leaderstats = p:FindFirstChild("leaderstats") or service.New("Folder")
+					leaderstats.Name = "leaderstats"
+					if statName then 
+						if not leaderstats:FindFirstChild(FilteredStatName) then 
+							local newStat = service.New(if statType == "number" then "NumberValue" else "StringValue") 
+							newStat.Name = FilteredStatName
+							if statType ~= "number" then 
+								newStat.Value = "N/A"
+							end
+							newStat.Parent = leaderstats
+						end
+					end
+					leaderstats.Parent = p
+				end
+			end
+		};
+		
 		AddToStat = {
 			Prefix = Settings.Prefix;
 			Commands = {"add", "addtostat", "addstat"};
@@ -4951,6 +5020,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
+						leaderstats.Name = "leaderstats"
 						local absoluteMatch = leaderstats:FindFirstChild(statName)
 						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
 							absoluteMatch.Value += valueToAdd
@@ -6436,8 +6506,14 @@ return function(Vargs, env)
 			Description = "View script error log";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
-				local tab = table.create(#Logs.Errors)
-				for i, v in Logs.Errors do
+				local Count = if Logs.Errors.__meta == "DLL" then Logs.Errors.count else #Logs.Errors
+				local tab = table.create(Count)
+				for i, v in 
+					if Logs.Errors.__meta == "DLL" then 
+						Logs.Errors:GetAsTable() 
+					else 
+						Logs.Errors 
+				do
 					table.insert(tab, i, {
 						Time = v.Time;
 						Text = `{v.Text}: {v.Desc}`;
@@ -6583,8 +6659,14 @@ return function(Vargs, env)
 			Description = "View the command logs for the server";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
-				local tab = table.create(#Logs.Commands)
-				for i, v in Logs.Commands do
+				local Count = if Logs.Commands.__meta == "DLL" then Logs.Commands.count else #Logs.Commands
+				local tab = table.create(Count)
+				for i, v in 
+					if Logs.Commands.__meta == "DLL" then 
+						Logs.Commands:GetAsTable() 
+						else 
+						Logs.Commands 
+				do
 					table.insert(tab, i, {
 						Time = v.Time;
 						Text = `{v.Text}: {v.Desc}`;
