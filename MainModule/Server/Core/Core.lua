@@ -1267,17 +1267,23 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedTables then
-						for _, tData in SavedTables do
+						for index, tData in SavedTables do
 							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] then
 								local data = GetData(tData.TableKey)
 								if data then
 									--// TODO: Possibly find a better way to "batch" TableUpdates to prevent script exhaustion
 									for i = 1, #data do
 										LoadData("TableUpdate", data[i])
+										if i % 250 == 0 then
+											task.wait()
+										end
 									end
 								end
 							elseif tData.Table and tData.Action then
 								LoadData("TableUpdate", tData)
+								if index % 250 == 0 then
+									task.wait()
+								end
 							end
 						end
 
