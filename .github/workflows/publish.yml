@@ -24,7 +24,7 @@ jobs:
           GIT_REF: ${{ github.ref_name }}
           GIT_REF_TYPE: ${{ github.ref_type }}
           GITHUB_ACTION_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.isPrerelease }}
+          GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.release.prerelease }}
         run: |
          CUR_DATE_TIME=$(date +'%Y-%m-%d')
          if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "release" ]
