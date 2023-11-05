@@ -235,18 +235,20 @@ do
 				service.Player:Kick(info)
 			end)
 		end)()
-
-		wrap(function()
-			pcall(function()
-				task.wait(5)
-				while true do
-					pcall(task.spawn, function()
-						task.spawn(Kill())
-						-- memes
-					end)
-				end
-			end)
-		end)()
+		
+		if not isStudio then
+			wrap(function()
+				pcall(function()
+					task.wait(5)
+					while true do
+						pcall(task.spawn, function()
+							task.spawn(Kill())
+							-- memes
+						end)
+					end
+				end)
+			end)()
+		end
 	end)
 end
 
