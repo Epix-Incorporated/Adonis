@@ -532,13 +532,6 @@ return service.NewProxy({
 			AdonisDebugEnabled.Name = "ADONIS_DEBUGMODE_ENABLED"
 			AdonisDebugEnabled.Value = true
 			AdonisDebugEnabled.Parent = Folder.Parent.Client
-		else
-			local serverMetatable = getmetatable(tab)
-			serverMetatable.__metatable = "Adonis"
-			setmetatable(tab, serverMetatable)
-			local serviceMetatable = getmetatable(service)
-			serverMetatable.__metatable = "Service"
-			setmetatable(service, serviceMetatable)
 		end
 		
 		setfenv(1, setmetatable({}, {__metatable = unique}))

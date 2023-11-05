@@ -257,7 +257,7 @@ GetEnv = function(env, repl)
 			return (locals[ind] or (env or origEnv)[ind])
 		end,
 
-		__metatable = if not Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then "Adonis" else unique,
+		__metatable = if Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then nil else unique,
 	})
 
 	if repl and type(repl) == "table" then
@@ -545,6 +545,8 @@ return service.NewProxy({
 
 		if Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
 			data.DebugMode = true
+		else
+			data.DebugMode = false
 		end
 
 		setfenv(1, setmetatable({}, { __metatable = unique }))
@@ -559,6 +561,7 @@ return service.NewProxy({
 		client.TrueStart = data.Start
 		client.LoadingTime = data.LoadingTime
 		client.RemoteName = remoteName
+		client.DebugMode = data.DebugMode
 
 		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
 		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
