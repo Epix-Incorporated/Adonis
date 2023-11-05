@@ -406,7 +406,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		Wrapped = function(object)
-			if getmetatable(object) and getmetatable(object).__ADONIS_WRAPPED or getmetatable(object) == "Adonis_Proxy" then
+			if type(getmetatable(object)) == "table" and getmetatable(object).__ADONIS_WRAPPED or getmetatable(object) == "Adonis_Proxy" then
 				return true
 			elseif type(object) == ("table" or "userdata") and object.IsProxy and object:IsProxy() then
 				return true
@@ -1262,6 +1262,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 		ReadOnly = function(tabl, excluded, killOnError, noChecks)
 			local doChecks = (not noChecks) and service.RunService:IsClient()
+			if main.Core and main.Core.DebugMode then 
+				doChecks = false
+			end
 			local player = doChecks and service.Players.LocalPlayer
 			local kick = player and player.Kick
 			local settings, getMeta, get, pc, resume, create = getfenv().settings, getmetatable, getfenv, pcall, coroutine.resume, coroutine.create
@@ -1464,7 +1467,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		__tostring = "Service";
-		__metatable = nil; -- This is set later within initialization in Core.lua
+		__metatable = if main.Core and main.Core.DebugMode then nil else "Service";
 	})
 
 	WrapService = Wrapper.Wrap(WrapService)

@@ -175,6 +175,8 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		DebugMode = client.DebugMode;
+
 		LoadPlugin = function(plugin)
 			local plug = require(plugin)
 			local func = setfenv(plug,GetEnv(getfenv(plug)))
