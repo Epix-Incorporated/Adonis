@@ -6298,19 +6298,22 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"char", "character", "appearance"};
 			Args = {"player", "username"};
-			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If you want to supply a UserId, supply with 'userid-', followed by a number after 'userid'.";
+			Description = "Changes the target player(s)'s character appearence to <ID/Name>.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing username or UserId")
-
-				local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
+			
+				local target = service.GetPlayers(plr, args[2], {
+					AllowUnknownUsers = true;
+				}) 
 				if target then
-					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
+					target = target[1]
+					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target.UserId)
 
 					if success then
 						for _, v in service.GetPlayers(plr, args[1]) do
-							v.CharacterAppearanceId = target
+							v.CharacterAppearanceId = target.UserId
 
 							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
 								v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
