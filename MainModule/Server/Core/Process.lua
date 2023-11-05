@@ -738,6 +738,27 @@ return function(Vargs, GetEnv)
 						return "REMOVED"
 					end
 				end
+				
+				do 
+					local Removed = false
+					local success, err = pcall(function()
+						for filter,func in pairs(server.Variables.PlayerJoinFilters) do
+							local success, res, message = pcall(func, p, PlayerData)
+							if success and res == false then
+								p:Kick(`::Adonis:: {message or Settings.CustomJoinFilterKickMessage or "You are not allowed to join this experience"}`)
+								Logs.AddLog(server.Logs.Script, `{tostring(p)} failed the join filter {filter}`)
+								break
+							elseif not success then
+								Logs.AddLog(server.Logs.Errors, `{filter} failed for {res}`)
+							end
+						end
+					end)
+					if Removed then
+						return "REMOVED"
+					end
+				end
+				
+				
 			end)
 
 			if not ran then
