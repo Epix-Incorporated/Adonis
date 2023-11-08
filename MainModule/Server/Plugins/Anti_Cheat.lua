@@ -141,13 +141,13 @@ return function(Vargs, GetEnv)
 			charGood = true
 
 			for _, v in ipairs(character:GetChildren()) do
-				if v:IsA("Accoutrement") and Settings.ProtectHats == true then
+				if v:IsA("Accoutrement") and Settings.ProtectHats == true and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
 					coroutine.wrap(protectHat)(v)
 				end
 			end
 
 			character.ChildAdded:Connect(function(child)
-				if child:IsA("Accoutrement") and Settings.ProtectHats == true then
+				if child:IsA("Accoutrement") and Settings.ProtectHats == true and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
 					protectHat(child)
 				elseif child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
 					local count = 0
@@ -172,7 +172,7 @@ return function(Vargs, GetEnv)
 
 			local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
 
-			if Settings.AntiHumanoidDeletion then
+			if Settings.AntiHumanoidDeletion and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
 				humanoid.AncestryChanged:Connect(function(child, parent)
 					task.defer(function()
 						if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
@@ -257,7 +257,7 @@ return function(Vargs, GetEnv)
 			local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 			local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
 
-			if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
+			if (Settings.AntiRootJointDeletion or Settings.AntiParanoid) and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
 				makeConnection(rootJoint.AncestryChanged)
 
 				if humanoid.RigType == Enum.HumanoidRigType.R15 then
