@@ -361,7 +361,7 @@ settings.Allowed_API_Calls = {
 
 --// IF YOU EXPERIENCE ISSUES WITH FALSE POSITIVES/RANDOM KICKING/CRASHING DISABLE ALL OF THESE!
 
-settings.AllowClientAntiExploit = false 	-- (Default: false) Allows use of client-sided anti exploit functionality if true
+settings.AllowClientAntiExploit = true--[[false]] 	-- (Default: false) Allows use of client-sided anti exploit functionality if true
 settings.Detection = false					-- (Default: false) If true: enables built-in anti-exploit detections that do not have their own settings.
 settings.CheckClients = true				-- (Default: true) 	Checks clients every minute or two to make sure they are still active.
 
