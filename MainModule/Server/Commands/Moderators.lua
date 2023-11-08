@@ -3016,54 +3016,67 @@ return function(Vargs, env)
 			end
 		};
 
-		Clone = {
+		LoadAvatar = {
 			Prefix = Settings.Prefix;
-			Commands = {"clone", "cloneplayer", "duplicate"};
-			Args = {"player", "copies (max: 50 | default: 1)"};
-			Description = "Clones the character of the target player(s)";
+			Commands = {"loadavatar", "loadchar", "loadcharacter", "clone", "cloneplayer", "duplicate"};
+			Args = {"player", "copies (max: 50 | default: 1)", "appearence (optional)", "avatar type(R6/R15) (optional)"};
+			Description = "Copies the target character in front of you with the specified amount of copies.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tonumber(args[2] or 1)
-				assert(num <= 50, "Cannot make more than 50 clones")
+				local count = tonumber(args[2] or 1)
+				assert(count <= 50, "Cannot make more than 50 clones")
+				local isSelf = args[3] and string.lower(args[3]) == "me"
+				local avatarType = args[4] and assert(Enum.HumanoidRigType[string.upper(args[4])], "Invalid avatar type given")
+				local appearenceId = not isSelf and args[3] and (tonumber(string.match(args[3], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[3]), "Unable to fetch user."))
+				local description = appearenceId and assert(select(2, xpcall(service.Players.GetHumanoidDescriptionFromUserId, warn, service.Players, appearenceId)), "Unable to get avatar for target appearence.")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local char = v.Character
-					local hum = char and char:FindFirstChildOfClass("Humanoid")
-					if not hum then
+					local character = v.Character
+					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+					local localDescription = humanoid and humanoid:GetAppliedDescription()
+					if not humanoid then
 						continue
 					end
-					Routine(function()
-						char.Archivable = true
-						local charPivot = char:GetPivot()
-						for _ = 1, num do
-							local clone = char:Clone()
+
+					local oldArchivable, charPivot = character.Archivable, character:GetPivot()
+					character.Archivable = true
+
+					for i = 1, count do
+						task.spawn(function()
+							local clone = avatarType and service.Players:CreateHumanoidModelFromDescription(description or localDescription, avatarType, Enum.AssetTypeVerification.Always) or character:Clone()
 							table.insert(Variables.Objects, clone)
 
-							local animate
-							local anim = clone:FindFirstChild("Animate")
-							if anim then
-								animate = hum.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+							local oldAnimate, animate = clone:FindFirstChild("Animate"), nil
+							if oldAnimate and oldAnimate:IsA("LocalScript") then
+								animate = humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 								animate:ClearAllChildren()
-								for _, v in anim:GetChildren() do
+								for _, v in oldAnimate:GetChildren() do
 									v.Parent = animate
 								end
-								anim:Destroy()
+								oldAnimate:Destroy()
 								animate.Parent = clone
 							end
 
-							clone:PivotTo(charPivot)
+							clone:PivotTo(charPivot * CFrame.Angles(0, math.rad((360/count)*i+90), 0) * CFrame.new((count*0.2)+5, 0, 0) * CFrame.Angles(0, math.pi / 2, 0))
 
 							if animate then
 								animate.Disabled = false
 							end
+
 							clone:FindFirstChildOfClass("Humanoid").Died:Once(function()
 								service.Debris:AddItem(clone, service.Players.RespawnTime)
 							end)
 
-							clone.Archivable = false
+							clone.Archivable = oldArchivable
 							clone.Parent = workspace
-						end
-					end)
+							if appearenceId and not avatarType then
+								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
+								clone:FindFirstChildOfClass("Humanoid"):ApplyDescription(description, Enum.AssetTypeVerification.Always)
+							end
+						end)
+					end
+
+					character.Archivable = oldArchivable
 				end
 			end
 		};
@@ -6347,54 +6360,6 @@ return function(Vargs, env)
 							end
 						end
 					end)
-				end
-			end
-		};
-
-		LoadAvatar = {
-			Prefix = Settings.Prefix;
-			Commands = {"loadavatar", "loadchar", "loadcharacter"};
-			Args = {"player", "username", "avatar type(R6/R15)"};
-			Description = "Loads the target character in front of you.";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing username or UserId")
-				local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
-				
-				if not args[3] then
-					local success, appearanceInfo = pcall(service.Players.GetCharacterAppearanceInfoAsync, service.Players, target)
-					if success then
-						args[3] = appearanceInfo.playerAvatarType
-					else
-						error("Unable to get default avatar type for target user")
-					end
-				end
-
-				local AvatarType = string.upper(args[3])
-				if AvatarType == "R6" or AvatarType == "R15" then
-					if target then
-						local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
-
-						if success then
-							for _, v in service.GetPlayers(plr, args[1]) do
-								task.defer(function()
-									local char = Deps.Assets[`Rig{AvatarType}`]:Clone()
-									char.Name = Functions.GetNameFromUserIdAsync(target)
-									char.Parent = workspace
-									if char:FindFirstChild("Animate") then char.Animate:Destroy() local Anima = Deps.Assets[`{AvatarType}Animate`]:Clone() Anima.Parent = char Anima.Disabled = false end
-									char.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
-									char.HumanoidRootPart.CFrame = (v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(5, 0, 0)) * CFrame.Angles(0, math.rad(90), 0)
-
-									char.Humanoid.Died:Once(function()
-										service.Debris:AddItem(char, service.Players.RespawnTime)
-									end)
-								end)
-							end
-						else
-							error("Unable to get avatar for target user")
-						end
-					end
 				end
 			end
 		};
