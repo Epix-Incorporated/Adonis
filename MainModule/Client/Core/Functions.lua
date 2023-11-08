@@ -972,8 +972,8 @@ return function(Vargs, GetEnv)
 					--// we wanna get the default channel because the new ChatSystem sucks
 					--// Please fix it Roblox
 					--// we need less strict ways to filter & receive messages
-					if service.TextChatService:FindFirstChild("TextChannels") and service.TextChatService.TextChannels:FindFirstChild("RBXGeneral") then
-						channel = service.TextChatService.TextChannels.RBXGeneral
+					if service.TextChatService:FindFirstChild("TextChannels") and service.TextChatService.TextChannels:FindFirstChild("RBXSystem") then
+						channel = service.TextChatService.TextChannels.RBXSystem
 					end
 				end
 				if channel then
@@ -989,17 +989,18 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SetFPS = function(fps)
+		SetFPS = function(fps) --watameln was here
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
+
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
-					local fpslockint = time() +1 /fps
-					repeat until time()>=fpslockint
+					local cat = tick()
+					repeat while cat + 1/fps > tick() do end task.wait() cat = tick() until service.IsLooped("SetFPS") == false
 				end)
 			end
 		end;
-
+		
 		RestoreFPS = function()
 			service.StopLoop("SetFPS")
 		end;

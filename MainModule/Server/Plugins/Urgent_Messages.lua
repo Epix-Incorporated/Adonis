@@ -14,7 +14,7 @@ return function(Vargs, GetEnv)
 
 	local LastDateTime, Messages = "Loading...", {"The messages haven't loaded. Please comeback later..."}
 	task.spawn(xpcall, function()
-		warn("Requiring Alerts Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/8096250407/Adonis-Alerts-Module"})
+		print("Requiring Alerts Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/8096250407/Adonis-Alerts-Module"})
 
 		local r, AlertTab = xpcall(require, function()
 			warn("Something went wrong while requiring the urgent messages module");
@@ -84,7 +84,7 @@ return function(Vargs, GetEnv)
 		AdminLevel = "Players";
 		Function = function(plr,args)
 			Remote.MakeGui(plr,"List",{
-				Title = "URGENT MESSAGES [Recent: ".. LastDateTime .."]",
+				Title = `URGENT MESSAGES [Recent: {LastDateTime}]`,
 				Icon = "rbxassetid://7467273592",
 				Table = Messages,
 				Font = "Code",

@@ -46,6 +46,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local Lighting = service.Lighting
+	
 	server.Variables = {
 		Init = Init,
 		RunAfterInit = AfterInit,
@@ -57,6 +58,7 @@ return function(Vargs, GetEnv)
 		ScriptBuilder = {},
 		CachedDonors = {},
 		BanMessage = "Banned",
+		PlayerJoinFilters = {};
 		LockMessage = "Not Whitelisted",
 		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605", 5212082, 5212081}, --// Strings are items; numbers are gamepasses
 		WebPanel_Initiated = false,
@@ -95,25 +97,9 @@ return function(Vargs, GetEnv)
 			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
 		},
 		
-		AtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
+		AtmosphereSettings = {},
 
-		OriginalAtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
+		OriginalAtmosphereSettings = {},
 
 		PMtickets = {};
 
@@ -134,8 +120,6 @@ return function(Vargs, GetEnv)
 		Jails = {};
 
 		LocalEffects = {};
-
-		BundleCache = {};
 
 		TrackingTable = {};
 

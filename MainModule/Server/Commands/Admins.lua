@@ -12,33 +12,6 @@ return function(Vargs, env)
 	local Routine = env.Routine
 
 	return {
-		--[[
-		--// Unfortunately not viable
-		Reboot = {
-			Prefix = ":";
-			Commands = {"rebootadonis", "reloadadonis"};
-			Args = {};
-			Description = "Attempts to force Adonis to reload";
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {any})
-				local rebootHandler = server.Deps.RebootHandler:Clone();
-
-				if server.Runner then
-					rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
-					rebootHandler.Dropper.Value = service.UnWrap(server.Dropper);
-					rebootHandler.Runner.Value = service.UnWrap(server.Runner);
-					rebootHandler.Model.Value = service.UnWrap(server.Model);
-					rebootHandler.Mode.Value = "REBOOT";
-					task.wait(0.03)
-					rebootHandler.Parent = service.ServerScriptService;
-					rebootHandler.Disabled = false;
-					task.wait(0.03)
-					server.CleanUp();
-				else
-					error("Unable to reload: Runner missing");
-				end
-			end;
-		};--]]
 
 		SetRank = {
 			Prefix = Settings.Prefix;
@@ -339,7 +312,7 @@ return function(Vargs, env)
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[1]
 						if data.Options.Chat ~= true then
-							TextToUse = server.Functions.EscapeRichTextTags(args[1] or "Hello world!")
+							TextToUse = service.SanitizeXML(args[1] or "Hello world!")
 						end 
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
@@ -994,7 +967,7 @@ return function(Vargs, env)
 					}) == "Yes"
 				then]]
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), `Script unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("Script", args[1], true)
 				cl.Name = "[Adonis] Script"
@@ -1019,7 +992,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[1]}`, true)
 				cl.Name = "[Adonis] LocalScript"
@@ -1042,7 +1015,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[2])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local new = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[2]}`, true)
 				for i, v in service.GetPlayers(plr, args[1]) do
@@ -1068,7 +1041,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing LocalScript code (argument #1)")
 
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local new = Core.NewScript("LocalScript", args[1], true)
 				new.Name = "[Adonis] StarterScript"

@@ -3,6 +3,7 @@ client = nil
 Pcall = nil
 cPcall = nil
 Routine = nil
+logError = nil
 
 local main
 local ErrorHandler
@@ -100,7 +101,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
 	local Events, Threads, Wrapper, Helpers = {
-		TrackTask = function(name, func, ...)
+		TrackTask = function(name, func, errHandler, ...)
+			local overrflowArgs = {...}
+			if type(errHandler) ~= "function" or #overrflowArgs == 0 and errHandler == nil then
+				errHandler = function(err)
+					logError(err.."\n"..debug.traceback())
+				end
+			end
 			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
@@ -116,7 +123,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local function taskFunc(...)
 				TrackedTasks[index] = data
 				data.Status = "Running"
-				data.Returns = {pcall(func, ...)}
+				data.Returns = {xpcall(func, errHandler, ...)}
 
 				if not data.Returns[1] then
 					data.Status = "Errored"
@@ -139,7 +146,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		EventTask = function(name, func)
 			local newTask = service.TrackTask
 			return function(...)
-				return newTask(name, func, ...)
+				return newTask(name, func, false, ...)
 			end
 		end;
 
@@ -250,94 +257,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		GetEvent = function(name)
 			if not HookedEvents[name] then
-				local Wrap = service.Wrap
-				local UnWrap = service.UnWrap
-				local Wrapped = service.Wrapped
-				local WrapArgs = service.WrapEventArgs
-				local UnWrapArgs = service.UnWrapEventArgs
-				local event = Wrap(service.New("BindableEvent"), main)
-
-				event:SetSpecial("Wait", function(i, timeout)
-					local special = math.random()
-					local done = false
-					local ret
-
-					if timeout and type(timeout) == "number" and timeout > 0 then
-						Routine(function()
-							wait(timeout)
-							if not done then
-								UnWrap(event):Fire(special)
-							end
-						end)
-					end
-
-					repeat
-						ret = {UnWrap(event.Event):Wait()}
-					until ret[1] == 2 or ret[1] == special
-
-					done = true
-
-					if ret[1] == special then
-						warn(`Event waiter timed out [{timeout}]`)
-						return nil
-					else
-						return unpack(WrapArgs(ret), 2)
-					end
-				end)
-
-				event:SetSpecial("Fire", function(i, ...)
-					local packedResult = table.pack(...)
-					UnWrap(event):Fire(2, unpack(UnWrapArgs(packedResult), 1, packedResult.n))
-				end)
-
-				event:SetSpecial("ConnectOnce", function(i, func)
-					local event2; event2 = event:Connect(function(...)
-						event2:Disconnect()
-						func(...)
-					end)
-
-					return event2
-				end)
-
-				event:SetSpecial("Connect", function(i, func)
-					local special = math.random()
-					local event2 = Wrap(UnWrap(event.Event):Connect(function(con, ...)
-						local packedResult = table.pack(...)
-						if con == 2 or con == special then
-							func(unpack(WrapArgs(packedResult), 1, packedResult.n))
-						end
-					end), main)
-
-					event2:SetSpecial("Fire", function(i, ...)
-						local packedResult = table.pack(...)
-						UnWrap(event):Fire(special, unpack(UnWrapArgs(packedResult), 1, packedResult.n))
-					end)
-
-					event2:SetSpecial("Wait", function(i, timeout)
-						local ret
-
-						repeat
-							ret = {UnWrap(event.Event):Wait(timeout)}
-						until ret[1] == 2 or ret[1] == special
-
-						return unpack(WrapArgs(ret), 2)
-					end)
-
-					event2:SetSpecial("wait", event.Wait)
-					event2:SetSpecial("disconnect", event2.Disconnect)
-
-					return event2
-				end)
-
-				event:SetSpecial("fire", event.Fire)
-				event:SetSpecial("wait", event.Wait)
-				event:SetSpecial("connect", event.Connect)
-				event:SetSpecial("connectOnce", event.ConnectOnce)
-				event:SetSpecial("Event", service.Wrap(event.Event, main))
-				event.Event:SetSpecial("Wait", event.Wait)
-				event.Event:SetSpecial("wait", event.Wait)
-				event.Event:SetSpecial("Connect", event.Connect)
-				event.Event:SetSpecial("connect", event.Connect)
+				--// GoodSignal has been setup to be fully backwards-compatible with the existing Events system
+				local event = service.GoodSignal.new()
 
 				HookedEvents[name] = event
 				return event
@@ -476,7 +397,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Remove = function(thread) service.Threads.Stop(thread) for ind,th in service.Threads.Threads do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
 		StopAll = function() for ind,th in service.Threads.Threads do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in service.Threads.Threads do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
 	},{
-		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = "Ignore"}) end;
+		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = if main.Core and main.Core.DebugMode then "Ignore" else nil}) end; -- Unused
 		CheckWrappers = function()
 			for obj,wrap in Wrappers do
 				if service.IsDestroyed(obj) then
@@ -485,7 +406,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		Wrapped = function(object)
-			return getmetatable(object) == "Adonis_Proxy"
+			if type(getmetatable(object)) == "table" and getmetatable(object).__ADONIS_WRAPPED or getmetatable(object) == "Adonis_Proxy" then
+				return true
+			elseif type(object) == ("table" or "userdata") and object.IsProxy and object:IsProxy() then
+				return true
+			else
+				return false
+			end
 		end;
 		UnWrap = function(object)
 			local OBJ_Type = typeof(object)
@@ -569,6 +496,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						return sWrap(new)
 					end;
 
+					IsWrapped = function()
+						return true -- Cannot fully depend on __metatable if DebugMode is enabled
+					end;
+
 					connect = function(ignore, func)
 						return Wrap(object:Connect(function(...)
 							local packedResult = table.pack(...)
@@ -611,8 +542,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				--newMeta.__gc = function(tab)
 				--	custom:RemoveFromCache()
 				--end
-				newMeta.__metatable = "Adonis_Proxy"
-
+				newMeta.__metatable = if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy"
+				newMeta.__ADONIS_WRAPPED = true
 				custom:AddToCache()
 				return newObj
 			else
@@ -772,7 +703,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
 			local metatable = getmetatable(newProxy)
-			metatable.__metatable = false
+			metatable.__metatable = if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy"
+			metatable.__ADONIS_WRAPPED = true
 			for i,v in meta do metatable[i] = v end
 			return newProxy
 		end;
@@ -834,7 +766,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			table.insert(queue.Functions, tab);
 
 			if not queue.Processing then
-				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, queue, key);
+				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, false, queue, key);
 			end
 
 			if doYield and not tab.Finished then
@@ -875,12 +807,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 
 						service.TrackTask(`Thread: {key or "Unknown"}_QueuedFunction`, function()
-							local r,e = pcall(func.Function);
-
-							if not r then
+							local r,e = xpcall(func.Function,function(e)
 								func.Error = e;
-								warn(`Queue Error: {key}: {e}`)
-							end
+								warn(`Queue Error: {key}: {e} \n {debug.traceback()}`)
+							end);
 
 							func.Running = false;
 							func.Finished = true
@@ -890,7 +820,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 							end
 
 							Yield:Release();
-						end)
+						end,false)
 
 						if func.Running then
 							Yield:Wait();
@@ -1290,9 +1220,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 
 			if noYield then
-				service.TrackTask(`Thread: Loop: {name}`, loop)
+				service.TrackTask(`Thread: Loop: {name}`, false, loop)
 			else
-				service.TrackTask(`Loop: {name}`, loop)
+				service.TrackTask(`Loop: {name}`, false, loop)
 			end
 
 			--[[local task = service.Threads.RunTask(`LOOP:{name}`, loop)
@@ -1317,6 +1247,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			end
 		end;
+		IsLooped = function(name)
+			for cat,loop in RunningLoops do
+				if name == loop.Function or name == loop.Name then
+					return loop.Running
+				end
+			end
+			return false
+		end;
 		Immutable = function(...)
 			local co = coroutine.wrap(function(...) while true do coroutine.yield(...) end end)
 			co(...)
@@ -1324,6 +1262,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 		ReadOnly = function(tabl, excluded, killOnError, noChecks)
 			local doChecks = (not noChecks) and service.RunService:IsClient()
+			if main.Core and main.Core.DebugMode then 
+				doChecks = false
+			end
 			local player = doChecks and service.Players.LocalPlayer
 			local kick = player and player.Kick
 			local settings, getMeta, get, pc, resume, create = getfenv().settings, getmetatable, getfenv, pcall, coroutine.resume, coroutine.create
@@ -1377,7 +1318,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end;
 
-				__metatable = "ReadOnly_Table";
+				__metatable = if main.Core and main.Core.DebugMode then unique else "ReadOnly_Table"; -- Allow ReadOnly table's metadata to be modified if DebugMode is enabled
 			}
 		end;
 		Wait = function(mode)
@@ -1406,7 +1347,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 			return false
 		end;
+		OutfitCache = {},
+		UnallowedCache = {},
 		Insert = function(id, rawModel)
+			if service.UnallowedCache and service.UnallowedCache[id] then return end
 			local model = service.InsertService:LoadAsset(id)
 			if not rawModel and model:IsA("Model") and model.Name == "Model" then
 				local asset = model:GetChildren()[1]
@@ -1415,7 +1359,64 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return asset
 			end
 			return model
-		end;
+		end,
+		SecureAccessory = function(plr, itemId)
+			if not plr.Character then return end
+
+			local function reject()
+				service.UnallowedCache[tonumber(itemId)] = true
+				error("Item not supported")
+			end
+
+			local success, item = pcall(function() return service.Insert(tonumber(itemId)) end)
+			if not success then return reject() end
+			if not item then return reject() end
+			if not item:IsA("Accoutrement") then return reject() end
+			if not item:FindFirstChild("Handle") then return reject() end
+			if #item:GetDescendants() > 250 then return reject() end
+			item.Name = "CustomAdonisAccessory"
+			item:SetAttribute("AssetId", itemId)
+
+			-- No classes except those in whitelistedClasses are allowed
+			local whitelistedClasses = {"Accoutrement", "BasePart", "SpecialMesh", "Attachment", "Weld", "WeldConstraint", "Motor6D", "Folder", "ValueBase", "ParticleEmitter", "Sparkles", "Fire"}
+			local blacklistedClasses = {"LuaSourceContainer", "Model", "Tool", "Hopperbin"} -- extra security
+			
+			for i,v in item:GetDescendants() do
+				if v:IsA("BasePart") then
+					v.CanCollide = false
+				end
+			end
+			
+			-- If a blacklisted class is found, cancel the command
+			for i,v in item:GetDescendants() do
+				local blacklisted = false
+				for _,x in blacklistedClasses do
+					if v:IsA(x) then
+						blacklisted = true
+						break
+					end
+				end
+				if blacklisted then
+					return reject()
+				end
+			end
+			
+			-- If a non-whitelisted class is found, delete it
+			for i,v in item:GetDescendants() do 
+				local allowed = false
+				for _,x in whitelistedClasses do
+					if v:IsA(x) then
+						allowed = true
+						break
+					end
+				end
+				if not allowed then
+					v:Destroy()
+				end
+			end
+
+			plr.Character.Humanoid:AddAccessory(item)
+		end,
 		GetPlayers = function() return service.Players:GetPlayers() end;
 		IsAdonisObject = function(obj) for i,v in CreatedItems do if v == obj then return true end end end;
 		GetAdonisObjects = function() return CreatedItems end;
@@ -1466,7 +1467,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		__tostring = "Service";
-		__metatable = "Service";
+		__metatable = if main.Core and main.Core.DebugMode then nil else "Service";
 	})
 
 	WrapService = Wrapper.Wrap(WrapService)
@@ -1533,6 +1534,204 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				changedLocale = translator.LocaleId
 			end)
 		end, warn)
+	end
+	
+	--// Add GoodSignal
+	do 
+		-- The currently idle thread to run the next handler on
+		local freeRunnerThread = nil
+
+		-- Function which acquires the currently idle handler runner thread, runs the
+		-- function fn on it, and then releases the thread, returning it to being the
+		-- currently idle one.
+		-- If there was a currently idle runner thread already, that's okay, that old
+		-- one will just get thrown and eventually GCed.
+		local function acquireRunnerThreadAndCallEventHandler(fn, ...)
+			local acquiredRunnerThread = freeRunnerThread
+			freeRunnerThread = nil
+			fn(...)
+			-- The handler finished running, this runner thread is free again.
+			freeRunnerThread = acquiredRunnerThread
+		end
+
+		-- Coroutine runner that we create coroutines of. The coroutine can be 
+		-- repeatedly resumed with functions to run followed by the argument to run
+		-- them with.
+		local function runEventHandlerInFreeThread()
+			-- Note: We cannot use the initial set of arguments passed to
+			-- runEventHandlerInFreeThread for a call to the handler, because those
+			-- arguments would stay on the stack for the duration of the thread's
+			-- existence, temporarily leaking references. Without access to raw bytecode
+			-- there's no way for us to clear the "..." references from the stack.
+			while true do
+				acquireRunnerThreadAndCallEventHandler(coroutine.yield())
+			end
+		end
+
+		-- Connection class
+		local Connection = {}
+		Connection.__index = Connection
+
+		function Connection.new(signal, fn)
+			return setmetatable({
+				_connected = true,
+				_signal = signal,
+				_fn = fn,
+				_next = false,
+			}, Connection)
+		end
+
+		function Connection:Disconnect()
+			self._connected = false
+
+			-- Unhook the node, but DON'T clear it. That way any fire calls that are
+			-- currently sitting on this node will be able to iterate forwards off of
+			-- it, but any subsequent fire calls will not hit it, and it will be GCed
+			-- when no more fire calls are sitting on it.
+			if self._signal._handlerListHead == self then
+				self._signal._handlerListHead = self._next
+			else
+				local prev = self._signal._handlerListHead
+				while prev and prev._next ~= self do
+					prev = prev._next
+				end
+				if prev then
+					prev._next = self._next
+				end
+			end
+		end
+
+		-- Make Connection strict
+		setmetatable(Connection, {
+			__index = function(tb, key)
+				error(("Attempt to get Connection::%s (not a valid member)"):format(tostring(key)), 2)
+			end,
+			__newindex = function(tb, key, value)
+				error(("Attempt to set Connection::%s (not a valid member)"):format(tostring(key)), 2)
+			end
+		})
+
+		-- Signal class
+		local Signal = {}
+		Signal.__index = Signal
+
+		function Signal.new()
+			return setmetatable({
+				_handlerListHead = false,
+				Event = {},
+			}, Signal)
+		end
+
+		function Signal:Connect(fn)
+			local connection = Connection.new(self, fn)
+			if self._handlerListHead then
+				connection._next = self._handlerListHead
+				self._handlerListHead = connection
+			else
+				self._handlerListHead = connection
+			end
+			local signalSelf = self
+			function connection:Fire(...)
+				signalSelf:Fire(fn)
+			end
+			function connection:fire(...)
+				signalSelf:Fire(fn)
+			end
+			function connection:disconnect()
+				self:Disconnect()
+			end
+			function connection:wait()
+				return signalSelf:Wait()
+			end
+			return connection
+		end
+		
+		function Signal:connect(fn)
+			return self:Connect(fn)
+		end
+		
+		-- Disconnect all handlers. Since we use a linked list it suffices to clear the
+		-- reference to the head handler.
+		function Signal:DisconnectAll()
+			self._handlerListHead = false
+		end
+
+		-- Signal:Fire(...) implemented by running the handler functions on the
+		-- coRunnerThread, and any time the resulting thread yielded without returning
+		-- to us, that means that it yielded to the Roblox scheduler and has been taken
+		-- over by Roblox scheduling, meaning we have to make a new coroutine runner.
+		function Signal:Fire(...)
+			local item = self._handlerListHead
+			while item do
+				if item._connected then
+					if not freeRunnerThread then
+						freeRunnerThread = coroutine.create(runEventHandlerInFreeThread)
+						-- Get the freeRunnerThread to the first yield
+						coroutine.resume(freeRunnerThread)
+					end
+					task.spawn(freeRunnerThread, item._fn, ...)
+				end
+				item = item._next
+			end
+		end
+		
+		function Signal:fire(...)
+			self:Fire(...)
+		end
+
+		-- Implement Signal:Wait() in terms of a temporary connection using
+		-- a Signal:Connect() which disconnects itself.
+		function Signal:Wait()
+			local waitingCoroutine = coroutine.running()
+			local cn;
+			cn = self:Connect(function(...)
+				cn:Disconnect()
+				task.spawn(waitingCoroutine, ...)
+			end)
+			return coroutine.yield()
+		end
+		
+		function Signal:wait()
+			return self:Wait()
+		end
+		
+		-- Implement Signal:Once() in terms of a connection which disconnects
+		-- itself before running the handler.
+		function Signal:Once(fn)
+			local cn;
+			cn = self:Connect(function(...)
+				if cn._connected then
+					cn:Disconnect()
+				end
+				fn(...)
+			end)
+			return cn
+		end
+		
+		function Signal:ConnectOnce(fn)
+			return self:Once(fn)
+		end
+		
+		function Signal:connectOnce(fn)
+			return self:Once(fn)
+		end
+		
+		function Signal:Destroy()
+			self:DisconnectAll()
+			setmetatable(self, nil)
+		end
+
+		-- Make signal strict
+		setmetatable(Signal, {
+			__index = function(tb, key)
+				error(("Attempt to get Signal::%s (not a valid member)"):format(tostring(key)), 2)
+			end,
+			__newindex = function(tb, key, value)
+				error(("Attempt to set Signal::%s (not a valid member)"):format(tostring(key)), 2)
+			end
+		})
+
+		service.GoodSignal = Signal
 	end
 
 	return service

@@ -91,7 +91,7 @@ return function(Vargs, env)
 						plr.Character.Humanoid.Jump = true
 					end
 					wait()
-					plr.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90), 0)*CFrame.new(5+.2, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, -5))
 				end
 			end
 		};
@@ -247,7 +247,7 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				assert(args[2], "Missing message")
 
-				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
 			end
 		};
 
@@ -261,7 +261,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -600,7 +600,7 @@ return function(Vargs, env)
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[2]
 						if data.Options.Chat ~= true then
-							TextToUse = server.Functions.EscapeRichTextTags(args[2] or "Hello world!")
+							TextToUse = service.SanitizeXML(args[2] or "Hello world!")
 						end 
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{
@@ -1930,7 +1930,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", "Teleporting to server \""..args[2].."\"\nPlease wait...", players, false, 10)
+				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
 			end
 		};
 
@@ -2409,16 +2409,30 @@ return function(Vargs, env)
 			Description = "Resets atmosphere back to the setting it had on server start";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
-					for i, v in service.Lighting:FindFirstChildWhichIsA("Atmosphere") do
-						v.Name = Variables.OriginalAtmosphereSettings.Name
-						v.Density = Variables.OriginalAtmosphereSettings.Density
-						v.Offset = Variables.OriginalAtmosphereSettings.Offset
-						v.Color = Variables.OriginalAtmosphereSettings.Color
-						v.Decay = Variables.OriginalAtmosphereSettings.Decay
-						v.Glare = Variables.OriginalAtmosphereSettings.Glare
-						v.Haze = Variables.OriginalAtmosphereSettings.Haze
+				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
+					Variables.OriginalAtmosphereSettings = {
+						Name = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Name,
+						Density = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Density,
+						Offset = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Offset,
+						Color = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Color,
+						Decay = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Decay,
+						Glare = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Glare,
+						Haze = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Haze,
+					}
+
+					if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
+						local Atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+						
+						Atmosphere.Name = Variables.OriginalAtmosphereSettings.Name
+						Atmosphere.Density = Variables.OriginalAtmosphereSettings.Density
+						Atmosphere.Offset = Variables.OriginalAtmosphereSettings.Offset
+						Atmosphere.Color = Variables.OriginalAtmosphereSettings.Color
+						Atmosphere.Decay = Variables.OriginalAtmosphereSettings.Decay
+						Atmosphere.Glare = Variables.OriginalAtmosphereSettings.Glare
+						Atmosphere.Haze = Variables.OriginalAtmosphereSettings.Haze
 					end
+				else
+					Functions.Hint("Atmosphere doesn't exist!", {plr})
 				end
 			end
 		};
@@ -3006,7 +3020,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"loadavatar", "loadchar", "loadcharacter", "clone", "cloneplayer", "duplicate"};
 			Args = {"player", "copies (max: 50 | default: 1)", "appearence (optional)", "avatar type(R6/R15) (optional)"};
-			Description = "Loads the target character in front of you. You can give an optional appearence name for the avatar. If you want to supply a UserId, supply with 'userid-<PlayerID>'";
+			Description = "Copies the target character in front of you with the specified amount of copies.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local count = tonumber(args[2] or 1)
@@ -4681,7 +4695,7 @@ return function(Vargs, env)
 						end
 					end
 
-					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
+					if not point then Functions.Hint(`Waypoint {m} was not found.`, {plr}) end
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
 					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
@@ -4803,7 +4817,11 @@ return function(Vargs, env)
 			Description = "Teleports the target player(s) to your position";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local players = service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"))
+				local players = service.GetPlayers(plr, if args[1] then args[1] else "me")
+				if #players == 1 and players[1] == plr then
+					Commands.Thru.Function(plr, {`@{plr.Name}`})
+					return
+				end
 				if #players < 10 or not Commands.MassBring or Remote.GetGui(plr, "YesNoPrompt", {
 					Title = "Suggestion";
 					Icon = server.MatIcons.Feedback;
@@ -4937,7 +4955,76 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		RemoveLeaderstat = {
+			Prefix = Settings.Prefix;
+			Commands = {"removestats", "delstat"};
+			Args = {"name"};
+			Description = "Removes a leaderstat entirely";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local statName = assert(args[1], "Missing the stat name!")
 
+				for _, v in service.GetPlayers(plr) do
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						leaderstats.Name = "leaderstats"
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
+							absoluteMatch:Destroy()
+						else
+							for _, st in leaderstats:GetChildren() do
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{statName:lower()}`) then
+									st:Destroy()
+								end
+							end
+						end
+						if #leaderstats:GetChildren() == 0 then
+							leaderstats:Destroy()
+						end
+					else
+						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a leaderstats folder`, {plr})
+					end
+				end
+			end
+		};
+		
+		NewStat = {
+			Prefix = Settings.Prefix;
+			Commands = {"newstat", "createstat", "cstat"};
+			Args = {"statname", "type (string/number [default: number])"};
+			Description = "Creates a new stat on the leaderboard";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local statName = args[1]
+				if not statName then
+					error("Not statname provided!")
+				end
+				local statType = if args[2] then args[2]:lower() else "number"
+				local FilteredStatName = service.BroadcastFilter(statName, plr)
+				
+				if FilteredStatName ~= statName then
+					error("Stat name is filtered! Sorry!")
+				end
+				
+				for _,p in service.GetPlayers() do 
+					local leaderstats = p:FindFirstChild("leaderstats") or service.New("Folder")
+					leaderstats.Name = "leaderstats"
+					if statName then 
+						if not leaderstats:FindFirstChild(FilteredStatName) then 
+							local newStat = service.New(if statType == "number" then "NumberValue" else "StringValue") 
+							newStat.Name = FilteredStatName
+							if statType ~= "number" then 
+								newStat.Value = "N/A"
+							end
+							newStat.Parent = leaderstats
+						end
+					end
+					leaderstats.Parent = p
+				end
+			end
+		};
+		
 		AddToStat = {
 			Prefix = Settings.Prefix;
 			Commands = {"add", "addtostat", "addstat"};
@@ -4950,6 +5037,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
+						leaderstats.Name = "leaderstats"
 						local absoluteMatch = leaderstats:FindFirstChild(statName)
 						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
 							absoluteMatch.Value += valueToAdd
@@ -5274,6 +5362,76 @@ return function(Vargs, env)
 			end
 		};
 
+		SaveOutfit = {
+			Prefix = Settings.Prefix;
+			Commands = {"saveoutfit", "savefit"};
+			Args = {"player"};
+			Description = "Saves your current character's appearance when respawning";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local connection = service.OutfitCache[v]
+					if connection then
+						connection:Disconnect()
+					end
+
+					if v.Character then
+						local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription():Clone()
+							local customAccessories = {}
+							for i,x in v.Character:GetChildren() do
+								if x.Name == "CustomAdonisAccessory" then
+									table.insert(customAccessories, x:GetAttribute("AssetId"))
+								end
+							end
+
+							service.OutfitCache[v] = v.CharacterAdded:Connect(function(char)
+								char:SetAttribute("LoadingSavedOutfit", true)
+								local newHum = char:WaitForChild("Humanoid")
+								newHum:WaitForChild("HumanoidDescription")
+								task.defer(newHum.ApplyDescription, newHum, humanoidDesc, Enum.AssetTypeVerification.Always)
+								for i,x in customAccessories do
+									service.SecureAccessory(v, x)
+								end
+								char:SetAttribute("LoadingSavedOutfit", nil)
+							end)
+						end
+					end
+				end
+			end,
+		},
+
+		RemoveSavedOutfit = {
+			Prefix = Settings.Prefix;
+			Commands = {"removesavedoutfit", "removeoutfit", "removefit", "defaultavatar"};
+			Args = {"player"};
+			Description = "Removes any currently saved outfits and reverts your character to its original look";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local connection = service.OutfitCache[v]
+					if connection then
+						connection:Disconnect()
+					end
+
+					if v.Character then
+						local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local humdesc = service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
+							humanoid:ApplyDescription(humdesc)
+						end
+
+						for i,x in v.Character:GetChildren() do
+							if x.Name == "CustomAdonisAccessory" then
+								x:Destroy()
+							end
+						end
+					end
+				end
+			end,
+		},
+		
 		AvatarItem = {
 			Prefix = Settings.Prefix;
 			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
@@ -5287,73 +5445,66 @@ return function(Vargs, env)
 				local success, productInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, itemId)
 				assert(success and productInfo, "Invalid item ID")
 
-				local typeId = productInfo.AssetTypeId
+				local AssetTypeNameDescriptionOverides = {
+					DynamicHead = "Head"
+				}
 
-				--// Roblox doesn't expose a good way to insert into a HumanoidDescription from the Enum.AssetType, so we're mapping them out instead.
-				local SingleAssetIds = {
-					[2] = "GraphicTShirt",
-					[11] = "Shirt",
-					[12] = "Pants",
-					[17] = "Head",
-					[18] = "Face",
-					[27] = "Torso",
-					[28] = "RightArm",
-					[29] = "LeftArm",
-					[30] = "LeftLeg",
-					[31] = "RightLeg",
-					[48] = "ClimbAnimation",
-					[49] = "DeathAnimation",
-					[50] = "FallAnimation",
-					[51] = "IdleAnimation",
-					[52] = "JumpAnimation",
-					[53] = "RunAnimation",
-					[54] = "SwimAnimation",
-					[55] = "WalkAnimation",
-				}
-				local AccessoryAssetIds = { -- AssetTypes that are comma-seperated (accessories)
-					[8] = "HatAccessory",
-					[41] = "HairAccessory",
-					[42] = "FaceAccessory",
-					[43] = "NeckAccessory",
-					[44] = "ShouldersAccessory",
-					[45] = "FrontAccessory",
-					[46] = "BackAccessory",
-					[47] = "WaistAccessory",
-				}
-				local LayeredAccessoryAssetIds = {
-					[64] = Enum.AccessoryType.TShirt,
-					[65] = Enum.AccessoryType.Shirt,
-					[66] = Enum.AccessoryType.Pants,
-					[67] = Enum.AccessoryType.Jacket,
-					[68] = Enum.AccessoryType.Sweater,
-					[69] = Enum.AccessoryType.Shorts,
-					[70] = Enum.AccessoryType.LeftShoe,
-					[71] = Enum.AccessoryType.RightShoe,
-					[72] = Enum.AccessoryType.DressSkirt,
-				}
+				local typeId = productInfo.AssetTypeId
+				local typeEnum
+
+				for _, enum in pairs(Enum.AvatarAssetType:GetEnumItems()) do
+					if enum.Value == typeId then
+						typeEnum = enum
+						break
+					end
+				end
 
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						
+						if not typeEnum then
+							if v.Character:GetAttribute("LoadingSavedOutfit") then continue end
 
-						if SingleAssetIds[typeId] then
-							humanoidDesc[SingleAssetIds[typeId]] = itemId
-						elseif AccessoryAssetIds[typeId] then
-							if string.find(humanoidDesc[AccessoryAssetIds[typeId]], tostring(itemId)) then continue end
-							humanoidDesc[AccessoryAssetIds[typeId]] ..= `,{itemId}`
-						elseif LayeredAccessoryAssetIds[typeId] then
-							local accessories = humanoidDesc:GetAccessories(true)
-							table.insert(accessories, {
-								Order = #accessories,
-								AssetId = itemId,
-								AccessoryType = LayeredAccessoryAssetIds[typeId]
-							})
-							humanoidDesc:SetAccessories(accessories, true)
-						elseif typeId == 61 then
+							local customHats = 0
+							for _,x in v.Character:GetChildren() do
+								if x.Name == "CustomAdonisAccessory" then
+									customHats += 1
+								end
+							end
+
+							if customHats > 7 then
+								continue
+							end
+
+							service.SecureAccessory(v, itemId)
+							continue
+						end
+
+						if typeEnum == Enum.AvatarAssetType.EmoteAnimation then
 							humanoidDesc:AddEmote(productInfo.Name, itemId)
 						else
-							error("Item not supported")
+							local accessoryType = service.AvatarEditorService:GetAccessoryType(typeEnum)
+							if accessoryType and accessoryType ~= Enum.AccessoryType.Unknown then
+								local accessories = humanoidDesc:GetAccessories(true)
+								table.insert(accessories, {
+									Order = #accessories,
+									AssetId = itemId,
+									AccessoryType = accessoryType
+								})
+								humanoidDesc:SetAccessories(accessories, true)
+							elseif accessoryType == Enum.AccessoryType.Unknown then
+								local typeName = typeEnum.Name
+								if AssetTypeNameDescriptionOverides[typeName] then
+									typeName = AssetTypeNameDescriptionOverides[typeName]
+								end
+								if humanoidDesc[typeName] then
+									humanoidDesc[typeName] = itemId
+								else
+									error(`Asset type of {productInfo.Name} ({itemId}) not supported`)
+								end
+							end
 						end
 
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
@@ -5361,7 +5512,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		RemoveTShirt = {
 			Prefix = Settings.Prefix;
 			Commands = {"removetshirt", "untshirt", "notshirt"};
@@ -5900,9 +6051,8 @@ return function(Vargs, env)
 
 						new.Parent = part
 						new.Disabled = false
-						Remote.MakeGui(v, "Notification", {
-							Title = "Flight";
-							Message = "You are now flying. Press E to toggle flight.";
+						Remote.MakeGui(v, "Hint", {
+							Message = "You are now flying - press E to toggle flight";
 							Time = 10;
 						})
 					end
@@ -6128,44 +6278,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		RemovePackage = {
-			Prefix = Settings.Prefix;
-			Commands = {"removepackage", "nopackage", "rpackage"};
-			Args = {"player"};
-			Description = "Removes the target player(s)'s Package";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						if humanoid then
-							local rigType = humanoid.RigType
-							if rigType == Enum.HumanoidRigType.R6 then
-								for _, x in v.Character:GetChildren() do
-									if x:IsA("CharacterMesh") then
-										x:Destroy()
-									end
-								end
-							elseif rigType == Enum.HumanoidRigType.R15 then
-								local rig = Deps.Assets.RigR15
-								local rigHumanoid = rig.Humanoid
-								local validParts = table.create(#Enum.BodyPartR15:GetEnumItems())
-								for _, x in Enum.BodyPartR15:GetEnumItems() do
-									validParts[x.Name] = x.Value
-								end
-								for _, x in rig:GetChildren() do
-									if x:IsA("BasePart") and validParts[x.Name] then
-										humanoid:ReplaceBodyPartR15(validParts[x.Name], x:Clone())
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-		};
-
+		
 		GivePackage = {
 			Prefix = Settings.Prefix;
 			Commands = {"package", "givepackage", "setpackage", "bundle"};
@@ -6177,55 +6290,19 @@ return function(Vargs, env)
 				assert(args[1] and args[2] and tonumber(args[2]), "Missing or invalid package ID")
 
 				local id = tonumber(args[2])
-				local assetHD = Variables.BundleCache[id]
 
-				if assetHD == false then
-					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} is not supported.`})
+				local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
+
+				if suc then
+					for _, item in ers.Items do
+						if item.Type == "Asset" then
+							Commands.AvatarItem.Function(plr, {`@{plr.Name}`, item.Id})
+							break
+						end
+					end
+				else
+					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} doesn't exist.`})
 					return
-				end
-
-				if not assetHD then
-					local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
-
-					if suc then
-						for _, item in ers.Items do
-							if item.Type == "UserOutfit" then
-								local _, Outfit = pcall(function() return service.Players:GetHumanoidDescriptionFromOutfitId(item.Id) end)
-								Variables.BundleCache[id] = Outfit
-								assetHD = Outfit
-								break
-							end
-						end
-					end
-
-					if not suc or not assetHD then
-						Variables.BundleCache[id] = false
-
-						Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `Package {id} is not supported.`})
-						return
-					end
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local char = v.Character
-
-					if char then
-						local humanoid = char:FindFirstChildOfClass("Humanoid")
-
-						if not humanoid then
-							Functions.Hint(`Could not transfer bundle to {v.Name}`, {plr})
-						else
-							local newDescription = humanoid:GetAppliedDescription()
-							local defaultDescription = Instance.new("HumanoidDescription")
-							for _, property in {"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"} do
-								if assetHD[property] ~= defaultDescription[property] then
-									newDescription[property] = assetHD[property]
-								end
-							end
-
-							humanoid:ApplyDescription(newDescription, Enum.AssetTypeVerification.Always)
-						end
-					end
 				end
 			end
 		};
@@ -6234,19 +6311,22 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"char", "character", "appearance"};
 			Args = {"player", "username"};
-			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If you want to supply a UserId, supply with 'userid-', followed by a number after 'userid'.";
+			Description = "Changes the target player(s)'s character appearence to <ID/Name>.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing username or UserId")
-
-				local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(args[2]), "Unable to fetch user.")
+			
+				local target = service.GetPlayers(plr, args[2], {
+					AllowUnknownUsers = true;
+				}) 
 				if target then
-					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
+					target = target[1]
+					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target.UserId)
 
 					if success then
 						for _, v in service.GetPlayers(plr, args[1]) do
-							v.CharacterAppearanceId = target
+							v.CharacterAppearanceId = target.UserId
 
 							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
 								v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
@@ -6398,8 +6478,14 @@ return function(Vargs, env)
 			Description = "View script error log";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
-				local tab = table.create(#Logs.Errors)
-				for i, v in Logs.Errors do
+				local Count = if Logs.Errors.__meta == "DLL" then Logs.Errors.count else #Logs.Errors
+				local tab = table.create(Count)
+				for i, v in 
+					if Logs.Errors.__meta == "DLL" then 
+						Logs.Errors:GetAsTable() 
+					else 
+						Logs.Errors 
+				do
 					table.insert(tab, i, {
 						Time = v.Time;
 						Text = `{v.Text}: {v.Desc}`;
@@ -6545,8 +6631,14 @@ return function(Vargs, env)
 			Description = "View the command logs for the server";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
-				local tab = table.create(#Logs.Commands)
-				for i, v in Logs.Commands do
+				local Count = if Logs.Commands.__meta == "DLL" then Logs.Commands.count else #Logs.Commands
+				local tab = table.create(Count)
+				for i, v in 
+					if Logs.Commands.__meta == "DLL" then 
+						Logs.Commands:GetAsTable() 
+						else 
+						Logs.Commands 
+				do
 					table.insert(tab, i, {
 						Time = v.Time;
 						Text = `{v.Text}: {v.Desc}`;

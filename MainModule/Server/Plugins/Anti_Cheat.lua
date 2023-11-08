@@ -79,12 +79,12 @@ return function(Vargs, GetEnv)
 					end
 
 					Logs.AddLog(Logs.Script, {
-						Text = "Character AE Detected "..tostring(player);
-						Desc = "The Anti-Exploit character check detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason);
+						Text = `Character AE Detected {player}`;
+						Desc = `The Anti-Exploit character check detected player: {player} action: {action} reason: {reason}`;
 						Player = player;
 					})
 
-					warn("Charactercheck detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason))
+					warn(`Charactercheck detected player: {player} action: {action} reason: {reason}`)
 				else
 					Anti.Detected(player, action, reason)
 				end
@@ -111,8 +111,8 @@ return function(Vargs, GetEnv)
 						end
 
 						Logs.AddLog(Logs.Script, {
-							Text = "AE: Hat joint deletion reset network ownership for player: "..tostring(player);
-							Desc = "The AE reset joint handle network ownership for player: "..tostring(player);
+							Text = `AE: Hat joint deletion reset network ownership for player: {player}`;
+							Desc = `The AE reset joint handle network ownership for player: {player}`;
 							Player = player;
 						})
 					end)
@@ -188,8 +188,8 @@ return function(Vargs, GetEnv)
 					humanoid.Health = 0
 					humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 					Logs.AddLog(Logs.Script, {
-						Text = "AE: Humanoid came out of dead state for player: "..tostring(player);
-						Desc = "AE: Humanoid came out of dead state for player: "..tostring(player);
+						Text = `AE: Humanoid came out of dead state for player: {player}`;
+						Desc = `AE: Humanoid came out of dead state for player: {player}`;
 						Player = player;
 					})
 				end
@@ -243,8 +243,8 @@ return function(Vargs, GetEnv)
 							humanoid.Health = 0
 							humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 							Logs.AddLog(Logs.Script, {
-								Text = "AE: Waist joint deleted by player: "..tostring(player);
-								Desc = "AE: Waist joint deleted by player: "..tostring(player);
+								Text = `AE: Waist joint deleted by player: {player}`;
+								Desc = `AE: Waist joint deleted by player: {player}`;
 								Player = player;
 							})
 						end

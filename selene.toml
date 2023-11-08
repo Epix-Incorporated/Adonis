@@ -1,4 +1,6 @@
 std = "roblox"
+# Packages external to Adonis, such as Roact. (Don't globally blacklist .spec.lua files, this isn't needed, and would make it a bigger problem to introduce support)
+exclude = ["MainModule/Client/UI/Modern/Components/Packages/**"]
 
 [rules]
 if_same_then_else = "allow"

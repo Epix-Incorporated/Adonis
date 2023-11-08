@@ -8,6 +8,7 @@ return {
 		{Text = "joritochip",				Desc = "Community Maintainer & WebPanel Developer"};
 		{Text = "Coasterteam",				Desc = "Community Maintainer & Development contributions (Kronos developer)"};
 		{Text = "Expertcoderz",				Desc = "Community Maintainer"};
+		{Text = "Dimenpsyonal",				Desc = "Community Maintainer"};
 	};
 
 	Contributors = {
@@ -76,6 +77,10 @@ return {
 		{Text = "@watameln",			Desc = "Open Source Contributor"};
 		{Text = "@bigbenster702",	Desc = "Open Source Contributor"};
 		{Text = "@WalkerOfBacon", 	Desc = "Open Source Contributor"};
+		{Text = "@wilsontulus", 	Desc = "Open Source Contributor"};
+		{Text = "RealEthanPlayzDev", Desc = "Open Source Contributor"};
+		{Text = "Redfuire", Desc = "Open Source Contributor"};
+		{Text = "RadiantUwU", Desc = "Open Source Contributor"};
 	};
 
 	Misc = {
