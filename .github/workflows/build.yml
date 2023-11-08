@@ -49,7 +49,7 @@ jobs:
          fi
          echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_${GIT_HASH}" >> $GITHUB_OUTPUT
 
-      - uses: ok-nick/setup-aftman@v0.3.0
+      - uses: ok-nick/setup-aftman@v0.4.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
