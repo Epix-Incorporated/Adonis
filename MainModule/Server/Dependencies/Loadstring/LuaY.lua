@@ -158,18 +158,6 @@ luaY.VARARG_NEEDSARG = 4
 
 luaY.LUA_MULTRET = -1  -- (lua.h)
 
--- // Luau compound operator translation
--- Also the concat operator is an odd one out, concatting uses a different type of operation
--- because concatting concats a range of operators, I guess its an optimisation or something
-luaY.COMPOUND_OP_TRANSLATE = {
-	TK_ASSIGN_ADD = "OP_ADD",
-	TK_ASSIGN_SUB = "OP_SUB",
-	TK_ASSIGN_MUL = "OP_MUL",
-	TK_ASSIGN_DIV = "OP_DIV",
-	TK_ASSIGN_MOD = "OP_MOD",
-	TK_ASSIGN_POW = "OP_POW",
-}
-
 --[[--------------------------------------------------------------------
 -- other functions
 ----------------------------------------------------------------------]]
@@ -1151,6 +1139,26 @@ function luaY:getbinopr(op)
 end
 
 ------------------------------------------------------------------------
+-- // Luau compound operator translation
+-- Also the concat operator is an odd one out, concatting uses a different type of operation
+-- because concatting concats a range of operators, I guess its an optimisation or something
+-- ccuser44 added this array, but never actually implemented it (?), so moo1210 did. 
+------------------------------------------------------------------------
+luaY.COMPOUND_OP_TRANSLATE = {
+	TK_ASSIGN_ADD = "OP_ADD",
+	TK_ASSIGN_SUB = "OP_SUB",
+	TK_ASSIGN_MUL = "OP_MUL",
+	TK_ASSIGN_DIV = "OP_DIV",
+	TK_ASSIGN_MOD = "OP_MOD",
+	TK_ASSIGN_POW = "OP_POW",
+}
+function luaY:getcompopr(op)
+  local opr = self.COMPOUND_OP_TRANSLATE[op]
+  if opr then return opr else return "OP_NOCOMOPR" end
+end
+
+
+------------------------------------------------------------------------
 -- the following priority table consists of pairs of left/right values
 -- for binary operators (was a static const struct); grep for ORDER OPR
 -- * the following struct is replaced:
@@ -1314,7 +1322,12 @@ function luaY:assignment(ls, lh, nvars)
                     "variables in assignment")
     self:assignment(ls, nv, nvars + 1)
   else  -- assignment -> '=' explist1
-    self:checknext(ls, "=")
+    local compOpr = self:getcompopr(ls.t.token)
+    if compOpr ~= "OP_NOCOMOPR" then
+      luaX:next(ls)
+    else
+      self:checknext(ls, "=")
+    end
     local nexps = self:explist1(ls, e)
     if nexps ~= nvars then
       self:adjust_assign(ls, nvars, nexps, e)
@@ -1323,6 +1336,11 @@ function luaY:assignment(ls, lh, nvars)
       end
     else
       luaK:setoneret(ls.fs, e)  -- close last expression
+      if compOpr ~= "OP_NOCOMOPR" then
+        luaK:exp2val(ls.fs, lh.v)
+        luaK:exp2val(ls.fs, e)
+        luaK:codearith(ls.fs, compOpr, lh.v, e)
+      end
       luaK:storevar(ls.fs, lh.v, e)
       return  -- avoid default
     end
@@ -1385,7 +1403,7 @@ function luaY:continuestat(ls)
 	if upval then
 		luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
 	end
-	luaK:codeAsBx(fs, "OP_JMP", 0, INSERTTHELOOPINSTRUCTIONOFFSETHERE) -- // Is bl.breaklist.previous the loop instruction? I have to test
+	luaK:codeAsBx(fs, "OP_JMP", 0, bl.breaklist.previous) -- This is correct from what I can tell from compiling Luau bytecode and testing it
 end
 
 ------------------------------------------------------------------------

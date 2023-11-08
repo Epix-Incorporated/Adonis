@@ -591,7 +591,7 @@ return function(Vargs, GetEnv)
 							Detected("kick", "InvokeServer function hooks detected")
 						end
 					end
-					--pcall(remFuncCheck.InvokeServer, remFuncCheck, proxyDetector)
+					pcall(remFuncCheck.InvokeServer, proxyDetector, remEventCheck)
 
 					hasCompleted = true
 				end, function()

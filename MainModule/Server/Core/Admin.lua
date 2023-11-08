@@ -49,28 +49,34 @@ return function(Vargs, GetEnv)
 								chatMessage.Status == Enum.TextChatMessageStatus.Success
 								or chatMessage.Status == Enum.TextChatMessageStatus.Sending
 							then
-								local player = service.Players:GetPlayerByUserId(textSource.UserId)
+								local SenderId = chatMessage.TextSource.UserId
+								local SenderPlayer = service.Players:GetPlayerByUserId(SenderId)
+								local Receiver = service.Players:GetPlayerByUserId(textSource.UserId)
 								local slowCache = Admin.SlowCache
-
-								if not player then
+								
+								local IsOriginalSender = SenderPlayer == Receiver
+								
+								if not SenderPlayer then
 									return true
-								elseif Admin.DoHideChatCmd(player, chatMessage.Text) then -- // Hide chat commands?
+								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
 									return false
-								elseif Admin.IsMuted(player) then -- // Mute handler
-									Remote.MakeGui(player, "Notification", {
-										Title = "You are muted!";
-										Message = "You are muted and cannot talk in the chat right now.";
-										Time = 10;
-									})
-
+								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
+									if IsOriginalSender then
+										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
+									end 
+									
 									return false
-								elseif Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-									Remote.MakeGui(player, "Notification", {
-										Title = "You are chatting too fast!";
-										Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[player]));
-										Time = 10;
-									})
-
+								elseif Admin.SlowMode and not Admin.CheckAdmin(SenderPlayer) and slowCache[SenderPlayer] and os.time() - slowCache[SenderPlayer] < Admin.SlowMode then
+									if IsOriginalSender then --// Only show this for the person sending! Hide for others, however
+										--Remote.MakeGui(SenderPlayer, "Notification", {
+										--	Title = "You are chatting too fast!";
+										--	Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]));
+										--	Time = 10;
+										--})
+										
+										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are sending messages too fast! {string.format("(%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]))}`)
+									end
+									
 									return false
 								end
 
@@ -78,15 +84,15 @@ return function(Vargs, GetEnv)
 									chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
 								end
 
-								if Admin.SlowMode then
-									slowCache[player] = os.time()
+								if Admin.SlowMode and IsOriginalSender then
+									slowCache[SenderPlayer] = os.time()
 								end
 							end
 
 							return true
 						end
 					else 
-						AddLog("Script", `Using the \`CanSend\` method of handling chat connectivity in channel {textchannel.Name}`)
+						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
 						server.Variables.TextChatSpeakers = {}
 						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
 							if not server.Variables.TextChatSpeakers[player] then
@@ -1174,7 +1180,9 @@ return function(Vargs, GetEnv)
 					--logError("SERVER","Command",error)
 				end]]
 
-				TrackTask(`Command: {coma}`, com.Function, false, args)
+				TrackTask(`Command: {coma}`, com.Function, function(err)
+					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+				end, args)
 			end
 		end;
 
@@ -1186,25 +1194,30 @@ return function(Vargs, GetEnv)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
-				local ran, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {
-					PlayerData = {
-						Player = plr;
-						Level = adminLvl;
-						isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false;
+				local ran, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{
+						PlayerData = {
+							Player = plr,
+							Level = adminLvl,
+							isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false,
+						},
 					}
-				})
+				)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask(`COMMAND:{plr.Name}: {coma}`,com.Function,60*5,plr,args)
-				if error then
-					--logError(plr,"Command",error)
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = '';
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-					return;
-				end
 			end
 		end;
 
@@ -1212,20 +1225,27 @@ return function(Vargs, GetEnv)
 			local ind, com = Admin.GetCommand(coma)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local _, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {PlayerData = {
-					Player = plr;
-					Level = 0;
-					isDonor = false;
-				}})
-				if error then
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = "";
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-				end
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
+				local _, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{ PlayerData = {
+						Player = plr,
+						Level = 0,
+						isDonor = false,
+					} }
+				)
 			end
 		end;
 

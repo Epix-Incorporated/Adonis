@@ -13,6 +13,7 @@ return function(Vargs, GetEnv)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
+	local DLL = server.DLL;
 
 	local MaxLogs = 1000
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
@@ -33,18 +34,20 @@ return function(Vargs, GetEnv)
 		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");
 	end;
-
+	
+	local UseDLL = server.Settings.UseLinkedListsInLogs == true
+	
 	server.Logs = {
 		Init = Init;
-		Chats = {};
-		Joins = {};
-		Leaves = {};
-		Script = {};
-		RemoteFires = {};
-		Commands = {};
-		Exploit = {};
-		Errors = {};
-		DateTime = {};
+		Chats = if UseDLL then DLL.new() else {};
+		Joins = if UseDLL then DLL.new() else {};
+		Leaves = if UseDLL then DLL.new() else {};
+		Script = if UseDLL then DLL.new() else {};
+		RemoteFires = if UseDLL then DLL.new() else {};
+		Commands = if UseDLL then DLL.new() else {};
+		Exploit = if UseDLL then DLL.new() else {};
+		Errors = if UseDLL then DLL.new() else {};
+		DateTime = if UseDLL then DLL.new() else {};
 		TempUpdaters = {};
 		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
@@ -88,9 +91,13 @@ return function(Vargs, GetEnv)
 				log.Time = os.time()
 			end
 
-			table.insert(tab, 1, log)
-			if #tab > tonumber(MaxLogs) then
-				table.remove(tab, #tab)
+			if tab.__meta == "DLL" then
+				tab:AddToStartAndRemoveEndIfEnd(log, MaxLogs)
+			else 
+				table.insert(tab, 1, log)
+				if #tab > tonumber(MaxLogs) then
+					table.remove(tab, #tab)
+				end
 			end
 
 			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
@@ -175,6 +182,6 @@ return function(Vargs, GetEnv)
 			end;
 		};
 	};
-
+	
 	Logs = Logs
 end
