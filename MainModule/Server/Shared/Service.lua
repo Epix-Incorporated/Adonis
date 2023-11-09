@@ -1479,7 +1479,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	service.HelperService = HelperService
 	service.ThreadService = ThreadService
 	service.EventService = EventService
-	service.GoodSignal = require(main.Shared.GoodSignal)
+	service.GoodSignal = require(script.Parent.Shared.GoodSignal)
 
 	if client ~= nil then
 		for i,val in service do
