@@ -6307,6 +6307,30 @@ return function(Vargs, env)
 			end
 		};
 
+		Outfit = {
+			Prefix = Settings.Prefix;
+			Commands = {"outfit"};
+			Args = {"player", "outfitid"};
+			Description = "Changes the target player(s)'s character appearence to a specified OutfitID. You can get OutfitID(s) by using Roblox Avatar API.";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player name")
+				assert(tonumber(args[2]), "Missing OutfitId")
+
+				local success, desc = pcall(service.Players.GetHumanoidDescriptionFromOutfitId, service.Players, tonumber(args[2]))
+
+				if success then
+					for _, v in service.GetPlayers(plr, args[1]) do
+						if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+							v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
+						end
+					end
+				else
+					error("Unable to get avatar for target user")
+				end
+			end
+		};
+
 		Char = {
 			Prefix = Settings.Prefix;
 			Commands = {"char", "character", "appearance"};
