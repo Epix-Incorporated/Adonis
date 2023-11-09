@@ -127,6 +127,7 @@ Signal.__index = Signal
 function Signal.new()
 	return setmetatable({
 		_handlerListHead = false,
+		Event = {},
 	}, Signal)
 end
 
@@ -138,7 +139,24 @@ function Signal:Connect(fn)
 	else
 		self._handlerListHead = connection
 	end
+	local signalSelf = self
+	function connection:Fire(...)
+		signalSelf:Fire(fn)
+	end
+	function connection:fire(...)
+		signalSelf:Fire(fn)
+	end
+	function connection:disconnect()
+		self:Disconnect()
+	end
+	function connection:wait()
+		return signalSelf:Wait()
+	end
 	return connection
+end
+
+function Signal:connect(fn)
+	return self:Connect(fn)
 end
 
 -- Disconnect all handlers. Since we use a linked list it suffices to clear the
@@ -166,6 +184,10 @@ function Signal:Fire(...)
 	end
 end
 
+function Signal:fire(...)
+	self:Fire(...)
+end
+
 -- Implement Signal:Wait() in terms of a temporary connection using
 -- a Signal:Connect() which disconnects itself.
 function Signal:Wait()
@@ -176,6 +198,10 @@ function Signal:Wait()
 		task.spawn(waitingCoroutine, ...)
 	end)
 	return coroutine.yield()
+end
+	
+function Signal:wait()
+	return self:Wait()
 end
 
 -- Implement Signal:Once() in terms of a connection which disconnects
@@ -189,6 +215,19 @@ function Signal:Once(fn)
 		fn(...)
 	end)
 	return cn
+end
+	
+function Signal:ConnectOnce(fn)
+	return self:Once(fn)
+end
+
+function Signal:connectOnce(fn)
+	return self:Once(fn)
+end
+
+function Signal:Destroy()
+	self:DisconnectAll()
+	setmetatable(self, nil)
 end
 
 -- Make signal strict
