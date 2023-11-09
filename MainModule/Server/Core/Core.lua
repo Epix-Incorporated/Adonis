@@ -1307,6 +1307,11 @@ return function(Vargs, GetEnv)
 						Desc = "Data was retrieved from the datastore and loaded successfully",
 					})
 				end
+				
+				--// Backup Map
+				if Settings.AutoBackup then
+					TrackTask("Thread: Initial Map Backup", Admin.RunCommand, `{Settings.Prefix}backupmap`)
+				end
 			end
 		end,
 

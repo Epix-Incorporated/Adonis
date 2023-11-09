@@ -102,8 +102,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, errHandler, ...)
-			local overrflowArgs = {...}
-			if type(errHandler) ~= "function" or #overrflowArgs == 0 and errHandler == nil then
+			local overflowArgs = {...}
+			if type(errHandler) ~= "function" or (#overflowArgs == 0 and errHandler == nil) then
+				if typeof(errHandler) ~= "function" then
+					table.insert(overflowArgs, errHandler)
+				end
 				errHandler = function(err)
 					logError(err.."\n"..debug.traceback())
 				end
@@ -137,9 +140,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			if isThread then
 				data.Thread = coroutine.create(taskFunc)
-				return coroutine.resume(data.Thread, ...) --select(2, coroutine.resume(data.Thread, ...))
+				return coroutine.resume(data.Thread, unpack(overflowArgs)) --select(2, coroutine.resume(data.Thread, ...))
 			else
-				return taskFunc(...)
+				return taskFunc(unpack(overflowArgs))
 			end
 		end;
 
