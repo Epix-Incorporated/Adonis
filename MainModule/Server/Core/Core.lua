@@ -1311,13 +1311,13 @@ return function(Vargs, GetEnv)
 				
 				--// Backup Map
 				if Settings.AutoBackup then
-					TrackTask("Thread: Initial Map Backup", Admin.RunCommand, `{Settings.Prefix}backupmap`)
+					TrackTask("Thread: Initial Map Backup", Admin.RunCommand, nil, `{Settings.Prefix}backupmap`)
 				end
 				
 				--// OnStartup
 				for i,v in StartupCommands do
 					print(`Running startup command {v}`)
-					TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
+					TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, nil, v)
 					AddLog("Script", {
 						Text = `Startup: Executed {v}`;
 						Desc = `Executed startup command; {v}`;
