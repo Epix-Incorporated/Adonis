@@ -370,16 +370,6 @@ return function(Vargs, GetEnv)
 	end;
 
 	local function RunAfterPlugins(data)
-		--// Run OnStartup Commands
-		for i,v in Settings.OnStartup do
-			print(`Running startup command {v}`)
-			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
-			AddLog("Script", {
-				Text = `Startup: Executed {v}`;
-				Desc = `Executed startup command; {v}`;
-			})
-		end
-
 		--// Check if Shutdownlogs is set and if not then set it
 		if Core.DataStore and not Core.GetData("ShutdownLogs") then
 			Core.SetData("ShutdownLogs", {})

@@ -1215,7 +1215,8 @@ return function(Vargs, GetEnv)
 			else
 				local SavedSettings
 				local SavedTables
-
+				local StartupCommands = table.clone(Settings.OnStartup)
+				
 				if Core.DataStore and Settings.DataStoreEnabled then
 
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
@@ -1311,6 +1312,16 @@ return function(Vargs, GetEnv)
 				--// Backup Map
 				if Settings.AutoBackup then
 					TrackTask("Thread: Initial Map Backup", Admin.RunCommand, `{Settings.Prefix}backupmap`)
+				end
+				
+				--// OnStartup
+				for i,v in StartupCommands do
+					print(`Running startup command {v}`)
+					TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
+					AddLog("Script", {
+						Text = `Startup: Executed {v}`;
+						Desc = `Executed startup command; {v}`;
+					})
 				end
 			end
 		end,
