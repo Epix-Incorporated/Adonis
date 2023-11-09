@@ -105,7 +105,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local overflowArgs = {...}
 			if type(errHandler) ~= "function" or errHandler == nil then
 				if typeof(errHandler) ~= nil then
-					table.insert(overflowArgs, errHandler)
+					table.insert(overflowArgs, 1, errHandler)
 				end
 				errHandler = function(err)
 					logError(err.."\n"..debug.traceback())
