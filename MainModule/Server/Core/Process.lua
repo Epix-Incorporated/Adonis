@@ -343,7 +343,7 @@ return function(Vargs, GetEnv)
 								})
 
 								if command then
-									local rets = {TrackTask(`Remote: {p.Name}: {comString}`, command, p, args)}
+									local rets = {TrackTask(`Remote: {p.Name}: {comString}`, command, false, p, args)}
 									if not rets[1] then
 										logError(p, `{comString}: {rets[2]}`)
 									else
@@ -479,28 +479,29 @@ return function(Vargs, GetEnv)
 				end
 
 				Admin.UpdateCooldown(pDat, command)
-				local ran, cmdError = TrackTask(taskName, command.Function, p, args, {
+				local ran, cmdError = TrackTask(taskName, command.Function, function(cmdError)
+					if not opts.IgnoreErrors then
+						if type(cmdError) == "string" then
+							AddLog("Errors", `[{matched}] {cmdError}`)
+	
+							cmdError = cmdError:match("%d: (.+)$") or cmdError
+	
+							if not isSystem then
+								Remote.MakeGui(p, "Output", {
+									Message = cmdError,
+								})
+								warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+							end
+						elseif cmdError ~= nil and cmdError ~= true and not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = `There was an error but the error was not a string? : {cmdError}`;
+							})
+						end
+					end
+				end, p, args, {
 					PlayerData = pDat,
 					Options = opts
 				})
-
-				if not opts.IgnoreErrors then
-					if type(cmdError) == "string" then
-						AddLog("Errors", `[{matched}] {cmdError}`)
-
-						cmdError = cmdError:match("%d: (.+)$") or cmdError
-
-						if not isSystem then
-							Remote.MakeGui(p, "Output", {
-								Message = cmdError,
-							})
-						end
-					elseif cmdError ~= nil and cmdError ~= true and not isSystem then
-						Remote.MakeGui(p, "Output", {
-							Message = `There was an error but the error was not a string? : {cmdError}`;
-						})
-					end
-				end
 
 				service.Events.CommandRan:Fire(p, {
 					Message = msg,
@@ -633,12 +634,14 @@ return function(Vargs, GetEnv)
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					service.Events.MutedPlayerChat_UnFiltered:Fire(p, msg)
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
 						Text = `[MUTED] {p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
 					})
+					service.Events.MutedPlayerChat_Filtered:Fire(p, filtered)
 				end
 			elseif not didPassRate and RateLimit(p, "RateLog") then
 				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", curRate))
@@ -735,6 +738,27 @@ return function(Vargs, GetEnv)
 						return "REMOVED"
 					end
 				end
+				
+				do 
+					local Removed = false
+					local success, err = pcall(function()
+						for filter,func in pairs(server.Variables.PlayerJoinFilters) do
+							local success, res, message = pcall(func, p, PlayerData)
+							if success and res == false then
+								p:Kick(`::Adonis:: {message or Settings.CustomJoinFilterKickMessage or "You are not allowed to join this experience"}`)
+								Logs.AddLog(server.Logs.Script, `{tostring(p)} failed the join filter {filter}`)
+								break
+							elseif not success then
+								Logs.AddLog(server.Logs.Errors, `{filter} failed for {res}`)
+							end
+						end
+					end)
+					if Removed then
+						return "REMOVED"
+					end
+				end
+				
+				
 			end)
 
 			if not ran then
@@ -759,7 +783,7 @@ return function(Vargs, GetEnv)
 
 				--// Get chats
 				p.Chatted:Connect(function(msg)
-					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, p, msg)
+					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, false, p, msg)
 					if not ran then
 						logError(err);
 					end
@@ -767,7 +791,7 @@ return function(Vargs, GetEnv)
 
 				--// Character added
 				p.CharacterAdded:Connect(function(...)
-					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, p, ...)
+					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, false, p, ...)
 					if not ran then
 						logError(err);
 					end
@@ -812,6 +836,13 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
+			for _,rateLimit in RateLimiter do 
+				if not rateLimit.Caches then 
+					continue
+				end
+				rateLimit.Caches[p.UserId] = nil
+			end
+
 			Core.SavePlayerData(p, data)
 
 			Variables.TrackingTable[p.Name] = nil
@@ -846,7 +877,7 @@ return function(Vargs, GetEnv)
 
 			--// Run OnJoin commands
 			for i,v in Settings.OnJoin do
-				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
+				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
 				AddLog("Script", {
 					Text = `OnJoin: Executed {v}`;
 					Desc = `Executed OnJoin command; {v}`
@@ -871,25 +902,25 @@ return function(Vargs, GetEnv)
 
 			--// Load admin or non-admin specific things
 			if level < 1 then
-				if Settings.AntiSpeed then
+				if Settings.AntiSpeed and Settings.AllowClientAntiExploit then
 					Remote.Send(p, "LaunchAnti", "Speed", {
 						Speed = tostring(60.5 + math.random(9e8)/9e8)
 					})
 				end
 
-				if Settings.Detection then
+				if Settings.Detection and Settings.AllowClientAntiExploit then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
-
+					
 					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
 						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})
 
-					if Settings.ExploitGuiDetection then
+					if Settings.ExploitGuiDetection and Settings.AllowClientAntiExploit then
 						Remote.Send(p, "LaunchAnti", "AntiCoreGui")
 					end
 				end
 
-				if Settings.AntiBuildingTools then
+				if Settings.AntiBuildingTools and Settings.AllowClientAntiExploit then
 					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
 				end
 			end
@@ -899,7 +930,7 @@ return function(Vargs, GetEnv)
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == workspace then
 					--service.Threads.TimeoutRunTask(`{p.Name};CharacterAdded`,Process.CharacterAdded,60,p)
-					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, p, p.Character, {FinishedLoading = true})
+					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, false, p, p.Character, {FinishedLoading = true})
 					if not ran then
 						logError(err)
 					end
@@ -912,14 +943,6 @@ return function(Vargs, GetEnv)
 					if Settings.HelpButton then
 						Remote.MakeGui(p, "HelpButton")
 					end
-				end
-
-				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
-					Remote.MakeGui(p, "Console")
-				end
-
-				if Settings.HelpButton then
-					Remote.MakeGui(p, "HelpButton")
 				end
 
 				if level > 0 then
@@ -949,7 +972,17 @@ return function(Vargs, GetEnv)
 
 						task.wait(1)
 
-						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
+						if level > 300 and Core.DebugMode == true then
+							Remote.MakeGui(p, "Notification", {
+								Title = "Debug Mode Enabled";
+								Message = "Adonis is currently running in Debug Mode.";
+								Icon = server.MatIcons["Bug report"];
+								Time = 10;
+								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`);
+							})
+						end
+
+						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Warning!";
 								Message = "Using default datastore key!";
@@ -1038,10 +1071,14 @@ return function(Vargs, GetEnv)
 											
 				if 
 					(not args[1] or 
-						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil))
+						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil or args[1].FinishedLoading == true))
 					and 
 						(Settings.Console and (not Settings.Console_AdminsOnly or level > 0)) then
 					Remote.RefreshGui(p, "Console")
+				end
+
+				if Settings.HelpButton then
+					Remote.MakeGui(p, "HelpButton")
 				end
 
 				--if Settings.CustomChat then
@@ -1053,7 +1090,7 @@ return function(Vargs, GetEnv)
 				--end
 
 				if level < 1 then
-					if Settings.AntiNoclip then
+					if Settings.AntiNoclip and Settings.AllowClientAntiExploit then
 						Remote.Send(p, "LaunchAnti", "HumanoidState")
 					end
 				end
@@ -1072,7 +1109,7 @@ return function(Vargs, GetEnv)
 
 				--// Run OnSpawn commands
 				for _, v in Settings.OnSpawn do
-					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, v, p)
+					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
 					AddLog("Script", {
 						Text = `OnSpawn: Executed {v}`;
 						Desc = `Executed OnSpawn command; {v}`;

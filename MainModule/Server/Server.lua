@@ -7,7 +7,7 @@ This module is part of Adonis 1.0 and contains lots of old code;
 future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
 
 If you find bugs or similar issues, please submit an issue report
-on our GitHub repository here: https://github.com/Epix-Incorporated/Adonis/issues/new/choose
+on our GitHub repository.
 																																																																																						]]
 
 --// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
@@ -203,31 +203,34 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if type(plug) == "function" then
 		if isCore then
-			local ran,err = service.TrackTask(`CoreModule: {module}`, plug, GetVargTable(), GetEnv)
-			if not ran then
-				warn("Core Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
-		elseif yield then
+			local ran, err = service.TrackTask(
+				`CoreModule: {module}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				function(err)
+					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+				end,
+				GetVargTable(),
+				GetEnv
+			)
+			return err
+
+		 --[[elseif yield then (all pcalls yield by default for a quite a while time now)
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
-			if not ran then
-				warn("Plugin Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
+			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),function(err)
+				warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+			end, GetVargTable())
+			return err;]]
 		else
 			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask(`Thread: Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
-			if not ran then
-				warn("Plugin Module encountered an error while loading:", module)
-				warn(err)
-			else
-				return err;
-			end
+			local ran, err = service.TrackTask(
+				`Plugin: {module}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				function(err)
+					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+				end,
+				GetVargTable()
+			)
+			return err
 		end
 	else
 		server[module.Name] = plug
@@ -239,7 +242,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			Desc = "Adonis loaded a core module or plugin";
 		})
 	end
-end;
+end
 
 --// WIP
 local function LoadPackage(package, folder, runNow)
@@ -271,7 +274,7 @@ end;
 local function CleanUp()
 	--local env = getfenv(2)
 	--local ran,ret = pcall(function() return env.script:GetFullName() end)
-	warn("Beginning Adonis cleanup & shutdown process...")
+	print("Beginning Adonis cleanup & shutdown process...")
 	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
 	--local loader = server.Core.ClientLoader
 	local data = service.UnWrap(server.Data)
@@ -307,7 +310,7 @@ local function CleanUp()
 		pcall(server.Core.DisconnectEvent)
 	end
 
-	warn("Unloading complete")
+	print("Unloading complete")
 end;
 
 server = {
@@ -513,7 +516,6 @@ return service.NewProxy({
 		end
 
 		--// Begin Script Loading
-		setfenv(1, setmetatable({}, {__metatable = unique}))
 		data = service.Wrap(data or {})
 
 		if not (data and data.Loader) then
@@ -523,6 +525,16 @@ return service.NewProxy({
 		if data and data.ModuleID == 8612978896 then
 			warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
 		end
+
+		if data and data.DebugMode == true then
+			warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
+			local AdonisDebugEnabled = service.New("BoolValue")
+			AdonisDebugEnabled.Name = "ADONIS_DEBUGMODE_ENABLED"
+			AdonisDebugEnabled.Value = true
+			AdonisDebugEnabled.Parent = Folder.Parent.Client
+		end
+		
+		setfenv(1, setmetatable({}, {__metatable = unique}))
 
 		--// Server Variables
 		local setTab = require(server.Deps.DefaultSettings)
@@ -599,6 +611,8 @@ return service.NewProxy({
 		server.Typechecker = require(server.Shared.Typechecker)
 		server.Changelog = require(server.Shared.Changelog)
 		server.Credits = require(server.Shared.Credits)
+		server.DLL = require(server.Shared.DoubleLinkedList)
+
 		do
 			local MaterialIcons = require(server.Shared.MatIcons)
 			server.MatIcons = setmetatable({}, {
@@ -610,7 +624,7 @@ return service.NewProxy({
 					end
 					return ""
 				end,
-				__metatable = "Adonis_MatIcons"
+				__metatable = if data.DebugMode then unique else "Adonis_MatIcons"
 			})
 		end
 
@@ -701,9 +715,9 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			warn(`Loading Complete; Required by {data.Loader:GetFullName()}`)
+			print(`Loading Complete; Required by {data.Loader:GetFullName()}`)
 		else
-			warn("Loading Complete; No loader location provided")
+			print("Loading Complete; No loader location provided")
 		end
 
 		if server.Logs then
@@ -721,5 +735,5 @@ return service.NewProxy({
 	__tostring = function()
 		return "Adonis"
 	end;
-	__metatable = "Adonis";
+	__metatable = nil; -- This is now set in __call if DebugMode isn't enabled.
 })

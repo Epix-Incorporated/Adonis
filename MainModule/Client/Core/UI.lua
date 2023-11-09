@@ -176,6 +176,7 @@ return function(Vargs, GetEnv)
 					TrackTask(`UI: {module:GetFullName()}`,
 						--func,
 						setfenv(func, newEnv),
+						false,
 						data,
 						newEnv
 					)

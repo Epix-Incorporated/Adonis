@@ -85,6 +85,7 @@ local luaX = {}
 luaX.RESERVED = [[
 TK_AND and
 TK_BREAK break
+TK_CONTINUE continue
 TK_DO do
 TK_ELSE else
 TK_ELSEIF elseif
@@ -104,6 +105,13 @@ TK_THEN then
 TK_TRUE true
 TK_UNTIL until
 TK_WHILE while
+TK_ASSIGN_ADD +=
+TK_ASSIGN_SUB -=
+TK_ASSIGN_MUL *=
+TK_ASSIGN_DIV /=
+TK_ASSIGN_MOD %=
+TK_ASSIGN_POW ^=
+TK_ASSIGN_CONCAT ..=
 TK_CONCAT ..
 TK_DOTS ...
 TK_EQ ==
@@ -385,21 +393,44 @@ end
 -- * returns the number, nil if fails (originally returns a boolean)
 -- * conversion function originally lua_str2number(s,p), a macro which
 --   maps to the strtod() function by default (from luaconf.h)
+-- * ccuser44 was here to add support for binary intiger constants and
+--   intiger decimal seperators
 ------------------------------------------------------------------------
 function luaX:str2d(s)
-  local result = tonumber(s)
-  if result then return result end
-  -- conversion failed
-  if string.lower(string.sub(s, 1, 2)) == "0x" then  -- maybe an hexadecimal constant?
-    result = tonumber(s, 16)
-    if result then return result end  -- most common case
-    -- Was: invalid trailing characters?
-    -- In C, this function then skips over trailing spaces.
-    -- true is returned if nothing else is found except for spaces.
-    -- If there is still something else, then it returns a false.
-    -- All this is not necessary using Lua's tonumber.
-  end
-  return nil
+	-- Support for Luau decimal seperators for integer literals
+	if string.match(string.lower(s), "[^b%da-f_]_") or string.match(string.lower(s), "_[^%da-f_]") then
+		return nil
+	end
+	s = string.gsub(s, "_", "")
+
+	local result = tonumber(s)
+	if result then return result end
+	-- conversion failed
+
+	if string.lower(string.sub(s, 1, 2)) == "0x" then  -- maybe an hexadecimal constant?
+		result = tonumber(s, 16)
+		if result then return result end  -- most common case
+		-- Was: invalid trailing characters?
+		-- In C, this function then skips over trailing spaces.
+		-- true is returned if nothing else is found except for spaces.
+		-- If there is still something else, then it returns a false.
+		-- All this is not necessary using Lua's tonumber.
+	elseif string.lower(string.sub(s, 1, 2)) == "0b" then  -- binary intiger constants
+		if string.match(string.sub(s, 3), "[^01]") then
+			return nil
+		end
+
+		local bin = string.reverse(string.sub(s, 3))
+		local sum = 0
+
+		for i = 1, string.len(bin) do
+			local num = string.sub(bin, i, i) == "1" and 1 or 0
+			sum = sum + num * math.pow(2, i - 1)
+		end
+
+		return sum
+	end
+	return nil
 end
 
 ------------------------------------------------------------------------
@@ -538,48 +569,92 @@ end
 ------------------------------------------------------------------------
 -- reads a string
 -- * has been restructured significantly compared to the original C code
+-- * ccuser44 was here to add support for UTF8 string literals,
+-- hex numerical string literals and the \z string literal
 ------------------------------------------------------------------------
 
 function luaX:read_string(ls, del, Token)
-  self:save_and_next(ls)
-  while ls.current ~= del do
-    local c = ls.current
-    if c == "EOZ" then
-      self:lexerror(ls, "unfinished string", "TK_EOS")
-    elseif self:currIsNewline(ls) then
-      self:lexerror(ls, "unfinished string", "TK_STRING")
-    elseif c == "\\" then
-      c = self:nextc(ls)  -- do not save the '\'
-      if self:currIsNewline(ls) then  -- go through
-        self:save(ls, "\n")
-        self:inclinenumber(ls)
-      elseif c ~= "EOZ" then -- will raise an error next loop
-        -- escapes handling greatly simplified here:
-        local i = string.find("abfnrtv", c, 1, 1)
-        if i then
-          self:save(ls, string.sub("\a\b\f\n\r\t\v", i, i))
-          self:nextc(ls)
-        elseif not string.find(c, "%d") then
-          self:save_and_next(ls)  -- handles \\, \", \', and \?
-        else  -- \xxx
-          c, i = 0, 0
-          repeat
-            c = 10 * c + ls.current
-            self:nextc(ls)
-            i = i + 1
-          until i >= 3 or not string.find(ls.current, "%d")
-          if c > 255 then  -- UCHAR_MAX
-            self:lexerror(ls, "escape sequence too large", "TK_STRING")
-          end
-          self:save(ls, string.char(c))
-        end
-      end
-    else
-      self:save_and_next(ls)
-    end--if c
-  end--while
-  self:save_and_next(ls)  -- skip delimiter
-  Token.seminfo = string.sub(ls.buff, 2, -2)
+	self:save_and_next(ls)
+	while ls.current ~= del do
+		local c = ls.current
+		if c == "EOZ" then
+			self:lexerror(ls, "unfinished string", "TK_EOS")
+		elseif self:currIsNewline(ls) then
+			self:lexerror(ls, "unfinished string", "TK_STRING")
+		elseif c == "\\" then
+			c = self:nextc(ls)  -- do not save the '\'
+			if self:currIsNewline(ls) then  -- go through
+				self:save(ls, "\n")
+				self:inclinenumber(ls)
+			elseif c ~= "EOZ" then -- will raise an error next loop
+				-- escapes handling greatly simplified here:
+				local i = string.find("abfnrtv", c, 1, 1)
+				if i then
+					self:save(ls, string.sub("\a\b\f\n\r\t\v", i, i))
+					self:nextc(ls)
+				elseif c == "u" then -- UTF8 string literal
+					assert(utf8 and utf8.char, "No utf8 library found! Cannot decode UTF8 string literal!")
+
+					if self:nextc(ls) ~= "{" then
+						self:lexerror("Sounds like a skill issue", "TK_STRING")
+					end
+
+					local unicodeCharacter = ""
+
+					while true do
+						c = self:nextc(ls)
+
+						if c == "}" then
+							break
+						elseif string.match(c, "%x") then
+							unicodeCharacter = unicodeCharacter .. c
+						else
+							self:lexerror(string.format("Invalid unicode character sequence. Expected alphanumeric character, got %s. Did you forget to close the code sequence with a curly bracket?", c), "TK_STRING")
+						end
+					end
+
+					if not tonumber(unicodeCharacter, 16) or not utf8.char(tonumber(unicodeCharacter, 16)) then
+						self:lexerror(string.format("Invalid UTF8 char %s. Expected a valid UTF8 character code", unicodeCharacter), "TK_STRING")
+					else
+						self:save(ls, utf8.char(tonumber(unicodeCharacter)))
+					end
+				elseif string.lower(c) == "x" then -- Hex numeral literal
+					local hexNum = self:nextc(ls)..self:nextc(ls)
+
+					if not string.match(string.upper(hexNum), "%x") then
+						self:lexerror(string.format("Invalid hex string literal. Expected valid string literal, got %s", hexNum), "TK_STRING")
+					else
+						self:save(ls, string.char(tonumber(hexNum, 16)))
+					end
+				elseif string.lower(c) == "z" then -- Support \z string literal. I'm not sure why you would want to use this
+					local c = luaX:nextc(ls)
+
+					if c == del then
+						break
+					else
+						self:save(ls, c)
+					end
+				elseif not string.find(c, "%d") then
+					self:save_and_next(ls)  -- handles \\, \", \', and \?
+				else  -- \xxx
+					c, i = 0, 0
+					repeat
+						c = 10 * c + ls.current
+						self:nextc(ls)
+						i = i + 1
+					until i >= 3 or not string.find(ls.current, "%d")
+					if c > 255 then  -- UCHAR_MAX
+						self:lexerror(ls, "escape sequence too large", "TK_STRING")
+					end
+					self:save(ls, string.char(c))
+				end
+			end
+		else
+			self:save_and_next(ls)
+		end--if c
+	end--while
+	self:save_and_next(ls)  -- skip delimiter
+	Token.seminfo = string.sub(ls.buff, 2, -2)
 end
 
 ------------------------------------------------------------------------
@@ -595,7 +670,8 @@ function luaX:llex(ls, Token)
     ----------------------------------------------------------------
     elseif c == "-" then
       c = self:nextc(ls)
-      if c ~= "-" then return "-" end
+      if c == "=" then self:nextc(ls); return "TK_ASSIGN_SUB" -- Luau Compound 
+      elseif c ~= "-" then return "-" end
       -- else is a comment
       local sep = -1
       if self:nextc(ls) == '[' then
@@ -621,7 +697,34 @@ function luaX:llex(ls, Token)
       else
         self:lexerror(ls, "invalid long string delimiter", "TK_STRING")
       end
+    ---------------------Luau Compound Start------------------------
+    elseif c == "+" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "+"
+      else self:nextc(ls); return "TK_ASSIGN_ADD" end
     ----------------------------------------------------------------
+    elseif c == "*" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "*"
+      else self:nextc(ls); return "TK_ASSIGN_MUL" end
+    ----------------------------------------------------------------
+    elseif c == "/" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "/"
+      else self:nextc(ls); return "TK_ASSIGN_DIV" end
+    ----------------------------------------------------------------
+    elseif c == "%" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "%"
+      else self:nextc(ls); return "TK_ASSIGN_MOD" end
+    ----------------------------------------------------------------
+    elseif c == "^" then
+      c = self:nextc(ls)
+      if c ~= "=" then return "^"
+      else self:nextc(ls); return "TK_ASSIGN_POW" end
+    ----------------------------------------------------------------
+    --             TODO: TK_ASSIGN_CONCAT support                 --
+    ----------------------Luau Compound End-------------------------
     elseif c == "=" then
       c = self:nextc(ls)
       if c ~= "=" then return "="

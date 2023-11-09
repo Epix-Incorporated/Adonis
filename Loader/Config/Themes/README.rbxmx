@@ -9,10 +9,8 @@
 			<string name="Name">README</string>
 			<string name="ScriptGuid">{ED4805A5-4DFA-4CD0-9EB8-6FC6A1A3DA26}</string>
 			<ProtectedString name="Source"><![CDATA[--[[
-	This is just a placeholder file so GitHub doesn't ignore the Themes folder. 
-	
-	Current Documentation:
-	https://github.com/Epix-Incorporated/Adonis/wiki
+	This is just a placeholder file so Rojo doesn't ignore the Themes folder. 
+
 --]]
 return function() end;
 ]]></ProtectedString>

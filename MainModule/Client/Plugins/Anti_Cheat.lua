@@ -292,9 +292,10 @@ return function(Vargs)
 			service.StartLoop("AntiCoreGui", 15, function()
 				xpcall(function()
 					local function getCoreUrls()
-						local coreUrls = {}
+						local coreUrls = {"rbxassetid://0", "rbxassetid://10066921516"}	-- Whitelist for Roblox Camera SFX
 						local backpack = Player:FindFirstChildOfClass("Backpack")
 						local character = Player.Character
+						local starterPack = service.StarterPack
 						local screenshotHud = service.GuiService:FindFirstChildOfClass("ScreenshotHud")
 
 						if character then
@@ -313,6 +314,14 @@ return function(Vargs)
 							end
 						end
 
+						if starterPack then
+							for _, v in ipairs(starterPack:GetChildren()) do
+								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
+									table.insert(coreUrls, service.Trim(v.TextureId))
+								end
+							end
+						end
+								
 						if screenshotHud and service.Trim(screenshotHud.CameraButtonIcon) ~= "" then
 							table.insert(coreUrls, service.Trim(screenshotHud.CameraButtonIcon))
 						end
@@ -406,6 +415,8 @@ return function(Vargs)
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
 
 			local lookFor = {
+				"electron";
+				"celery"; -- // Not sure - someone check
 				"current identity is [0789]";
 				"gui made by kujo";
 				"tetanus reloaded hooked";
@@ -518,6 +529,7 @@ return function(Vargs)
 				"Couldn't find target with input:";
 				"Found target with input:";
 				"Couldn't find the target's root part%. :[";
+				"HookMT"; --watameln was here :3
 			}
 
 			local soundIds = {

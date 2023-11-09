@@ -38,69 +38,169 @@ return function(Vargs, GetEnv)
 		TrackTask("Thread: ChatServiceHandler", function()
 
 			--// Support for modern TextChatService
-			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and Settings.OverrideChatCallbacks then
-				local function onNewTextchannel(textchannel)
-					AddLog("Script", "Connected to textchannel: "..textchannel.Name)
+			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+				local function onNewTextchannel(textchannel: TextChannel)
+					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
+					
+					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
+						AddLog("Script", "Overriding ShouldDeliverCallback for " .. textchannel.Name)
+						textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
+							if
+								chatMessage.Status == Enum.TextChatMessageStatus.Success
+								or chatMessage.Status == Enum.TextChatMessageStatus.Sending
+							then
+								local SenderId = chatMessage.TextSource.UserId
+								local SenderPlayer = service.Players:GetPlayerByUserId(SenderId)
+								local Receiver = service.Players:GetPlayerByUserId(textSource.UserId)
+								local slowCache = Admin.SlowCache
+								
+								local IsOriginalSender = SenderPlayer == Receiver
+								
+								if not SenderPlayer then
+									return true
+								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
+									return false
+								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
+									if IsOriginalSender then
+										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
+									end 
+									
+									return false
+								elseif Admin.SlowMode and not Admin.CheckAdmin(SenderPlayer) and slowCache[SenderPlayer] and os.time() - slowCache[SenderPlayer] < Admin.SlowMode then
+									if IsOriginalSender then --// Only show this for the person sending! Hide for others, however
+										--Remote.MakeGui(SenderPlayer, "Notification", {
+										--	Title = "You are chatting too fast!";
+										--	Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]));
+										--	Time = 10;
+										--})
+										
+										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are sending messages too fast! {string.format("(%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]))}`)
+									end
+									
+									return false
+								end
 
-					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
-						if
-							chatMessage.Status == Enum.TextChatMessageStatus.Success
-							or chatMessage.Status == Enum.TextChatMessageStatus.Sending
-						then
-							local player = service.Players:GetPlayerByUserId(textSource.UserId)
-							local slowCache = Admin.SlowCache
+								if Variables.DisguiseBindings[textSource.UserId] then -- // Disguise command handler
+									chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
+								end
 
-							if not player then
-								return true
-							elseif Admin.DoHideChatCmd(player, chatMessage.Text) then -- // Hide chat commands?
-								return false
-							elseif Admin.IsMuted(player) then -- // Mute handler
-								Remote.MakeGui(player, "Notification", {
-									Title = "You are muted!";
-									Message = "You are muted and cannot talk in the chat right now.";
-									Time = 10;
-								})
-
-								return false
-							elseif Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-								Remote.MakeGui(player, "Notification", {
-									Title = "You are chatting too fast!";
-									Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[player]));
-									Time = 10;
-								})
-
-								return false
+								if Admin.SlowMode and IsOriginalSender then
+									slowCache[SenderPlayer] = os.time()
+								end
 							end
 
-							if Variables.DisguiseBindings[textSource.UserId] then -- // Disguise command handler
-								chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
-							end
-
-							if Admin.SlowMode then
-								slowCache[player] = os.time()
+							return true
+						end
+					else 
+						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
+						server.Variables.TextChatSpeakers = {}
+						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
+							if not server.Variables.TextChatSpeakers[player] then
+								server.Variables.TextChatSpeakers[player] = {}
+							end 
+							table.insert(server.Variables.TextChatSpeakers[player], speaker)
+							--// Check if the player is muted or not
+							speaker:SetAttribute("OriginalCanSend", speaker.CanSend)
+							if server.Admin.IsMuted(player) then
+								speaker.CanSend = false
 							end
 						end
-
-						return true
+						local function SpeakerAdded(speaker: TextSource) 
+							if speaker.UserId and speaker.UserId > 0 then
+								local Player = service.Players:GetPlayerByUserId(speaker.UserId)
+								if Player then
+									AddUserToTextChatSpeakers(Player, speaker)
+								end
+							end
+						end
+						local function SpeakerRemoved(speaker: TextSource)
+							if speaker.UserId and speaker.UserId > 0 then
+								local Player = service.Players:GetPlayerByUserId(speaker.UserId)
+								local Tab = server.Variables.TextChatSpeakers[Player]
+								if Tab then
+									local index = table.find(Tab, speaker)
+									while index do
+										table.remove(Tab, index)
+										index = table.find(Tab, speaker)
+									end
+									task.defer(function()
+										if #Tab == 0 then
+											server.Variables.TextChatSpeakers[Player] = nil
+										end
+									end)
+								end
+							end
+						end
+						
+						textchannel.ChildAdded:Connect(function(textSource)
+							if textSource:IsA("TextSource") then
+								SpeakerAdded(textSource)
+							end
+						end)
+						
+						textchannel.ChildRemoved:Connect(function(textSource)
+							if textSource:IsA("TextSource") then
+								SpeakerRemoved(textSource)
+							end
+						end)
+						
+						for _,inst in textchannel:GetChildren() do 
+							if inst:IsA("TextSource") then
+								SpeakerAdded(inst)
+							end
+						end
+						
 					end
 				end
+				
+				--// Only set this up once
+				--// This is for commands to tell us when a player should be muted
+				if not Settings.OverrideChatCallbacks then 
+					service.Events.PlayerMuted:Connect(function(data)
+						local PlayerId = data.Target;
+						local ModId = data.Moderator;
+
+						local Player = service.Players:GetPlayerByUserId(PlayerId)
+						--// Loop through CanSend of a speaker
+						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do 
+							speakers.CanSend = false
+						end
+						if Player then
+							AddLog("Script", `Muted player {Player.Name}:{Player.UserId} using CanSend method`)
+						end
+					end)
+					service.Events.PlayerUnMuted:Connect(function(data)
+						local PlayerId = data.Target;
+						local ModId = data.Moderator;
+
+						local Player = service.Players:GetPlayerByUserId(PlayerId)
+						--// Loop through CanSend of a speaker
+						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do 
+							local original = speakers:GetAttribute("OriginalCanSend")
+							speakers.CanSend = if original ~= nil then original else true
+						end
+						if Player then
+							AddLog("Script", `UnMuted player {Player.Name}:{Player.UserId} via CanSend method`)
+						end
+					end)
+					service.Events.MutedPlayerChat_UnFiltered:Connect(function(p, ...)
+						server.Remote.Send(p, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
+					end)
+				end
+					
 
 				local function onTextChannelsAdded(textChannels)
-					for _, v in textChannels:GetChildren() do
-						if v:IsA("TextChannel") then
-							task.spawn(onNewTextchannel, v)
-						end
-					end
-
 					textChannels.ChildAdded:Connect(function(child)
 						if child:IsA("TextChannel") then
 							task.spawn(onNewTextchannel, child)
 						end
 					end)
-				end
-
-				if service.TextChatService:FindFirstChild("TextChannels") then
-					task.spawn(pcall, onTextChannelsAdded, service.TextChatService:FindFirstChild("TextChannels"))
+				
+					for _, v in textChannels:GetChildren() do
+						if v:IsA("TextChannel") then
+							task.spawn(onNewTextchannel, v)
+						end
+					end
 				end
 
 				service.TextChatService.ChildAdded:Connect(function(child)
@@ -108,6 +208,10 @@ return function(Vargs, GetEnv)
 						task.spawn(onTextChannelsAdded, child)
 					end
 				end)
+				
+				if service.TextChatService:FindFirstChild("TextChannels") then
+					task.spawn(pcall, onTextChannelsAdded, service.TextChatService:FindFirstChild("TextChannels"))
+				end
 
 				AddLog("Script", "TextChatService Handler Loaded")
 			end
@@ -275,7 +379,7 @@ return function(Vargs, GetEnv)
 
 		--// Run OnStartup Commands
 		for i,v in Settings.OnStartup do
-			warn(`Running startup command {v}`)
+			print(`Running startup command {v}`)
 			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
 			AddLog("Script", {
 				Text = `Startup: Executed {v}`;
@@ -358,6 +462,7 @@ return function(Vargs, GetEnv)
 		CommandCache = {};
 		SlowCache = {};
 		UserIdCache = {};
+		UsernameCache = {};
 		GroupsCache = {};
 
 		BlankPrefix = false;
@@ -1077,7 +1182,9 @@ return function(Vargs, GetEnv)
 					--logError("SERVER","Command",error)
 				end]]
 
-				TrackTask(`Command: {coma}`, com.Function, false, args)
+				TrackTask(`Command: {coma}`, com.Function, function(err)
+					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+				end, args)
 			end
 		end;
 
@@ -1089,25 +1196,30 @@ return function(Vargs, GetEnv)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
-				local ran, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {
-					PlayerData = {
-						Player = plr;
-						Level = adminLvl;
-						isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false;
+				local ran, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{
+						PlayerData = {
+							Player = plr,
+							Level = adminLvl,
+							isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false,
+						},
 					}
-				})
+				)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask(`COMMAND:{plr.Name}: {coma}`,com.Function,60*5,plr,args)
-				if error then
-					--logError(plr,"Command",error)
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = '';
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-					return;
-				end
 			end
 		end;
 
@@ -1115,20 +1227,27 @@ return function(Vargs, GetEnv)
 			local ind, com = Admin.GetCommand(coma)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local _, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {PlayerData = {
-					Player = plr;
-					Level = 0;
-					isDonor = false;
-				}})
-				if error then
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = "";
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-				end
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
+				local _, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{ PlayerData = {
+						Player = plr,
+						Level = 0,
+						isDonor = false,
+					} }
+				)
 			end
 		end;
 
@@ -1147,6 +1266,62 @@ return function(Vargs, GetEnv)
 
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
+
+			-- // Support for commands to be ran via TextChat
+			task.spawn(function()
+				local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands")
+
+				if container then
+					for _, v in container:GetChildren() do
+						if string.sub(v.Name, 1, 7) == "Adonis_" then
+							v:Destroy()
+						end
+					end
+
+					local blacklistedCommands = {}
+
+					for _, v in container:GetDescendants() do
+						if v:IsA("TextChatCommand") then
+							blacklistedCommands[v.PrimaryAlias] = true
+							blacklistedCommands[v.SecondaryAlias] = true
+						end
+					end
+
+					for name, data in Commands do
+						local command1, command2 = nil, nil
+
+						if data.Hidden then
+							continue
+						end
+
+						for _, v in data.Commands do
+							if not blacklistedCommands["/"..data.Prefix..v] then
+								if not command1 then
+									command1 = "/"..data.Prefix..v
+								else
+									command2 = "/"..data.Prefix..v
+								end
+							end
+						end
+
+						if command1 then
+							local command = Instance.new("TextChatCommand")
+
+							command.Name = "Adonis_"..name
+							command.PrimaryAlias = command1
+							command.SecondaryAlias = command2 or ""
+							command.Parent = container
+							command.Triggered:Connect(function(textSource, text)
+								local player = service.Players:GetPlayerByUserId(textSource.UserId)
+
+								if player then
+									Process.Command(player, string.sub(text, 2))
+								end
+							end)
+						end
+					end
+				end
+			end)
 		end;
 
 		GetCommand = function(Command)

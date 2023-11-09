@@ -1,4 +1,5 @@
----@diagnostic disable: undefined-global
+client = nil
+service = nil
 
 local Components = script.Parent.Components.AdonisModernComponents
 local Packages = Components.Parent.Packages

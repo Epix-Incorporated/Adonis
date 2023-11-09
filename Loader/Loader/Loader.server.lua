@@ -28,7 +28,11 @@ local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
-warn("Loading...")
+local print = function(...)
+	print(":: Adonis ::", ...)
+end
+
+print("Loading...")
 
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
@@ -108,7 +112,7 @@ else
 				break
 			end
 		end
-		if not moduleId then
+		if not moduleId and not data.NightlyMode then
 			error(`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent:GetFullName()}`)
 		end
 	end
@@ -153,7 +157,7 @@ else
 	end
 
 	if tonumber(moduleId) then
-		warn(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
+		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
 	local module = require(moduleId)

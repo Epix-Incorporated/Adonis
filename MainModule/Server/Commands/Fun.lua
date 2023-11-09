@@ -582,7 +582,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-698712377")
+					Admin.RunCommandAsPlayer(`{Settings.Prefix}char`, v, "me", "id-698712377")
 				end
 			end
 		};
@@ -623,7 +623,7 @@ return function(Vargs, env)
 						cl.Parent = char
 
 						for _, prt in char:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
 								prt.Transparency = 0
 								prt.Reflectance = 0
 								prt.BrickColor = BrickColor.new("Dark green")
@@ -643,10 +643,6 @@ return function(Vargs, env)
 										tconn:Disconnect()
 									end
 								end)
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = 0
-								prt.Head.Reflectance = 0
-								prt.Head.BrickColor = BrickColor.new("Dark green")
 							end
 						end
 					end
@@ -675,16 +671,11 @@ return function(Vargs, env)
 						local char = script.Parent.Parent
 						local clr = BrickColor.random() 
 						for i, v in next, char:GetChildren() do 
-							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" and (v.Name ~= "Head" or not v.Parent:FindFirstChild("NameTag", true)) then
+							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
 								if not restore[v] then
 									restore[v] = v.Color
 								end
 								v.Color = Color3.fromHSV(tick() % 1, 1, 1)
-							elseif v:FindFirstChild("NameTag") then
-								if not restore[v.Head] then
-									restore[v.Head] = v.Head.Color
-								end
-								v.Head.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							end
 						end
 					until not char or script.Name == "Stop" -- signal to unrainbowify
@@ -873,17 +864,13 @@ return function(Vargs, env)
 						end
 
 						for _, prt in v.Character:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
 								prt.Transparency = .5
 								prt.Reflectance = 0
 								prt.BrickColor = BrickColor.new("Institutional white")
 								if prt.Name:find("Leg") then
 									prt.Transparency = 1
 								end
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = .5
-								prt.Head.Reflectance = 0
-								prt.Head.BrickColor = BrickColor.new("Institutional white")
 							end
 						end
 					end
@@ -910,14 +897,10 @@ return function(Vargs, env)
 						end
 
 						for _, prt in v.Character:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
+							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
 								prt.Transparency = 0
 								prt.Reflectance = .4
 								prt.BrickColor = BrickColor.new("Bright yellow")
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = 0
-								prt.Head.Reflectance = .4
-								prt.Head.BrickColor = BrickColor.new("Bright yellow")
 							end
 						end
 					end
@@ -941,16 +924,11 @@ return function(Vargs, env)
 						if v.Character:FindFirstChild("Pants") then
 							v.Character.Pants:Destroy()
 						end
-
-						for _, prt in v.Character:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
-								prt.Transparency = 0
-								prt.Reflectance = 1
-								prt.BrickColor = BrickColor.new("Institutional white")
-							elseif prt:FindFirstChild("NameTag") then
-								prt.Head.Transparency = 0
-								prt.Head.Reflectance = 1
-								prt.Head.BrickColor = BrickColor.new("Institutional white")
+						for _, m in v.Character:GetChildren() do
+							if m:IsA("BasePart") and m.Name ~= "HumanoidRootPart" then
+								m.Transparency = 0
+								m.Reflectance = 1
+								m.BrickColor = BrickColor.new("Institutional white")
 							end
 						end
 					end
@@ -991,16 +969,6 @@ return function(Vargs, env)
 				audio.Looped = false
 				audio.Volume = 1
 				audio.PlayOnRemove = true
-
-				--[[local thanos = audio:Clone()
-				thanos.Name = "Adonis_Thanos"
-				thanos.SoundId = "rbxassetid://2231229572"
-
-				thanos.Parent = service.SoundService
-				audio.Parent = service.SoundService
-
-				task.wait()
-				thanos:Destroy()--]]
 				task.wait()
 				audio:Destroy()
 
@@ -1092,18 +1060,6 @@ return function(Vargs, env)
 									end
 								end
 							end
-
-							--[[local root = p.Character:FindFirstChild("HumanoidRootPart")
-							if root then
-								local part = Instance.new("Part")
-								part.Anchored = false
-								part.CanCollide = true
-								part.BrickColor = BrickColor.new("Burnt Sienna")
-								part.Size = Vector3.new(0.1, 0.1, 0.1)
-								part.CFrame = root.CFrame*CFrame.new(math.random(-3, 3), math.random(-3, 3), math.random(-3, 3))
-								part.Parent = workspace
-								service.Debris:AddItem(part, 5)
-							end--]]
 							task.wait(0.2)
 						end
 
@@ -2055,7 +2011,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+			assert(Settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
+				for i, v in service.GetPlayers(plr, args[1]) do	
 					cPcall(function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
 						local run = true
@@ -2441,11 +2398,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local bunnyScript = Deps.Assets.BunnyHop
-				bunnyScript.Name = "HippityHopitus"
 				local hat = service.Insert(110891941)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					hat:Clone().Parent = v.Character
 					local clone = bunnyScript:Clone()
+					clone.Name = "HippityHopitus"
 					clone.Parent = v.Character
 					clone.Disabled = false
 				end
@@ -2794,22 +2751,22 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local cl = Deps.Assets.Dogg:Clone()
+				local avatarAnimator = Deps.Assets.AnimateAvatar:Clone()
 
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
+				mesh.Name = "ADONIS_ANIMATEAVATAR_MESH"
 				local decal1 = service.New("Decal")
 				decal1.Face = "Back"
 				decal1.Texture = "http://www.roblox.com/asset/?id=131396137"
 				decal1.Name = "Snoop"
 
-				cl.Name = "Animator"
-
 				local decal2 = decal1:Clone()
 				decal2.Face = "Front"
-				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://137545053"
-				sound.Looped = true
+				--local sound = service.New("Sound")
+				--sound.SoundId = "rbxassetid://137545053" Long lost audio...
+				--sound.Looped = true
+				--sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local character = v.Character
@@ -2819,13 +2776,12 @@ return function(Vargs, env)
 						end
 					end
 
-					local sound = sound:Clone()
+					--local sound = sound:Clone()
 					local decal1 = decal1:Clone()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
-					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
+					Commands.Invisible.Function(plr, {`@{v.Name}`})
 
 					local headMesh = character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2842,18 +2798,15 @@ return function(Vargs, env)
 						end
 					end
 
-					cl:Clone().Parent = decal1
-					cl:Clone().Parent = decal2
-
 					decal1.Parent = v.Character.HumanoidRootPart
 					decal2.Parent = v.Character.HumanoidRootPart
-					sound.Parent = v.Character.HumanoidRootPart
+					--sound.Parent = v.Character.HumanoidRootPart
 					mesh.Parent = v.Character.HumanoidRootPart
+					avatarAnimator.Parent = v.Character.HumanoidRootPart
 
-					decal1.Animator.Disabled = false
-					decal2.Animator.Disabled = false
+					avatarAnimator.Disabled = false
 
-					sound:Play()
+					--sound:Play()
 				end
 			end
 		};
@@ -2866,22 +2819,22 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local cl = Deps.Assets.Sp00ks:Clone()
+				local avatarAnimator = Deps.Assets.AnimateAvatar:Clone()
 
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
+				mesh.Name = "ADONIS_ANIMATEAVATAR_MESH"
 				local decal1 = service.New("Decal")
 				decal1.Face = "Back"
 				decal1.Texture = "http://www.roblox.com/asset/?id=183747890"
-				decal1.Name = "Snoop"
-
-				cl.Name = "Animator"
+				decal1.Name = "Sp00ks"
 
 				local decal2 = decal1:Clone()
 				decal2.Face = "Front"
 				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://174270407"
+				sound.SoundId = "rbxassetid://138081566"
 				sound.Looped = true
+				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					for k, p in v.Character.HumanoidRootPart:GetChildren() do
@@ -2895,8 +2848,7 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
-					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
+					Commands.Invisible.Function(plr, {`@{v.Name}`})
 
 					local headMesh = v.Character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2913,16 +2865,13 @@ return function(Vargs, env)
 						end
 					end
 
-					cl:Clone().Parent = decal1
-					cl:Clone().Parent = decal2
-
 					decal1.Parent = v.Character.HumanoidRootPart
 					decal2.Parent = v.Character.HumanoidRootPart
 					sound.Parent = v.Character.HumanoidRootPart
 					mesh.Parent = v.Character.HumanoidRootPart
+					avatarAnimator.Parent = v.Character.HumanoidRootPart
 
-					decal1.Animator.Disabled = false
-					decal2.Animator.Disabled = false
+					avatarAnimator.Disabled = false
 
 					sound:Play()
 				end
@@ -2937,22 +2886,22 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local cl = Deps.Assets.Kitty:Clone()
+				local avatarAnimator = Deps.Assets.AnimateAvatar:Clone()
 
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
+				mesh.Name = "ADONIS_ANIMATEAVATAR_MESH"
 				local decal1 = service.New("Decal")
 				decal1.Face = "Back"
 				decal1.Texture = "http://www.roblox.com/asset/?id=280224764"
-				decal1.Name = "Snoop"
-
-				cl.Name = "Animator"
+				decal1.Name = "Kitty"
 
 				local decal2 = decal1:Clone()
 				decal2.Face = "Front"
-				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://179393562"
-				sound.Looped = true
+				--local sound = service.New("Sound")
+				--sound.SoundId = "rbxassetid://179393562" I don't think the Rainbow Bunchie song will be coming back soon (private audios)...
+				--sound.Looped = true
+				--sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					for k, p in v.Character.HumanoidRootPart:GetChildren() do
@@ -2961,13 +2910,12 @@ return function(Vargs, env)
 						end
 					end
 
-					local sound = sound:Clone()
+					--local sound = sound:Clone()
 					local decal1 = decal1:Clone()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
-					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
+					Commands.Invisible.Function(plr, {`@{v.Name}`})
 
 					local headMesh = v.Character.Head:FindFirstChild("Mesh")
 					if headMesh then
@@ -2984,18 +2932,15 @@ return function(Vargs, env)
 						end
 					end
 
-					cl:Clone().Parent = decal1
-					cl:Clone().Parent = decal2
-
 					decal1.Parent = v.Character.HumanoidRootPart
 					decal2.Parent = v.Character.HumanoidRootPart
-					sound.Parent = v.Character.HumanoidRootPart
+					--sound.Parent = v.Character.HumanoidRootPart
 					mesh.Parent = v.Character.HumanoidRootPart
+					avatarAnimator.Parent = v.Character.HumanoidRootPart
 
-					decal1.Animator.Disabled = false
-					decal2.Animator.Disabled = false
+					avatarAnimator.Disabled = false
 
-					sound:Play()
+					--sound:Play()
 				end
 			end
 		};
@@ -3008,26 +2953,25 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local cl = Deps.Assets.Nyan1:Clone()
-				local c2 = Deps.Assets.Nyan2:Clone()
+				local avatarAnimator = Deps.Assets.AnimateAvatar:Clone()
 
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(0.1, 4.8, 20)
+				mesh.Name = "ADONIS_ANIMATEAVATAR_MESH"
 
 				local decal1 = service.New("Decal")
 				decal1.Face = "Left"
 				decal1.Texture = "http://www.roblox.com/asset/?id=332277963"
-				decal1.Name = "Nyan"
-				local decal2=decal1:Clone()
+				decal1.Name = "Nyan1"
+				local decal2 = service.New("Decal")
 				decal2.Face = "Right"
 				decal2.Texture = "http://www.roblox.com/asset/?id=332288373"
-
-				cl.Name = "Animator"
-				c2.Name = "Animator"
+				decal2.Name = "Nyan2"
 
 				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://265125691"
+				sound.SoundId = "rbxassetid://9067256917" -- Old audio 265125691 which is gone...
 				sound.Looped = true
+				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					for k, p in v.Character.HumanoidRootPart:GetChildren() do
@@ -3041,8 +2985,7 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
-					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
+					Commands.Invisible.Function(plr, {`@{v.Name}`})
 
 					local head = v.Character:FindFirstChild("Head")
 					local headMesh = head:FindFirstChild("Mesh")
@@ -3060,16 +3003,13 @@ return function(Vargs, env)
 						end
 					end
 
-					cl:Clone().Parent = decal1
-					c2:Clone().Parent = decal2
-
 					decal1.Parent = v.Character.HumanoidRootPart
 					decal2.Parent = v.Character.HumanoidRootPart
 					sound.Parent = v.Character.HumanoidRootPart
 					mesh.Parent = v.Character.HumanoidRootPart
+					avatarAnimator.Parent = v.Character.HumanoidRootPart
 
-					decal1.Animator.Disabled = false
-					decal2.Animator.Disabled = false
+					avatarAnimator.Disabled = false
 
 					sound:Play()
 				end
@@ -3084,23 +3024,24 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local cl = Deps.Assets.Fr0g:Clone()
+				local avatarAnimator = Deps.Assets.AnimateAvatar:Clone()
 
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
+				mesh.Name = "ADONIS_ANIMATEAVATAR_MESH"
 				local decal1 = service.New("Decal")
 				decal1.Face = "Back"
 				decal1.Texture = "http://www.roblox.com/asset/?id=185945467"
 				decal1.Name = "Fr0g"
 
-				cl.Name = "Animator"
 
 				local decal2 = decal1:Clone()
 				decal2.Face = "Front"
 
-				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://149690685"
-				sound.Looped = true
+				--local sound = service.New("Sound")
+				--sound.SoundId = "rbxassetid://149690685" Was a Vine called Cat Bowser's Dance which was a real song called Parov Stelar - Catgroove, so Copyright...
+				--sound.Looped = true
+				--sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					for k, p in v.Character.HumanoidRootPart:GetChildren() do
@@ -3109,13 +3050,12 @@ return function(Vargs, env)
 						end
 					end
 
-					local sound = sound:Clone()
+					--local sound = sound:Clone()
 					local decal1 = decal1:Clone()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
-					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
+					Commands.Invisible.Function(plr, {`@{v.Name}`})
 
 					local head = v.Character:FindFirstChild("Head")
 					local headMesh = head:FindFirstChild("Mesh")
@@ -3133,18 +3073,15 @@ return function(Vargs, env)
 						end
 					end
 
-					cl:Clone().Parent = decal1
-					cl:Clone().Parent = decal2
-
 					decal1.Parent = v.Character.HumanoidRootPart
 					decal2.Parent = v.Character.HumanoidRootPart
-					sound.Parent = v.Character.HumanoidRootPart
+					--sound.Parent = v.Character.HumanoidRootPart
 					mesh.Parent = v.Character.HumanoidRootPart
+					avatarAnimator.Parent = v.Character.HumanoidRootPart
 
-					decal1.Animator.Disabled = false
-					decal2.Animator.Disabled = false
+					avatarAnimator.Disabled = false
 
-					sound:Play()
+					--sound:Play()
 				end
 			end
 		};
@@ -3157,10 +3094,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local cl = Deps.Assets.Shia:Clone()
+				local avatarAnimator = Deps.Assets.AnimateAvatar:Clone()
 
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
+				mesh.Name = "ADONIS_ANIMATEAVATAR_MESH"
 
 				local decal1 = service.New("Decal")
 				decal1.Face = "Back"
@@ -3171,10 +3109,9 @@ return function(Vargs, env)
 				decal2.Face = "Front"
 
 				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://259702986"
+				sound.SoundId = "rbxassetid://4792468132" -- Old audio of 259702986 was ate by the private audio update.
 				sound.Looped = true
-
-				cl.Name = "Animator"
+				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local humRootPart = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
@@ -3192,8 +3129,7 @@ return function(Vargs, env)
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 
-					Admin.RunCommand(`{Settings.Prefix}removehats`, v.Name)
-					Admin.RunCommand(`{Settings.Prefix}invisible`, v.Name)
+					Commands.Invisible.Function(plr, {`@{v.Name}`})
 
 					local head = v.Character:FindFirstChild("Head")
 					local headMesh = head:FindFirstChild("Mesh")
@@ -3211,18 +3147,46 @@ return function(Vargs, env)
 						end
 					end
 
-					cl:Clone().Parent = decal1
-					cl:Clone().Parent = decal2
-
 					decal1.Parent = humRootPart
 					decal2.Parent = humRootPart
 					sound.Parent = humRootPart
 					mesh.Parent = humRootPart
+					avatarAnimator.Parent = v.Character.HumanoidRootPart
 
-					decal1.Animator.Disabled = false
-					decal2.Animator.Disabled = false
+					avatarAnimator.Disabled = false
 
 					sound:Play()
+				end
+			end
+		};
+
+		GenericAvatarStopAnimate = {
+			Prefix = Settings.Prefix;
+			Commands = {"stopadonisanimation", "unsh1a", "unlab00f", "unsh1alab00f", "unshia", "unfr0g", "unfr0ggy", "unmlgfr0g", "unmlgfrog", "unnyan", "unp0ptart", "unk1tty", "uncut3", "unsp00ky", "unspooky", "unspookyscaryskeleton", "undogg", "unsnoop", "unsnoopify"};
+			Args = {"player"};
+			Description = "Stop any decal/sound avatar animations";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local possibleNames = {"Shia", "Nyan1", "Nyan2", "Fr0g", "Kitty", "Snoop", "ADONIS_ANIMATEAVATAR_SOUND", "ADONIS_ANIMATEAVATAR_MESH"}
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local humRootPart = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
+					if not humRootPart then
+						continue
+					end
+					local animateAvatarScript = humRootPart:FindFirstChild("AnimateAvatar")
+					if animateAvatarScript and animateAvatarScript:IsA("Script") then
+						animateAvatarScript:Destroy()
+					end
+					for _, c in humRootPart:GetChildren() do
+						for _, name in ipairs(possibleNames) do
+							if c.Name == name then
+								c:Destroy()
+							end
+						end
+					end
+
+					Commands.Visible.Function(plr, {`@{v.Name}`})
 				end
 			end
 		};
@@ -3678,8 +3642,6 @@ return function(Vargs, env)
 									if part.Name == "FAKETORSO" then
 										part:Destroy()
 									end
-								elseif part:FindFirstChild("NameTag") then
-									part.Head.BrickColor = BrickColor.new("Bright green")
 								end
 							end
 						end
@@ -5261,6 +5223,42 @@ return function(Vargs, env)
 					sound.Parent = spart
 					spart.Parent = workspace
 					spart.Archivable = false
+				end
+			end
+		};
+
+		Pipe = {
+			Prefix = Settings.Prefix;
+			Commands = {"pipe"};
+			Args = {"player"};
+			Description = "Drops a metal pipe on the target player(s).";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					task.defer(function()
+						local Person = v.Character
+						if not Person then return end
+		
+						local pipe = Deps.Assets.Pipe:Clone()
+						pipe.Name = "Pipe"
+						pipe.Parent = workspace
+						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
+						
+						local Humanoid = Person:FindFirstChildOfClass("Humanoid")
+		
+						local deb = false
+						local HitCon
+						HitCon = pipe.Touched:Connect(function(hit)
+							if deb or hit.Name == "Pipe" or (hit.CanCollide == false and not Humanoid) then return end
+							deb = true
+							pipe.MetalPipeSound:Play()
+							Humanoid.Health = 0
+							HitCon:Disconnect()
+						end)
+
+						service.Debris:AddItem(pipe, 10)
+					end)
 				end
 			end
 		};
