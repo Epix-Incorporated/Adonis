@@ -103,8 +103,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, errHandler, ...)
 			local overflowArgs = {...}
-			if type(errHandler) ~= "function" or (#overflowArgs == 0 and errHandler == nil) then
-				if typeof(errHandler) ~= "function" then
+			if type(errHandler) ~= "function" or errHandler == nil then
+				if typeof(errHandler) ~= nil then
 					table.insert(overflowArgs, errHandler)
 				end
 				errHandler = function(err)
