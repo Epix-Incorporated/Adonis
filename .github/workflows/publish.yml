@@ -68,7 +68,7 @@ jobs:
       - name: Send Standalone Release to Discord channel
         uses: tsickert/discord-webhook@v5.3.0
         with:
-          webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
+          webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
 #      - name: Publish Loader
