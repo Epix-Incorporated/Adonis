@@ -3623,7 +3623,7 @@ return function(Vargs, env)
 								{joints["Neck"], CFrame.new(Vector3.new(0, 1, 0) * magnitude) * (isR15 and blankFrame or CFrame.Angles(math.rad(90), math.rad(180), 0))};
 								{rarm, CFrame.new(Vector3.new(-1, -1.5, -0.5) * magnitude) * (isR15 and blankFrame or CFrame.Angles(0, math.rad(90), 0))};
 								{larm, CFrame.new(Vector3.new(1, -1.5, -0.5) * magnitude) * (isR15 and blankFrame or CFrame.Angles(0, math.rad(-90), 0))};
-								{rleg, CFrame.new(Vector3.new(isR15 and -0.5 or 0, isR15 and -0.5 or -1, 0.5) * magnitude) * CFrame.Angles(0, math.rad(isR15 and 180 or -90), 0)};
+								{rleg, CFrame.new(Vector3.new(isR15 and -0.5 or 0, isR15 and -0.5 or -1, 0.5) * magnitude) * CFrame.Angles(0, math.rad(isR15 and 180 or 90), 0)};
 								{lleg, CFrame.new(Vector3.new(isR15 and 0.5 or 0, isR15 and -0.5 or -1, 0.5) * magnitude) * CFrame.Angles(0, math.rad(isR15 and 180 or -90), 0)};
 							}
 
