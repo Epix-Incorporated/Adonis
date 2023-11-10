@@ -17,4 +17,4 @@
 This is the Fallback branch of Adonis. It is intended to be used in case the regular MainModule, for whatever reason, cannot be loaded.
 
 # When is this updated?
-The fallback branch is rarely updated to ensure reliability, and is only ever updated for security purposes to keep it as barebones as possible in order to prevent it from being deleted.
+The fallback branch is rarely updated to ensure reliability, and is only ever updated for security purposes. This is to keep it as barebones as possible, in order to prevent it from being deleted on Roblox.
