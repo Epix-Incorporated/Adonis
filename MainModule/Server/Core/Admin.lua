@@ -1182,7 +1182,7 @@ return function(Vargs, GetEnv)
 
 				TrackTask(`Command: {coma}`, com.Function, function(err)
 					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
-				end, args)
+				end, nil, args)
 			end
 		end;
 
