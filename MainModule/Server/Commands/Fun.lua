@@ -727,28 +727,35 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				-- TODO: Switch to HumanoidDescriptions
-				local bodyColors = service.New("BodyColors", {
-					HeadColor = BrickColor.new("Bright yellow"),
-					LeftArmColor = BrickColor.new("Bright yellow"),
-					RightArmColor = BrickColor.new("Bright yellow"),
-					LeftLegColor = BrickColor.new("Br. yellowish green"),
-					RightLegColor = BrickColor.new("Br. yellowish green"),
-					TorsoColor = BrickColor.new("Bright blue")
-				})
+				local properties = {
+					HeadColor = BrickColor.new("Bright yellow").Color,
+					LeftArmColor = BrickColor.new("Bright yellow").Color,
+					RightArmColor = BrickColor.new("Bright yellow").Color,
+					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
+					RightLegColor = BrickColor.new("Br. yellowish green").Color,
+					TorsoColor = BrickColor.new("Bright blue").Color,
+					Pants = 0,
+					Shirt = 0,
+					LeftArm = 0,
+					RightArm = 0,
+					LeftLeg = 0,
+					RightLeg = 0,
+					Torso = 0
+				}
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						for _, p in v.Character:GetChildren() do
-							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") or p:IsA("BodyColors") then
-								p:Destroy()
-							end
+					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						Admin.RunCommand(`{Settings.Prefix}clearhats`, v.Name)
+						local description = humanoid:GetAppliedDescription()
+
+						for k, v in properties do
+							description[k] = v
 						end
-						bodyColors:Clone().Parent = v.Character
+
+						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 					end
 				end
-
-				bodyColors:Destroy()
 			end
 		};
 
@@ -3180,7 +3187,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr, args)
-				assert(args[1], "Player argument missing")
+				assert(#Functions.GetPlayers(plr, args[1]) <= 0, "Player argument missing")
 
 				local color = Functions.ParseColor3(args[3])
 				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
