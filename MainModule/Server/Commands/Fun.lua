@@ -3608,32 +3608,31 @@ return function(Vargs, env)
 						if humanoid then
 							local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
 							local joints = Functions.GetJoints(v.Character)
+							local rarm = isR15 and joints["RightShoulder"] or joints["Right Shoulder"]
+							local larm = isR15 and joints["LeftShoulder"] or joints["Left Shoulder"]
+							local rleg = isR15 and joints["RightHip"] or joints["Right Hip"]
+							local lleg = isR15 and joints["LeftHip"] or joints["Left Hip"]
+							local torso = isR15 and v.Character:FindFirstChild("UpperTorso") or v.Character:FindFirstChild("Torso")
+							local magnitude = torso and torso.Size / Vector3.new(2, isR15 and 1.7 or 2, 1) or Vector3.one
+							local blankFrame = CFrame.Angles(0, 0, 0)
 
 							if v.Character:FindFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
 							if v.Character:FindFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
 
-							if joints["Neck"] then
-								joints["Neck"].C0 = isR15 and CFrame.new(0, 1, 0) or (CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(90), math.rad(180), 0))
-							end
+							local frames = {
+								{joints["Neck"], CFrame.new(Vector3.new(0, 1, 0) * magnitude) * (isR15 and blankFrame or CFrame.Angles(math.rad(90), math.rad(180), 0))};
+								{rarm, CFrame.new(Vector3.new(-1, -1.5, -0.5) * magnitude) * (isR15 and blankFrame or CFrame.Angles(0, math.rad(90), 0))};
+								{larm, CFrame.new(Vector3.new(1, -1.5, -0.5) * magnitude) * (isR15 and blankFrame or CFrame.Angles(0, math.rad(-90), 0))};
+								{rleg, CFrame.new(Vector3.new(isR15 and -0.5 or 0, isR15 and -0.5 or -1, 0.5) * magnitude) * CFrame.Angles(0, math.rad(isR15 and 180 or -90), 0)};
+								{lleg, isR15 and CFrame.new(Vector3.new(isR15 and 0.5 or 0, isR15 and -0.5 or -1, 0.5) * magnitude) * CFrame.Angles(0, math.rad(isR15 and 180 or -90), 0)};
+							}
 
-							local rarm = isR15 and joints["RightShoulder"] or joints["Right Shoulder"]
-							if rarm then
-								rarm.C0 = isR15 and CFrame.new(-1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0, math.rad(90), 0))
-							end
+							for _, frame in frames do
+								local joint, transform = unpack(frame)
 
-							local larm = isR15 and joints["LeftShoulder"] or joints["Left Shoulder"]
-							if larm then
-								larm.C0 = isR15 and CFrame.new(1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0, math.rad(-90), 0))
-							end
-
-							local rleg = isR15 and joints["RightHip"] or joints["Right Hip"]
-							if rleg then
-								rleg.C0 = isR15 and (CFrame.new(-0.5,-0.5, 0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0, math.rad(90), 0))
-							end
-
-							local lleg = isR15 and joints["LeftHip"] or joints["Left Hip"]
-							if lleg then
-								lleg.C0 = isR15 and (CFrame.new(0.5,-0.5, 0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0, math.rad(-90), 0))
+								if joint then
+									joint.C0 = transform
+								end
 							end
 
 							for _, part in v.Character:GetChildren() do
