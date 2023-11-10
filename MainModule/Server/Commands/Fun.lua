@@ -3187,7 +3187,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr, args)
-				assert(#Functions.GetPlayers(plr, args[1]) <= 0, "Player argument missing")
+				assert(#Functions.GetPlayers(plr, args[1]) > 0, "Player argument missing")
 
 				local color = Functions.ParseColor3(args[3])
 				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
