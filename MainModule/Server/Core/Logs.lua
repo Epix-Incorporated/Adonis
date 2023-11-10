@@ -35,7 +35,7 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "Logging Module Initialized");
 	end;
 	
-	local UseDLL = server.Settings.UseLinkedListsInLogs == true
+	local UseDLL = Variables.UseLinkedListsInLogs == true
 	
 	server.Logs = {
 		Init = Init;
