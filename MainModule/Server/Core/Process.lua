@@ -977,8 +977,8 @@ return function(Vargs, GetEnv)
 									})
 
 									window:Ready()
-								]]));
-							}))
+								]]);
+							)
 						end
 					end
 
