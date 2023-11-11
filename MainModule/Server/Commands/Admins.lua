@@ -43,14 +43,11 @@ return function(Vargs, env)
 				for _, p in Functions.GetPlayers(plr, args[1], {NoFakePlayer = false})do
 					if senderLevel > Admin.GetLevel(p) then
 						Admin.AddAdmin(p, rankName)
-						Remote.MakeGui(p, "Notification", {
-							Title = "Notification";
-							Message = string.format("You are %s%s. Click to view commands.", if string.lower(string.sub(rankName, 1, 3)) == "the" then "" elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(string.sub(rankName, 1, 3)) ~= "uni" then "an " else "a ", rankName);
-							Icon = server.MatIcons.Shield;
-							Time = 10;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
-
+						Functions.Notification(
+							"Notification",
+							`You are {if string.lower(string.sub(rankName, 1, 3)) == "the" then "" elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(string.sub(rankName, 1, 3)) ~= "uni" then "an " else "a "}{rankName}. Click to view commands.`,
+							{p}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`)
+						)
 						Functions.Hint(`{service.FormatPlayer(p, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
 					else
 						Functions.Hint(`You do not have permission to set the rank of {service.FormatPlayer(p, true)}`, {plr})
@@ -89,13 +86,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, rankName, true)
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = `You are a temp {rankName}. Click to view commands.`;
-							Icon = server.MatIcons.Shield;
-							Time = 10;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", `You are a temp {rankName}. Click to view commands.`, {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
 					else
 						Functions.Hint(`You do not have permission to set the rank of {service.FormatPlayer(v, true)}`, {plr})
@@ -119,13 +110,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1])do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.SetLevel(v, newLevel)--, args[3] == "true")
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = `Your admin permission level was set to {newLevel} for this server only. Click to view commands.`;
-							Icon = server.MatIcons.Shield;
-							Time = 10;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", `Your admin permission level was set to {newLevel} for this server only. Click to view commands.`, {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now permission level {newLevel}`, {plr})
 					else
 						Functions.Hint(`You do not have permission to set the permission level of {service.FormatPlayer(v, true)}`, {plr})
@@ -158,12 +143,7 @@ return function(Vargs, env)
 							if senderLevel > targLevel then
 								Admin.RemoveAdmin(v, temp)
 								Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v, true), targRank or "[unknown rank]"), {plr})
-								Remote.MakeGui(v, "Notification", {
-									Title = "Notification";
-									Message = string.format("You are no longer a(n) %s", targRank or "admin");
-									Icon = server.MatIcons["Remove moderator"];
-									Time = 10;
-								})
+								Functions.Notification("Notification", `You are no longer a(n) {targRank or "admin"}`, {v}, 10, "MatIcon://Shield")
 							else
 								Functions.Hint(`You do not have permission to remove {service.FormatPlayer(v, true)}'s rank`, {plr})
 							end
@@ -226,12 +206,7 @@ return function(Vargs, env)
 						if senderLevel > targetLevel then
 							Admin.RemoveAdmin(v, true)
 							Functions.Hint(`Removed {service.FormatPlayer(v)}'s admin powers`, {plr})
-							Remote.MakeGui(v, "Notification", {
-								Title = "Notification";
-								Message = "Your admin powers have been temporarily removed";
-								Icon = server.MatIcons["Remove moderator"];
-								Time = 10;
-							})
+							Functions.Notification("Notification", "Your admin powers have been temporarily removed", {v}, 10, "MatIcons://Remove moderator")
 						else
 							Functions.Hint(`You do not have permission to remove {service.FormatPlayer(v, true)}'s admin powers`, {plr})
 						end
@@ -254,13 +229,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators", true)
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are a temp moderator. Click to view commands.";
-							Icon = server.MatIcons.Shield;
-							Time = 10;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are a temp moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temp moderator`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -284,13 +253,7 @@ return function(Vargs, env)
 				do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators")
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are a moderator. Click to view commands.";
-							Icon = server.MatIcons.Shield;
-							Time = 10;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are a moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a moderator`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -442,10 +405,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing message")
 				for _, v in service.GetPlayers() do
 					Remote.RemoveGui(v, "Notify")
-					Remote.MakeGui(v, "Notify", {
-						Title = Settings.SystemTitle;
-						Message = service.Filter(args[1], plr, v);
-					})
+					Functions.Notify(Settings.SystemTitle, service.Filter(args[1], plr, v), {v})
 				end
 			end
 		};
@@ -1348,6 +1308,7 @@ return function(Vargs, env)
 						Title = "Trelloban";
 						Message = "Trello has not been configured.";
 					})
+					Functions.Notification("Trelloban", "Trello has not been configured.", {plr}, 10, "MatIcon://Description")
 				end
 
 				local lists = trello.getLists(Settings.Trello_Primary)
@@ -1369,12 +1330,7 @@ return function(Vargs, env)
 						)
 
 						pcall(function() v:Kick(reason) end)
-						Remote.MakeGui(plr, "Notification", {
-							Title = "Notification";
-							Icon = server.MatIcons.Gavel;
-							Message = `Trello-banned {service.FormatPlayer(v, true)}`;
-							Time = 5;
-						})
+						Functions.Notification("Notification", `Trello-banned {service.FormatPlayer(v, true)}`, {plr}, 5, "MatIcons://Gavel")
 					end
 				end
 
