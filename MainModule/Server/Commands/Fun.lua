@@ -3499,11 +3499,11 @@ return function(Vargs, env)
 					cPcall(function()
 						if v.Character then
 							local head = v.Character.Head
-							local torso = v.Character.HumanoidRootPart
-							local larm = v.Character["Left Arm"]
-							local rarm = v.Character["Right Arm"]
-							local lleg = v.Character["Left Leg"]
-							local rleg = v.Character["Right Leg"]
+							local torso = v.Character:FindFirstChild("Torso") or v.Character.UpperTorso
+							local larm = v.Character:FindFirstChild("Left Arm") or v.Character.LeftUpperArm
+							local rarm = v.Character:FindFirstChild("Right Arm") or v.Character.RightUpperArm
+							local lleg = v.Character:FindFirstChild("Left Leg") or v.Character.LeftLowerLeg
+							local rleg = v.Character:FindFirstChild("Right Leg") or v.Character.RightLowerLeg
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = true end
 							end
