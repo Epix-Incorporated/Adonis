@@ -1575,7 +1575,7 @@ return function(Vargs, GetEnv)
 
 				local cmdFullName = cmd._fullName or (function()
 					local aliases = cmd.Aliases or cmd.Commands or {}
-					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 					return cmd._fullName
 				end)()
 
@@ -1644,7 +1644,7 @@ return function(Vargs, GetEnv)
 
 			local cmdFullName = cmd._fullName or (function()
 				local aliases = cmd.Aliases or cmd.Commands or {}
-				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 				return cmd._fullName
 			end)()
 
