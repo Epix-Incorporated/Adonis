@@ -549,12 +549,9 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				local speed = args[2] or 50
-				if not speed or not tonumber(speed) then
-					speed = 1000
-				end
-				for i, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "Dizzy", tonumber(speed))
+				local speed = tonumber(args[2]) or 50
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(v, "Function", "Dizzy", speed)
 				end
 			end
 		};
@@ -567,7 +564,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "Dizzy", false)
 				end
 			end
@@ -575,7 +572,7 @@ return function(Vargs, env)
 
 		Davey = {
 			Prefix = Settings.Prefix;
-			Commands = {"Davey_Bones"};
+			Commands = {"Davey_Bones", "davey"};
 			Args = {"player"};
 			Description = "Turns you into me <3";
 			Fun = true;
@@ -615,31 +612,41 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local infect; infect = function(v)
-					local char = v.Character
-					if char and char:FindFirstChild("HumanoidRootPart") and not char:FindFirstChild("Infected") then
-						local cl = service.New("StringValue", char)
-						cl.Name = "Infected"
-						cl.Parent = char
+				local infect; infect = function(humanoid)
+					local properties = {
+						HeadColor = BrickColor.new("Artichoke").Color,
+						LeftArmColor = BrickColor.new("Artichoke").Color,
+						RightArmColor = BrickColor.new("Artichoke").Color,
+						LeftLegColor = BrickColor.new("Artichoke").Color,
+						RightLegColor = BrickColor.new("Artichoke").Color,
+						TorsoColor = BrickColor.new("Artichoke").Color,
+						Face = math.random(1, 3) == 3 and 173789114 or 133360789
+					}
 
-						for _, prt in char:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
-								prt.Transparency = 0
-								prt.Reflectance = 0
-								prt.BrickColor = BrickColor.new("Dark green")
-								if prt.Name:find("Leg") or prt.Name:find("Arm") then
-									prt.BrickColor = BrickColor.new("Dark green")
-								end
-								local tconn; tconn = prt.Touched:Connect(function(hit)
-									if hit and hit.Parent and service.Players:FindFirstChild(hit.Parent.Name) and cl.Parent == char then
-										infect(hit.Parent)
-									elseif cl.Parent ~= char then
+					if humanoid and humanoid.RootPart and not humanoid.Parent:FindFirstChild("Infected") then
+						local description = humanoid:GetAppliedDescription()
+						local cl = service.New("StringValue")
+						cl.Name = "Infected"
+						cl.Parent = humanoid.Parent
+
+						for k, v in properties do
+							description[k] = v
+						end
+
+						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+
+						for _, part in humanoid.Parent:GetChildren() do
+							if part:IsA("BasePart") then
+								local tconn; tconn = part.Touched:Connect(function(hit)
+									if cl.Parent ~= humanoid.Parent then
 										tconn:Disconnect()
+									elseif hit.Parent and hit.Parent:FindFirstChildOfClass("Humanoid") then
+										infect(hit.Parent:FindFirstChildOfClass("Humanoid"))
 									end
 								end)
 
 								cl.Changed:Connect(function()
-									if cl.Parent ~= char then
+									if cl.Parent ~= humanoid.Parent then
 										tconn:Disconnect()
 									end
 								end)
@@ -648,8 +655,8 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					infect(v)
+				for _, v in service.GetPlayers(plr, args[1]) do
+					infect(v.Character and v.Character:FindFirstChildOfClass("Humanoid"))
 				end
 			end
 		};
@@ -730,28 +737,30 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				-- TODO: Switch to HumanoidDescriptions
-				local bodyColors = service.New("BodyColors", {
-					HeadColor = BrickColor.new("Bright yellow"),
-					LeftArmColor = BrickColor.new("Bright yellow"),
-					RightArmColor = BrickColor.new("Bright yellow"),
-					LeftLegColor = BrickColor.new("Br. yellowish green"),
-					RightLegColor = BrickColor.new("Br. yellowish green"),
-					TorsoColor = BrickColor.new("Bright blue")
-				})
+				local properties = {
+					HeadColor = BrickColor.new("Bright yellow").Color,
+					LeftArmColor = BrickColor.new("Bright yellow").Color,
+					RightArmColor = BrickColor.new("Bright yellow").Color,
+					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
+					RightLegColor = BrickColor.new("Br. yellowish green").Color,
+					TorsoColor = BrickColor.new("Bright blue").Color,
+					Pants = 0, Shirt = 0, LeftArm = 0, RightArm = 0,
+					LeftLeg = 0, RightLeg = 0, Torso = 0
+				}
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						for _, p in v.Character:GetChildren() do
-							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") or p:IsA("BodyColors") then
-								p:Destroy()
-							end
+					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						Admin.RunCommand(`{Settings.Prefix}clearhats`, v.Name)
+						local description = humanoid:GetAppliedDescription()
+
+						for k, v in properties do
+							description[k] = v
 						end
-						bodyColors:Clone().Parent = v.Character
+
+						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 					end
 				end
-
-				bodyColors:Destroy()
 			end
 		};
 
@@ -1972,23 +1981,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					cPcall(function()
-						local color
-						local num = math.random(1, 7)
-						if num == 1 then
-							color = "Really blue"
-						elseif num == 2 then
-							color = "Really red"
-						elseif num == 3 then
-							color = "Magenta"
-						elseif num == 4 then
-							color = "Lime green"
-						elseif num == 5 then
-							color = "Hot pink"
-						elseif num == 6 then
-							color = "New Yeller"
-						elseif num == 7 then
-							color = "White"
-						end
+						local color = ({"Really blue", "Really red", "Magenta", "Lime green", "Hot pink", "New Yeller", "White"})[math.random(1, 7)]
 						local hum=v.Character:FindFirstChild("Humanoid")
 						if not hum then return end
 						--Remote.Send(v, "Function", "Effect", "dance")
@@ -2154,44 +2147,42 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				local desiredColors = {
+					HeadColor = BrickColor.new("Br. yellowish green").Color,
+					LeftArmColor = BrickColor.new("Br. yellowish green").Color,
+					RightArmColor = BrickColor.new("Br. yellowish green").Color,
+					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
+					RightLegColor = BrickColor.new("Br. yellowish green").Color,
+					TorsoColor = BrickColor.new("Br. yellowish green").Color,
+					Face = 116042990 -- Is there an animated face equivelant of this?
+				}
+
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
-						local torso = v.Character:FindFirstChild("HumanoidRootPart")
-						local larm=v.Character:FindFirstChild("Left Arm")
-						local rarm=v.Character:FindFirstChild("Right Arm")
-						local lleg = v.Character:FindFirstChild("Left Leg")
-						local rleg = v.Character:FindFirstChild("Right Leg")
-						local head = v.Character:FindFirstChild("Head")
-						local hum=v.Character:FindFirstChildOfClass("Humanoid")
-						if torso and larm and rarm and lleg and rleg and head and hum and not v.Character:FindFirstChild("Adonis_Poisoned") then
+						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid and not v.Character:FindFirstChild("Adonis_Poisoned") then
+							local description, orgColors = humanoid:GetAppliedDescription(), {}
 							local poisoned = service.New("BoolValue", v.Character)
 							poisoned.Name = "Adonis_Poisoned"
 							poisoned.Value = true
-							local tor = torso.BrickColor
-							local lar = larm.BrickColor
-							local rar = rarm.BrickColor
-							local lle = lleg.BrickColor
-							local rle = rleg.BrickColor
-							local hea = head.BrickColor
-							torso.BrickColor = BrickColor.new("Br. yellowish green")
-							larm.BrickColor = BrickColor.new("Br. yellowish green")
-							rarm.BrickColor = BrickColor.new("Br. yellowish green")
-							lleg.BrickColor = BrickColor.new("Br. yellowish green")
-							rleg.BrickColor = BrickColor.new("Br. yellowish green")
-							head.BrickColor = BrickColor.new("Br. yellowish green")
+
+							for k, v in desiredColors do
+								orgColors[k], description[k] = description[k], v
+							end
+	
+							task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							local run = true
-							coroutine.wrap(function() wait(10) run = false end)()
+							task.spawn(function() wait(10) run = false end)
 							repeat
 								task.wait(1)
-								hum:TakeDamage(5)
+								humanoid:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
-								torso.BrickColor = tor
-								larm.BrickColor = lar
-								rarm.BrickColor = rar
-								lleg.BrickColor = lle
-								rleg.BrickColor = rle
-								head.BrickColor = hea
+								for k, v in desiredColors do
+									description[k] = orgColors[k]
+								end
+		
+								task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							end
 						end
 					end)
@@ -2676,7 +2667,7 @@ return function(Vargs, env)
 
 		Dog = {
 			Prefix = Settings.Prefix;
-			Commands = {"dog", "dogify"};
+			Commands = {"dog", "dogify", "cow", "cowify"};
 			Args = {"player"};
 			Description = "Turn the target player(s) into a dog";
 			Fun = true;
@@ -2880,7 +2871,7 @@ return function(Vargs, env)
 
 		K1tty = {
 			Prefix = Settings.Prefix;
-			Commands = {"k1tty", "cut3"};
+			Commands = {"k1tty", "cut3", "hellokitty"};
 			Args = {"player"};
 			Description = "2 cute 4 u";
 			Fun = true;
@@ -2947,7 +2938,7 @@ return function(Vargs, env)
 
 		Nyan = {
 			Prefix = Settings.Prefix;
-			Commands = {"nyan", "p0ptart"};
+			Commands = {"nyan", "p0ptart", "nyancat"};
 			Args = {"player"};
 			Description = "Poptart kitty";
 			Fun = true;
@@ -3199,7 +3190,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr, args)
-				assert(args[1], "Player argument missing")
+				assert(#Functions.GetPlayers(plr, args[1]) > 0, "Player argument missing")
 
 				local color = Functions.ParseColor3(args[3])
 				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
@@ -3516,11 +3507,11 @@ return function(Vargs, env)
 					cPcall(function()
 						if v.Character then
 							local head = v.Character.Head
-							local torso = v.Character.HumanoidRootPart
-							local larm = v.Character["Left Arm"]
-							local rarm = v.Character["Right Arm"]
-							local lleg = v.Character["Left Leg"]
-							local rleg = v.Character["Right Leg"]
+							local torso = v.Character:FindFirstChild("Torso") or v.Character.UpperTorso
+							local larm = v.Character:FindFirstChild("Left Arm") or v.Character.LeftUpperArm
+							local rarm = v.Character:FindFirstChild("Right Arm") or v.Character.RightUpperArm
+							local lleg = v.Character:FindFirstChild("Left Leg") or v.Character.LeftLowerLeg
+							local rleg = v.Character:FindFirstChild("Right Leg") or v.Character.RightLowerLeg
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = true end
 							end
@@ -3664,7 +3655,7 @@ return function(Vargs, env)
 
 						if human then
 							if human.RigType == Enum.HumanoidRigType.R6 then
-								v.Character.Head.Mesh.Scale = Vector3.new(1.75, 1.75, 1.75)
+								v.Character.Head.Mesh.Scale = Vector3.new(1.25, 1.25, 1.25) * (tonumber(args[2]) or 1.4)
 								v.Character.Torso.Neck.C0 = CFrame.new(0, 1.3, 0) * CFrame.Angles(math.rad(90), math.rad(180), 0)
 							else
 								local scale = human and human:FindFirstChild("HeadScale")
@@ -3693,7 +3684,7 @@ return function(Vargs, env)
 
 						if human then
 							if human.RigType == Enum.HumanoidRigType.R6 then
-								v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
+								v.Character.Head.Mesh.Scale = Vector3.new(1.25, 1.25, 1.25) * (tonumber(args[2]) or 0.6)
 								v.Character.Torso.Neck.C0 = CFrame.new(0,.8, 0) * CFrame.Angles(math.rad(90), math.rad(180), 0)
 							else
 								local scale = human and human:FindFirstChild("HeadScale")
@@ -4385,214 +4376,6 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Functions.PlayAnimation(v , args[2])
-				end
-			end
-		};
-
-		WalkAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"walkanimation", "walkanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s walk animation, based on the default animation system. Supports 'R15' and 'R6' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507777826" -- Default R15 animation
-				elseif args[2] == "R6" then
-					animId = "180426354"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _, v2 in animateScript:GetDescendants() do
-								if v2.Name == "walk" then
-									found = true
-									local walkAnimation = v2:FindFirstChildOfClass("Animation")
-									if walkAnimation then
-										walkAnimation.AnimationId = `"rbxassetid://{animId}`
-									else
-										local walkAnimation = Instance.new("Animation")
-										walkAnimation.Name = "WalkAnim" -- Name actually doesn't matter, but I just name it like the default one.
-										walkAnimation.AnimationId = `"rbxassetid://{animId}`
-										walkAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'walk' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
-				end
-			end
-		};
-
-		RunAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"runanimation", "runanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s run animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507767714"
-				elseif args[2] == "R6" then
-					animId = "180426354"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _,v2 in animateScript:GetDescendants() do
-								if v2.Name == "run" then
-									found = true
-									local runAnimation = v2:FindFirstChildOfClass("Animation")
-									if runAnimation then
-										runAnimation.AnimationId = `"rbxassetid://{animId}`
-									else
-										local runAnimation = Instance.new("Animation")
-										runAnimation.Name = "RunAnim"
-										runAnimation.AnimationId = `"rbxassetid://{animId}`
-										runAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'run' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
-				end
-			end
-		};
-
-		JumpAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"jumpanimation", "jumpanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s jump animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507765000"
-				elseif args[2] == "R6" then
-					animId = "125750702"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _, v2 in animateScript:GetDescendants() do
-								if v2.Name == "jump" then
-									found = true
-									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
-									if jumpAnimation then
-										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
-									else
-										local jumpAnimation = Instance.new("Animation")
-										jumpAnimation.Name = "JumpAnim"
-										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
-										jumpAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'jump' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
-				end
-			end
-		};
-
-		FallAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"fallanimation", "fallanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s fall animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507767968"
-				elseif args[2] == "R6" then
-					animId = "180436148"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _,v2 in animateScript:GetDescendants() do
-								if v2.Name == "fall" then
-									found = true
-									local fallAnimation = v2:FindFirstChildOfClass("Animation")
-									if fallAnimation then
-										fallAnimation.AnimationId = `rbxassetid://{animId}`
-									else
-										local fallAnimation = Instance.new("Animation")
-										fallAnimation.Name = "FallAnim"
-										fallAnimation.AnimationId = `rbxassetid://{animId}`
-										fallAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'fall' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
 				end
 			end
 		};
