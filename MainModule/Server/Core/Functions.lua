@@ -964,7 +964,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		MakeWeld = function(a, b, c0, c1)
-			local weld = service.New("ManualWeld")
+			local weld = service.New("Weld")
 			weld.Part0 = a
 			weld.Part1 = b
 			weld.C0 = c0 or a.CFrame:Inverse() * b.CFrame
