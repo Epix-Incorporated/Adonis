@@ -144,12 +144,11 @@ for _, child in ipairs(script.Parent:GetChildren()) do
     local avatarTypeForChild = AvatarTypes[child.Name]
     if child:IsA("Decal") and avatarTypeForChild then
         task.spawn(function()
-            while true do
-                for _, id in ipairs(avatarTypeForChild) do
-                    child.Texture = "rbxassetid://" .. id
-                    task.wait(0.1)
-                end
-            end
+			local max = #avatarTypeForChild
+			while true do
+				child.Texture = `rbxassetid://{avatarTypeForChild[math.floor(os.clock() / 0.1) % max + 1]}`
+				task.wait(0.5)
+			end
         end)
     end
  end
