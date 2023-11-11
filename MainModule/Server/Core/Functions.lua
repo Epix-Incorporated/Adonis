@@ -1017,15 +1017,8 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Notification = function(title, message, players, duration, icon)
-			if icon then
-				-- Support "MatIcon://" for fast access to maticons
-				local MatIcon = icon:match('MatIcon://(.+)')
-
-				if MatIcon then
-					icon = server.MatIcons[MatIcon]
-				end
-			end
+		Notification = function(title, message, players, duration, icon, onClick)
+			icon = icon:match('MatIcon://(.+)') or icon
 
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
@@ -1033,6 +1026,7 @@ return function(Vargs, GetEnv)
 					Message = message;
 					Time = duration;
 					Icon = server.MatIcons[icon or "Info"];
+					OnClick = onClick;
 				})
 			end
 		end;
