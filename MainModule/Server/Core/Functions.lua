@@ -1024,8 +1024,6 @@ return function(Vargs, GetEnv)
 
 				if MatIcon then
 					image = server.MatIcons[MatIcon]
-				elseif sender and (image == 'HeadShot') then
-					image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
 				end
 			end
 
