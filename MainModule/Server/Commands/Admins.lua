@@ -194,7 +194,7 @@ return function(Vargs, env)
 						then
 							table.remove(rankData.Users, i)
 							if not temp and Settings.SaveAdmins then
-								service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+								service.TrackTask("Thread: RemoveAdmin", Core.DoSave, false, {
 									Type = "TableRemove";
 									Table = {"Settings", "Ranks", rankName, "Users"};
 									Value = user;
