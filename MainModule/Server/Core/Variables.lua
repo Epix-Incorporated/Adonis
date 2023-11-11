@@ -39,7 +39,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local function AfterInit(data)
-		server.Variables.CodeName = server.Functions:GetRandom()
+		server.Variables.CodeName = service.HttpService:GenerateGUID(false)
 
 		Variables.RunAfterInit = nil
 		Logs:AddLog("Script", "Finished Variables AfterInit")
