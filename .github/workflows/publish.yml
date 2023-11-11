@@ -42,7 +42,7 @@ jobs:
          else
            exit 1
          fi
-         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_${GIT_HASH}" >> $GITHUB_OUTPUT
+         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
 
       - uses: ok-nick/setup-aftman@v0.3.0
         with:
