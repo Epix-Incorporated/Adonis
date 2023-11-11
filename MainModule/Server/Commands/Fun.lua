@@ -2155,7 +2155,7 @@ return function(Vargs, env)
 							poisoned.Name = "Adonis_Poisoned"
 							poisoned.Value = true
 
-							for k, v in properties do
+							for k, v in desiredColors do
 								orgColors[k], description[k] = description[k], v
 							end
 	
@@ -2167,7 +2167,7 @@ return function(Vargs, env)
 								humanoid:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
-								for k, v in properties do
+								for k, v in desiredColors do
 									description[k] = orgColors[k]
 								end
 		
