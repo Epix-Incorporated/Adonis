@@ -147,7 +147,7 @@ for _, child in ipairs(script.Parent:GetChildren()) do
 			local max = #avatarTypeForChild
 			while true do
 				child.Texture = `rbxassetid://{avatarTypeForChild[math.floor(os.clock() / 0.1) % max + 1]}`
-				task.wait(0.5)
+				task.wait(0.05)
 			end
         end)
     end
