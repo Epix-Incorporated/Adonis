@@ -84,6 +84,10 @@ return function(Vargs, GetEnv)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
 			task.wait(2)
 
+			for _, v in Players:GetPlayers() do
+				teleportedPlayers[v] = 1
+			end
+
 			Logs:AddLog("Script", `Teleporting {#Players:GetPlayers()} players to a temporary softshutdown server`)
 			TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, Players:GetPlayers(), "", {[PARAMETER_NAME] = true})
 			Players.PlayerAdded:Connect(function(player)
@@ -138,6 +142,10 @@ return function(Vargs, GetEnv)
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
 			task.wait(1)
+
+			for _, v in Players:GetPlayers() do
+				teleportedPlayers[v] = 1
+			end
 
 			Logs:AddLog("Script", `Teleporting {#Players:GetPlayers()} players to a temporary softshutdown server`)
 			TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, Players:GetPlayers(), "", {[PARAMETER_NAME] = true})
