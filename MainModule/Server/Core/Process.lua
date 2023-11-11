@@ -950,45 +950,22 @@ return function(Vargs, GetEnv)
 					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						Remote.MakeGui(p, "Notification", {
-							Title = "Welcome.";
-							Message = "Click here for commands.";
-							Icon = server.MatIcons["Verified user"];
-							Time = 15;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Welcome.", "Click here for commands.", {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 
 						task.wait(1)
 
 						if oldVer and newVer and newVer > oldVer then
-							Remote.MakeGui(p, "Notification", {
-								Title = "Updated!";
-								Message = "Click to view the changelog.";
-								Icon = server.MatIcons.Description;
-								Time = 10;
-								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`);
-							})
+							Functions.Notification("Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://Description", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
 						end
 
 						task.wait(1)
 
 						if level > 300 and Core.DebugMode == true then
-							Remote.MakeGui(p, "Notification", {
-								Title = "Debug Mode Enabled";
-								Message = "Adonis is currently running in Debug Mode.";
-								Icon = server.MatIcons["Bug report"];
-								Time = 10;
-								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`);
-							})
+							Functions.Notification("Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`))
 						end
 
 						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
-							Remote.MakeGui(p, "Notification", {
-								Title = "Warning!";
-								Message = "Using default datastore key!";
-								Icon = server.MatIcons.Description;
-								Time = 10;
-								OnClick = Core.Bytecode([[
+							Functions.Notification("Warning!", "Using default datastore key!", {p}, "MatIcon://Description", Core.Bytecode([[
 									local window = client.UI.Make("Window", {
 										Title = "How to change the DataStore key";
 										Size = {700,300};
@@ -1001,7 +978,7 @@ return function(Vargs, GetEnv)
 
 									window:Ready()
 								]]);
-							})
+							}))
 						end
 					end
 
