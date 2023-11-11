@@ -1,5 +1,5 @@
 local AvatarTypes = {
-    Snoop = {
+    Snoop = {0.05, {
         131395838,
         131395847,
         131395855,
@@ -58,8 +58,8 @@ local AvatarTypes = {
         131396185,
         131396188,
         131396192
-    },
-    Fr0g = {
+    }},
+    Fr0g = {0.1, {
         185945467,
         185945486,
         185945493,
@@ -70,8 +70,8 @@ local AvatarTypes = {
         185945586,
         185945612,
         185945634
-    },
-    Kitty = {
+    }},
+    Kitty = {0.1, {
         280224764,
         280224790,
         280224800,
@@ -82,8 +82,8 @@ local AvatarTypes = {
         280224899,
         280224924,
         280224955
-    },
-    Nyan1 = {
+    }},
+    Nyan1 = {0.1, {
         332277948,
         332277937,
         332277919,
@@ -96,8 +96,8 @@ local AvatarTypes = {
         332277809,
         332277789,
         332277963
-    },
-    Nyan2 = {
+    }},
+    Nyan2 = {0.1, {
         332288373,
         332288356,
         332288314,
@@ -110,8 +110,8 @@ local AvatarTypes = {
         332288163,
         332288144,
         332288125
-    },
-    Shia = {
+    }},
+    Shia = {0.1, {
         286117283;
         286117453;
         286117512;
@@ -127,8 +127,8 @@ local AvatarTypes = {
         286118755;
         286118810;
         286118862;
-    },
-    Sp00ks = {
+    }},
+    Sp00ks = {0.05, {
         183747849,
         183747854,
         183747863,
@@ -137,16 +137,16 @@ local AvatarTypes = {
         183747879,
         183747885,
         183747890
-    }
+    }}
 }
 
 for _, child in ipairs(script.Parent:GetChildren()) do
-    local avatarTypeForChild = AvatarTypes[child.Name]
+    local delta, avatarTypeForChild = AvatarTypes[child.Name][1], AvatarTypes[child.Name][2]
     if child:IsA("Decal") and avatarTypeForChild then
         task.spawn(function()
 			local max = #avatarTypeForChild
 			while true do
-				child.Texture = `rbxassetid://{avatarTypeForChild[math.floor(os.clock() / 0.1) % max + 1]}`
+				child.Texture = `rbxassetid://{avatarTypeForChild[math.floor(os.clock() / delta) % max + 1]}`
 				task.wait(0.05)
 			end
         end)
