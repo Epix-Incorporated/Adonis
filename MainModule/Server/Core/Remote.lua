@@ -789,12 +789,7 @@ return function(Vargs, GetEnv)
 							if not pcall(function()
 									obj:Destroy()
 								end) then
-								Remote.MakeGui(p ,"Notification", {
-									Title = "Error";
-									Icon = server.MatIcons.Error;
-									Message = "Cannot delete object.";
-									Time = 2;
-								})
+								Functions.Notification("Error", "Cannot delete object.", {p}, 2, "MatIcon://Error")
 							end
 						end
 					end
