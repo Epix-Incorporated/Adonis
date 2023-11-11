@@ -1236,8 +1236,7 @@ return function(Vargs, GetEnv)
 				local event = brain.Event
 
 				local oldAnim = new:FindFirstChild("Animate")
-				local isR15 = hum.RigType == "R15"
-				local anim = isR15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+				local anim = hum.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 
 				new.Name = player.Name
 				new.Archivable = false
