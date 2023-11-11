@@ -978,7 +978,6 @@ return function(Vargs, GetEnv)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if image then
-
 				-- Support "MatIcon://" for fast access to maticons
 				local MatIcon = image:match('MatIcon://(.+)')
 
@@ -1019,6 +1018,17 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon)
+			if image then
+				-- Support "MatIcon://" for fast access to maticons
+				local MatIcon = image:match('MatIcon://(.+)')
+
+				if MatIcon then
+					image = server.MatIcons[MatIcon]
+				elseif sender and (image == 'HeadShot') then
+					image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
+				end
+			end
+
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
