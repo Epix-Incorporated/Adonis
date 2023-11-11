@@ -5049,7 +5049,7 @@ return function(Vargs, env)
 					local humanoid = character:FindFirstChildOfClass("Humanoid")
 					local isR15 = humanoid and humanoid.RigType == Enum.HumanoidRigType.R15 or false
 					local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
-					local partsColor = {head.Color:ToHSV()}[3] < 0.26 and BrickColor.new("Lily White") or BrickColor.new("Black")
+					local partsColor = ({head.Color:ToHSV()})[3] < 0.26 and BrickColor.new("Lily White") or BrickColor.new("Black")
 	
 					local sound = head:FindFirstChild("ADONIS_SOUND") or Instance.new("Sound")
 					sound.SoundId = `rbxassetid://{id}`
