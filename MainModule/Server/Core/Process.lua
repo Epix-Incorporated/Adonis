@@ -682,7 +682,7 @@ return function(Vargs, GetEnv)
 			local key = tostring(p.UserId)
 			local keyData = {
 				Player = p;
-				Key = Functions.GetRandom();
+				Key = service.HttpService:GenerateGUID(false);
 				Cache = {};
 				Sent = 0;
 				Received = 0;
