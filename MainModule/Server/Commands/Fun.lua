@@ -1921,11 +1921,7 @@ return function(Vargs, env)
 							SpecialMesh.MeshType = "FileMesh"
 							SpecialMesh.TextureId = "43abb6d081e0fbc8666fc92f6ff378c1"
 							SpecialMesh.Scale = Vector3.new(0.5, 0.5, 0.5)
-							local Weld = service.New("Weld")
-							Weld.Parent = Part
-							Weld.Part0 = Part
-							Weld.Part1 = v.Character.HumanoidRootPart
-							Weld.C0 = CFrame.new(0,-1, 0)*CFrame.Angles(-1.5, 0, 0)
+							Functions.MakeWeld(Part, v.Character.HumanoidRootPart, CFrame.new(0,-1, 0)*CFrame.Angles(-1.5, 0, 0))
 							local BodyVelocity = service.New("BodyVelocity")
 							BodyVelocity.Parent = Part
 							BodyVelocity.maxForce = Vector3.new(math.huge, math.huge, math.huge)
@@ -2719,7 +2715,7 @@ return function(Vargs, env)
 							st.CFrame = torso.CFrame
 							st.Parent = char
 
-							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
+							Functions.MakeWeld(torso, st, CFrame.new(), CFrame.new(0, .5, 0))
 
 							for _, v in char:GetDescendants() do
 								if v:IsA("BasePart") then
@@ -3427,9 +3423,7 @@ return function(Vargs, env)
 							end
 						end
 
-						local weld = service.New("Weld", root)
-						weld.Part0 = root
-						weld.Part1 = torso
+						Functions.MakeWeld(root, torso, CFrame.new(), CFrame.new())
 
 						local cape = char:FindFirstChild("ADONIS_CAPE")
 						if cape then
@@ -3516,35 +3510,17 @@ return function(Vargs, env)
 								if v:IsA("Part") then v.Anchored = true end
 							end
 							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=v.Character.HumanoidRootPart
-							weld.C0=v.Character.HumanoidRootPart.CFrame
+							Functions.MakeWeld(v.Character.HumanoidRootPart, v.Character.HumanoidRootPart, v.Character.HumanoidRootPart.CFrame)
 							head.Size = Vector3.new(head.Size.X, head.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=head
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(0, 1.5, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, head, v.Character.HumanoidRootPart.CFrame*CFrame.new(0, 1.5, 0))
 							larm.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=larm
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, larm, v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0))
 							rarm.Size = Vector3.new(rarm.Size.X, rarm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=rarm
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, rarm, v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0))
 							lleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=lleg
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,-1.5, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, lleg, v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, -1.5, 0))
 							rleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=rleg
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, rleg, v.Character.HumanoidRootPart.CFrame*CFrame.new(1, -1.5, 0))
 							task.wait()
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = false end
@@ -5102,11 +5078,7 @@ return function(Vargs, env)
 						leftMesh.Parent = leftEye
 						leftMesh.MeshType = Enum.MeshType.Sphere
 						leftMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
-						local weld = Instance.new("Weld")
-						weld.Parent = leftEye
-						weld.Part0 = leftEye
-						weld.Part1 = head
-						weld.C1 = CFrame.new(Vector3.new(-.17, .14, -.57) * relativeSize)
+						Functions.MakeWeld(leftEye, head, CFrame.new(), CFrame.new(Vector3.new(-.17, .14, -.57) * relativeSize))
 	
 						local rightEye = Instance.new("Part")
 						rightEye.Anchored = false
@@ -5120,11 +5092,7 @@ return function(Vargs, env)
 						rightMesh.Parent = rightEye
 						rightMesh.MeshType = Enum.MeshType.Sphere
 						rightMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
-						local weld = Instance.new("Weld")
-						weld.Parent = rightEye
-						weld.Part0 = rightEye
-						weld.Part1 = head
-						weld.C1 = CFrame.new(Vector3.new(.17, .14, -.57) * relativeSize)
+						Functions.MakeWeld(rightEye, head, CFrame.new(), CFrame.new(Vector3.new(.17, .14, -.57) * relativeSize))
 	
 						local mouth = Instance.new("Part")
 						mouth.Anchored = false
@@ -5139,11 +5107,7 @@ return function(Vargs, env)
 						mouthMesh.Parent = mouth
 						mouthMesh.MeshType = Enum.MeshType.Sphere
 						mouthMesh.Scale = Vector3.new(.13, 0.1, 0.05) * relativeSize
-						local weld = Instance.new("Weld")
-						weld.Parent = mouth
-						weld.Part0 = mouth
-						weld.Part1 = head
-						weld.C1 = CFrame.new(Vector3.new(0, -.25, -.6) * relativeSize)
+						Functions.MakeWeld(mouth, head, CFrame.new(), CFrame.new(Vector3.new(0, -.25, -.6) * relativeSize))
 	
 						leftEye.Parent = character
 						rightEye.Parent = character
