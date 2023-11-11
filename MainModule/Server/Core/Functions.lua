@@ -1018,12 +1018,12 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon)
-			if image then
+			if icon then
 				-- Support "MatIcon://" for fast access to maticons
-				local MatIcon = image:match('MatIcon://(.+)')
+				local MatIcon = icon:match('MatIcon://(.+)')
 
 				if MatIcon then
-					image = server.MatIcons[MatIcon]
+					icon = server.MatIcons[MatIcon]
 				end
 			end
 
