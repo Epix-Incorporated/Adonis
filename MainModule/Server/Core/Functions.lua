@@ -952,13 +952,14 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Notification = function(title, message, players, duration, icon)
+		Notification = function(title, message, players, duration, icon, onClick)
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
 					Message = message;
 					Time = duration;
 					Icon = server.MatIcons[icon or "Info"];
+					OnClick = onClick;
 				})
 			end
 		end;
