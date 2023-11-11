@@ -405,9 +405,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		Wrapped = function(object)
-			if type(getmetatable(object)) == "table" and getmetatable(object).__ADONIS_WRAPPED or getmetatable(object) == "Adonis_Proxy" then
+			if type(getmetatable(object)) == "table" and rawget(getmetatable(object), "__ADONIS_WRAPPED") or getmetatable(object) == "Adonis_Proxy" then
 				return true
-			elseif type(object) == ("table" or "userdata") and object.IsProxy and object:IsProxy() then
+			elseif (type(object) == "table" or typeof(object) == "userdata") and object.IsProxy and object:IsProxy() then
 				return true
 			else
 				return false
