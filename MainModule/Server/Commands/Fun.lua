@@ -2144,6 +2144,7 @@ return function(Vargs, env)
 					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
 					RightLegColor = BrickColor.new("Br. yellowish green").Color,
 					TorsoColor = BrickColor.new("Br. yellowish green").Color,
+					Face = 116042990 -- Is there an animated face equivelant of this?
 				}
 
 				for _, v in service.GetPlayers(plr, args[1]) do
