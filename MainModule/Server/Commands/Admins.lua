@@ -1303,12 +1303,13 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local trello = HTTP.Trello.API
-				if not Settings.Trello_Enabled or trello == nil then return 
+				if not Settings.Trello_Enabled or trello == nil then
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Trelloban";
 						Message = "Trello has not been configured.";
 					})
 					Functions.Notification("Trelloban", "Trello has not been configured.", {plr}, 10, "MatIcon://Description")
+					return 
 				end
 
 				local lists = trello.getLists(Settings.Trello_Primary)
