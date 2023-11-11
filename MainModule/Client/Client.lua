@@ -143,7 +143,6 @@ local Folder = script.Parent
 setfenv(1, setmetatable({}, { __metatable = unique }))
 --local origWarn = warn
 local startTime = time()
-local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
 local locals = {}
@@ -692,7 +691,6 @@ return service.NewProxy({
 
 				--// Finished loading
 				log("Finish loading")
-				clientLocked = true
 				client.Finish_Loading = function() end
 				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
 				service.Events.FinishedLoading:Fire(os.time())
