@@ -612,7 +612,7 @@ return function(Vargs, GetEnv)
 			properties.Enabled = Variables.ParticlesEnabled;
 
 			effect = service.New(class, properties);
-			index = Functions.GetRandom();
+			index = service.HttpService:GenerateGUID(false);
 
 			Variables.Particles[index] = effect;
 
@@ -777,7 +777,7 @@ return function(Vargs, GetEnv)
 				Wave = true;
 				isR15 = isR15;
 			}
-			Variables.Capes[Functions.GetRandom()] = capeData
+			Variables.Capes[service.HttpService:GenerateGUID(false)] = capeData
 
 			local p = service.Players:GetPlayerFromCharacter(char)
 			if p and p == service.Player then
