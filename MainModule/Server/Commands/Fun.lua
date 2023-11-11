@@ -612,31 +612,41 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local infect; infect = function(v)
-					local char = v.Character
-					if char and char:FindFirstChild("HumanoidRootPart") and not char:FindFirstChild("Infected") then
-						local cl = service.New("StringValue", char)
-						cl.Name = "Infected"
-						cl.Parent = char
+				local infect; infect = function(humanoid)
+					local properties = {
+						HeadColor = BrickColor.new("Artichoke").Color,
+						LeftArmColor = BrickColor.new("Artichoke").Color,
+						RightArmColor = BrickColor.new("Artichoke").Color,
+						LeftLegColor = BrickColor.new("Artichoke").Color,
+						RightLegColor = BrickColor.new("Artichoke").Color,
+						TorsoColor = BrickColor.new("Artichoke").Color,
+						Face = math.random(1, 3) == 3 and 173789114 or 133360789
+					}
 
-						for _, prt in char:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
-								prt.Transparency = 0
-								prt.Reflectance = 0
-								prt.BrickColor = BrickColor.new("Dark green")
-								if prt.Name:find("Leg") or prt.Name:find("Arm") then
-									prt.BrickColor = BrickColor.new("Dark green")
-								end
-								local tconn; tconn = prt.Touched:Connect(function(hit)
-									if hit and hit.Parent and service.Players:FindFirstChild(hit.Parent.Name) and cl.Parent == char then
-										infect(hit.Parent)
-									elseif cl.Parent ~= char then
+					if humanoid and humanoid.RootPart and not humanoid.Parent:FindFirstChild("Infected") then
+						local description = humanoid:GetAppliedDescription()
+						local cl = service.New("StringValue")
+						cl.Name = "Infected"
+						cl.Parent = humanoid.Parent
+
+						for k, v in properties do
+							description[k] = v
+						end
+
+						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+
+						for _, part in humanoid.Parent:GetChildren() do
+							if part:IsA("BasePart") then
+								local tconn; tconn = part.Touched:Connect(function(hit)
+									if cl.Parent ~= humanoid.Parent then
 										tconn:Disconnect()
+									elseif hit.Parent and hit.Parent:FindFirstChildOfClass("Humanoid") then
+										infect(hit.Parent:FindFirstChildOfClass("Humanoid"))
 									end
 								end)
 
 								cl.Changed:Connect(function()
-									if cl.Parent ~= char then
+									if cl.Parent ~= humanoid.Parent then
 										tconn:Disconnect()
 									end
 								end)
@@ -645,8 +655,8 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					infect(v)
+				for _, v in service.GetPlayers(plr, args[1]) do
+					infect(v.Character and v.Character:FindFirstChildOfClass("Humanoid"))
 				end
 			end
 		};
