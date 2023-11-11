@@ -1008,7 +1008,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		NewParticle = function(target, particleType, props)
-			local ind = Functions.GetRandom()
+			local ind = service.HttpService:GenerateGUID(false)
 			Variables.LocalEffects[ind] = {
 				Part = target;
 				Class = particleType;
@@ -1066,7 +1066,7 @@ return function(Vargs, GetEnv)
 				if isdon and Settings.DonorCapes and Settings.LocalCapes then
 					Remote.Send(player, "Function", "NewCape", data)
 				else
-					local ind = Functions.GetRandom()
+					local ind = service.HttpService:GenerateGUID(false)
 					Variables.LocalEffects[ind] = {
 						Player = player;
 						Part = player.Character.HumanoidRootPart;
@@ -1236,7 +1236,7 @@ return function(Vargs, GetEnv)
 			if service.Players:FindFirstChild(player.Name) then
 				local parent = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 15) or player:WaitForChild("Backpack")
 				local cl = Core.NewScript("LocalScript", source)
-				cl.Name = name or Functions.GetRandom()
+				cl.Name = name or service.HttpService:GenerateGUID(false)
 				cl.Parent = parent
 				cl.Disabled = false
 				if object then
