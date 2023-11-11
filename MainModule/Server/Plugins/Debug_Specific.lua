@@ -393,7 +393,7 @@ local service = wrappedEnv.Service
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
 			for _, v in service.GetPlayers(plr, args[1]) do
-				Anti.Detected(table.unpack(args, 2))
+				Anti.Detected(v, table.unpack(args, 2))
 			end
 		end
 	};
