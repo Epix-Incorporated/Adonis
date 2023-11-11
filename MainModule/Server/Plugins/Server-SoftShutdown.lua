@@ -29,22 +29,12 @@ return function(Vargs, GetEnv)
 				task.wait(RETRY_WAIT * teleportedPlayers[player])
 				teleportedPlayers[player] += 1
 				Logs:AddLog("Script", `Failed to teleport {player.Name} {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"} due to {result.Name}. Retrying... Details: {message}`)
-				Remote.MakeGui(plr, "Notification", {
-					Title = "Notification",
-					Icon = "MatIcon://Warning";
-					Message = `SoftShutdown failed to teleport {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"}. Retrying...`;
-					Time = 10;
-				})
+				Functions.Notification("Teleport failed", `SoftShutdown failed to teleport {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"}. Retrying...`, {player}, 10, "MatIcon://Warning"
 				TeleportService:Teleport(game.PlaceId, player, {[PARAMETER_2_NAME] = true})
 			else
 				Logs:AddLog("Script", `Failed to teleport {player.Name} {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"} due to {result.Name}. Details: {message}`)
 				Logs:AddLog("Error", `Failed to teleport {player.Name} {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"} to {result.Name}. Details: {message}`)
-				Remote.MakeGui(plr, "Notification", {
-					Title = "Notification",
-					Icon = "MatIcon://Error";
-					Message = `SoftShutdown failed to teleport {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"}. Details {message}`;
-					Time = 35;
-				})
+				Functions.Notification("Teleport failed", `SoftShutdown failed to teleport {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"}. Details {message}`, {player}, 35, "MatIcon://Error")
 			end
 		end
 	end)
@@ -91,13 +81,14 @@ return function(Vargs, GetEnv)
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message('Adonis', "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
 			task.wait(2)
 
 			Logs:AddLog("Script", `Teleporting {#Players:GetPlayers()} players to a temporary softshutdown server`)
 			TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, Players:GetPlayers(), "", {[PARAMETER_NAME] = true})
 			Players.PlayerAdded:Connect(function(player)
 				Logs:AddLog("Script", `Teleporting {player.Name} to a temporary softshutdown server`)
+				teleportedPlayers[player] = 1
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[PARAMETER_NAME] = true})
 			end)
 
@@ -145,13 +136,14 @@ return function(Vargs, GetEnv)
 
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message('Adonis', "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
 			task.wait(1)
 
 			Logs:AddLog("Script", `Teleporting {#Players:GetPlayers()} players to a temporary softshutdown server`)
 			TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, Players:GetPlayers(), "", {[PARAMETER_NAME] = true})
 			Players.PlayerAdded:Connect(function(player)
 				Logs:AddLog("Script", `Teleporting {player.Name} to a temporary softshutdown server`)
+				teleportedPlayers[player] = 1
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[PARAMETER_NAME] = true})
 			end)
 
