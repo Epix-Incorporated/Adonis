@@ -957,7 +957,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 
-				local sessionName = Functions.GetRandom() --// Used by the private chat windows
+				local sessionName = service.HttpService:GenerateGUID(false) --// Used by the private chat windows
 				local newSession = Remote.NewSession("PrivateChat")
 				local history = {}
 
@@ -1130,7 +1130,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local replyTicket = Functions.GetRandom()
+					local replyTicket = service.HttpService:GenerateGUID(false)
 					Variables.PMtickets[replyTicket] = plr
 
 					Remote.MakeGui(v, "PrivateMessage", {
