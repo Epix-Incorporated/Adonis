@@ -2105,9 +2105,13 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in players do
+					for i, v in players do
 					Routine(function()
-						local response = Remote.GetGui(v, "Vote", {Question = question; Answers = anstab;})
+						local response = Remote.GetGui(v, "Vote", {
+							Question = question;
+							Answers = anstab;
+							IsRandomOrder = true;
+						})
 						if response then
 							table.insert(responses, response)
 						end
@@ -2126,25 +2130,22 @@ return function(Vargs, env)
 			end
 		};
 
-		VoteAdvanced = {
+		OrderedVote = {
 			Prefix = Settings.Prefix;
-			Commands = {"voteadvanced"};
-			Args = {"player", "random order? (true/false)","answer1,answer2,etc (NO SPACES)", "question"};
+			Commands = {"orderedvote","ovote"};
+			Args = {"player", "answer1,answer2,etc (NO SPACES)", "question"};
 			Filter = true;
 			Description = `Same as {Settings.Prefix}vote, but with more options, such as randomizing the order of the choices.`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local question = args[4]
+				local question = args[3]
 				if not question then error("You forgot to supply a question!") end
-				local answers = args[3]
+				local answers = args[2]
 				local anstab = {}
 				local responses = {}
 				local voteKey = `ADONISVOTE{math.random()}`;
 				local players = service.GetPlayers(plr, args[1])
 				local startTime = os.clock();
-
-				local isRandomOrder = if args[2] and args[2]:lower() == "false" then false
-					else true
 
 				local function voteUpdate()
 					local total = #responses
@@ -2197,7 +2198,7 @@ return function(Vargs, env)
 						local response = Remote.GetGui(v, "Vote", {
 							Question = question;
 							Answers = anstab;
-							IsRandomOrder = isRandomOrder;
+							IsRandomOrder = false;
 						})
 						if response then
 							table.insert(responses, response)
