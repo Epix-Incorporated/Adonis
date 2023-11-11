@@ -734,13 +734,8 @@ return function(Vargs, env)
 					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
 					RightLegColor = BrickColor.new("Br. yellowish green").Color,
 					TorsoColor = BrickColor.new("Bright blue").Color,
-					Pants = 0,
-					Shirt = 0,
-					LeftArm = 0,
-					RightArm = 0,
-					LeftLeg = 0,
-					RightLeg = 0,
-					Torso = 0
+					Pants = 0, Shirt = 0, LeftArm = 0, RightArm = 0,
+					LeftLeg = 0, RightLeg = 0, Torso = 0
 				}
 
 				for _, v in service.GetPlayers(plr, args[1]) do
