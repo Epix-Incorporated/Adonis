@@ -649,7 +649,7 @@ return service.NewProxy({
 				Variables.LocalContainer = service.New("Folder", {
 					Parent = workspace,
           Archivable = false,
-					Name = `__ADONIS_LOCALCONTAINER_{client.Functions.GetRandom()}`,
+					Name = `__ADONIS_LOCALCONTAINER_{service.HttpService:GenerateGUID(false)}`,
 				})
 			end
 			return Variables.LocalContainer
