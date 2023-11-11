@@ -141,7 +141,8 @@ local AvatarTypes = {
 }
 
 for _, child in ipairs(script.Parent:GetChildren()) do
-	local delta, avatarTypeForChild = AvatarTypes[child.Name][1], AvatarTypes[child.Name][2]
+	local data = AvatarTypes[child.Name]
+	local delta, avatarTypeForChild = data and data[1], data and data[2]
 	if child:IsA("Decal") and avatarTypeForChild then
 		task.spawn(function()
 			local max = #avatarTypeForChild
