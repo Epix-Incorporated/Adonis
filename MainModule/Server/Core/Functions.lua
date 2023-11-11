@@ -1018,7 +1018,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon, onClick)
-			icon = icon:match('MatIcon://(.+)') or icon
+			icon = icon and icon:match('MatIcon://(.+)') or icon
 
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
