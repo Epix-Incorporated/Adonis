@@ -47,7 +47,7 @@ jobs:
          else
            BUILD_TYPE="Nightly"
          fi
-         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
+         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
 
       - uses: ok-nick/setup-aftman@v0.4.2
         with:
