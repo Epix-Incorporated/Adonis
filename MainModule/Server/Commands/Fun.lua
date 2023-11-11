@@ -2137,44 +2137,41 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				local desiredColors = {
+					HeadColor = BrickColor.new("Br. yellowish green").Color,
+					LeftArmColor = BrickColor.new("Br. yellowish green").Color,
+					RightArmColor = BrickColor.new("Br. yellowish green").Color,
+					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
+					RightLegColor = BrickColor.new("Br. yellowish green").Color,
+					TorsoColor = BrickColor.new("Br. yellowish green").Color,
+				}
+
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
-						local torso = v.Character:FindFirstChild("HumanoidRootPart")
-						local larm=v.Character:FindFirstChild("Left Arm")
-						local rarm=v.Character:FindFirstChild("Right Arm")
-						local lleg = v.Character:FindFirstChild("Left Leg")
-						local rleg = v.Character:FindFirstChild("Right Leg")
-						local head = v.Character:FindFirstChild("Head")
-						local hum=v.Character:FindFirstChildOfClass("Humanoid")
-						if torso and larm and rarm and lleg and rleg and head and hum and not v.Character:FindFirstChild("Adonis_Poisoned") then
+						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid and not v.Character:FindFirstChild("Adonis_Poisoned") then
+							local description, orgColors = humanoid:GetAppliedDescription(), {}
 							local poisoned = service.New("BoolValue", v.Character)
 							poisoned.Name = "Adonis_Poisoned"
 							poisoned.Value = true
-							local tor = torso.BrickColor
-							local lar = larm.BrickColor
-							local rar = rarm.BrickColor
-							local lle = lleg.BrickColor
-							local rle = rleg.BrickColor
-							local hea = head.BrickColor
-							torso.BrickColor = BrickColor.new("Br. yellowish green")
-							larm.BrickColor = BrickColor.new("Br. yellowish green")
-							rarm.BrickColor = BrickColor.new("Br. yellowish green")
-							lleg.BrickColor = BrickColor.new("Br. yellowish green")
-							rleg.BrickColor = BrickColor.new("Br. yellowish green")
-							head.BrickColor = BrickColor.new("Br. yellowish green")
+
+							for k, v in properties do
+								orgColors[k], description[k] = description[k], v
+							end
+	
+							task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							local run = true
-							coroutine.wrap(function() wait(10) run = false end)()
+							task.spawn(function() wait(10) run = false end)
 							repeat
 								task.wait(1)
-								hum:TakeDamage(5)
+								humanoid:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
-								torso.BrickColor = tor
-								larm.BrickColor = lar
-								rarm.BrickColor = rar
-								lleg.BrickColor = lle
-								rleg.BrickColor = rle
-								head.BrickColor = hea
+								for k, v in properties do
+									description[k] = orgColors[k]
+								end
+		
+								task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							end
 						end
 					end)
