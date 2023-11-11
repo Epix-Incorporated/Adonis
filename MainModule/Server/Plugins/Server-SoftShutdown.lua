@@ -29,7 +29,7 @@ return function(Vargs, GetEnv)
 				task.wait(RETRY_WAIT * teleportedPlayers[player])
 				teleportedPlayers[player] += 1
 				Logs:AddLog("Script", `Failed to teleport {player.Name} {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"} due to {result.Name}. Retrying... Details: {message}`)
-				Functions.Notification("Teleport failed", `SoftShutdown failed to teleport {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"}. Retrying...`, {player}, 10, "MatIcon://Warning"
+				Functions.Notification("Teleport failed", `SoftShutdown failed to teleport {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"}. Retrying...`, {player}, 10, "MatIcon://Warning")
 				TeleportService:Teleport(game.PlaceId, player, {[PARAMETER_2_NAME] = true})
 			else
 				Logs:AddLog("Script", `Failed to teleport {player.Name} {isPrivateServer and "back to the main game" or "to a temporary softshutdown server"} due to {result.Name}. Details: {message}`)
