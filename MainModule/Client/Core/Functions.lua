@@ -224,22 +224,6 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetRandom = function(pLen)
-			--local str = ""
-			--for i=1,math.random(5,10) do str=`{str}{string.char(math.random(33,90))}` end
-			--return str
-
-			local random = math.random
-			local format = string.format
-
-			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
-			local Res = {};
-			for Idx = 1, Len do
-				Res[Idx] = format('%02x', random(255));
-			end;
-			return table.concat(Res)
-		end;
-
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
@@ -628,7 +612,7 @@ return function(Vargs, GetEnv)
 			properties.Enabled = Variables.ParticlesEnabled;
 
 			effect = service.New(class, properties);
-			index = Functions.GetRandom();
+			index = service.HttpService:GenerateGUID(false);
 
 			Variables.Particles[index] = effect;
 
@@ -793,7 +777,7 @@ return function(Vargs, GetEnv)
 				Wave = true;
 				isR15 = isR15;
 			}
-			Variables.Capes[Functions.GetRandom()] = capeData
+			Variables.Capes[service.HttpService:GenerateGUID(false)] = capeData
 
 			local p = service.Players:GetPlayerFromCharacter(char)
 			if p and p == service.Player then

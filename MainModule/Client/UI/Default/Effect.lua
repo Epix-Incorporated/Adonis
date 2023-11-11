@@ -6,7 +6,7 @@ service = nil
 gTable = nil
 
 --// All global vars will be wiped/replaced except script
---// All guis are autonamed using client.Functions.GetRandom()
+--// All guis are autonamed using service.HttpService:GenerateGUID(false)
 
 return function(data, env)
 	if env then

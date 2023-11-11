@@ -30,13 +30,7 @@ return function(Vargs, GetEnv)
 		Messages = Alerts.Messages;								--// List of alert messages/lines
 
 		local function doNotify(p)
-			Remote.MakeGui(p,"Notification",{
-				Title = "Urgent Message!";
-				Message = "Click to view messages";
-				Icon = "rbxassetid://7495456913";
-				Time = 20;
-				OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand',':adonisalerts')");
-			})
+			Functions.Notification("Urgent Message!", "Click to view messages", {p}, 20, "MatIcon://Announcement", Core.Bytecode("client.Remote.Send('ProcessCommand',':adonisalerts')"))
 		end
 
 		local function checkDoNotify(p, data)

@@ -462,15 +462,6 @@ return function(Vargs, GetEnv)
 			return nil
 		end;
 
-		IsClass = function(obj, classList)
-			for _,class in classList do
-				if obj:IsA(class) then
-					return true
-				end
-			end
-			return false
-		end;
-
 		ArgsToString = function(args)
 			local str = ""
 			for i, arg in args do
@@ -716,61 +707,6 @@ return function(Vargs, GetEnv)
 			return finalFilteredList
 		end;
 
-		GetRandom = function(pLen)
-			--local str = ""
-			--for i=1,math.random(5,10) do str=str..string.char(math.random(33,90)) end
-			--return str
-
-			local random = math.random
-			local format = string.format
-
-			local res = {}
-			for i = 1, if type(pLen) == "number" then pLen else random(5, 10) do
-				res[i] = format("%02x", random(126))
-			end
-			return table.concat(res)
-		end;
-
-
-		AdonisEncrypt = function(key)
-			local ae_info = {
-				version = "1";
-				ver_codename = "aencrypt_xorB64";
-				ver_full = "v1_AdonisEncrypt";
-			}
-
-			--return "adonis:enc;;"..ver..";;"..Base64Encode(string.char(unpack(t)))
-			return {
-				encrypt = function(data)
-					-- Add as many layers of encryption that are useful, even a basic cipher that throws exploiters off the actual encrypted data is accepted.
-					-- What could count: XOR, Base64, Simple Encryption, A Cipher to cover the encryption, etc.
-					-- What would be too complex: AES-256 CTR-Mode, Base91, PGP/Pretty Good Privacy
-
-					-- TO:DO; - Script XOR + Custom Encryption Backend, multiple security measures, if multiple encryption layers are used,
-					--          manipulate the key as much as possible;
-					--
-					--        - Create Custom Lightweight Encoding + Cipher format, custom B64 Alphabet, etc.
-					--          'ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#'
-					--
-					--        - A basic form of string compression before encrypting should be used
-					--          If this becomes really nice, find a way to convert old datastore saved data to this new format.
-					--
-					--        ? This new format has an URI-Like structure to provide correct versioning and easy migrating between formats
-
-					--[[ INSERT ALREADY USED ADONIS "ENCRYPTION" HERE ]]
-					--[[ INSERT BIT32 BITWISE XOR OPERAND HERE]]
-					--[[ INSERT ROT47 CIPHER HERE ]]
-					--[[ INSERT CUSTOM ADONIS BASE64 ENCODING HERE ]]
-					--[[ CONVERT EVERYTHING TO AN URI WITH VERSIONING AND INFORMATION ]]
-
-				end;
-
-				decrypt = function(data)
-
-				end;
-			}
-		end;
-
 		-- ROT 47: ROT13 BUT BETTER
 		Rot47Cipher = function(data,mode)
 			if not (mode == "enc" or mode == "dec") then error("Invalid ROT47 Cipher Mode") end
@@ -794,8 +730,6 @@ return function(Vargs, GetEnv)
 			if mode == "enc" then return cipher(data,47) end
 			if mode == "dec" then return cipher(data,-47) end
 		end;
-
-		--
 
 		-- Thanks to Tiffany352 for this base64 implementation!
 
@@ -1019,7 +953,6 @@ return function(Vargs, GetEnv)
 
 		Notification = function(title, message, players, duration, icon, onClick)
 			icon = icon and icon:match('MatIcon://(.+)') or icon
-
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
@@ -1031,16 +964,17 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		MakeWeld = function(a, b)
-			local weld = service.New("ManualWeld")
+		MakeWeld = function(a, b, c0, c1)
+			local weld = service.New("Weld")
 			weld.Part0 = a
 			weld.Part1 = b
-			weld.C0 = a.CFrame:Inverse() * b.CFrame
+			weld.C0 = c0 or a.CFrame:Inverse() * b.CFrame
+			weld.C1 = c1 or CFrame.new()
 			weld.Parent = a
 			return weld
 		end;
 
-		SetLighting = function(prop,value)
+		SetLighting = function(prop, value)
 			if service.Lighting[prop] ~= nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
@@ -1075,7 +1009,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		NewParticle = function(target, particleType, props)
-			local ind = Functions.GetRandom()
+			local ind = service.HttpService:GenerateGUID(false)
 			Variables.LocalEffects[ind] = {
 				Part = target;
 				Class = particleType;
@@ -1133,7 +1067,7 @@ return function(Vargs, GetEnv)
 				if isdon and Settings.DonorCapes and Settings.LocalCapes then
 					Remote.Send(player, "Function", "NewCape", data)
 				else
-					local ind = Functions.GetRandom()
+					local ind = service.HttpService:GenerateGUID(false)
 					Variables.LocalEffects[ind] = {
 						Player = player;
 						Part = player.Character.HumanoidRootPart;
@@ -1302,7 +1236,7 @@ return function(Vargs, GetEnv)
 			if service.Players:FindFirstChild(player.Name) then
 				local parent = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 15) or player:WaitForChild("Backpack")
 				local cl = Core.NewScript("LocalScript", source)
-				cl.Name = name or Functions.GetRandom()
+				cl.Name = name or service.HttpService:GenerateGUID(false)
 				cl.Parent = parent
 				cl.Disabled = false
 				if object then

@@ -181,13 +181,7 @@ return function(Vargs, env)
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins")
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are a head admin. Click to view commands.";
-							Time = 10;
-							Icon = "rbxassetid://7536784790";
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are a head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v)} is now a permanent head admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})
@@ -208,13 +202,7 @@ return function(Vargs, env)
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins", true)
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are a temp head admin. Click to view commands.";
-							Time = 10;
-							Icon = "rbxassetid://7536784790";
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are a temp head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v)} is now a temporary head admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})
@@ -259,13 +247,7 @@ return function(Vargs, env)
 				if ans == "Yes" then
 					Core.RemoveData(tostring(id))
 					Core.PlayerData[tostring(id)] = nil
-
-					Remote.MakeGui(plr, "Notification", {
-						Title = "Notification";
-						Icon = server.MatIcons["Delete"];
-						Message = string.format("Cleared data for %s [%d].", username, id);
-						Time = 10;
-					})
+					Functions.Notification("Notification", string.format("Cleared data for %s [%d].", username, id), {plr}, 10, "MatIcon://Delete")
 				else
 					Functions.Hint("Operation cancelled", {plr})
 				end

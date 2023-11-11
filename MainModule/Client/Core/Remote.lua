@@ -478,7 +478,7 @@ return function(Vargs, GetEnv)
 
 		OldGet = function(com,...)
 			local returns
-			local key = Functions:GetRandom()
+			local key = service.HttpService:GenerateGUID(false)
 			local waiter = service.New("BindableEvent");
 			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
 

@@ -107,7 +107,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					logError(err.."\n"..debug.traceback())
 				end
 			end
-			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
+			local index = (main and main.Functions and game:GetService("HttpService"):GenerateGUID(false)) or math.random();
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
 			local data = {
@@ -1175,7 +1175,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				Running = true;
 			}
 
-			local index = `{name} - {main.Functions:GetRandom()}`
+			local index = `{name} - {game:GetService("HttpService"):GenerateGUID(false)}`
 
 			local function kill()
 				tab.Running = true
