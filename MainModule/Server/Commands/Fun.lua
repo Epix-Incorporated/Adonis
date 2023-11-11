@@ -5049,6 +5049,7 @@ return function(Vargs, env)
 					local humanoid = character:FindFirstChildOfClass("Humanoid")
 					local isR15 = humanoid and humanoid.RigType == Enum.HumanoidRigType.R15 or false
 					local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
+					local partsColor = {head.Color} < 0.26 and BrickColor.new("Lily White") or BrickColor.new("Black")
 	
 					local sound = head:FindFirstChild("ADONIS_SOUND") or Instance.new("Sound")
 					sound.SoundId = `rbxassetid://{id}`
@@ -5076,7 +5077,7 @@ return function(Vargs, env)
 						leftEye.Anchored = false
 						leftEye.CanCollide = false
 						leftEye.Massless = true
-						leftEye.BrickColor = BrickColor.new("Black")
+						leftEye.BrickColor = partsColor
 						leftEye.TopSurface = Enum.SurfaceType.Smooth
 						leftEye.BottomSurface = Enum.SurfaceType.Smooth
 						leftEye.Name = "ADONIS_LEFTEYE"
@@ -5091,7 +5092,7 @@ return function(Vargs, env)
 						rightEye.CanCollide = false
 						rightEye.Massless = true
 						rightEye.Name = "ADONIS_RIGHTEYE"
-						rightEye.BrickColor = BrickColor.new("Black")
+						rightEye.BrickColor = partsColor
 						rightEye.TopSurface = Enum.SurfaceType.Smooth
 						rightEye.BottomSurface = Enum.SurfaceType.Smooth
 						local rightMesh = Instance.new("SpecialMesh")
@@ -5105,7 +5106,7 @@ return function(Vargs, env)
 						mouth.CanCollide = false
 						mouth.Massless = true
 						mouth.Name = "ADONIS_MOUTH"
-						mouth.BrickColor = BrickColor.new("Black")
+						mouth.BrickColor = partsColor
 						mouth.TopSurface = Enum.SurfaceType.Smooth
 						mouth.BottomSurface = Enum.SurfaceType.Smooth
 						mouth.Material = Enum.Material.SmoothPlastic
