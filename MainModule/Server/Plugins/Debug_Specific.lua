@@ -384,5 +384,19 @@ local service = wrappedEnv.Service
 		end
 	};
 
+	Commands.DebugAnti = {
+		Prefix = Settings.Prefix;
+		Commands = {"debuganti", "debuganticheat", "debugcheat", "debugantiexploit", "debugexploit", "debugantihack", "debughack"};
+		Args = {"player", "action", "info"};
+		Description = "Shows you how to use some syntax related things";
+		Hidden = true;
+		AdminLevel = "Creators";
+		Function = function(plr: Player, args: {string})
+			for _, v in service.GetPlayers(plr, args[1]) do
+				Anti.Detected(table.unpack(args, 2))
+			end
+		end
+	};
+
 	Logs:AddLog("Script", "Debug Built-in Plugin Module Loaded as DebugMode was on");
 end;
