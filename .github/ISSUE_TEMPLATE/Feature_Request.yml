@@ -13,11 +13,12 @@ body:
     attributes:
       label: What part of Adonis is this related to?
       options:
+        - Loader/Settings
         - Command
         - User Interface
         - Documentation
-        - Anti-Exploit
         - GitHub Repository
+        - Anti-Exploit
         - Other
     validations:
       required: true

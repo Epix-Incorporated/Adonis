@@ -102,8 +102,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, errHandler, ...)
-			local overrflowArgs = {...}
-			if type(errHandler) ~= "function" or #overrflowArgs == 0 and errHandler == nil then
+			if type(errHandler) ~= "function" or select("#", ...) == 0 and errHandler == nil then
 				errHandler = function(err)
 					logError(err.."\n"..debug.traceback())
 				end
@@ -406,9 +405,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		Wrapped = function(object)
-			if type(getmetatable(object)) == "table" and getmetatable(object).__ADONIS_WRAPPED or getmetatable(object) == "Adonis_Proxy" then
+			if type(getmetatable(object)) == "table" and rawget(getmetatable(object), "__ADONIS_WRAPPED") or getmetatable(object) == "Adonis_Proxy" then
 				return true
-			elseif type(object) == ("table" or "userdata") and object.IsProxy and object:IsProxy() then
+			elseif (type(object) == "table" or typeof(object) == "userdata") and object.IsProxy and object:IsProxy() then
 				return true
 			else
 				return false
