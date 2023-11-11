@@ -623,7 +623,7 @@ return function(Vargs, env)
 						Face = math.random(1, 3) == 3 and 173789114 or 133360789
 					}
 
-					if humanoid and humanoid.RootPart and not humanoid.Parent:FindFirstChild("Infected") then
+					if humanoid and humanoid.RootPart and string.lower(humanoid.Name) ~= "zombie" and not humanoid.Parent:FindFirstChild("Infected") then
 						local description = humanoid:GetAppliedDescription()
 						local cl = service.New("StringValue")
 						cl.Name = "Infected"
