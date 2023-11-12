@@ -725,13 +725,6 @@ return function(Vargs, GetEnv)
 
 		};
 
-		UnEncrypted = setmetatable({}, {
-			__newindex = function(_, ind, val)
-				warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands")
-				Remote.Commands[ind] = val
-			end
-		});
-
 		Commands = {
 			GetReturn = function(p: Player, args: {[number]: any})
 				local com = args[1]
