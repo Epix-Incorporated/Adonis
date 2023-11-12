@@ -276,7 +276,7 @@ return function(Vargs, env)
 					sound:Destroy()
 					task.wait(1.4)
 					local vel = Instance.new("BodyVelocity")
-					vel.Velocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
+					vel.AssemblyLinearVelocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
 					vel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 					vel.P = math.huge
 					vel.Parent = root
@@ -1052,7 +1052,7 @@ return function(Vargs, env)
 												NumberSequenceKeypoint.new(1, 1)
 											}
 											em.Acceleration = Vector3.new(1, 0.1, 0)
-											em.VelocityInheritance = 0
+											em.AssemblyLinearVelocityInheritance = 0
 											em.EmissionDirection = "Top"
 											em.Lifetime = NumberRange.new(3, 8)
 											em.Rate = 10
@@ -1924,7 +1924,7 @@ return function(Vargs, env)
 							local BodyVelocity = service.New("BodyVelocity")
 							BodyVelocity.Parent = Part
 							BodyVelocity.maxForce = Vector3.new(math.huge, math.huge, math.huge)
-							BodyVelocity.velocity = Vector3.new(0, 100*speed, 0)
+							BodyVelocity.AssemblyLinearVelocity = Vector3.new(0, 100*speed, 0)
 									--[[
 									cPcall(function()
 										for i = 1, math.huge do
@@ -2028,7 +2028,7 @@ return function(Vargs, env)
 								p.TopSurface = "Smooth"
 								p.BottomSurface = "Smooth"
 								p.CFrame = v.Character.Head.CFrame * CFrame.new(Vector3.new(0, 0, -1))
-								p.Velocity = v.Character.Head.CFrame.lookVector * 20 + Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
+								p.AssemblyLinearVelocity = v.Character.Head.CFrame.lookVector * 20 + Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
 								p.Anchored = false
 								m.Name = "Puke Peice"
 								p.Name = "Puke Peice"
@@ -2098,7 +2098,7 @@ return function(Vargs, env)
 								p.TopSurface = "Smooth"
 								p.BottomSurface = "Smooth"
 								p.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(Vector3.new(2, 0, 0))
-								p.Velocity = v.Character.Head.CFrame.lookVector * 1 + Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1))
+								p.AssemblyLinearVelocity = v.Character.Head.CFrame.lookVector * 1 + Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1))
 								p.Anchored = false
 								m.Name = "Blood Peice"
 								p.Name = "Blood Peice"
