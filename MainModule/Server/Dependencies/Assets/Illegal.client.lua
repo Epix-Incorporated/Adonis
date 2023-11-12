@@ -80,8 +80,8 @@ task.spawn(function()
 
 		if startspaz then
 			humanoid.PlatformStand = true
-			torso.Velocity = Vector3.new(math.random(-10, 10), -5, math.random(-10, 10))
-			torso.RotVelocity = Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
+			torso.AssemblyLinearVelocity = Vector3.new(math.random(-10, 10), -5, math.random(-10, 10))
+			torso.AssemblyAngularVelocity = Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
 		end
 	until stop or not humanoid or not humanoid.Parent or humanoid.Health<=0 or not torso
 end)
