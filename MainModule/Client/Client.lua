@@ -223,12 +223,12 @@ do
 			elseif Fire then
 				Fire("BadMemes", info)
 			end
-		end))
+		end)
 
 		spawn(pcall, function()
 			task.wait(1)
 			service.Player:Kick(info)
-		end))
+		end)
 		
 		if not isStudio then
 			spawn(pcall, function()
@@ -239,7 +239,7 @@ do
 						-- memes
 					end)
 				end
-			end))
+			end)
 		end
 	end)
 end
