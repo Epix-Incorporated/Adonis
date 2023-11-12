@@ -1687,11 +1687,11 @@ return function(Vargs, env)
 								if part.Position.Y>=main.Position.Y+50 then
 									run=false
 								end
-								pos.position=Vector3.new(50*math.cos(i), part.Position.Y+5, 50*math.sin(i))+main.Position
+								pos.Position=Vector3.new(50*math.cos(i), part.Position.Y+5, 50*math.sin(i))+main.Position
 								i=i+1
 							end
-							pos.maxForce = Vector3.new(500, 500, 500)
-							pos.position=Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
+							pos.MaxForce = Vector3.new(500, 500, 500)
+							pos.Position=Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
 							pos:Destroy()
 						end
 
@@ -1710,7 +1710,7 @@ return function(Vargs, env)
 
 						repeat
 							for i, v in parts do
-								if (((main.Position - v.Position).Magnitude * 250 * 20) < (5000 * 40)) and v and v:IsDescendantOf(workspace) then
+								if v and v:IsDescendantOf(workspace) and (((main.Position - v.Position).Magnitude * 250 * 20) < (5000 * 40)) then
 									task.spawn(fling, v)
 								elseif not v or not v:IsDescendantOf(workspace) then
 									table.remove(parts, i)
