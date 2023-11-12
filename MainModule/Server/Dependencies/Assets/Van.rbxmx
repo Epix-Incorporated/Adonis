@@ -5,8 +5,6 @@
 	<Item class="Model" referent="RBX3D234256E6C24F11AA7DF82B44EB5E37">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
-			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-			<bool name="DefinesCapabilities">false</bool>
 			<token name="LevelOfDetail">0</token>
 			<CoordinateFrame name="ModelMeshCFrame">
 				<X>0</X>
@@ -66,7 +64,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -74,7 +71,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -164,7 +160,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -172,7 +167,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -262,7 +256,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -270,7 +263,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -360,7 +352,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -368,7 +359,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -458,7 +448,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -466,7 +455,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -556,7 +544,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -564,7 +551,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -654,7 +640,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -662,7 +647,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -752,7 +736,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -760,7 +743,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -850,7 +832,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -858,7 +839,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -948,7 +928,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -956,7 +935,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -1046,7 +1024,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -1054,7 +1031,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -1144,7 +1120,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -1152,7 +1127,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -1242,7 +1216,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -1250,7 +1223,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -1340,7 +1312,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -1348,7 +1319,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -1413,13 +1383,11 @@
 					<float name="Angle">85</float>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<float name="Brightness">20</float>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color">
 						<R>1</R>
 						<G>0</G>
 						<B>0</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Enabled">true</bool>
 					<token name="Face">5</token>
 					<string name="Name">SpotLight</string>
@@ -1459,7 +1427,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -1467,7 +1434,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -1532,13 +1498,11 @@
 					<float name="Angle">70</float>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<float name="Brightness">25</float>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color">
 						<R>1</R>
 						<G>0.992156923</G>
 						<B>0.698039234</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Enabled">true</bool>
 					<token name="Face">5</token>
 					<string name="Name">SpotLight</string>
@@ -1578,7 +1542,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -1586,7 +1549,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -1651,13 +1613,11 @@
 					<float name="Angle">70</float>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<float name="Brightness">25</float>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color">
 						<R>1</R>
 						<G>0.992156923</G>
 						<B>0.698039234</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Enabled">true</bool>
 					<token name="Face">5</token>
 					<string name="Name">SpotLight</string>
@@ -1671,8 +1631,6 @@
 		<Item class="Model" referent="RBXBE615C0671374DE288F18C3ED0C1590E">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
 				<token name="LevelOfDetail">0</token>
 				<CoordinateFrame name="ModelMeshCFrame">
 					<X>0</X>
@@ -1721,8 +1679,6 @@
 			<Item class="BodyColors" referent="RBXDA80A405C97A4652B0D83AF3EF9914AE">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
 					<Color3 name="HeadColor3">
 						<R>0.972549081</R>
 						<G>0.972549081</G>
@@ -1761,13 +1717,11 @@
 			<Item class="Pants" referent="RBX2B93EB76C338488B80D7E7E9CB801CE7">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<string name="Name">Pants</string>
 					<Content name="PantsTemplate"><url>http://www.roblox.com/asset/?id=37566406</url></Content>
 					<int64 name="SourceAssetId">-1</int64>
@@ -1777,13 +1731,11 @@
 			<Item class="Shirt" referent="RBX720B26B49C7C4BEF8C6F02721C66BE86">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<string name="Name">Shirt</string>
 					<Content name="ShirtTemplate"><url>http://www.roblox.com/asset/?id=15557308</url></Content>
 					<int64 name="SourceAssetId">-1</int64>
@@ -1819,7 +1771,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -1827,7 +1778,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -1890,8 +1840,6 @@
 				<Item class="SpecialMesh" referent="RBX25B665D04B7340618B5B70003BA044A9">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<Content name="MeshId"><null></null></Content>
 						<token name="MeshType">0</token>
 						<string name="Name">Mesh</string>
@@ -1918,13 +1866,11 @@
 				<Item class="Decal" referent="RBXDBE046BB0A8741EEB47D1C93A3EFC524">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<Color3 name="Color3">
 							<R>1</R>
 							<G>1</G>
 							<B>1</B>
 						</Color3>
-						<bool name="DefinesCapabilities">false</bool>
 						<token name="Face">5</token>
 						<string name="Name">face</string>
 						<int64 name="SourceAssetId">-1</int64>
@@ -1965,8 +1911,6 @@
 							<R21>0</R21>
 							<R22>1</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Enabled">true</bool>
 						<string name="Name">HeadWeld</string>
 						<Ref name="Part0">RBX0E9E3E9227154F0BAE3CEE42CC70D503</Ref>
@@ -2005,7 +1949,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -2013,7 +1956,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -2103,7 +2045,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -2111,7 +2052,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -2201,7 +2141,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -2209,7 +2148,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -2299,7 +2237,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -2307,7 +2244,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -2397,7 +2333,6 @@
 					<bool name="CanCollide">true</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -2405,7 +2340,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -2468,13 +2402,11 @@
 				<Item class="Decal" referent="RBXE76287758ACC4E128D8D3B393A5B6A28">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<Color3 name="Color3">
 							<R>1</R>
 							<G>1</G>
 							<B>1</B>
 						</Color3>
-						<bool name="DefinesCapabilities">false</bool>
 						<token name="Face">5</token>
 						<string name="Name">roblox</string>
 						<int64 name="SourceAssetId">-1</int64>
@@ -2515,8 +2447,6 @@
 							<R21>0</R21>
 							<R22>0</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<float name="DesiredAngle">-0.0620252751</float>
 						<bool name="Enabled">true</bool>
 						<float name="MaxVelocity">0.150000006</float>
@@ -2558,8 +2488,6 @@
 							<R21>0</R21>
 							<R22>0</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<float name="DesiredAngle">-0.0620252751</float>
 						<bool name="Enabled">true</bool>
 						<float name="MaxVelocity">0.150000006</float>
@@ -2601,8 +2529,6 @@
 							<R21>0</R21>
 							<R22>0</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<float name="DesiredAngle">0.0620252751</float>
 						<bool name="Enabled">true</bool>
 						<float name="MaxVelocity">0.100000001</float>
@@ -2644,8 +2570,6 @@
 							<R21>0</R21>
 							<R22>0</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<float name="DesiredAngle">0.0620252751</float>
 						<bool name="Enabled">true</bool>
 						<float name="MaxVelocity">0.100000001</float>
@@ -2687,8 +2611,6 @@
 							<R21>1</R21>
 							<R22>-0</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<float name="DesiredAngle">0</float>
 						<bool name="Enabled">true</bool>
 						<float name="MaxVelocity">0.100000001</float>
@@ -2707,9 +2629,7 @@
 					<bool name="AutoRotate">true</bool>
 					<bool name="AutomaticScalingEnabled">true</bool>
 					<bool name="BreakJointsOnDeath">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<token name="CollisionType">0</token>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="DisplayDistanceType">2</token>
 					<string name="DisplayName"></string>
 					<bool name="EvaluateStateMachine">true</bool>
@@ -2756,8 +2676,6 @@
 						<R22>1</R22>
 					</CoordinateFrame>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
 					<string name="Name">Clown</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
@@ -2791,7 +2709,6 @@
 						<bool name="CanCollide">false</bool>
 						<bool name="CanQuery">true</bool>
 						<bool name="CanTouch">true</bool>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<bool name="CastShadow">true</bool>
 						<string name="CollisionGroup">Default</string>
 						<int name="CollisionGroupId">0</int>
@@ -2799,7 +2716,6 @@
 						<PhysicalProperties name="CustomPhysicalProperties">
 							<CustomPhysics>false</CustomPhysics>
 						</PhysicalProperties>
-						<bool name="DefinesCapabilities">false</bool>
 						<bool name="EnableFluidForces">true</bool>
 						<float name="FrontParamA">-0.5</float>
 						<float name="FrontParamB">0.5</float>
@@ -2862,8 +2778,6 @@
 					<Item class="SpecialMesh" referent="RBXA015ED06CC9245AB9DA76885BF1F6810">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
-							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-							<bool name="DefinesCapabilities">false</bool>
 							<Content name="MeshId"><url>http://www.roblox.com/asset/?id=15393031</url></Content>
 							<token name="MeshType">5</token>
 							<string name="Name">Mesh</string>
@@ -2890,8 +2804,6 @@
 					<Item class="Vector3Value" referent="RBX15E7893ECF914144AA0CF429B5FAFC8B">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
-							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-							<bool name="DefinesCapabilities">false</bool>
 							<string name="Name">OriginalSize</string>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
@@ -2908,8 +2820,6 @@
 		<Item class="Model" referent="RBXC3672997144F43D895FCEAECF25EF4DE">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
 				<token name="LevelOfDetail">0</token>
 				<CoordinateFrame name="ModelMeshCFrame">
 					<X>0</X>
@@ -2958,8 +2868,6 @@
 			<Item class="BodyColors" referent="RBX8AE58D799F8B4F8FBA19B6C1547F62F8">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
 					<Color3 name="HeadColor3">
 						<R>0.972549081</R>
 						<G>0.972549081</G>
@@ -2998,13 +2906,11 @@
 			<Item class="Pants" referent="RBX44565AE1C06A40B589C65A823E677B61">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<string name="Name">Pants</string>
 					<Content name="PantsTemplate"><url>http://www.roblox.com/asset/?id=37566406</url></Content>
 					<int64 name="SourceAssetId">-1</int64>
@@ -3014,13 +2920,11 @@
 			<Item class="Shirt" referent="RBXDF85B59B8C384FC392BF0076940734D8">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<string name="Name">Shirt</string>
 					<Content name="ShirtTemplate"><url>http://www.roblox.com/asset/?id=15557308</url></Content>
 					<int64 name="SourceAssetId">-1</int64>
@@ -3056,7 +2960,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -3064,7 +2967,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -3127,8 +3029,6 @@
 				<Item class="SpecialMesh" referent="RBX1137DD53ED66482B8133F90C6FEB9985">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<Content name="MeshId"><null></null></Content>
 						<token name="MeshType">0</token>
 						<string name="Name">Mesh</string>
@@ -3155,13 +3055,11 @@
 				<Item class="Decal" referent="RBX649FF30726BA4417B145DD91D6FC0E5F">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<Color3 name="Color3">
 							<R>1</R>
 							<G>1</G>
 							<B>1</B>
 						</Color3>
-						<bool name="DefinesCapabilities">false</bool>
 						<token name="Face">5</token>
 						<string name="Name">face</string>
 						<int64 name="SourceAssetId">-1</int64>
@@ -3202,8 +3100,6 @@
 							<R21>0</R21>
 							<R22>1</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Enabled">true</bool>
 						<string name="Name">HeadWeld</string>
 						<Ref name="Part0">RBX99A8D1AC505C43F5A3777CFDE9F6F1AD</Ref>
@@ -3242,7 +3138,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -3250,7 +3145,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -3340,7 +3234,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -3348,7 +3241,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -3438,7 +3330,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -3446,7 +3337,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -3536,7 +3426,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -3544,7 +3433,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -3634,7 +3522,6 @@
 					<bool name="CanCollide">true</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -3642,7 +3529,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -3705,13 +3591,11 @@
 				<Item class="Decal" referent="RBXF320A1B0C19D447795D1DCA676E6676F">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<Color3 name="Color3">
 							<R>1</R>
 							<G>1</G>
 							<B>1</B>
 						</Color3>
-						<bool name="DefinesCapabilities">false</bool>
 						<token name="Face">5</token>
 						<string name="Name">roblox</string>
 						<int64 name="SourceAssetId">-1</int64>
@@ -3752,8 +3636,6 @@
 							<R21>0</R21>
 							<R22>0</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<float name="DesiredAngle">-0.0620252751</float>
 						<bool name="Enabled">true</bool>
 						<float name="MaxVelocity">0.150000006</float>
@@ -3795,8 +3677,6 @@
 							<R21>1</R21>
 							<R22>-0</R22>
 						</CoordinateFrame>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
 						<float name="DesiredAngle">0</float>
 						<bool name="Enabled">true</bool>
 						<float name="MaxVelocity">0.100000001</float>
@@ -3815,9 +3695,7 @@
 					<bool name="AutoRotate">true</bool>
 					<bool name="AutomaticScalingEnabled">true</bool>
 					<bool name="BreakJointsOnDeath">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<token name="CollisionType">0</token>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="DisplayDistanceType">2</token>
 					<string name="DisplayName"></string>
 					<bool name="EvaluateStateMachine">true</bool>
@@ -3864,8 +3742,6 @@
 						<R22>1</R22>
 					</CoordinateFrame>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
 					<string name="Name">Clown</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
@@ -3899,7 +3775,6 @@
 						<bool name="CanCollide">false</bool>
 						<bool name="CanQuery">true</bool>
 						<bool name="CanTouch">true</bool>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<bool name="CastShadow">true</bool>
 						<string name="CollisionGroup">Default</string>
 						<int name="CollisionGroupId">0</int>
@@ -3907,7 +3782,6 @@
 						<PhysicalProperties name="CustomPhysicalProperties">
 							<CustomPhysics>false</CustomPhysics>
 						</PhysicalProperties>
-						<bool name="DefinesCapabilities">false</bool>
 						<bool name="EnableFluidForces">true</bool>
 						<float name="FrontParamA">-0.5</float>
 						<float name="FrontParamB">0.5</float>
@@ -3970,8 +3844,6 @@
 					<Item class="SpecialMesh" referent="RBXC546F605C3D5445D919560016F61834D">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
-							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-							<bool name="DefinesCapabilities">false</bool>
 							<Content name="MeshId"><url>http://www.roblox.com/asset/?id=15393031</url></Content>
 							<token name="MeshType">5</token>
 							<string name="Name">Mesh</string>
@@ -3998,8 +3870,6 @@
 					<Item class="Vector3Value" referent="RBX9E05A6B9846A4A959A8E70BCA0E07CF1">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
-							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-							<bool name="DefinesCapabilities">false</bool>
 							<string name="Name">OriginalSize</string>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
@@ -4016,8 +3886,6 @@
 		<Item class="Model" referent="RBX96FA9876B4334B4EBF8F883CC87256D4">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
 				<token name="LevelOfDetail">0</token>
 				<CoordinateFrame name="ModelMeshCFrame">
 					<X>0</X>
@@ -4092,7 +3960,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -4100,7 +3967,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -4190,7 +4056,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -4198,7 +4063,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -4288,7 +4152,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -4296,7 +4159,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -4386,7 +4248,6 @@
 					<bool name="CanCollide">false</bool>
 					<bool name="CanQuery">true</bool>
 					<bool name="CanTouch">true</bool>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="CastShadow">true</bool>
 					<string name="CollisionGroup">Default</string>
 					<int name="CollisionGroupId">0</int>
@@ -4394,7 +4255,6 @@
 					<PhysicalProperties name="CustomPhysicalProperties">
 						<CustomPhysics>false</CustomPhysics>
 					</PhysicalProperties>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="EnableFluidForces">true</bool>
 					<float name="FrontParamA">-0.5</float>
 					<float name="FrontParamB">0.5</float>
@@ -4485,7 +4345,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -4493,7 +4352,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -4583,7 +4441,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -4591,7 +4448,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -4681,7 +4537,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -4689,7 +4544,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -4752,13 +4606,11 @@
 			<Item class="Texture" referent="RBXD3E7DCA21C024270B9BBA61AAC508D8F">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">4</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -4775,13 +4627,11 @@
 			<Item class="Texture" referent="RBX8946911272D346949F3FC9AD75FA8492">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">1</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -4825,7 +4675,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -4833,7 +4682,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -4923,7 +4771,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -4931,7 +4778,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5021,7 +4867,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5029,7 +4874,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5119,7 +4963,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5127,7 +4970,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5217,7 +5059,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5225,7 +5066,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5315,7 +5155,6 @@
 				<bool name="CanCollide">true</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5323,7 +5162,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5413,7 +5251,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5421,7 +5258,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5511,7 +5347,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5519,7 +5354,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5609,7 +5443,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5617,7 +5450,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5707,7 +5539,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5715,7 +5546,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5805,7 +5635,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5813,7 +5642,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -5903,7 +5731,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -5911,7 +5738,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6001,7 +5827,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6009,7 +5834,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6099,7 +5923,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6107,7 +5930,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6197,7 +6019,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6205,7 +6026,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6295,7 +6115,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6303,7 +6122,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6393,7 +6211,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6401,7 +6218,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6491,7 +6307,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6499,7 +6314,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6589,7 +6403,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6597,7 +6410,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6687,7 +6499,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6695,7 +6506,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6785,7 +6595,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -6793,7 +6602,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -6856,13 +6664,11 @@
 			<Item class="Texture" referent="RBX870602AC75964EFEBAF62317277D1949">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">4</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -6879,13 +6685,11 @@
 			<Item class="Texture" referent="RBXE8273AD79599449395BF0620224D9981">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">1</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -6931,7 +6735,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<BinaryString name="ChildData"></BinaryString>
 				<SharedString name="ChildData2">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
@@ -6941,7 +6744,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<token name="FluidFidelityInternal">0</token>
 				<token name="FormFactor">3</token>
@@ -7016,13 +6818,11 @@
 			<Item class="Texture" referent="RBX96AA0EEDBB774A3F9817515506EF9C42">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">3</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -7039,13 +6839,11 @@
 			<Item class="Texture" referent="RBX4B69116C3E3943EA88DB11247832D6C9">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">0</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -7091,7 +6889,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<BinaryString name="ChildData"></BinaryString>
 				<SharedString name="ChildData2">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
@@ -7101,7 +6898,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<token name="FluidFidelityInternal">0</token>
 				<token name="FormFactor">3</token>
@@ -7176,13 +6972,11 @@
 			<Item class="Texture" referent="RBXB6878F75460141348F17EB3B71ABE231">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">3</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -7199,13 +6993,11 @@
 			<Item class="Texture" referent="RBXAA06DF0B0D674AA0AE40BCB78EA90F1F">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">0</token>
 					<string name="Name">Texture</string>
 					<float name="OffsetStudsU">0</float>
@@ -7249,7 +7041,6 @@
 				<bool name="CanCollide">true</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -7257,7 +7048,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -7320,13 +7110,11 @@
 			<Item class="Decal" referent="RBX7C301C66F97347E69E2005FB739D1E3A">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color3">
 						<R>1</R>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<token name="Face">0</token>
 					<string name="Name">Decal</string>
 					<int64 name="SourceAssetId">-1</int64>
@@ -7366,7 +7154,6 @@
 				<bool name="CanCollide">false</bool>
 				<bool name="CanQuery">true</bool>
 				<bool name="CanTouch">true</bool>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 				<bool name="CastShadow">true</bool>
 				<string name="CollisionGroup">Default</string>
 				<int name="CollisionGroupId">0</int>
@@ -7374,7 +7161,6 @@
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
-				<bool name="DefinesCapabilities">false</bool>
 				<bool name="EnableFluidForces">true</bool>
 				<float name="FrontParamA">-0.5</float>
 				<float name="FrontParamB">0.5</float>
@@ -7439,13 +7225,11 @@
 					<float name="Angle">85</float>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<float name="Brightness">20</float>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<Color3 name="Color">
 						<R>1</R>
 						<G>0</G>
 						<B>0</B>
 					</Color3>
-					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Enabled">true</bool>
 					<token name="Face">5</token>
 					<string name="Name">SpotLight</string>
