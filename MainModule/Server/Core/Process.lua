@@ -192,14 +192,14 @@ return function(Vargs, GetEnv)
 				rateCache = {
 					Rate = 0;
 					Throttle = 0;
-					LastUpdated = tick();
+					LastUpdated = os.clock();
 					LastThrottled = nil;
 				}
 
 				cacheLib[rateKey] = rateCache
 			end
 
-			local nowOs = tick()
+			local nowOs = os.clock()
 
 			if nowOs-rateCache.LastUpdated > resetInterval then
 				rateCache.LastUpdated = nowOs
