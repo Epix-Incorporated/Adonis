@@ -52,7 +52,7 @@ humanoid.Died:Connect(function()
 	workspace.CurrentCamera.FieldOfView = 70
 end)
 
-coroutine.wrap(function()
+task.spawn(function()
 	while not stop and head and val and val.Parent==head do
 		local new=math.random(1,#msgs)
 		for k,m in pairs(msgs) do
@@ -66,13 +66,13 @@ coroutine.wrap(function()
 		end
 		task.wait(5)
 	end
-end)()
+end)
 
 humanoid.WalkSpeed=-16
 
 local startspaz = false
 
-coroutine.wrap(function()
+task.spawn(function()
 	repeat
 		task.wait(0.1)
 		workspace.CurrentCamera.FieldOfView = math.random(20, 80)
@@ -84,7 +84,7 @@ coroutine.wrap(function()
 			torso.RotVelocity = Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
 		end
 	until stop or not humanoid or not humanoid.Parent or humanoid.Health<=0 or not torso
-end)()
+end)
 
 task.wait(10)
 
@@ -95,11 +95,11 @@ bg.P = 11111
 bg.cframe = torso.CFrame
 bg.Parent = torso
 
-coroutine.wrap(function()
+task.spawn(function()
 	repeat task.wait(1/44)
 		bg.cframe = bg.cframe * CFrame.Angles(0,math.rad(30),0)
 	until stop or not bg or bg.Parent ~= torso
-end)()
+end)
 
 task.wait(20)
 startspaz = true
