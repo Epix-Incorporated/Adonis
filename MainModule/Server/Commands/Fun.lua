@@ -1676,7 +1676,7 @@ return function(Vargs, env)
 						function fling(part)
 							part:BreakJoints()
 							part.Anchored=false
-							local attachment = Instance.New("Attachment", part)
+							local attachment = Instance.new("Attachment", part)
 							local pos=Instance.new("AlignPosition", part)
 							pos.MaxForce = math.huge
 							pos.Position = part.Position
