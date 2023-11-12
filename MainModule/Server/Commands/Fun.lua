@@ -4570,7 +4570,7 @@ return function(Vargs, env)
 
 				scr.Name = "ADONIS_IceSkates"
 
-				for i, v in service.GetPlayers(plr, args[1]:lower()) do
+				for i, v in service.GetPlayers(plr, tostring(args[1]):lower()) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local vel = vel:Clone()
 						vel.Parent = v.Character.HumanoidRootPart
