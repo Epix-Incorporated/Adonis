@@ -1708,10 +1708,10 @@ return function(data, env)
 		gTable:Destroy()
 	end)
 
-	local start = tick()
+	local start = os.clock()
 	repeat
 		wait()
-	until toReturn ~= nil or (duration and (tick()-duration) > duration)
+	until toReturn ~= nil or (duration and (os.clock()-duration) > duration)
 	if toReturn == nil then toReturn = false end
 
 	return toReturn

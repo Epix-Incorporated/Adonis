@@ -29,10 +29,6 @@ return function(Vargs, GetEnv)
 		LastDateTime = Alerts.LastDateTime;						--// Last message date and time
 		Messages = Alerts.Messages;								--// List of alert messages/lines
 
-		local function doNotify(p)
-			Functions.Notification("Urgent Message!", "Click to view messages", {p}, 20, "MatIcon://Announcement", Core.Bytecode("client.Remote.Send('ProcessCommand',':adonisalerts')"))
-		end
-
 		local function checkDoNotify(p, data)
 			local lastMessage = data.LastUrgentMessage or 0;
 
@@ -56,7 +52,7 @@ return function(Vargs, GetEnv)
 				local data = Core.GetPlayer(p);
 				if checkDoNotify(p, data) then
 					data.LastUrgentMessage = MessageVersion;
-					task.delay(0.5, doNotify, p)
+					task.delay(0.5, Functions.Notification, "Urgent Message!", "Click to view messages", {p}, 20, "MatIcon://Announcement", Core.Bytecode("client.Remote.Send('ProcessCommand',':adonisalerts')"))
 				end
 			end
 		end

@@ -540,7 +540,7 @@ Main = (function()
 		caller(function() if not getfenv(2).zin then incompatibleMessage("RERU WILL BE FILING A LAWSUIT AGAINST YOU SOON") end end)
 		
 		local second = false
-		coroutine.wrap(function() local start = tick() wait(5) if tick() - start < 0.1 or not second then incompatibleMessage("SKIDDED YIELDING") end end)()
+		task.spawn(function() local start = tick() wait(5) if tick() - start < 0.1 or not second then incompatibleMessage("SKIDDED YIELDING") end end)
 		second = true
 	end
 	]]
@@ -1100,10 +1100,10 @@ Main = (function()
 		if not val then
 			local startTime = tick()
 			Main.MainGuiCloseTime = startTime
-			coroutine.wrap(function()
+			task.spawn(function()
 				Lib.FastWait(0.2)
 				if not Main.MainGuiOpen and startTime == Main.MainGuiCloseTime then Main.MainGui.OpenButton.MainFrame.Visible = false end
-			end)()
+			end)
 		else
 			Main.MainGuiMouseEvent = service.UserInputService.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 and not Lib.CheckMouseInGui(Main.MainGui.OpenButton) and not Lib.CheckMouseInGui(Main.MainGui.OpenButton.MainFrame) then
@@ -1263,10 +1263,10 @@ Main = (function()
 
 		-- Done
 		intro.SetProgress("Complete",1)
-		coroutine.wrap(function()
+		task.spawn(function()
 			Lib.FastWait(1.25)
 			intro.Close()
-		end)()
+		end)
 
 		-- Init window system, create main menu, show explorer and properties
 		Lib.Window.Init()
@@ -2134,7 +2134,7 @@ local function main()
 		end
 
 		if hasExpanded and not updateDebounce then
-			coroutine.wrap(Explorer.PerformUpdate)(true)
+			task.spawn(Explorer.PerformUpdate, true)
 		end
 	end
 
@@ -2649,7 +2649,7 @@ local function main()
 		table.clear(nilCons)
 
 		for i = 1,#nilNode do
-			coroutine.wrap(removeObject)(nilNode[i].Obj)
+			task.spawn(removeObject, nilNode[i].Obj)
 		end
 
 		Explorer.Update()
@@ -2687,7 +2687,7 @@ local function main()
 			local node = nilNode[i]
 			if not newNilMap[node.Obj] then
 				nilMap[node.Obj] = nil
-				coroutine.wrap(removeObject)(node)
+				task.spawn(removeObject, node)
 			end
 		end]]
 
@@ -2696,7 +2696,7 @@ local function main()
 		for i = 1,#nilInsts do
 			local obj = nilInsts[i]
 			local node = nodes[obj]
-			if not node then coroutine.wrap(addObject)(obj) end
+			if not node then task.spawn(addObject, obj) end
 		end
 
 		--[[
@@ -3326,7 +3326,7 @@ return search]==]
 	end
 
 	Explorer.InitDelCleaner = function()
-		coroutine.wrap(function()
+		task.spawn(function()
 			local fw = Lib.FastWait
 			while true do
 				local processed = false
@@ -3365,7 +3365,7 @@ return search]==]
 				if processed and not refreshDebounce then Explorer.PerformRefresh() end
 				fw(0.5)
 			end
-		end)()
+		end)
 	end
 
 	Explorer.UpdateSelectionVisuals = function()
@@ -4082,7 +4082,7 @@ local function main()
 
 		funcs.Fire = function(self,...)
 			for i,v in next,self.Connections do
-				xpcall(coroutine.wrap(v.Func),function(e) warn(e.."\n"..debug.traceback()) end,...)
+				task.spawn(xpcall, v.Func, function(e) warn(e.."\n"..debug.traceback()) end, ...)
 			end
 		end
 
@@ -6645,7 +6645,7 @@ local function main()
 			lineTweens.Vis:Cancel()
 			cursor.BackgroundTransparency = 0
 			
-			coroutine.wrap(function()
+			task.spawn(function()
 				while self.Editable do
 					Lib.FastWait(0.5)
 					if self.LastAnimTime ~= animTime then return end
@@ -6655,7 +6655,7 @@ local function main()
 					lineTweens.Vis:Play()
 					Lib.FastWait(0.2)
 				end
-			end)()
+			end)
 		end
 		
 		funcs.MoveCursor = function(self,x,y)
@@ -10289,7 +10289,7 @@ local function main()
 			if newId then sound.TimePosition = 0 end
 			if not noplay then sound:Resume() end
 
-			coroutine.wrap(function()
+			task.spawn(function()
 				local previewTime = tick()
 				Properties.SoundPreviewTime = previewTime
 				while previewTime == Properties.SoundPreviewTime and sound.Playing do
@@ -10301,7 +10301,7 @@ local function main()
 					end
 					Lib.FastWait()
 				end
-			end)()
+			end)
 			Properties.Refresh()
 		end
 	end

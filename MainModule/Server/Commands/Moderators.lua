@@ -2695,7 +2695,7 @@ return function(Vargs, env)
 							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if opt == "rainbow" then
-										box.Color3 = Color3.fromHSV(tick()%5/5, 1, 1)
+										box.Color3 = Color3.fromHSV(os.clock()%5/5, 1, 1)
 									end
 
 									if v.Character then
@@ -6076,7 +6076,7 @@ return function(Vargs, env)
 							repeat xran = math.random(-9999, 9999) until math.abs(xran) >= 5555
 							repeat zran = math.random(-9999, 9999) until math.abs(zran) >= 5555
 							v.Character.Humanoid.Sit = true
-							v.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+							v.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 							local Attachment = service.New("Attachment", v.Character.HumanoidRootPart)
 							local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 							frc.Name = "BFRC"
