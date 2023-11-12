@@ -681,7 +681,7 @@ return function(Vargs, env)
 								if not restore[v] then
 									restore[v] = v.Color
 								end
-								v.Color = Color3.fromHSV(tick() % 1, 1, 1)
+								v.Color = Color3.fromHSV(os.time() % 1, 1, 1)
 							end
 						end
 					until not char or script.Name == "Stop" -- signal to unrainbowify
