@@ -1052,7 +1052,7 @@ return function(Vargs, env)
 												NumberSequenceKeypoint.new(1, 1)
 											}
 											em.Acceleration = Vector3.new(1, 0.1, 0)
-											em.AssemblyLinearVelocityInheritance = 0
+											em.VelocityInheritance = 0
 											em.EmissionDirection = "Top"
 											em.Lifetime = NumberRange.new(3, 8)
 											em.Rate = 10
