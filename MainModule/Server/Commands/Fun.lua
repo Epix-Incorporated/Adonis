@@ -276,7 +276,7 @@ return function(Vargs, env)
 					sound:Destroy()
 					task.wait(1.4)
 					local vel = Instance.new("BodyVelocity")
-					vel.AssemblyLinearVelocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
+					vel.Velocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
 					vel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 					vel.P = math.huge
 					vel.Parent = root
@@ -681,7 +681,7 @@ return function(Vargs, env)
 								if not restore[v] then
 									restore[v] = v.Color
 								end
-								v.Color = Color3.fromHSV(os.time() % 1, 1, 1)
+								v.Color = Color3.fromHSV(os.clock() % 1, 1, 1)
 							end
 						end
 					until not char or script.Name == "Stop" -- signal to unrainbowify
@@ -1923,8 +1923,8 @@ return function(Vargs, env)
 							Functions.MakeWeld(Part, v.Character.HumanoidRootPart, CFrame.new(0,-1, 0)*CFrame.Angles(-1.5, 0, 0))
 							local BodyVelocity = service.New("BodyVelocity")
 							BodyVelocity.Parent = Part
-							BodyVelocity.maxForce = Vector3.new(math.huge, math.huge, math.huge)
-							BodyVelocity.AssemblyLinearVelocity = Vector3.new(0, 100*speed, 0)
+							BodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+							BodyVelocity.Velocity = Vector3.new(0, 100*speed, 0)
 									--[[
 									cPcall(function()
 										for i = 1, math.huge do
@@ -4565,7 +4565,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local vel = service.New("BodyVelocity")
 				vel.Name = "ADONIS_IceVelocity"
-				vel.maxForce = Vector3.new(5000, 0, 5000)
+				vel.MaxForce = Vector3.new(5000, 0, 5000)
 				local scr = Deps.Assets.Slippery:Clone()
 
 				scr.Name = "ADONIS_IceSkates"
