@@ -215,38 +215,31 @@ end
 local Kill
 local Fire, Detected = nil, nil
 do
-	local wrap = coroutine.wrap
 	Kill = Immutable(function(info)
 		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
-		wrap(function()
-			pcall(function()
-				if Detected then
-					Detected("kick", info)
-				elseif Fire then
-					Fire("BadMemes", info)
-				end
-			end)
-		end)()
+		spawn(pcall, function()
+			if Detected then
+				Detected("kick", info)
+			elseif Fire then
+				Fire("BadMemes", info)
+			end
+		end))
 
-		wrap(function()
-			pcall(function()
-				task.wait(1)
-				service.Player:Kick(info)
-			end)
-		end)()
+		spawn(pcall, function()
+			task.wait(1)
+			service.Player:Kick(info)
+		end))
 		
 		if not isStudio then
-			wrap(function()
-				pcall(function()
-					task.wait(5)
-					while true do
-						pcall(task.spawn, function()
-							task.spawn(Kill())
-							-- memes
-						end)
-					end
-				end)
-			end)()
+			spawn(pcall, function()
+				task.wait(5)
+				while true do
+					pcall(task.spawn, function()
+						task.spawn(Kill())
+						-- memes
+					end)
+				end
+			end))
 		end
 	end)
 end
