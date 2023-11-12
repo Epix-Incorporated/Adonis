@@ -2695,7 +2695,7 @@ return function(Vargs, env)
 							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if opt == "rainbow" then
-										box.Color3 = Color3.fromHSV(os.time()%5/5, 1, 1)
+										box.Color3 = Color3.fromHSV(os.clock()%5/5, 1, 1)
 									end
 
 									if v.Character then
