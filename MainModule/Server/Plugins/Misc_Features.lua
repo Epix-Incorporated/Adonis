@@ -30,6 +30,7 @@ return function(Vargs, GetEnv)
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
 			Remote.Commands[ind] = val
+			Logs:AddLog("Script", `Attempted to add {ind} to legacy Remote.Unencrypted. Moving to Remote.Commands`)
 		end
 	});
 	Functions.GetRandom = function(pLen)
