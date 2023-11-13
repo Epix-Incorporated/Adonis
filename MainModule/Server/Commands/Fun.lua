@@ -338,10 +338,6 @@ return function(Vargs, env)
 						hum:WaitForChild("BodyDepthScale").Value /= 2
 						hum:WaitForChild("BodyWidthScale").Value /= 2
 
-						if v ~= plr then
-						end
-
-
 						for _, obj in model:GetDescendants() do
 							if obj:IsA("BasePart") then
 								obj.Massless = true
