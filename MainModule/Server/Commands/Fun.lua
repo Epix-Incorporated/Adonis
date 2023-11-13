@@ -1202,11 +1202,6 @@ return function(Vargs, env)
 						end
 
 						if check() then
-							service.New("Sound", {
-								Parent = primary;
-								SoundId = "rbxassetid://2767085";
-								Volume = 1;
-							}):Play()
 							task.wait(1)
 							spotLight.Enabled = true
 							particles.Enabled = true
