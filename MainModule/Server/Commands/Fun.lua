@@ -301,13 +301,15 @@ return function(Vargs, env)
 		CharGear = {
 			Prefix = Settings.Prefix;
 			Commands = {"chargear", "charactergear", "doll", "cgear", "playergear", "dollify", "pgear", "plrgear"};
-			Args = {"player/username"};
+			Args = {"player/username", "steal"};
 			Fun = true;
 			AdminLevel = "Moderators";
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
 				local plrChar = assert(plr.Character, "You don't have a character")
 				local cfr = assert(plrChar:FindFirstChild("RightHand") or plrChar:FindFirstChild("Right Arm"), "You don't have a right hand/arm").CFrame
+				local steal = args[2] and table.find({"yes", "y", "true"}, args[2]:lower())
+				assert(args[2] == nil or table.find({"yes", "y", "true", "no", "n", "false"}, args[2]:lower()), "Invalid boolean argument type")
 
 				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					Routine(function()
@@ -352,6 +354,14 @@ return function(Vargs, env)
 						model.Parent = tool
 						if v ~= plr then
 							model:PivotTo(cfr)
+
+							if steal then
+								local orgCharacter = v.Character
+								v.Character = model
+								if orgCharacter and not service.IsDestroyed(orgCharacter) then
+									orgCharacter:Destroy()
+								end
+							end
 						end
 
 						service.New("WeldConstraint", {
