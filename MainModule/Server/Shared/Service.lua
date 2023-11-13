@@ -1219,9 +1219,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 
 			if noYield then
-				service.TrackTask(`Thread: Loop: {name}`, false, loop)
+				service.TrackTask(`Thread: Loop: {name}`, loop, false)
 			else
-				service.TrackTask(`Loop: {name}`, false, loop)
+				service.TrackTask(`Loop: {name}`, loop, false)
 			end
 
 			--[[local task = service.Threads.RunTask(`LOOP:{name}`, loop)
