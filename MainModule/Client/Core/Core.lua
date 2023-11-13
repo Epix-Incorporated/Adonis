@@ -180,7 +180,7 @@ return function(Vargs, GetEnv)
 		LoadPlugin = function(plugin)
 			local plug = require(plugin)
 			local func = setfenv(plug,GetEnv(getfenv(plug)))
-			cPcall(func)
+			task.spawn(pcall, func)
 		end;
 
 		LoadBytecode = function(str, env)
