@@ -337,7 +337,7 @@ return function(Vargs, env)
 						hum:WaitForChild("BodyHeightScale").Value /= 2
 						hum:WaitForChild("BodyDepthScale").Value /= 2
 						hum:WaitForChild("BodyWidthScale").Value /= 2
-						hum.PlatFormStand = if steal then hum.PlatFormStand else true
+						hum.PlatformStand = if steal then hum.PlatformStand else true
 
 						for _, obj in model:GetDescendants() do
 							if obj:IsA("BasePart") then
