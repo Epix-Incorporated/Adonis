@@ -2575,14 +2575,16 @@ return function(Vargs, env)
 				local spinGryo = service.New("AlignOrientation")
 				spinGryo.Name = "ADONIS_SPIN_GYRO"
 				spinGryo.MaxTorque = math.huge
+				spinGryo.Responsiveness = 200
 				spinGryo.Mode = Enum.OrientationAlignmentMode.OneAttachment
+				spinGryo.AlignType = Enum.AlignType.PrimaryAxisPerpendicular
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local humanoidRootPart = v.Character.HumanoidRootPart
 						for _, q in humanoidRootPart:GetChildren() do
-						if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
-							q:Destroy()
-						end
+							if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
+								q:Destroy()
+							end
 						end
 						spinGryoAttachment.Parent = humanoidRootPart
 						spinGryo.Attachment0 = spinGryoAttachment
