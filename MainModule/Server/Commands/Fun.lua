@@ -5025,7 +5025,7 @@ return function(Vargs, env)
 							head:FindFirstChildOfClass("SurfaceAppearance"):Destroy()
 						end
 					elseif head:FindFirstChildOfClass("SpecialMesh") and table.find(Variables.AnimatedFaces, tonumber(head:FindFirstChildOfClass("SpecialMesh").MeshId:match("%d%d%d+"))) then
-						head:FindFirstChildOfClass("SpecialMesh").MeshId = ""
+						head:FindFirstChildOfClass("SpecialMesh").TextureId = ""
 					end
 
 					if head:FindFirstChildOfClass("FaceControls") then
