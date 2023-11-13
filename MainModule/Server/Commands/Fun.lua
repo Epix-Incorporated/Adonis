@@ -1510,6 +1510,12 @@ return function(Vargs, env)
 							end
 						end
 
+						service.New("Sound", {
+							Parent = primary;
+							SoundId = "rbxassetid://2767085";
+							Volume = 1;
+						}):Play()
+
 						sound.Pitch = 0.9
 
 						task.wait(0.5)
