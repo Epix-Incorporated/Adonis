@@ -339,10 +339,8 @@ return function(Vargs, env)
 						hum:WaitForChild("BodyWidthScale").Value /= 2
 
 						if v ~= plr then
-							handle.CFrame = cfr
 						end
 
-						model.Animate.Disabled = true
 
 						for _, obj in model:GetDescendants() do
 							if obj:IsA("BasePart") then
@@ -351,10 +349,12 @@ return function(Vargs, env)
 							end
 						end
 
+						model:PivotTo(cfr)
+						handle.CFrame = cfr
+						model.Animate.Disabled = true
 						model.Parent = tool
-						if v ~= plr then
-							model:PivotTo(cfr)
 
+						if v ~= plr then
 							if steal then
 								local orgCharacter = v.Character
 								v.Character = model
