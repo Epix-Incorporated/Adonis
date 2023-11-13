@@ -300,14 +300,16 @@ return function(Vargs, env)
 
 		CharGear = {
 			Prefix = Settings.Prefix;
-			Commands = {"chargear", "charactergear", "doll", "cgear"};
-			Args = {"player/username"};
+			Commands = {"chargear", "charactergear", "doll", "cgear", "playergear", "dollify", "pgear", "plrgear"};
+			Args = {"player/username", "steal"};
 			Fun = true;
 			AdminLevel = "Moderators";
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
 				local plrChar = assert(plr.Character, "You don't have a character")
 				local cfr = assert(plrChar:FindFirstChild("RightHand") or plrChar:FindFirstChild("Right Arm"), "You don't have a right hand/arm").CFrame
+				local steal = args[2] and table.find({"yes", "y", "true"}, args[2]:lower())
+				assert(args[2] == nil or table.find({"yes", "y", "true", "no", "n", "false"}, args[2]:lower()), "Invalid boolean argument type")
 
 				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					Routine(function()
@@ -324,9 +326,10 @@ return function(Vargs, env)
 							Transparency = 1;
 						})
 
+						local orgHumanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 						local model = service.Players:CreateHumanoidModelFromDescription(
-							service.Players:GetHumanoidDescriptionFromUserId(v.UserId),
-							Enum.HumanoidRigType.R15
+							orgHumanoid and orgHumanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(v.CharacterAppearanceId > 0 and v.CharacterAppearanceId or v.UserId),
+							orgHumanoid and orgHumanoid.RigType or Enum.HumanoidRigType.R15
 						)
 						model.Name = targetName
 
@@ -334,12 +337,7 @@ return function(Vargs, env)
 						hum:WaitForChild("BodyHeightScale").Value /= 2
 						hum:WaitForChild("BodyDepthScale").Value /= 2
 						hum:WaitForChild("BodyWidthScale").Value /= 2
-
-						if v ~= plr then
-							handle.CFrame = cfr
-						end
-
-						model.Animate.Disabled = true
+						hum.PlatformStand = if steal then hum.PlatformStand else true
 
 						for _, obj in model:GetDescendants() do
 							if obj:IsA("BasePart") then
@@ -348,9 +346,19 @@ return function(Vargs, env)
 							end
 						end
 
+						model:PivotTo(cfr)
+						handle.CFrame = cfr
+						model.Animate.Disabled = true
 						model.Parent = tool
+
 						if v ~= plr then
-							model:PivotTo(cfr)
+							if steal then
+								local orgCharacter = v.Character
+								v.Character = model
+								if orgCharacter and not service.IsDestroyed(orgCharacter) then
+									orgCharacter:Destroy()
+								end
+							end
 						end
 
 						service.New("WeldConstraint", {
@@ -360,76 +368,6 @@ return function(Vargs, env)
 						})
 
 						tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
-					end)
-				end
-			end
-		};
-
-		PlrGear = {
-			Prefix = Settings.Prefix;
-			Commands = {"playergear", "dollify", "pgear", "plrgear"};
-			Args = {"player"};
-			Fun = true;
-			AdminLevel = "Moderators";
-			Description = "Turns the target player into a doll which can be picked up";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local char = v.Character
-					if not char then
-						Functions.Hint(`{service.FormatPlayer(v)} has no character`, {plr})
-						continue
-					end
-					if char.Parent and char.Parent:IsA("Tool") then
-						Functions.Hint(`{service.FormatPlayer(v)} is already a doll`, {plr})
-						continue
-					end
-
-					Routine(function()
-						local tool = service.New("Tool", {
-							Name = v.Name;
-							ToolTip = `{service.FormatPlayer(v)} as a tool; converted using Adonis`;
-						})
-						local handle = service.New("Part", {
-							Parent = tool;
-							Name = "Handle";
-							Transparency = 1;
-						})
-
-						local charHum = char:FindFirstChildOfClass("Humanoid")
-						local model = service.Players:CreateHumanoidModelFromDescription(
-							service.Players:GetHumanoidDescriptionFromUserId(plr.UserId),
-							if charHum then charHum.RigType else Enum.HumanoidRigType.R15
-						)
-						model.Name = v.DisplayName
-						model.PrimaryPart = model:WaitForChild("HumanoidRootPart", 1)
-
-						local pivot = char:GetPivot()
-						char:Destroy()
-						v.Character = model
-						model:PivotTo(pivot)
-
-						local hum = model:WaitForChild("Humanoid")
-						hum:WaitForChild("BodyHeightScale").Value /= 2
-						hum:WaitForChild("BodyDepthScale").Value /= 2
-						hum:WaitForChild("BodyWidthScale").Value /= 2
-
-						handle.CFrame = pivot
-						handle.CanCollide = false
-						for _, v in model:GetDescendants() do
-							if v:IsA("BasePart") then
-								v.Massless = true
-							end
-						end
-
-						model.Parent = tool
-
-						service.New("WeldConstraint", {
-							Parent = tool;
-							Part0 = handle;
-							Part1 = model.PrimaryPart;
-						})
-
-						tool.Parent = workspace
 					end)
 				end
 			end
