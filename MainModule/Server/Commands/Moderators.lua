@@ -1353,7 +1353,7 @@ return function(Vargs, env)
 					"―――――――――――――――――――――――",
 				}
 				for _, v in players do
-					cPcall(function()
+					task.spawn(pcall, function()
 						if type(v) == "string" and v == "NoPlayer" then
 							table.insert(tab, {
 								Text = "PLAYERLESS CLIENT";
@@ -2515,7 +2515,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, string.lower(args[1])) do
-					cPcall(function()
+					task.spawn(pcall, function()
 						if v and v:FindFirstChild("leaderstats") then
 							for a, q in v.leaderstats:GetChildren() do
 								if q:IsA("IntValue") or q:IsA("NumberValue") then q.Value = 0 end
