@@ -177,6 +177,7 @@ local warn = function(...)
 	warn(...)
 end
 ]]
+-- Use `task.spawn(pcall, ...)`, `task.spawn(Pcall, f, ...)` or `task.spawn(xpcall, f, handler, ...)` instead
 local cPcall = function(func, ...)
 	local ran, err = pcall(coroutine.resume, coroutine.create(func), ...)
 
