@@ -327,7 +327,7 @@ return function(Vargs, env)
 						local orgHumanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 						local model = service.Players:CreateHumanoidModelFromDescription(
 							orgHumanoid and orgHumanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(v.CharacterAppearanceId > 0 and v.CharacterAppearanceId or v.UserId),
-							Enum.HumanoidRigType.R15
+							orgHumanoid and orgHumanoid.RigType or Enum.HumanoidRigType.R15
 						)
 						model.Name = targetName
 
