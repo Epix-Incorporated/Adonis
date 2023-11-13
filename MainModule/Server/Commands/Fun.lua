@@ -220,7 +220,7 @@ return function(Vargs, env)
 
 		Trigger = {
 			Prefix = Settings.Prefix;
-			Commands = {"trigger"};
+			Commands = {"trigger", "triggered"};
 			Args = {"player"};
 			Fun = true;
 			Description = "Makes the target player really angry";
@@ -233,6 +233,18 @@ return function(Vargs, env)
 						if head then
 							service.New("Sound", {Parent = head; SoundId = "rbxassetid://429400881";}):Play()
 							service.New("Sound", {Parent = head; Volume = 3; SoundId = "rbxassetid://606862847";}):Play()
+							local smoke = Instance.new("ParticleEmitter")
+							smoke.Enabled = true
+							smoke.Lifetime = NumberRange.new(0, 3)
+							smoke.Rate = 999999
+							smoke.RotSpeed = NumberRange.new(0, 20)
+							smoke.Rotation = NumberRange.new(0, 360)
+							smoke.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1.25, 1.25), NumberSequenceKeypoint.new(1, 1.25, 1.25) })
+							smoke.Speed = NumberRange.new(1, 1)
+							smoke.SpreadAngle = Vector2.new(360, 360)
+							smoke.Texture = "rbxassetid://10892277322"
+							smoke.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0, 0), NumberSequenceKeypoint.new(1, 1, 0) })
+							smoke.Parent = head
 							local face = head:FindFirstChild("face")
 							if face then face.Texture = "rbxassetid://412416747" end
 							head.BrickColor = BrickColor.new("Maroon")
