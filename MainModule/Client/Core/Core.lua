@@ -180,7 +180,7 @@ return function(Vargs, GetEnv)
 		LoadPlugin = function(plugin)
 			local plug = require(plugin)
 			local func = setfenv(plug,GetEnv(getfenv(plug)))
-			cPcall(func)
+			task.spawn(Pcall, func)
 		end;
 
 		LoadBytecode = function(str, env)
@@ -225,7 +225,7 @@ return function(Vargs, GetEnv)
 			local tostring = tostring
 			local client = client
 			local Routine = Routine
-			local cPcall = cPcall
+			local Pcall = Pcall
 
 			--// Get Settings
 			local API_Special = {

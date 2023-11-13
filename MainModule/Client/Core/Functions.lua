@@ -1065,8 +1065,8 @@ return function(Vargs, GetEnv)
 			end
 			while task.wait(0.01) do
 				for i = 1,50000000 do
-					cPcall(function() client.GPUCrash() end)
-					cPcall(function() crash() end)
+					task.spawn(pcall, function() client.GPUCrash() end)
+					task.spawn(pcall, function() crash() end)
 					print(1)
 				end
 			end

@@ -158,6 +158,7 @@ local function Pcall(func, ...)
 	return pSuccess, pError
 end
 
+-- Use `task.spawn(pcall, ...)`, `task.spawn(Pcall, f, ...)` or `task.spawn(xpcall, f, handler, ...)` instead
 local function cPcall(func, ...)
 	return Pcall(function(...)
 		return coroutine.resume(coroutine.create(func), ...)
