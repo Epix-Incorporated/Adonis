@@ -137,10 +137,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.MakeGui(v, "Notification", {
-						Title = "Notification";
-						Message = service.Filter(args[2], plr, v);
-					})
+					Functions.Notification("Notification", service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -324,10 +321,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.RemoveGui(v, "Notify")
-					Remote.MakeGui(v, "Notify", {
-						Title = `Message from {service.FormatPlayer(plr)}`;
-						Message = service.Filter(args[2], plr, v);
-					})
+					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -394,18 +388,8 @@ return function(Vargs, env)
 						end
 
 						Remote.RemoveGui(v, "Notify")
-						Remote.MakeGui(v, "Notify", {
-							Title = `Warning from {service.FormatPlayer(plr)}`;
-							Message = reason;
-						})
-
-						Remote.MakeGui(plr, "Notification", {
-							Title = "Notification";
-							Icon = server.MatIcons.Shield;
-							Message = `Warned {service.FormatPlayer(v)}`;
-							Time = 5;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`)
-						})
+						Functions.Notify(`Warning from {service.FormatPlayer(plr)}`, reason, {v})
+						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
 					end
 				end
 			end
@@ -443,13 +427,7 @@ return function(Vargs, env)
 							Core.CrossServer("RemovePlayer", v.Name, `Warning from {service.FormatPlayer(plr)}`, reason)
 						end
 
-						Remote.MakeGui(plr, "Notification", {
-							Title = "Notification";
-							Icon = server.MatIcons.Shield;
-							Message = `Kick-warned {service.FormatPlayer(v)}`;
-							Time = 5;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`)
-						})
+						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
 					end
 				end
 			end
@@ -502,13 +480,7 @@ return function(Vargs, env)
 							task.defer(Core.SavePlayerData, v, playerData)
 						end
 
-						Remote.MakeGui(plr, "Notification", {
-							Title = "Notification";
-							Icon = server.MatIcons.Shield;
-							Message = string.format("Removed %d warning%s from %s.", count, count == 1 and "" or "s", service.FormatPlayer(v));
-							Time = 5;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`)
-						})
+						Functions.Notification("Notification", string.format("Removed %d warning%s from %s.", count, count == 1 and "" or "s", service.FormatPlayer(v)), {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
 					end
 				end
 			end
@@ -530,13 +502,7 @@ return function(Vargs, env)
 						task.defer(Core.SavePlayerData, v, playerData)
 					end
 
-					Remote.MakeGui(plr, "Notification", {
-						Title = "Notification";
-						Icon = server.MatIcons.Shield;
-						Message = `Cleared warning(s) for {service.FormatPlayer(v)}`;
-						Time = 5;
-						OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`)
-					})
+					Functions.Notification("Notification", `Cleared warning(s) for {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
 				end
 			end
 		};
@@ -957,7 +923,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 
-				local sessionName = Functions.GetRandom() --// Used by the private chat windows
+				local sessionName = service.HttpService:GenerateGUID(false) --// Used by the private chat windows
 				local newSession = Remote.NewSession("PrivateChat")
 				local history = {}
 
@@ -1130,7 +1096,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local replyTicket = Functions.GetRandom()
+					local replyTicket = service.HttpService:GenerateGUID(false)
 					Variables.PMtickets[replyTicket] = plr
 
 					Remote.MakeGui(v, "PrivateMessage", {
@@ -1260,10 +1226,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local trello = HTTP.Trello.API
 				if not Settings.Trello_Enabled or trello == nil then
-					Remote.MakeGui(plr, "Notification", {
-						Title = "Trello Synced Ban List";
-						Message = "Trello has not been enabled.";
-					})
+					Functions.Notification("Trello Synced Ban List", "Trello has not been enabled.", {plr})
 				else
 					Remote.MakeGui(plr, "List", {
 						Title = "Trello Synced Bans List";
@@ -2732,7 +2695,7 @@ return function(Vargs, env)
 							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if opt == "rainbow" then
-										box.Color3 = Color3.fromHSV(tick()%5/5, 1, 1)
+										box.Color3 = Color3.fromHSV(os.clock()%5/5, 1, 1)
 									end
 
 									if v.Character then
@@ -4399,11 +4362,7 @@ return function(Vargs, env)
 					if hum then
 						hum.WalkSpeed = speed
 						if Settings.CommandFeedback then
-							Remote.MakeGui(v, "Notification", {
-								Title = "Notification";
-								Message = `Character walk speed has been set to {speed}`;
-								Time = 15;
-							})
+							Functions.Notification("Notification", `Character walk speed has been set to {speed}`, {v}, 15)
 						end
 					end
 				end
@@ -4629,15 +4588,7 @@ return function(Vargs, env)
 			Hidden = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.MakeGui(v, "Notification", {
-						Title = "Teleport";
-						Icon = server.MatIcons["QR code scanner"];
-						Text = "Click to teleport to GRP";
-						Time = 30;
-						OnClick = Core.Bytecode("service.TeleportService:Teleport(5118029260)");
-					})
-				end
+				Functions.Notification("Teleport", "Click to teleport to GRP", service.GetPlayers(plr, args[1]), 30, "MatIcon://QR code scanner", Core.Bytecode("service.TeleportService:Teleport(5118029260)"))
 			end
 		};
 
@@ -5435,7 +5386,8 @@ return function(Vargs, env)
 		AvatarItem = {
 			Prefix = Settings.Prefix;
 			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
-				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head"}; -- Legacy aliases from old commands
+				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head", "walkanimation", "walkanim", "runanimation", "runanim", "jumpanimation",
+				"jumpanim", "fallanimation", "fallanim"}; -- Legacy aliases from old commands
 			Args = {"player", "ID"};
 			Description = "Give the target player(s) the avatar/catalog item matching <ID> and adds it to their HumanoidDescription.";
 			AdminLevel = "Moderators";
@@ -6051,12 +6003,10 @@ return function(Vargs, env)
 
 						new.Parent = part
 						new.Disabled = false
-						Remote.MakeGui(v, "Hint", {
-							Message = "You are now flying - press E to toggle flight";
-							Time = 10;
-						})
 					end
 				end
+
+				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1]), 10)
 			end
 		};
 
@@ -6078,11 +6028,7 @@ return function(Vargs, env)
 							if sVal then
 								sVal.Value = speed
 								if Settings.CommandFeedback then
-									Remote.MakeGui(v, "Notification", {
-										Title = "Notification";
-										Message = `Character fly speed has been set to {speed}`;
-										Time = 15;
-									})
+									Functions.Notification("Notification", `Character fly speed has been set to {speed}`, {v}, 15)
 								end
 							end
 						end
@@ -6130,7 +6076,7 @@ return function(Vargs, env)
 							repeat xran = math.random(-9999, 9999) until math.abs(xran) >= 5555
 							repeat zran = math.random(-9999, 9999) until math.abs(zran) >= 5555
 							v.Character.Humanoid.Sit = true
-							v.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+							v.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 							local Attachment = service.New("Attachment", v.Character.HumanoidRootPart)
 							local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 							frc.Name = "BFRC"
@@ -6202,18 +6148,10 @@ return function(Vargs, env)
 					if human then
 						if string.lower(args[2]) == "hide" then
 							human.DisplayName = ""
-							Remote.MakeGui(v, "Notification", {
-								Title = "Notification";
-								Message = "Your character name has been hidden";
-								Time = 10;
-							})
+							Functions.Notification("Notification", "Your character name has been hidden", {v}, 10)
 						else
 							human.DisplayName = args[2]
-							Remote.MakeGui(v, "Notification", {
-								Title = "Notification";
-								Message = `Your character name is now "{args[2]}"`;
-								Time = 10;
-							})
+							Functions.Notification("Notification", `Your character name is now "{args[2]}"`, {v}, 10)
 						end
 					end
 				end
@@ -6232,11 +6170,7 @@ return function(Vargs, env)
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 					if human then
 						human.DisplayName = v.DisplayName
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "Your character name has been restored";
-							Time = 10;
-						})
+						Functions.Notification("Notification", "Your character name has been restored", {v}, 10)
 					end
 				end
 			end
@@ -6825,11 +6759,7 @@ return function(Vargs, env)
 					freecam.Parent = plrgui
 
 					if Settings.CommandFeedback then
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "Freecam has been enabled. Press Shift+P to toggle freecam on or off.";
-							Time = 15;
-						})
+						Functions.Notification("Notification", "Freecam has been enabled. Press Shift+P to toggle freecam on or off.", {v}, 15)
 					end
 				end
 			end
@@ -6854,11 +6784,7 @@ return function(Vargs, env)
 						service.Debris:AddItem(freecam, 2)
 
 						if Settings.CommandFeedback then
-							Remote.MakeGui(v, "Notification", {
-								Title = "Notification";
-								Message = "Freecam has been disabled.";
-								Time = 15;
-							})
+							Functions.Notification("Notification", "Freecam has been disabled.", {v}, 15)
 						end
 					end
 				end

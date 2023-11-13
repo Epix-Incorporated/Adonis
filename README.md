@@ -9,7 +9,7 @@
 [![LICENSE](https://img.shields.io/github/license/Epix-Incorporated/Adonis)](https://github.com/Epix-Incorporated/Adonis/blob/master/LICENSE.md "The legal LICENSE governing the usage of the admin system.")
 [![releases](https://img.shields.io/github/v/release/Epix-Incorporated/Adonis?label=version)](https://github.com/Epix-Incorporated/Adonis/releases "Downloadable versions of the admin system.")
 [![Discord server](https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white)](https://dvr.cx/discord "A Discord server where people can discuss Adonis related stuff and talk.")
-[![Lint](https://github.com/Epix-Incorporated/Adonis/workflows/lint/badge.svg)](https://github.com/Epix-Incorporated/Adonis/actions/workflows/lint.yml "Allows to check if the code of the admin system is valid without errors.")
+[![lint](https://github.com/Epix-Incorporated/Adonis/actions/workflows/lint.yml/badge.svg)](https://github.com/Epix-Incorporated/Adonis/actions/workflows/lint.yml "Allows to check if the code of the admin system is valid without errors.")
 
 </div>
 

@@ -169,13 +169,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins", true)
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are a temp administrator. Click to view commands.";
-							Time = 10;
-							Icon = server.MatIcons["Admin panel settings"];
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are a temp administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temporary admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -199,13 +193,7 @@ return function(Vargs, env)
 				do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins")
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
-							Time = 10;
-							Icon = server.MatIcons["Admin panel settings"];
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are an administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a permanent admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -524,12 +512,7 @@ return function(Vargs, env)
 						Functions.Hint(string.format("Hidden %s from %d other player%s.", service.FormatPlayer(v), n, n == 1 and "" or "s"), {plr})
 					end
 
-					Remote.MakeGui(v, "Notification", {
-						Title = "Incognito Mode";
-						Icon = server.MatIcons["Privacy tip"];
-						Text = "You will cease to appear on the player list, on other players' screens.";
-						Time = 15;
-					})
+					Functions.Notification("Incognito Mode", "You will cease to appear on the player list, on other players' screens.", {v}, 15, "MatIcon://Privacy tip")
 				end
 			end
 		};

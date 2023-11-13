@@ -789,12 +789,7 @@ return function(Vargs, GetEnv)
 							if not pcall(function()
 									obj:Destroy()
 								end) then
-								Remote.MakeGui(p ,"Notification", {
-									Title = "Error";
-									Icon = server.MatIcons.Error;
-									Message = "Cannot delete object.";
-									Time = 2;
-								})
+								Functions.Notification("Error", "Cannot delete object.", {p}, 2, "MatIcon://Error")
 							end
 						end
 					end
@@ -1007,7 +1002,7 @@ return function(Vargs, GetEnv)
 					local title = string.format("Reply from %s (@%s)", p.DisplayName, p.Name)
 					local message = args[3]
 
-					local replyTicket = Functions.GetRandom()
+					local replyTicket = service.HttpService:GenerateGUID(false)
 					Variables.PMtickets[replyTicket] = p
 					Remote.MakeGui(target, "PrivateMessage", {
 						Title = title;
@@ -1035,7 +1030,7 @@ return function(Vargs, GetEnv)
 				Users = {};
 				Events = {};
 				SessionType = sessionType;
-				SessionKey = Functions.GetRandom();
+				SessionKey = service.HttpService:GenerateGUID(false);
 				SessionEvent = service.New("BindableEvent");
 
 				AddUser = function(self, p, defaultData)
@@ -1166,7 +1161,7 @@ return function(Vargs, GetEnv)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				local returns, finished
-				local key = Functions:GetRandom()
+				local key = service.HttpService:GenerateGUID(false)
 				local Yield = service.Yield();
 				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Release() end)
 

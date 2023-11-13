@@ -122,7 +122,6 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local value = assert(tonumber(args[2]), "Missing/invalid FPS value (argument #2)")
-				assert(value <= 60, "FPS cannot exceed 60!")
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "SetFPS", value)
 				end
@@ -549,12 +548,9 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				local speed = args[2] or 50
-				if not speed or not tonumber(speed) then
-					speed = 1000
-				end
-				for i, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "Dizzy", tonumber(speed))
+				local speed = tonumber(args[2]) or 50
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(v, "Function", "Dizzy", speed)
 				end
 			end
 		};
@@ -567,7 +563,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "Dizzy", false)
 				end
 			end
@@ -575,7 +571,7 @@ return function(Vargs, env)
 
 		Davey = {
 			Prefix = Settings.Prefix;
-			Commands = {"Davey_Bones"};
+			Commands = {"Davey_Bones", "davey"};
 			Args = {"player"};
 			Description = "Turns you into me <3";
 			Fun = true;
@@ -615,31 +611,41 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local infect; infect = function(v)
-					local char = v.Character
-					if char and char:FindFirstChild("HumanoidRootPart") and not char:FindFirstChild("Infected") then
-						local cl = service.New("StringValue", char)
-						cl.Name = "Infected"
-						cl.Parent = char
+				local infect; infect = function(humanoid)
+					local properties = {
+						HeadColor = BrickColor.new("Artichoke").Color,
+						LeftArmColor = BrickColor.new("Artichoke").Color,
+						RightArmColor = BrickColor.new("Artichoke").Color,
+						LeftLegColor = BrickColor.new("Artichoke").Color,
+						RightLegColor = BrickColor.new("Artichoke").Color,
+						TorsoColor = BrickColor.new("Artichoke").Color,
+						Face = math.random(1, 3) == 3 and 173789114 or 133360789
+					}
 
-						for _, prt in char:GetChildren() do
-							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" then
-								prt.Transparency = 0
-								prt.Reflectance = 0
-								prt.BrickColor = BrickColor.new("Dark green")
-								if prt.Name:find("Leg") or prt.Name:find("Arm") then
-									prt.BrickColor = BrickColor.new("Dark green")
-								end
-								local tconn; tconn = prt.Touched:Connect(function(hit)
-									if hit and hit.Parent and service.Players:FindFirstChild(hit.Parent.Name) and cl.Parent == char then
-										infect(hit.Parent)
-									elseif cl.Parent ~= char then
+					if humanoid and humanoid.RootPart and string.lower(humanoid.Name) ~= "zombie" and not humanoid.Parent:FindFirstChild("Infected") then
+						local description = humanoid:GetAppliedDescription()
+						local cl = service.New("StringValue")
+						cl.Name = "Infected"
+						cl.Parent = humanoid.Parent
+
+						for k, v in properties do
+							description[k] = v
+						end
+
+						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+
+						for _, part in humanoid.Parent:GetChildren() do
+							if part:IsA("BasePart") then
+								local tconn; tconn = part.Touched:Connect(function(hit)
+									if cl.Parent ~= humanoid.Parent then
 										tconn:Disconnect()
+									elseif hit.Parent and hit.Parent:FindFirstChildOfClass("Humanoid") then
+										infect(hit.Parent:FindFirstChildOfClass("Humanoid"))
 									end
 								end)
 
 								cl.Changed:Connect(function()
-									if cl.Parent ~= char then
+									if cl.Parent ~= humanoid.Parent then
 										tconn:Disconnect()
 									end
 								end)
@@ -648,8 +654,8 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					infect(v)
+				for _, v in service.GetPlayers(plr, args[1]) do
+					infect(v.Character and v.Character:FindFirstChildOfClass("Humanoid"))
 				end
 			end
 		};
@@ -675,7 +681,7 @@ return function(Vargs, env)
 								if not restore[v] then
 									restore[v] = v.Color
 								end
-								v.Color = Color3.fromHSV(tick() % 1, 1, 1)
+								v.Color = Color3.fromHSV(os.clock() % 1, 1, 1)
 							end
 						end
 					until not char or script.Name == "Stop" -- signal to unrainbowify
@@ -730,28 +736,30 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				-- TODO: Switch to HumanoidDescriptions
-				local bodyColors = service.New("BodyColors", {
-					HeadColor = BrickColor.new("Bright yellow"),
-					LeftArmColor = BrickColor.new("Bright yellow"),
-					RightArmColor = BrickColor.new("Bright yellow"),
-					LeftLegColor = BrickColor.new("Br. yellowish green"),
-					RightLegColor = BrickColor.new("Br. yellowish green"),
-					TorsoColor = BrickColor.new("Bright blue")
-				})
+				local properties = {
+					HeadColor = BrickColor.new("Bright yellow").Color,
+					LeftArmColor = BrickColor.new("Bright yellow").Color,
+					RightArmColor = BrickColor.new("Bright yellow").Color,
+					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
+					RightLegColor = BrickColor.new("Br. yellowish green").Color,
+					TorsoColor = BrickColor.new("Bright blue").Color,
+					Pants = 0, Shirt = 0, LeftArm = 0, RightArm = 0,
+					LeftLeg = 0, RightLeg = 0, Torso = 0
+				}
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						for _, p in v.Character:GetChildren() do
-							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") or p:IsA("BodyColors") then
-								p:Destroy()
-							end
+					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						Admin.RunCommand(`{Settings.Prefix}clearhats`, v.Name)
+						local description = humanoid:GetAppliedDescription()
+
+						for k, v in properties do
+							description[k] = v
 						end
-						bodyColors:Clone().Parent = v.Character
+
+						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 					end
 				end
-
-				bodyColors:Destroy()
 			end
 		};
 
@@ -1668,7 +1676,7 @@ return function(Vargs, env)
 						function fling(part)
 							part:BreakJoints()
 							part.Anchored=false
-							local attachment = Instance.New("Attachment", part)
+							local attachment = Instance.new("Attachment", part)
 							local pos=Instance.new("AlignPosition", part)
 							pos.MaxForce = math.huge
 							pos.Position = part.Position
@@ -1679,11 +1687,11 @@ return function(Vargs, env)
 								if part.Position.Y>=main.Position.Y+50 then
 									run=false
 								end
-								pos.position=Vector3.new(50*math.cos(i), part.Position.Y+5, 50*math.sin(i))+main.Position
+								pos.Position=Vector3.new(50*math.cos(i), part.Position.Y+5, 50*math.sin(i))+main.Position
 								i=i+1
 							end
-							pos.maxForce = Vector3.new(500, 500, 500)
-							pos.position=Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
+							pos.MaxForce = Vector3.new(500, 500, 500)
+							pos.Position=Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
 							pos:Destroy()
 						end
 
@@ -1702,8 +1710,8 @@ return function(Vargs, env)
 
 						repeat
 							for i, v in parts do
-								if (((main.Position - v.Position).Magnitude * 250 * 20) < (5000 * 40)) and v and v:IsDescendantOf(workspace) then
-									coroutine.wrap(fling, v)
+								if v and v:IsDescendantOf(workspace) and (((main.Position - v.Position).Magnitude * 250 * 20) < (5000 * 40)) then
+									task.spawn(fling, v)
 								elseif not v or not v:IsDescendantOf(workspace) then
 									table.remove(parts, i)
 								end
@@ -1912,15 +1920,11 @@ return function(Vargs, env)
 							SpecialMesh.MeshType = "FileMesh"
 							SpecialMesh.TextureId = "43abb6d081e0fbc8666fc92f6ff378c1"
 							SpecialMesh.Scale = Vector3.new(0.5, 0.5, 0.5)
-							local Weld = service.New("Weld")
-							Weld.Parent = Part
-							Weld.Part0 = Part
-							Weld.Part1 = v.Character.HumanoidRootPart
-							Weld.C0 = CFrame.new(0,-1, 0)*CFrame.Angles(-1.5, 0, 0)
+							Functions.MakeWeld(Part, v.Character.HumanoidRootPart, CFrame.new(0,-1, 0)*CFrame.Angles(-1.5, 0, 0))
 							local BodyVelocity = service.New("BodyVelocity")
 							BodyVelocity.Parent = Part
-							BodyVelocity.maxForce = Vector3.new(math.huge, math.huge, math.huge)
-							BodyVelocity.velocity = Vector3.new(0, 100*speed, 0)
+							BodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+							BodyVelocity.Velocity = Vector3.new(0, 100*speed, 0)
 									--[[
 									cPcall(function()
 										for i = 1, math.huge do
@@ -1972,23 +1976,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					cPcall(function()
-						local color
-						local num = math.random(1, 7)
-						if num == 1 then
-							color = "Really blue"
-						elseif num == 2 then
-							color = "Really red"
-						elseif num == 3 then
-							color = "Magenta"
-						elseif num == 4 then
-							color = "Lime green"
-						elseif num == 5 then
-							color = "Hot pink"
-						elseif num == 6 then
-							color = "New Yeller"
-						elseif num == 7 then
-							color = "White"
-						end
+						local color = ({"Really blue", "Really red", "Magenta", "Lime green", "Hot pink", "New Yeller", "White"})[math.random(1, 7)]
 						local hum=v.Character:FindFirstChild("Humanoid")
 						if not hum then return end
 						--Remote.Send(v, "Function", "Effect", "dance")
@@ -2040,7 +2028,7 @@ return function(Vargs, env)
 								p.TopSurface = "Smooth"
 								p.BottomSurface = "Smooth"
 								p.CFrame = v.Character.Head.CFrame * CFrame.new(Vector3.new(0, 0, -1))
-								p.Velocity = v.Character.Head.CFrame.lookVector * 20 + Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
+								p.AssemblyLinearVelocity = v.Character.Head.CFrame.lookVector * 20 + Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
 								p.Anchored = false
 								m.Name = "Puke Peice"
 								p.Name = "Puke Peice"
@@ -2110,7 +2098,7 @@ return function(Vargs, env)
 								p.TopSurface = "Smooth"
 								p.BottomSurface = "Smooth"
 								p.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(Vector3.new(2, 0, 0))
-								p.Velocity = v.Character.Head.CFrame.lookVector * 1 + Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1))
+								p.AssemblyLinearVelocity = v.Character.Head.CFrame.lookVector * 1 + Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1))
 								p.Anchored = false
 								m.Name = "Blood Peice"
 								p.Name = "Blood Peice"
@@ -2154,44 +2142,42 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				local desiredColors = {
+					HeadColor = BrickColor.new("Br. yellowish green").Color,
+					LeftArmColor = BrickColor.new("Br. yellowish green").Color,
+					RightArmColor = BrickColor.new("Br. yellowish green").Color,
+					LeftLegColor = BrickColor.new("Br. yellowish green").Color,
+					RightLegColor = BrickColor.new("Br. yellowish green").Color,
+					TorsoColor = BrickColor.new("Br. yellowish green").Color,
+					Face = 116042990 -- Is there an animated face equivelant of this?
+				}
+
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
-						local torso = v.Character:FindFirstChild("HumanoidRootPart")
-						local larm=v.Character:FindFirstChild("Left Arm")
-						local rarm=v.Character:FindFirstChild("Right Arm")
-						local lleg = v.Character:FindFirstChild("Left Leg")
-						local rleg = v.Character:FindFirstChild("Right Leg")
-						local head = v.Character:FindFirstChild("Head")
-						local hum=v.Character:FindFirstChildOfClass("Humanoid")
-						if torso and larm and rarm and lleg and rleg and head and hum and not v.Character:FindFirstChild("Adonis_Poisoned") then
+						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid and not v.Character:FindFirstChild("Adonis_Poisoned") then
+							local description, orgColors = humanoid:GetAppliedDescription(), {}
 							local poisoned = service.New("BoolValue", v.Character)
 							poisoned.Name = "Adonis_Poisoned"
 							poisoned.Value = true
-							local tor = torso.BrickColor
-							local lar = larm.BrickColor
-							local rar = rarm.BrickColor
-							local lle = lleg.BrickColor
-							local rle = rleg.BrickColor
-							local hea = head.BrickColor
-							torso.BrickColor = BrickColor.new("Br. yellowish green")
-							larm.BrickColor = BrickColor.new("Br. yellowish green")
-							rarm.BrickColor = BrickColor.new("Br. yellowish green")
-							lleg.BrickColor = BrickColor.new("Br. yellowish green")
-							rleg.BrickColor = BrickColor.new("Br. yellowish green")
-							head.BrickColor = BrickColor.new("Br. yellowish green")
+
+							for k, v in desiredColors do
+								orgColors[k], description[k] = description[k], v
+							end
+	
+							task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							local run = true
-							coroutine.wrap(function() wait(10) run = false end)()
+							task.spawn(function() wait(10) run = false end)
 							repeat
 								task.wait(1)
-								hum:TakeDamage(5)
+								humanoid:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
-								torso.BrickColor = tor
-								larm.BrickColor = lar
-								rarm.BrickColor = rar
-								lleg.BrickColor = lle
-								rleg.BrickColor = rle
-								head.BrickColor = hea
+								for k, v in desiredColors do
+									description[k] = orgColors[k]
+								end
+		
+								task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							end
 						end
 					end)
@@ -2676,7 +2662,7 @@ return function(Vargs, env)
 
 		Dog = {
 			Prefix = Settings.Prefix;
-			Commands = {"dog", "dogify"};
+			Commands = {"dog", "dogify", "cow", "cowify"};
 			Args = {"player"};
 			Description = "Turn the target player(s) into a dog";
 			Fun = true;
@@ -2728,7 +2714,7 @@ return function(Vargs, env)
 							st.CFrame = torso.CFrame
 							st.Parent = char
 
-							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
+							Functions.MakeWeld(torso, st, CFrame.new(), CFrame.new(0, .5, 0))
 
 							for _, v in char:GetDescendants() do
 								if v:IsA("BasePart") then
@@ -2880,7 +2866,7 @@ return function(Vargs, env)
 
 		K1tty = {
 			Prefix = Settings.Prefix;
-			Commands = {"k1tty", "cut3"};
+			Commands = {"k1tty", "cut3", "hellokitty"};
 			Args = {"player"};
 			Description = "2 cute 4 u";
 			Fun = true;
@@ -2947,7 +2933,7 @@ return function(Vargs, env)
 
 		Nyan = {
 			Prefix = Settings.Prefix;
-			Commands = {"nyan", "p0ptart"};
+			Commands = {"nyan", "p0ptart", "nyancat"};
 			Args = {"player"};
 			Description = "Poptart kitty";
 			Fun = true;
@@ -3199,7 +3185,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr, args)
-				assert(args[1], "Player argument missing")
+				assert(#Functions.GetPlayers(plr, args[1]) > 0, "Player argument missing")
 
 				local color = Functions.ParseColor3(args[3])
 				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
@@ -3436,9 +3422,7 @@ return function(Vargs, env)
 							end
 						end
 
-						local weld = service.New("Weld", root)
-						weld.Part0 = root
-						weld.Part1 = torso
+						Functions.MakeWeld(root, torso, CFrame.new(), CFrame.new())
 
 						local cape = char:FindFirstChild("ADONIS_CAPE")
 						if cape then
@@ -3516,44 +3500,26 @@ return function(Vargs, env)
 					cPcall(function()
 						if v.Character then
 							local head = v.Character.Head
-							local torso = v.Character.HumanoidRootPart
-							local larm = v.Character["Left Arm"]
-							local rarm = v.Character["Right Arm"]
-							local lleg = v.Character["Left Leg"]
-							local rleg = v.Character["Right Leg"]
+							local torso = v.Character:FindFirstChild("Torso") or v.Character.UpperTorso
+							local larm = v.Character:FindFirstChild("Left Arm") or v.Character.LeftUpperArm
+							local rarm = v.Character:FindFirstChild("Right Arm") or v.Character.RightUpperArm
+							local lleg = v.Character:FindFirstChild("Left Leg") or v.Character.LeftLowerLeg
+							local rleg = v.Character:FindFirstChild("Right Leg") or v.Character.RightLowerLeg
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = true end
 							end
 							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=v.Character.HumanoidRootPart
-							weld.C0=v.Character.HumanoidRootPart.CFrame
+							Functions.MakeWeld(v.Character.HumanoidRootPart, v.Character.HumanoidRootPart, v.Character.HumanoidRootPart.CFrame)
 							head.Size = Vector3.new(head.Size.X, head.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=head
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(0, 1.5, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, head, v.Character.HumanoidRootPart.CFrame*CFrame.new(0, 1.5, 0))
 							larm.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=larm
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, larm, v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0))
 							rarm.Size = Vector3.new(rarm.Size.X, rarm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=rarm
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, rarm, v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0))
 							lleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=lleg
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,-1.5, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, lleg, v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, -1.5, 0))
 							rleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0=v.Character.HumanoidRootPart
-							weld.Part1=rleg
-							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5, 0)
+							Functions.MakeWeld(v.Character.HumanoidRootPart, rleg, v.Character.HumanoidRootPart.CFrame*CFrame.new(1, -1.5, 0))
 							task.wait()
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = false end
@@ -3608,32 +3574,31 @@ return function(Vargs, env)
 						if humanoid then
 							local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
 							local joints = Functions.GetJoints(v.Character)
+							local rarm = isR15 and joints["RightShoulder"] or joints["Right Shoulder"]
+							local larm = isR15 and joints["LeftShoulder"] or joints["Left Shoulder"]
+							local rleg = isR15 and joints["RightHip"] or joints["Right Hip"]
+							local lleg = isR15 and joints["LeftHip"] or joints["Left Hip"]
+							local torso = isR15 and v.Character:FindFirstChild("UpperTorso") or v.Character:FindFirstChild("Torso")
+							local magnitude = torso and torso.Size / Vector3.new(2, isR15 and 1.7 or 2, 1) or Vector3.one
+							local blankFrame = CFrame.Angles(0, 0, 0)
 
 							if v.Character:FindFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
 							if v.Character:FindFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
 
-							if joints["Neck"] then
-								joints["Neck"].C0 = isR15 and CFrame.new(0, 1, 0) or (CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(90), math.rad(180), 0))
-							end
+							local frames = {
+								{joints["Neck"], CFrame.new(Vector3.new(0, 1, 0) * magnitude) * (isR15 and blankFrame or CFrame.Angles(math.rad(90), math.rad(180), 0))};
+								{rarm, CFrame.new(Vector3.new(-1, -1.5, -0.5) * magnitude) * (isR15 and blankFrame or CFrame.Angles(0, math.rad(90), 0))};
+								{larm, CFrame.new(Vector3.new(1, -1.5, -0.5) * magnitude) * (isR15 and blankFrame or CFrame.Angles(0, math.rad(-90), 0))};
+								{rleg, CFrame.new(Vector3.new(isR15 and -0.5 or 0, isR15 and -0.5 or -1, 0.5) * magnitude) * CFrame.Angles(0, math.rad(isR15 and 180 or 90), 0)};
+								{lleg, CFrame.new(Vector3.new(isR15 and 0.5 or 0, isR15 and -0.5 or -1, 0.5) * magnitude) * CFrame.Angles(0, math.rad(isR15 and 180 or -90), 0)};
+							}
 
-							local rarm = isR15 and joints["RightShoulder"] or joints["Right Shoulder"]
-							if rarm then
-								rarm.C0 = isR15 and CFrame.new(-1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0, math.rad(90), 0))
-							end
+							for _, frame in frames do
+								local joint, transform = unpack(frame)
 
-							local larm = isR15 and joints["LeftShoulder"] or joints["Left Shoulder"]
-							if larm then
-								larm.C0 = isR15 and CFrame.new(1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0, math.rad(-90), 0))
-							end
-
-							local rleg = isR15 and joints["RightHip"] or joints["Right Hip"]
-							if rleg then
-								rleg.C0 = isR15 and (CFrame.new(-0.5,-0.5, 0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0, math.rad(90), 0))
-							end
-
-							local lleg = isR15 and joints["LeftHip"] or joints["Left Hip"]
-							if lleg then
-								lleg.C0 = isR15 and (CFrame.new(0.5,-0.5, 0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0, math.rad(-90), 0))
+								if joint then
+									joint.C0 = transform
+								end
 							end
 
 							for _, part in v.Character:GetChildren() do
@@ -3665,7 +3630,7 @@ return function(Vargs, env)
 
 						if human then
 							if human.RigType == Enum.HumanoidRigType.R6 then
-								v.Character.Head.Mesh.Scale = Vector3.new(1.75, 1.75, 1.75)
+								v.Character.Head.Mesh.Scale = Vector3.new(1.25, 1.25, 1.25) * (tonumber(args[2]) or 1.4)
 								v.Character.Torso.Neck.C0 = CFrame.new(0, 1.3, 0) * CFrame.Angles(math.rad(90), math.rad(180), 0)
 							else
 								local scale = human and human:FindFirstChild("HeadScale")
@@ -3694,7 +3659,7 @@ return function(Vargs, env)
 
 						if human then
 							if human.RigType == Enum.HumanoidRigType.R6 then
-								v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
+								v.Character.Head.Mesh.Scale = Vector3.new(1.25, 1.25, 1.25) * (tonumber(args[2]) or 0.6)
 								v.Character.Torso.Neck.C0 = CFrame.new(0,.8, 0) * CFrame.Angles(math.rad(90), math.rad(180), 0)
 							else
 								local scale = human and human:FindFirstChild("HeadScale")
@@ -4390,214 +4355,6 @@ return function(Vargs, env)
 			end
 		};
 
-		WalkAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"walkanimation", "walkanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s walk animation, based on the default animation system. Supports 'R15' and 'R6' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507777826" -- Default R15 animation
-				elseif args[2] == "R6" then
-					animId = "180426354"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _, v2 in animateScript:GetDescendants() do
-								if v2.Name == "walk" then
-									found = true
-									local walkAnimation = v2:FindFirstChildOfClass("Animation")
-									if walkAnimation then
-										walkAnimation.AnimationId = `"rbxassetid://{animId}`
-									else
-										local walkAnimation = Instance.new("Animation")
-										walkAnimation.Name = "WalkAnim" -- Name actually doesn't matter, but I just name it like the default one.
-										walkAnimation.AnimationId = `"rbxassetid://{animId}`
-										walkAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'walk' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
-				end
-			end
-		};
-
-		RunAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"runanimation", "runanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s run animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507767714"
-				elseif args[2] == "R6" then
-					animId = "180426354"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _,v2 in animateScript:GetDescendants() do
-								if v2.Name == "run" then
-									found = true
-									local runAnimation = v2:FindFirstChildOfClass("Animation")
-									if runAnimation then
-										runAnimation.AnimationId = `"rbxassetid://{animId}`
-									else
-										local runAnimation = Instance.new("Animation")
-										runAnimation.Name = "RunAnim"
-										runAnimation.AnimationId = `"rbxassetid://{animId}`
-										runAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'run' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
-				end
-			end
-		};
-
-		JumpAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"jumpanimation", "jumpanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s jump animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507765000"
-				elseif args[2] == "R6" then
-					animId = "125750702"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _, v2 in animateScript:GetDescendants() do
-								if v2.Name == "jump" then
-									found = true
-									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
-									if jumpAnimation then
-										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
-									else
-										local jumpAnimation = Instance.new("Animation")
-										jumpAnimation.Name = "JumpAnim"
-										jumpAnimation.AnimationId = `"rbxassetid://{animId}`
-										jumpAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'jump' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
-				end
-			end
-		};
-
-		FallAnimation = {
-			Prefix = Settings.Prefix;
-			Commands = {"fallanimation", "fallanim"};
-			Args = {"player", "animationID"};
-			Description = "Change the target player(s)'s fall animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				local animId
-
-				if not (args[2] == "R15" or args[2] == "R6") then
-					assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
-					animId = args[2]
-				elseif args[2] == "R15" then
-					animId = "507767968"
-				elseif args[2] == "R6" then
-					animId = "180436148"
-				end
-
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local animateScript = v.Character:FindFirstChild("Animate")
-						if animateScript then
-							local found = false
-							for _,v2 in animateScript:GetDescendants() do
-								if v2.Name == "fall" then
-									found = true
-									local fallAnimation = v2:FindFirstChildOfClass("Animation")
-									if fallAnimation then
-										fallAnimation.AnimationId = `rbxassetid://{animId}`
-									else
-										local fallAnimation = Instance.new("Animation")
-										fallAnimation.Name = "FallAnim"
-										fallAnimation.AnimationId = `rbxassetid://{animId}`
-										fallAnimation.Parent = v2
-									end
-								end
-							end
-
-							if not (found) then
-								assert(nil, "Instance 'StringValue' named 'fall' was not found. Please note, this command is designed for the default animation system.")
-							end
-						else
-							assert(nil, "Target player does not have the 'Animate' LocalScript")
-						end
-					end
-				end
-			end
-		};
-
 		BlurEffect = {
 			Prefix = Settings.Prefix;
 			Commands = {"blur", "screenblur", "blureffect"};
@@ -4808,12 +4565,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local vel = service.New("BodyVelocity")
 				vel.Name = "ADONIS_IceVelocity"
-				vel.maxForce = Vector3.new(5000, 0, 5000)
+				vel.MaxForce = Vector3.new(5000, 0, 5000)
 				local scr = Deps.Assets.Slippery:Clone()
 
 				scr.Name = "ADONIS_IceSkates"
 
-				for i, v in service.GetPlayers(plr, args[1]:lower()) do
+				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local vel = vel:Clone()
 						vel.Parent = v.Character.HumanoidRootPart
@@ -4835,7 +4592,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]:lower()) do
+				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local scr = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceSkates")
 						local vel = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceVelocity")
@@ -5291,6 +5048,7 @@ return function(Vargs, env)
 					local humanoid = character:FindFirstChildOfClass("Humanoid")
 					local isR15 = humanoid and humanoid.RigType == Enum.HumanoidRigType.R15 or false
 					local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
+					local partsColor = ({head.Color:ToHSV()})[3] < 0.26 and BrickColor.new("Lily White") or BrickColor.new("Black")
 	
 					local sound = head:FindFirstChild("ADONIS_SOUND") or Instance.new("Sound")
 					sound.SoundId = `rbxassetid://{id}`
@@ -5302,7 +5060,16 @@ return function(Vargs, env)
 					if head:FindFirstChild("face") then
 						head.face:Destroy()
 					end
-	
+
+					if head:IsA("MeshPart") and table.find(Variables.AnimatedFaces, tonumber(head.TextureID:match("%d%d%d+"))) then
+						head.TextureID = ""
+						if head:FindFirstChildOfClass("SurfaceAppearance") then
+							head:FindFirstChildOfClass("SurfaceAppearance"):Destroy()
+						end
+					elseif head:FindFirstChildOfClass("SpecialMesh") and table.find(Variables.AnimatedFaces, tonumber(head:FindFirstChildOfClass("SpecialMesh").MeshId:match("%d%d%d+"))) then
+						head:FindFirstChildOfClass("SpecialMesh").MeshId = ""
+					end
+
 					if head:FindFirstChildOfClass("FaceControls") then
 						head:FindFirstChildOfClass("FaceControls"):Destroy()
 					end
@@ -5312,7 +5079,7 @@ return function(Vargs, env)
 						leftEye.Anchored = false
 						leftEye.CanCollide = false
 						leftEye.Massless = true
-						leftEye.BrickColor = BrickColor.new("Black")
+						leftEye.BrickColor = partsColor
 						leftEye.TopSurface = Enum.SurfaceType.Smooth
 						leftEye.BottomSurface = Enum.SurfaceType.Smooth
 						leftEye.Name = "ADONIS_LEFTEYE"
@@ -5320,36 +5087,28 @@ return function(Vargs, env)
 						leftMesh.Parent = leftEye
 						leftMesh.MeshType = Enum.MeshType.Sphere
 						leftMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
-						local weld = Instance.new("Weld")
-						weld.Parent = leftEye
-						weld.Part0 = leftEye
-						weld.Part1 = head
-						weld.C1 = CFrame.new(Vector3.new(-.17, .14, -.57) * relativeSize)
+						Functions.MakeWeld(leftEye, head, CFrame.new(), CFrame.new(Vector3.new(-.17, .14, -.57) * relativeSize))
 	
 						local rightEye = Instance.new("Part")
 						rightEye.Anchored = false
 						rightEye.CanCollide = false
 						rightEye.Massless = true
 						rightEye.Name = "ADONIS_RIGHTEYE"
-						rightEye.BrickColor = BrickColor.new("Black")
+						rightEye.BrickColor = partsColor
 						rightEye.TopSurface = Enum.SurfaceType.Smooth
 						rightEye.BottomSurface = Enum.SurfaceType.Smooth
 						local rightMesh = Instance.new("SpecialMesh")
 						rightMesh.Parent = rightEye
 						rightMesh.MeshType = Enum.MeshType.Sphere
 						rightMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
-						local weld = Instance.new("Weld")
-						weld.Parent = rightEye
-						weld.Part0 = rightEye
-						weld.Part1 = head
-						weld.C1 = CFrame.new(Vector3.new(.17, .14, -.57) * relativeSize)
+						Functions.MakeWeld(rightEye, head, CFrame.new(), CFrame.new(Vector3.new(.17, .14, -.57) * relativeSize))
 	
 						local mouth = Instance.new("Part")
 						mouth.Anchored = false
 						mouth.CanCollide = false
 						mouth.Massless = true
 						mouth.Name = "ADONIS_MOUTH"
-						mouth.BrickColor = BrickColor.new("Black")
+						mouth.BrickColor = partsColor
 						mouth.TopSurface = Enum.SurfaceType.Smooth
 						mouth.BottomSurface = Enum.SurfaceType.Smooth
 						mouth.Material = Enum.Material.SmoothPlastic
@@ -5357,11 +5116,7 @@ return function(Vargs, env)
 						mouthMesh.Parent = mouth
 						mouthMesh.MeshType = Enum.MeshType.Sphere
 						mouthMesh.Scale = Vector3.new(.13, 0.1, 0.05) * relativeSize
-						local weld = Instance.new("Weld")
-						weld.Parent = mouth
-						weld.Part0 = mouth
-						weld.Part1 = head
-						weld.C1 = CFrame.new(Vector3.new(0, -.25, -.6) * relativeSize)
+						Functions.MakeWeld(mouth, head, CFrame.new(), CFrame.new(Vector3.new(0, -.25, -.6) * relativeSize))
 	
 						leftEye.Parent = character
 						rightEye.Parent = character

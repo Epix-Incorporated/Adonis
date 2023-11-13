@@ -508,16 +508,16 @@ return function(data, env)
 	local localplayer = service.Player
 	local toggle = script.Parent.Parent.Toggle
 
-	if client.Core.Get("Chat") then
+	if client.UI.Get("Chat") then
 		toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	end
 
 	toggle.MouseButton1Down:Connect(function()
-		local found = client.Core.Get("UserPanel",nil,true)
+		local found = client.UI.Get("UserPanel",nil,true)
 		if found then
 			found.Object:Destroy()
 		else
-			client.Core.Make("UserPanel",{})
+			client.UI.Make("UserPanel",{})
 		end
 	end)
 

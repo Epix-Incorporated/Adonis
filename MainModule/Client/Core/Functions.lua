@@ -224,22 +224,6 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetRandom = function(pLen)
-			--local str = ""
-			--for i=1,math.random(5,10) do str=`{str}{string.char(math.random(33,90))}` end
-			--return str
-
-			local random = math.random
-			local format = string.format
-
-			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
-			local Res = {};
-			for Idx = 1, Len do
-				Res[Idx] = format('%02x', random(255));
-			end;
-			return table.concat(Res)
-		end;
-
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
@@ -628,7 +612,7 @@ return function(Vargs, GetEnv)
 			properties.Enabled = Variables.ParticlesEnabled;
 
 			effect = service.New(class, properties);
-			index = Functions.GetRandom();
+			index = service.HttpService:GenerateGUID(false);
 
 			Variables.Particles[index] = effect;
 
@@ -793,7 +777,7 @@ return function(Vargs, GetEnv)
 				Wave = true;
 				isR15 = isR15;
 			}
-			Variables.Capes[Functions.GetRandom()] = capeData
+			Variables.Capes[service.HttpService:GenerateGUID(false)] = capeData
 
 			local p = service.Players:GetPlayerFromCharacter(char)
 			if p and p == service.Player then
@@ -878,15 +862,15 @@ return function(Vargs, GetEnv)
 
 								local ang = 0.1
 								if wave then
-									if torso.Velocity.Magnitude > 1 then
-										ang += ((torso.Velocity.Magnitude/10)*.05)+.05
+									if torso.AssemblyLinearVelocity.Magnitude > 1 then
+										ang += ((torso.AssemblyLinearVelocity.Magnitude/10)*.05)+.05
 									end
 									v.Wave = false
 								else
 									v.Wave = true
 								end
-								ang += math.min(torso.Velocity.Magnitude/11, .8)
-								motor.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + 0.002
+								ang += math.min(torso.AssemblyLinearVelocity.Magnitude/11, .8)
+								motor.MaxVelocity = math.min((torso.AssemblyLinearVelocity.Magnitude/111), .04) + 0.002
 								if isPlayer then
 									motor.DesiredAngle = -ang
 								else
@@ -995,8 +979,8 @@ return function(Vargs, GetEnv)
 
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
-					local cat = tick()
-					repeat while cat + 1/fps > tick() do end task.wait() cat = tick() until service.IsLooped("SetFPS") == false
+					local cat = os.clock()
+					repeat while cat + 1/fps > os.clock() do end task.wait() cat = os.clock() until service.IsLooped("SetFPS") == false
 				end)
 			end
 		end;
@@ -1333,24 +1317,24 @@ return function(Vargs, GetEnv)
 				local wave = false
 				repeat task.wait(1/44)
 					local ang = 0.1
-					local oldmag = torso.Velocity.Magnitude
+					local oldmag = torso.AssemblyLinearVelocity.Magnitude
 					local mv = .002
 					if wave then 
-						ang += ((torso.Velocity.Magnitude/10)*.05)+.05
+						ang += ((torso.AssemblyLinearVelocity.Magnitude/10)*.05)+.05
 						wave = false
 					else
 						wave = true
 					end
-					ang += math.min(torso.Velocity.Magnitude/11, .5)
-					motor1.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + mv
+					ang += math.min(torso.AssemblyLinearVelocity.Magnitude/11, .5)
+					motor1.MaxVelocity = math.min((torso.AssemblyLinearVelocity.Magnitude/111), .04) + mv
 					motor1.DesiredAngle = -ang
 					if motor1.CurrentAngle < -.2 and motor1.DesiredAngle > -.2 then
 						motor1.MaxVelocity = .04
 					end
 
-					repeat task.wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.Magnitude - oldmag) >=(torso.Velocity.Magnitude/10) + 1
+					repeat task.wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.AssemblyLinearVelocity.Magnitude - oldmag) >=(torso.AssemblyLinearVelocity.Magnitude/10) + 1
 
-					if torso.Velocity.Magnitude < .1 then
+					if torso.AssemblyLinearVelocity.Magnitude < .1 then
 						task.wait(.1)
 					end
 				until not p or not p.Parent or p.Parent ~= service.LocalContainer()

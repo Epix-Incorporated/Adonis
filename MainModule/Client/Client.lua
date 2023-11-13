@@ -143,7 +143,6 @@ local Folder = script.Parent
 setfenv(1, setmetatable({}, { __metatable = unique }))
 --local origWarn = warn
 local startTime = time()
-local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
 local locals = {}
@@ -216,38 +215,31 @@ end
 local Kill
 local Fire, Detected = nil, nil
 do
-	local wrap = coroutine.wrap
 	Kill = Immutable(function(info)
 		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
-		wrap(function()
-			pcall(function()
-				if Detected then
-					Detected("kick", info)
-				elseif Fire then
-					Fire("BadMemes", info)
-				end
-			end)
-		end)()
+		spawn(pcall, function()
+			if Detected then
+				Detected("kick", info)
+			elseif Fire then
+				Fire("BadMemes", info)
+			end
+		end)
 
-		wrap(function()
-			pcall(function()
-				task.wait(1)
-				service.Player:Kick(info)
-			end)
-		end)()
+		spawn(pcall, function()
+			task.wait(1)
+			service.Player:Kick(info)
+		end)
 		
 		if not isStudio then
-			wrap(function()
-				pcall(function()
-					task.wait(5)
-					while true do
-						pcall(task.spawn, function()
-							task.spawn(Kill())
-							-- memes
-						end)
-					end
-				end)
-			end)()
+			spawn(pcall, function()
+				task.wait(5)
+				while true do
+					pcall(task.spawn, function()
+						task.spawn(Kill())
+						-- memes
+					end)
+				end
+			end)
 		end
 	end)
 end
@@ -650,7 +642,7 @@ return service.NewProxy({
 				Variables.LocalContainer = service.New("Folder", {
 					Parent = workspace,
           Archivable = false,
-					Name = `__ADONIS_LOCALCONTAINER_{client.Functions.GetRandom()}`,
+					Name = `__ADONIS_LOCALCONTAINER_{service.HttpService:GenerateGUID(false)}`,
 				})
 			end
 			return Variables.LocalContainer
@@ -692,7 +684,6 @@ return service.NewProxy({
 
 				--// Finished loading
 				log("Finish loading")
-				clientLocked = true
 				client.Finish_Loading = function() end
 				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
 				service.Events.FinishedLoading:Fire(os.time())
