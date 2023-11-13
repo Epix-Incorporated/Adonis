@@ -35,8 +35,9 @@ return function(data, env)
 	})
 	if randomOrder then
 		local shuffled = {}
-		for _, ans in answers do
-			shuffled[math.random(1, #answers)] = ans
+		for i, v in ipairs(answers) do
+			local pos = math.random(1, #shuffled+1)
+			table.insert(shuffled, pos, v)
 		end
 		answers = shuffled
 	end
