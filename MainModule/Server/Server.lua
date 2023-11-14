@@ -356,7 +356,7 @@ service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 		logError("Task", msg)
 	end
 end, function(c, parent, tab)
-	if not isModule(c) and c ~= server.Loader and c ~= server.Dropper and c ~= server.Runner and c ~= server.Model and c ~= script and c ~= Folder and parent == nil then
+	if not isModule(c) and c ~= server.Loader and c ~= server.Runner and c ~= server.Model and c ~= script and c ~= Folder and parent == nil then
 		tab.UnHook()
 	end
 end, ServiceSpecific, GetEnv(nil, {server = server}))
@@ -548,7 +548,6 @@ return service.NewProxy({
 		server.Data = data or {}
 		server.Model = data.Model or service.New("Model")
 		server.ModelParent = data.ModelParent or service.ServerScriptService;
-		server.Dropper = data.Dropper or service.New("Script")
 		server.Loader = data.Loader or service.New("Script")
 		server.Runner = data.Runner or service.New("Script")
 		server.LoadModule = LoadModule

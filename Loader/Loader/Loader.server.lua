@@ -55,7 +55,6 @@ else
 	local configFolder = model.Config
 	local loaderFolder = model.Loader
 
-	local dropper = loaderFolder.Dropper
 	local loader = loaderFolder.Loader
 	local runner = script
 
@@ -80,7 +79,6 @@ else
 		Core = loaderFolder;
 
 		Loader = loader;
-		Dopper = dropper;
 		Runner = runner;
 
 		ModuleID = 7510592873;  		--// https://www.roblox.com/library/7510592873/Adonis-MainModule

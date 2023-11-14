@@ -39,7 +39,6 @@ return function(Vargs, GetEnv)
 
 			if server.Runner then
 				rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
-				rebootHandler.Dropper.Value = service.UnWrap(server.Dropper);
 				rebootHandler.Runner.Value = service.UnWrap(server.Runner);
 				rebootHandler.Model.Value = service.UnWrap(server.Model);
 				rebootHandler.Mode.Value = "REBOOT";
