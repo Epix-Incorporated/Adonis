@@ -135,29 +135,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GivePlayerPoints = { --// obsolete since ROBLOX discontinued player points
-			Prefix = Settings.Prefix;
-			Commands = {"giveppoints", "giveplayerpoints", "sendplayerpoints"};
-			Args = {"player", "amount"};
-			Hidden = true;
-			Description = "Lets you give <player> <amount> player points";
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
-					if ran and service.PointsService:GetAwardablePoints() >= amount then
-						Functions.Hint(`Gave {amount} points to {service.FormatPlayer(v)}`, {plr})
-					elseif service.PointsService:GetAwardablePoints() < amount then
-						Functions.Hint(`You don't have {amount} points to give to {service.FormatPlayer(v)}`, {plr})
-					else
-						Functions.Hint(`(Unknown Error) Failed to give {amount} points to {service.FormatPlayer(v)}`, {plr})
-					end
-					Functions.Hint(`Available Player Points: {service.PointsService:GetAwardablePoints()}`, {plr})
-				end
-			end
-		};
-
 		Settings = {
 			Prefix = "";
 			Commands = {":adonissettings", `{Settings.Prefix}settings`, `{Settings.Prefix}adonissettings`};
