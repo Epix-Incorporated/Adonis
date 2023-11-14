@@ -1955,7 +1955,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-			assert(Settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
+				assert(Settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
 				for i, v in service.GetPlayers(plr, args[1]) do	
 					task.spawn(pcall, function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
@@ -4773,8 +4773,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local num = assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
-				workspace.Gravity = num or 196.2
+				local num = 
+				workspace.Gravity = args[1] == "fix" and 196.2 or assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
 			end
 		};
 
@@ -4786,11 +4786,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(plr.Character ~= nil, "Character not found")
-				assert(typeof(plr.Character) == "Instance", "Character found fake")
-				assert(plr.Character:IsA("Model"), "Character isn't a model.")
-
-				local char = plr.Character
+				local char = assert(plr.Character, "Character not found")
 				assert(char:FindFirstChild("Head"), "Head isn't found in your character. How is it going to spawn?")
 
 				local soundid = (args[1] and tonumber(args[1])) or select(1, function()
