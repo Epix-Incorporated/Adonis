@@ -10,7 +10,6 @@
 			<string name="Name">RebootHandler</string>
 			<string name="ScriptGuid">{62D59941-4C6D-45EB-9E45-D4A6587DB801}</string>
 			<ProtectedString name="Source"><![CDATA[if script.Parent then
-	local dDropperVal = script:WaitForChild("Dropper");
 	local dTargetVal = script:WaitForChild("Runner");
 	local parentVal = script:WaitForChild("mParent");
 	local modelVal = script:WaitForChild("Model");
@@ -20,7 +19,6 @@
 	task.wait(5)
 	script.Parent = nil;
 
-	local dropper = dDropperVal.Value;
 	local dTarget = dTargetVal.Value;
 	local tParent = parentVal.Value;
 	local model = modelVal.Value;
@@ -47,7 +45,6 @@
 		warn("_G VARIABLES CLEARED")
 
 		warn("MOVING MODEL");
-		dropper.Disabled = true;
 		model.Parent = tParent;
 	end
 
@@ -61,8 +58,8 @@
 
 		task.wait()
 
+		dTarget.Disabled = false;
 		warn("RUNNING");
-		model.Loader.Dropper.Disabled = false;
 	elseif mode == "STOP" then
 		warn("ATTEMPTING TO STOP ADONIS");
 		CleanUp();
@@ -107,15 +104,6 @@ end]]></ProtectedString>
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Runner</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<Ref name="Value">null</Ref>
-			</Properties>
-		</Item>
-		<Item class="ObjectValue" referent="RBX20A09698A70C40A6BB16C730FCACBE3D">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">Dropper</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<Ref name="Value">null</Ref>
