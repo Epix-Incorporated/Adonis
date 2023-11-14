@@ -4773,7 +4773,6 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local num = 
 				workspace.Gravity = args[1] == "fix" and 196.2 or assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
 			end
 		};
