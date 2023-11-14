@@ -72,7 +72,7 @@ jobs:
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
 #      - name: Publish Loader
-#        uses: fjogeleit/http-request-action@v1
+#        uses: fjogeleit/http-request-action@v1.14.1
 #        with:
 #          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
 #          method: "POST"
@@ -82,7 +82,7 @@ jobs:
 #          timeout: 10000
           
 #      - name: Publish Module
-#        uses: fjogeleit/http-request-action@v1
+#        uses: fjogeleit/http-request-action@v1.14.1
 #        with:
 #          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
 #          method: "POST"
