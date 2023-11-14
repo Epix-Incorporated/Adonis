@@ -84,3 +84,4 @@ jobs:
           files: '{ "file": "module.rbxm" }'
           customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
           timeout: 10000
+          preventFailureOnNoResponse: 'true'
