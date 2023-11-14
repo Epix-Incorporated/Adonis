@@ -335,7 +335,7 @@ return function(Vargs, env)
 			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint(service.BroadcastFilter(assert(tonumber(args[1]), "Invalid time amount (must be a number)"), plr), service.GetPlayers(), assert(args[2], "Missing message"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				Functions.Hint(service.BroadcastFilter(assert(args[1], "Missing message"), plr), service.GetPlayers(), assert(tonumber(args[2]), "Invalid time amount (must be a number)"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
