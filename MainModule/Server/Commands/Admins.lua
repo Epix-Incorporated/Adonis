@@ -468,8 +468,7 @@ return function(Vargs, env)
 			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message (argument #1)")
-				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(assert(args[1], "Missing message (argument #1)"), plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -1278,8 +1277,7 @@ return function(Vargs, env)
 			Description = "Unbans the target user(s) from the server";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing user (argument #1)")
-				for _, v in service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing user (argument #1)"), {
 					UseFakePlayer = true;
 					})
 				do
