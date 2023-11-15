@@ -32,7 +32,7 @@ return function(data, env)
 		BackgroundTransparency = 1;
 		Position = UDim2.new(1, -45, 1, -45);
 		Size = UDim2.fromOffset(40, 40);
-		Image = client.HelpButtonImage;
+		Image = client.HelpButtonImage or "rbxassetid://357249130";
 		ImageTransparency = 0.5;
 	})
 
