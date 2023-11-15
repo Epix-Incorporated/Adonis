@@ -114,7 +114,7 @@ local Load = function()
 	end	
 	
 	local ModuleId = if Data.NightlyMode then Data.NightlyModuleID else Data.ModuleID
-	local success, settings = pcall(require, Settings)
+	local success, setTab = pcall(require, Settings)
 
 	if success then
 		Data.Messages = setTab.Settings.Messages
@@ -131,7 +131,7 @@ local Load = function()
 	
 	if not success then
 		warn("Settings module failed to load; Using defaults;")
-		settings = {}
+		setTab = {}
 	end
 	
 	Data.Settings, Data.Descriptions, Data.Order = setTab.Settings, setTab.Descriptions, setTab.Order
