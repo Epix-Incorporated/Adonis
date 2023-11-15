@@ -113,7 +113,7 @@ local Load = function()
 		Model.Name = math.random()
 	end	
 	
-	local ModuleId = if Data.NightlyMode then Data.NightlyModuleID else Data.ModuleID
+	local moduleId = if Data.NightlyMode then Data.NightlyModuleID else Data.ModuleID
 	local success, setTab = pcall(require, Settings)
 
 	if success then
@@ -138,7 +138,7 @@ local Load = function()
 	LoadPlugins()
 	LoadThemes()
 	
-	local Adonis = require(ModuleID)
+	local Adonis = require(moduleId)
 	local Loaded, Response = Adonis(Data)
 	
 	if Loaded == true then
