@@ -1,22 +1,26 @@
+--!nonstrict
 --[[
-	
+
 	CURRENT LOADER:
-	https://www.roblox.com/library/2373505175/Adonis-Loader-BETA
-	
+	https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated
+
+	CURRENT MODULE:
+	https://www.roblox.com/library/7510592873/Adonis-MainModule
+
+	NIGHTLY MODULE:
+	https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
+
 --]]
 
-
-
-
-----------------------------------------------------------------------------------------
---                                  Adonis Loader                                     --
-----------------------------------------------------------------------------------------
---		   	  Epix Incorporated. Not Everything is so Black and White.		   		  --
-----------------------------------------------------------------------------------------
---	    Edit settings in-game or using the settings module in the Config folder	      --
-----------------------------------------------------------------------------------------
---	                  This is not designed to work in solo mode                       --
-----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+--                                Adonis Loader                                 --
+--                            By Epix Incorporated                              --
+----------------------------------------------------------------------------------
+--          Edit settings using the Settings module in the Config folder        --
+----------------------------------------------------------------------------------
+--       This script loads the Adonis source (MainModule) into the game.        --
+--            Only edit this script if you know what you're doing!              --
+----------------------------------------------------------------------------------
 
 local print = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader :: INFO: "..tostring(v)) end end
 local error = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader :: ERROR: "..tostring(v).."; Traceback:\n"..debug.traceback()) end end
