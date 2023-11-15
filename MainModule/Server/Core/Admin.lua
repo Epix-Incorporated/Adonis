@@ -1001,39 +1001,57 @@ return function(Vargs, GetEnv)
 		end;
 
 		CheckBan = function(p)
-			local doCheck = Admin.DoCheck
-			local banCheck = Admin.DoBanCheck
-
-			for ind, admin in Settings.Banned do
-				if (type(admin) == "table" and ((admin.UserId and doCheck(p, admin.UserId, true)) or (admin.Name and not admin.UserId and doCheck(p, admin.Name, true)))) or doCheck(p, admin, true) then
-					return true, (type(admin) == "table" and admin.Reason)
-				end
-			end
-
-			for ind, ban in Core.Variables.TimeBans do
-				if p.UserId == ban.UserId then
-					if ban.EndTime-os.time() <= 0 then
-						table.remove(Core.Variables.TimeBans, ind)
-					else
-						return true, `\n Reason: {ban.Reason or "(No reason provided.)"}\n Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
+			local getPlayerBan = function(tab)
+				for ind, Ban in pairs(tab) do
+					if type(Ban)=="string" then
+						local banned = Admin.DoCheck(p, Ban)
+						
+						if banned then
+							return true,Ban
+						end
+					elseif type(Ban)=="table" then
+						if Ban.id == p.UserId then
+							return Ban,"table"
+						end
 					end
 				end
+
+				return false
 			end
 
-			for ind, admin in HTTP.Trello.Bans do
-				local name = type(admin) == "table" and admin.Name or admin
-				if doCheck(p, name) or banCheck(p, name) then
-					return true, (type(admin) == "table" and admin.Reason and service.Filter(admin.Reason, p, p))
+			local SBan = getPlayerBan(Admin.ServerBans)
+			local TBan = getPlayerBan(Admin.TimeBans)
+			local GBan, Type = getPlayerBan(Settings.Banned)
+
+			if SBan then
+				p:Kick(Functions.GetKickMessage("Ban",SBan))
+				return true
+			end
+
+			if TBan then
+				p:Kick(Functions.GetKickMessage("TimeBan",TBan))
+				return true
+			end
+
+			if GBan then
+				if Type ~= "table" then
+					p:Kick(Functions.GetKickMessage("GameBan",{
+						reason = "Banned in settings by a developer. "..tostring(Type);
+						time = os.time();
+						name = p.Name;
+						id = p.UserId;
+						moderator = Type;
+						kickType = Type;
+						expireTime = "Game Banned";
+						remainingTime = "Game Banned"
+					}))
+				else
+					p:Kick(Functions.GetKickMessage("GameBan",GBan))
+					return true
 				end
 			end
 
-			if HTTP.WebPanel.Bans then
-				for ind, admin in HTTP.WebPanel.Bans do
-					if doCheck(p, admin) or banCheck(p, admin) then
-						return true, (type(admin) == "table" and admin.Reason)
-					end
-				end
-			end
+			return false
 		end;
 
 		AddBan = function(p, reason, doSave, moderator)
