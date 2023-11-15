@@ -284,9 +284,26 @@ settings.CodeExecution = false			-- Enables the use of code execution in Adonis;
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
 
+--[[ Messages shown to banned users
+	The different placeholders you can use are:
+	{reason} - Shows the Ban Reason, if none is provided, it will show as "No Reason Provided"
+	{time} - Shows the Time they were banned, in UTC time
+	{name} - Shows the Player's name
+	{id} - Shows the Player's UserId
+	{moderator} - Shows the moderator who banned the Player
+	{type} - Shows the type of ban, Can display: "TIMEBAN", "SERVERBAN", "GAMEBAN", "CONFIGBAN", "TRELLOBAN"
+	{expiretime} - Shows the time a ban will expire, only applicable on a Timeban, else will return "Undefined" or "Permanent"
+	{remainingtime} - Shows the remaining time on a Timeban, any other form of ban will return "Undefined" or "Permanent"
+--]]
+	
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
+settings.TrelloBanMessage = "You are Trello-Banned for {reason}! Time: {time}" --// Shown if a player is Trellobanned on a connected Trello
+settings.TimeBanMessage = "You are Timebanned for {reason}, for time {remainingtime}" --// Shown if a player is Timebanned in-game
+settings.GameBanMessage = "You are Gamebanned for {reason}, " --// Shown if a player is banned in the `settings.Banned` table
+
 settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
+settings.SystemImage = "rbxassetid://357249130" -- The image that shows up below the System Message titled, displayed in :sm
 
 settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
@@ -305,7 +322,6 @@ settings.Console_AdminsOnly = false -- If true, only admins will be able to acce
 settings.HelpSystem = true		-- Allows players to call admins for help using !help
 settings.HelpButton = true		-- Shows a little help button in the bottom right corner.
 settings.HelpButtonImage = "rbxassetid://357249130" -- Sets the image used for the Adonis help button above.
-
 
 --------------------
 -- DONOR SETTINGS --
@@ -454,10 +470,14 @@ descs.ChatCommands = [[ If false you will not be able to run commands via the ch
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
 
-
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
+descs.TrelloBanMessage = [[ Shown if a player is Trellobanned on a connected Trello ]]
+descs.TimeBanMessage = [[ Shown if a player is Timebanned in-game ]]
+descs.GameBanMessage = [[ Shown if a player is banned in the `settings.Banned` table ]]
+	
 descs.SystemTitle = [[ Title to display in :sm ]]
+descs.SystemImage = [[ The image that shows up below the System Message titled, displayed in :sm ]]
 
 descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
@@ -599,7 +619,12 @@ order = {
 	" ";
 	"BanMessage";
 	"LockMessage";
+	"TrelloBanMessage";
+	"TimeBanMessage";
+	"GameBanMessage";
+	"";
 	"SystemTitle";
+	"SystemImage";
 	" ";
 	"MaxLogs";
 	"SaveCommandLogs";
