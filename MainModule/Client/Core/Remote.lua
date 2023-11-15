@@ -216,6 +216,14 @@ return function(Vargs, GetEnv)
 				return UI.Make(guiName, guiData, themeData)
 			end;
 
+			GetGui = function(args)
+				local guiName = args[1]
+				local ignore = args[2]
+				local returnOne = args[3]
+
+				return UI.GetGui(guiName, ignore, returnOne)
+			end;
+
 			InstanceList = function(args)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
