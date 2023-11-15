@@ -142,7 +142,7 @@ local Load = function()
 	local Loaded, Response = Adonis(Data)
 	
 	if Loaded == true then
-		if (Data.Settings and Data.Settings.HideScript) and not Data.Settings.Debug then
+		if (Data.Settings and Data.Settings.HideScript) and not Data.DebugMode then
 			Model.Parent = nil
 			game:BindToClose(function()
 				Model.Parent = game:GetService("ServerScriptService")
