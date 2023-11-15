@@ -109,18 +109,18 @@ local Load = function()
 	_G.__Adonis_MUTEX = script:GetFullName()
 	script:Destroy()
 	
-	if not data.DebugMode then
+	if not Data.DebugMode then
 		Model.Name = math.random()
 	end	
 	
-	local ModuleId = if data.NightlyMode then data.NightlyModuleID else data.ModuleID
+	local ModuleId = if Data.NightlyMode then Data.NightlyModuleID else Data.ModuleID
 	local success, settings = pcall(require, Settings)
 
 	if success then
-		data.Messages = setTab.Settings.Messages
+		Data.Messages = setTab.Settings.Messages
 	else
 		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
-		table.insert(data.Messages, {
+		table.insert(Data.Messages, {
 			Title = "Warning!";
 			Icon = "rbxassetid://7495468117";
 			Message = "Settings module error detected; using default settings.";
