@@ -1284,7 +1284,13 @@ return function(Vargs, GetEnv)
 					for name, data in Commands do
 						local command1, command2 = nil, nil
 
-						if type(data) ~= "table" or data.Hidden then
+						if type(data) ~= "table" then
+							xpcall(function()
+								Logs:AddLog("Script", "Tried to add init function to commands. This is a sign of an Adonis loading order issue?")
+							end, warn)
+							warn("Tried to add init function to commands. This is a sign of an Adonis loading order issue?")
+							continue
+						elseif data.Hidden then
 							continue
 						end
 
