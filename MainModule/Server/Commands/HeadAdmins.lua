@@ -18,9 +18,8 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
-				assert(args[2], "Missing duration (argument #2)")
 
-				local duration, valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
+				local duration, valid = assert(args[2], "Missing duration (argument #2)"):gsub("^(%d+)([smhd])$", function(val, unit)
 					return if unit == "s" then val
 						elseif unit == "m" then val * 60
 						elseif unit == "h" then val * 60 * 60
@@ -53,9 +52,8 @@ return function(Vargs, env)
 			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
-				assert(args[2], "Missing duration (argument #2)")
 
-				local duration, valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
+				local duration, valid = assert(args[2], "Missing duration (argument #2)"):gsub("^(%d+)([smhd])$", function(val, unit)
 					return if unit == "s" then val
 						elseif unit == "m" then val * 60
 						elseif unit == "h" then val * 60 * 60
@@ -262,8 +260,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local trello = HTTP.Trello.API
 				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
-				assert(args[1], "Enter a valid list name")
-				local list = assert(trello.Boards.GetList(Settings.Trello_Primary, args[1]), "List not found.")
+				local list = assert(trello.Boards.GetList(Settings.Trello_Primary, assert(args[1], "Enter a valid list name")), "List not found.")
 
 				local cards = trello.Lists.GetCards(list.id)
 				local temp = table.create(#cards)
