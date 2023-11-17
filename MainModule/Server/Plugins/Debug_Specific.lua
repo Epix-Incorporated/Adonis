@@ -39,7 +39,6 @@ return function(Vargs, GetEnv)
 
 			if server.Runner then
 				rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
-				rebootHandler.Dropper.Value = service.UnWrap(server.Dropper);
 				rebootHandler.Runner.Value = service.UnWrap(server.Runner);
 				rebootHandler.Model.Value = service.UnWrap(server.Model);
 				rebootHandler.Mode.Value = "REBOOT";
@@ -381,6 +380,20 @@ local service = wrappedEnv.Service
 				Functions.Hint(err,{plr})
 			end
 			--end
+		end
+	};
+
+	Commands.DebugAnti = {
+		Prefix = Settings.Prefix;
+		Commands = {"debuganti", "debuganticheat", "debugcheat", "debugantiexploit", "debugexploit", "debugantihack", "debughack"};
+		Args = {"player", "action", "info"};
+		Description = "Shows you how to use some syntax related things";
+		Hidden = true;
+		AdminLevel = "Creators";
+		Function = function(plr: Player, args: {string})
+			for _, v in service.GetPlayers(plr, args[1]) do
+				Anti.Detected(v, table.unpack(args, 2))
+			end
 		end
 	};
 

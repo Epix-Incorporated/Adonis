@@ -68,11 +68,7 @@ return function(Vargs, GetEnv)
 									return false
 								elseif Admin.SlowMode and not Admin.CheckAdmin(SenderPlayer) and slowCache[SenderPlayer] and os.time() - slowCache[SenderPlayer] < Admin.SlowMode then
 									if IsOriginalSender then --// Only show this for the person sending! Hide for others, however
-										--Remote.MakeGui(SenderPlayer, "Notification", {
-										--	Title = "You are chatting too fast!";
-										--	Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]));
-										--	Time = 10;
-										--})
+										--Functions.Notification("You are chatting too fast!", string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer])), {SenderPlayer}, 10)
 										
 										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are sending messages too fast! {string.format("(%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]))}`)
 									end
@@ -372,13 +368,13 @@ return function(Vargs, GetEnv)
 	local function RunAfterPlugins(data)
 		--// Backup Map
 		if Settings.AutoBackup then
-			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, `{Settings.Prefix}backupmap`)
+			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, false, `{Settings.Prefix}backupmap`)
 		end
 
 		--// Run OnStartup Commands
 		for i,v in Settings.OnStartup do
 			print(`Running startup command {v}`)
-			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
+			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, false, v)
 			AddLog("Script", {
 				Text = `Startup: Executed {v}`;
 				Desc = `Executed startup command; {v}`;
@@ -907,7 +903,7 @@ return function(Vargs, GetEnv)
 						table.remove(list, ind)
 
 						if not temp and Settings.SaveAdmins then
-							TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+							TrackTask("Thread: RemoveAdmin", Core.DoSave, false, {
 								Type = "TableRemove";
 								Table = {"Settings", "Ranks", listName, "Users"};
 								Value = check;
@@ -965,7 +961,7 @@ return function(Vargs, GetEnv)
 				table.insert(newList, value)
 
 				if Settings.SaveAdmins and levelName and not temp then
-					TrackTask("Thread: SaveAdmin", Core.DoSave, {
+					TrackTask("Thread: SaveAdmin", Core.DoSave, false, {
 						Type = "TableAdd";
 						Table = {"Settings", "Ranks", levelName, "Users"};
 						Value = value
@@ -1575,7 +1571,7 @@ return function(Vargs, GetEnv)
 
 				local cmdFullName = cmd._fullName or (function()
 					local aliases = cmd.Aliases or cmd.Commands or {}
-					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 					return cmd._fullName
 				end)()
 
@@ -1644,7 +1640,7 @@ return function(Vargs, GetEnv)
 
 			local cmdFullName = cmd._fullName or (function()
 				local aliases = cmd.Aliases or cmd.Commands or {}
-				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 				return cmd._fullName
 			end)()
 

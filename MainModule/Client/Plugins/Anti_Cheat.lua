@@ -564,7 +564,7 @@ return function(Vargs)
 			end
 
 			local function soundIdCheck(Sound)
-				for _,v in pairs(soundIds) do
+				for _,v in ipairs(soundIds) do
 					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
 					end
@@ -588,13 +588,11 @@ return function(Vargs)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
-					if soundIdCheck(child) then
-						Detected("crash", "CMDx Detected; "..tostring(child))
-					else
-						wait()
+					for i = 1, 5 do
 						if soundIdCheck(child) then
 							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
+						task.wait(0.1)
 					end
 				end
 			end)
@@ -866,8 +864,8 @@ return function(Vargs)
 				if
 					not success or
 					script.Archivable ~= false or
-					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or lastChanged2 - lastChanged1 > 60) or
-					lastChanged2 - lastChanged3 > 60 or
+					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or lastChanged2 - lastChanged1 > 90) or
+					lastChanged2 - lastChanged3 > 90 or
 					not checkEvent or
 					typeof(checkEvent) ~= "RBXScriptConnection" or
 					checkEvent.Connected ~= true
@@ -897,8 +895,8 @@ return function(Vargs)
 		task.spawn(xpcall, function()
 			while true do
 				if
-					not isStudio and math.abs(lastChanged3 - lastChanged1) > 60 or
-					math.abs(lastChanged3 - lastChanged2) > 60
+					not isStudio and math.abs(lastChanged3 - lastChanged1) > 90 or
+					math.abs(lastChanged3 - lastChanged2) > 90
 				then
 					opcall(Detected, "crash", "Tamper Protection 0xE28D")
 					oWait(1)

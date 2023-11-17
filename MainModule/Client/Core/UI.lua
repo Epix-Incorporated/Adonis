@@ -108,7 +108,7 @@ return function(Vargs, GetEnv)
 			else
 				pcall(function()if UI.Holder then UI.Holder:Destroy()end end)
 				local new = service.New("ScreenGui", {
-					Name = Functions.GetRandom(),
+					Name = service.HttpService:GenerateGUID(false),
 					Parent = service.PlayerGui,
 				});
 				UI.Holder = new
@@ -357,7 +357,7 @@ return function(Vargs, GetEnv)
 						end
 
 						newGui.Parent = Variables.GUIHolder
-						newGui.Name = Functions.GetRandom()
+						newGui.Name = service.HttpService:GenerateGUID(false)
 
 						data.gIndex = gIndex
 						data.gTable = gTable
@@ -438,7 +438,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Register = function(gui, data)
-			local gIndex = Functions.GetRandom()
+			local gIndex = service.HttpService:GenerateGUID(false)
 			local gTable;gTable = {
 				Object = gui,
 				Config = gui:FindFirstChild'Config';
@@ -559,7 +559,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			gui.Name = Functions.GetRandom()
+			gui.Name = service.HttpService:GenerateGUID(false)
 			gTable:Register(gui)
 
 			return gTable,gIndex

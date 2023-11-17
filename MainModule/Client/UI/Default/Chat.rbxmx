@@ -2253,7 +2253,7 @@ return function(data, env)
 	end)
 
 	admins.MouseButton1Click:Connect(function()
-		if isAdmin or tick() - lastClick > 5 then
+		if isAdmin or os.clock() - lastClick > 5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
 				openAdmins()
@@ -2261,12 +2261,12 @@ return function(data, env)
 				admins.BackgroundTransparency = 0.8
 				admins.TextTransparency = 0.8
 			end
-			lastClick = tick()
+			lastClick = os.clock()
 		end
 	end)
 
 	cross.MouseButton1Click:Connect(function()
-		if isAdmin or tick() - lastClick > 5 then
+		if isAdmin or os.clock() - lastClick > 5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
 				openCross()
@@ -2274,24 +2274,24 @@ return function(data, env)
 				cross.BackgroundTransparency = 0.8
 				cross.TextTransparency = 0.8
 			end
-			lastClick = tick()
+			lastClick = os.clock()
 		end
 	end)
 
 	box.FocusLost:Connect(function(enterPressed)
 		boxFocused = false
 		if enterPressed and not client.Variables.Muted then
-			if box.Text ~= '' and ((mode ~= "Cross" and tick() - lastChat >= 0.5) or (mode == "Cross" and tick() - lastChat >= 10)) then
+			if box.Text ~= '' and ((mode ~= "Cross" and os.clock() - lastChat >= 0.5) or (mode == "Cross" and os.clock() - lastChat >= 10)) then
 				if not client.Variables.Muted then
 					client.Remote.Send('ProcessCustomChat', box.Text, mode)
-					lastChat = tick()
+					lastChat = os.clock()
 				end
-			elseif not ((mode ~= "Cross" and tick() - lastChat >= 0.5) or (mode == "Cross" and tick() - lastChat >= 10)) then
+			elseif not ((mode ~= "Cross" and os.clock() - lastChat >= 0.5) or (mode == "Cross" and os.clock() - lastChat >= 10)) then
 				local tim
 				if mode == "Cross" then
-					tim = 10 - (tick() - lastChat)
+					tim = 10 - (os.clock() - lastChat)
 				else
-					tim = 0.5 - (tick() - lastChat)
+					tim = 0.5 - (os.clock() - lastChat)
 				end
 				tim = string.sub(tostring(tim), 1, 3)
 				client.Handlers.ChatHandler("SpamBot", `Sending too fast! Please wait {tim} seconds.`, "System")
@@ -2299,7 +2299,7 @@ return function(data, env)
 			box.Text = "Click here or press the '/' key to chat"
 			fadeOut()
 			if mode ~= "Cross" then
-				lastChat = tick()
+				lastChat = os.clock()
 			end
 		end
 	end)

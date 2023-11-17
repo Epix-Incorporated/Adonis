@@ -142,7 +142,7 @@ return function(Vargs, GetEnv)
 
 			for _, v in ipairs(character:GetChildren()) do
 				if v:IsA("Accoutrement") and Settings.ProtectHats == true and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
-					coroutine.wrap(protectHat)(v)
+					task.spawn(protectHat, v)
 				end
 			end
 
@@ -267,7 +267,7 @@ return function(Vargs, GetEnv)
 		end
 
 		if player.Character then
-			coroutine.wrap(onCharacterAdded)(player.Character)
+			task.spawn(onCharacterAdded, player.Character)
 		end
 
 		player.CharacterRemoving:Connect(onCharacterRemoving)
