@@ -197,18 +197,13 @@ return function(Vargs, GetEnv)
 
 				for _, plr in service.Players:GetPlayers() do
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
-						Remote.MakeGui(plr, "Notification", {
-							Title = "Notification",
-							Icon = server.MatIcons["Notification important"];
-							Message = string.format(
+						Functions.Notification("Notification", string.format(
 								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
 								player.Name,
 								action,
 								string.sub(info, 1, 50)
-							);
-							Time = 30;
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}exploitlogs')`);
-						})
+							), {plr}, 30, "MatIcon://Notification important", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}exploitlogs')`)
+						)
 					end
 				end
 			end

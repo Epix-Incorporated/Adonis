@@ -25,5 +25,25 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "Removed legacy trello board")
 	end
 
+	-- // Backwards compatibility
+	Remote.UnEncrypted = setmetatable({}, {
+		__newindex = function(_, ind, val)
+			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
+			Remote.Commands[ind] = val
+			Logs:AddLog("Script", `Attempted to add {ind} to legacy Remote.Unencrypted. Moving to Remote.Commands`)
+		end
+	});
+	Functions.GetRandom = function(pLen)
+		local random = math.random
+		local format = string.format
+
+		local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
+		local Res = {};
+		for Idx = 1, Len do
+			Res[Idx] = format('%02x', random(255));
+		end;
+		return table.concat(Res)
+	end;
+
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end

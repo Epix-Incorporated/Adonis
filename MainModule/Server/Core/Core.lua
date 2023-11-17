@@ -45,7 +45,7 @@ return function(Vargs, GetEnv)
 		Core.ModuleID = data.ModuleID or 7510592873
 		Core.LoaderID = data.LoaderID or 7510622625
 		Core.DebugMode = data.DebugMode or false
-		Core.Name = Functions:GetRandom()
+		Core.Name = service.HttpService:GenerateGUID(false)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
@@ -309,7 +309,7 @@ return function(Vargs, GetEnv)
 				loader.Object:Destroy()
 			end;
 
-			local depsName = Functions:GetRandom()
+			local depsName = service.HttpService:GenerateGUID(false)
 			local folder = server.Client:Clone()
 			local acli = Deps.ClientMover:Clone();
 			local client = folder.Client
@@ -407,8 +407,8 @@ return function(Vargs, GetEnv)
 			local key = tostring(p.UserId)
 			local keys = Remote.Clients[key]
 			if keys then
-				local depsName = Functions:GetRandom()
-				local eventName = Functions:GetRandom()
+				local depsName = service.HttpService:GenerateGUID(false)
+				local eventName = service.HttpService:GenerateGUID(false)
 				local folder = server.Client:Clone()
 				local acli = Deps.ClientMover:Clone();
 				local client = folder.Client
@@ -484,7 +484,7 @@ return function(Vargs, GetEnv)
 
 		LoadClientLoader = function(p)
 			local loader = Deps.ClientLoader:Clone()
-			loader.Name = Functions.GetRandom()
+			loader.Name = service.HttpService:GenerateGUID(false)
 			loader.Parent = p:WaitForChild("PlayerGui", 60) or p:WaitForChild("Backpack")
 			loader.Disabled = false
 		end;
@@ -556,7 +556,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if not data.Code then
-				data.Code = Functions.GetRandom()
+				data.Code = service.HttpService:GenerateGUID(false)
 			end
 
 			table.insert(Core.ExecuteScripts, data)
@@ -587,7 +587,7 @@ return function(Vargs, GetEnv)
 				`Invalid script type '{scriptType}'`
 			)
 
-			local execCode = Functions.GetRandom()
+			local execCode = service.HttpService:GenerateGUID(false)
 
 			scr.Name = `[Adonis] {scriptType}`
 

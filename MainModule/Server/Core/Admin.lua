@@ -68,11 +68,7 @@ return function(Vargs, GetEnv)
 									return false
 								elseif Admin.SlowMode and not Admin.CheckAdmin(SenderPlayer) and slowCache[SenderPlayer] and os.time() - slowCache[SenderPlayer] < Admin.SlowMode then
 									if IsOriginalSender then --// Only show this for the person sending! Hide for others, however
-										--Remote.MakeGui(SenderPlayer, "Notification", {
-										--	Title = "You are chatting too fast!";
-										--	Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]));
-										--	Time = 10;
-										--})
+										--Functions.Notification("You are chatting too fast!", string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer])), {SenderPlayer}, 10)
 										
 										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are sending messages too fast! {string.format("(%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]))}`)
 									end
@@ -1575,7 +1571,7 @@ return function(Vargs, GetEnv)
 
 				local cmdFullName = cmd._fullName or (function()
 					local aliases = cmd.Aliases or cmd.Commands or {}
-					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 					return cmd._fullName
 				end)()
 
@@ -1644,7 +1640,7 @@ return function(Vargs, GetEnv)
 
 			local cmdFullName = cmd._fullName or (function()
 				local aliases = cmd.Aliases or cmd.Commands or {}
-				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 				return cmd._fullName
 			end)()
 

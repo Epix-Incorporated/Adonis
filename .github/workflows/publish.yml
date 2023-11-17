@@ -71,22 +71,24 @@ jobs:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
-#      - name: Publish Loader
-#        uses: fjogeleit/http-request-action@v1
-#        with:
-#          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
-#          method: "POST"
-#          contentType: "multipart/form-data"
-#          files: '{ "file": "loader.rbxm" }'
-#          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-#          timeout: 10000
+      - name: Publish Loader
+        uses: fjogeleit/http-request-action@v1.14.1
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "loader.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
+          preventFailureOnNoResponse: 'true'
           
-#      - name: Publish Module
-#        uses: fjogeleit/http-request-action@v1
-#        with:
-#          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
-#          method: "POST"
-#          contentType: "multipart/form-data"
-#          files: '{ "file": "module.rbxm" }'
-#          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-#          timeout: 10000
+      - name: Publish Module
+        uses: fjogeleit/http-request-action@v1.14.1
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "module.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
+          preventFailureOnNoResponse: 'true'

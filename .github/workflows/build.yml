@@ -47,7 +47,7 @@ jobs:
          else
            BUILD_TYPE="Nightly"
          fi
-         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
+         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
 
       - uses: ok-nick/setup-aftman@v0.4.2
         with:
@@ -61,7 +61,7 @@ jobs:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
 
-    # The following are ran for pushes, not pull requests, only.
+    # The following commands are run for pushes only.
           
       - name: Build Nightly MainModule
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
@@ -74,13 +74,14 @@ jobs:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
-    #- name: Publish Nightly MainModule
-    #  uses: fjogeleit/http-request-action@v1
-    #  if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
-    #  with:
-    #    url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.NIGHTLY_MODULE_ID }}"
-    #    method: "POST"
-    #    contentType: "multipart/form-data"
-    #    files: '{ "file": "module.rbxm" }'
-    #    customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-    #    timeout: 10000
+      - name: Publish Nightly MainModule
+        uses: fjogeleit/http-request-action@v1.14.1
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.NIGHTLY_MODULE_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "module.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
+          preventFailureOnNoResponse: 'true'
