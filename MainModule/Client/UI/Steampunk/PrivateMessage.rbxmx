@@ -269,7 +269,7 @@
 						<token name="BorderMode">0</token>
 						<int name="BorderSizePixel">0</int>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="ClearTextOnFocus">false</bool>
+						<bool name="ClearTextOnFocus">true</bool>
 						<bool name="ClipsDescendants">true</bool>
 						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Draggable">false</bool>
