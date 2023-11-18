@@ -262,7 +262,8 @@ return function(data, env)
 		local holder = service.New("ScreenGui")
 		holder.IgnoreGuiInset = not client.Variables.TopBarShift
 		holder.ClipToDeviceSafeArea = true
-		
+		holder.ScreenInsets = if not client.Variables.TopBarShift then Enum.ScreenInsets.TopbarSafeInsets else Enum.ScreenInsets.CoreUISafeInsets
+
 		
 		local hTable = client.UI.Register(holder)
 		local frame = service.New("ScrollingFrame", holder)
@@ -270,7 +271,7 @@ return function(data, env)
 		hTable.Name = "HintHolder"
 		frame.Name = "Frame"
 		frame.BackgroundTransparency = 1
-		frame.Size = UDim2.new(1, 0, 0,150)
+		frame.Size = if not client.Variables.TopBarShift then UDim2.new(1, 0, 1, 0) else UDim2.new(1, 0, 0, 150)
 		frame.CanvasSize = UDim2.new(0, 0, 0, 0)
 		frame.ChildAdded:Connect(function(c)
 			if #frame:GetChildren() == 0 then
@@ -288,6 +289,14 @@ return function(data, env)
 			end
 		end)
 		
+		local framelayout = service.New("UIListLayout", {
+			Parent = frame;
+			Name = "AdonisHintLayout";
+			VerticalAlignment = if not client.Variables.TopBarShift then Enum.VerticalAlignment.Center else Enum.VerticalAlignment.Top;
+			FillDirection = Enum.FillDirection.Vertical;
+			HorizontalAlignment = Enum.HorizontalAlignment.Center;
+		})
+
 		container = hTable
 		hTable:Ready()
 	end
@@ -298,9 +307,10 @@ return function(data, env)
 	
 	if (container:IsA("ScreenGui")) then
 		container.IgnoreGuiInset, container.ClipToDeviceSafeArea = not client.Variables.TopBarShift, true
+		container.ScreenInsets = if not client.Variables.TopBarShift then Enum.ScreenInsets.TopbarSafeInsets else Enum.ScreenInsets.CoreUISafeInsets
 	end
 	
-	container.Position = UDim2.new(0, 0, 0, (notif and 30 or 0))
+	container.Position = UDim2.new(0, 0, 0, 0)
 	
 	local children = container:GetChildren()
 	
@@ -308,7 +318,7 @@ return function(data, env)
 	gui.Frame.msg.Text = str
 	local bounds = gui.Frame.msg.TextBounds.X
 	
-	local function moveGuis(m,ignore)
+	--[[local function moveGuis(m,ignore)
 		m = m or 0
 		local max = #container:GetChildren()
 		for i,v in pairs(container:GetChildren()) do
@@ -318,11 +328,11 @@ return function(data, env)
 				if i~=max then v.Size = UDim2.new(1,0,0,28) end
 			end
 		end
-	end
+	end]]
 	
-	local lom = -1
-	moveGuis(-1)
 	gui.Parent = container
+	--[[local lom = -1
+	moveGuis(-1)
 	if #container:GetChildren()>5 then lom = -2 end
 	UDim2.new(0,0,0,(#container:GetChildren()+lom)*28)
 	moveGuis(-1)
@@ -333,13 +343,25 @@ return function(data, env)
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
+	end]]
+
+	--TODO: kinda hacky way to prevent overclipping, new CSS flexbox-like layout classes (cur. in beta) might be useful for this case
+	local function recenterLogic()
+		if #container:GetChildren()>2 and not client.Variables.TopBarShift then
+			container.AdonisHintLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+		elseif not client.Variables.TopBarShift then
+			container.AdonisHintLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+		end
 	end
+
+	recenterLogic()
 	
 	wait(data.Time or 5)
 	
 	if gui and gui.Parent then 
-		moveGuis(-2,gui)
+		--moveGuis(-2,gui)
 		gui:Destroy()
+		recenterLogic()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
 	end
 end]]></ProtectedString>
