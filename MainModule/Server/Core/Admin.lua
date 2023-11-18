@@ -1284,7 +1284,7 @@ return function(Vargs, GetEnv)
 					for name, data in Commands do
 						local command1, command2 = nil, nil
 
-						if data.Hidden then
+						if type(data) ~= "table" or data.Hidden then
 							continue
 						end
 
