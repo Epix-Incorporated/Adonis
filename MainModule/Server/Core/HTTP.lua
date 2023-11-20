@@ -199,8 +199,8 @@ return function(Vargs, GetEnv)
 					 data = {
 						Bans = {};
 						Mutes = {};
-						Lists = {}
-						Labels = {}
+						Lists = {};
+						Labels = {};
 						Music = {};
 						Whitelist = {};
 						Blacklist = {};
