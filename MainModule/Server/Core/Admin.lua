@@ -1248,52 +1248,38 @@ return function(Vargs, GetEnv)
 						return Ban
 					end
 				end
+
 				return false
 			end
-			local SBan = getPlayerBan(Admin.ServerBans)
-			local TBan = getPlayerBan(Admin.TimeBans)
-			local GBan = getPlayerBan(Settings.Banned)
-
-			if SBan then
-				removePlayerBan(Admin.ServerBans)
-			end
-
-			if TBan then
-				removePlayerBan(Admin.TimeBans)
-			end
-
-			if GBan then
-				removePlayerBan(Settings.Banned)
-			end;
-
-			return plr.Name
-
+			
 			local removePlayerBan = function(tab)
 				for ind, Ban in pairs(tab) do
 					if Ban.id == plr.UserId then
 						tab[ind] = nil
 					end
 				end
+
 				return false
 			end
-		end;
-
-		RemoveTimeBan = function(name : string | number | Instance)
-			local ret
-			for i,v in Core.Variables.TimeBans do
-				if Admin.DoBanCheck(name, v) then
-					table.remove(Core.Variables.TimeBans, i)
-					ret = v
-					Core.DoSave({
-						Type = "TableRemove";
-						Table = {"Core", "Variables", "TimeBans"};
-						Value = v;
-						LaxCheck = true;
-					})
-				end
+			
+			local SBan = getPlayerBan(Admin.ServerBans)
+			local TBan = getPlayerBan(Admin.TimeBans)
+			local GBan = getPlayerBan(Settings.Banned)
+			
+			if SBan then
+				removePlayerBan(Admin.ServerBans)
 			end
-			return ret
-		end,
+			
+			if TBan then
+				removePlayerBan(Admin.TimeBans)
+			end
+			
+			if GBan then
+				removePlayerBan(Settings.Banned)
+			end
+			
+			return plr.Name
+		end;
 
 		RunCommand = function(coma: string, ...)
 			local _, com = Admin.GetCommand(coma)
