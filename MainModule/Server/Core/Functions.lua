@@ -470,6 +470,103 @@ return function(Vargs, GetEnv)
 			return string.sub(str, 1, -3)
 		end;
 
+			SetKickMessage = function(Message, Table, Default)
+			if type(Table)=="table" then
+				server.Variables.Messages[Message] = table.concat(Table, "\n")
+			else
+				server.Variables.Messages[Message] = table.concat(Default, "\n")
+				warn(tostring(Message).." is not a table! (Is your configuration out of date?) Using default...")
+			end
+		end;
+
+		GetKickMessage = function(Type, Data)
+			local Message = Variables.Messages[Type]
+
+			if tonumber(Data.time) then
+				Data.time = Functions.EpochToHuman(Data.time)
+			end
+
+			if tonumber(Data.expireTime) then
+				Data.expireTime = Functions.EpochToHuman(Data.expireTime)
+			end
+
+			Message = Message:gsub("{reason}", Data.reason or "No Reason Provided")
+			Message = Message:gsub("{time}", Data.time or "None")
+			Message = Message:gsub("{name}", Data.name or "nil")
+			Message = Message:gsub("{id}", Data.id or "nil")
+			Message = Message:gsub("{moderator}", Data.moderator.Name or "None")
+			Message = Message:gsub("{type}", Data.kickType or "nil")
+			Message = Message:gsub("{expiretime}", Data.expireTime or "nil")
+			Message = Message:gsub("{remainingtime}", Data.remainingTime or "nil")
+
+			print(Message)
+			return Message
+		end;
+
+		GetSlockMessage = function()
+			local SlockData = Variables.SlockData
+			local Data = {
+				reason = SlockData.Reason;
+				time = SlockData.TimeEnabled;
+				name = "nil";
+				id = 0;
+				moderator = SlockData.Moderator;
+				kickType = "nil";
+				expireTime = "nil";
+				remainingTime = "nil";
+			}
+
+			return Functions.GetKickMessage("Lock", Data)
+		end;
+
+		GetWhitelistMessage = function()
+			local WhitelistData = Variables.WhitelistData
+			local Data = {
+				reason = WhitelistData.Reason;
+				time = WhitelistData.TimeEnabled;
+				name = "nil";
+				id = 0;
+				moderator = WhitelistData.Moderator;
+				kickType = "nil";
+				expireTime = "nil";
+				remainingTime = "nil";
+			}
+
+			return Functions.GetKickMessage("Whitelist", Data)
+		end;
+
+		EpochToHuman = function(Epoch)
+			local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
+			local Months = {"January"; "February"; "March"; "April"; "May"; "June"; "July"; "August"; "September"; "October"; "November"; "December"}
+			local TimeTable = os.date("!*t", tonumber(Epoch))
+
+			local Week = Weeks[TimeTable.wday]
+			local Month = Months[TimeTable.month]
+			local Day = TimeTable.day
+			local Year = TimeTable.year
+
+			local hour, am_pm
+
+			if TimeTable.hour >= 12 then
+				hour = TimeTable.hour - 12
+				am_pm = "PM"
+			else
+				hour = TimeTable.hour
+				am_pm = "AM"
+			end
+
+			if hour == 0 then
+				hour = 12
+			end
+
+			local Hour = string.format("%02s", tostring(hour))
+			local Minute = string.format("%02s", tostring(TimeTable.min))
+			local Seconds = string.format("%02s", tostring(TimeTable.sec))
+
+			local TimeString = Week.." "..Month.." "..Day.." @ "..Hour..":"..Minute..":"..Seconds.." "..am_pm.." (UTC)"
+			return TimeString
+		end;
+
 		GetPlayers = function(plr, argument, options)
 			options = options or {}
 
@@ -934,6 +1031,16 @@ return function(Vargs, GetEnv)
 					})
 				end)
 			end
+		end;
+
+		GetModelMass = function(Model)
+			local mass = 0
+			for _,p in ipairs(Model:GetDescendants()) do
+				if p:IsA("BasePart") then
+					mass = mass + p:GetMass()
+				end
+			end
+			return mass
 		end;
 
 		Notify = function(title, message, players, duration)
