@@ -1,3 +1,4 @@
+task.wait()
 local players = game:GetService("Players")
 local localplayer = players.LocalPlayer
 local torso = localplayer.Character.HumanoidRootPart 
@@ -12,7 +13,15 @@ local moos = mouse.KeyDown:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 1 
 	elseif key:lower() == "s" then 
-	 -25,7 +25,7  local moos = mouse.KeyDown:Connect(function(key)
+		dir.s = 1 
+	elseif key:lower() == "a" then 
+		dir.a = 1 
+	elseif key:lower() == "d" then 
+		dir.d = 1 
+	elseif key:lower() == "q" then 
+		spd = spd + 1 
+	elseif key:lower() == "e" then 
+		spd = spd - 1 
 	end 
 end) 
 
@@ -20,7 +29,10 @@ local moos1 = mouse.KeyUp:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 0 
 	elseif key:lower() == "s" then 
-	 -36,10 +36,10  local moos1 = mouse.KeyUp:Connect(function(key)
+		dir.s = 0 
+	elseif key:lower() == "a" then 
+		dir.a = 0 
+	elseif key:lower() == "d" then 
 		dir.d = 0 
 	end 
 end) 
@@ -31,7 +43,8 @@ local macka = hum.Changed:Connect(function()
 	hum.PlatformStand = true 
 end) 
 
-	 -48,12 +48,12  repeat
+repeat 
+	if enabled == nil or enabled.Parent == nil or enabled.Value == false then
 		running = false
 		break
 	end
