@@ -875,17 +875,14 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		RemoveAdmin = function(p, temp, override)
-			local current, rank = Admin.GetLevel(p)
-			local listData = rank and Settings.Ranks[rank]
-			local listName = listData and rank
-			local list = listData and listData.Users
-
+		RemoveAdmin = function(p,temp,override)
+			local current = Admin.GetLevel(p)
+			local list = Admin.LevelToList(current)
 			local isTemp,tempInd = Admin.IsTempAdmin(p)
 
 			if isTemp then
 				temp = true
-				table.remove(Admin.TempAdmins, tempInd)
+				table.remove(Admin.TempAdmins,tempInd)
 			end
 
 			if override then
@@ -893,84 +890,123 @@ return function(Vargs, GetEnv)
 			end
 
 			if type(p) == "userdata" then
-				Admin.SetLevel(p, 0)
+				Admin.SetLevel(p,0)
 			end
 
-			if list then
-				local DoCheck = Admin.DoCheck
-				for ind,check in list do
-					if DoCheck(p, check) and not (type(check) == "string" and (string.match(check,"^Group:") or string.match(check,"^Item:"))) then
-						table.remove(list, ind)
+			local function doRemove(level,check)
+				if level == 1 then
+					Core.DoSave({
+						Type = "TableRemove";
+						Table = "Moderators";
+						Value = check;
+					})
+				elseif level == 2 then
+					if Settings.SaveAdmins then
+						Core.DoSave({
+							Type = "TableRemove";
+							Table = "Admins";
+							Value = check;
+						})
+					end
+				elseif level == 3 then
+					if Settings.SaveAdmins then
+						Core.DoSave({
+							Type = "TableRemove";
+							Table = "HeadAdmins";
+							Value = check;
+						})		
+					end					
+				elseif level == 4 then
+					if Settings.SaveAdmins then
+						Core.DoSave({
+							Type = "TableRemove";
+							Table = "Creators";
+							Value = check;
+						})
+					end
+				end
+			end
 
+			local function removeFromTable(list,level)
+				for ind,check in pairs(list) do
+					if Admin.DoCheck(p,check) and not (type(check) == "string" and (check:match("^Group:") or check:match("^Item:"))) then
+						table.remove(list,ind)
 						if not temp and Settings.SaveAdmins then
-							TrackTask("Thread: RemoveAdmin", Core.DoSave, false, {
-								Type = "TableRemove";
-								Table = {"Settings", "Ranks", listName, "Users"};
-								Value = check;
-							})
+							doRemove(level,check)
 						end
 					end
 				end
 			end
 
+			removeFromTable(Settings.Moderators,1)
+			removeFromTable(Settings.Admins,2)
+			removeFromTable(Settings.HeadAdmins,3)
+			removeFromTable(Settings.Creators,4)
 			Admin.UpdateCachedLevel(p)
 		end;
 
-		AddAdmin = function(p, level, temp)
-			local current, rank = Admin.GetLevel(p)
-			local list = rank and Settings.Ranks[rank]
-			local levelName, newRank, newList
+		AddAdmin = function(p,level,temp)
+			local current = Admin.GetLevel(p)
+			local list = Admin.LevelToList(current)
 
-			if type(level) == "string" then
-				local newRank = Settings.Ranks[level]
-				levelName = newRank and level
-				newList = newRank and newRank.Users
-				level = (newRank and newRank.Level) or Admin.StringToComLevel(levelName) or level
-			else
-				local nL, nLN = Admin.LevelToList(level)
-				levelName = nLN
-				newRank = nLN
-				newList = nL
-			end
+			Admin.RemoveAdmin(p,temp)
+			Admin.SetLevel(p,level)
+			if temp then table.insert(Admin.TempAdmins,p) end
 
-			Admin.RemoveAdmin(p, temp)
-			Admin.SetLevel(p, level, nil, levelName)
-
-			if temp then
-				table.insert(Admin.TempAdmins, p)
-			end
-
-			if list and type(list) == "table" then
+			if list and type(list)=="table" then 
 				local index,value
-
-				for ind,ent in list do
-					if (type(ent)=="number" or type(ent)=="string") and (ent==p.UserId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(`{p.Name}:{p.UserId}`)) then
+				for ind,ent in pairs(list) do
+					if (type(ent)=="number" or type(ent)=="string") and (ent==p.userId or ent:lower()==p.Name:lower() or ent:lower()==(p.Name..":"..p.userId):lower()) then
 						index = ind
 						value = ent
 					end
 				end
-
 				if index and value then
-					table.remove(list, index)
+					table.remove(list,index)
 				end
 			end
 
-			local value = `{p.Name}:{p.UserId}`
-
-			if newList then
-				table.insert(newList, value)
-
-				if Settings.SaveAdmins and levelName and not temp then
-					TrackTask("Thread: SaveAdmin", Core.DoSave, false, {
+			local value = p.Name..":"..p.userId
+			if level == 1 then
+				table.insert(Settings.Moderators,value)
+				if Settings.SaveAdmins and not temp then
+					Core.DoSave({
 						Type = "TableAdd";
-						Table = {"Settings", "Ranks", levelName, "Users"};
+						Table = "Moderators";
+						Value = value
+					})
+				end
+			elseif level == 2 then
+				table.insert(Settings.Admins,value)
+				if Settings.SaveAdmins and not temp then
+					Core.DoSave({
+						Type = "TableAdd";
+						Table = "Admins";
+						Value = value
+					})
+				end
+			elseif level == 3 then
+				table.insert(Settings.HeadAdmins,value)
+				if Settings.SaveAdmins and not temp then
+					Core.DoSave({
+						Type = "TableAdd";
+						Table = "HeadAdmins";
+						Value = value
+					})
+				end
+			elseif level == 4 then
+				table.insert(Settings.Creators,value)
+				if Settings.SaveAdmins and not temp then
+					Core.DoSave({
+						Type = "TableAdd";
+						Table = "Creators";
 						Value = value
 					})
 				end
 			end
 
 			Admin.UpdateCachedLevel(p)
-		end;
+		end;	
 
 		CheckDonor = function(p)
 			--if not Settings.DonorPerks then return false end
