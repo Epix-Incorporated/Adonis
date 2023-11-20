@@ -1102,15 +1102,15 @@ return function(Vargs, GetEnv)
 					expireTime = expireTime;
 					remainingTime = expireTime - os.time()
 				}
-
+				
 				table.insert(Admin.TimeBans, banData)
-
+				
 				Core.DoSave({
 					Type = "TableAdd";
 					Table = "TimeBans";
 					Value = banData
 				})	
-
+				
 				if p and service.Players:FindFirstChild(tostring(p.Name)) then
 					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("TimeBan",banData))
 				end
@@ -1125,7 +1125,7 @@ return function(Vargs, GetEnv)
 					expireTime = "Server Ban";
 					remainingTime = "Server Ban"
 				}
-
+				
 				table.insert(Admin.ServerBans, banData)
 
 				if p and service.Players:FindFirstChild(tostring(p.Name)) then
@@ -1142,12 +1142,13 @@ return function(Vargs, GetEnv)
 					expireTime = "Game Ban";
 					remainingTime = "Game Ban"
 				}
-
+				
 				table.insert(Settings.Banned, banData)
+
 				Core.DoSave({
 					Type = "TableAdd";
 					Table = "Banned";
-					Value = banData;
+					Value = banData
 				})
 
 				if p and service.Players:FindFirstChild(tostring(p.Name)) then
@@ -1155,12 +1156,9 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			if type(p) ~= "table" then
-				if not service.Players:FindFirstChild(p.Name) then
-					Remote.Send(p,'Function','KillClient')
-				end
+			if not service.Players:FindFirstChild(p.Name) then
+				Remote.Send(p,'Function','KillClient')
 			end
-			service.Events.PlayerBanned:Fire(p, reason, doSave, moderator)
 		end;
 
 				GetBanData = function(plr)
