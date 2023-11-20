@@ -922,7 +922,7 @@ return function(Vargs, GetEnv)
 						end
 
 						local lists = trello.Boards.GetLists(Settings.Trello_Primary)
-						local list = trello.GetListObject(lists,list)
+						local list = trello.GetListObject(lists,listName)
 						if list then
 							local card = trello.Lists.MakeCard(list.id, name, desc)
 							Functions.Hint(`Made card "{card.name}" in list "{list.name}"`, {p})
