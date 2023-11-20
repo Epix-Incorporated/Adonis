@@ -710,22 +710,20 @@ return function(Vargs, GetEnv)
 				local banned, reason = Admin.CheckBan(p)
 
 				if banned then
-					Remote.Clients[key] = nil;
-					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
 					return "REMOVED"
 				end
 
-				if Variables.ServerLock and level < 1 then
+				if Variables.SlockData.Enabled and level < 1 then
 					Remote.Clients[key] = nil;
-					p:Kick(Variables.LockMessage or "::Adonis::\nServer Locked")
+					p:Kick(Functions.GetSlockMessage())
 					return "REMOVED"
 				end
 
-				if Variables.Whitelist.Enabled then
+				if Variables.WhitelistData.Enabled then
 					local listed = false
 
 					local CheckTable = Admin.CheckTable
-					for listName, list in Variables.Whitelist.Lists do
+					for listName, list in Variables.WhitelistData.List do
 						if CheckTable(p, list) then
 							listed = true
 							break;
@@ -734,7 +732,7 @@ return function(Vargs, GetEnv)
 
 					if not listed and level == 0 then
 						Remote.Clients[key] = nil;
-						p:Kick(Variables.LockMessage or "::Adonis::\nWhitelist Enabled")
+						p:Kick(Functions.GetWhitelistMessage())
 						return "REMOVED"
 					end
 				end
@@ -769,6 +767,23 @@ return function(Vargs, GetEnv)
 
 			if Remote.Clients[key] then
 				Core.HookClient(p)
+
+				if not server.Variables.TrackTable[p.UserId] then
+					server.Variables.TrackTable[p.UserId] = {}
+				end
+				p:GetPropertyChangedSignal("TeamColor"):Connect(function()
+					local color = p.TeamColor.Color
+					for _,plr in ipairs(game.Players:GetPlayers()) do
+						if server.Variables.TrackTable[plr.UserId][p.UserId] then
+							server.Commands.Track.Function(plr, {p.Name})
+						end
+					end
+				end)
+				p.CharacterAppearanceLoaded:Connect(function(char)
+					for _,plr in pairs(server.Variables.TrackTable[p.UserId]) do
+						server.Commands.Track.Function(p, {plr.Name})
+					end
+				end)
 
 				AddLog("Script", {
 					Text = `{p.Name} loading started`;
@@ -941,7 +956,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if Settings.HelpButton then
-						Remote.MakeGui(p, "HelpButton")
+						Remote.MakeGui(p,"HelpButton", {Settings.HelpButtonID})
 					end
 				end
 
