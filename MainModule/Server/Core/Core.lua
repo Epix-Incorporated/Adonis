@@ -1287,13 +1287,13 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						if Core.Variables.TimeBans then
-							for i, v in Core.Variables.TimeBans do
+						if Admin.TimeBans then
+							for i, v in Admin.TimeBans do
 								if v.EndTime - os.time() <= 0 then
-									table.remove(Core.Variables.TimeBans, i)
+									table.remove(Admin.TimeBans, i)
 									DoSave({
 										Type = "TableRemove",
-										Table = { "Core", "Variables", "TimeBans" },
+										Table = { "Admin", "TimeBans" },
 										Value = v,
 										LaxCheck = true,
 									})
