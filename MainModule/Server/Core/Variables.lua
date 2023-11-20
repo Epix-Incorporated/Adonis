@@ -57,9 +57,28 @@ return function(Vargs, GetEnv)
 		FrozenObjects = {},
 		ScriptBuilder = {},
 		CachedDonors = {},
-		BanMessage = "Banned",
 		PlayerJoinFilters = {};
-		LockMessage = "Not Whitelisted",
+		WhitelistData = {
+			Enabled = false;
+			TimeEnabled = 0;
+			Moderator = {Name = "SERVER"};
+			List = {};
+			Reason = "This server is whitelisted."
+		};
+		SlockData = {
+			Enabled = false;
+			TimeEnabled = 0;
+			Moderator = {Name = "SERVER"};
+			Reason = "This server is locked."
+		};
+		Messages = {
+			Ban = "";
+			TrelloBan = "";
+			Lock = "";
+			Whitelist = "";
+			TimeBan = "";
+			GameBan = "";
+		};
 		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605", 5212082, 5212081}, --// Strings are items; numbers are gamepasses
 		WebPanel_Initiated = false,
 		AnimatedFaces = {
@@ -211,5 +230,8 @@ return function(Vargs, GetEnv)
 				Settings = server.Settings.Whitelist
 			},
 		};
+		TrackTable = {};
+		TeamBindings = {};
+		ForceField = {};
 	}
 end
