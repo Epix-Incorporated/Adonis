@@ -144,7 +144,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if oldLogs then
-					for _, m in service.HttpService:JSONDecode(data) do
+					for _, m in service.HttpService:JSONDecode(oldLogs) do
 						table.insert(temp, m)
 					end
 				end
