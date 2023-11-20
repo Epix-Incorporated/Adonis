@@ -144,7 +144,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if oldLogs then
-					for _, m in oldLogs do
+					for _, m in service.HttpService:JSONDecode(data) do
 						table.insert(temp, m)
 					end
 				end
@@ -166,7 +166,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				return temp
+				return service.HttpService:JSONEncode(temp)
 			end)
 
 			print("Command logs saved!")
