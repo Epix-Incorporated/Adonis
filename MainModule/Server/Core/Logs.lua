@@ -34,9 +34,9 @@ return function(Vargs, GetEnv)
 		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");
 	end;
-	
-	local UseDLL = server.Settings.UseLinkedListsInLogs == true
-	
+
+	local UseDLL = server.Settings.UseLinkedListsInLogs == true or server.Settings.UseLinkedListsInLogs == nil
+
 	server.Logs = {
 		Init = Init;
 		Chats = if UseDLL then DLL.new() else {};
