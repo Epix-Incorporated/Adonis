@@ -1054,35 +1054,129 @@ return function(Vargs, GetEnv)
 			return false
 		end;
 
-		AddBan = function(p, reason, doSave, moderator)
-			local value = {
-				Name = p.Name;
-				UserId = p.UserId;
-				Reason = reason;
-				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
-			}
+		AddBan = function(p, banType, moderator, banTime, reason, expireTime)
+			if banType == "TIME" then
+				local banData = {
+					reason = reason or "No Reason Provided";
+					time = banTime or os.time();
+					name = p.Name;
+					id = p.UserId;
+					moderator = {Name = moderator.Name; UserId = moderator.UserId};
+					kickType = banType;
+					expireTime = expireTime;
+					remainingTime = expireTime - os.time()
+				}
 
-			table.insert(Settings.Banned, value)--`{p.Name}:{p.UserId}`
+				table.insert(Admin.TimeBans, banData)
 
-			if doSave then
+				Core.DoSave({
+					Type = "TableAdd";
+					Table = "TimeBans";
+					Value = banData
+				})	
+
+				if p and service.Players:FindFirstChild(tostring(p.Name)) then
+					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("TimeBan",banData))
+				end
+			elseif banType == "BAN" then
+				local banData = {
+					reason = reason or "No Reason Provided";
+					time = banTime or os.time();
+					name = p.Name;
+					id = p.UserId;
+					moderator = {Name = moderator.Name; UserId = moderator.UserId};
+					kickType = banType;
+					expireTime = "Server Ban";
+					remainingTime = "Server Ban"
+				}
+
+				table.insert(Admin.ServerBans, banData)
+
+				if p and service.Players:FindFirstChild(tostring(p.Name)) then
+					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("Ban",banData))
+				end
+			elseif banType == "GAME" then
+				local banData = {
+					reason = reason or "No Reason Provided";
+					time = banTime or os.time();
+					name = p.Name;
+					id = p.UserId;
+					moderator = {Name = moderator.Name; UserId = moderator.UserId};
+					kickType = banType;
+					expireTime = "Game Ban";
+					remainingTime = "Game Ban"
+				}
+
+				table.insert(Settings.Banned, banData)
 				Core.DoSave({
 					Type = "TableAdd";
 					Table = "Banned";
-					Value = value;
+					Value = banData;
 				})
 
-				Core.CrossServer("RemovePlayer", p.Name, Variables.BanMessage, value.Reason or "No reason provided")
+				if p and service.Players:FindFirstChild(tostring(p.Name)) then
+					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("GameBan",banData))
+				end
 			end
 
 			if type(p) ~= "table" then
 				if not service.Players:FindFirstChild(p.Name) then
 					Remote.Send(p,'Function','KillClient')
-				else
-					if p then pcall(function() p:Kick(`{Variables.BanMessage} | Reason: {value.Reason or "No reason provided"}`) end) end
 				end
 			end
-
 			service.Events.PlayerBanned:Fire(p, reason, doSave, moderator)
+		end;
+
+				GetBanData = function(plr)
+			local banData, found = {
+				reason = "No Reason Provided";
+				time = os.time();
+				name = plr.Name;
+				id = plr.UserId;
+				moderator = "None";
+				kickType = "nil";
+				expireTime = os.time();
+				remainingTime = 0;
+			}, nil
+
+			local getPlayerBan = function(tab)
+				for _, Ban in pairs(tab) do
+					if Ban.id == plr.UserId then
+						for ind, val in pairs(banData) do
+							banData[ind] = Ban[ind]
+						end
+
+						found = true
+						return banData
+					end
+				end
+
+				return false
+			end
+
+			getPlayerBan(Admin.ServerBans)
+			if not found then
+				getPlayerBan(Admin.TimeBans)
+			end
+
+			if not found then
+				getPlayerBan(Settings.Banned)
+			end
+
+			if not found then
+				return false
+			end
+
+			local trelloBanData = HTTP.GetTrelloBan(plr)
+
+			if trelloBanData then
+				return {
+					name = trelloBanData.name;
+					time = trelloBanData.time;
+				}
+			end
+
+			return banData
 		end;
 
 		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string, moderator: Player?)
@@ -1147,22 +1241,41 @@ return function(Vargs, GetEnv)
 			return false
 		end;
 
-		RemoveBan = function(name, doSave)
-			local ret
-			for i,v in Settings.Banned do
-				if Admin.DoBanCheck(name, v) then
-					ret = table.remove(Settings.Banned, i)
-					if doSave then
-						Core.DoSave({
-							Type = "TableRemove";
-							Table = "Banned";
-							Value = ret;
-							LaxCheck = true;
-						})
+		RemoveBan = function(plr)
+			local getPlayerBan = function(tab)
+				for ind, Ban in pairs(tab) do
+					if Ban.id == plr.UserId then
+						return Ban
 					end
 				end
+				return false
 			end
-			return ret
+			local SBan = getPlayerBan(Admin.ServerBans)
+			local TBan = getPlayerBan(Admin.TimeBans)
+			local GBan = getPlayerBan(Settings.Banned)
+
+			if SBan then
+				removePlayerBan(Admin.ServerBans)
+			end
+
+			if TBan then
+				removePlayerBan(Admin.TimeBans)
+			end
+
+			if GBan then
+				removePlayerBan(Settings.Banned)
+			end;
+
+			return plr.Name
+
+			local removePlayerBan = function(tab)
+				for ind, Ban in pairs(tab) do
+					if Ban.id == plr.UserId then
+						tab[ind] = nil
+					end
+				end
+				return false
+			end
 		end;
 
 		RemoveTimeBan = function(name : string | number | Instance)
