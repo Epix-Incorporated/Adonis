@@ -12,7 +12,7 @@ local moos = mouse.KeyDown:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 1 
 	elseif key:lower() == "s" then 
-	@@ -25,7 +25,7 @@ local moos = mouse.KeyDown:Connect(function(key)
+	 -25,7 +25,7  local moos = mouse.KeyDown:Connect(function(key)
 	end 
 end) 
 
@@ -20,7 +20,7 @@ local moos1 = mouse.KeyUp:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 0 
 	elseif key:lower() == "s" then 
-	@@ -36,10 +36,10 @@ local moos1 = mouse.KeyUp:Connect(function(key)
+	 -36,10 +36,10  local moos1 = mouse.KeyUp:Connect(function(key)
 		dir.d = 0 
 	end 
 end) 
@@ -31,7 +31,7 @@ local macka = hum.Changed:Connect(function()
 	hum.PlatformStand = true 
 end) 
 
-	@@ -48,12 +48,12 @@ repeat
+	 -48,12 +48,12  repeat
 		running = false
 		break
 	end
