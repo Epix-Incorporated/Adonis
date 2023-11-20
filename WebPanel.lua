@@ -475,8 +475,9 @@ return function(Vargs)
 				continue
 			end
 
+			local code = res.StatusCode
 			if code ~= 520 and code ~= 524 then
-				local errorMessage = string.format("WebPanel Polling Error: %* (%*)", res.StatusMessage, res.StatusCode)
+				local errorMessage = string.format("WebPanel Polling Error: %* (%*)", res.StatusMessage, code)
 
 				Logs:AddLog("Script", errorMessage)
 				Logs:AddLog("Errors", errorMessage)

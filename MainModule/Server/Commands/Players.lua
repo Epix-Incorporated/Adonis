@@ -152,9 +152,7 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing time amount")
-				assert(args[2], "Missing message")
-				Functions.Notification("Notification", args[2], {plr}, tonumber(args[1]), "MatIcon://Notifications")
+				Functions.Notification("Notification", assert(args[2], "Missing message"), {plr}, tonumber(assert(args[1], "Missing time amount")), "MatIcon://Notifications")
 			end
 		};
 

@@ -133,10 +133,9 @@ return function(Vargs, env)
 			Filter = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name")) do
 					Functions.Notification("Notification", service.Filter(args[2], plr, v), {v})
 				end
 			end
@@ -241,10 +240,7 @@ return function(Vargs, env)
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(tonumber(args[1]), "Invalid time amount (must be number)")
-				assert(args[2], "Missing message")
-
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(assert(args[2], "Missing message"), plr), service.GetPlayers(), true, assert(tonumber(args[1]), "Invalid time amount (must be number)"))
 			end
 		};
 
@@ -256,9 +252,7 @@ return function(Vargs, env)
 			Description = "Makes a message";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message")
-
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(assert(args[1], "Missing message"), plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -288,9 +282,7 @@ return function(Vargs, env)
 			Description = "Makes a small message";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message")
-
-				Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(args[1], plr), service.GetPlayers())
+				Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(assert(args[1], "Missing message"), plr), service.GetPlayers())
 			end
 		};
 
@@ -302,10 +294,7 @@ return function(Vargs, env)
 			Description = `Same as {Settings.Prefix}n but says whatever you want the title to be instead of your name.`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing title")
-				assert(args[2], "Missing message")	
-
-				Functions.Notify(service.BroadcastFilter(args[1], plr), service.BroadcastFilter(args[2], plr), service.GetPlayers())
+				Functions.Notify(service.BroadcastFilter(assert(args[1], "Missing title"), plr), service.BroadcastFilter(assert(args[2], "Missing message")	, plr), service.GetPlayers())
 			end
 		};
 
@@ -334,9 +323,7 @@ return function(Vargs, env)
 			Description = "Makes a hint";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message")
-
-				Functions.Hint(service.BroadcastFilter(args[1], plr), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				Functions.Hint(service.BroadcastFilter(assert(args[1], "Missing message"), plr), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
@@ -348,10 +335,7 @@ return function(Vargs, env)
 			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(tonumber(args[1]), "Invalid time amount (must be a number)")
-				assert(args[2], "Missing message")
-
-				Functions.Hint(service.BroadcastFilter(args[1], plr), service.GetPlayers(), tonumber(args[2]), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				Functions.Hint(service.BroadcastFilter(assert(args[2], "Missing message"), plr), service.GetPlayers(), assert(tonumber(args[1]), "Invalid time amount (must be a number)"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
@@ -3873,8 +3857,7 @@ return function(Vargs, env)
 					color = BrickColor.random().Color
 					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
 				else
-					color = Functions.ParseColor3(args[2])
-					assert(color, "Invalid color provided")
+					color = assert(Functions.ParseColor3(args[2]), "Invalid color provided")
 				end
 
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
@@ -3979,9 +3962,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-
-				local color = Functions.ParseColor3(args[1])
-				assert(color, "Invalid color provided")
+				local color = assert(Functions.ParseColor3(args[1]), "Invalid color provided")
 
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
@@ -4001,9 +3982,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-
-				local color = Functions.ParseColor3(args[1])
-				assert(color, "Invalid color provided")
+				local color = assert(Functions.ParseColor3(args[1]), "Invalid color provided")
 
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
@@ -4102,8 +4081,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-				local color = Functions.ParseColor3(args[1])
-				assert(color, "Invalid color provided")
+				local color = assert(Functions.ParseColor3(args[1]), "Invalid color provided")
 
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
 					Remote.SetAtmosphere(color)
@@ -5826,8 +5804,8 @@ return function(Vargs, env)
 			Description = "Change the volume of the currently playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local volume = tonumber(args[1])
-				assert(volume, "Volume must be a valid number")
+				local volume = assert(tonumber(args[1]), "Volume must be a valid number")
+
 				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if string.sub(args[1], 1, 1) == "+" then
@@ -6341,9 +6319,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				assert(tonumber(args[2]), "Missing OutfitId")
-
-				local success, desc = pcall(service.Players.GetHumanoidDescriptionFromOutfitId, service.Players, tonumber(args[2]))
+				local success, desc = pcall(service.Players.GetHumanoidDescriptionFromOutfitId, service.Players, assert(tonumber(args[2]), "Missing OutfitId"))
 
 				if success then
 					for _, v in service.GetPlayers(plr, args[1]) do
@@ -6365,9 +6341,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				assert(args[2], "Missing username or UserId")
-			
-				local target = service.GetPlayers(plr, args[2], {
+				local target = service.GetPlayers(plr, assert(args[2], "Missing username or UserId"), {
 					AllowUnknownUsers = true;
 				}) 
 				if target then
