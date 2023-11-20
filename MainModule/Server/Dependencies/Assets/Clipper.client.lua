@@ -1,11 +1,14 @@
-local Humanoid = script.Parent
-local Character = Humanoid.Parent
-
-game:GetService("RunService").Stepped:Connect(function()
-	for _, Object in pairs(Character:GetDescendants()) do
-		if Object:IsA("BasePart") and Object.CanCollide then
-			Object.CanCollide = false
+local hum = script.Parent
+local char = hum.Parent
+local torso = char:FindFirstChild("HumanoidRootPart")
+local origY = torso.Position.Y
+local event = game:service("RunService").Stepped:Connect(function()
+	for _,v in pairs(char:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.CanCollide = false
 		end
 	end
-	Humanoid:ChangeState(11)	--| Enum.HumanoidStateType.StrafingNoPhysics (semi-depricated but still working and fixes the colliding if in water).
+	local cf = torso.CFrame
+	torso.CFrame = (cf - cf.Position) + Vector3.new(cf.X, origY, cf.Z)
+	hum:ChangeState(11)
 end)
