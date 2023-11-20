@@ -66,7 +66,7 @@ return function(Vargs, GetEnv)
 
 		Trello = {
 			PerformedCommands = {};
-
+			API = require(server.Deps.TrelloAPI);
 			Mutes = {};
 			Bans = {};
 			Music = {};
@@ -192,13 +192,15 @@ return function(Vargs, GetEnv)
 					return;
 				end
 
-				if not HTTP.CheckHttp() then
+				if not HTTP.CheckHttp() and Settings.Trello_Enabled then 
 					warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
 					return;
 				else
 					local data = {
 						Bans = {};
 						Mutes = {};
+						Lists = {}
+						Labels = {}
 						Music = {};
 						Whitelist = {};
 						Blacklist = {};
@@ -290,7 +292,7 @@ return function(Vargs, GetEnv)
 						for i, v in service.GetPlayers() do
 							local isBanned, Reason = Admin.CheckBan(v)
 							if isBanned then
-								v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
+								v:Kick(Functions.GetKickMessage("Ban"))
 								continue
 							end
 
@@ -301,6 +303,14 @@ return function(Vargs, GetEnv)
 							Text = "Updated Trello data";
 							Desc = "Data was retreived from Trello";
 						})
+					end
+				end
+			end;
+
+			GetTrelloBan = function(plr)
+				for _, Ban in pairs(HTTP.Trello.Bans) do
+					if tostring(Ban.name):find(plr.Name) or tostring(Ban.name):find(tostring(plr.UserId)) then
+						return Ban
 					end
 				end
 			end;
