@@ -196,7 +196,7 @@ return function(Vargs, GetEnv)
 					warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
 					return;
 				else
-					local data = {
+					 data = {
 						Bans = {};
 						Mutes = {};
 						Lists = {}
@@ -215,7 +215,7 @@ return function(Vargs, GetEnv)
 
 					local function grabData(board)
 						local lists: {List} = HTTP.Trello.API.getListsAndCards(board, true)
-						if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
+						if #lists == 0 then error("No Trello lists detected; L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
 
 						for _, list in lists do
 							local foundOverride = false
