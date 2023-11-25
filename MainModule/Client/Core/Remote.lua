@@ -230,9 +230,9 @@ return function(Vargs, GetEnv)
 
 			ClientLog = function(args)
 				local MESSAGE_TYPE_COLORS = {
-					[Enum.MessageType.MessageWarning] = Color3.fromRGB(221, 187, 13),
-					[Enum.MessageType.MessageError] = Color3.fromRGB(255, 50, 14),
-					[Enum.MessageType.MessageInfo] = Color3.fromRGB(14, 78, 255)
+					[Enum.MessageType.MessageWarning] = Color3.fromRGB(222, 146, 55),
+					[Enum.MessageType.MessageError] = Color3.fromRGB(219, 75, 75),
+					[Enum.MessageType.MessageInfo] = Color3.fromRGB(137, 221, 255)
 				}
 				local tab = {}
 				local logHistory: {{message: string, messageType: Enum.MessageType, timestamp: number}} = service.LogService:GetLogHistory()
