@@ -1,6 +1,5 @@
 server = nil
 service = nil
-cPcall = nil
 Routine = nil
 GetEnv = nil
 origEnv = nil
