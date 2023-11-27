@@ -53,7 +53,6 @@
 						<string name="Name">NoEnv-Code</string>
 						<string name="ScriptGuid">{7BF9AA91-E052-44AF-9DDF-15EF73C26F7E}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
@@ -960,7 +959,6 @@ end]]></ProtectedString>
 						<string name="Name">NoEnv-Code</string>
 						<string name="ScriptGuid">{9E936207-7E57-4E10-9696-6E9265116B66}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
@@ -1622,7 +1620,6 @@ end]]></ProtectedString>
 						<string name="Name">NoEnv-Code</string>
 						<string name="ScriptGuid">{B3814843-B1DA-47C5-B2BE-29EA82873C01}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
