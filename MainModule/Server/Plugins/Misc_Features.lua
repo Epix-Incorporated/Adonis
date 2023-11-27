@@ -28,7 +28,7 @@ return function(Vargs, GetEnv)
 	--// AutoClean
 	if Settings.AutoClean then
 		service.StartLoop("AUTO_CLEAN", Settings.AutoCleanDelay, Functions.CleanWorkspace, true)
-		Logs:AddLog("Script", `Started autoclean with {Settings.AutoCleanDelay} delay`)
+		Logs:AddLog("Script", `Started autoclean with {Settings.AutoCleanDelay}s delay`)
 	end
 
 	-- // Backwards compatibility
