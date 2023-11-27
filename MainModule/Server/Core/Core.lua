@@ -1334,7 +1334,6 @@ return function(Vargs, GetEnv)
 			local server = server
 			local service = service
 			local Routine = env.Routine
-			local cPcall = env.cPcall
 			local MetaFunc = service.MetaFunc
 			local StartLoop = service.StartLoop
 			local API_Special = {
