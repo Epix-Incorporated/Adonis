@@ -2785,7 +2785,7 @@ return function(Vargs, env)
 						Model.Parent = workspace
 						
 						service.TrackTask(`Thread: JailLoop{ind}`, function()
-							while wait() and Variables.Jails[ind] == jail and Model.Parent == workspace do
+							while task.wait() and Variables.Jails[ind] == jail and Model.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if Color == "rainbow" then
 										box.Color3 = Color3.fromHSV(tick()%5/5, 1, 1)
