@@ -28,11 +28,6 @@ return function(Vargs, GetEnv)
 	end;
 
 	local function RunAfterPlugins(data)
-		--// AutoClean
-		if Settings.AutoClean then
-			service.StartLoop("AUTO_CLEAN", Settings.AutoCleanDelay, Functions.CleanWorkspace, true)
-		end
-
 		Functions.RunAfterPlugins = nil
 		Logs:AddLog("Script", "Functions Module RunAfterPlugins Finished")
 	end

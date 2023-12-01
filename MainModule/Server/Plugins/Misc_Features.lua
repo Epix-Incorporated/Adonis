@@ -25,6 +25,12 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "Removed legacy trello board")
 	end
 
+	--// AutoClean
+	if Settings.AutoClean then
+		service.StartLoop("AUTO_CLEAN", Settings.AutoCleanDelay, Functions.CleanWorkspace, true)
+		Logs:AddLog("Script", `Started autoclean with {Settings.AutoCleanDelay}s delay`)
+	end
+
 	-- // Backwards compatibility
 	Remote.UnEncrypted = setmetatable({}, {
 		__newindex = function(_, ind, val)
