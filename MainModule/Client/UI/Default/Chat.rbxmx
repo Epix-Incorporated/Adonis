@@ -1800,8 +1800,8 @@
 					<string name="Name">Code</string>
 					<string name="ScriptGuid">{BFD65A0F-2AF4-4E17-828B-6275D5277DCE}</string>
 					<ProtectedString name="Source"><![CDATA[
-client, cPcall, Pcall, Routine, service, gTable
-	= nil, nil, nil, nil, nil, nil
+client, Pcall, Routine, service, gTable
+	= nil, nil, nil, nil, nil
 
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed client.Variables.CodeName..gui.Name
@@ -1812,8 +1812,8 @@ return function(data, env)
 		setfenv(1, env)
 	end
 	
-	local client, cPcall, Pcall, Routine, service, gTable =
-		client, cPcall, Pcall, Routine, service, gTable
+	local client, Pcall, Routine, service, gTable =
+		client, Pcall, Routine, service, gTable
 
 	local gui = script.Parent.Parent
 

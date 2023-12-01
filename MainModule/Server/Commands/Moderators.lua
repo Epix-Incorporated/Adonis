@@ -10,7 +10,6 @@ return function(Vargs, env)
 
 	local Routine = env.Routine
 	local Pcall = env.Pcall
-	local cPcall = env.cPcall
 
 	return {
 		Kick = {
