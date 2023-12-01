@@ -2772,6 +2772,7 @@ return function(Vargs, env)
 						}
 						Variables.Jails[ind] = jail
 
+						v.Character.Humanoid:UnequipTools()
 						local Backpack = v:FindFirstChildOfClass("Backpack")
 						if Backpack then
 							for _, k in Backpack:GetChildren() do
@@ -2795,6 +2796,7 @@ return function(Vargs, env)
 										local torso = v.Character:FindFirstChild("HumanoidRootPart")
 										if torso then
 
+											v.Character.Humanoid:UnequipTools()
 											local Backpack = v:FindFirstChildOfClass("Backpack")
 											if Backpack then
 												for _, k in Backpack:GetChildren() do
@@ -2824,33 +2826,10 @@ return function(Vargs, env)
 						if Duration then
 							service.TrackTask(`Thread: JailTimeLoop :: {ind}`, function()
 								while true do
-									if os.time() < jail.EndTime and Model.Parent == workspace then
+									if os.time() < jail.EndTime and Model.Parent == workspace and Variables.Jails[ind] == jail then
 										task.wait(1)
 									else
-										local found = false
-										
-										if Variables.Jails[ind] then
-											Pcall(function()
-												for _, tool in jail.Tools do
-													tool.Parent = v.Backpack
-												end
-											end)
-											Pcall(function() jail.Jail:Destroy() end)
-											found = true
-										end
-										
-										if not found then
-											for i, v in Variables.Jails do
-												if string.sub(string.lower(v.Name), 1, #args[1]) == string.lower(args[1]) then
-													local ind = v.Index
-													service.StopLoop(`{ind}JAIL`)
-													Pcall(function() v.Jail:Destroy() end)
-												end
-											end
-										end
-										
-										Variables.Jails[ind] = nil
-										Model:Destroy()
+										Commands.UnJail.Function(plr,v.Name)
 										break
 									end
 								end
