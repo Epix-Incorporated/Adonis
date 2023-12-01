@@ -342,26 +342,60 @@ return function(Vargs, env)
 							orgHumanoid and orgHumanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(v.CharacterAppearanceId > 0 and v.CharacterAppearanceId or v.UserId),
 							orgHumanoid and orgHumanoid.RigType or Enum.HumanoidRigType.R15
 						)
+						
 						model.Name = targetName
 
 						local hum = model:FindFirstChildOfClass("Humanoid") or model:WaitForChild("Humanoid")
-						hum:WaitForChild("BodyHeightScale").Value /= 2
-						hum:WaitForChild("BodyDepthScale").Value /= 2
-						hum:WaitForChild("BodyWidthScale").Value /= 2
-						hum.PlatformStand = if steal then hum.PlatformStand else true
+						
+						if hum then
+							if hum.RigType == Enum.HumanoidRigType.R15 then
+								hum:WaitForChild("BodyHeightScale").Value /= 2
+								hum:WaitForChild("BodyDepthScale").Value /= 2
+								hum:WaitForChild("BodyWidthScale").Value /= 2
+								
+								for _, obj in model:GetDescendants() do
+									if obj:IsA("BasePart") then
+										obj.Massless = true
+										obj.CanCollide = false
+									end
+								end
+							elseif hum.RigType == Enum.HumanoidRigType.R6 then
+								local motors = {}
+								table.insert(motors, model.HumanoidRootPart:FindFirstChild("RootJoint"))
+								for _, motor in model.Torso:GetChildren() do
+									if motor:IsA("Motor6D") then table.insert(motors, motor) end
+								end
+								for _, motor in motors do
+									motor.C0 = CFrame.new((motor.C0.Position * 0.4)) * (motor.C0 - motor.C0.Position)
+									motor.C1 = CFrame.new((motor.C1.Position * 0.4)) * (motor.C1 - motor.C1.Position)
+								end
 
-						for _, obj in model:GetDescendants() do
-							if obj:IsA("BasePart") then
-								obj.Massless = true
-								obj.CanCollide = false
+								for _, v in model:GetDescendants() do
+									if v:IsA("BasePart") then
+										v.Size *= 0.4
+										v.Position = model.Torso.Position
+									elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
+										local handle = v.Handle
+										handle.AccessoryWeld.C0 = CFrame.new((handle.AccessoryWeld.C0.Position * 0.4)) * (handle.AccessoryWeld.C0 - handle.AccessoryWeld.C0.Position)
+										handle.AccessoryWeld.C1 = CFrame.new((handle.AccessoryWeld.C1.Position * 0.4)) * (handle.AccessoryWeld.C1 - handle.AccessoryWeld.C1.Position)
+										local mesh = handle:FindFirstChildOfClass("SpecialMesh")
+										if mesh then
+											mesh.Scale *= 0.4
+										end
+									elseif v:IsA("SpecialMesh") and v.Parent.Name ~= "Handle" and v.Parent.Name ~= "Head" then
+										v.Scale *= 0.4
+									end
+								end
 							end
 						end
+						
+						hum.PlatformStand = if steal then hum.PlatformStand else true
 
 						model:PivotTo(cfr)
 						handle.CFrame = cfr
 						model.Animate.Disabled = true
 						model.Parent = tool
-
+						
 						if v ~= plr then
 							if steal then
 								local orgCharacter = v.Character
