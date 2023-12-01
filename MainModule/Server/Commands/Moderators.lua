@@ -2663,7 +2663,7 @@ return function(Vargs, env)
 						Duration = math.huge
 					end
 				end
-				
+
 				local Color = BrickColor.new("White")
 				if args[3] then
 					if string.lower(args[2]) == "rainbow" then
@@ -2783,7 +2783,7 @@ return function(Vargs, env)
 						end
 
 						Model.Parent = workspace
-						
+
 						service.TrackTask(`Thread: JailLoop{ind}`, function()
 							while task.wait() and Variables.Jails[ind] == jail and Model.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
@@ -2820,13 +2820,35 @@ return function(Vargs, env)
 								Model:Destroy()
 							end
 						end)
-						
+
 						if Duration then
 							service.TrackTask(`Thread: JailTimeLoop :: {ind}`, function()
 								while true do
 									if os.time() < jail.EndTime and Model.Parent == workspace then
 										task.wait(1)
 									else
+										local found = false
+										
+										if Variables.Jails[ind] then
+											Pcall(function()
+												for _, tool in jail.Tools do
+													tool.Parent = v.Backpack
+												end
+											end)
+											Pcall(function() jail.Jail:Destroy() end)
+											found = true
+										end
+										
+										if not found then
+											for i, v in Variables.Jails do
+												if string.sub(string.lower(v.Name), 1, #args[1]) == string.lower(args[1]) then
+													local ind = v.Index
+													service.StopLoop(`{ind}JAIL`)
+													Pcall(function() v.Jail:Destroy() end)
+												end
+											end
+										end
+										
 										Variables.Jails[ind] = nil
 										Model:Destroy()
 										break
