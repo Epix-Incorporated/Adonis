@@ -342,17 +342,17 @@ return function(Vargs, env)
 							orgHumanoid and orgHumanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(v.CharacterAppearanceId > 0 and v.CharacterAppearanceId or v.UserId),
 							orgHumanoid and orgHumanoid.RigType or Enum.HumanoidRigType.R15
 						)
-						
+
 						model.Name = targetName
 
 						local hum = model:FindFirstChildOfClass("Humanoid") or model:WaitForChild("Humanoid")
-						
+
 						if hum then
 							if hum.RigType == Enum.HumanoidRigType.R15 then
 								hum:WaitForChild("BodyHeightScale").Value /= 2
 								hum:WaitForChild("BodyDepthScale").Value /= 2
 								hum:WaitForChild("BodyWidthScale").Value /= 2
-								
+
 								for _, obj in model:GetDescendants() do
 									if obj:IsA("BasePart") then
 										obj.Massless = true
@@ -388,14 +388,14 @@ return function(Vargs, env)
 								end
 							end
 						end
-						
+
 						hum.PlatformStand = if steal then hum.PlatformStand else true
 
 						model:PivotTo(cfr)
 						handle.CFrame = cfr
 						model.Animate.Disabled = true
 						model.Parent = tool
-						
+
 						if v ~= plr then
 							if steal then
 								local orgCharacter = v.Character
@@ -658,8 +658,8 @@ return function(Vargs, env)
 					repeat
 						task.wait()
 						local char = script.Parent.Parent
-						local clr = BrickColor.random() 
-						for i, v in next, char:GetChildren() do 
+						local clr = BrickColor.random()
+						for i, v in next, char:GetChildren() do
 							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
 								if not restore[v] then
 									restore[v] = v.Color
@@ -694,7 +694,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Unrainbowify = {
 			Prefix = Settings.Prefix;
 			Commands = {"unrainbowify", "unrainbow"};
@@ -1989,7 +1989,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(Settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
-				for i, v in service.GetPlayers(plr, args[1]) do	
+				for i, v in service.GetPlayers(plr, args[1]) do
 					task.spawn(pcall, function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
 						local run = true
@@ -2153,7 +2153,7 @@ return function(Vargs, env)
 							for k, v in desiredColors do
 								orgColors[k], description[k] = description[k], v
 							end
-	
+
 							task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							local run = true
 							task.spawn(function() wait(10) run = false end)
@@ -2165,7 +2165,7 @@ return function(Vargs, env)
 								for k, v in desiredColors do
 									description[k] = orgColors[k]
 								end
-		
+
 								task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							end
 						end
@@ -2312,7 +2312,7 @@ return function(Vargs, env)
 						end
 						local attachment = service.New("Attachment", v.Character.HumanoidRootPart)
 						attachment.Name = "ADONIS_GRAVITY_ATTACHMENT"
-						
+
 						local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
 						frc.Attachment0 = attachment
@@ -2347,7 +2347,7 @@ return function(Vargs, env)
 
 						local attachment = service.New("Attachment", v.Character.HumanoidRootPart)
 						attachment.Name = "ADONIS_GRAVITY_ATTACHMENT"
-						
+
 						local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
 						frc.Attachment0 = attachment
@@ -2437,7 +2437,7 @@ return function(Vargs, env)
 							s.Color = BrickColor.new(0, 0, 0)
 							v.Transparency = 1
 							m.Head.Transparency = 0
-							if m.head:FindFirstChild("Mesh") then
+							if m.Head:FindFirstChild("Mesh") then
 								m.Head.Mesh:Destroy()
 							end
 							local b = service.New("SpecialMesh")
@@ -3701,7 +3701,7 @@ return function(Vargs, env)
 						Functions.Hint(`Cannot resize {service.FormatPlayer(v)}'s character: humanoid and/or character doesn't exist!`, {plr})
 						continue
 					end
-					
+
 					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
 					if not resizeAttributeValue then
 						char:SetAttribute("Adonis_Resize", num)
@@ -4986,14 +4986,14 @@ return function(Vargs, env)
 					task.defer(function()
 						local Person = v.Character
 						if not Person then return end
-		
+
 						local pipe = Deps.Assets.Pipe:Clone()
 						pipe.Name = "Pipe"
 						pipe.Parent = workspace
 						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
-						
+
 						local Humanoid = Person:FindFirstChildOfClass("Humanoid")
-		
+
 						local deb = false
 						local HitCon
 						HitCon = pipe.Touched:Connect(function(hit)
@@ -5013,25 +5013,25 @@ return function(Vargs, env)
 		Sing = {
 			Prefix = server.Settings.Prefix;
 			Commands = {"sing";};
-			Args = {"player","soundid"};	
+			Args = {"player","soundid"};
 			Description = "Sings the song";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				local id = string.lower(assert(args[2], "Missing soundid!"))
-	
+
 				for i, v in Variables.MusicList do
 					if id == string.lower(v.Name) then
 						id = v.ID
 					end
 				end
-	
+
 				for i, v in HTTP.Trello.Music do
 					if id == string.lower(v.Name) then
 						id = v.ID
 					end
 				end
-	
+
 				for _, player in service.GetPlayers(plr, args[1]) do
 					local character = player.Character
 					local head = character.Head
@@ -5039,14 +5039,14 @@ return function(Vargs, env)
 					local isR15 = humanoid and humanoid.RigType == Enum.HumanoidRigType.R15 or false
 					local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
 					local partsColor = ({head.Color:ToHSV()})[3] < 0.26 and BrickColor.new("Lily White") or BrickColor.new("Black")
-	
+
 					local sound = head:FindFirstChild("ADONIS_SOUND") or Instance.new("Sound")
 					sound.SoundId = `rbxassetid://{id}`
 					sound.Volume = 2
 					sound.Name = "ADONIS_SOUND"
 					sound.Looped = true
 					sound:Play()
-	
+
 					if head:FindFirstChild("face") then
 						head.face:Destroy()
 					end
@@ -5063,7 +5063,7 @@ return function(Vargs, env)
 					if head:FindFirstChildOfClass("FaceControls") then
 						head:FindFirstChildOfClass("FaceControls"):Destroy()
 					end
-	
+
 					if not character:FindFirstChild("ADONIS_MOUTH") then
 						local leftEye = Instance.new("Part")
 						leftEye.Anchored = false
@@ -5078,7 +5078,7 @@ return function(Vargs, env)
 						leftMesh.MeshType = Enum.MeshType.Sphere
 						leftMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
 						Functions.MakeWeld(leftEye, head, CFrame.new(), CFrame.new(Vector3.new(-.17, .14, -.57) * relativeSize))
-	
+
 						local rightEye = Instance.new("Part")
 						rightEye.Anchored = false
 						rightEye.CanCollide = false
@@ -5092,7 +5092,7 @@ return function(Vargs, env)
 						rightMesh.MeshType = Enum.MeshType.Sphere
 						rightMesh.Scale = Vector3.new(0.02, 0.12, 0.03) * relativeSize
 						Functions.MakeWeld(rightEye, head, CFrame.new(), CFrame.new(Vector3.new(.17, .14, -.57) * relativeSize))
-	
+
 						local mouth = Instance.new("Part")
 						mouth.Anchored = false
 						mouth.CanCollide = false
@@ -5107,14 +5107,14 @@ return function(Vargs, env)
 						mouthMesh.MeshType = Enum.MeshType.Sphere
 						mouthMesh.Scale = Vector3.new(.13, 0.1, 0.05) * relativeSize
 						Functions.MakeWeld(mouth, head, CFrame.new(), CFrame.new(Vector3.new(0, -.25, -.6) * relativeSize))
-	
+
 						leftEye.Parent = character
 						rightEye.Parent = character
 						mouth.Parent = character
 					end
-	
+
 					sound.Parent = head
-	
+
 					if not sound:FindFirstChild("Singer") then
 						Deps.Assets.Singer:Clone().Parent = sound
 					end
