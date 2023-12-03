@@ -797,8 +797,8 @@ return function(data, env)
 			local commandBox
 			local keyBox
 			local binds = keyTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
-				Position = UDim2.new(0, 5, 0, 5);
+				Size = UDim2.new(1, -10, 1, -60);
+				Position = UDim2.new(0, 5, 0, 30);
 				BackgroundTransparency = 0.5;
 			})
 
@@ -1074,8 +1074,8 @@ return function(data, env)
 			})
 
 			local aliases = aliasTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
-				Position = UDim2.new(0, 5, 0, 5);
+				Size = UDim2.new(1, -10, 1, -60);
+				Position = UDim2.new(0, 5, 0, 30);
 				BackgroundTransparency = 0.5;
 			})
 
