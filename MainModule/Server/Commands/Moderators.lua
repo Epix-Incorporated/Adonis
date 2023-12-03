@@ -2644,16 +2644,31 @@ return function(Vargs, env)
 		Jail = {
 			Prefix = Settings.Prefix;
 			Commands = {"jail", "imprison"};
-			Args = {"player", "BrickColor"};
-			Description = "Jails the target player(s), removing their tools until they are un-jailed; Specify a BrickColor to change the color of the jail bars";
+			Args = {"player","Duration: Optional","BrickColor: Optional"};
+			Description = "Jails the target player(s), removing their tools until they are un-jailed; Put an optional time function to set when they get released from jail; Specify a BrickColor to change the color of the jail bars";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local opt = BrickColor.new("White")
+				local Duration, Valid
 				if args[2] then
-					if string.lower(args[2]) == "rainbow" then
-						opt = "rainbow"
+					if args[2]:lower() ~= ("inf" or "infinite" or "infinity" or "unlimited") then
+						Duration, Valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
+							return if unit == "s" then val
+								elseif unit == "m" then val * 60
+								elseif unit == "h" then val * 60 * 60
+								else val * 60 * 60 * 24
+						end)
+						assert(Valid > 0, "Invalid duration value (argument #2)")
 					else
-						opt = BrickColor.new(args[2]) or BrickColor.new("White")
+						Duration = math.huge
+					end
+				end
+
+				local Color = BrickColor.new("White")
+				if args[3] then
+					if string.lower(args[2]) == "rainbow" then
+						Color = "rainbow"
+					else
+						Color = BrickColor.new(args[2]) or BrickColor.new("White")
 					end
 				end
 
@@ -2661,10 +2676,10 @@ return function(Vargs, env)
 					local cHumanoidRootPart	= v.Character and v.Character.PrimaryPart or v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if cHumanoidRootPart then
 
-						local cf = CFrame.new(cHumanoidRootPart.CFrame.p + Vector3.new(0, 1, 0))
-						local origpos = cHumanoidRootPart.Position
+						local CF = CFrame.new(cHumanoidRootPart.CFrame.p + Vector3.new(0, 1, 0))
+						local OrigPos = cHumanoidRootPart.Position
 
-						local mod = service.New("Model", {
+						local Model = service.New("Model", {
 							Name = `{v.Name}_ADONISJAIL`,
 						})
 						local top = service.New("Part", {
@@ -2676,36 +2691,36 @@ return function(Vargs, env)
 							CanCollide = true,
 							BrickColor = BrickColor.new("Really black"),
 							Transparency = 1,
-							CFrame = cf*CFrame.new(0, 3.5, 0),
+							CFrame = CF*CFrame.new(0, 3.5, 0),
 
-							Parent = mod,
+							Parent = Model,
 						})
 
 						local bottom = top:Clone()
 						bottom.Transparency = 0
 						bottom.CanCollide = true
-						bottom.CFrame = cf * CFrame.new(0,-3.5, 0)
+						bottom.CFrame = CF * CFrame.new(0,-3.5, 0)
 						local front = top:Clone()
 						front.Transparency = 1
 						front.Reflectance = 0
 						front.Size = Vector3.new(6, 6, 1)
-						front.CFrame = cf * CFrame.new(0, 0,-3)
+						front.CFrame = CF * CFrame.new(0, 0,-3)
 						local back = front:Clone()
 						back.Transparency = 1
-						back.CFrame = cf * CFrame.new(0, 0, 3)
-						back.Parent = mod
+						back.CFrame = CF * CFrame.new(0, 0, 3)
+						back.Parent = Model
 						local right = front:Clone()
 						right.Transparency = 1
 						right.Size = Vector3.new(1, 6, 6)
-						right.CFrame = cf * CFrame.new(3, 0, 0)
+						right.CFrame = CF * CFrame.new(3, 0, 0)
 						local left = right:Clone()
 						left.Transparency = 1
-						left.CFrame = cf * CFrame.new(-3, 0, 0)
+						left.CFrame = CF * CFrame.new(-3, 0, 0)
 
-						bottom.Parent = mod
-						front.Parent = mod
-						right.Parent = mod
-						left.Parent = mod
+						bottom.Parent = Model
+						front.Parent = Model
+						right.Parent = Model
+						left.Parent = Model
 
 						local msh = service.New("BlockMesh", {
 							Scale = Vector3.new(1, 1, 0),
@@ -2721,40 +2736,42 @@ return function(Vargs, env)
 						msh3.Parent = right
 						msh4.Parent = left
 
-						local brick = service.New("Part", mod)
+						local brick = service.New("Part", Model)
 						local box = service.New("SelectionBox", {
 							Adornee = brick,
 							Parent = brick,
 						})
-						if typeof(opt) == "BrickColor" then
-							box.Color = BrickColor.new("White")
+						if typeof(Color) == "BrickColor" then
+							box.Color = Color
 						end
 
 						brick.Anchored = true
 						brick.CanCollide = false
 						brick.Transparency = 1
 						brick.Size = Vector3.new(5, 7, 5)
-						brick.CFrame = cf
+						brick.CFrame = CF
 						--table.insert(Variables.Objects, mod)
 
 						local value = service.New("StringValue", {
 							Name = "Player",
 							Value = v.Name,
-							Parent = mod,
+							Parent = Model,
 						})
 
-						cHumanoidRootPart.CFrame = cf
+						cHumanoidRootPart.CFrame = CF
 
 						local ind = tostring(v.UserId)
 						local jail = {
 							Player = v;
 							Name = v.Name;
 							Index = ind;
-							Jail = mod;
+							Jail = Model;
 							Tools = {};
+							EndTime = if Duration then os.time()+Duration else nil;
 						}
 						Variables.Jails[ind] = jail
 
+						v.Character.Humanoid:UnequipTools()
 						local Backpack = v:FindFirstChildOfClass("Backpack")
 						if Backpack then
 							for _, k in Backpack:GetChildren() do
@@ -2765,18 +2782,20 @@ return function(Vargs, env)
 							end
 						end
 
-						mod.Parent = workspace
+						Model.Parent = workspace
+
 						service.TrackTask(`Thread: JailLoop{ind}`, function()
-							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
+							while task.wait() and Variables.Jails[ind] == jail and Model.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
-									if opt == "rainbow" then
-										box.Color3 = Color3.fromHSV(os.clock()%5/5, 1, 1)
+									if Color == "rainbow" then
+										box.Color3 = Color3.fromHSV(tick()%5/5, 1, 1)
 									end
 
 									if v.Character then
 										local torso = v.Character:FindFirstChild("HumanoidRootPart")
 										if torso then
 
+											v.Character.Humanoid:UnequipTools()
 											local Backpack = v:FindFirstChildOfClass("Backpack")
 											if Backpack then
 												for _, k in Backpack:GetChildren() do
@@ -2787,21 +2806,34 @@ return function(Vargs, env)
 												end
 											end
 
-											if (torso.Position-origpos).Magnitude > 3.3 then
-												torso.CFrame = cf
+											if (torso.Position-OrigPos).Magnitude > 3.3 then
+												torso.CFrame = CF
 											end
 										end
 									end
 								elseif Variables.Jails[ind] ~= jail then
-									mod:Destroy()
+									Model:Destroy()
 									break;
 								end
 							end
 
-							if mod then
-								mod:Destroy()
+							if Model then
+								Model:Destroy()
 							end
 						end)
+
+						if Duration then
+							service.TrackTask(`Thread: JailTimeLoop :: {ind}`, function()
+								while true do
+									if os.time() < jail.EndTime and Model.Parent == workspace and Variables.Jails[ind] == jail then
+										task.wait(1)
+									else
+										Commands.UnJail.Function(plr,v.Name)
+										break
+									end
+								end
+							end)
+						end
 					end
 				end
 			end
