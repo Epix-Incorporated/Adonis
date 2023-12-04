@@ -1893,8 +1893,6 @@ return function(data, env)
 		gui:SetSpecial("Object", gui)
 		gui:SetSpecial("SetPosition", function(ignore, newPos) gui.Position = newPos end)
 		gui:SetSpecial("SetSize", function(ingore, newSize) gui.Size = newSize end)
-		gui:SetSpecial("SetMinSize",function(ignore, Table) setMinSize(Table) end)
-		gui:SetSpecial("SetMaxSize",function(ignore, Table) setMaxSize(Table) end)
 		gui:SetSpecial("Add", function(ignore, class, data)
 			if not data then data = class class = ignore end
 			local new = create(class,data);
