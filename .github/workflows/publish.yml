@@ -12,7 +12,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
         with:
           ref: release
           
@@ -44,7 +44,7 @@ jobs:
          fi
          echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
 
-      - uses: ok-nick/setup-aftman@v0.3.0
+      - uses: ok-nick/setup-aftman@v0.4.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         
@@ -72,7 +72,7 @@ jobs:
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
       - name: Publish Loader
-        uses: fjogeleit/http-request-action@v1.14.1
+        uses: fjogeleit/http-request-action@v1.14.2
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
           method: "POST"
@@ -83,7 +83,7 @@ jobs:
           preventFailureOnNoResponse: 'true'
           
       - name: Publish Module
-        uses: fjogeleit/http-request-action@v1.14.1
+        uses: fjogeleit/http-request-action@v1.14.2
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
           method: "POST"
