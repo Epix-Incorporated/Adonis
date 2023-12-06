@@ -16,7 +16,7 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
       
       - name: Layout file name
         id: naming
@@ -56,7 +56,7 @@ jobs:
       - name: Build
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3.1.3
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
@@ -75,7 +75,7 @@ jobs:
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
       - name: Publish Nightly MainModule
-        uses: fjogeleit/http-request-action@v1.14.1
+        uses: fjogeleit/http-request-action@v1.14.2
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.NIGHTLY_MODULE_ID }}"
