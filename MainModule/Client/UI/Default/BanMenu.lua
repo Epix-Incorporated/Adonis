@@ -25,7 +25,7 @@ return function(data, env)
 		NoClose = false;
 		CanKeepAlive = true;
 		SizeLocked = false;
-		NoDrag = false
+		NoDrag = false;
 	})
 	
 	if window then
@@ -291,11 +291,11 @@ return function(data, env)
 					if button.BackgroundTransparency == 0 then
 						window:SetPosition(UDim2.new(0, AbsolutePosition.X, 0, AbsolutePosition.Y-(15/2)))
 						window:SetSize({AbsoluteSize.X,AbsoluteSize.Y+15})
-						window:SetMinSize({AbsoluteSize.X,AbsoluteSize.Y+15})
+						window:SetMinSize({267,265})
 					else
 						window:SetPosition(UDim2.new(0, AbsolutePosition.X, 0, AbsolutePosition.Y+(15/2)))
 						window:SetSize({AbsoluteSize.X,AbsoluteSize.Y-15})
-						window:SetMinSize({AbsoluteSize.X,AbsoluteSize.Y-15})
+						window:SetMinSize({267,250})
 					end
 				end)
 
@@ -418,10 +418,6 @@ return function(data, env)
 				
 				button.MouseButton1Click:Connect(function()
 					getPlayers()
-					
-					if searchBar.Text ~= "" then
-						
-					end
 				end)
 
 				getPlayers()
