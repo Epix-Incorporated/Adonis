@@ -797,12 +797,21 @@ return function(data, env)
 			local commandBox
 			local keyBox
 			local binds = keyTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
-				Position = UDim2.new(0, 5, 0, 5);
+				Size = UDim2.new(1, -10, 1, -60);
+				Position = UDim2.new(0, 5, 0, 30);
 				BackgroundTransparency = 0.5;
 			})
 
-
+			local searchbar:TextBox = keyTab:Add("TextBox",{
+				Size = UDim2.new(1, -10, 0, 20);
+				Position = UDim2.new(0, 5, 0, 5);
+				BackgroundTransparency = 0.5;
+				BorderSizePixel = 0;
+				TextColor3 = Color3.new(1, 1, 1);
+				Text = "";
+				PlaceholderText = "Search";
+				TextStrokeTransparency = 0.8;
+			})
 
 			local function getBinds()
 				local num = 0
@@ -853,6 +862,25 @@ return function(data, env)
 				binds:ResizeCanvas(false, true)
 			end
 
+			searchbar.Changed:Connect(function()
+				if searchbar.Text ~= "" then
+					local num = 0
+					for i,UI: TextButton in pairs(binds:GetChildren()) do
+						if UI.Text:find(searchbar.Text) ~= nil then
+							UI.Visible = true
+							UI.Position = UDim2.new(0, 0, 0, num*25);
+							num += 1
+						else
+							UI.Visible = false
+						end
+					end
+
+					binds:ResizeCanvas(false, true)
+				else
+					getBinds()
+				end
+			end)
+			
 			local binderBox; binderBox = keyTab:Add("Frame", {
 				Visible = false;
 				Size = UDim2.new(0, 220, 0, 150);
@@ -1034,9 +1062,20 @@ return function(data, env)
 			local commandBox
 			local aliasBox
 
-			local aliases = aliasTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
+			local searchbar:TextBox = aliasTab:Add("TextBox",{
+				Size = UDim2.new(1, -10, 0, 20);
 				Position = UDim2.new(0, 5, 0, 5);
+				BackgroundTransparency = 0.5;
+				BorderSizePixel = 0;
+				TextColor3 = Color3.new(1, 1, 1);
+				Text = "";
+				PlaceholderText = "Search";
+				TextStrokeTransparency = 0.8;
+			})
+
+			local aliases = aliasTab:Add("ScrollingFrame", {
+				Size = UDim2.new(1, -10, 1, -60);
+				Position = UDim2.new(0, 5, 0, 30);
 				BackgroundTransparency = 0.5;
 			})
 
@@ -1087,6 +1126,25 @@ return function(data, env)
 
 				aliases:ResizeCanvas(false, true)
 			end
+
+			searchbar.Changed:Connect(function()
+				if searchbar.Text ~= "" then
+					local num = 0
+					for i,UI: TextButton in pairs(aliases:GetChildren()) do
+						if UI.Text:find(searchbar.Text) ~= nil then
+							UI.Visible = true
+							UI.Position = UDim2.new(0, 0, 0, num*25);
+							num += 1
+						else
+							UI.Visible = false
+						end
+					end
+					
+					aliases:ResizeCanvas(false, true)
+				else
+					getAliases()
+				end
+			end)
 
 			local binderBox; binderBox = aliasTab:Add("Frame", {
 				Visible = false;
