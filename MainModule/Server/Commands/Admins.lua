@@ -276,12 +276,12 @@ return function(Vargs, env)
 						local TextToUse = args[1]
 						if data.Options.Chat ~= true then
 							TextToUse = service.SanitizeXML(args[1] or "Hello world!")
-						end 
+						end
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
 							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, Settings.SystemTitle, service.Filter(TextToUse), plr, v)
 							}`)
-					else 
+					else
 						Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
 					end
 				end
@@ -991,22 +991,70 @@ return function(Vargs, env)
 
 		CreateStarterScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"starterscript", "clientstarterscript", "starterclientscript"};
-			Args = {"code"};
+			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
+			Args = {"name", "code"};
 			Description = "Executes the given code on everyone's client upon respawn";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing LocalScript code (argument #1)")
+				assert(args[1], "Missing starter script name (argument #1)")
+				assert(args[2], "Missing LocalScript code (argument #2)")
 
-				local bytecode = Core.Bytecode(args[1])
+				local bytecode = Core.Bytecode(args[2])
 				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
-				local new = Core.NewScript("LocalScript", args[1], true)
-				new.Name = "[Adonis] StarterScript"
+				local new = Core.NewScript("LocalScript", args[2], true)
+				new.Name = `[Adonis] {args[1]}`
 				new.Parent = service.StarterGui
 				new.Disabled = false
 				Functions.Hint("Created starter script", {plr})
+			end
+		};
+
+
+		StarterScripts = {
+			Prefix = Settings.Prefix;
+			Commands = {"starterscripts", "clientstarterscripts", "starterclientscripts"};
+			Args = {};
+			Description = "Show existing starterscripts";
+			AdminLevel = "Admins";
+			NoFilter = true;
+			Function = function(plr: Player, args: {string})
+				local result = {}
+
+				for _,v : Instance in service.StarterGui:GetChildren() do
+					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
+						table.insert(result, v.Name:gsub("%[Adonis%] ", ""))
+					end
+				end
+
+
+				Remote.MakeGui(plr,"List",{
+					Title = "Starter Scripts";
+					Tab = result;
+				})
+			end
+		};
+
+
+		RemoveStarterScript = {
+			Prefix = Settings.Prefix;
+			Commands = {"removestarterscript", "removeclientstarterscripts", "removestarterclientscripts", "unstarterscript"};
+			Args = {"name"};
+			Description = "Remove a starterscript";
+			AdminLevel = "Admins";
+			NoFilter = true;
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "No starterscript name provided!")
+
+				for _,v : Instance in service.StarterGui:GetChildren() do
+					if v:IsA("LocalScript") and v.Name:find("[Athena]") then
+						if v.Name:gsub("%[Adonis%] ", ""):lower() == args[1]:lower() or args[1]:lower() == "all" then
+							service.Delete(v)
+							Functions.Hint("Removed starter script "..v.Name, {plr})
+						end
+					end
+				end
 			end
 		};
 
@@ -1303,7 +1351,7 @@ return function(Vargs, env)
 				local trello = HTTP.Trello.API
 				if not Settings.Trello_Enabled or trello == nil then
 					Functions.Notification("Trelloban", "Trello has not been configured.", {plr}, 10, "MatIcon://Description")
-					return 
+					return
 				end
 
 				local lists = trello.getLists(Settings.Trello_Primary)
