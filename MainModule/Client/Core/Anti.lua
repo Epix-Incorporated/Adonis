@@ -126,74 +126,77 @@ return function(Vargs, GetEnv)
 
 	do
 		local proxyMt = getmetatable(proxyDetector)
+		
+		if settings.Detections == true then
+			
+			proxyMt.__index = function() 
+				Detected("kick", "Proxy metaMethod 0x215F")
 
-		proxyMt.__index = function()
-			Detected("kick", "Proxy metaMethod 0x215F")
+				return task.wait(2e2)
+			end
 
-			return task.wait(2e2)
+			proxyMt.__newindex = function()
+				Detected("kick", "Proxy metaMethod 0x86F1")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__tostring = function()
+				Detected("kick", "Proxy metaMethod 0xC0BD0")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__unm = function()
+				Detected("kick", "Proxy metaMethod 0x10F00")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__add = function()
+				Detected("kick", "Proxy metaMethod 0x60DC3")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__sub = function()
+				Detected("kick", "Proxy metaMethod 0x90F5D")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__mul = function()
+				Detected("kick", "Proxy metaMethod 0x19999")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__div = function()
+				Detected("kick", "Proxy metaMethod 0x1D14AC")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__mod = function()
+				Detected("kick", "Proxy metaMethod 0x786C64")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__pow = function()
+				Detected("kick", "Proxy metaMethod 0x1D948C")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__len = function()
+				Detected("kick", "Proxy metaMethod 0xBE931")
+	
+				return task.wait(2e2)
+			end
+	
+			proxyMt.__metatable = "The metatable is locked"
 		end
-
-		proxyMt.__newindex = function()
-			Detected("kick", "Proxy metaMethod 0x86F1")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__tostring = function()
-			Detected("kick", "Proxy metaMethod 0xC0BD0")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__unm = function()
-			Detected("kick", "Proxy metaMethod 0x10F00")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__add = function()
-			Detected("kick", "Proxy metaMethod 0x60DC3")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__sub = function()
-			Detected("kick", "Proxy metaMethod 0x90F5D")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__mul = function()
-			Detected("kick", "Proxy metaMethod 0x19999")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__div = function()
-			Detected("kick", "Proxy metaMethod 0x1D14AC")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__mod = function()
-			Detected("kick", "Proxy metaMethod 0x786C64")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__pow = function()
-			Detected("kick", "Proxy metaMethod 0x1D948C")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__len = function()
-			Detected("kick", "Proxy metaMethod 0xBE931")
-
-			return task.wait(2e2)
-		end
-
-		proxyMt.__metatable = "The metatable is locked"
 	end
 
 	do
