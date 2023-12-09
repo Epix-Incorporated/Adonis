@@ -127,7 +127,7 @@ return function(Vargs, GetEnv)
 	do
 		local proxyMt = getmetatable(proxyDetector)
 		
-		if settings.Detections == true then
+		if settings.Detection == true then
 			
 			proxyMt.__index = function() 
 				Detected("kick", "Proxy metaMethod 0x215F")
