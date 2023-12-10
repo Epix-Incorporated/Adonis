@@ -3,6 +3,15 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[Patch v240a 2023-12-10 10:10 UTC] @Dimenpsyonal";
+	"CodeExecution is again true by default";
+	"Fix TrackTask on older functions, and invalid tracktest orders";
+	"Fix logic check on type(object)";
+	"Fix arguments for NoYield function";
+	"Fix :sing command MeshID";
+	"Fix sing not removing animatedface";
+	"Fix wrapped checks";
+	"";
 	"[v240 2023-11-05 09:20 UTC] @Dimenpsyonal&@ccuser44";
 	"Add TextChatService command support";
 	"Added commands :createstat and :removestats";
