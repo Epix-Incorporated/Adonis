@@ -25,71 +25,71 @@ do
 
 	local proxyDetector = newproxy(true)
 
-	do
+	while Settings.Detection and Settings.AllowClientAntiExploit do
 		local proxyMt = getmetatable(proxyDetector)
 
 		proxyMt.__index = function()
-			loadingDetected("Proxy methamethod 0xEC7E1")
+			loadingDetected("Proxy metaMethod 0xEC7E1")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__newindex = function()
-			loadingDetected("Proxy methamethod 0x28AEC")
+			loadingDetected("Proxy metaMethod 0x28AEC")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__tostring = function()
-			loadingDetected("Proxy methamethod 0x36F14")
+			loadingDetected("Proxy metaMethod 0x36F14")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__unm = function()
-			loadingDetected("Proxy methamethod 0x50B7F")
+			loadingDetected("Proxy metaMethod 0x50B7F")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__add = function()
-			loadingDetected("Proxy methamethod 0xCD67D")
+			loadingDetected("Proxy metaMethod 0xCD67D")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__sub = function()
-			loadingDetected("Proxy methamethod 0x8110D")
+			loadingDetected("Proxy metaMethod 0x8110D")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__mul = function()
-			loadingDetected("Proxy methamethod 0x6A01B")
+			loadingDetected("Proxy metaMethod 0x6A01B")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__div = function()
-			loadingDetected("Proxy methamethod 0x5A975")
+			loadingDetected("Proxy metaMethod 0x5A975")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__mod = function()
-			loadingDetected("Proxy methamethod 0x6CFEB")
+			loadingDetected("Proxy metaMethod 0x6CFEB")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__pow = function()
-			loadingDetected("Proxy methamethod 0x20A50")
+			loadingDetected("Proxy metaMethod 0x20A50")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__len = function()
-			loadingDetected("Proxy methamethod 0x3B96C")
+			loadingDetected("Proxy metaMethod 0x3B96C")
 
 			return task.wait(2e2)
 		end
