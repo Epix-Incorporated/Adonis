@@ -12,6 +12,8 @@ return {
 	"Fix sing not removing animatedface";
 	"Fix wrapped checks";
 	"";
+	"(Git/WalkerOfBacon) Remove both :flynoclip and :flyspeed";
+	"";
 	"[v240 2023-11-05 09:20 UTC] @Dimenpsyonal&@ccuser44";
 	"Add TextChatService command support";
 	"Added commands :createstat and :removestats";
