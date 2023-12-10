@@ -372,13 +372,13 @@ return function(Vargs, GetEnv)
 	local function RunAfterPlugins(data)
 		--// Backup Map
 		if Settings.AutoBackup then
-			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, `{Settings.Prefix}backupmap`)
+			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, false, `{Settings.Prefix}backupmap`)
 		end
 
 		--// Run OnStartup Commands
 		for i,v in Settings.OnStartup do
 			print(`Running startup command {v}`)
-			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
+			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, false, v)
 			AddLog("Script", {
 				Text = `Startup: Executed {v}`;
 				Desc = `Executed startup command; {v}`;
@@ -907,7 +907,7 @@ return function(Vargs, GetEnv)
 						table.remove(list, ind)
 
 						if not temp and Settings.SaveAdmins then
-							TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+							TrackTask("Thread: RemoveAdmin", Core.DoSave, false, {
 								Type = "TableRemove";
 								Table = {"Settings", "Ranks", listName, "Users"};
 								Value = check;
@@ -965,7 +965,7 @@ return function(Vargs, GetEnv)
 				table.insert(newList, value)
 
 				if Settings.SaveAdmins and levelName and not temp then
-					TrackTask("Thread: SaveAdmin", Core.DoSave, {
+					TrackTask("Thread: SaveAdmin", Core.DoSave, false, {
 						Type = "TableAdd";
 						Table = {"Settings", "Ranks", levelName, "Users"};
 						Value = value
