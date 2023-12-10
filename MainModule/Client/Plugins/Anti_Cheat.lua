@@ -78,7 +78,7 @@ return function(Vargs)
 
 	local proxyDetector = newproxy(true)
 
-	while Settings.Detection and Settings.AllowClientAntiExploit do
+	while settings.Detection and settings.AllowClientAntiExploit do
 		local proxyMt = getmetatable(proxyDetector)
 
 		proxyMt.__index = function()
