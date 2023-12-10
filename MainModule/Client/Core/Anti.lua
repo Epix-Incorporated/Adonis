@@ -124,7 +124,7 @@ return function(Vargs, GetEnv)
 
 	local proxyDetector = newproxy(true)
 
-	while Settings.Detection and Settings.AllowClientAntiExploit do		
+	while settings.Detection and settings.AllowClientAntiExploit do		
 		local proxyMt = getmetatable(proxyDetector)
 				
 		proxyMt.__index = function() 
@@ -196,7 +196,7 @@ return function(Vargs, GetEnv)
 		proxyMt.__metatable = "The metatable is locked"
 	end
 
-	while Settings.Detection and Settings.AllowClientAntiExploit do
+	while settings.Detection and settings.AllowClientAntiExploit do
 		local callStacks = {
 			indexInstance = {},
 			newindexInstance = {},
@@ -414,7 +414,7 @@ return function(Vargs, GetEnv)
 		end)
 
 		Routine(function()
-			while Settings.Detection and Settings.AllowClientAntiExploit do
+			while settings.Detection and settings.AllowClientAntiExploit do
 				do
 					local source, line, argN, isVararg, name, closure = debug.info(Detected, "slanf")
 					if
@@ -653,7 +653,7 @@ return function(Vargs, GetEnv)
 
 	client.Anti = Anti
 
-	while Settings.Detection and Settings.AllowClientAntiExploit do
+	while settings.Detection and settings.AllowClientAntiExploit do
 		local meta = service.MetaFunc
 		local track = meta(service.TrackTask)
 		local opcall = meta(pcall)
