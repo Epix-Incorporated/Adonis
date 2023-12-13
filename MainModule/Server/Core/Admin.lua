@@ -457,6 +457,8 @@ return function(Vargs, GetEnv)
 		SlowCache = {};
 		UserIdCache = {};
 		UsernameCache = {};
+		ServerBans = {};
+		TimeBans = {};
 		GroupsCache = {};
 
 		BlankPrefix = false;
@@ -1041,7 +1043,7 @@ return function(Vargs, GetEnv)
 				for ind, Ban in pairs(tab) do
 					if type(Ban)=="string" then
 						local banned = Admin.DoCheck(p, Ban)
-						
+
 						if banned then
 							return true,Ban
 						end
@@ -1102,15 +1104,15 @@ return function(Vargs, GetEnv)
 					expireTime = expireTime;
 					remainingTime = expireTime - os.time()
 				}
-				
+
 				table.insert(Admin.TimeBans, banData)
-				
+
 				Core.DoSave({
 					Type = "TableAdd";
 					Table = "TimeBans";
 					Value = banData
 				})	
-				
+
 				if p and service.Players:FindFirstChild(tostring(p.Name)) then
 					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("TimeBan",banData))
 				end
@@ -1125,7 +1127,7 @@ return function(Vargs, GetEnv)
 					expireTime = "Server Ban";
 					remainingTime = "Server Ban"
 				}
-				
+
 				table.insert(Admin.ServerBans, banData)
 
 				if p and service.Players:FindFirstChild(tostring(p.Name)) then
@@ -1142,7 +1144,7 @@ return function(Vargs, GetEnv)
 					expireTime = "Game Ban";
 					remainingTime = "Game Ban"
 				}
-				
+
 				table.insert(Settings.Banned, banData)
 
 				Core.DoSave({
@@ -1285,7 +1287,7 @@ return function(Vargs, GetEnv)
 
 				return false
 			end
-			
+
 			local removePlayerBan = function(tab)
 				for ind, Ban in pairs(tab) do
 					if Ban.id == plr.UserId then
@@ -1295,23 +1297,23 @@ return function(Vargs, GetEnv)
 
 				return false
 			end
-			
+
 			local SBan = getPlayerBan(Admin.ServerBans)
 			local TBan = getPlayerBan(Admin.TimeBans)
 			local GBan = getPlayerBan(Settings.Banned)
-			
+
 			if SBan then
 				removePlayerBan(Admin.ServerBans)
 			end
-			
+
 			if TBan then
 				removePlayerBan(Admin.TimeBans)
 			end
-			
+
 			if GBan then
 				removePlayerBan(Settings.Banned)
 			end
-			
+
 			return plr.Name
 		end;
 
