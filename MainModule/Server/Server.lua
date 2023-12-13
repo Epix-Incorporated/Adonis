@@ -489,7 +489,7 @@ return service.NewProxy({
 				.."\nAdonis server-side is already running! Aborting..."
 				.."\n-----------------------------------------------")
 			script:Destroy()
-			return "FAILED"
+			return false, "ADONIS_RUNNING"
 		else
 			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Archivable = false, Value = "Running"})
 			local mutexBackup = mutex:Clone()
