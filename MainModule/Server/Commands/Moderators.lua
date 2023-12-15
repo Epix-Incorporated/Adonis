@@ -1854,7 +1854,7 @@ return function(Vargs, env)
 				else
 					Remote.MakeGui(plr, "List", {
 						Title = "Tasks",
-						Icon = server.MatIcons.Subject
+						Icon = server.MatIcons.Subject;
 						Table = Logs.ListUpdaters.ShowTasks(plr),
 						Font = "Code",
 						Update = "ShowTasks",
