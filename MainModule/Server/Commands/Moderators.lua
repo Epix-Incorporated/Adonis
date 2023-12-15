@@ -1842,7 +1842,7 @@ return function(Vargs, env)
 					for i, v in service.GetPlayers(plr, args[1]) do
 						Remote.MakeGui(plr, "List", {
 							Title = `{v.Name}'s Tasks`;
-							Icon = server.MatIcons.Subject
+							Icon = server.MatIcons.Subject;
 							Table = Logs.ListUpdaters.ShowTasks(plr, v);
 							Font = "Code";
 							Update = "ShowTasks";
