@@ -647,6 +647,13 @@ return service.NewProxy({
 		--// Experimental, may have issues with Adonis tables that are protected metatables
 		--ServiceSpecific.CloneTable = CloneTable
 
+		server.Functions.SetKickMessage("BanMessage", server.Settings.BanMessage, setTab.BanMessage)
+		server.Functions.SetKickMessage("TrelloBan", server.Settings.TrelloBanMessage, setTab.TrelloBanMessage)
+		server.Functions.SetKickMessage("TimeBan", server.Settings.TimeBanMessage, setTab.TimeBanMessage)
+		server.Functions.SetKickMessage("GameBan", server.Settings.GameBanMessage, setTab.GameBanMessage)
+		server.Functions.SetKickMessage("Lock", server.Settings.LockMessage, setTab.LockMessage)
+		server.Functions.SetKickMessage("Whitelist", server.Settings.NotWhitelistedMessage, setTab.NotWhitelistedMessage)
+
 		--// Initialize Cores
 		local runLast = {}
 		local runAfterInit = {}
@@ -730,7 +737,7 @@ return service.NewProxy({
 		end
 		service.Events.ServerInitialized:Fire();
 
-		return "SUCCESS"
+		return true, "SUCCESS"
 	end;
 	__tostring = function()
 		return "Adonis"
