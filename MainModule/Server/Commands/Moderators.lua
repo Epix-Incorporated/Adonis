@@ -4591,7 +4591,7 @@ return function(Vargs, env)
 							Remote.MakeGuiGet(v, "Notification", {
 								Title = "Teleport";
 								Text = if reservedServerInfo then string.format("Click to teleport to server %s.", args[2]) else string.format("Click to teleport to place %d.", placeId);
-								Icon = server.MatIcons["QR code scanner"]
+								Icon = server.MatIcons["QR code scanner"];
 								Time = 30;
 								OnClick = Core.Bytecode("return true");
 							})
