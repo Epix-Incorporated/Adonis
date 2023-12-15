@@ -113,7 +113,7 @@ local logError = function(plr, err)
 		plr = nil;
 	end
 
-	if server.Core and server.Core.DebugMode then
+	if server.Core and server.Settings.Debug or Data.Debug or false then
 		warn(`::Adonis:: Error: {plr}: {err}`)
 	end
 
