@@ -121,7 +121,7 @@ return function(Vargs, env)
 					end
 				end
 
-				Remote.MakeGui(plr, "List", {Title = "Time Bans", Tab = tab})
+				Remote.MakeGui(plr, "List", {Title = "Time Bans", Icon = server.MatIcons["Hourglass full"], Tab = tab})
 			end
 		};
 
@@ -1842,6 +1842,7 @@ return function(Vargs, env)
 					for i, v in service.GetPlayers(plr, args[1]) do
 						Remote.MakeGui(plr, "List", {
 							Title = `{v.Name}'s Tasks`;
+							Icon = server.MatIcons.Subject
 							Table = Logs.ListUpdaters.ShowTasks(plr, v);
 							Font = "Code";
 							Update = "ShowTasks";
@@ -1853,6 +1854,7 @@ return function(Vargs, env)
 				else
 					Remote.MakeGui(plr, "List", {
 						Title = "Tasks",
+						Icon = server.MatIcons.Subject
 						Table = Logs.ListUpdaters.ShowTasks(plr),
 						Font = "Code",
 						Update = "ShowTasks",
@@ -2094,6 +2096,7 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Results";
+					Icon = server.MatIcons.Poll
 					Tab = voteUpdate();
 					Update = "TempUpdate";
 					UpdateArgs = {{UpdateKey = voteKey}};
@@ -2182,6 +2185,7 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Results";
+					Icon = server.MatIcons.Poll
 					Tab = voteUpdate();
 					Update = "TempUpdate";
 					UpdateArgs = {{UpdateKey = voteKey}};
@@ -2252,7 +2256,7 @@ return function(Vargs, env)
 				for i, v in tab do
 					tab[i] = {Text = `{v.Name} - {v.ID}`; Desc = v.ID;}
 				end
-				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab; TextSelectable = true})
+				Remote.MakeGui(plr, "List", {Title = "Insert List", Icon = server.MatIcons["Format list numbered"],Table = tab; TextSelectable = true})
 			end
 		};
 
@@ -2337,6 +2341,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Adonis Instances";
+					Icon = server.MatIcons["Broadcast"]
 					Table = Logs.ListUpdaters.ShowServerInstances(plr);
 					Stacking = false;
 					Update = "ShowServerInstances";
@@ -2373,6 +2378,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(plr, "List", {
 						Title = `{service.FormatPlayer(v)}'s Client Instances`;
+						Icon = server.MatIcons["Account circle"]
 						Table = Logs.ListUpdaters.ShowClientInstances(plr, v);
 						Stacking = false;
 						Update = "ShowClientInstances";
@@ -2534,7 +2540,7 @@ return function(Vargs, env)
 				for _, v in Variables.Capes do
 					table.insert(list, v.Name)
 				end
-				Remote.MakeGui(plr, "List", {Title = "Cape List", Tab = list;})
+				Remote.MakeGui(plr, "List", {Title = "Cape List", Icon = server.MatIcons.Grade, Tab = list;})
 			end
 		};
 
@@ -3544,6 +3550,7 @@ return function(Vargs, env)
 								--// Generate the UI for this player
 								server.Remote.MakeGui(plr, "List", {
 									Tab = tab;
+									Icon = server.MatIcons.Epix
 									Title = "Command Usage";
 								})
 								return
@@ -4584,6 +4591,7 @@ return function(Vargs, env)
 							Remote.MakeGuiGet(v, "Notification", {
 								Title = "Teleport";
 								Text = if reservedServerInfo then string.format("Click to teleport to server %s.", args[2]) else string.format("Click to teleport to place %d.", placeId);
+								Icon = server.MatIcons["QR code scanner"]
 								Time = 30;
 								OnClick = Core.Bytecode("return true");
 							})
@@ -4645,7 +4653,7 @@ return function(Vargs, env)
 				for i, v in servers do
 					table.insert(tab, {Text = i, Desc = `Place: {v.ID} | Code: {v.Code}`})
 				end
-				Remote.MakeGui(plr, "List", {Title = "Servers"; Table = tab;})
+				Remote.MakeGui(plr, "List", {Title = "Servers"; Icon = server.MatIcons.Broadcast, Table = tab;})
 			end
 		};
 
