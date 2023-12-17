@@ -1725,46 +1725,7 @@ return function(Vargs, env)
 			Description = "Command Box";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "Window", {
-					Title = "Command Box";
-					Name = "CommandBox";
-					Icon = server.MatIcons.Code;
-					Size  = {300, 250};
-					Ready = true;
-					Content = {
-						{
-							Class = "TextBox";
-							Name = "ComText";
-							Size = UDim2.new(1, -10, 1, -40);
-							Text = "";
-							BackgroundTransparency = 0.5;
-							PlaceholderText = "Enter commands here";
-							TextYAlignment = "Top";
-							MultiLine = true;
-							ClearTextOnFocus = false;
-							TextChanged = Core.Bytecode[[
-								if not Object.TextFits then
-									Object.TextYAlignment = "Bottom"
-								else
-									Object.TextYAlignment = "Top"
-								end
-							]]
-						};
-						{
-							Class = "TextButton";
-							Name = "Execute";
-							Size = UDim2.new(1, -10, 0, 35);
-							Position = UDim2.new(0, 5, 1, -40);
-							Text = "Execute";
-							OnClick = Core.Bytecode[[
-								local textBox = Object.Parent:FindFirstChild("ComText")
-								if textBox then
-									client.Remote.Send("ProcessCommand", textBox.Text)
-								end
-							]]
-						};
-					}
-				})
+				Remote.MakeGui(plr,"CommandBox")																																																																													
 			end;
 		};
 
