@@ -5,6 +5,8 @@ return function(data,env)
 		setfenv(1, env)
 	end
 	
+	local Enabled = false
+	
 	local window = client.UI.Make("Window",{
 		Title = "Command Box";
 		Name = "CommandBox";
@@ -15,17 +17,20 @@ return function(data,env)
 	local Frame: ScrollingFrame = window:Add("ScrollingFrame",{
 		Name = "ComFrame";
 		Size = UDim2.new(1, -10, 1, -45);
-		BackgroundTransparency = 0.5;
+		BackgroundTransparency = 1;
+		AutomaticCanvasSize = Enum.AutomaticSize.Y;
 	})
 	
-	local Text: TextLabel = Frame:Add("TextBox",{
+	local Text: TextBox = Frame:Add("TextBox",{
 		Name = "ComText";
 		Size = UDim2.new(1, 0, 1, 0);
 		Position = UDim2.new(0, 0, 0, 0);
+		BackgroundTransparency = 1;
 		Text = "";
-		BackgroundTransparency = 0.5;
 		PlaceholderText = "Enter commands here";
 		TextYAlignment = "Top";
+		TextWrapped = true;
+		TextScaled = false;
 		MultiLine = true;
 		ClearTextOnFocus = false;
 	})
@@ -40,7 +45,15 @@ return function(data,env)
 		end,
 	})
 	
-	Text:GetPropertyChangedSignal("Text"):Connect(function()
+	Text:GetPropertyChangedSignal("TextBounds"):Connect(function()
+		if Text.Text ~= "" then
+			Text.Size = UDim2.new(Text.Size.X.Scale, Text.Size.X.Offset, Text.Size.Y.Scale, Text.TextBounds.Y+16)
+		else
+			Text.Size = UDim2.new(1, 0, 1, 0)
+		end
+	end)
+	
+	--[[Text:GetPropertyChangedSignal("Text"):Connect(function()
 		if Text.TextBounds.Y > Frame.AbsoluteSize.Y then
 			Text:SetSize(UDim2.new(1, 0, 0, Text.TextBounds.Y+5))
 			Text:SetPosition(UDim2.new(0, 0, 0, 0))
@@ -57,7 +70,7 @@ return function(data,env)
 			Frame.CanvasSize = UDim2.new(0, 0, 0, 0)
 			Text:SetSize(UDim2.new(1, 0, 1, 0))
 		end
-	end)
+	end)]]
 	
 	window:Ready()
 end
