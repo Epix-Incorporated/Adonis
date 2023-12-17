@@ -10,6 +10,7 @@ return function(Vargs, env)
 
 	local Routine = env.Routine
 	local Pcall = env.Pcall
+	local cPcall = env.cPcall
 
 	return {
 		ViewCommands = {
@@ -151,7 +152,14 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Functions.Notification("Notification", assert(args[2], "Missing message"), {plr}, tonumber(assert(args[1], "Missing time amount")), "MatIcon://Notifications")
+				assert(args[1], "Missing time amount")
+				assert(args[2], "Missing message")
+				Remote.MakeGui(plr, "Notification", {
+					Title = "Notification";
+					Icon = server.MatIcons["Notifications"];
+					Message = args[2];
+					Time = tonumber(args[1]);
+				})
 			end
 		};
 
@@ -301,6 +309,17 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Ping")
 			end
 		};
+		
+		Fps = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"fps","framespersecond"};
+			Args = {};
+			Description = "Shows your current fps (frames per second)";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr,"FPS")
+			end,
+		};
 
 		ServerSpeed = {
 			Prefix = Settings.PlayerPrefix;
@@ -390,7 +409,12 @@ return function(Vargs, env)
 												answered = true
 												Commands.Teleport.Function(plr, {p.Name, `@{plr.Name}`})
 											else
-												Functions.Notification("Help Request", "Another admin has already responded to this request!", {plr}, 5, "MatIcon://Mail")
+												Remote.MakeGui(p, "Notification", {
+													Title = "Help Request";
+													Message = "Another admin has already responded to this request!";
+													Icon = server.MatIcons.Mail;
+													Time = 5;
+												})
 											end
 										end
 									end
@@ -615,7 +639,12 @@ return function(Vargs, env)
 				data.CustomTheme = args[1]
 				playerData.Client = data
 				Core.SavePlayer(plr, playerData)
-				Functions.Notification("Theme Changed", if args[1] then `UI theme set to '{args[1]}'!` else "UI theme reset to default.", {plr}, 5, "MatIcon://Palette")
+				Remote.MakeGui(plr, "Notification", {
+					Title = "Theme Changed";
+					Icon = server.MatIcons.Palette;
+					Message = if args[1] then `UI theme set to '{args[1]}'!` else "UI theme reset to default.";
+					Time = 5;
+				})
 				Remote.LoadCode(plr, `client.Variables.CustomTheme = {if args[1] then `[[{args[1]}]]` else "nil"}`)
 			end
 		};
@@ -1132,16 +1161,19 @@ return function(Vargs, env)
 			Args = {"id"};
 			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
 			AdminLevel = "Players";
+			Disabled = Settings.DisableBuyItem ~= false;
 			Function = function(plr: Player, args: {string})
 				local assetId = assert(tonumber(args[1]), "Missing asset ID (argument #1)")
 				local success, assetAlreadyOwned = pcall(service.MarketplaceService.PlayerOwnsAsset, service.MarketplaceService, plr, assetId)
 				assert(not (success and assetAlreadyOwned), "You already own the asset!")
-				local success, assetInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId)
-				assert(success and not assetInfo.IsLimited, "Cannot buy limited assets!")
 				local connection; connection = service.MarketplaceService.PromptPurchaseFinished:Connect(function(_, boughtAssetId, isPurchased)
 					if boughtAssetId == assetId then
 						connection:Disconnect()
-						Functions.Notification("Adonis purchase", (isPurchased and string.format("Asset %d was purchased successfully!", assetId) or string.format("Asset %d was not bought", assetId)), {plr}, 10, "MatIcon://Shopping cart")
+						Remote.MakeGui(plr, "Notification", {
+							Title = "Adonis purchase";
+							Message = (isPurchased and string.format("Asset %d was purchased successfully!", assetId) or string.format("Asset %d was not bought", assetId));
+							Time = 10;
+						})
 					end
 				end)
 				service.MarketplaceService:PromptPurchase(plr, assetId, false)
