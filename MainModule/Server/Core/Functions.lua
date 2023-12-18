@@ -374,7 +374,10 @@ return function(Vargs, GetEnv)
 
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p ~= plr and plr:DistanceFromCharacter(p.Character.Head.Position) <= num then
+							local character = p.Character
+							local Head = character and character:FindFirstChild("Head")
+							
+							if Head and p and p ~= plr and plr:DistanceFromCharacter(Head.Position) <= num then
 								table.insert(players,p)
 								plus()
 							end
