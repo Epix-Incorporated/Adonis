@@ -2096,7 +2096,7 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Results";
-					Icon = server.MatIcons.Poll
+					Icon = server.MatIcons.Poll;
 					Tab = voteUpdate();
 					Update = "TempUpdate";
 					UpdateArgs = {{UpdateKey = voteKey}};
@@ -2185,7 +2185,7 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Results";
-					Icon = server.MatIcons.Poll
+					Icon = server.MatIcons.Poll;
 					Tab = voteUpdate();
 					Update = "TempUpdate";
 					UpdateArgs = {{UpdateKey = voteKey}};
@@ -2341,7 +2341,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Adonis Instances";
-					Icon = server.MatIcons["Broadcast"]
+					Icon = server.MatIcons["Broadcast"];
 					Table = Logs.ListUpdaters.ShowServerInstances(plr);
 					Stacking = false;
 					Update = "ShowServerInstances";
@@ -2378,7 +2378,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(plr, "List", {
 						Title = `{service.FormatPlayer(v)}'s Client Instances`;
-						Icon = server.MatIcons["Account circle"]
+						Icon = server.MatIcons["Account circle"];
 						Table = Logs.ListUpdaters.ShowClientInstances(plr, v);
 						Stacking = false;
 						Update = "ShowClientInstances";
@@ -3550,7 +3550,7 @@ return function(Vargs, env)
 								--// Generate the UI for this player
 								server.Remote.MakeGui(plr, "List", {
 									Tab = tab;
-									Icon = server.MatIcons.Epix
+									Icon = server.MatIcons.Epix;
 									Title = "Command Usage";
 								})
 								return
