@@ -41,7 +41,7 @@ return function(data,env)
 		window:Ready()
 
 		repeat
-			label.Text = `{math.floor(1/game:GetService("RunService").RenderStepped:Wait())} fps`
+			label.Text = `{math.floor(1/service["RunService"].RenderStepped:Wait())} fps`
 			task.wait(1)
 		until not gfps or not gTable.Active
 	end
