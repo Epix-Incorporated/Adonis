@@ -59,6 +59,7 @@ return {
 	"Duration to jail command by @kaiserandaxl (#1292)";
 	"Added search box to keybinds, and aliases by @kaiserandaxl (#1294)";
 	"Other misc fixes & improvements by @ccuser44 (#1265)";
+	"Remove both :flynoclip and :flyspeed by @WalkerOfBacon";
 	"";
 	"[Patch v240a 2023-12-10 10:10 UTC] @Dimenpsyonal";
 	"CodeExecution is again true by default (#1299)";
@@ -68,8 +69,6 @@ return {
 	"Fix :sing command MeshID";
 	"Fix sing not removing animatedface";
 	"Fix wrapped checks";
-	"";
-	"(Git/WalkerOfBacon) Remove both :flynoclip and :flyspeed";
 	"";
 	"[v240 2023-11-05 09:20 UTC] @Dimenpsyonal&@ccuser44";
 	"Add TextChatService command support";
