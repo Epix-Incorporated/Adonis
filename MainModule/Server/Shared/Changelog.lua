@@ -13,7 +13,7 @@ return {
 	"Add :sing command (#1217)";
 	"Add new BanMenu UI; add functions+data models to the window code (#1295)";
 	":vote command is now in random order (#1179)";
-	"Add :orderedvote command for voting in order (#1179)"
+	"Add :orderedvote command for voting in order (#1179)";
 	"";
 	"Add command to debug anti cheat by @ccuser44 (#1267)";
 	"Fix remotespy detection by @ccuser44 (#1218)";
