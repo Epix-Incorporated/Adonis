@@ -837,7 +837,8 @@
 		[Bool] 		Walls		 - If true the window will be snapped back when dragged off the screen
 		[Bool] 		NoClose		 - If true the close button will be removed
 		[Bool]		CanKeepAlive - If false the window will be destroyed when the user respawns
-		[Bool]		SizeLocked	 - IF true the window cannot be resized
+		[Bool]		SizeLocked	 - If true the window cannot be resized
+		[Bool]		NoDrag		 - If true window can't be dragged
 		[Function]	OnClose		 - Called when the window closes
 		[Function]	OnResize	 - Called when the window is resized by the user
 		[Function]	OnReady		 - Called when window:Ready() is called
@@ -867,6 +868,8 @@
 		:Add(string Class, table Data)	- Adds a new object of Class to the window with properties specified by Data
 		:Hide(bool doHide)				- Forces the window to minimize or maximize
 		:SetTitle(string newTitle)		- Sets the window's title
+		:SetMinSize(table newMinSize)	- Sets the minimum allowed window size
+		:SetMaxSize(table newMaxSize)	- Sets the maximum allowed window size
 		:SetPosition(UDim2 newPos)		- Sets the window's position
 		:SetSize(table newSize)			- Sets the window's size; Must be a table containing X and Y absolute sizes
 		:GetPosition()					- Gets the window's position
@@ -954,6 +957,8 @@ local setPosition
 local checkMouse
 local isInFrame
 local setSize
+local setMinSize
+local setMaxSize
 local apiIfy
 
 client = nil
@@ -978,6 +983,7 @@ return function(data, env)
 	local InputService = service.UserInputService
 	local gIndex = data.gIndex
 	local gTable = data.gTable
+	warn(gTable.BindEvent)
 
 	local Event = gTable.BindEvent
 	local GUI = gTable.Object
@@ -990,6 +996,7 @@ return function(data, env)
 	local Walls = data.Walls
 	local noHide = data.NoHide
 	local noClose = data.NoClose
+	local noDrag = data.NoDrag
 	local onReady = data.OnReady
 	local onClose = data.OnClose
 	local onResize = data.OnResize
@@ -1009,7 +1016,6 @@ return function(data, env)
 	local isClosed = false
 	local Resizing = false
 	local Refreshing = false
-	local DragEnabled = true
 	local checkProperty = service.CheckProperty
 	local specialInsts = {}
 	local inExpandable
@@ -2025,6 +2031,18 @@ return function(data, env)
 			Drag.Position = UDim2.new(0.5, -Drag.AbsoluteSize.X/2, 0.5, -Main.AbsoluteSize.Y/2)
 		end
 	end
+	
+	function setMinSize(Table)
+		if Table and typeof(Table) == "table" then
+			MinSize = Table
+		end
+	end
+	
+	function setMaxSize(Table)
+		if Table and typeof(Table) == "table" then
+			MaxSize = Table
+		end
+	end
 
 	if Name then
 		gTable.Name = Name
@@ -2436,9 +2454,11 @@ return function(data, env)
 
 		Event(InputService.InputBegan, function(input)
 			if inFrame and GUI.DisplayOrder == 101 and not dragDragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then--isInFrame(input.Position.X, input.Position.Y, object) then
-				dragDragging = true
-				BringToFront()
-				dragOffset = Vector2.new(Drag.AbsolutePosition.X - input.Position.X, Drag.AbsolutePosition.Y - input.Position.Y)
+				if not noDrag then
+					dragDragging = true
+					BringToFront()
+					dragOffset = Vector2.new(Drag.AbsolutePosition.X - input.Position.X, Drag.AbsolutePosition.Y - input.Position.Y)
+				end
 			end
 		end)
 
@@ -2480,6 +2500,8 @@ return function(data, env)
 	api:SetSpecial("SetTitle", function(ignore, newTitle) Titlef.Text = newTitle end)
 	api:SetSpecial("SetPosition", function(ignore, newPos) setPosition(newPos) end)
 	api:SetSpecial("SetSize", function(ignore, newSize) setSize(newSize) end)
+	api:SetSpecial("SetMinSize",function(ignore, Table) setMinSize(Table) end)
+	api:SetSpecial("SetMaxSize",function(ignore, Table) setMaxSize(Table) end)
 	api:SetSpecial("GetPosition", function() return Drag.AbsolutePosition end)
 	api:SetSpecial("GetSize", function() return Main.AbsoluteSize end)
 	api:SetSpecial("IsVisible", isVisible)

@@ -1333,6 +1333,23 @@ return function(Vargs, env)
 			end;
 		};
 
+		BanMenu = {
+			Prefix = Settings.Prefix;
+			Commands = {"banmenu"};
+			Args = {};
+			Description = "Opens the ban menu";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string}, data: {any})
+				Remote.MakeGui(plr,"BanMenu",{
+					AdminLevel = Admin.GetLevel(plr);
+					CanBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.ServerBan.AdminLevel);
+					CanTimeBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.TimeBan.AdminLevel);
+					CanPermBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.PermanentBan.AdminLevel);
+					Prefix = Settings.Prefix;
+				})
+			end,
+		};
+
 		CustomMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"cm", "custommessage"};
