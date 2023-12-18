@@ -59,7 +59,7 @@ return {
 	"Duration to jail command by @kaiserandaxl (#1292)";
 	"Added search box to keybinds, and aliases by @kaiserandaxl (#1294)";
 	"Other misc fixes & improvements by @ccuser44 (#1265)";
-	"Remove both :flynoclip and :flyspeed by @WalkerOfBacon";
+	"Remove both :flynoclip and :flyspeed by @WalkerOfBacon (#1301)";
 	"";
 	"[Patch v240a 2023-12-10 10:10 UTC] @Dimenpsyonal";
 	"CodeExecution is again true by default (#1299)";
