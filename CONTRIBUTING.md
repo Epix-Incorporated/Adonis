@@ -83,7 +83,7 @@ Discord server: <https://discord.com/invite/H5RvTP3>
 
 ### That's all, folks!
 
-Feel free to make inquiries on our Discord server.
+Feel free to make enquiries on our Discord server.
   
 <sub>Adonis Contribution Guide 2022</sub>
 
