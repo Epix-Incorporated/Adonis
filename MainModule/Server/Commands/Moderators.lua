@@ -4978,7 +4978,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[1], "Missing the stat name!")
 
-				for _, v in service.GetPlayers(plr) do
+				for _, v in service.GetPlayers() do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						leaderstats.Name = "leaderstats"
