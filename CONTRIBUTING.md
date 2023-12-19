@@ -8,7 +8,7 @@ Adonis is an ever-expanding, frequently updated, slightly complicated, system. T
 
 ## Q: Who's in charge of handling pull requests (PRs)?
 
-**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz)) and [@LiveFireExercise](https://github.com/LiveFireExercise) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
+**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz)) and [@Dimenpsyonal](https://github.com/Dimenpsyonal) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
 
 Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
 
