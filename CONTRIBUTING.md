@@ -23,6 +23,8 @@ A short explanation/clarification may be appended to the title, and should be in
 Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
 
 **Description:** The description of a PR should be comprehensive and either describe, or list and describe the specific additions, changes, and/or removals made by the PR, and their full rationale.
+
+**Proof of functionality:** A PR must contain some form of you showcasing your PR working inside Roblox. This is to ensure that no breaking PRs are merged and to maintain a high quality of Pull Request. This can be a video or some other form of media which adequately displays that your PR is functional. Exceptions will be made for small PRs that are obviously functional such as fixing typos, tweaking minor functionality, etc.
   
 ℹ️ **The above rules do not apply to individual commit names and descriptions.**
 
