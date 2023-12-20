@@ -444,7 +444,7 @@ return function(Vargs, env)
 			Description = "Sets the ban message banned players see";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				Variables.BanMessage = assert(args[1], "Missing message (argument #1)")
+				settings.BanMessage = assert(args[1], "Missing message (argument #1)")
 			end
 		};
 
@@ -1263,7 +1263,7 @@ return function(Vargs, env)
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "server-ban", false) then
-						Admin.AddBan(v, reason, false, plr)
+						Admin.AddBan(v, "BAN", plr, os.time(), reason, "Server Ban")
 						Functions.Hint(`Server-banned {service.FormatPlayer(v, true)}`, {plr})
 					end
 				end
