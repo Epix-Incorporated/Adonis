@@ -59,7 +59,7 @@ return {
 	"(Git/kaiserandaxl) Duration to jail command (#1292)";
 	"(Git/kaiserandaxl) Added search box to keybinds, and aliases (#1294)";
 	"(Git/ccuser44) Other misc fixes & improvements (#1265)";
-  "(Git/WalkerOfBacon) Remove both :flynoclip and :flyspeed (#1301);
+  	"(Git/WalkerOfBacon) Remove both :flynoclip and :flyspeed (#1301)";
 	"";
 	"[Patch v240a 2023-12-10 10:10 UTC] @Dimenpsyonal";
 	"CodeExecution is again true by default (#1299)";
