@@ -433,7 +433,7 @@ return function(Vargs, GetEnv)
 				if not allowed then
 					if not (isSystem or opts.NoOutput) and (denialMessage or not Settings.SilentCommandDenials or opts.Check) then
 						Remote.MakeGui(p, "Output", {
-							 Message = denialMessage or (if Settings.SilentCommandDenials
+							Message = denialMessage or (if Settings.SilentCommandDenials
 								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
 								else string.format("You do not have permission to run '%s'.", msg));
 						})
