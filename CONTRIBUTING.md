@@ -8,7 +8,7 @@ Adonis is an ever-expanding, frequently updated, slightly complicated, system. T
 
 ## Q: Who's in charge of handling pull requests (PRs)?
 
-**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz)) and [@LiveFireExercise](https://github.com/LiveFireExercise) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
+**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz)) and [@Dimenpsyonal](https://github.com/Dimenpsyonal) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
 
 Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
 
@@ -23,6 +23,8 @@ A short explanation/clarification may be appended to the title, and should be in
 Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
 
 **Description:** The description of a PR should be comprehensive and either describe, or list and describe the specific additions, changes, and/or removals made by the PR, and their full rationale.
+
+**Proof of functionality:** A PR must contain some form of you showcasing your PR working inside Roblox. This is to ensure that no breaking PRs are merged and to maintain a high quality of Pull Request. This can be a video or some other form of media which adequately displays that your PR is functional. Exceptions will be made for small PRs that are obviously functional such as fixing typos, tweaking minor functionality, etc.
   
 ℹ️ **The above rules do not apply to individual commit names and descriptions.**
 
@@ -81,7 +83,7 @@ Discord server: <https://discord.com/invite/H5RvTP3>
 
 ### That's all, folks!
 
-Feel free to make inquiries on our Discord server.
+Feel free to make enquiries on our Discord server.
   
 <sub>Adonis Contribution Guide 2022</sub>
 
