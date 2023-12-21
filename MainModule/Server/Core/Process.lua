@@ -1004,8 +1004,8 @@ return function(Vargs, GetEnv)
 						end
 						
 						if level >= 300 and #Settings.Messages > 0 then
-							task.wait(1)
 							for _,Message in pairs(Settings.Messages) do
+								task.wait(1)
 								Remote.MakeGui(p,"Notification",{
 									Title = "Message";
 									Message = tostring(Message);
