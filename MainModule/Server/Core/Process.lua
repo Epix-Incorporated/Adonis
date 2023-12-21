@@ -108,7 +108,7 @@ return function(Vargs, GetEnv)
 						return require(ChatSettings)
 					end)
 					if success then
-						local NewChatLimit = ChatSettingsModule.MaximumLength
+						local NewChatLimit = ChatSettingsModule.MaximumMessageLength
 						if NewChatLimit and type(NewChatLimit) == "number" then
 							Process.MaxChatCharacterLimit = NewChatLimit
 							AddLog("Script", `Chat Character Limit automatically set to {NewChatLimit}`)
@@ -285,8 +285,8 @@ return function(Vargs, GetEnv)
 		RunAfterPlugins = RunAfterPlugins;
 		RateLimit = RateLimit;
 		newRateLimit = newRateLimit;
-		MsgStringLimit = 500; --// Max  string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
-		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a  larger than that;
+		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
+		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
 		RemoteMaxArgCount = 5; --// The maximum argument count Adonis will take from Remote (alter if your script requires more arguments)
 		RateLimits = {
 			Remote = 0.01;
@@ -405,7 +405,7 @@ return function(Vargs, GetEnv)
 					if opts.Check then
 						Remote.MakeGui(p, "Output", {
 							Title = "Output";
-							 = if Settings.SilentCommandDenials
+							Message = if Settings.SilentCommandDenials
 								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
 								else string.format("'%s' is not a valid command.", msg);
 						})
@@ -413,7 +413,7 @@ return function(Vargs, GetEnv)
 					return
 				end
 
-				local allowed, denial = false, nil
+				local allowed, denialMessage = false, nil
 				local isSystem = false
 
 				local pDat = {
@@ -427,13 +427,13 @@ return function(Vargs, GetEnv)
 					allowed = not command.Disabled
 					p = p or "SYSTEM"
 				else
-					allowed, denial = Admin.CheckPermission(pDat, command, false, opts)
+					allowed, denialMessage = Admin.CheckPermission(pDat, command, false, opts)
 				end
 
 				if not allowed then
-					if not (isSystem or opts.NoOutput) and (denial or not Settings.SilentCommandDenials or opts.Check) then
+					if not (isSystem or opts.NoOutput) and (denialMessage or not Settings.SilentCommandDenials or opts.Check) then
 						Remote.MakeGui(p, "Output", {
-							 = denial or (if Settings.SilentCommandDenials
+							 Message = denialMessage or (if Settings.SilentCommandDenials
 								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
 								else string.format("You do not have permission to run '%s'.", msg));
 						})
@@ -488,7 +488,7 @@ return function(Vargs, GetEnv)
 	
 							if not isSystem then
 								Remote.MakeGui(p, "Output", {
-									 = cmdError,
+									Message = cmdError,
 								})
 								warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
 							end
