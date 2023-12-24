@@ -1020,7 +1020,6 @@ return function(Vargs, GetEnv)
 				
 				Variable.Script = args[1]["Text"]
 			end,
-			
 			RunScript = function(p: Player, args: {})
 				local se = Variables.ScriptEditor[tostring(p.UserId)]
 				local Name = args[1][1]
@@ -1035,7 +1034,7 @@ return function(Vargs, GetEnv)
 							oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 						end
 
-						Remote.Terminal.LiveOutput(p, `LUA_DEMAND_ERROR: {reason}`)
+						Remote.MakeGui(p, "Output",{Title = 'Output'; Message = `LUA_DEMAND_ERROR: {reason}`})
 						oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 					end;
 				})
