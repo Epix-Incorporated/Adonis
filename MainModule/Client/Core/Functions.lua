@@ -446,6 +446,7 @@ return function(Vargs, GetEnv)
 				"BorderSizePixel";
 				"Position";
 				"Rotation";
+				"RichText";
 				"Selectable";
 				"Size";
 				"SizeConstraint";
@@ -458,6 +459,8 @@ return function(Vargs, GetEnv)
 				"NextSelectionLeft";
 				"NextSelectionRight";
 				"NextSelectionUp";
+				"PlaceholderColor3";
+				"PlaceholderText";
 				"AutoButtonColor";
 				"Modal";
 				"Image";
@@ -469,11 +472,14 @@ return function(Vargs, GetEnv)
 				"SliceCenter";
 				"Text";
 				"TextColor3";
+				"TextDirection";
 				"Font";
 				"TextScaled";
+				"TextSize";
 				"TextStrokeColor3";
 				"TextStrokeTransparency";
 				"TextTransparency";
+				"TextTuncate";
 				"TextWrapped";
 				"TextXAlignment";
 				"TextYAlignment";
