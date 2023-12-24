@@ -433,8 +433,15 @@ return function(Vargs, GetEnv)
 		GetGuiData = function(args)
 			local props = {
 				"AbsolutePosition";
+				"AutomaticCanvasSize";
+				"BottomImage";
 				"AbsoluteSize";
+				"AnchorPoint";
+				"CornerRadius";
+				"CanvasSize";
+				"CanvasPosition";
 				"ClassName";
+				"ElasticBehavior";
 				"Name";
 				"Parent";
 				"Archivable";
@@ -448,9 +455,17 @@ return function(Vargs, GetEnv)
 				"Rotation";
 				"RichText";
 				"Selectable";
+				"HorizontalScrollBarPosition";
 				"Size";
+				"Enabled";
+				"Active";
 				"SizeConstraint";
 				"Style";
+				"ScrollBarThickness";
+				"ScrollBarImageTransparency";
+				"ScrollingEnabled";
+				"ScrollingDirection";
+				"ScrollBarImageColor";
 				"Visible";
 				"ZIndex";
 				"ClipsDescendants";
@@ -463,6 +478,7 @@ return function(Vargs, GetEnv)
 				"PlaceholderText";
 				"AutoButtonColor";
 				"Modal";
+				"MidImage";
 				"Image";
 				"ImageColor3";
 				"ImageRectOffset";
@@ -471,6 +487,7 @@ return function(Vargs, GetEnv)
 				"ScaleType";
 				"SliceCenter";
 				"Text";
+				"TopImage";
 				"TextColor3";
 				"TextDirection";
 				"Font";
@@ -483,6 +500,60 @@ return function(Vargs, GetEnv)
 				"TextWrapped";
 				"TextXAlignment";
 				"TextYAlignment";
+				"VerticalScrollBarInset";
+				"VerticalScrollBarPosition";
+				"AspectRatio";
+				"AspectType";
+				"DominantAxis";
+				"Offset";
+				"Transparency";
+				"CellPadding";
+				"CellSize";
+				"Padding";
+				"PaddingBottom";
+				"PaddingLeft";
+				"PaddingRight";
+				"PaddingTop";
+				"Animated";
+				"Circular";
+				"EasingDirection";
+				"EasingStyle";
+				"TweenTime";
+				"FillDirection";
+				"SortOrder";
+				"VerticalAlignment";
+				"GamepadInputEnabled";
+				"ScrollWheelInputEnabled";
+				"TouchInputEnabled";
+				"Scale";
+				"MaxSize";
+				"MinSize";
+				"ApplyStrokeMode";
+				"Color";
+				"LineJoinMode";
+				"Thickness";
+				"FillEmptySpaceColumns";
+				"FillEmptySpaceRow";
+				"MajorAxis";
+				"HorizontalAlignment";
+				"MaxTextSize";
+				"MinTextSize";
+				"GroupColor3";
+				"GroupTransparency";
+				"SelectionImageObject";
+				"Looped";
+				"Playing";
+				"TimePosition";
+				"Video";
+				"Volume";
+				"LayoutOrder";
+				"Ambient";
+				"LightColor";
+				"LightDirection";
+				"CurrentCamera";
+				"AutomaticSize";
+				"AutoLocalize";
+				"RootLocalizationTable";
 			};
 
 			local classes = {
@@ -497,6 +568,20 @@ return function(Vargs, GetEnv)
 				"TextBox";
 				"BillboardGui";
 				"SurfaceGui";
+				"UICorner";
+				"UIAspectRatioConstraint";
+				"UIGradient";
+				"UIGridLayout";
+				"UIListLayout";
+				"UIPadding";
+				"UIPageLayout";
+				"UIScale";
+				"UISizeConstraint";
+				"UIStroke";
+				"UITableLayout";
+				"UITextSizeConstraint";
+				"VideoFrame";
+				"ViewportFrame"
 			}
 
 			local guis = {
