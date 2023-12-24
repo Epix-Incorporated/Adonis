@@ -292,8 +292,8 @@ return function(Vargs, env)
 					
 					local oError = error
 					local newenv = setfenv(getfenv(),{
-						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
-						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `PRINT: {str}`}) end;
+						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `WARN: {str}`}) end;
 						error = function(reason, level)
 							if level ~= nil and type(level) ~= "number" then
 								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
