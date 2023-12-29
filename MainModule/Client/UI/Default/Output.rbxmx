@@ -8,7 +8,8 @@
 			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">9000005</int>
 			<bool name="Enabled">false</bool>
-			<bool name="IgnoreGuiInset">false</bool>
+			<token name="ScreenInsets">0</token>
+			<bool name="IgnoreGuiInset">true</bool>
 			<string name="Name">Output</string>
 			<bool name="ResetOnSpawn">false</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
