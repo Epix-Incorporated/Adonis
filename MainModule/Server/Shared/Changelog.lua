@@ -20,7 +20,7 @@ return {
 	"(Git/dylanjkl) Implemented way to monitor Adonis Teleport status via a Character Attribute named \"ADONIS_isTeleporting\" (#1312)";
 	"(Git/kaiserandaxl) Added all properties and classes to \":GuiView\" (#1314)";
 	"(Git/WalkerOfBacon) Fix :sceleratis (#1305)";
-	"(Git/WalkerOfBacon) Fix :removestats (#1309);
+	"(Git/WalkerOfBacon) Fix :removestats (#1309)";
 	"(Git/ccuser44) Add command to debug anti cheat (#1267)";
 	"(Git/ccuser44) Fix remotespy detection (#1218)";
 	"(Git/ccuser44) Disable protections superseded by RejectCharacterDeletions on new games (#1245)";
