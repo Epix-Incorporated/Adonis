@@ -3,8 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v241 2023-12-20 23:59 UTC] Portions (@Dimenpsyonal & @ccuser44 & @moo1210)";
-	"The Fixed & Bricked Update";
+	"[v241 2023-12-20 23:59 UTC] Portions (@Dimenpsyonal & @ccuser44)";
 	"Selene, rojo, aftman and git fixes & upgrades";
 	"";
 	"(Git/kaiserandaxl) Command Box now scrolls (#1307)";
