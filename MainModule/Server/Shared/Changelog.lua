@@ -4,7 +4,6 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v241 2023-12-20 23:59 UTC] Portions (@Dimenpsyonal & @ccuser44)";
-	"Selene, rojo, aftman and git fixes & upgrades";
 	"";
 	"(Git/kaiserandaxl) Command Box now scrolls (#1307)";
 	"(Git/ccuser44) :BuyItem now only blocks limiteds (#1223)";
