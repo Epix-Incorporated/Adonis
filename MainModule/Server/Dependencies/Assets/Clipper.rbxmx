@@ -34,7 +34,7 @@ game:GetService("RunService").Stepped:Connect(function()
 		elseif Humanoid.RigType == Enum.HumanoidRigType.R15 then
 			for _, Object in pairs(Character:GetDescendants()) do
 				if Object.Name == ("HumanoidRootPart" or "LowerTorso" or "UpperTorso") then
-					
+					Object.CanCollide = true
 				end
 			end
 		end
