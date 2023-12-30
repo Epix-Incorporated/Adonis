@@ -2553,9 +2553,10 @@ return function(Vargs, env)
 					Admin.RunCommand(`{Settings.Prefix}clip`, p.Name)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
+					new.Clip.Value = true
 					new.Disabled = false
 					if Settings.CommandFeedback then
-						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk through walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
 			end
@@ -2586,16 +2587,14 @@ return function(Vargs, env)
 				for i, p in service.GetPlayers(plr, args[1]) do
 					local old = p.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
 					if old then
-						local enabled = old:FindFirstChild("Enabled")
-						if enabled then
-							enabled.Value = false
-							wait(0.5)
-						end
-						old.Parent = nil
-						wait(0.5)
-						old:Destroy()
-						if Settings.CommandFeedback then
-							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+						if old.Clip.Value then
+							old.Clip.Value = false
+							
+							task.delay(.5,function() old:Destroy() end)
+
+							if Settings.CommandFeedback then
+								Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk through walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+							end
 						end
 					end
 				end
