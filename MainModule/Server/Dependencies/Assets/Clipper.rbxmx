@@ -39,13 +39,13 @@ game:GetService("RunService").Stepped:Connect(function()
 	else
 		if Humanoid.RigType == Enum.HumanoidRigType.R6 then
 			for _, Object in pairs(Character:GetDescendants()) do
-				if table.find(R6,Object.Name) then
+				if table.find(R6,Object.Name) and Object:IsA("BasePart") then
 					Object.CanCollide = true
 				end
 			end
 		elseif Humanoid.RigType == Enum.HumanoidRigType.R15 then
 			for _, Object in pairs(Character:GetDescendants()) do
-				if table.find(R15,Object.Name) then
+				if table.find(R15,Object.Name) and Object:IsA("BasePart") then
 					Object.CanCollide = true
 				end
 			end
