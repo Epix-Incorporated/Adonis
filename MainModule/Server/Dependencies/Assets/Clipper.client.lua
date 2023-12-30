@@ -7,5 +7,5 @@ game:GetService("RunService").Stepped:Connect(function()
 			Object.CanCollide = false
 		end
 	end
-	Humanoid:ChangeState(11)	--| Enum.HumanoidStateType.StrafingNoPhysics (semi-depricated but still working and fixes the colliding if in water).
+	Humanoid:ChangeState(1)	--| Enum.HumanoidStateType.StrafingNoPhysics (semi-depricated but still working and fixes the colliding if in water).
 end)
