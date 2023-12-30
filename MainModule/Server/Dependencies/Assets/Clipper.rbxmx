@@ -15,6 +15,18 @@
 			<ProtectedString name="Source"><![CDATA[local Humanoid: Humanoid = script.Parent
 local Character = Humanoid.Parent
 
+local R6 = {
+	"Torso",
+	"HumanoidRootPart",
+	"Head"
+}
+
+local R15 = {
+	"HumanoidRootPart",
+	"LowerTorso",
+	"UpperTorso"
+}
+
 game:GetService("RunService").Stepped:Connect(function()
 	if script.Clip.Value then
 		for _, Object in pairs(Character:GetDescendants()) do
@@ -27,13 +39,13 @@ game:GetService("RunService").Stepped:Connect(function()
 	else
 		if Humanoid.RigType == Enum.HumanoidRigType.R6 then
 			for _, Object in pairs(Character:GetDescendants()) do
-				if Object.Name == ("Torso" or "HumanoidRootPart" or "Head") then
+				if table.find(R6,Object.Name) then
 					Object.CanCollide = true
 				end
 			end
 		elseif Humanoid.RigType == Enum.HumanoidRigType.R15 then
 			for _, Object in pairs(Character:GetDescendants()) do
-				if Object.Name == ("HumanoidRootPart" or "LowerTorso" or "UpperTorso") then
+				if table.find(R15,Object.Name) then
 					Object.CanCollide = true
 				end
 			end
