@@ -1,0 +1,49 @@
+name: Bug Report
+description: File a bug report
+labels: ["\U0001F41B bug"] # , "triage" # I wish...
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please make sure that you include all necessary details in your post so we can reach a resolution as painlessly as possible. Also note that not recieving a response does not mean that your issue has been ignored.
+    validations:
+      required: false
+  - type: dropdown
+    id: version-channel
+    attributes:
+      label: Version channel
+      description: You're likely using stable, unless configured otherwise.
+      options:
+        - Stable (Default)
+        - Nightly
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: segment
+    attributes:
+      label: What part of Adonis is this related to?
+      options:
+        - Loader/Settings
+        - Command
+        - User Interface
+        - Documentation
+        - GitHub Repository
+        - Anti-Exploit
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What would've you expected to happen instead?
+      placeholder: ex. When I ran :shutdown, I expected the server to shut down, but instead...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output, if any.
+      render: shell

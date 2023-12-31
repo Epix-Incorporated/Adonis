@@ -1,6 +1,5 @@
 server = nil
 service = nil
-cPcall = nil
 Routine = nil
 GetEnv = nil
 origEnv = nil
@@ -39,13 +38,14 @@ return function(Vargs, GetEnv)
 	end
 
 	local function AfterInit(data)
-		server.Variables.CodeName = server.Functions:GetRandom()
+		server.Variables.CodeName = service.HttpService:GenerateGUID(false)
 
 		Variables.RunAfterInit = nil
 		Logs:AddLog("Script", "Finished Variables AfterInit")
 	end
 
 	local Lighting = service.Lighting
+	
 	server.Variables = {
 		Init = Init,
 		RunAfterInit = AfterInit,
@@ -57,9 +57,22 @@ return function(Vargs, GetEnv)
 		ScriptBuilder = {},
 		CachedDonors = {},
 		BanMessage = "Banned",
+		PlayerJoinFilters = {};
 		LockMessage = "Not Whitelisted",
 		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605", 5212082, 5212081}, --// Strings are items; numbers are gamepasses
 		WebPanel_Initiated = false,
+		AnimatedFaces = {
+			-- R15 (Hopefully)
+			14719428401, 12936561806, 12936887700, 12937016609, 12937135097, 12939014597, 12945364777, 12945456452, 14374800823, 14367118483, 13674780763,
+			13675154281, 13675471354, 14637766494, 14695685417, 13675435245, 14638202807, 13684039612, 13684329978, 13684434516, 13684479531, 13691523700,
+			14769032055, 13691867290, 13692882504, 13702714010, 14182901840, 14719365169, 14754580931, 14478188128, 14755068153, 14760215320, 14524485191,
+			14525129330, 13001896404, 14719225657, 14640105786, 13820802344, 14638466361, 13821294344, 14840473015, 13822584343, 14701679873, 13822985393,
+			13823226706, 14719266373, 14192299483, 14192630651, 14192804513, 14192863652, 14192993380, 14193224583, 14205130925, 14205179825, 13020957350,
+			13021695400, 12995139274, 12733096025, 12732440273, 14377306239, 12859102530, 14521518488, 14918993907, 14401304993, 12860895688, 10704977958,
+			14380344401,
+			-- R6
+			14366393007
+		},
 		LightingSettings = {
 			Ambient = Lighting.Ambient,
 			OutdoorAmbient = Lighting.OutdoorAmbient,
@@ -95,25 +108,9 @@ return function(Vargs, GetEnv)
 			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
 		},
 		
-		AtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
+		AtmosphereSettings = {},
 
-		OriginalAtmosphereSettings = {
-			Name = Lighting:FindFirstChildOfClass("Atmosphere").Name,
-			Density = Lighting:FindFirstChildOfClass("Atmosphere").Density,
-			Offset = Lighting:FindFirstChildOfClass("Atmosphere").Offset,
-			Color = Lighting:FindFirstChildOfClass("Atmosphere").Color,
-			Decay = Lighting:FindFirstChildOfClass("Atmosphere").Decay,
-			Glare = Lighting:FindFirstChildOfClass("Atmosphere").Glare,
-			Haze = Lighting:FindFirstChildOfClass("Atmosphere").Haze,
-		},
+		OriginalAtmosphereSettings = {},
 
 		PMtickets = {};
 
@@ -134,8 +131,6 @@ return function(Vargs, GetEnv)
 		Jails = {};
 
 		LocalEffects = {};
-
-		BundleCache = {};
 
 		TrackingTable = {};
 

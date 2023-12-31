@@ -13,11 +13,46 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4.1.1
 
-    - uses: Roblox/setup-foreman@v1
+    - uses: ok-nick/setup-aftman@v0.4.2
       with:
           token: ${{ SECRETS.GITHUB_TOKEN }}
+
+    - name: Cache Roblox Standard Library
+      id: cache-roblox-std
+      uses: actions/cache@v3.3.2
+      with:
+        path: roblox.yml
+        key: roblox-std
+    
+    - name: Check standard roblox library status
+      id: check-roblox-std
+      env: 
+       DID_CACHE: ${{steps.cache-roblox-std.outputs.cache-hit}}
+      run: |
+       if test -f roblox.yml; then
+        CUR_ROBLOX_STD_TIMEDATE="$(date +%s -d "$(cat roblox.yml |  head -n 1 | grep -oP "\d{4}-\d{2}-\d{2}(?=\s+\d{2}:\d{2}:\d{2})")")"
+       else
+        CUR_ROBLOX_STD_TIMEDATE=0
+       fi
+       if [ "$DID_CACHE" == "true" ] 
+       then
+         if [ "$(($(date +%s)-$CUR_ROBLOX_STD_TIMEDATE))" -ge "604800" ]
+         then
+           echo "::notice ::Roblox Standard Library Cache is out of date by 1 week, requiring a refresh of the standard library cache."
+           echo "should-fetch=true" >> $GITHUB_OUTPUT
+         else
+          echo "should-fetch=false" >> $GITHUB_OUTPUT
+         fi
+       else
+         echo "should-fetch=true" >> $GITHUB_OUTPUT
+       fi
+
+    - name: Update standard roblox library
+      if: steps.check-roblox-std.outputs.should-fetch == 'true'
+      run: |
+        selene generate-roblox-std
 
     - name: Lint
       run: |

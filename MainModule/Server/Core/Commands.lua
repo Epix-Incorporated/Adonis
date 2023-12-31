@@ -1,6 +1,5 @@
 server = nil
 service = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 GetEnv = nil
@@ -118,7 +117,12 @@ return function(Vargs, GetEnv)
 						if type(cmd.ListUpdater) == "function" then
 							return cmd.ListUpdater(plr, ...)
 						end
-						return Logs[cmd.ListUpdater]
+						--// will change how this works later
+						local LogTable = Logs[cmd.ListUpdater]
+						if LogTable and LogTable.__meta == "DLL" then
+							return LogTable:GetAsTable()
+						end
+						return LogTable
 					end
 				end
 			end

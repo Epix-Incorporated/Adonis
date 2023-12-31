@@ -1,6 +1,5 @@
 client = nil
 service = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 GetEnv = nil
@@ -133,7 +132,7 @@ return function(Vargs, GetEnv)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
 						--local ran,err = pcall(command, args) --task service.Threads.RunTask(`REMOTE:{comString}`,command,args)
-						local rets = {service.TrackTask(`Remote: {comString}`, command, args)}
+						local rets = {service.TrackTask(`Remote: {comString}`, command, false, args)}
 						if not rets[1] then
 							logError(rets[2])
 						else

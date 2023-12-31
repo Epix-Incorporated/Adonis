@@ -280,10 +280,9 @@ settings.CommandFeedback = false		-- Should players be notified when commands wi
 settings.CrossServerCommands = true		-- Are commands which affect more than one server enabled?
 settings.ChatCommands = true			-- If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands
 settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictly used for debugging; I can't debug without full access to the script
-settings.CodeExecution = false			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
+settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
-settings.DisableBuyItem = true			-- Disable a security vulnerability related to UGCs being able to be taken for free using adonis.
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
@@ -291,6 +290,7 @@ settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
+settings.UseLinkedListsInLogs = true -- If true then log system uses a linked-list system to store logs instead of tables - severely improves server performance & allows for large logs with little to no impact except slightly increased memory usage
 settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
@@ -360,8 +360,10 @@ settings.Allowed_API_Calls = {
 ---------------------------
 
 --// IF YOU EXPERIENCE ISSUES WITH FALSE POSITIVES/RANDOM KICKING/CRASHING DISABLE ALL OF THESE!
-settings.Detection = true			-- (Default: true) 	If true: enables built-in anti-exploit detections that do not have their own settings.
-settings.CheckClients = true		-- (Default: true) 	Checks clients every minute or two to make sure they are still active.
+
+settings.AllowClientAntiExploit = false 	-- (Default: false) Allows use of client-sided anti exploit functionality if true
+settings.Detection = false					-- (Default: false) If true: enables built-in anti-exploit detections that do not have their own settings.
+settings.CheckClients = true				-- (Default: true) 	Checks clients every minute or two to make sure they are still active.
 
 settings.ExploitNotifications = true        -- (Default: true)	Notify all moderators and higher-ups when a player is kicked or crashed from the AntiExploit.
 settings.CharacterCheckLogs = false			-- (Default: false)	If the character checks appear in exploit logs and exploit notifications.
@@ -451,7 +453,7 @@ descs.CrossServerCommands = [[ Are commands which affect more than one server en
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands ]]
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
-descs.DisableBuyItem = [[ Disable a security vulnerability related to UGCs being able to be taken for free using Adonis. ]]
+
 
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
@@ -460,6 +462,7 @@ descs.SystemTitle = [[ Title to display in :sm ]]
 descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
+descs.UseLinkedListsInLogs = [[ If true then log system uses a linked-list system to store logs instead of tables - severely improves server performance & allows for large logs with little to no impact except slightly increased memory usage ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
@@ -485,6 +488,7 @@ descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
 descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
+descs.AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionality ]]
 descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
 descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
 
@@ -589,10 +593,9 @@ order = {
 	"CrossServerCommands";
 	"ChatCommands";
 	"CreatorPowers";
-	"CodeExecution";
+	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
-	"DisableBuyItem";
 	" ";
 	"BanMessage";
 	"LockMessage";
@@ -600,6 +603,7 @@ order = {
 	" ";
 	"MaxLogs";
 	"SaveCommandLogs";
+	"UseLinkedListsInLogs";
 	"Notification";
 	"SongHint";
 	"TopBarShift";
@@ -622,6 +626,7 @@ order = {
 	"DonorCapes";
 	"LocalCapes";
 	" ";
+	"AllowClientAntiExploit";
 	"Detection";
 	"CheckClients";
 	" ";

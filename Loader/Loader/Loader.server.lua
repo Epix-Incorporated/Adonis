@@ -55,7 +55,6 @@ else
 	local configFolder = model.Config
 	local loaderFolder = model.Loader
 
-	local dropper = loaderFolder.Dropper
 	local loader = loaderFolder.Loader
 	local runner = script
 
@@ -80,7 +79,6 @@ else
 		Core = loaderFolder;
 
 		Loader = loader;
-		Dopper = dropper;
 		Runner = runner;
 
 		ModuleID = 7510592873;  		--// https://www.roblox.com/library/7510592873/Adonis-MainModule
@@ -112,7 +110,7 @@ else
 				break
 			end
 		end
-		if not moduleId then
+		if not moduleId and not data.NightlyMode then
 			error(`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent:GetFullName()}`)
 		end
 	end

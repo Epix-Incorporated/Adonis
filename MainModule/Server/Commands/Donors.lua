@@ -317,6 +317,30 @@ return function(Vargs, env)
 			end
 		};
 
+		DonorSaveOutfit = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"saveoutfit", "savefit"};
+			Args = {};
+			Description = "Saves your current character's appearance when respawning";
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr: Player)
+				return Commands.SaveOutfit.Function(plr, {`@{plr.Name}`})
+			end
+		};
+
+		DonorRemoveOutfit = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"removesavedoutfit", "removeoutfit", "removefit", "defaultavatar"};
+			Args = {};
+			Description = "Removes any currently saved outfits and reverts your character to its original look";
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr: Player)
+				return Commands.RemoveSavedOutfit.Function(plr, {`@{plr.Name}`})
+			end
+		};
+
 		DonorHatList = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"myhats", "hatlist", "hats", "donorhats"};

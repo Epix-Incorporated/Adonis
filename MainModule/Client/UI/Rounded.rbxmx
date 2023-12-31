@@ -511,7 +511,6 @@
 						<string name="Name">Code</string>
 						<string name="ScriptGuid">{12B855CB-5F49-4E0C-9F88-CD7CDC833761}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
@@ -1116,7 +1115,6 @@ end]]></ProtectedString>
 						<string name="Name">Code</string>
 						<string name="ScriptGuid">{A89F8863-453E-46CF-BDE4-896F110925CB}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
@@ -5588,7 +5586,6 @@ end]]></ProtectedString>
 						<string name="Name">Code</string>
 						<string name="ScriptGuid">{65CC0BD2-FCA1-43DC-9229-1883B93CE05B}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil

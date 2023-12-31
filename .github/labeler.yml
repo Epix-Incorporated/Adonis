@@ -1,0 +1,14 @@
+'⚡ command':
+  - '### What part of Adonis is this related to\?\s+Command'
+'📱 UI':
+  - '### What part of Adonis is this related to\?\s+User Interface'
+'📄 documentation':
+  - '### What part of Adonis is this related to\?\s+Documentation'
+'🛡️ anti-exploit':
+  - '### What part of Adonis is this related to\?\s+Anti-Exploit'
+'github':
+  - '### What part of Adonis is this related to\?\s+GitHub Repository'
+'🖇️ loader':
+  - '### What part of Adonis is this related to\?\s+Loader/Settings'
+'🎏 miscellaneous':
+  - '### What part of Adonis is this related to\?\s+Other'

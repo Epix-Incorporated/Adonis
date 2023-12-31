@@ -8422,7 +8422,7 @@ return function(data, env)
 	if not TopbarMatchAdmin then
 		local text=TopbarText
 		if text=="%TIME" then
-			cPcall(function()
+			task.spawn(pcall, function()
 				repeat
 					local t4=GetTime()
 					local nt4

@@ -1,6 +1,5 @@
 server = nil
 service = nil
-cPcall = nil
 Routine = nil
 GetEnv = nil
 origEnv = nil
@@ -49,28 +48,30 @@ return function(Vargs, GetEnv)
 								chatMessage.Status == Enum.TextChatMessageStatus.Success
 								or chatMessage.Status == Enum.TextChatMessageStatus.Sending
 							then
-								local player = service.Players:GetPlayerByUserId(textSource.UserId)
+								local SenderId = chatMessage.TextSource.UserId
+								local SenderPlayer = service.Players:GetPlayerByUserId(SenderId)
+								local Receiver = service.Players:GetPlayerByUserId(textSource.UserId)
 								local slowCache = Admin.SlowCache
-
-								if not player then
+								
+								local IsOriginalSender = SenderPlayer == Receiver
+								
+								if not SenderPlayer then
 									return true
-								elseif Admin.DoHideChatCmd(player, chatMessage.Text) then -- // Hide chat commands?
+								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
 									return false
-								elseif Admin.IsMuted(player) then -- // Mute handler
-									Remote.MakeGui(player, "Notification", {
-										Title = "You are muted!";
-										Message = "You are muted and cannot talk in the chat right now.";
-										Time = 10;
-									})
-
+								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
+									if IsOriginalSender then
+										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
+									end 
+									
 									return false
-								elseif Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-									Remote.MakeGui(player, "Notification", {
-										Title = "You are chatting too fast!";
-										Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[player]));
-										Time = 10;
-									})
-
+								elseif Admin.SlowMode and not Admin.CheckAdmin(SenderPlayer) and slowCache[SenderPlayer] and os.time() - slowCache[SenderPlayer] < Admin.SlowMode then
+									if IsOriginalSender then --// Only show this for the person sending! Hide for others, however
+										--Functions.Notification("You are chatting too fast!", string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer])), {SenderPlayer}, 10)
+										
+										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are sending messages too fast! {string.format("(%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]))}`)
+									end
+									
 									return false
 								end
 
@@ -78,15 +79,15 @@ return function(Vargs, GetEnv)
 									chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
 								end
 
-								if Admin.SlowMode then
-									slowCache[player] = os.time()
+								if Admin.SlowMode and IsOriginalSender then
+									slowCache[SenderPlayer] = os.time()
 								end
 							end
 
 							return true
 						end
 					else 
-						AddLog("Script", `Using the \`CanSend\` method of handling chat connectivity in channel {textchannel.Name}`)
+						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
 						server.Variables.TextChatSpeakers = {}
 						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
 							if not server.Variables.TextChatSpeakers[player] then
@@ -366,13 +367,13 @@ return function(Vargs, GetEnv)
 	local function RunAfterPlugins(data)
 		--// Backup Map
 		if Settings.AutoBackup then
-			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, `{Settings.Prefix}backupmap`)
+			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, false, `{Settings.Prefix}backupmap`)
 		end
 
 		--// Run OnStartup Commands
 		for i,v in Settings.OnStartup do
 			print(`Running startup command {v}`)
-			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, v)
+			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, false, v)
 			AddLog("Script", {
 				Text = `Startup: Executed {v}`;
 				Desc = `Executed startup command; {v}`;
@@ -901,7 +902,7 @@ return function(Vargs, GetEnv)
 						table.remove(list, ind)
 
 						if not temp and Settings.SaveAdmins then
-							TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+							TrackTask("Thread: RemoveAdmin", Core.DoSave, false, {
 								Type = "TableRemove";
 								Table = {"Settings", "Ranks", listName, "Users"};
 								Value = check;
@@ -959,7 +960,7 @@ return function(Vargs, GetEnv)
 				table.insert(newList, value)
 
 				if Settings.SaveAdmins and levelName and not temp then
-					TrackTask("Thread: SaveAdmin", Core.DoSave, {
+					TrackTask("Thread: SaveAdmin", Core.DoSave, false, {
 						Type = "TableAdd";
 						Table = {"Settings", "Ranks", levelName, "Users"};
 						Value = value
@@ -1174,7 +1175,9 @@ return function(Vargs, GetEnv)
 					--logError("SERVER","Command",error)
 				end]]
 
-				TrackTask(`Command: {coma}`, com.Function, false, args)
+				TrackTask(`Command: {coma}`, com.Function, function(err)
+					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+				end, nil, args)
 			end
 		end;
 
@@ -1186,25 +1189,30 @@ return function(Vargs, GetEnv)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
-				local ran, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {
-					PlayerData = {
-						Player = plr;
-						Level = adminLvl;
-						isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false;
+				local ran, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{
+						PlayerData = {
+							Player = plr,
+							Level = adminLvl,
+							isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false,
+						},
 					}
-				})
+				)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask(`COMMAND:{plr.Name}: {coma}`,com.Function,60*5,plr,args)
-				if error then
-					--logError(plr,"Command",error)
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = '';
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-					return;
-				end
 			end
 		end;
 
@@ -1212,20 +1220,27 @@ return function(Vargs, GetEnv)
 			local ind, com = Admin.GetCommand(coma)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local _, error = TrackTask(`{plr.Name}: {coma}`, com.Function, plr, args, {PlayerData = {
-					Player = plr;
-					Level = 0;
-					isDonor = false;
-				}})
-				if error then
-					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, "Output", {
-						Title = "";
-						Message = error;
-						Color = Color3.new(1, 0, 0)
-					})
-				end
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
+				local _, error = TrackTask(
+					`{plr.Name}: {coma}`,
+					com.Function,
+					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
+						Remote.MakeGui(plr, "Output", {
+							Title = "",
+							Message = error,
+							Color = Color3.new(1, 0, 0),
+						})
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
+					end,
+					plr,
+					args,
+					{ PlayerData = {
+						Player = plr,
+						Level = 0,
+						isDonor = false,
+					} }
+				)
 			end
 		end;
 
@@ -1244,6 +1259,62 @@ return function(Vargs, GetEnv)
 
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
+
+			-- // Support for commands to be ran via TextChat
+			task.spawn(function()
+				local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands")
+
+				if container then
+					for _, v in container:GetChildren() do
+						if string.sub(v.Name, 1, 7) == "Adonis_" then
+							v:Destroy()
+						end
+					end
+
+					local blacklistedCommands = {}
+
+					for _, v in container:GetDescendants() do
+						if v:IsA("TextChatCommand") then
+							blacklistedCommands[v.PrimaryAlias] = true
+							blacklistedCommands[v.SecondaryAlias] = true
+						end
+					end
+
+					for name, data in Commands do
+						local command1, command2 = nil, nil
+
+						if type(data) ~= "table" or data.Hidden then
+							continue
+						end
+
+						for _, v in data.Commands do
+							if not blacklistedCommands["/"..data.Prefix..v] then
+								if not command1 then
+									command1 = "/"..data.Prefix..v
+								else
+									command2 = "/"..data.Prefix..v
+								end
+							end
+						end
+
+						if command1 then
+							local command = Instance.new("TextChatCommand")
+
+							command.Name = "Adonis_"..name
+							command.PrimaryAlias = command1
+							command.SecondaryAlias = command2 or ""
+							command.Parent = container
+							command.Triggered:Connect(function(textSource, text)
+								local player = service.Players:GetPlayerByUserId(textSource.UserId)
+
+								if player then
+									Process.Command(player, string.sub(text, 2))
+								end
+							end)
+						end
+					end
+				end
+			end)
 		end;
 
 		GetCommand = function(Command)
@@ -1499,7 +1570,7 @@ return function(Vargs, GetEnv)
 
 				local cmdFullName = cmd._fullName or (function()
 					local aliases = cmd.Aliases or cmd.Commands or {}
-					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+					cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 					return cmd._fullName
 				end)()
 
@@ -1568,7 +1639,7 @@ return function(Vargs, GetEnv)
 
 			local cmdFullName = cmd._fullName or (function()
 				local aliases = cmd.Aliases or cmd.Commands or {}
-				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.getRandom()}-RANDOM_COMMAND`}`
+				cmd._fullName = `{cmd.Prefix}{aliases[1] or `{service.HttpService:GenerateGUID(false)}-RANDOM_COMMAND`}`
 				return cmd._fullName
 			end)()
 

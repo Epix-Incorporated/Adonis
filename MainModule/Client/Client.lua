@@ -139,13 +139,12 @@ end)
 
 local unique = {}
 local origEnv = getfenv()
+local Folder = script.Parent
 setfenv(1, setmetatable({}, { __metatable = unique }))
 --local origWarn = warn
 local startTime = time()
-local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
-local Folder = script.Parent
 local locals = {}
 local client = {}
 local service = {}
@@ -178,6 +177,7 @@ local warn = function(...)
 	warn(...)
 end
 ]]
+-- Use `task.spawn(pcall, ...)`, `task.spawn(Pcall, f, ...)` or `task.spawn(xpcall, f, handler, ...)` instead
 local cPcall = function(func, ...)
 	local ran, err = pcall(coroutine.resume, coroutine.create(func), ...)
 
@@ -216,28 +216,23 @@ end
 local Kill
 local Fire, Detected = nil, nil
 do
-	local wrap = coroutine.wrap
 	Kill = Immutable(function(info)
 		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
-		wrap(function()
-			pcall(function()
-				if Detected then
-					Detected("kick", info)
-				elseif Fire then
-					Fire("BadMemes", info)
-				end
-			end)
-		end)()
+		spawn(pcall, function()
+			if Detected then
+				Detected("kick", info)
+			elseif Fire then
+				Fire("BadMemes", info)
+			end
+		end)
 
-		wrap(function()
-			pcall(function()
-				task.wait(1)
-				service.Player:Kick(info)
-			end)
-		end)()
-
-		wrap(function()
-			pcall(function()
+		spawn(pcall, function()
+			task.wait(1)
+			service.Player:Kick(info)
+		end)
+		
+		if not isStudio then
+			spawn(pcall, function()
 				task.wait(5)
 				while true do
 					pcall(task.spawn, function()
@@ -246,7 +241,7 @@ do
 					end)
 				end
 			end)
-		end)()
+		end
 	end)
 end
 
@@ -257,7 +252,7 @@ GetEnv = function(env, repl)
 			return (locals[ind] or (env or origEnv)[ind])
 		end,
 
-		__metatable = unique,
+		__metatable = if Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then nil else unique,
 	})
 
 	if repl and type(repl) == "table" then
@@ -286,27 +281,23 @@ local LoadModule = function(module, yield, envVars, noEnv)
 				local ran, err = service.TrackTask(
 					`Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					function(err)
+						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					end,
 					GetVargTable(),
 					GetEnv
 				)
-
-				if not ran then
-					warn(`Module encountered an error while loading: {module}`)
-					warn(tostring(err))
-				end
 			else
 				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
 				local ran, err = service.TrackTask(
 					`Thread: Plugin: {module}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					function(err)
+						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					end,
 					GetVargTable(),
 					GetEnv
 				)
-
-				if not ran then
-					warn(`Module encountered an error while loading: {module}`)
-					warn(tostring(err))
-				end
 			end
 		else
 			client[module.Name] = plug
@@ -547,6 +538,12 @@ return service.NewProxy({
 		local remoteName, depsName = string.match(data.Name, "(.*)\\(.*)")
 		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
+		if Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
+			data.DebugMode = true
+		else
+			data.DebugMode = false
+		end
+
 		setfenv(1, setmetatable({}, { __metatable = unique }))
 
 		client.Folder = Folder
@@ -559,6 +556,7 @@ return service.NewProxy({
 		client.TrueStart = data.Start
 		client.LoadingTime = data.LoadingTime
 		client.RemoteName = remoteName
+		client.DebugMode = data.DebugMode
 
 		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
 		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
@@ -572,7 +570,7 @@ return service.NewProxy({
 						return self[ind]
 					end
 				end,
-				__metatable = "Adonis_MatIcons",
+				__metatable = if not data.DebugMode then "Adonis" else unique,
 			})
 		end
 
@@ -645,7 +643,7 @@ return service.NewProxy({
 				Variables.LocalContainer = service.New("Folder", {
 					Parent = workspace,
           Archivable = false,
-					Name = `__ADONIS_LOCALCONTAINER_{client.Functions.GetRandom()}`,
+					Name = `__ADONIS_LOCALCONTAINER_{service.HttpService:GenerateGUID(false)}`,
 				})
 			end
 			return Variables.LocalContainer
@@ -687,7 +685,6 @@ return service.NewProxy({
 
 				--// Finished loading
 				log("Finish loading")
-				clientLocked = true
 				client.Finish_Loading = function() end
 				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
 				service.Events.FinishedLoading:Fire(os.time())
@@ -800,7 +797,7 @@ return service.NewProxy({
 		log("~! Return success")
 		return "SUCCESS"
 	end,
-	__metatable = "Adonis",
+	__metatable = if not Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then "Adonis" else unique,
 	__tostring = function()
 		return "Adonis"
 	end,
