@@ -1569,59 +1569,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Chik3n = {
-			Prefix = Settings.Prefix;
-			Commands = {"chik3n", "zelith", "z3lith"};
-			Args = {};
-			Description = "Call on the KFC dark prophet powers of chicken";
-			Fun = true;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr, args)
-				local hats = {}
-				local tempHats = {}
-				local run = true
-				local hat = service.Insert(24112667):GetChildren()[1]
-				--
-				local scr = Deps.Assets.Quacker:Clone()
-				scr.Name = "Quacker"
-				scr.Parent = hat
-				--]]
-				hat.Anchored = true
-				hat.CanCollide = false
-				hat.ChickenSounds.Disabled = true
-				table.insert(hats, hat)
-				table.insert(Variables.Objects, hat)
-				hat.Parent = workspace
-				hat.CFrame = plr.Character.Head.CFrame
-				service.StopLoop("ChickenSpam")
-				service.StartLoop("ChickenSpam", 5, function()
-					tempHats = {}
-					for i, v in hats do
-						task.wait(0.5)
-						if not hat or not hat.Parent or not scr or not scr.Parent then
-							break
-						end
-						local nhat = hat:Clone()
-						table.insert(tempHats, v)
-						table.insert(tempHats, nhat)
-						table.insert(Variables.Objects, nhat)
-						nhat.Parent = workspace
-						nhat.Quacker.Disabled = false
-						nhat.CFrame = v.CFrame*CFrame.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100))*CFrame.Angles(math.random(-360, 360), math.random(-360, 360), math.random(-360, 360))
-					end
-					hats = tempHats
-				end)
-				for i, v in tempHats do
-					pcall(function() v:Destroy() end)
-					table.remove(tempHats, i)
-				end
-				for i, v in hats do
-					pcall(function() v:Destroy() end)
-					table.remove(hats, i)
-				end
-			end;
-		};
-
 		Tornado = {
 			Prefix = Settings.Prefix;
 			Commands = {"tornado", "twister"};
