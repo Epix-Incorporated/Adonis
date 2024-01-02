@@ -1317,6 +1317,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		FixCameraSubject = function()
+			workspace.Camera.CameraSubject = service.Players.LocalPlayer.Character.Humanoid
+		end,
+
 		FadeAudio = function(audioId,inVol,pitch,looped,incWait)
 			if not inVol then
 				local sound = Variables.localSounds[tostring(audioId)]
