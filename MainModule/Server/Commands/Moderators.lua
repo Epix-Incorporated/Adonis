@@ -6288,13 +6288,44 @@ return function(Vargs, env)
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local name = args[2] == "hide" and " " or args[2]
+				for i, p: Player in pairs(service.GetPlayers(plr, args[1])) do
+					if p.Character and p.Character:FindFirstChild("Head") then
+						local Character: Model = p.Character
+						for i,v in pairs(Character:GetDescendants()) do
+							if v.Name == "NameTag" then
+								v.Parent:Destroy()
+								break
+							end
+						end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-
-					if humanoid then
-						humanoid.DisplayName = name
+						local Head = Character:FindFirstChild("Head")
+						local Model = service.New("Model", Character)
+						local cHead = Character.Head:Clone()
+						local Hum = Character.Humanoid:Clone()
+						Model.Name = args[2] or ""
+						cHead.Parent = Model
+						cHead.CanCollide = false
+						Hum.Name = "NameTag"
+						Hum.DisplayName = ""
+						Hum.MaxHealth = Character.Humanoid.MaxHealth
+						Hum.Health = Character.Humanoid.Health
+						Hum.Parent = Model
+						Head.Transparency = 1
+						Character.Humanoid.DisplayName = ""
+						
+						if args[2]:lower() == "hide" then
+							Model.Name = ""
+							Hum.MaxHealth = 0
+							Hum.Health = 0
+						else
+							Character.Humanoid.Changed:Connect(function()
+								Hum.MaxHealth = Character.Humanoid.MaxHealth
+								Hum.Health = Character.Humanoid.Health
+							end)
+						end
+						
+						local weld = service.New("Weld", cHead); weld.Part0 = cHead; weld.Part1 = Head
+						task.defer(function() Remote.Send(p,"Function","FixCameraSubject") end) -- Function to set Camera Subject back the normal humanoid
 					end
 				end
 			end
@@ -6307,11 +6338,18 @@ return function(Vargs, env)
 			Description = "Put the target player(s)'s back to normal";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+				for _, p in service.GetPlayers(plr, args[1]) do
+					local Character: Model = p.Character
+					for i,v in pairs(Character:GetDescendants()) do
+						if v.Name == "NameTag" and v:IsA("Humanoid") then
+							v.Parent:Destroy()
+							break
+						end
+					end
 
-					if humanoid then
-						humanoid.DisplayName = v.DisplayName
+					if Character.Humanoid then
+						Character.Head.Transparency = 0
+						Character.Humanoid.DisplayName = p.DisplayName
 					end
 				end
 			end
