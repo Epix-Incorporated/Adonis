@@ -983,7 +983,6 @@ return function(data, env)
 	local InputService = service.UserInputService
 	local gIndex = data.gIndex
 	local gTable = data.gTable
-	warn(gTable.BindEvent)
 
 	local Event = gTable.BindEvent
 	local GUI = gTable.Object
