@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v241 2024-01-08 16:00 UTC] @Dimenpsyonal";
+	"[v241 2024-01-08 12:06 UTC] @Dimenpsyonal";
 	"Command Box now scrolls (#1307)";
 	":BuyItem now only blocks limiteds (#1223)";
 	"Coasterteam various fixes and improvements (#1242)";
