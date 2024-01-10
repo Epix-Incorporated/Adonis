@@ -955,7 +955,7 @@ return function(Vargs, GetEnv)
             
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
-							Message = "Your rank is ".. rank ..".Click here for commands.";
+							Message = `Your rank is {rank} ({level}). Click here for commands.`;
 							Icon = server.MatIcons["Verified user"];
 							Time = 15;
 							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
