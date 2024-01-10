@@ -979,11 +979,6 @@ return function(Vargs, GetEnv)
 						if level >= 300 and #Settings.Messages > 0 then
 							for _, Message in Settings.Messages do
 								task.delay(1, Functions.Notification, "Message", tostring(Message), {p}, math.round((#Message/19)+2.5))
-								Remote.MakeGui(p,"Notification",{
-									Title = "Message";
-									Message = tostring(Message);
-									Time = math.round((#Message/19)+2.5);
-								})
 							end
 						end
 					end
