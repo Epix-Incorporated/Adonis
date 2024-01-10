@@ -1316,7 +1316,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Trim = function(str)
-			return string.match(str, "^%s*(.-)%s*$")
+			return string.match(str, "^%s*([^%.]-)%s*$")
 		end;
 
 		RoundToPlace = function(num, places)
