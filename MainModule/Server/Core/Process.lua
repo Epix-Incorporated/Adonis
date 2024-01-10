@@ -950,22 +950,47 @@ return function(Vargs, GetEnv)
 					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						Functions.Notification("Welcome.", "Your rank is ".. rank ..". Click here for commands.", {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
-
+            
 						task.wait(1)
+            
+						Remote.MakeGui(p, "Notification", {
+							Title = "Welcome.";
+							Message = "Your rank is ".. rank ..".Click here for commands.";
+							Icon = server.MatIcons["Verified user"];
+							Time = 15;
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
+						})
 
 						if oldVer and newVer and newVer > oldVer then
-							Functions.Notification("Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://Description", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
+							task.wait(1)
+							Remote.MakeGui(p, "Notification", {
+								Title = "Updated!";
+								Message = "Click to view the changelog.";
+								Icon = server.MatIcons.Description;
+								Time = 10;
+								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`);
+							})
 						end
 
-						task.wait(1)
-
 						if level > 300 and Core.DebugMode == true then
-							Functions.Notification("Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`))
+							task.wait(1)
+							Remote.MakeGui(p, "Notification", {
+								Title = "Debug Mode Enabled";
+								Message = "Adonis is currently running in Debug Mode.";
+								Icon = server.MatIcons["Bug report"];
+								Time = 10;
+								OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`);
+							})
 						end
 
 						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
-							Functions.Notification("Warning!", "Using default datastore key!", {p}, "MatIcon://Description", Core.Bytecode([[
+							task.wait(1)
+							Remote.MakeGui(p, "Notification", {
+								Title = "Warning!";
+								Message = "Using default datastore key!";
+								Icon = server.MatIcons.Description;
+								Time = 10;
+								OnClick = Core.Bytecode([[
 									local window = client.UI.Make("Window", {
 										Title = "How to change the DataStore key";
 										Size = {700,300};
@@ -977,8 +1002,19 @@ return function(Vargs, GetEnv)
 									})
 
 									window:Ready()
-								]])
-							)
+								]]);
+							})
+						end
+						
+						if level >= 300 and #Settings.Messages > 0 then
+							for _,Message in pairs(Settings.Messages) do
+								task.wait(1)
+								Remote.MakeGui(p,"Notification",{
+									Title = "Message";
+									Message = tostring(Message);
+									Time = math.round((#Message/19)+2.5);
+								})
+							end
 						end
 					end
 

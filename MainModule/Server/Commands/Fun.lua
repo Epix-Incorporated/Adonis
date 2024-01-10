@@ -815,7 +815,7 @@ return function(Vargs, env)
 						for _, p in v.Character:GetChildren() do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
-							elseif p:IsA("Part") then
+							elseif p:IsA("BasePart") then
 								if args[2] then
 									local str = BrickColor.new("Institutional white").Color
 									local teststr = args[2]
@@ -4753,7 +4753,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-1237666")
+					Admin.RunCommandAsPlayer(`{Settings.Prefix}char`, v, "me", "id-1237666")
 				end
 			end
 		};
