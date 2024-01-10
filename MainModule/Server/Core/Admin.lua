@@ -1471,7 +1471,7 @@ return function(Vargs, GetEnv)
 			end
 
 			--if not foundPlayerAlias then
-			for alias, cmd in Settings.Aliases do
+			for alias, cmd in Variables.Aliases do
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
 					local escAlias = EscapeSpecialCharacters(tAlias)
