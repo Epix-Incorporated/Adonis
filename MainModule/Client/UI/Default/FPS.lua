@@ -41,7 +41,7 @@ return function(data,env)
 		window:Ready()
 
 		repeat
-			label.Text = `{math.floor(1/service["RunService"].RenderStepped:Wait())} fps`
+			label.Text = `Render: {math.floor(1/service["RunService"].RenderStepped:Wait())} fps\nPhysics: {workspace:GetRealPhysicsFPS()} fps`
 			task.wait(1)
 		until not gfps or not gTable.Active
 	end
