@@ -953,7 +953,7 @@ return function(Vargs, GetEnv)
 						Functions.Notification("Welcome.", "Click here for commands.", {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 
 						if oldVer and newVer and newVer > oldVer then
-							task.delay(Functions.Notification, 1, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://Description", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
+							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://Description", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
 						end
 
 						if level > 300 and Core.DebugMode == true then
