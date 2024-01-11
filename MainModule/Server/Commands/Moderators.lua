@@ -2422,8 +2422,6 @@ return function(Vargs, env)
 						Atmosphere.Glare = Variables.OriginalAtmosphereSettings.Glare
 						Atmosphere.Haze = Variables.OriginalAtmosphereSettings.Haze
 					end
-				else
-					Functions.Hint("Atmosphere doesn't exist!", {plr})
 				end
 			end
 		};
