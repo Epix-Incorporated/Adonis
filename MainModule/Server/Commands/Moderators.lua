@@ -2379,7 +2379,7 @@ return function(Vargs, env)
 
 		ResetLighting = {
 			Prefix = Settings.Prefix;
-			Commands = {"fix", "resetlighting", "undisco", "unflash", "fixlighting"};
+			Commands = {"fix", "resetlighting", "undisco", "unflash", "fixlighting", "resetatmosphere", "fixatmosphere"};
 			Args = {};
 			Description = "Reset lighting back to the setting it had on server start";
 			AdminLevel = "Moderators";
@@ -2398,16 +2398,8 @@ return function(Vargs, env)
 				if Variables.OriginalLightingSettings.Sky then
 					Variables.OriginalLightingSettings.Sky:Clone().Parent = service.Lighting
 				end
-			end
-		};
 
-		ResetAtmosphere = {
-			Prefix = Settings.Prefix;
-			Commands = {"resetatmosphere", "fixatmosphere"};
-			Args = {};
-			Description = "Resets atmosphere back to the setting it had on server start";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+				-- Atmosphere
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
 					Variables.OriginalAtmosphereSettings = {
 						Name = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Name,
@@ -2430,8 +2422,6 @@ return function(Vargs, env)
 						Atmosphere.Glare = Variables.OriginalAtmosphereSettings.Glare
 						Atmosphere.Haze = Variables.OriginalAtmosphereSettings.Haze
 					end
-				else
-					Functions.Hint("Atmosphere doesn't exist!", {plr})
 				end
 			end
 		};
