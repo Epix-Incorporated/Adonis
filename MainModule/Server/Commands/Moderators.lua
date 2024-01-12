@@ -2778,7 +2778,7 @@ return function(Vargs, env)
 									if os.time() < jail.EndTime and Model.Parent == workspace and Variables.Jails[ind] == jail then
 										task.wait(1)
 									else
-										Commands.UnJail.Function(plr,v.Name)
+										Commands.UnJail.Function(plr,{v.Name})
 										break
 									end
 								end
@@ -2826,7 +2826,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		BubbleChat = {
 			Prefix = Settings.Prefix;
 			Commands = {"bchat", "dchat", "bubblechat", "dialogchat"};
