@@ -1483,6 +1483,8 @@ return function(Vargs, GetEnv)
 				Message = MetaFunc(Functions.Message, true);
 
 				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin, true);
+
+				GetPlayers = MetaFunc(Functions.GetPlayers, true);
 			}
 
 			if Core.DebugMode == true then
