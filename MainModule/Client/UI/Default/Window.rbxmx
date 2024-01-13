@@ -1737,11 +1737,13 @@ return function(data, env)
 					local desc;
 					local color
 					local richText;
+					local onClick;
 
 					if type(v) == "table" then
 						text = v.Text
 						desc = v.Desc
 						color = v.Color
+						onClick = v.OnClick
 
 						if v.RichTextAllowed or entProps.RichTextAllowed then
 							richText = true
@@ -1765,9 +1767,10 @@ return function(data, env)
 							RichText = richText or false;
 							TextEditable = false;
 							ClearTextOnFocus = false;
+							OnClick = onClick;
 						})
 					else
-						label = create("TextLabel",{
+						label = create(onClick and "TextButton" or "TextLabel",{
 							Text = ` {text}`;
 							ToolTip = desc;
 							AutomaticSize = if not entProps.ySize then Enum.AutomaticSize.Y else nil;
@@ -1780,6 +1783,7 @@ return function(data, env)
 							TextXAlignment = "Left";
 							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
 							RichText = richText or false;
+							OnClick = onClick;
 						})
 					end
 
