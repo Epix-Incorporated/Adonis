@@ -12,6 +12,8 @@ return {
 	"(Git/ccuser44) Merge resetatmosphere to resetlighting (#1340)";
 	"(Git/SuperCater) Fix naming error in :starterscript (#1341)";
 	"(Git/kaiserandaxl) Fixed :Jail bug not unjailing after set time (#1342)";
+	"(Git/ccuser44) Fix FPS gui (#1338)";
+	"(Git/EasternBloxxer) Fix Duplicate Display of Reason in Kick Message (#1343)";
 	"";
 	"[v241 2024-01-08 12:06 UTC] @Dimenpsyonal";
 	"Command Box now scrolls (#1307)";
