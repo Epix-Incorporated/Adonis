@@ -952,20 +952,16 @@ return function(Vargs, GetEnv)
 					if Settings.Notification then
 						Functions.Notification("Welcome.", "Click here for commands.", {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 
-						task.wait(1)
-
 						if oldVer and newVer and newVer > oldVer then
-							Functions.Notification("Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://Description", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
+							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://Description", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
 						end
 
-						task.wait(1)
-
 						if level > 300 and Core.DebugMode == true then
-							Functions.Notification("Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`))
+							task.delay(1, Functions.Notification, "Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`))
 						end
 
 						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
-							Functions.Notification("Warning!", "Using default datastore key!", {p}, "MatIcon://Description", Core.Bytecode([[
+							task.delay(1, Functions.Notification, "Warning!", "Using default datastore key!", {p}, 15, "MatIcon://Description", Core.Bytecode([[
 									local window = client.UI.Make("Window", {
 										Title = "How to change the DataStore key";
 										Size = {700,300};
@@ -977,8 +973,13 @@ return function(Vargs, GetEnv)
 									})
 
 									window:Ready()
-								]])
-							)
+							]]))
+						end
+						
+						if level >= 300 and #Settings.Messages > 0 then
+							for _, Message in Settings.Messages do
+								task.delay(1, Functions.Notification, "Message", tostring(Message), {p}, math.round((#Message/19)+2.5))
+							end
 						end
 					end
 

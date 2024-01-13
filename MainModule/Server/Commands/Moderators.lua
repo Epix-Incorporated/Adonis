@@ -2379,7 +2379,7 @@ return function(Vargs, env)
 
 		ResetLighting = {
 			Prefix = Settings.Prefix;
-			Commands = {"fix", "resetlighting", "undisco", "unflash", "fixlighting"};
+			Commands = {"fix", "resetlighting", "undisco", "unflash", "fixlighting", "resetatmosphere", "fixatmosphere"};
 			Args = {};
 			Description = "Reset lighting back to the setting it had on server start";
 			AdminLevel = "Moderators";
@@ -2398,16 +2398,8 @@ return function(Vargs, env)
 				if Variables.OriginalLightingSettings.Sky then
 					Variables.OriginalLightingSettings.Sky:Clone().Parent = service.Lighting
 				end
-			end
-		};
 
-		ResetAtmosphere = {
-			Prefix = Settings.Prefix;
-			Commands = {"resetatmosphere", "fixatmosphere"};
-			Args = {};
-			Description = "Resets atmosphere back to the setting it had on server start";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+				-- Atmosphere
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
 					Variables.OriginalAtmosphereSettings = {
 						Name = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Name,
@@ -2430,8 +2422,6 @@ return function(Vargs, env)
 						Atmosphere.Glare = Variables.OriginalAtmosphereSettings.Glare
 						Atmosphere.Haze = Variables.OriginalAtmosphereSettings.Haze
 					end
-				else
-					Functions.Hint("Atmosphere doesn't exist!", {plr})
 				end
 			end
 		};
@@ -2553,9 +2543,10 @@ return function(Vargs, env)
 					Admin.RunCommand(`{Settings.Prefix}clip`, p.Name)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
+					new.Clip.Value = true
 					new.Disabled = false
 					if Settings.CommandFeedback then
-						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk through walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
 			end
@@ -2571,16 +2562,14 @@ return function(Vargs, env)
 				for i, p in service.GetPlayers(plr, args[1]) do
 					local old = p.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
 					if old then
-						local enabled = old:FindFirstChild("Enabled")
-						if enabled then
-							enabled.Value = false
-							wait(0.5)
-						end
-						old.Parent = nil
-						wait(0.5)
-						old:Destroy()
-						if Settings.CommandFeedback then
-							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+						if old.Clip.Value then
+							old.Clip.Value = false
+							
+							task.delay(.5,function() old:Destroy() end)
+
+							if Settings.CommandFeedback then
+								Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk through walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+							end
 						end
 					end
 				end
@@ -2774,7 +2763,7 @@ return function(Vargs, env)
 									if os.time() < jail.EndTime and Model.Parent == workspace and Variables.Jails[ind] == jail then
 										task.wait(1)
 									else
-										Commands.UnJail.Function(plr,v.Name)
+										Commands.UnJail.Function(plr,{v.Name})
 										break
 									end
 								end
@@ -2822,7 +2811,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		BubbleChat = {
 			Prefix = Settings.Prefix;
 			Commands = {"bchat", "dchat", "bubblechat", "dialogchat"};
@@ -4646,6 +4635,7 @@ return function(Vargs, env)
 			Description = "Teleport player1(s) to player2, a waypoint, or specific coords, use :tp player1 waypoint-WAYPOINTNAME to use waypoints, x,y,z for coords";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				
 				if args[2] and (string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")) then
 					local m = string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")
 					local point
@@ -4655,19 +4645,27 @@ return function(Vargs, env)
 							point=v
 						end
 					end
-
+					
 					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if point then
-							if not v.Character then
+							local Character = v.Character
+
+							if not Character then
 								continue
 							end
+
+							Character:SetAttribute("ADONIS_isTeleporting", true)
+							task.delay(0.5, function() if Character then Character:SetAttribute("ADONIS_isTeleporting", nil) end end)
+
 							if workspace.StreamingEnabled == true then
 								v:RequestStreamAroundAsync(point)
 							end
-							local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-							local root = (Humanoid and Humanoid.RootPart or v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
+
+							local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+							local root = (Humanoid and Humanoid.RootPart or Character.PrimaryPart or Character:FindFirstChild("HumanoidRootPart"))
 							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
 							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
+
 							if Humanoid then
 								if Humanoid.SeatPart~=nil then
 									Functions.RemoveSeatWelds(Humanoid.SeatPart)
@@ -4677,12 +4675,14 @@ return function(Vargs, env)
 									Humanoid.Jump = true
 								end
 							end
+
 							if FlightPos and FlightGyro then
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
 
-							wait()
+							task.wait()
+
 							if root then
 								root.CFrame = CFrame.new(point)
 								if FlightPos and FlightGyro then
@@ -4697,15 +4697,22 @@ return function(Vargs, env)
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
 					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
-						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
+						local Character = v.Character
+						local root = Character and Character:FindFirstChild('HumanoidRootPart')
+
+						if not root then continue end
+
+						Character:SetAttribute("ADONIS_isTeleporting", true)
+						task.delay(0.5, function() if Character then Character:SetAttribute("ADONIS_isTeleporting", nil) end end)
 
 						if workspace.StreamingEnabled == true then
 							v:RequestStreamAroundAsync(Vector3.new(x,y,z))
 						end
-						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						local root = v.Character:FindFirstChild('HumanoidRootPart')
+
+						local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 						local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
+
 						if Humanoid then
 							if Humanoid.SeatPart~=nil then
 								Functions.RemoveSeatWelds(Humanoid.SeatPart)
@@ -4715,12 +4722,16 @@ return function(Vargs, env)
 								Humanoid.Jump = true
 							end
 						end
+
 						if FlightPos and FlightGyro then
 							FlightPos.Position = root.Position
 							FlightGyro.CFrame = root.CFrame
 						end
-						wait()
+
+						task.wait()
+
 						root.CFrame = CFrame.new(Vector3.new(tonumber(x), tonumber(y), tonumber(z)))
+
 						if FlightPos and FlightGyro then
 							FlightPos.Position = root.Position
 							FlightGyro.CFrame = root.CFrame
@@ -4730,15 +4741,20 @@ return function(Vargs, env)
 					local target = service.GetPlayers(plr, args[2], { NoFakePlayer = true })[1]
 					local players = service.GetPlayers(plr, args[1], { NoFakePlayer = true })
 					if #players == 1 and players[1] == target then
-						local n = players[1]
-						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
-							local Humanoid = n.Character:FindFirstChildOfClass("Humanoid")
-							local root = n.Character:FindFirstChild('HumanoidRootPart')
+						local v = players[1]
+						local Character = v.Character
+						local root = Character and Character:FindFirstChild('HumanoidRootPart')
+
+						if root and target.Character:FindFirstChild("HumanoidRootPart") then
+							local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
 							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
 
+							Character:SetAttribute("ADONIS_isTeleporting", true)
+							task.delay(0.5, function() if Character then Character:SetAttribute("ADONIS_isTeleporting", nil) end end)
+
 							if workspace.StreamingEnabled == true then
-								n:RequestStreamAroundAsync((target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+								v:RequestStreamAroundAsync((target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
 							end
 
 							if Humanoid then
@@ -4754,8 +4770,11 @@ return function(Vargs, env)
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
-							wait()
+
+							task.wait()
+
 							root.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+
 							if FlightPos and FlightGyro then
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
@@ -4764,15 +4783,19 @@ return function(Vargs, env)
 					else
 						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 						if targ_root then
-							for k, n in players do
-								if n ~= target then
-									local Character = n.Character
+							for k, v in players do
+								if v ~= target then
+									local Character = v.Character
+
 									if not Character or not Character:FindFirstChild("HumanoidRootPart") then
 										continue
 									end
 
+									Character:SetAttribute("ADONIS_isTeleporting", true)
+									task.delay(0.5, function() if Character then Character:SetAttribute("ADONIS_isTeleporting", nil) end end)
+
 									if workspace.StreamingEnabled == true then
-										n:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+										v:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
 									end
 
 									local Humanoid = Character:FindFirstChildOfClass("Humanoid")
@@ -4792,7 +4815,9 @@ return function(Vargs, env)
 										FlightPos.Position = root.Position
 										FlightGyro.CFrame = root.CFrame
 									end
-									wait()
+
+									task.wait()
+
 									if root and targ_root then
 										root.CFrame = (targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
 										if FlightPos and FlightGyro then
@@ -4867,6 +4892,9 @@ return function(Vargs, env)
 					for i = (l-1) * math.floor(numPlayers/lines) + 1, l * math.floor(numPlayers/lines) do
 						local char = players[i].Character
 						if not char then continue end
+						
+						char:SetAttribute("ADONIS_isTeleporting", true)
+						task.delay(0.5, function() if char then char:SetAttribute("ADONIS_isTeleporting", nil) end end)
 
 						local hum = char:FindFirstChildOfClass("Humanoid")
 						if hum then
@@ -4895,6 +4923,9 @@ return function(Vargs, env)
 					for i = lines*math.floor(numPlayers/lines)+1, lines*math.floor(numPlayers/lines) + numPlayers%lines do
 						local char = players[i].Character
 						if not char then continue end
+						
+						char:SetAttribute("ADONIS_isTeleporting", true)
+						task.delay(0.5, function() if char then char:SetAttribute("ADONIS_isTeleporting", nil) end end)
 
 						local r = i % (lines*math.floor(numPlayers/lines))
 						local offsetX = if r == 1 then 0
