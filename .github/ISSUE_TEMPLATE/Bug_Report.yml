@@ -20,7 +20,7 @@ body:
     validations:
       required: true
   - type: input
-    id: loader-channel
+    id: loader-version
     attributes:
       label: Loader version
       description: If your issue is related to loader/settings and you do not provide this we may not be able to solve your issue. Paste the value from `Adonis_Loader > Version > .Value` ![Version VALUE](https://media.discordapp.net/attachments/834826232565727282/1194191940640587836/image.png)
