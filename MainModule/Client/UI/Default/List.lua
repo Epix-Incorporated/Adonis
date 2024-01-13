@@ -68,6 +68,7 @@ return function(data, env)
 					Time = v.Time;
 					Filter = v.Filter;
 					Duplicates = v.Duplicates;
+					OnClick = v.OnClick;
 				}
 			elseif type(v) == "string" then
 				newTab[i] = {
