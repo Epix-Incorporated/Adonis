@@ -1,9 +1,9 @@
 return {
-	"Version: 241";
+	"Version: 242";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v242 2024-01-12 13:45 UTC] @Dimenpsyonal";
+	"[v242 2024-01-14 12:10 UTC] @Dimenpsyonal";
 	"Add new pipe model";
 	"(Git/bwrbur) Fix String Matching (#1326)";
 	"(Git/kaiserandaxl) Add !FPS Command (#1308)";
@@ -14,6 +14,8 @@ return {
 	"(Git/kaiserandaxl) Fixed :Jail bug not unjailing after set time (#1342)";
 	"(Git/ccuser44) Fix FPS gui (#1338)";
 	"(Git/EasternBloxxer) Fix Duplicate Display of Reason in Kick Message (#1343)";
+	"(Git/ccuser44) Make disabling linkedlists a loader flag by @ccuser44 in (#1335)";
+	"(Git/ccuser44) Improve bug report form (#1345)";
 	"";
 	"[v241 2024-01-08 12:06 UTC] @Dimenpsyonal";
 	"Command Box now scrolls (#1307)";
