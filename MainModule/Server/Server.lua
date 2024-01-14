@@ -553,6 +553,7 @@ return service.NewProxy({
 		server.LoadModule = LoadModule
 		server.LoadPackage = LoadPackage
 		server.ServiceSpecific = ServiceSpecific
+		server.DisableLinkedListsInLogs = data.DisableLinkedListsInLogs
 
 		server.Shared = Folder.Shared
 		server.ServerPlugins = data.ServerPlugins
