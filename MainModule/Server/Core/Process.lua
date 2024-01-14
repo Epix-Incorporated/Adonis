@@ -460,7 +460,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog then
 					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
 						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
