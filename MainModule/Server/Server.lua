@@ -202,7 +202,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(module) == "function"
 	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
-	local plug = (isFunc and module) or type(module) == "string" and assert((loadstringEnabled and loadstring(module) or customLoadstring(module, GetEnv({}, envVars))), "Failed to compile module")() or require(module)
+	local plug = (isFunc and module) or type(module) == "string" and assert(loadstringEnabled and loadstring(module) or customLoadstring(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
 
 	if server.Modules and type(module) ~= "function" and type(module) ~= "string" then
 		table.insert(server.Modules,module)
