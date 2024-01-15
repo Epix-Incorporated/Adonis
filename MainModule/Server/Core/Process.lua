@@ -865,7 +865,7 @@ return function(Vargs, GetEnv)
 
 		FinishLoading = function(p)
 			local PlayerData = Core.GetPlayer(p)
-			local level = Admin.GetLevel(p)
+			local level, rank = Admin.GetLevel(p)
 			local key = tostring(p.UserId)
 
 			--// Fire player added
@@ -950,7 +950,9 @@ return function(Vargs, GetEnv)
 					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						Functions.Notification("Welcome.", "Click here for commands.", {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+            
+						task.wait(1)
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 
 						if oldVer and newVer and newVer > oldVer then
 							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://Description", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
