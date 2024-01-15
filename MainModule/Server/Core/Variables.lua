@@ -56,6 +56,7 @@ return function(Vargs, GetEnv)
 		AuthorizedToReply = {},
 		FrozenObjects = {},
 		ScriptBuilder = {},
+		ScriptEditor = {},
 		CachedDonors = {},
 		Aliases = {},
 		BanMessage = "Banned",
