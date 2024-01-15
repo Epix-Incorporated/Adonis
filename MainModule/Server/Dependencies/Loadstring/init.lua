@@ -37,7 +37,7 @@ getfenv().script = nil
 return function(str,env)
 	local f, writer, buff
 	env = env or getfenv(2)
-	local name = (env.script and env.script:GetFullName())
+	local name = (type(env.script) == "userdata" and env.script:GetFullName())
 	local ran, error = xpcall(function()
 		local zio = luaZ:init(luaZ:make_getS(str), nil)
 		if not zio then return error() end
