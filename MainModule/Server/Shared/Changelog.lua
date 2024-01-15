@@ -1,7 +1,21 @@
 return {
-	"Version: 241";
+	"Version: 242";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v242 2024-01-14 12:10 UTC] @Dimenpsyonal";
+	"Add new pipe model";
+	"(Git/bwrbur) Fix String Matching (#1326)";
+	"(Git/kaiserandaxl) Add !FPS Command (#1308)";
+	"(Git/ccuser44) Update Debug_Specific (#1337)";
+	"(Git/ccuser44) Revert regressions introduced in #1313 and #1308 (#1339)";
+	"(Git/ccuser44) Merge resetatmosphere to resetlighting (#1340)";
+	"(Git/SuperCater) Fix naming error in :starterscript (#1341)";
+	"(Git/kaiserandaxl) Fixed :Jail bug not unjailing after set time (#1342)";
+	"(Git/ccuser44) Fix FPS gui (#1338)";
+	"(Git/EasternBloxxer) Fix Duplicate Display of Reason in Kick Message (#1343)";
+	"(Git/ccuser44) Make disabling linkedlists a loader flag by @ccuser44 in (#1335)";
+	"(Git/ccuser44) Improve bug report form (#1345)";
 	"";
 	"[v241 2024-01-08 12:06 UTC] @Dimenpsyonal";
 	"Command Box now scrolls (#1307)";
