@@ -1048,7 +1048,7 @@ return function(Vargs, env)
 				assert(args[1], "No starterscript name provided!")
 
 				for _,v : Instance in service.StarterGui:GetChildren() do
-					if v:IsA("LocalScript") and v.Name:find("[Athena]") then
+					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
 						if v.Name:gsub("%[Adonis%] ", ""):lower() == args[1]:lower() or args[1]:lower() == "all" then
 							service.Delete(v)
 							Functions.Hint("Removed starter script "..v.Name, {plr})

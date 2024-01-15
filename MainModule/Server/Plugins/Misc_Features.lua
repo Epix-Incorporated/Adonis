@@ -49,6 +49,15 @@ return function(Vargs, GetEnv)
 		end;
 		return table.concat(Res)
 	end;
+	for k, v in {-- Legacy aliases
+		[":giveppoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
+		[":giveplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
+		[":sendplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
+	} do
+		if not Variables.Aliases[k] then
+			Variables.Aliases[k] = v
+		end
+	end
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end

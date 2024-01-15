@@ -135,21 +135,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GivePlayerPoints = { --// obsolete since ROBLOX discontinued player points
-			Prefix = Settings.Prefix;
-			Commands = {"giveppoints", "giveplayerpoints", "sendplayerpoints"};
-			Args = {"player", "amount"};
-			Hidden = true;
-			Description = "Lets you give <player> <amount> player points";
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
-				end
-			end
-		};
-
 		Settings = {
 			Prefix = "";
 			Commands = {":adonissettings", `{Settings.Prefix}settings`, `{Settings.Prefix}adonissettings`};
@@ -255,6 +240,70 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Terminal")
 			end
 		};
+
+		ScriptEditor = {
+			Prefix = Settings.Prefix;
+			Commands = {"scripteditor", "se"};
+			Args = {"new/edit/delete/run","name"};
+			Description = "Opens Script editor";
+			AdminLevel = "Creators";
+			Function = function(plr: Player, args: {string})
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				local Operation = assert(args[1], "Operation not defined (argument #1)")
+				local Name = assert(args[2], "Name not defined (argument #2)")
+				local se = Variables.ScriptEditor[tostring(plr.UserId)]
+				if not se then
+					se = {}
+					Variables.ScriptEditor[tostring(plr.UserId)] = se
+				end
+				
+				if Operation:lower() == "new" then
+					se[Name] = {
+						Script = false;
+					}
+					
+					Commands.ScriptEditor.Function(plr,{"edit",Name})
+				elseif Operation:lower() == "edit" then
+					Remote.MakeGui(plr, "ScriptEditor",{
+						Name = Name;
+						Script = se[Name].Script
+					})
+				elseif Operation:lower() == "delete" then
+					assert(se[Name], "No script found")
+					
+					se[Name] = nil
+				elseif Operation:lower() == "run" then
+					assert(se[Name], "No script found")
+					
+					local oError = error
+					local newenv = setfenv(getfenv(),{
+						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `PRINT: {str}`}) end;
+						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `WARN: {str}`}) end;
+						error = function(reason, level)
+							if level ~= nil and type(level) ~= "number" then
+								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
+							end
+
+							Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `LUA_DEMAND_ERROR: {reason}`})
+							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
+						end;
+					})
+
+					service.TrackTask(`Thread: ScriptEditor: {plr.UserId}: {Name}`,function()
+						local func,err = Core.Loadstring(se[Name]["Script"], newenv)
+						if func then
+							local Succ,Err = pcall(function()
+								func()
+							end)
+
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = Err})
+						else
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = err})
+						end
+					end)
+				end
+			end,
+		}
 
 		--[[
 		TaskManager = { --// Unfinished

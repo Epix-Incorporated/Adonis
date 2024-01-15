@@ -1014,7 +1014,7 @@ return function(Vargs, GetEnv)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, `\n Reason: {ban.Reason or "(No reason provided.)"}\n Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
+						return true, `\n {ban.Reason or "(No reason provided.)"}\n | Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
 					end
 				end
 			end
@@ -1471,7 +1471,7 @@ return function(Vargs, GetEnv)
 			end
 
 			--if not foundPlayerAlias then
-			for alias, cmd in Settings.Aliases do
+			for alias, cmd in Variables.Aliases do
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
 					local escAlias = EscapeSpecialCharacters(tAlias)
