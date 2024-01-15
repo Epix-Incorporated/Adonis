@@ -433,11 +433,11 @@ return function(Vargs, GetEnv)
 		local suppliedArgs = Admin.GetArgs(msg, numArgs) -- User supplied args (when running :alias arg)
 		local out = aliasCmd
 
-		local EscapeSpecialCharacters = service.EscapeSpecialCharacters
+		local SanitizePattern = service.SanitizePattern
 		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, EscapeSpecialCharacters(argType), replaceWith)
+				out = string.gsub(out, SanitizePattern(argType), replaceWith)
 			end
 		end
 
