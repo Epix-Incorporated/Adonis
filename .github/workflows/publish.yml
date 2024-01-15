@@ -30,7 +30,7 @@ jobs:
           if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "refs/heads/release" ]
           then
             BUILD_TYPE="Stable"
-          elif [ "$GITHUB_ACTION_EVENT_NAME" == "tag" ]
+          elif [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [[ "$GIT_REF" == "refs/tags/v"* ]]
           then
             BUILD_TYPE="Release"
           elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "false" ]
@@ -40,7 +40,7 @@ jobs:
           then
             BUILD_TYPE="Beta"
           else
-             echo "Unexpected event or condition"
+            echo "Unexpected event or condition"
             echo "Event name: $GITHUB_ACTION_EVENT_NAME"
             echo "Ref: $GIT_REF"
             echo "Ref type: $GIT_REF_TYPE"
