@@ -1316,7 +1316,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		Trim = function(str)
-			return string.match(str, "^%s*([^%.]*%.?[^%.]*[^%.]+)%s*$")
+			local command, args = string.match(str, "^(%S+)%s*(.-)%s*$")
+
+			if command and not string.match(args, "^%s*[%p%s]+$") then
+				return string.match(str, "^%s*(.-)%s*$")
+			end
 		end;
 
 		RoundToPlace = function(num, places)
