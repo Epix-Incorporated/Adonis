@@ -1316,7 +1316,16 @@ return function(Vargs, GetEnv)
 		end;
 
 		Trim = function(str)
-			return string.match(str, "^%s*(.-)%s*$")
+			local Split = str:split(" ")
+			if #Split > 1 then
+				if string.match(Split[2],"^%s*(%.-)%s*$") then
+					return str:gsub(".","")
+				else
+					return string.match(str,"^%s*(.-)%s*$")
+				end
+			else
+				return string.match(str,"^%s*(.-)%s*$")
+			end
 		end;
 
 		RoundToPlace = function(num, places)
