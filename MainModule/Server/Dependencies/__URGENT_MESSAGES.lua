@@ -23,6 +23,8 @@ return {
 		"IF NO SUCH SETTING EXISTS ADD `settings.AllowClientAntiExploit = TRUE` IN YOUR SETTINGS FILE";
 		"IF YOU'D LIKE TO RE-ENABLE THE ANTI CHEAT;";
 		"THIS ALERT IS TO PREVENT UNINTENDED CONSEQUENCES FROM THE DEFAULT DISABLING OF THE CLIENT-SIDE AC";
+		"Completely unrelated to this we have also disabled the serverside AC protections for HumanoidDeletion and HatProtection";
+		"so enable workspace.RejectCharacterDeletions if you haven't already.";
 		"";
 		"~~~ SECOND ALERT BELOW ~~~";
 		"[LOW - DATE: 2021-9-4 19:27 UTC]";
