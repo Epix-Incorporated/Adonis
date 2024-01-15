@@ -673,10 +673,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return new or "Filter Error"
 		end;
 
-		EscapeSpecialCharacters = function(x)
-			return string.gsub(x, "([^%w])", "%%%1")
-		end;
-
 		MetaFunc = function(func, filterArgs: boolean?)
 			return service.NewProxy({
 				__call = function(tab,...)
@@ -935,6 +931,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				[">"] = "&gt;",
 				["&"] = "&amp;"
 			})
+		end;
+
+		SanitizePattern = function(str)
+			return string.gsub(str, "([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
 		end;
 
 		GetCurrentLocale = function()
