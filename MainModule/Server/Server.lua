@@ -98,6 +98,12 @@ local ServiceSpecific = {}
 local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
+local loadstringEnabled = pcall(loadstring, "return 1")
+local customLoadstring = (function()
+	local module, fione = script.Parent.Dependencies.Loadstring:Clone(), script.Parent.Shared.FiOne:Clone()
+	fione.Parent = module
+	return require(module)
+end)()
 local isModule = function(module)
 	for ind, modu in pairs(server.Modules) do
 		if module == modu then
@@ -196,9 +202,9 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(module) == "function"
 	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
-	local plug = (isFunc and module) or require(module)
+	local plug = (isFunc and module) or type(module) == "string" and assert((loadstringEnabled and loadstring(module) or customLoadstring(module, GetEnv({}, envVars))), "Failed to compile module")() or require(module)
 
-	if server.Modules and type(module) ~= "function" then
+	if server.Modules and type(module) ~= "function" and type(module) ~= "string" then
 		table.insert(server.Modules,module)
 	end
 
@@ -206,7 +212,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 		if isCore then
 			local ran, err = service.TrackTask(
 				`CoreModule: {module}`,
-				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				((noEnv or not loadstringEnabled) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
 					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,
