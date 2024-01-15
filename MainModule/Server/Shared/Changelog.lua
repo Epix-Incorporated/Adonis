@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[Patch v242a 2024-01-15 16:15 UTC] @Dimenpsyonal";
+	"Revert string matching change (#1326) due to breaking some messages";
+	"";
 	"[v242 2024-01-15 09:45 UTC] @Dimenpsyonal";
 	"Add new pipe model";
 	"(Git/kaiserandaxl) Add !FPS Command (#1308)";
