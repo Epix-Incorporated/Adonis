@@ -297,6 +297,7 @@ settings.Messages = {}			-- A list of notification messages to show HeadAdmins a
 settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	-- Time between auto cleans
 settings.AutoBackup = false 	-- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
+settings.ReJail = false			-- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
 
 settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
