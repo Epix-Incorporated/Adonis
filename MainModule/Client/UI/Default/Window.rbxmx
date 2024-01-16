@@ -121,7 +121,7 @@
 					<token name="BorderMode">0</token>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClearTextOnFocus">true</bool>
-					<bool name="Clipsendants">false</bool>
+					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
 						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
