@@ -1073,7 +1073,7 @@ return function(data, env)
 
 				point.Size = UDim2.fromOffset(sizeX, sizeY)
 				point.Position = UDim2.fromOffset(posX, posY)
-				point.Visible = true
+				point.Visible = text ~= ""
 			end)
 		end
 	end
