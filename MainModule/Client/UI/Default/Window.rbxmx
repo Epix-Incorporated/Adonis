@@ -121,7 +121,7 @@
 					<token name="BorderMode">0</token>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClearTextOnFocus">true</bool>
-					<bool name="ClipsDescendants">false</bool>
+					<bool name="Clipsendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
 						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
@@ -5424,7 +5424,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>5</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
