@@ -197,7 +197,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 	local isFunc = type(module) == "function"
 	local isRaw = type(module) == "string"
 	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
-	local plug = (isFunc and module) or isRaw and assert(assert(Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
+	local plug = (isFunc and module) or isRaw and assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
 
 	if server.Modules and not isFunc and not isRaw then
 		table.insert(server.Modules,module)
