@@ -273,11 +273,11 @@ end
 
 local LoadModule = function(module, yield, envVars, noEnv)
 	local isRaw = type(module) == "string"
-	local isValue = not isFunc and not IsRaw and module:IsA("StringValue")
+	local isValue = not isRaw and module:IsA("StringValue")
 	local plugran, plug
 
 	if isRaw then
-		plugran, plug = pcall(assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module"))
+		plugran, plug = pcall(assert(assert(client.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module"))
 	elseif isValue then
 		plugran, plug = pcall(client.Core.LoadCode or function(...) return require(client.Shared.FiOne)(...) end, client.Functions.Base64Decode(module.Value), GetEnv({}, envVars))
 	else
