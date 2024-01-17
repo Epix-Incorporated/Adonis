@@ -2615,10 +2615,11 @@ return function(Vargs, env)
 
 				local Color = BrickColor.new("White")
 				if args[3] then
-					if string.lower(args[2]) == "rainbow" then
+					warn(args[3])
+					if string.lower(args[3]) == "rainbow" then
 						Color = "rainbow"
 					else
-						Color = BrickColor.new(args[2]) or BrickColor.new("White")
+						Color = BrickColor.new(args[3]) or BrickColor.new("White")
 					end
 				end
 
@@ -2692,7 +2693,7 @@ return function(Vargs, env)
 							Parent = brick,
 						})
 						if typeof(Color) == "BrickColor" then
-							box.Color = Color
+							box.Color3 = Color.Color
 						end
 
 						brick.Anchored = true
