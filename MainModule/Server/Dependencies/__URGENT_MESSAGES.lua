@@ -23,7 +23,7 @@ return {
 		"IF NO SUCH SETTING EXISTS ADD `settings.AllowClientAntiExploit = TRUE` IN YOUR SETTINGS FILE";
 		"IF YOU'D LIKE TO RE-ENABLE THE ANTI CHEAT;";
 		"THIS ALERT IS TO PREVENT UNINTENDED CONSEQUENCES FROM THE DEFAULT DISABLING OF THE CLIENT-SIDE AC";
-		"Completely unrelated to this we have also disabled the serverside AC protections for HumanoidDeletion and HatProtection";
+		"Completely unrelated to this, we have also disabled the serverside AC protections for HumanoidDeletion and HatProtection";
 		"so enable workspace.RejectCharacterDeletions if you haven't already.";
 		"";
 		"~~~ SECOND ALERT BELOW ~~~";
@@ -98,6 +98,6 @@ return {
 		"Again, the cause of this was entirely out of my control and was not caused by anything Adonis did.";
 		"Personally, I'd prefer not to do this but the risk and severity is high enough to warrant it.";
 		"- Davey_Bones (Sceleratis)";
-		"[END_OF_MESSAGE 2020-1-8 18:38 EST]";
+		"[END_OF_MESSAGE 2020-1-8 23:38 UTC]";
 	}
 }
