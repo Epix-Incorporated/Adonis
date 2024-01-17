@@ -195,18 +195,19 @@ end
 local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(module) == "function"
+	local isRaw = type(module) == "string"
 	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
-	local plug = (isFunc and module) or require(module)
+	local plug = (isFunc and module) or isRaw and assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
 
-	if server.Modules and type(module) ~= "function" then
+	if server.Modules and not isFunc and not isRaw then
 		table.insert(server.Modules,module)
 	end
 
-	if type(plug) == "function" then
+	if isFunc then
 		if isCore then
 			local ran, err = service.TrackTask(
 				`CoreModule: {module}`,
-				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				((noEnv or isRaw) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
 					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,
@@ -225,7 +226,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask(
 				`Plugin: {module}`,
-				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				((noEnv or isRaw) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
 					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,

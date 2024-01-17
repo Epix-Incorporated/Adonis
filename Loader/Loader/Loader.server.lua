@@ -68,7 +68,7 @@ else
 		Settings = {} :: {[string]: any};
 		Descriptions = {} :: {[string]: string};
 		Messages = {} :: {string|{[string]: any}};
-		ServerPlugins = {} :: {ModuleScript};
+		ServerPlugins = {} :: {ModuleScript|string};
 		ClientPlugins = {} :: {ModuleScript};
 		Packages = {} :: {Folder};
 		Themes = {} :: {Instance};
