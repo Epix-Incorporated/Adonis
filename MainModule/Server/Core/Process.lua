@@ -845,6 +845,27 @@ return function(Vargs, GetEnv)
 
 			Core.SavePlayerData(p, data)
 
+			if Settings.ReJail then
+				for i,v in pairs(Variables.Jails) do
+					if v.Mod == p then
+						if service.Players:FindFirstChild(v.Name) then
+							Pcall(function()
+								for _, tool in v.Tools do
+									tool.Parent = v.Player.Backpack
+								end
+							end)
+							Pcall(function() v.Jail:Destroy() end)
+							Variables.Jails[i] = nil
+						else
+							local ind = v.Index
+							service.StopLoop(`{ind}JAIL`)
+							Pcall(function() v.Jail:Destroy() end)
+							Variables.Jails[ind] = nil
+						end
+					end
+				end
+			end
+
 			Variables.TrackingTable[p.Name] = nil
 			for otherPlrName, trackTargets in Variables.TrackingTable do
 				if trackTargets[p] then
