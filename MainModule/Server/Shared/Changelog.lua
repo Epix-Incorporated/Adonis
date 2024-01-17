@@ -69,7 +69,6 @@ return {
 	"(Git/kaiserandaxl) Add Duration to jail command (#1292)";
 	"(Git/kaiserandaxl) Add search box to keybinds, and aliases (#1294)";
 	"(Git/ccuser44) Other misc fixes & improvements (#1265)";
-  "(Git/WalkerOfBacon) Remove both :flynoclip and :flyspeed (#1301)";
 	"(Git/dylanjkl) Fix radius-{num} for games with custom player/character loading systems (#1310)";
 	"(Git/theplayeroffire) Modifiy user name auto-filling when tab is pressed in the default console (#1302)";
 	"(Git/WalkerOfBacon) Fix :removestats and :sceleratis (#1309, #1305)";
