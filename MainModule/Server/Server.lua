@@ -582,7 +582,9 @@ return service.NewProxy({
 		end
 
 		for _, module in pairs(data.ClientPlugins or {}) do
-			module:Clone().Parent = server.Client.Plugins
+			if type(module) ~= "string" then
+				module:Clone().Parent = server.Client.Plugins
+			end
 		end
 
 		for _, theme in pairs(data.Themes or {}) do
@@ -702,6 +704,17 @@ return service.NewProxy({
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
 		for _, f in pairs(runAfterPlugins) do
 			f(data)
+		end
+
+		-- // Load sourcecode clientside plugins
+		for _, module in pairs(data.ClientPlugins or {}) do
+			if type(module) == "string" then
+				local code = Instance.new("StringValue")
+
+				code.Name = service.HttpService:GenerateGUID(false)
+				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua"  or server.Core.Bytecode(module))
+				code.Parent = server.Client.Plugins
+			end
 		end
 
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
