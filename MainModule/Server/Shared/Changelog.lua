@@ -3,6 +3,12 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[v243 2024-01-xx xx:xx UTC] @Dimenpsyonal";
+	"(Git/StayBlue) Add NoLog option to Commands (#1346)";
+	"(Git/kaiserandaxl) Remove blank description displaying (#1364)";
+	"(Git/ccuser44) Make Server accept raw Lua code serverplugins (#1362)";
+	"(Git/kaiserandaxl) Add unjail upon command executor leave (#1363)";
+	"";
 	"[Patch v242a 2024-01-15 16:15 UTC] @Dimenpsyonal";
 	"Revert string matching change (#1326) due to breaking some messages";
 	"";
