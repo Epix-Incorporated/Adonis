@@ -1,5 +1,5 @@
 return {
-	"Version: 242";
+	"Version: 243";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
