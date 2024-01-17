@@ -433,11 +433,11 @@ return function(Vargs, GetEnv)
 		local suppliedArgs = Admin.GetArgs(msg, numArgs) -- User supplied args (when running :alias arg)
 		local out = aliasCmd
 
-		local EscapeSpecialCharacters = service.EscapeSpecialCharacters
+		local SanitizePattern = service.SanitizePattern
 		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, EscapeSpecialCharacters(argType), replaceWith)
+				out = string.gsub(out, SanitizePattern(argType), replaceWith)
 			end
 		end
 
@@ -1456,13 +1456,13 @@ return function(Vargs, GetEnv)
 		AliasFormat = function(aliases, msg)
 			local foundPlayerAlias = false --// Check if there's a player-defined alias first then otherwise check settings aliases
 
-			local CheckAliasBlacklist, EscapeSpecialCharacters = Admin.CheckAliasBlacklist, service.EscapeSpecialCharacters
+			local CheckAliasBlacklist, SanitizePattern = Admin.CheckAliasBlacklist, service.SanitizePattern
 
 			if aliases then
 				for alias, cmd in aliases do
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
-						local escAlias = EscapeSpecialCharacters(tAlias)
+						local escAlias = SanitizePattern(tAlias)
 						if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 							msg = FormatAliasArgs(alias, cmd, msg)
 						end
@@ -1474,7 +1474,7 @@ return function(Vargs, GetEnv)
 			for alias, cmd in Variables.Aliases do
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
-					local escAlias = EscapeSpecialCharacters(tAlias)
+					local escAlias = SanitizePattern(tAlias)
 					if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 						msg = FormatAliasArgs(alias, cmd, msg)
 					end
