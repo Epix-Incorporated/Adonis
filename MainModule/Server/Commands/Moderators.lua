@@ -2615,7 +2615,6 @@ return function(Vargs, env)
 
 				local Color = BrickColor.new("White")
 				if args[3] then
-					warn(args[3])
 					if string.lower(args[3]) == "rainbow" then
 						Color = "rainbow"
 					else
