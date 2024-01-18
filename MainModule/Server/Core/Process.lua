@@ -604,33 +604,47 @@ return function(Vargs, GetEnv)
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
-					local msg = string.sub(msg, 1, Process.MsgStringLimit)
-					local filtered = service.LaxFilter(msg, p)
+					local Slowmode = Admin.CheckSlowMode(p)
+					if not Slowmode then
+						local msg = string.sub(msg, 1, Process.MsgStringLimit)
+						local filtered = service.LaxFilter(msg, p)
 
-					AddLog(Logs.Chats, {
-						Text = `{p.Name}: {filtered}`;
-						Desc = tostring(filtered);
-						Player = p;
-					})
+						AddLog(Logs.Chats, {
+							Text = `{p.Name}: {filtered}`;
+							Desc = tostring(filtered);
+							Player = p;
+						})
 
-					if Settings.ChatCommands then
-						if Admin.DoHideChatCmd(p, msg) then
-							Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
-							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 3) == "/e " then
-							service.Events.PlayerChatted:Fire(p, msg)
-							msg = string.sub(msg, 4)
-							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 8) == "/system " then
-							service.Events.PlayerChatted:Fire(p, msg)
-							msg = string.sub(msg, 9)
-							Process.Command(p, msg, {Chat = true;})
+						if Settings.ChatCommands then
+							if Admin.DoHideChatCmd(p, msg) then
+								Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
+								Process.Command(p, msg, {Chat = true;})
+							elseif string.sub(msg, 1, 3) == "/e " then
+								service.Events.PlayerChatted:Fire(p, msg)
+								msg = string.sub(msg, 4)
+								Process.Command(p, msg, {Chat = true;})
+							elseif string.sub(msg, 1, 8) == "/system " then
+								service.Events.PlayerChatted:Fire(p, msg)
+								msg = string.sub(msg, 9)
+								Process.Command(p, msg, {Chat = true;})
+							else
+								service.Events.PlayerChatted:Fire(p, msg)
+								Process.Command(p, msg, {Chat = true;})
+							end
 						else
 							service.Events.PlayerChatted:Fire(p, msg)
-							Process.Command(p, msg, {Chat = true;})
 						end
-					else
-						service.Events.PlayerChatted:Fire(p, msg)
+					elseif Slowmode then
+						local msg = string.sub(msg, 1, Process.MsgStringLimit)
+						
+						if Settings.ChatCommands then
+							if Admin.DoHideChatCmd(p, msg) then
+								Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
+								Process.Command(p, msg, {Chat = true;})
+							else
+								Process.Command(p, msg, {Chat = true;})
+							end
+						end
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
