@@ -2615,10 +2615,14 @@ return function(Vargs, env)
 
 				local Color = BrickColor.new("White")
 				if args[3] then
-					if string.lower(args[2]) == "rainbow" then
+					local R,G,B = string.match(args[3],"(%d+),(%d+),(%d+)")
+					if R and G and B then
+						R,G,B = tonumber(R),tonumber(G),tonumber(B); if R>255 then R=255 end; if G>255 then G=255 end;if B>255 then B=255 end;
+						Color = Color3.fromRGB(R,G,B)
+					elseif string.lower(args[3]) == "rainbow" then
 						Color = "rainbow"
 					else
-						Color = BrickColor.new(args[2]) or BrickColor.new("White")
+						Color = BrickColor.new(args[3]) or BrickColor.new("White")
 					end
 				end
 
@@ -2692,7 +2696,9 @@ return function(Vargs, env)
 							Parent = brick,
 						})
 						if typeof(Color) == "BrickColor" then
-							box.Color = Color
+							box.Color3 = Color.Color
+						elseif typeof(Color) == "Color3" then
+							box.Color3 = Color
 						end
 
 						brick.Anchored = true
