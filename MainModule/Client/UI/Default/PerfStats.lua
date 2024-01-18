@@ -11,8 +11,8 @@ return function(data,env)
 	--warn(math.floor(1/game:GetService("RunService").RenderStepped:Wait()))
 	
 	local window = client.UI.Make("Window",{
-		Name  = "FPS";
-		Title = "FPS";
+		Name  = "Performance stats";
+		Title = "Performance stats";
 		Icon = client.MatIcons.Leaderboard;
 		Size  = {150, 70};
 		Position = UDim2.new(0, 10, 1, -80);
@@ -41,7 +41,7 @@ return function(data,env)
 		window:Ready()
 
 		repeat
-			label.Text = `Render: {math.round(1/service["RunService"].RenderStepped:Wait())} fps\nPhysics: {math.round(workspace:GetRealPhysicsFPS())} fps`
+			label.Text = `Render: {math.round(1/service["RunService"].RenderStepped:Wait())} fps\nPhysics: {math.round(workspace:GetRealPhysicsFPS())} fps\nPing: {service.Players.LocalPlayer:GetNetworkPing()}ms`
 			task.wait(1)
 		until not gfps or not gTable.Active
 	end
