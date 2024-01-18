@@ -196,8 +196,9 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(module) == "function"
 	local isRaw = type(module) == "string"
+	local isValue = not isFunc and not isRaw and module:IsA("StringValue")
 	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
-	local plug = (isFunc and module) or isRaw and assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
+	local plug = (isFunc and module) or isValue and (server.Core.LoadCode or function(...) return require(server.Shared.FiOne)(...) end)(server.Functions.Base64Decode(module.Value), GetEnv({}, envVars)) or isRaw and assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
 
 	if server.Modules and not isFunc and not isRaw then
 		table.insert(server.Modules,module)
@@ -207,7 +208,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 		if isCore then
 			local ran, err = service.TrackTask(
 				`CoreModule: {module}`,
-				((noEnv or isRaw) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
 					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,
@@ -226,7 +227,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask(
 				`Plugin: {module}`,
-				((noEnv or isRaw) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
 					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,
@@ -582,7 +583,9 @@ return service.NewProxy({
 		end
 
 		for _, module in pairs(data.ClientPlugins or {}) do
-			module:Clone().Parent = server.Client.Plugins
+			if type(module) ~= "string" then
+				module:Clone().Parent = server.Client.Plugins
+			end
 		end
 
 		for _, theme in pairs(data.Themes or {}) do
@@ -702,6 +705,17 @@ return service.NewProxy({
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
 		for _, f in pairs(runAfterPlugins) do
 			f(data)
+		end
+
+		-- // Load sourcecode clientside plugins
+		for _, module in pairs(data.ClientPlugins or {}) do
+			if type(module) == "string" then
+				local code = Instance.new("StringValue")
+
+				code.Name = service.HttpService:GenerateGUID(false)
+				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua"  or server.Core.Bytecode(module))
+				code.Parent = server.Client.Plugins
+			end
 		end
 
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
