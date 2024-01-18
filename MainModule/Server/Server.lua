@@ -204,7 +204,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 		table.insert(server.Modules,module)
 	end
 
-	if isFunc then
+	if type(plug) == "function" then
 		if isCore then
 			local ran, err = service.TrackTask(
 				`CoreModule: {module}`,
