@@ -2497,8 +2497,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					task.spawn(pcall, function()
-						Admin.RunCommand(`{Settings.Prefix}freeze`, v.Name)
 						local char = v.Character
+						char.HumanoidRootPart.Anchored = true
 						local zeus = service.New("Model", char)
 						local cloud = service.New("Part", zeus)
 						cloud.Anchored = true
