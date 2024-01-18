@@ -602,7 +602,13 @@ return function(Vargs, env)
 						LeftLegColor = BrickColor.new("Artichoke").Color,
 						RightLegColor = BrickColor.new("Artichoke").Color,
 						TorsoColor = BrickColor.new("Artichoke").Color,
-						Face = math.random(1, 3) == 3 and 173789114 or 133360789
+						Face = math.random(1, 3) == 3 and 173789114 or 133360789,
+					}
+					
+					local ActionProperties = {
+						Speed = args[2] or nil,
+						Health = args[3] or nil,
+						Jumppower = args[4] or nil,
 					}
 
 					if humanoid and humanoid.RootPart and string.lower(humanoid.Name) ~= "zombie" and not humanoid.Parent:FindFirstChild("Infected") then
@@ -616,6 +622,10 @@ return function(Vargs, env)
 						end
 
 						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+						
+						if ActionProperties.Speed then humanoid.WalkSpeed = ActionProperties.Speed end
+						if ActionProperties.Jumppower then humanoid.JumpPower = ActionProperties.Jumppower end
+						if ActionProperties.Health then humanoid.MaxHealth = ActionProperties.Health; humanoid.Health = ActionProperties.Health end
 
 						for _, part in humanoid.Parent:GetChildren() do
 							if part:IsA("BasePart") then
