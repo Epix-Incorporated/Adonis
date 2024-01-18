@@ -8,6 +8,13 @@ return {
 	"(Git/kaiserandaxl) Remove blank description displaying (#1364)";
 	"(Git/ccuser44) Make Server accept raw Lua code serverplugins (#1362)";
 	"(Git/kaiserandaxl) Add unjail upon command executor leave (#1363)";
+	"(Git/ccuser44) Fix player selectors not sanitising patterns & fix breaked UTF-8 in :commands (#1361)";
+	"(Git/ccuser44) Make list texts be able to be clicked (#1344)";
+	"(Git/ccuser44) Make Client accept raw Lua code clientplugins (#1365)";
+	"(Git/kaiserandaxl) Fix jail color not working (#1366)";
+	"(Git/kaiserandaxl) Fix slowmode logging (#1367)";
+	"(Git/kaiserandaxl) Fix :Smite freezing everyone (#1368)";
+	"(Git/kaiserandaxl) Add three properties to :infect (#1369)";
 	"";
 	"[Patch v242a 2024-01-15 16:15 UTC] @Dimenpsyonal";
 	"Revert string matching change (#1326) due to breaking some messages";
