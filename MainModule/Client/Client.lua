@@ -1,3 +1,4 @@
+--# selene: allow(empty_loop)
 -------------------
 -- Adonis Client --
 -------------------
