@@ -1,8 +1,6 @@
 --!nonstrict
 --[[
 
-	DEVELOPMENT HAS BEEN MOVED FROM DAVEY_BONES/SCELERATIS TO THE EPIX INCORPORATED GROUP
-
 	CURRENT LOADER:
 	https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated
 
