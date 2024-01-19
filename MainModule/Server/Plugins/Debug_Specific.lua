@@ -1,3 +1,4 @@
+--# selene: allow(mixed_table)
 server = nil
 service = nil
 cPcall = nil
