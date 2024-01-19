@@ -12,7 +12,7 @@ return function(data,env)
 	
 	local window = client.UI.Make("Window",{
 		Name  = "Performance stats";
-		Title = "Performance stats";
+		Title = "Stats";
 		Icon = client.MatIcons.Leaderboard;
 		Size  = {150, 90};
 		Position = UDim2.new(0, 10, 1, -100);
