@@ -14,8 +14,8 @@ return function(data,env)
 		Name  = "Performance stats";
 		Title = "Performance stats";
 		Icon = client.MatIcons.Leaderboard;
-		Size  = {150, 70};
-		Position = UDim2.new(0, 10, 1, -80);
+		Size  = {150, 90};
+		Position = UDim2.new(0, 10, 1, -100);
 		AllowMultiple = false;
 		NoHide = true;
 		Walls = true;
