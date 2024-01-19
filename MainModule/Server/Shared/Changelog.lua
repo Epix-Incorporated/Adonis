@@ -15,6 +15,10 @@ return {
 	"(Git/kaiserandaxl) Fix slowmode logging (#1367)";
 	"(Git/kaiserandaxl) Fix :Smite freezing everyone (#1368)";
 	"(Git/kaiserandaxl) Add three properties to :infect (#1369)";
+	"(Git/WalkerOfBacon) Change :flynoclip to :flyclip (#1301)";
+	"(Git/ccuser44) Made commands use better, more accurate and functional ping check (#1372)";
+	"(Git/ccuser44) Merge ping and fps commands (#1371)";
+	"(Git/kaiserandaxl) Fix RefreshGui not giving a theme over to Client (#1373)";
 	"";
 	"[Patch v242a 2024-01-15 16:15 UTC] @Dimenpsyonal";
 	"Revert string matching change (#1326) due to breaking some messages";
@@ -33,7 +37,7 @@ return {
 	"(Git/EasternBloxxer) Fix Duplicate Display of Reason in Kick Message (#1343)";
 	"(Git/ccuser44) Make disabling linkedlists a loader flag (#1335)";
 	"(Git/ccuser44) Improve bug report form (#1345)";
-	"(Git/EasternBloxxer) Fix PrivateMessage for TranksBlack (#1349)";
+	"(Git/EasternBloxxer) Fix PrivateMessage for TransBlack (#1349)";
 	"(Git/alau740) Notify admins what rank they are upon joining (#1303)";
 	"(Git/ccuser44) Make givepoints an alias (#1334)";
 	"(Git/wilsontulus) Update !playerinfo command - Get Render Resolution (#1287)";
