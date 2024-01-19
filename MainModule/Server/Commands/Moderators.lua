@@ -2551,22 +2551,21 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		FlyNoClip = {
+																																																																																																							
+		FlyClip = {
 			Prefix = Settings.Prefix;
-			Commands = {"flynoclip"};
+			Commands = {"flyclip"};
 			Args = {"player", "speed"};
 			Description = "Flying noclip";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local newArgs = { "me", args[2] or "2", "true" }
-
+				local newArgs = { "me", args[2] or "2", "false" }
 				for i, p in service.GetPlayers(plr, args[1]) do
 					Commands.Fly.Function(p, newArgs)
 				end
 			end
 		};
-
+		
 		Clip = {
 			Prefix = Settings.Prefix;
 			Commands = {"clip", "unnoclip"};
