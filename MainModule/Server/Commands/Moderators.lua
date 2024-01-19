@@ -6102,6 +6102,33 @@ return function(Vargs, env)
 			end
 		};
 
+		FlySpeed = {
+			Prefix = Settings.Prefix;
+			Commands = {"flyspeed", "flightspeed"};
+			Args = {"player", "speed"};
+			Description = "Change the target player(s) flight speed";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local speed = tonumber(args[2])
+
+				for i, v in service.GetPlayers(plr, args[1]) do
+					local part = v.Character:FindFirstChild("HumanoidRootPart")
+					if part then
+						local scr = part:FindFirstChild("ADONIS_FLIGHT")
+						if scr then
+							local sVal = scr:FindFirstChild("Speed")
+							if sVal then
+								sVal.Value = speed
+								if Settings.CommandFeedback then
+									Functions.Notification("Notification", `Character fly speed has been set to {speed}`, {v}, 15)
+								end
+							end
+						end
+					end
+				end
+			end
+		};
+
 		UnFly = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfly", "ground"};
