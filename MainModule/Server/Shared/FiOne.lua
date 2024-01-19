@@ -1,4 +1,4 @@
---# selene: allow(divide_by_zero, multiple_statements)
+--# selene: allow(divide_by_zero, multiple_statements, mixed_table)
 local bit = bit32
 local unpack = table.unpack or unpack
 
