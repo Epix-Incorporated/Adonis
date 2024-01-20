@@ -5,7 +5,7 @@ return {
 	MessageAdminType = 200;  			--// Minimum admin level to be notified (Or Donors or Players or nil to not notify)
 	MessageDate = "1699401601";			--// Time of message creation
 	MessageDuration = 60*60*24*7; 	--// How long should we notify people about this message
-	LastDateTime = "2024-1-15 00:00:01 UTC";
+	LastDateTime = "2024-1-20 00:00:01 UTC";
 	Messages = {
 		"YOU WILL ONLY BE NOTIFIED ONCE PER GAME ON JOIN, WHEN THERE ARE NEW MESSAGES.";
 		"THESE ARE IMPORTANT ANNOUNCEMENTS RELATED TO ADONIS AND ADONIS USERS.";
@@ -13,8 +13,7 @@ return {
 		"NOTIFICATIONS WILL ONLY HAPPEN FOR A SET TIME (WEEK AVG) AFTER THE MESSAGE WAS ADDED.";
 		"PLEASE READ THE MOST RECENT MESSAGE CAREFULLY AS IT LIKELY AFFECTS YOU AND YOUR USERS.";
 		"";
-		"PLEASE READ BOTH MESSAGES BELOW:";
-		"[HIGH - DATE: 2024-1-15 00:00:01 UTC]";
+		"[HIGH - DATE: 2024-1-20 00:00:01 UTC]";
 		"[DURATION: 7 DAYS]";
 		"[NOTIFY: ALL LEVEL 200 AND HIGHER]";
 		"VERSION 240 DISABLED THE CLIENT SIDE ANTI CHEAT BY DEFAULT!";
@@ -26,7 +25,9 @@ return {
 		"Completely unrelated to this, we have also disabled the serverside AC protections for HumanoidDeletion and HatProtection";
 		"so enable workspace.RejectCharacterDeletions if you haven't already.";
 		"";
-		"~~~ SECOND ALERT BELOW ~~~";
+		"";
+		"PREVIOUS ALERTS:";
+		"";
 		"[LOW - DATE: 2021-9-4 19:27 UTC]";
 		"[DURATION: 7 DAYS]";
 		"[NOTIFY: ALL LEVEL 200 AND HIGHER]";
@@ -35,7 +36,6 @@ return {
 		"RATHER THAN TEMP MODERATOR PERMS;";
 		"THIS ALERT IS TO PREVENT CONFUSION/UNINTENDED ACCIDENTAL RANK ADMIN ASSIGNMENT";
 		"";
-		"~~~ SECOND ALERT BELOW ~~~"--[["~~~ THIRD ALERT BELOW ~~~"]];
 		"[HIGH - DATE: 2021-9-4 19:27 UTC]";
 		"A VULNERABILITY THAT ALLOWED UNAUTHORIZED ACCESS TO Settings.WebPanel_ApiKey";
 		"HAS BEEN FOUND & PATCHED; IF YOU USE THE WEBPANEL, PLEASE REGENERATE";
@@ -52,8 +52,6 @@ return {
 		"YOUR PLUGIN CODE AND ENSURE YOU ARE TESTING ON ***NEW*** SERVERS.";
 		"[END_OF_MESSAGE 2021-7-4 01:12 UTC]";
 		"";
-		"";
-		"PREVIOUS ALERTS:";
 		"[IMPORTANCE LEVEL: MEDIUM - DATE: 29-12-2020 00:40 UTC]";
 		"[NOTIFY DURATION: 7 DAYS]";
 		"[NOTIFYING ALL RANK \"CREATOR\" AND HIGHER]";
