@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v243 2024-01-xx xx:xx UTC] @Dimenpsyonal";
+	"[v243 2024-01-22 10:00 UTC] @Dimenpsyonal";
 	"(Git/StayBlue) Add NoLog option to Commands (#1346)";
 	"(Git/kaiserandaxl) Remove blank description displaying (#1364)";
 	"(Git/ccuser44) Make Server accept raw Lua code serverplugins (#1362)";
@@ -19,6 +19,7 @@ return {
 	"(Git/ccuser44) Made commands use better, more accurate and functional ping check (#1372)";
 	"(Git/ccuser44) Merge ping and fps commands (#1371)";
 	"(Git/kaiserandaxl) Fix RefreshGui not giving a theme over to Client (#1373)";
+	"(Git/kaiserandaxl) Fix malformed group inputs giving everybody a rank (#1375)";
 	"";
 	"[Patch v242a 2024-01-15 16:15 UTC] @Dimenpsyonal";
 	"Revert string matching change (#1326) due to breaking some messages";
