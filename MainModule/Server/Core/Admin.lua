@@ -648,11 +648,16 @@ return function(Vargs, GetEnv)
 					local groupId = tonumber((string.match(filterData, "^%d+")))
 					if groupId then
 						local plrRank = Admin.GetGroupLevel(plr.UserId, groupId)
-						local requiredRank = tonumber((string.match(filterData, "^%d+:(.+)$")))
+						local requiredRank,noRank = tonumber((string.match(filterData, "^%d+:(.+)$"))), string.match(filterData,"^%d+$")
 						if requiredRank then
-							return plrRank == requiredRank or (requiredRank < 0 and plrRank >= math.abs(requiredRank))
+							if requiredRank < 0 then
+								return plrRank >= math.abs(requiredRank)
+							else
+								return plrRank == requiredRank
+							end
+						elseif noRank then
+							return plrRank > 0
 						end
-						return plrRank > 0
 					end
 					return false
 				elseif filterName == "item" then
