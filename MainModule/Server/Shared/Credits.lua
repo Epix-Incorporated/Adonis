@@ -28,7 +28,7 @@ return {
 		{Text = "@Awesomewebm", 		Desc = "Open Source Contributor"};
 		{Text = "@TheLegendarySpark",Desc = "Open Source Contributor"};
 		{Text = "@EasternBloxxer",			Desc = "Open Source Contributor"};
-		{Text = "@LiveFireExercise",	Desc = "Open Source Contributor"};
+		{Text = "@Dimenpsyonal",	Desc = "Open Source Contributor"};
 		{Text = "@policetonyR",		Desc = "Open Source Contributor"};
 		{Text = "@enescglyn",		Desc = "Open Source Contributor"};
 		{Text = "@EpicFazbear",		Desc = "Open Source Contributor"};
@@ -82,6 +82,11 @@ return {
 		{Text = "@Redfuire", Desc = "Open Source Contributor"};
 		{Text = "@RadiantUwU", Desc = "Open Source Contributor"};
 		{Text = "@kaiserandaxl", Desc = "Open Source Contributor"};
+		{Text = "@StayBlue", Desc = "Open Source Contributor"};
+		{Text = "@chesse20", Desc = "Open Source Contributor"};
+		{Text = "@SuperCater", Desc = "Open Source Contributor"};
+		{Text = "@dylanjkl", Desc = "Open Source Contributor"};
+		{Text = "@theplayeroffire", Desc = "Open Source Contributor"};
 	};
 
 	Misc = {
