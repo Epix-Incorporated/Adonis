@@ -1295,7 +1295,7 @@ return function(Vargs, GetEnv)
 			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in themeData do theme[ind] = dat end end
-			Remote.Send(p,"RefreshUI",name,ignore,themeData,data or {})
+			Remote.Send(p,"RefreshUI",name,ignore,themeData or theme,data or {})
 		end;
 
 		NewParticle = function(p: Player, target: Instance, class: string, properties: { [string]: any })

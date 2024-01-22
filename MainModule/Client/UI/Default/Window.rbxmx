@@ -1073,7 +1073,7 @@ return function(data, env)
 
 				point.Size = UDim2.fromOffset(sizeX, sizeY)
 				point.Position = UDim2.fromOffset(posX, posY)
-				point.Visible = true
+				point.Visible = text ~= ""
 			end)
 		end
 	end
@@ -1737,11 +1737,13 @@ return function(data, env)
 					local desc;
 					local color
 					local richText;
+					local onClick;
 
 					if type(v) == "table" then
 						text = v.Text
 						desc = v.Desc
 						color = v.Color
+						onClick = v.OnClick
 
 						if v.RichTextAllowed or entProps.RichTextAllowed then
 							richText = true
@@ -1767,7 +1769,7 @@ return function(data, env)
 							ClearTextOnFocus = false;
 						})
 					else
-						label = create("TextLabel",{
+						label = create(onClick and "TextButton" or "TextLabel",{
 							Text = ` {text}`;
 							ToolTip = desc;
 							AutomaticSize = if not entProps.ySize then Enum.AutomaticSize.Y else nil;
@@ -1780,6 +1782,7 @@ return function(data, env)
 							TextXAlignment = "Left";
 							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
 							RichText = richText or false;
+							OnClick = onClick;
 						})
 					end
 
@@ -5424,7 +5427,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>5</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>

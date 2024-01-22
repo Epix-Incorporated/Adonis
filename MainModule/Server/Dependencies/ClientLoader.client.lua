@@ -1,3 +1,4 @@
+--# selene: allow(empty_loop)
 --// ACLI - Adonis Client Loading Initializer
 if true then return end --// #DISABLED
 

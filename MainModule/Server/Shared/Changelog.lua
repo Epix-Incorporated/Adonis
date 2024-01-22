@@ -1,7 +1,25 @@
 return {
-	"Version: 242";
+	"Version: 243";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v243 2024-01-22 10:00 UTC] @Dimenpsyonal";
+	"(Git/StayBlue) Add NoLog option to Commands (#1346)";
+	"(Git/kaiserandaxl) Remove blank description displaying (#1364)";
+	"(Git/ccuser44) Make Server accept raw Lua code serverplugins (#1362)";
+	"(Git/kaiserandaxl) Add unjail upon command executor leave (#1363)";
+	"(Git/ccuser44) Fix player selectors not sanitising patterns & fix breaked UTF-8 in :commands (#1361)";
+	"(Git/ccuser44) Make list texts be able to be clicked (#1344)";
+	"(Git/ccuser44) Make Client accept raw Lua code clientplugins (#1365)";
+	"(Git/kaiserandaxl) Fix jail color not working (#1366)";
+	"(Git/kaiserandaxl) Fix slowmode logging (#1367)";
+	"(Git/kaiserandaxl) Fix :Smite freezing everyone (#1368)";
+	"(Git/kaiserandaxl) Add three properties to :infect (#1369)";
+	"(Git/WalkerOfBacon) Change :flynoclip to :flyclip (#1301)";
+	"(Git/ccuser44) Made commands use better, more accurate and functional ping check (#1372)";
+	"(Git/ccuser44) Merge ping and fps commands (#1371)";
+	"(Git/kaiserandaxl) Fix RefreshGui not giving a theme over to Client (#1373)";
+	"(Git/kaiserandaxl) Fix malformed group inputs giving everybody a rank (#1375)";
 	"";
 	"[Patch v242a 2024-01-15 16:15 UTC] @Dimenpsyonal";
 	"Revert string matching change (#1326) due to breaking some messages";
@@ -20,7 +38,7 @@ return {
 	"(Git/EasternBloxxer) Fix Duplicate Display of Reason in Kick Message (#1343)";
 	"(Git/ccuser44) Make disabling linkedlists a loader flag (#1335)";
 	"(Git/ccuser44) Improve bug report form (#1345)";
-	"(Git/EasternBloxxer) Fix PrivateMessage for TranksBlack (#1349)";
+	"(Git/EasternBloxxer) Fix PrivateMessage for TransBlack (#1349)";
 	"(Git/alau740) Notify admins what rank they are upon joining (#1303)";
 	"(Git/ccuser44) Make givepoints an alias (#1334)";
 	"(Git/wilsontulus) Update !playerinfo command - Get Render Resolution (#1287)";

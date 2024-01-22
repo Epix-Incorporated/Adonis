@@ -460,7 +460,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog then
 					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
 						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
@@ -604,33 +604,47 @@ return function(Vargs, GetEnv)
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
-					local msg = string.sub(msg, 1, Process.MsgStringLimit)
-					local filtered = service.LaxFilter(msg, p)
+					local Slowmode = Admin.CheckSlowMode(p)
+					if not Slowmode then
+						local msg = string.sub(msg, 1, Process.MsgStringLimit)
+						local filtered = service.LaxFilter(msg, p)
 
-					AddLog(Logs.Chats, {
-						Text = `{p.Name}: {filtered}`;
-						Desc = tostring(filtered);
-						Player = p;
-					})
+						AddLog(Logs.Chats, {
+							Text = `{p.Name}: {filtered}`;
+							Desc = tostring(filtered);
+							Player = p;
+						})
 
-					if Settings.ChatCommands then
-						if Admin.DoHideChatCmd(p, msg) then
-							Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
-							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 3) == "/e " then
-							service.Events.PlayerChatted:Fire(p, msg)
-							msg = string.sub(msg, 4)
-							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 8) == "/system " then
-							service.Events.PlayerChatted:Fire(p, msg)
-							msg = string.sub(msg, 9)
-							Process.Command(p, msg, {Chat = true;})
+						if Settings.ChatCommands then
+							if Admin.DoHideChatCmd(p, msg) then
+								Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
+								Process.Command(p, msg, {Chat = true;})
+							elseif string.sub(msg, 1, 3) == "/e " then
+								service.Events.PlayerChatted:Fire(p, msg)
+								msg = string.sub(msg, 4)
+								Process.Command(p, msg, {Chat = true;})
+							elseif string.sub(msg, 1, 8) == "/system " then
+								service.Events.PlayerChatted:Fire(p, msg)
+								msg = string.sub(msg, 9)
+								Process.Command(p, msg, {Chat = true;})
+							else
+								service.Events.PlayerChatted:Fire(p, msg)
+								Process.Command(p, msg, {Chat = true;})
+							end
 						else
 							service.Events.PlayerChatted:Fire(p, msg)
-							Process.Command(p, msg, {Chat = true;})
 						end
-					else
-						service.Events.PlayerChatted:Fire(p, msg)
+					elseif Slowmode then
+						local msg = string.sub(msg, 1, Process.MsgStringLimit)
+						
+						if Settings.ChatCommands then
+							if Admin.DoHideChatCmd(p, msg) then
+								Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
+								Process.Command(p, msg, {Chat = true;})
+							else
+								Process.Command(p, msg, {Chat = true;})
+							end
+						end
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
@@ -844,6 +858,27 @@ return function(Vargs, GetEnv)
 			end
 
 			Core.SavePlayerData(p, data)
+
+			if Settings.ReJail then
+				for i,v in pairs(Variables.Jails) do
+					if v.Mod == p then
+						if service.Players:FindFirstChild(v.Name) then
+							Pcall(function()
+								for _, tool in v.Tools do
+									tool.Parent = v.Player.Backpack
+								end
+							end)
+							Pcall(function() v.Jail:Destroy() end)
+							Variables.Jails[i] = nil
+						else
+							local ind = v.Index
+							service.StopLoop(`{ind}JAIL`)
+							Pcall(function() v.Jail:Destroy() end)
+							Variables.Jails[ind] = nil
+						end
+					end
+				end
+			end
 
 			Variables.TrackingTable[p.Name] = nil
 			for otherPlrName, trackTargets in Variables.TrackingTable do

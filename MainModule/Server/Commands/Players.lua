@@ -298,26 +298,15 @@ return function(Vargs, env)
 			end
 		};
 
-		Ping = {
+		ClientPerfStats = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"ping", "latency"};
+			Commands = {"cstats", "clientperformance", "clientperformanceststs", "clientstats", "ping", "latency", "fps","framespersecond"};
 			Args = {};
-			Description = "Shows you your current ping (latency)";
+			Description = "Shows you your client performance stats";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "Ping")
+				Remote.MakeGui(plr, "PerfStats")
 			end
-		};
-		
-		Fps = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"fps","framespersecond"};
-			Args = {};
-			Description = "Shows your current fps (frames per second)";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr,"FPS")
-			end,
 		};
 
 		ServerSpeed = {

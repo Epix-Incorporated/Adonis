@@ -433,11 +433,11 @@ return function(Vargs, GetEnv)
 		local suppliedArgs = Admin.GetArgs(msg, numArgs) -- User supplied args (when running :alias arg)
 		local out = aliasCmd
 
-		local EscapeSpecialCharacters = service.EscapeSpecialCharacters
+		local SanitizePattern = service.SanitizePattern
 		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, EscapeSpecialCharacters(argType), replaceWith)
+				out = string.gsub(out, SanitizePattern(argType), replaceWith)
 			end
 		end
 
@@ -463,6 +463,14 @@ return function(Vargs, GetEnv)
 		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
 		AdminLevelCacheTimeout = 30;
 
+		CheckSlowMode = function(p: Player)
+			if Admin.SlowMode and Admin.SlowCache[p] and os.time() - Admin.SlowCache[p] < Admin.SlowMode then
+				return true
+			else
+				return false
+			end
+		end,
+		
 		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
 			local pData = data or Core.GetPlayer(p)
 			if pData.Client.HideChatCommands then
@@ -640,11 +648,16 @@ return function(Vargs, GetEnv)
 					local groupId = tonumber((string.match(filterData, "^%d+")))
 					if groupId then
 						local plrRank = Admin.GetGroupLevel(plr.UserId, groupId)
-						local requiredRank = tonumber((string.match(filterData, "^%d+:(.+)$")))
+						local requiredRank,noRank = tonumber((string.match(filterData, "^%d+:(.+)$"))), string.match(filterData,"^%d+$")
 						if requiredRank then
-							return plrRank == requiredRank or (requiredRank < 0 and plrRank >= math.abs(requiredRank))
+							if requiredRank < 0 then
+								return plrRank >= math.abs(requiredRank)
+							else
+								return plrRank == requiredRank
+							end
+						elseif noRank then
+							return plrRank > 0
 						end
-						return plrRank > 0
 					end
 					return false
 				elseif filterName == "item" then
@@ -1456,13 +1469,13 @@ return function(Vargs, GetEnv)
 		AliasFormat = function(aliases, msg)
 			local foundPlayerAlias = false --// Check if there's a player-defined alias first then otherwise check settings aliases
 
-			local CheckAliasBlacklist, EscapeSpecialCharacters = Admin.CheckAliasBlacklist, service.EscapeSpecialCharacters
+			local CheckAliasBlacklist, SanitizePattern = Admin.CheckAliasBlacklist, service.SanitizePattern
 
 			if aliases then
 				for alias, cmd in aliases do
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
-						local escAlias = EscapeSpecialCharacters(tAlias)
+						local escAlias = SanitizePattern(tAlias)
 						if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 							msg = FormatAliasArgs(alias, cmd, msg)
 						end
@@ -1474,7 +1487,7 @@ return function(Vargs, GetEnv)
 			for alias, cmd in Variables.Aliases do
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
-					local escAlias = EscapeSpecialCharacters(tAlias)
+					local escAlias = SanitizePattern(tAlias)
 					if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 						msg = FormatAliasArgs(alias, cmd, msg)
 					end

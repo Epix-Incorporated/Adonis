@@ -1,3 +1,4 @@
+--# selene: allow(empty_loop)
 --// Adonis Client Loader (Non-ReplicatedFirst Version)
 
 local DebugMode = false;

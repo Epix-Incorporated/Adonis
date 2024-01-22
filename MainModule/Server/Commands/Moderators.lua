@@ -1336,42 +1336,25 @@ return function(Vargs, env)
 					"―――――――――――――――――――――――",
 				}
 				for _, v in players do
-					task.spawn(pcall, function()
-						if type(v) == "string" and v == "NoPlayer" then
+					if type(v) == "string" and v == "NoPlayer" then
+						table.insert(tab, {
+							Text = "PLAYERLESS CLIENT";
+							Desc = "PLAYERLESS SERVERREPLICATOR: COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!";
+						})
+					else
+						if v and service.Players:FindFirstChild(v.Name) then
+							local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 							table.insert(tab, {
-								Text = "PLAYERLESS CLIENT";
-								Desc = "PLAYERLESS SERVERREPLICATOR: COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!";
+								Text = string.format("[%s] %s", v:GetNetworkPing(), service.FormatPlayer(v, true));
+								Desc = string.format("Lower: %s | Health: %d | MaxHealth: %d | WalkSpeed: %d | JumpPower: %d | Humanoid Name: %s", v.Name:lower(), hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
 							})
 						else
-							local ping
-
-							Routine(function()
-								ping = `{Remote.Ping(v)}ms`
-							end)
-
-							for i = 0.1, 5, 0.1 do
-								if ping then break end
-								wait(0.1)
-							end
-
-							if not ping then
-								ping = ">5000ms"
-							end
-
-							if v and service.Players:FindFirstChild(v.Name) then
-								local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-								table.insert(tab, {
-									Text = string.format("[%s] %s", ping, service.FormatPlayer(v, true));
-									Desc = string.format("Lower: %s | Health: %d | MaxHealth: %d | WalkSpeed: %d | JumpPower: %d | Humanoid Name: %s", v.Name:lower(), hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
-								})
-							else
-								table.insert(tab, {
-									Text = `[LOADING] {service.FormatPlayer(v, true)}`;
-									Desc = `Lower: {string.lower(v.Name)} | Ping: {ping}`;
-								})
-							end
+							table.insert(tab, {
+								Text = `[LOADING] {service.FormatPlayer(v, true)}`;
+								Desc = `Lower: {string.lower(v.Name)} | Ping: {v:GetNetworkPing()}`;
+							})
 						end
-					end)
+					end
 				end
 				for i = 0.1, 5, 0.1 do
 					if service.CountTable(tab) - 2 >= service.CountTable(players) then break end
@@ -1380,7 +1363,6 @@ return function(Vargs, env)
 				return tab
 			end;
 			Function = function(plr: Player, args: {string})
-				Functions.Hint("Pinging players. Please wait. No ping = Ping > 5sec.", {plr})
 				Remote.MakeGui(plr, "List", {
 					Title = "Players",
 					Icon = server.MatIcons.People;
@@ -1737,7 +1719,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Functions.Hint(`{service.FormatPlayer(v)}'s Ping is {Remote.Get(v, "Ping")}ms`, {plr})
+					Functions.Hint(`{service.FormatPlayer(v)}'s Ping is {v:GetNetworkPing()}ms`, {plr})
 				end
 			end
 		};
@@ -2551,22 +2533,21 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		FlyNoClip = {
+																																																																																																							
+		FlyClip = {
 			Prefix = Settings.Prefix;
-			Commands = {"flynoclip"};
+			Commands = {"flyclip"};
 			Args = {"player", "speed"};
 			Description = "Flying noclip";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local newArgs = { "me", args[2] or "2", "true" }
-
+				local newArgs = { "me", args[2] or "2", "false" }
 				for i, p in service.GetPlayers(plr, args[1]) do
 					Commands.Fly.Function(p, newArgs)
 				end
 			end
 		};
-
+		
 		Clip = {
 			Prefix = Settings.Prefix;
 			Commands = {"clip", "unnoclip"};
@@ -2615,10 +2596,14 @@ return function(Vargs, env)
 
 				local Color = BrickColor.new("White")
 				if args[3] then
-					if string.lower(args[2]) == "rainbow" then
+					local R,G,B = string.match(args[3],"(%d+),(%d+),(%d+)")
+					if R and G and B then
+						R,G,B = tonumber(R),tonumber(G),tonumber(B); if R>255 then R=255 end; if G>255 then G=255 end;if B>255 then B=255 end;
+						Color = Color3.fromRGB(R,G,B)
+					elseif string.lower(args[3]) == "rainbow" then
 						Color = "rainbow"
 					else
-						Color = BrickColor.new(args[2]) or BrickColor.new("White")
+						Color = BrickColor.new(args[3]) or BrickColor.new("White")
 					end
 				end
 
@@ -2692,7 +2677,9 @@ return function(Vargs, env)
 							Parent = brick,
 						})
 						if typeof(Color) == "BrickColor" then
-							box.Color = Color
+							box.Color3 = Color.Color
+						elseif typeof(Color) == "Color3" then
+							box.Color3 = Color
 						end
 
 						brick.Anchored = true
@@ -2736,7 +2723,10 @@ return function(Vargs, env)
 
 						service.TrackTask(`Thread: JailLoop{ind}`, function()
 							while task.wait() and Variables.Jails[ind] == jail and Model.Parent == workspace do
-								if Variables.Jails[ind] == jail and v.Parent == service.Players then
+								if Variables.Jails[ind] == jail and service.Players:FindFirstChild(jail.Name) then
+									if Settings.ReJail then
+										v = service.Players:FindFirstChild(jail.Name)
+									end
 									if Color == "rainbow" then
 										box.Color3 = Color3.fromHSV(tick()%5/5, 1, 1)
 									end
