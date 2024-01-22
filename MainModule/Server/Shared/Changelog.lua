@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v244 2024-xx-xx xx:xx UTC] @Dimenpsyonal";
+	"Fixed handing of infinite respawn times";
 	"Fixed RichText and blank descriptions on Unity theme (#1378, 1379)";
 	"";
 	"[v243 2024-01-22 10:00 UTC] @Dimenpsyonal";
