@@ -205,6 +205,8 @@ return function(Vargs, GetEnv)
 
 					connection:Disconnect()
 
+					if service.Players.RespawnTime == "inf" then return end
+					
 					task.wait(service.Players.RespawnTime + 1.5)
 
 					if workspace:IsAncestorOf(humanoid) then
