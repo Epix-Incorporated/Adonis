@@ -3090,23 +3090,26 @@ return function(data, env)
 				label.Font = Enum.Font.Gotham
 				label.TextSize = 15
 				label.TextStrokeTransparency = 1
+				
+				local font
 				local sizeText = label.ContentText
 
+				if string.match(text,"^(<b>).+(</b>)$") then
+					font = Enum.Font.GothamBold
+				else
+					font = label.Font
+				end
+
 				local maxWidth = 400
-				local bounds = service.TextService:GetTextSize(sizeText, label.TextSize, label.Font, Vector2.new(maxWidth, math.huge))
+				local bounds = service.TextService:GetTextSize(sizeText, 15, font, Vector2.new(maxWidth, math.huge))
 
 				local sizeX, sizeY = bounds.X + 10, bounds.Y + 10
 				local posX = (x + 6 + sizeX) < GUI.AbsoluteSize.X and (x + 6) or (x - 6 - sizeX)
 				local posY = (y - 6 - sizeY) > 0 and (y - 6 - sizeY) or (y)
 
-				point.Size = UDim2.new(0, sizeX, 0, sizeY)
-				point.Position = UDim2.new(0, posX, 0, posY)
-
-				point.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-
-
-
-				point.Visible = true
+				point.Size = UDim2.fromOffset(sizeX, sizeY)
+				point.Position = UDim2.fromOffset(posX, posY)
+				point.Visible = text ~= ""
 			end)
 		end
 	end
@@ -8155,7 +8158,7 @@ end]]></ProtectedString>
 							<YS>0</YS>
 							<YO>5</YO>
 						</UDim2>
-						<bool name="RichText">false</bool>
+						<bool name="RichText">true</bool>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
