@@ -1184,7 +1184,7 @@ return function(data, env)
 
 				point.Size = UDim2.fromOffset(sizeX, sizeY)
 				point.Position = UDim2.fromOffset(posX, posY)
-				point.Visible = true
+				point.Visible = text ~= ""
 			end)
 		end
 	end
@@ -6382,7 +6382,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>2</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>

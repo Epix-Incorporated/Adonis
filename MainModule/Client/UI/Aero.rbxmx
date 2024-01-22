@@ -1565,7 +1565,7 @@ end]]></ProtectedString>
 							<YS>0</YS>
 							<YO>5</YO>
 						</UDim2>
-						<bool name="RichText">false</bool>
+						<bool name="RichText">true</bool>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
@@ -2229,17 +2229,22 @@ return function(data, env)
 
 			ent.MouseMoved:Connect(function(x,y)
 				inExpandable = ent
-				label.Text = text or ent.Desc.Value
-				--point.Size = UDim2.new(0, 10000, 0, 10000)
+
+				local text = text or ent.Desc.Value
+				label.Text = text
+
+				local sizeText = label.ContentText
+
 				local newx = 500
 				local bounds = service.TextService:GetTextSize(text or ent.Desc.Value, label.TextSize, label.Font, Vector2.new(1000,1000)).X-- point.Label.TextBounds.X
 				local rows = math.floor(bounds/500)
 				rows = rows+1
+
 				if rows<1 then rows = 1 end
 				if bounds<500 then newx = bounds end
 				point.Size = UDim2.new(0, newx+10, 0, (rows*20)+10)
 				point.Position = UDim2.new(0, x+6, 0, y-40-((rows*20)+10))
-				point.Visible = true
+				point.Visible = text ~= ""
 			end)
 		end
 	end
