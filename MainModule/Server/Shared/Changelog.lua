@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v244 2024-xx-xx xx:xx UTC] @Dimenpsyonal";
+	"[v244 2024-01-23 09:30 UTC] @Dimenpsyonal";
 	"Fixed handing of infinite respawn times";
 	"Fixed RichText and blank descriptions on Unity theme (#1378, 1379)";
 	"";
