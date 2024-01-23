@@ -2533,20 +2533,6 @@ return function(Vargs, env)
 				end
 			end
 		};
-																																																																																																							
-		FlyClip = {
-			Prefix = Settings.Prefix;
-			Commands = {"flyclip"};
-			Args = {"player", "speed"};
-			Description = "Lets the target player(s) fly but does not allow them to go through walls";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local newArgs = { "me", args[2] or "2", "false" }
-				for i, p in service.GetPlayers(plr, args[1]) do
-					Commands.Fly.Function(p, newArgs)
-				end
-			end
-		};
 		
 		Clip = {
 			Prefix = Settings.Prefix;
@@ -6024,7 +6010,7 @@ return function(Vargs, env)
 
 		Fly = {
 			Prefix = Settings.Prefix;
-			Commands = {"fly", "flight"};
+			Commands = {"fly", "flight", "flynoclip"};
 			Args = {"player", "speed", "noclip? (default: true)"};
 			Description = "Lets the target player(s) fly";
 			AdminLevel = "Moderators";
