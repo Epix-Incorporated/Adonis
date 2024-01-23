@@ -1,7 +1,9 @@
 return {
-	"Version: 244";
+	"Version: 245";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v245 2024-xx-xx xx:xx UTC] @Dimenpsyonal";
 	"";
 	"[v244 2024-01-23 09:30 UTC] @Dimenpsyonal";
 	"Fixed handing of infinite respawn times";
