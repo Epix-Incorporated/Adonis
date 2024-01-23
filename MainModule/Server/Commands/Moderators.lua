@@ -2538,7 +2538,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"flyclip"};
 			Args = {"player", "speed"};
-			Description = "Flying noclip";
+			Description = "Lets the target player(s) fly but does not allow them to go through walls";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local newArgs = { "me", args[2] or "2", "false" }
