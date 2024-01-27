@@ -1275,7 +1275,7 @@ return function(Vargs, GetEnv)
 
 			-- // Support for commands to be ran via TextChat
 			task.spawn(function()
-				local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands")
+				local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
 
 				if container then
 					for _, v in container:GetChildren() do
