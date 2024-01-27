@@ -413,6 +413,7 @@ return function(Vargs)
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
+			local lastLogIndex = 0
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -668,8 +669,6 @@ return function(Vargs)
 				end
 
 				--// Check Log History
-				--// TEMP DISABLED WHILE INVESTIGATING LAG SOURCE
-				--[[
 				local Logs = service.LogService.GetLogHistory(service.LogService)
 				local rawLogService = service.UnWrap(service.LogService)
 				local First = Logs[1]
@@ -707,12 +706,13 @@ return function(Vargs)
 				then
 					Detected("kick", "Bypass detected 0x48248")
 				else
-					for _, v in ipairs(Logs) do
+					for _, v in ipairs(Logs), Logs, lastLogIndex do
 						if check(v.message) then
 							Detected("crash", "Exploit detected; "..v.message)
 						end
 					end
-				end--]]
+					lastLogIndex = #Logs
+				end
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
