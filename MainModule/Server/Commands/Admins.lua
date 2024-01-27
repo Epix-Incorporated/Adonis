@@ -271,7 +271,6 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers() do
-					--Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[1]
 						if data.Options.Chat ~= true then
@@ -412,7 +411,7 @@ return function(Vargs, env)
 
 		Notif = {
 			Prefix = Settings.Prefix;
-			Commands = {"setmessage", "notif", "setmsg"};
+			Commands = {"setmessage", "notif", "setmsg", "permhint"};
 			Args = {"message OR off"};
 			Filter = true;
 			Description = "Sets a small hint message at the top of the screen";

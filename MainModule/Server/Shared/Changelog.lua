@@ -1,7 +1,15 @@
 return {
-	"Version: 244";
+	"Version: 245";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v245 2024-01-27 10:15 UTC] @Dimenpsyonal";
+	":permhint is now a command for :setmessage";
+	"Size of credits window slightly increased";
+	"Fixed error message about TextChatService";
+	":flynoclip is now a command for :fly";
+	":flyclip is now an alias";
+	"MainModule and Loader version is now part boot print (#1384)";
 	"";
 	"[v244 2024-01-23 09:30 UTC] @Dimenpsyonal";
 	"Fixed handing of infinite respawn times";

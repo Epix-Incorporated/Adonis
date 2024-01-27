@@ -58,7 +58,7 @@ jobs:
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
      
-      - uses: actions/upload-artifact@v4.0.0
+      - uses: actions/upload-artifact@v4.2.0
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm

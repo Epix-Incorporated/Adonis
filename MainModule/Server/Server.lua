@@ -731,9 +731,9 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			print(`Loading Complete; Required by {data.Loader:GetFullName()}`)
+			print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; Required by {data.Loader:GetFullName()}{data.Model:FindFirstChild("Version") and (" version: "..data.Model.Version.Value) or ""}`)
 		else
-			print("Loading Complete; No loader location provided")
+			print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; No loader location provided`)
 		end
 
 		if server.Logs then
