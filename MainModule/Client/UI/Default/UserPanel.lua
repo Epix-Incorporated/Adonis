@@ -58,8 +58,8 @@ return function(data, env)
 	local gTable
 	local window = UI.Make("Window", {
 		Name  = "UserPanel";
-		Title = "Adonis";
-		Icon = "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
+		Title = Variables.NightlyMode and "Adonis Nightly" or "Adonis";
+		Icon = Variables.NightlyMode and "rbxassetid://6877822142" or "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
 		Size  = {465, 325};
 		AllowMultiple = false;
 		OnClose = function()
@@ -103,14 +103,14 @@ return function(data, env)
 	end
 
 	local function promptPurchase(isGamepass, id)
-		if client.Variables.AllowThirdPartyPurchases == false then
+		if Variables.AllowThirdPartyPurchases == false then
 			createPurchaseWindow(isGamepass, id)
 		else
 			local logEvent, finishEvent
 
 			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
 				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
-					client.Variables.AllowThirdPartyPurchases = false
+					Variables.AllowThirdPartyPurchases = false
 
 					createPurchaseWindow(isGamepass, id)
 				end
