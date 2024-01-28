@@ -47,7 +47,8 @@ return function(data, env)
 
 	toggle.MouseButton1Down:Connect(function()
 		task.spawn(function()
-			local effect = Instance.new("ImageLabel", toggle)
+			local effect = Instance.new("ImageLabel")
+			effect.Parent = toggle
 			effect.AnchorPoint = Vector2.new(0.5, 0.5)
 			effect.BorderSizePixel = 0
 			effect.ZIndex = toggle.ZIndex + 1
