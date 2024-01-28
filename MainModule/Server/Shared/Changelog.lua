@@ -1,7 +1,11 @@
 return {
-	"Version: 245";
+	"Version: 246";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v246 2024-01-xx xx:xx UTC] @Dimenpsyonal";
+	"cPcall removal";
+	"Various optimisations";
 	"";
 	"[v245 2024-01-27 10:15 UTC] @Dimenpsyonal";
 	":permhint is now a command for :setmessage";
