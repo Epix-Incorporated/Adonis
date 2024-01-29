@@ -8,32 +8,32 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Colorize</string>
 			<string name="ScriptGuid">{DEDB902C-524D-428E-960D-26616B5E97ED}</string>
-			<ProtectedString name="Source"><![CDATA[--// You can use modules like this to alter guis without making a new theme
---// This makes it so you don't need to make an entire gui folder n all that
---// If the theme is set to this module, it will use the default guis
---// The default requested gui will be passed to and modified by this module
---// before it runs. This lets you change things in anyway you want without
---// needing to change the guis by hand or their code.
---// This is also generally safer and update proof.
---// Alternatively if this returns anything, it will be assumed
---// that this module created and registered it's own screenguis
---// It will assume that any return is from those guis
---// For instance the YesNoPrompt returns Yes or No depending on
---// what button the player presses.
---// Any non-nil return will be returned by the script
---// IF YOU MAKE YOUR OWN SCREENGUIS IT IS UP TO YOU TO REGISTER THEM!
---// If you plan to make your own guis you must return something from this module
---// and you must register them using client.UI.Register(ScreenGuiObjectHere)
---// Register will return gTable and gIndex, when destroying your gui
---// use gTable:Destroy(); If your gui needs to be removed in a special way
---// you can define a custom destroy function by doing
---// gTable.CustomDestroy = function() doStuffHere end
+			<ProtectedString name="Source"><![CDATA[--[[ You can use modules like this to alter guis without making a new theme
+	This makes it so you don't need to make an entire gui folder n all that
+	If the theme is set to this module, it will use the default guis
+	The default requested gui will be passed to and modified by this module
+	before it runs. This lets you change things in anyway you want without
+	needing to change the guis by hand or their code.
+	This is also generally safer and update proof.
+	Alternatively if this returns anything, it will be assumed
+	that this module created and registered it's own screenguis
+	It will assume that any return is from those guis
+	For instance the YesNoPrompt returns Yes or No depending on
+	what button the player presses.
+	Any non-nil return will be returned by the script
+	IF YOU MAKE YOUR OWN SCREENGUIS IT IS UP TO YOU TO REGISTER THEM!
+	If you plan to make your own guis you must return something from this module
+	and you must register them using client.UI.Register(ScreenGuiObjectHere)
+	Register will return gTable and gIndex, when destroying your gui
+	use gTable:Destroy(); If your gui needs to be removed in a special way
+	you can define a custom destroy function by doing
+	gTable.CustomDestroy = function() doStuffHere end
 
---// If this module returns a ScreenGui object, the script will use that as the gui and 
---// take care of registering and running the code module n all that.
---// RETURNED SCREENGUI MUST CONTAIN A "Config" FOLDER; 
---// If no Code module is given the default code module will be used.
-
+	If this module returns a ScreenGui object, the script will use that as the gui and 
+	take care of registering and running the code module n all that.
+	RETURNED SCREENGUI MUST CONTAIN A "Config" FOLDER; 
+	If no Code module is given the default code module will be used.
+--]]
 --[[
 	~= EXAMPLE CODE =~
 	return function(gui,gTable,guiData)
