@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v246 2024-01-xx xx:xx UTC] @Dimenpsyonal";
+	"Fixed !inspect UI clipping on certain people";
 	"cPcall removal";
 	"Various optimisations";
 	"";
