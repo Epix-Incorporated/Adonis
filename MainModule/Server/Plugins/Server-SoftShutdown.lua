@@ -56,7 +56,7 @@ return function(Vargs, GetEnv)
 					Time = 1000
 				})
 
-				wait(waitTime)
+				task.wait(waitTime)
 				waitTime /= 2
 
 				Logs:AddLog("Script", `Teleporting {player.Name} back to the main game`)
