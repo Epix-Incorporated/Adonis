@@ -50,7 +50,7 @@ return function(Vargs, GetEnv)
 		return table.concat(Res)
 	end
 	if HTTP.Trello.API then
-		HTTP.Trello.API = Functions.GetRandom
+		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
 	end
 	for k, v in {-- Legacy aliases
 		[":giveppoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
