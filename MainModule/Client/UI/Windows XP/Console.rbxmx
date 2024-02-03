@@ -500,7 +500,6 @@
 					<string name="Name">NoEnv-Code</string>
 					<string name="ScriptGuid">{d292d3cd-7314-4977-b6e0-0048f5843ff9}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
