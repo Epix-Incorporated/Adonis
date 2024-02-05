@@ -567,25 +567,16 @@ return function(Vargs, GetEnv)
 						DontError = true;
 						})
 					do
-						local a = service.Filter(a, p, v)
-						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == "Global" then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == "Team" and p.TeamColor == v.TeamColor then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == "Local" and p:DistanceFromCharacter(v.Character.Head.Position) < 80 then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == "Admins" and Admin.CheckAdmin(p) then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == "Private" and v.Name ~= p.Name then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == "Nil" then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-							--[[elseif b == 'Ignore' and v.Name ~= p.Name then
-								Remote.Send(v,'AddToTable','IgnoreList',v.Name)
-							elseif b == 'UnIgnore' and v.Name ~= p.Name then
-								Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)--]]
+						if
+							p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore"
+							or b == "Global"
+							or b == "Team" and p.TeamColor == v.TeamColor
+							or b == "Local" and p:DistanceFromCharacter(v.Character.Head.Position) < 80
+							or b == "Admins" and Admin.CheckAdmin(p)
+							or b == "Private" and v.Name ~= p.Name
+							or b == "Nil"
+						then
+							Remote.Send(v, "Handler", "ChatHandler", p, service.Filter(a, p, v), b)
 						end
 					end
 				end
