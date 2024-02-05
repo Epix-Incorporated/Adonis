@@ -6,6 +6,7 @@ return {
 	"[v246 2024-01-xx xx:xx UTC] @Dimenpsyonal";
 	"Fixed !inspect UI clipping on certain people";
 	"cPcall removal";
+	"Userpanel now displays if nightly is used";
 	"Updated update notification icon";
 	"Various optimisations";
 	"";
