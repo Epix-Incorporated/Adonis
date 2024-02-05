@@ -1062,15 +1062,19 @@ return function(Vargs, GetEnv)
 				cam[prop] = value
 			end
 		end;
-
-		SetFPS = function(fps) --watameln was here
+		
+		--# selene: allow(empty_loop)
+		SetFPS = function(fps)
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
 
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
-					local cat = os.clock()
-					repeat while cat + 1/fps > os.clock() do end task.wait() cat = os.clock() until service.IsLooped("SetFPS") == false
+					local osclock = os.clock()
+					repeat while osclock + 1/fps > os.clock() do end 
+						task.wait()
+						osclock = os.clock() 
+					until service.IsLooped("SetFPS") == false
 				end)
 			end
 		end;
