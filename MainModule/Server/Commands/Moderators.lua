@@ -3655,21 +3655,29 @@ return function(Vargs, env)
 								end
 
 								if rigType == Enum.HumanoidRigType.R6 then
+									local partsToRemove = {
+										["RightUpperArm"] = true,
+										["RightLowerArm"] = true,
+										["RightHand"] = true,
+										["LeftUpperArm"] = true,
+										["LeftLowerArm"] = true,
+										["LeftHand"] = true,
+										["RightUpperLeg"] = true,
+										["RightLowerLeg"] = true,
+										["RightFoot"] = true,
+										["LeftUpperLeg"] = true,
+										["LeftLowerLeg"] = true,
+										["LeftFoot"] = true,
+										["UpperTorso"] = true,
+										["LowerTorso"] = true
+									}
+
 									for i = #partInput, 1, -1 do
-										if partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso" then
+										if partsToRemove[partInput[i]] then
 											table.remove(partInput, i)
 										end
 									end
 								end
-
 
 								-- Make chosen parts transparent
 								for k, v in partInput do
@@ -5139,20 +5147,12 @@ return function(Vargs, env)
 												v:Destroy()
 											end
 										end
-
 										bCreateNewDefaultClothing = true
 									end
-								else -- If the specified clothing was not found.
-									if humanoidAppliedDesc.GraphicTShirt == 0 then
-										bCreateNewDefaultClothing = true
-									else
-										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
-										-- then just create a default clothing as well.
-										bCreateNewDefaultClothing = true
-									end
+								else
+								bCreateNewDefaultClothing = true
 								end
-
-
+								
 								if bCreateNewDefaultClothing then
 									-- Set a new specified clothing.
 									local humDescClone = humanoidAppliedDesc:Clone()
