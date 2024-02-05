@@ -5150,7 +5150,7 @@ return function(Vargs, env)
 										bCreateNewDefaultClothing = true
 									end
 								else
-								bCreateNewDefaultClothing = true
+									bCreateNewDefaultClothing = true
 								end
 								
 								if bCreateNewDefaultClothing then
@@ -5220,13 +5220,7 @@ return function(Vargs, env)
 										bCreateNewDefaultClothing = true
 									end
 								else -- If the specified clothing was not found.
-									if humanoidAppliedDesc.Shirt == 0 then
-										bCreateNewDefaultClothing = true
-									else
-										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
-										-- then just create a default clothing as well.
-										bCreateNewDefaultClothing = true
-									end
+									bCreateNewDefaultClothing = true
 								end
 
 
@@ -5298,13 +5292,7 @@ return function(Vargs, env)
 										bCreateNewDefaultClothing = true
 									end
 								else -- If the specified clothing was not found.
-									if humanoidAppliedDesc.Pants == 0 then
-										bCreateNewDefaultClothing = true
-									else
-										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
-										-- then just create a default clothing as well.
-										bCreateNewDefaultClothing = true
-									end
+									bCreateNewDefaultClothing = true
 								end
 
 
