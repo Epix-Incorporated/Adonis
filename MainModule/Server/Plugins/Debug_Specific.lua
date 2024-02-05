@@ -1,7 +1,6 @@
 --# selene: allow(mixed_table)
 server = nil
 service = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 GetEnv = nil

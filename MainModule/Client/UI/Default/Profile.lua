@@ -141,7 +141,7 @@ return function(data, env)
 			if v[1] then
 				generaltab:Add("TextLabel", {
 					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, 32*c + 225);
+					Position = UDim2.new(0, 5, 0, 32*c + 285);
 					BackgroundTransparency = 0.4;
 					Text = v[2];
 					ToolTip = v[4];
