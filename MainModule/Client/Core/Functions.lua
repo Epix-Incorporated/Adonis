@@ -1,3 +1,4 @@
+--# selene: allow(empty_loop)
 client = nil
 service = nil
 Pcall = nil
@@ -1063,7 +1064,6 @@ return function(Vargs, GetEnv)
 			end
 		end;
 		
-		--# selene: allow(empty_loop)
 		SetFPS = function(fps)
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
