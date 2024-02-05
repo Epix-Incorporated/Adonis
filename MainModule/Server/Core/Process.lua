@@ -604,8 +604,7 @@ return function(Vargs, GetEnv)
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
-					local Slowmode = Admin.CheckSlowMode(p)
-					if not Slowmode then
+					if not Admin.CheckSlowMode(p) then
 						local msg = string.sub(msg, 1, Process.MsgStringLimit)
 						local filtered = service.LaxFilter(msg, p)
 
@@ -634,7 +633,7 @@ return function(Vargs, GetEnv)
 						else
 							service.Events.PlayerChatted:Fire(p, msg)
 						end
-					elseif Slowmode then
+					else
 						local msg = string.sub(msg, 1, Process.MsgStringLimit)
 						
 						if Settings.ChatCommands then
@@ -664,18 +663,6 @@ return function(Vargs, GetEnv)
 		end;
 
 		--[==[
-				WorkspaceChildAdded = function(c)
-					--[[if c:IsA("Model") then
-						local p = service.Players:GetPlayerFromCharacter(c)
-						if p then
-							service.TrackTask(`{p.Name}: CharacterAdded`, Process.CharacterAdded, p)
-						end
-					end
-
-					-- Moved to PlayerAdded handler
-					--]]
-				end;
-
 				LogService = function(Message, Type)
 					--service.Events.Output:Fire(Message, Type)
 				end;
@@ -922,6 +909,9 @@ return function(Vargs, GetEnv)
 			--// Start keybind listener
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
 
+			-- // Send server variables to client
+			Remote.Send(p, "SetVariables", { TopBarShift = Settings.TopBarShift, NightlyMode = server.Data.NightlyMode or server.Data.ModuleID == 8612978896 })
+
 			--// Load some playerdata stuff
 			if type(PlayerData.Client) == "table" then
 				if PlayerData.Client.CapesEnabled == true or PlayerData.Client.CapesEnabled == nil then
@@ -1079,9 +1069,6 @@ return function(Vargs, GetEnv)
 					Remote.MakeGui(p, "Notif", {
 						Message = Variables.NotifMessage
 					})
-				end
-				if Settings.TopBarShift then
-					Remote.Send(p, "SetVariables", { TopBarShift = true })
 				end
 											
 				if 
