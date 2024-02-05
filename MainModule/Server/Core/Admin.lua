@@ -518,9 +518,7 @@ return function(Vargs, GetEnv)
 				if not updateCache then
 					--> Feel free to adjust the time to update over or less than 300 seconds (5 minutes).
 					--> 300 seconds is recommended in the event of unexpected server breakdowns with Roblox and faster performance.
-					if existCache and (os.time()-existCache.LastUpdated > 300) then
-						canUpdate = true
-					elseif not existCache then
+					if (existCache and (os.time()-existCache.LastUpdated > 300)) or not existCache then
 						canUpdate = true
 					end
 				else
