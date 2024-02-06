@@ -307,13 +307,14 @@ local service = wrappedEnv.Service
 			print(tack)
 			print(Remote.Get(plr,"Test"))
 			local tab = {
-				{
-					Children = {
-						{Class = "sdfhasdfjkasjdf"}
-				};
-					{{Something = "hi"}};
-				}
+			    {
+			    	Children = {
+			            {Class = "sdfhasdfjkasjdf"}
+			        }
+			    },
+ 			   {Something = "hi"}
 			}
+
 			local m, ret = Remote.Get(plr, "Test", tab)
 			if ret then
 				print(ret)
