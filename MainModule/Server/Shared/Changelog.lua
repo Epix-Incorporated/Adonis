@@ -1,7 +1,9 @@
 return {
-	"Version: 246";
+	"Version: 247";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v247 2024-xx-xx xx:xx UTC] @Maintainer";
 	"";
 	"[v246 2024-02-05 16:35 UTC] @Dimenpsyonal";
 	"Fixed !inspect UI clipping on certain people";
