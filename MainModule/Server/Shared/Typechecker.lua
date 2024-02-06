@@ -559,7 +559,7 @@ t.exactly = t.literal
 function t.keyOf(keyTable)
 	local keys = {}
 	local length = 0
-	for key in pairs(keyTable) do
+	for key in keyTable do
 		length = length + 1
 		keys[length] = key
 	end
@@ -577,7 +577,7 @@ end
 function t.valueOf(valueTable)
 	local values = {}
 	local length = 0
-	for _, value in pairs(valueTable) do
+	for _, value in valueTable do
 		length = length + 1
 		values[length] = value
 	end
@@ -848,7 +848,7 @@ function t.keys(check)
 			return false, tableErrMsg or ""
 		end
 
-		for key in pairs(value) do
+		for key in value do
 			local success, errMsg = check(key)
 			if success == false then
 				return false, string.format("bad key %s:\n\t%s", tostring(key), errMsg or "")
@@ -874,7 +874,7 @@ function t.values(check)
 			return false, tableErrMsg or ""
 		end
 
-		for key, val in pairs(value) do
+		for key, val in value do
 			local success, errMsg = check(val)
 			if success == false then
 				return false, string.format("bad value for key %s:\n\t%s", tostring(key), errMsg or "")
@@ -952,7 +952,7 @@ do
 				arraySize = arraySize + 1
 			end
 
-			for key in pairs(value) do
+			for key in value do
 				if key < 1 or key > arraySize then
 					return false, string.format("[array] key %s must be sequential", tostring(key))
 				end
@@ -989,7 +989,7 @@ do
 				return false, string.format("[strictArray] Array size exceeds limit of %d", #valueTypes)
 			end
 
-			for idx, typeFn in pairs(valueTypes) do
+			for idx, typeFn in valueTypes do
 				local typeSuccess, typeErrMsg = typeFn(value[idx])
 				if not typeSuccess then
 					return false, string.format("[strictArray] Array index #%d - %s", idx, typeErrMsg)
@@ -1102,14 +1102,14 @@ do
 				return false, tableErrMsg or ""
 			end
 
-			for key, check in pairs(checkTable) do
+			for key, check in checkTable do
 				local success, errMsg = check(value[key])
 				if success == false then
 					return false, string.format("[interface] bad value for %s:\n\t%s", tostring(key), errMsg or "")
 				end
 			end
 
-			for key in pairs(value) do
+			for key in value do
 				if not checkTable[key] then
 					return false, string.format("[interface] unexpected field %q", tostring(key))
 				end
@@ -1285,7 +1285,7 @@ do
 				end
 			end
 
-			for name, check in pairs(checkTable) do
+			for name, check in checkTable do
 				local success, errMsg = check(childrenByName[name])
 				if not success then
 					return false, string.format("[%s.%s] %s", value:GetFullName(), name, errMsg or "")
