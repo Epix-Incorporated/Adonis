@@ -23,7 +23,7 @@ local methods = setmetatable({}, {
 
 				if RealMethods[class][index] ~= obj[index] then
 					if ErrorHandler then
-						ErrorHandler("MethodError", `{debug.traceback()} || Cached method doesn't match found method: {index}`, `Method: {index}`, index)
+						ErrorHandler("MethodError", `{debug.traceback()} || Cached method does not match found method: {index}`, `Method: {index}`, index)
 					end
 				end
 
