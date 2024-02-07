@@ -2,10 +2,10 @@
 
 return {
 	MessageVersion = 5;					--// Message version/number
-	MessageAdminType = 200;  			--// Minimum admin level to be notified (Or Donors or Players or nil to not notify)
-	MessageDate = "1699401601";			--// Time of message creation
+	MessageAdminType = 900;  			--// Minimum admin level to be notified (Or Donors or Players or nil to not notify)
+	MessageDate = "1707264000";			--// Time of message creation
 	MessageDuration = 60*60*24*7; 	--// How long should we notify people about this message
-	LastDateTime = "2024-1-20 00:00:01 UTC";
+	LastDateTime = "2024-02-07 00:00:01 UTC";
 	Messages = {
 		"YOU WILL ONLY BE NOTIFIED ONCE PER GAME ON JOIN, WHEN THERE ARE NEW MESSAGES.";
 		"THESE ARE IMPORTANT ANNOUNCEMENTS RELATED TO ADONIS AND ADONIS USERS.";
@@ -15,7 +15,7 @@ return {
 		"";
 		"[LOW - DATE: 2024-02-07 00:00:01 UTC]";
 		"[DURATION: 7 DAYS]";
-		"[NOTIFY: ALL LEVEL 200 AND HIGHER]";
+		"[NOTIFY: ALL LEVEL 900 AND HIGHER]";
 		"VERSION 240 DISABLED THE CLIENT SIDE ANTI CHEAT BY DEFAULT!";
 		"THIS WILL CAUSE ALL OF THE CLIENT SIDE PROTECTIONS TO BE DISABLED!";
 		"IF YOU WANT TO RE-ENABLE THEM CHANGE settings.AllowClientAntiExploit TO `true`;";
