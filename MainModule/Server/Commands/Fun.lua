@@ -1907,7 +1907,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							local knownchar = v.Character
 							local speed = 10
@@ -1974,7 +1974,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						local color = ({"Really blue", "Really red", "Magenta", "Lime green", "Hot pink", "New Yeller", "White"})[math.random(1, 7)]
 						local hum=v.Character:FindFirstChild("Humanoid")
 						if not hum then return end
@@ -2000,7 +2000,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(Settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
 						local run = true
 						local k = service.New("StringValue", v.Character)
@@ -2071,7 +2071,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("ADONIS_BLEED") then return end
 						local run = true
 						local k = service.New("StringValue", v.Character)
@@ -2506,7 +2506,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						local char = v.Character
 						char.HumanoidRootPart.Anchored = true
 						local zeus = service.New("Model", char)
@@ -3447,7 +3447,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						for _, p in v.Character:GetChildren() do
 							if p:IsA("Part") then
 								if p:FindFirstChild("Mesh") then p.Mesh:Destroy() end
@@ -3498,7 +3498,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if v.Character then
 							local head = v.Character.Head
 							local torso = v.Character:FindFirstChild("Torso") or v.Character.UpperTorso
