@@ -13,7 +13,7 @@ return {
 		"NOTIFICATIONS WILL ONLY HAPPEN FOR A SET TIME (WEEK AVG) AFTER THE MESSAGE WAS ADDED.";
 		"PLEASE READ THE MOST RECENT MESSAGE CAREFULLY AS IT LIKELY AFFECTS YOU AND YOUR USERS.";
 		"";
-		"[LOW - DATE: 2024-02-07 00:00:01 UTC]";
+		"[LOW - DATE: 2024-02-07 00:00 UTC]";
 		"[DURATION: 7 DAYS]";
 		"[NOTIFY: ALL LEVEL 900 AND HIGHER]";
 		"VERSION 240 DISABLED THE CLIENT SIDE ANTI CHEAT BY DEFAULT!";
@@ -24,6 +24,7 @@ return {
 		"THIS ALERT IS TO PREVENT UNINTENDED CONSEQUENCES FROM THE DEFAULT DISABLING OF THE CLIENT-SIDE AC";
 		"Completely unrelated to this, we have also disabled the serverside AC protections for HumanoidDeletion and HatProtection";
 		"so enable workspace.RejectCharacterDeletions if you haven't already.";
+		"[END_OF_MESSAGE 2024-02-07 00:00 UTC]";
 		"";
 		"";
 		"PREVIOUS ALERTS:";
