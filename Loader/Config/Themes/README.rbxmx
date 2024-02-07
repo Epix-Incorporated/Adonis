@@ -9,10 +9,11 @@
 			<string name="Name">README</string>
 			<string name="ScriptGuid">{ED4805A5-4DFA-4CD0-9EB8-6FC6A1A3DA26}</string>
 			<ProtectedString name="Source"><![CDATA[--[[
-	This is just a placeholder file so Rojo doesn't ignore the Themes folder. 
-
+		If you wish to create a custom theme for your Adonis GUIs, place it in this folder.
+		You can find instructions about how to do this at our wiki:
+			https://github.com/Epix-Incorporated/Adonis/wiki/Guide:-Creating-a-theme
 --]]
-return function() end;
+return function() end
 ]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
