@@ -30,7 +30,8 @@ return function(data, env)
 	local round1 = Instance.new("UICorner")
 	round1.CornerRadius = UDim.new(0, 6)
 	round1.Parent = toggle
-
+	
+	local useCustomIcon
 	local gTable = client.UI.Register(gui)
 
 	if client.UI.Get("HelpButton", gui, true) then
@@ -39,6 +40,12 @@ return function(data, env)
 		return nil
 	end
 
+	if client.HelpButtonImage == "rbxassetid://357249130" then
+		useCustomIcon = false
+	else
+		useCustomIcon = true
+	end
+		
 	gTable.Name = "HelpButton"
 	gTable.CanKeepAlive = false
 
@@ -51,10 +58,11 @@ return function(data, env)
 	toggle.Size = UDim2.new(0, 33, 0, 33) --33
 	toggle.ZIndex = 67
 	toggle1.Size = UDim2.new(0, 40, 0, 40)
-		toggle.Image =
-			`https://www.roblox.com/headshot-thumbnail/image?userId={localplayer.UserId}&width=420&height=420&format=png`
-
-
+	if useCustomIcon then
+		toggle.Image = client.HelpButtonImage
+	else
+		toggle.Image = `https://www.roblox.com/headshot-thumbnail/image?userId={localplayer.UserId}&width=420&height=420&format=png`
+	end
 
 	toggle.ImageTransparency = 0
 
