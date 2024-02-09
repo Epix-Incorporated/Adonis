@@ -3,7 +3,11 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v247 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v247 2024-02-xx xx:xx UTC] @Dimenpsyonal";
+	"Delete webpanel functions";
+	"Add waypoints finally to the settings";
+	"Remove cpcall & legacy requestids;";
+	"Commands now use logpcall";
 	"";
 	"[v246 2024-02-05 16:35 UTC] @Dimenpsyonal";
 	"Fixed !inspect UI clipping on certain people";
