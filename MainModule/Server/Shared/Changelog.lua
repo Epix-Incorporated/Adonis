@@ -3,11 +3,12 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v247 2024-02-xx xx:xx UTC] @Dimenpsyonal";
+	"[v247 2024-02-09 09:30 UTC] @Dimenpsyonal";
 	"Delete webpanel functions";
 	"Add waypoints finally to the settings";
 	"Remove cpcall & legacy requestids;";
 	"Commands now use logpcall";
+	"Unity theme now supports custom icons";
 	"";
 	"[v246 2024-02-05 16:35 UTC] @Dimenpsyonal";
 	"Fixed !inspect UI clipping on certain people";
