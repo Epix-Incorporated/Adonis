@@ -105,7 +105,6 @@
 					<string name="Name">notification</string>
 					<string name="ScriptGuid">{6766DEF8-E2EF-425E-B41A-60C6038F826C}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil

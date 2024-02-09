@@ -435,7 +435,6 @@
 					<string name="Name">Code</string>
 					<string name="ScriptGuid">{50030479-DCBC-4CC1-9EDF-B518421F939C}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil

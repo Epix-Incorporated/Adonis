@@ -1,4 +1,3 @@
---# selene: allow(empty_loop)
 -------------------
 -- Adonis Client --
 -------------------
@@ -342,21 +341,21 @@ client = setmetatable({
 	end,
 
 	--Kill = Kill;
-}, {
-	__index = function(self, ind)
-		if ind == "Kill" then
-			local ran, func = pcall(function()
-				return Kill()
-			end)
+	}, {
+	  __index = function(self, ind)
+	    if ind == "Kill" then
+ 	     local ran, func = pcall(function()
+	        return Kill()
+	      end)
 
-			if not ran or type(func) ~= "function" then
-				service.Players.LocalPlayer:Kick("Adonis (PlrClientIndexKlErr)")
-				while true do
-				end
-			end
+	      if not ran or type(func) ~= "function" then
+ 		   	service.Players.LocalPlayer:Kick("1x00353 Adonis (PlrClientIndexKlErr)")
+	        warn("Failed to retrieve Kill function")
+  	      return function() end
+    	  end
 
-			return func
-		end
+   	   return func
+  	  end
 	end,
 })
 

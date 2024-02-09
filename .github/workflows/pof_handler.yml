@@ -22,10 +22,10 @@ jobs:
 
           if [[ $comment_body_lowercase =~ "(p\-?o\-?f|proof[-_\s]*of[-_\s]*work)\:?.*\!\[.*\]\(.+\)" ]]; then
             echo "Found proper pof"
-            echo "::set-output name=remove_label::true"
+            echo "remove_label=true" >> $GITHUB_OUTPUT
           else
             echo "Proof-of-work invalid or didnt exist"
-            echo "::set-output name=remove_label::false"
+            echo "remove_label=false" >> $GITHUB_OUTPUT
           fi
 
   remove_label_job:

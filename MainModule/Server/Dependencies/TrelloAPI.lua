@@ -36,20 +36,6 @@ local RateLimit = function()
 end
 
 local HttpFunctions; HttpFunctions = {
-	--// Same as the GetRandom() function
-	GenerateRequestID = function()
-		local format = string.format
-		local random = math.random
-
-		local Len = random(5,10)
-
-		local Res = {};
-		for Idx = 1, Len do
-			Res[Idx] = format('%02x', random(126));
-		end;
-		return table.concat(Res)
-	end;
-
 	Decode = function(str)
 		local success, tab = pcall(function()
 			return HttpService:JSONDecode(str)
@@ -79,7 +65,7 @@ local HttpFunctions; HttpFunctions = {
 	end;
 
 	Request = function(Url, Method, Headers, Body)
-		local RequestID = HttpFunctions.GenerateRequestID()
+		local RequestID = HttpService:GenerateGUID(false)
 		local ran, response = pcall(function()
 			local Request = {
 				Url = Url;
@@ -110,7 +96,7 @@ local HttpFunctions; HttpFunctions = {
 	end;
 
 	Get = function(Url)
-		local RequestID = HttpFunctions.GenerateRequestID()
+		local RequestID = HttpService:GenerateGUID(false)
 		Queue[RequestID] = Url
 		RateLimit()
 
@@ -128,7 +114,7 @@ local HttpFunctions; HttpFunctions = {
 	end;
 
 	Post = function(Url, Data, Type)
-		local RequestID = HttpFunctions.GenerateRequestID()
+		local RequestID = HttpService:GenerateGUID(false)
 		Queue[RequestID] = Url
 		RateLimit()
 

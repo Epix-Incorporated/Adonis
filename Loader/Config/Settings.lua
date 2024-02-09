@@ -140,14 +140,14 @@ settings.HideScript = true						 -- When the game starts the Adonis_Loader model
 settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO ANYTHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
-settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
+settings.LocalDatastore = false					 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
-settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
-settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
+settings.Storage = game:GetService("ServerStorage")  -- Where things like tools are stored
+settings.RecursiveTools = false						 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
+settings.DefaultTheme = "Default"		-- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
@@ -219,6 +219,7 @@ settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {
 settings.MusicList = {} 	-- List of songs to appear in the :musiclist	  Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
 settings.CapeList = {}		-- List of capes							  Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
 settings.InsertList = {} 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
+settings.Waypoints = {}     -- List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)}
 
 settings.OnStartup = {}		-- List of commands ran at server start								Format: {":notif TestNotif"}
 settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
@@ -282,7 +283,7 @@ settings.ChatCommands = true			-- If false you will not be able to run commands 
 settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictly used for debugging; I can't debug without full access to the script
 settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
-settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
+settings.OverrideChatCallbacks = true	-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
@@ -414,6 +415,7 @@ descs.Whitelist = [[ People who can join if whitelist enabled; Format: {"Usernam
 descs.MusicList = [[ List of songs to appear in the script; Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
 descs.CapeList = [[ List of capes; Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}} ]]
 descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
+descs.Waypoints = [[ List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)} ]]
 descs.CustomRanks = [[ List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} ]]
 
 descs.OnStartup = [[ List of commands ran at server start								Format: {":notif TestNotif"} ]]
@@ -557,6 +559,7 @@ order = {
 	"MusicList";
 	"CapeList";
 	"InsertList";
+	"Waypoints";
 	"CustomRanks";
 	" ";
 	"OnStartup";
