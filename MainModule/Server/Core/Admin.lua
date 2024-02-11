@@ -257,6 +257,8 @@ return function(Vargs, GetEnv)
 				end)
 
 				AddLog("Script", "ChatService Handler Loaded")
+			elseif chatService == false then
+				AddLog("Script", "Using TextChatService; Handler Loaded")
 			else
 				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
 				AddLog("Script", "ChatService Handler Not Found")
