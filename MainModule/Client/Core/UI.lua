@@ -330,15 +330,14 @@ return function(Vargs, GetEnv)
 						if folder:IsA("ModuleScript") then
 							local folderNoEnv = string.sub(folder.Name, 1, 5) == "NoEnv" or folder:FindFirstChild("NoEnv")
 
-							local newEnv = GetEnv{{
+							local newEnv = GetEnv({
 								script = folder,
 								gTable = gTable
-							}}
+							})
 
 							local ran, func = pcall(require, folder)
 							local rets = {
-								--// NoEnv temporarily disabled ~ Expertcoderz
-								--[[if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else]] pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
+								if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
 							}
 
 							local ran, ret = rets[1], rets[2]
