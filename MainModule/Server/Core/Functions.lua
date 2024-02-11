@@ -454,6 +454,8 @@ return function(Vargs, GetEnv)
 
 			if chatMod then
 				return require(chatMod)
+				elseif isTextChat then
+				return "TextChat"
 			end
 			return nil
 		end;
