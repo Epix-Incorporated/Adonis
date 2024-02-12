@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v249 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v250 2024-xx-xx xx:xx UTC] @Maintainer";
 	"Added !commspanel as a command for CommsPanel";
 	"";
 	"[v249 2024-02-12 10:00 UTC] @Dimenpsyonal";
