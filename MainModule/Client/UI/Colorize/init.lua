@@ -1,14 +1,4 @@
-<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
-	<Meta name="ExplicitAutoJoints">true</Meta>
-	<External>null</External>
-	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXD71C70FBDF4B49F086AAF6446BE520D8">
-		<Properties>
-			<BinaryString name="AttributesSerialize"></BinaryString>
-			<Content name="LinkedSource"><null></null></Content>
-			<string name="Name">Colorize</string>
-			<string name="ScriptGuid">{DEDB902C-524D-428E-960D-26616B5E97ED}</string>
-			<ProtectedString name="Source"><![CDATA[--[[ You can use modules like this to alter guis without making a new theme
+--[[ You can use modules like this to alter guis without making a new theme
 	This makes it so you don't need to make an entire gui folder n all that
 	If the theme is set to this module, it will use the default guis
 	The default requested gui will be passed to and modified by this module
@@ -29,9 +19,9 @@
 	you can define a custom destroy function by doing
 	gTable.CustomDestroy = function() doStuffHere end
 
-	If this module returns a ScreenGui object, the script will use that as the gui and 
+	If this module returns a ScreenGui object, the script will use that as the gui and
 	take care of registering and running the code module n all that.
-	RETURNED SCREENGUI MUST CONTAIN A "Config" FOLDER; 
+	RETURNED SCREENGUI MUST CONTAIN A "Config" FOLDER;
 	If no Code module is given the default code module will be used.
 --]]
 --[[
@@ -48,41 +38,43 @@
 			local no = yes:Clone()
 			no.Text = "No"
 			no.Position = UDim2.new(0.5,0,0,0)
-			
+
 			local gTable,gIndex = client.UI.Register(new)
-			
+
 			local ans
 			local waiting = true
-			
+
 			gTable.CustomDestroy = function()
 				waiting = false
 			end
-			
+
 			yes.MouseButton1Click:Connect(function()
 				ans = "Yes"
 				gTable:Destroy()
 			end)
-			
+
 			no.MouseButton1Click:Connect(function()
 				ans = "No"
 				gTable:Destroy()
 			end)
-			
+
 			repeat wait() until ans or not waiting  --// Wait until answer
 			return ans or false
 		end
 	end
-	
+
 --]]
 
 service = nil
 client = nil
 
-return function(gui: ScreenGui, guiData, gTable)
+return function(gui: ScreenGui, guiData, gTable, env)
+	if env then setfenv(1, env) end
+
 	local TWEEN_TIME = 2
 	local SEQUENCE = {
-		Color3.fromRGB(255, 85, 88), 
-		Color3.fromRGB(78, 140, 255), 
+		Color3.fromRGB(255, 85, 88),
+		Color3.fromRGB(78, 140, 255),
 		Color3.fromRGB(78, 255, 149)
 	}
 	local CLASSES = {
@@ -91,20 +83,20 @@ return function(gui: ScreenGui, guiData, gTable)
 		TextLabel = true;
 		TextButton = true;
 		ImageLabel = true;
-		ImageButton = true; 
+		ImageButton = true;
 		ScrollingFrame = true;
 	}
-	
+
 	local contents = {}
 	local OrgColors = {}
-	
+
 	local function getCont(obj)
-		for _, v in obj:GetChildren() do 
+		for _, v in obj:GetChildren() do
 			if CLASSES[v.ClassName] then
 				local OrgColor = {}
 				OrgColor.Background = v.BackgroundColor3
-				if v:IsA("ImageLabel") or v:IsA("ImageButton") then 
-					OrgColor.Image = v.ImageColor3 
+				if v:IsA("ImageLabel") or v:IsA("ImageButton") then
+					OrgColor.Image = v.ImageColor3
 				end
 				OrgColors[v] = OrgColor
 				table.insert(contents, v)
@@ -112,13 +104,13 @@ return function(gui: ScreenGui, guiData, gTable)
 			end
 		end
 	end
-	
+
 	getCont(gui)
-	
+
 	if gTable.Name == "List" then
 		gui.Drag.Main.BackgroundTransparency = 0
 	end
-	
+
 	local function tweenToColor(color1, color2, time)
 		local Info = TweenInfo.new(time, Enum.EasingStyle.Linear)
 		for _, v in contents do
@@ -138,29 +130,15 @@ return function(gui: ScreenGui, guiData, gTable)
 		end
 		task.wait(time)
 	end
-	
+
 	service.TrackTask(`Thread: Colorize_{gTable.Name}`,function()
-		repeat 
+		repeat
 			for i in SEQUENCE do
 				local one, two = SEQUENCE[i], SEQUENCE[i+1] or SEQUENCE[1]
-				
+
 				tweenToColor(one, two, TWEEN_TIME)
 			end
 		until not task.wait(if gTable.Active then 0 else 1) and gTable.Destroyed
-		
+
 	end)
-end]]></ProtectedString>
-			<int64 name="SourceAssetId">-1</int64>
-			<BinaryString name="Tags"></BinaryString>
-		</Properties>
-		<Item class="StringValue" referent="RBX37E05A28E4254A29A2D1C2A3769B245B">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">Base_Theme</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<string name="Value">Default</string>
-			</Properties>
-		</Item>
-	</Item>
-</roblox>
+end
