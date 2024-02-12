@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v248 2024-02-xx xx:xx UTC] @Dimenpsyonal";
+	"[v248 2024-02-12 09:15 UTC] @Dimenpsyonal";
 	"Fixed NoEnv for theme modules";
 	"Fixed timeout warn for games using TextChatService";
 	"";
