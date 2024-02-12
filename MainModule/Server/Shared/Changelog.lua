@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v249 2024-02-xx xx:xx UTC] @Dimenpsyonal";
+	"[v249 2024-02-12 10:00 UTC] @Dimenpsyonal";
 	"Fixed Unity notifications not showing up in Comms Panel";
 	"Deleted redundant Comms Center";
 	"Added new materials to !materialslist";
