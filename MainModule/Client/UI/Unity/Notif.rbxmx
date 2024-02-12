@@ -72,7 +72,7 @@ return function(data, env)
 	}
 
 	table.insert(client.Variables.CommunicationsHistory, log)
-	service.Events.CommsCenter:Fire(log)
+	service.Events.CommsPanel:Fire(log)
 
 
 	if str and type(str)=="string" then
