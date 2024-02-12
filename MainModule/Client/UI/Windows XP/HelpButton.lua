@@ -16,13 +16,14 @@ return function(data, env)
 	local gui = service.New("ScreenGui")
 	local toggle = service.New("ImageButton", gui)
 	local gTable = client.UI.Register(gui)
+	
+	local useCustomIcon
 
 	if client.UI.Get("HelpButton", gui, true) then
 		gui:Destroy()
 		gTable:Destroy()
 		return nil
 	end
-
 	if client.HelpButtonImage == "rbxassetid://357249130" then
 		useCustomIcon = false
 	else
