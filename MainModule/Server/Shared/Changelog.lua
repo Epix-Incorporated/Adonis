@@ -3,9 +3,10 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v248 2024-02-12 09:15 UTC] @Dimenpsyonal";
+	"[v248 2024-02-12 09:20 UTC] @Dimenpsyonal";
 	"Fixed NoEnv for theme modules";
 	"Fixed timeout warn for games using TextChatService";
+	"Added error codes to some client functions";
 	"";
 	"[v247 2024-02-09 09:30 UTC] @Dimenpsyonal";
 	"Delete webpanel functions";
