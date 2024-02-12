@@ -23,6 +23,12 @@ return function(data, env)
 		return nil
 	end
 
+	if client.HelpButtonImage == "rbxassetid://357249130" then
+		useCustomIcon = false
+	else
+		useCustomIcon = true
+	end
+
 	gTable.Name = "HelpButton"
 	gTable.CanKeepAlive = false
 
@@ -30,7 +36,11 @@ return function(data, env)
 	toggle.BackgroundTransparency = 1
 	toggle.Position = UDim2.new(1, -45, 1, -45)
 	toggle.Size = UDim2.new(0, 40, 0, 40)
-	toggle.Image = "http://www.roblox.com/asset/?id=7059706594"
+	if useCustomIcon then
+		toggle.Image = client.HelpButtonImage
+	else
+		toggle.Image = "http://www.roblox.com/asset/?id=7059706594"
+	end
 	toggle.ImageTransparency = 0
 
 	--if client.UI.Get("Chat") then
