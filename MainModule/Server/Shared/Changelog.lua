@@ -1,7 +1,10 @@
 return {
-	"Version: 249";
+	"Version: 250";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v249 2024-xx-xx xx:xx UTC] @Maintainer";
+	"Added !commspanel as a command for CommsPanel";
 	"";
 	"[v249 2024-02-12 10:00 UTC] @Dimenpsyonal";
 	"Fixed Unity notifications not showing up in Comms Panel";
