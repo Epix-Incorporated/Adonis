@@ -61,6 +61,17 @@ return function(data, env)
 	local str = data.Message
 
 	client.UI.Remove("Notif",script.Parent.Parent)
+	local log  = {
+		Type = "Notif";
+		Title = "Notif";
+		Message = str;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsPanel:Fire(log)
 
 	if str and type(str)=="string" then
 		label.Text = str
