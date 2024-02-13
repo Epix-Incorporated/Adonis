@@ -112,6 +112,18 @@ return function(data, env)
 	local frameStep = frameFade/fadeSteps
 	local textStep = 0.1
 	local strokeStep = 0.1
+
+	local log  = {
+		Type = "Small Screen Message";
+		Title = title;
+		Message = message;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsPanel:Fire(log)
 	
 	local function fadeIn()
 		gTable:Ready()
