@@ -2733,7 +2733,7 @@ return function(Vargs, env)
 							end
 							
 							local torso = character:WaitForChild("UpperTorso") or character:WaitForChild("Torso")
-							local head = character:WaitForChild("Head")
+							local head = plr.Character:WaitForChild("Head")
 							
 							torso.Transparency = 1
 							
