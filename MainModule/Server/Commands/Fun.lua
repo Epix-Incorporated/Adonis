@@ -2723,15 +2723,16 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
+							local character = plr.Character
 							if character:FindFirstChild("Shirt") then
-							    character.Shirt.Parent = character.HumanoidRootPart
+								character.Shirt.Parent = plr.Character.HumanoidRootPart
 							end
 							
 							if character:FindFirstChild("Pants") then
 							    character.Pants.Parent = character.HumanoidRootPart
 							end
 							
-							local char, torso = character, character:WaitForChild("UpperTorso") or character:WaitForChild("Torso")
+							local torso = character:WaitForChild("UpperTorso") or character:WaitForChild("Torso")
 							local head = char:WaitForChild("Head")
 							
 							torso.Transparency = 1
@@ -2747,7 +2748,7 @@ return function(Vargs, env)
 							
 							torso.Neck.C0 = CFrame.new(0, -0.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
 							
-							local humanoidDescription = HumanoidDescription.new()
+							local humanoidDescription = Instance.new("HumanoidDescription")
 							humanoidDescription.RightShoulderAngle = 90
 							humanoidDescription.LeftShoulderAngle = -90
 							humanoidDescription.RightHipAngle = 90
