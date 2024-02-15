@@ -2733,7 +2733,7 @@ return function(Vargs, env)
 							end
 							
 							local torso = character:WaitForChild("UpperTorso") or character:WaitForChild("Torso")
-							local head = char:WaitForChild("Head")
+							local head = character:WaitForChild("Head")
 							
 							torso.Transparency = 1
 							
@@ -2753,7 +2753,7 @@ return function(Vargs, env)
 							humanoidDescription.LeftShoulderAngle = -90
 							humanoidDescription.RightHipAngle = 90
 							humanoidDescription.LeftHipAngle = -90
-							char.Humanoid:ApplyDescription(humanoidDescription)
+							human:ApplyDescription(humanoidDescription)
 							
 							local seat = Instance.new("Seat")
 							seat.Name = "Adonis_Torso"
@@ -2770,11 +2770,11 @@ return function(Vargs, env)
 							vectorForce.Attachment0 = attachment
 							
 							seat.CFrame = torso.CFrame
-							seat.Parent = char
+							seat.Parent = character
 							
 							torso.Waist.C0 = CFrame.new(0, 0.5, 0)
 							
-							for _, v in char:GetDescendants() do
+							for _, v in character:GetDescendants() do
 							    if v:IsA("BasePart") then
 							        v.BrickColor = BrickColor.new("Brown")
 							    end
