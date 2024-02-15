@@ -6,6 +6,8 @@ return {
 	"[v250 2024-xx-xx xx:xx UTC] @Maintainer";
 	"Added !commspanel as a command for CommsPanel";
 	"Fixed all the themes not sending their messages to CommsPanel";
+	"Windows XP theme now supports custom icons";
+	"Loader now uses a Config instance for Config";
 	"";
 	"[v249 2024-02-12 10:00 UTC] @Dimenpsyonal";
 	"Fixed Unity notifications not showing up in Comms Panel";
