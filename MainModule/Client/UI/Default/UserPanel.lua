@@ -439,6 +439,7 @@ return function(data, env)
 			TextYAlignment = Enum.TextYAlignment.Center;
 			Font = Font.fromEnum(Enum.Font.SourceSansSemibold)
 		}
+
 		local donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad = donorTab:Add("TextLabel", LOAD_TEXT), keyTab:Add("TextLabel", LOAD_TEXT), aliasTab:Add("TextLabel", LOAD_TEXT), clientTab:Add("TextLabel", LOAD_TEXT), gameTab:Add("TextLabel", LOAD_TEXT)
 		gTable = window.gTable
 		window:Ready()
@@ -447,11 +448,10 @@ return function(data, env)
 		local settingsData = Remote.Get("AllSettings")
 		Variables.Aliases = playerData.Aliases or {}
 		commandPrefix = chatMod.Prefix
-		donorLoad:Destroy()
-		keyLoad:Destroy()
-		aliasLoad:Destroy()
-		clientLoad:Destroy()
-		gameLoad:Destroy()
+
+		for _, v in {donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad} do
+			v:Destroy()
+		end
 
 		--// Donor Tab
 		do
