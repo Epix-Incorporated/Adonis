@@ -431,13 +431,13 @@ return function(data, env)
 
 		local LOAD_TEXT = {
 			BackgroundTransparency = 1;
-			Size = UDim2.new(0, 1, 0, 1);
+			Size = UDim2.new(1, 0, 1, 0);
 			Text = "Loading...";
 			TextScaled = true;
 			TextColor3 = Color3.new(1, 1, 1);
 			TextXAlignment = Enum.TextXAlignment.Center;
 			TextYAlignment = Enum.TextYAlignment.Center;
-			Font = Font.fromEnum(Enum.Font.SourceSansSemibold)
+			Font = Enum.Font.SourceSansSemibold
 		}
 
 		local donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad = donorTab:Add("TextLabel", LOAD_TEXT), keyTab:Add("TextLabel", LOAD_TEXT), aliasTab:Add("TextLabel", LOAD_TEXT), clientTab:Add("TextLabel", LOAD_TEXT), gameTab:Add("TextLabel", LOAD_TEXT)
