@@ -296,6 +296,7 @@ return function(data, env)
 	end
 
 	if window then
+		local commandPrefix = ":"
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
@@ -358,7 +359,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						Remote.Send("ProcessCommand", `{chatMod.Prefix}cmds`)
+						Remote.Send("ProcessCommand", `{commandPrefix}cmds`)
 					end
 				}
 			})
@@ -430,7 +431,7 @@ return function(data, env)
 
 		local LOAD_TEXT = {
 			BackgroundTransparency = 1;
-			Size = Udim2.new(0, 1, 0, 1);
+			Size = UDim2.new(0, 1, 0, 1);
 			Text = "Loading...";
 			TextScaled = true;
 			TextColor3 = Color3.new(1, 1, 1);
@@ -445,6 +446,7 @@ return function(data, env)
 		local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		local settingsData = Remote.Get("AllSettings")
 		Variables.Aliases = playerData.Aliases or {}
+		commandPrefix = chatMod.Prefix
 		donorLoad:Destroy()
 		keyLoad:Destroy()
 		aliasLoad:Destroy()
