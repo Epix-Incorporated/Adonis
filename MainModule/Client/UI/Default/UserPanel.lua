@@ -296,12 +296,6 @@ return function(data, env)
 	end
 
 	if window then
-		local playerData   = Remote.Get("PlayerData")
-		local chatMod 	   = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-		local settingsData = Remote.Get("AllSettings")
-
-		Variables.Aliases = playerData.Aliases or {}
-
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
@@ -434,13 +428,19 @@ return function(data, env)
 
 		end
 
+		gTable = window.gTable
+		window:Ready()
+		local playerData = Remote.Get("PlayerData")
+		local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+		local settingsData = Remote.Get("AllSettings")
+		Variables.Aliases = playerData.Aliases or {}
 
 		--// Donor Tab
 		do
-			local donorData       = playerData.Donor
+			local donorData = playerData.Donor
 			local currentMaterial = donorData and donorData.Cape.Material
-			local currentTexture  = donorData and donorData.Cape.Image
-			local currentColor    = donorData and donorData.Cape.Color
+			local currentTexture = donorData and donorData.Cape.Image
+			local currentColor = donorData and donorData.Cape.Color
 
 			if type(currentColor) == "table" then
 				currentColor = Color3.new(currentColor[1],currentColor[2],currentColor[3])
