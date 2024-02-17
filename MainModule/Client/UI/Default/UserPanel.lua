@@ -218,7 +218,7 @@ return function(data, env)
 								if not inputBlock then
 									inputBlock = true
 									if #entryText.Text > 0 then
-										client.Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
+										Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
 										table.insert(tab, entryText.Text)
 									end
 									wait(0.5)
@@ -264,7 +264,7 @@ return function(data, env)
 					OnClicked = function(button)
 						if selected and not inputBlock then
 							inputBlock = true
-							client.Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
+							Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
 							table.remove(tab, selected.Index)
 							showItems()
 							wait(0.5)
