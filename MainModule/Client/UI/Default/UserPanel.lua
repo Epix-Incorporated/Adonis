@@ -192,30 +192,33 @@ return function(data, env)
 				local entryText
 				local entryBox; entryBox = tabWindow:Add("Frame", {
 					Visible = false;
-					Size = UDim2.new(0, 200, 0, 75);
-					Position = UDim2.new(0.5, -100, 0.5, -100);
+					Size = UDim2.new(0, 241,0, 105);
+					BackgroundColor3 = Color3.fromRGB(45, 45, 45);
+					BorderColor3 = Color3.fromRGB(27, 42, 53);
+					Position = UDim2.new(0.434, -100,0.612, -100);
 					ZIndex = 100;
 					Children = {
 						{
 							Class = "TextLabel";
-							Text = "Entry:";
-							Position = UDim2.new(0, 15, 0, 10);
-							Size = UDim2.new(0, 40, 0, 25);
+							Text = "Entry";
+							Position = UDim2.new(0, 0, 0, 0);
+							Size = UDim2.new(0, 241, 0, 34);
 							BackgroundTransparency = 1;
+							TextSize = 16.000;
 							ZIndex = 100;
 						};
 						{
 							Class = "TextButton";
 							Text = "Add";
-							Position = UDim2.new(0.5, 0, 1, -30);
-							Size = UDim2.new(0.5, -20, 0, 20);
+							Position = UDim2.new(0.479, 0, 1, -30);
+							Size = UDim2.new(0.6, -20, 0, 20);
 							BackgroundTransparency = 1;
 							ZIndex = 100;
 							OnClicked = function()
 								if not inputBlock then
 									inputBlock = true
 									if #entryText.Text > 0 then
-										Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
+										client.Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
 										table.insert(tab, entryText.Text)
 									end
 									wait(0.5)
@@ -228,7 +231,7 @@ return function(data, env)
 						{
 							Class = "TextButton";
 							Text = "Cancel";
-							Position = UDim2.new(0, 10, 1, -30);
+							Position = UDim2.new(-0.041, 10, 1, -30);
 							Size = UDim2.new(0.5, -20, 0, 20);
 							BackgroundTransparency = 1;
 							ZIndex = 100;
@@ -243,13 +246,14 @@ return function(data, env)
 				})
 
 				entryText = entryBox:Add("TextBox", {
-					Position = UDim2.new(0, 55, 0, 10);
-					Size = UDim2.new(1, -60, 0, 25);
+					Position = UDim2.new(0.043, 0, 0.324, 0);
+					Size = UDim2.new(0.928, 0, 0.238, 0);
 					Text = "";
 					PlaceholderText = "Type entry here";
 					TextScaled = true;
-					BackgroundColor3 = Color3.new(1,1,1);
-					BackgroundTransparency = 0.8;
+					TextWrapped = true;
+					BackgroundColor3 = Color3.fromRGB(58, 58, 58);
+					BackgroundTransparency = 0;
 					ZIndex = 100;
 				})
 
@@ -260,7 +264,7 @@ return function(data, env)
 					OnClicked = function(button)
 						if selected and not inputBlock then
 							inputBlock = true
-							Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
+							client.Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
 							table.remove(tab, selected.Index)
 							showItems()
 							wait(0.5)
@@ -281,7 +285,7 @@ return function(data, env)
 					end
 				})
 
-				entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1,1,1), 0.25)
+				--entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1,1,1), 0.25)
 				showItems()
 			else
 				items:Add("TextLabel", {
