@@ -123,7 +123,7 @@ return function(Vargs, GetEnv)
 			--	table.insert(logsToSave, Logs.Commands[i]);
 			--end
 
-			Core.UpdateData("OldCommandLogs", function(oldLogs) oldLogs = service.HttpService:JSONDecode(oldLogs)
+			Core.UpdateData("OldCommandLogs", function(oldLogs) if typeof(oldLogs) ~= "table" then oldLogs = service.HttpService:JSONDecode(oldLogs) end
 				local temp = {}
 
 				for _, m in logsToSave do
