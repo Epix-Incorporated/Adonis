@@ -6682,7 +6682,7 @@ return function(Vargs, env)
 					local tab = table.create(1000)
 					local data = Core.GetData("OldCommandLogs")
 					if data then
-						for i, v in data do
+						for i, v in service.HttpService:JSONDecode(data) do
 							table.insert(tab, i, {
 								Time = v.Time,
 								Text = `{v.Text}: {v.Desc}`,
