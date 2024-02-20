@@ -4,6 +4,10 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v250 2024-xx-xx xx:xx UTC] @Maintainer";
+	":oldlogs now works correctly with LinkedLists";
+	"> use :clearoldlogs to purge any corrupted logs";
+	"Entry UI now looks less weird";
+	"Fixed RunCommand not targeting players correctly";
 	"Added !commspanel as a command for CommsPanel";
 	"Fixed all the themes not sending their messages to CommsPanel";
 	"Windows XP theme now supports custom icons";
