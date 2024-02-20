@@ -40,7 +40,7 @@ return function(Vargs, GetEnv)
 			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 				local function onNewTextchannel(textchannel: TextChannel)
 					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
-					
+
 					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
 						AddLog("Script", "Overriding ShouldDeliverCallback for " .. textchannel.Name)
 						textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
@@ -52,9 +52,9 @@ return function(Vargs, GetEnv)
 								local SenderPlayer = service.Players:GetPlayerByUserId(SenderId)
 								local Receiver = service.Players:GetPlayerByUserId(textSource.UserId)
 								local slowCache = Admin.SlowCache
-								
+
 								local IsOriginalSender = SenderPlayer == Receiver
-								
+
 								if not SenderPlayer then
 									return true
 								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
@@ -62,16 +62,16 @@ return function(Vargs, GetEnv)
 								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
 									if IsOriginalSender then
 										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
-									end 
-									
+									end
+
 									return false
 								elseif Admin.SlowMode and not Admin.CheckAdmin(SenderPlayer) and slowCache[SenderPlayer] and os.time() - slowCache[SenderPlayer] < Admin.SlowMode then
 									if IsOriginalSender then --// Only show this for the person sending! Hide for others, however
 										--Functions.Notification("You are chatting too fast!", string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer])), {SenderPlayer}, 10)
-										
+
 										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are sending messages too fast! {string.format("(%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]))}`)
 									end
-									
+
 									return false
 								end
 
@@ -86,13 +86,13 @@ return function(Vargs, GetEnv)
 
 							return true
 						end
-					else 
+					else
 						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
 						server.Variables.TextChatSpeakers = {}
 						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
 							if not server.Variables.TextChatSpeakers[player] then
 								server.Variables.TextChatSpeakers[player] = {}
-							end 
+							end
 							table.insert(server.Variables.TextChatSpeakers[player], speaker)
 							--// Check if the player is muted or not
 							speaker:SetAttribute("OriginalCanSend", speaker.CanSend)
@@ -100,7 +100,7 @@ return function(Vargs, GetEnv)
 								speaker.CanSend = false
 							end
 						end
-						local function SpeakerAdded(speaker: TextSource) 
+						local function SpeakerAdded(speaker: TextSource)
 							if speaker.UserId and speaker.UserId > 0 then
 								local Player = service.Players:GetPlayerByUserId(speaker.UserId)
 								if Player then
@@ -126,38 +126,38 @@ return function(Vargs, GetEnv)
 								end
 							end
 						end
-						
+
 						textchannel.ChildAdded:Connect(function(textSource)
 							if textSource:IsA("TextSource") then
 								SpeakerAdded(textSource)
 							end
 						end)
-						
+
 						textchannel.ChildRemoved:Connect(function(textSource)
 							if textSource:IsA("TextSource") then
 								SpeakerRemoved(textSource)
 							end
 						end)
-						
-						for _,inst in textchannel:GetChildren() do 
+
+						for _,inst in textchannel:GetChildren() do
 							if inst:IsA("TextSource") then
 								SpeakerAdded(inst)
 							end
 						end
-						
+
 					end
 				end
-				
+
 				--// Only set this up once
 				--// This is for commands to tell us when a player should be muted
-				if not Settings.OverrideChatCallbacks then 
+				if not Settings.OverrideChatCallbacks then
 					service.Events.PlayerMuted:Connect(function(data)
 						local PlayerId = data.Target;
 						local ModId = data.Moderator;
 
 						local Player = service.Players:GetPlayerByUserId(PlayerId)
 						--// Loop through CanSend of a speaker
-						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do 
+						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do
 							speakers.CanSend = false
 						end
 						if Player then
@@ -170,7 +170,7 @@ return function(Vargs, GetEnv)
 
 						local Player = service.Players:GetPlayerByUserId(PlayerId)
 						--// Loop through CanSend of a speaker
-						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do 
+						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do
 							local original = speakers:GetAttribute("OriginalCanSend")
 							speakers.CanSend = if original ~= nil then original else true
 						end
@@ -182,7 +182,7 @@ return function(Vargs, GetEnv)
 						server.Remote.Send(p, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
 					end)
 				end
-					
+
 
 				local function onTextChannelsAdded(textChannels)
 					textChannels.ChildAdded:Connect(function(child)
@@ -190,7 +190,7 @@ return function(Vargs, GetEnv)
 							task.spawn(onNewTextchannel, child)
 						end
 					end)
-				
+
 					for _, v in textChannels:GetChildren() do
 						if v:IsA("TextChannel") then
 							task.spawn(onNewTextchannel, v)
@@ -203,7 +203,7 @@ return function(Vargs, GetEnv)
 						task.spawn(onTextChannelsAdded, child)
 					end
 				end)
-				
+
 				if service.TextChatService:FindFirstChild("TextChannels") then
 					task.spawn(pcall, onTextChannelsAdded, service.TextChatService:FindFirstChild("TextChannels"))
 				end
@@ -472,7 +472,7 @@ return function(Vargs, GetEnv)
 				return false
 			end
 		end,
-		
+
 		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
 			local pData = data or Core.GetPlayer(p)
 			if pData.Client.HideChatCommands then
@@ -1190,7 +1190,7 @@ return function(Vargs, GetEnv)
 
 				TrackTask(`Command: {coma}`, com.Function, function(err)
 					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
-				end, nil, args)
+				end, false, args)
 			end
 		end;
 
