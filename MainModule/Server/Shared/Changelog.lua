@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v250 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v250 2024-02-23 12:10 UTC] @Dimenpsyonal";
 	":oldlogs now works correctly with LinkedLists";
 	"> use :clearoldlogs to purge any corrupted logs";
 	"Entry UI now looks less weird";
