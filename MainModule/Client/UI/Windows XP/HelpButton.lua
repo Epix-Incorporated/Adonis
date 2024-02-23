@@ -16,11 +16,18 @@ return function(data, env)
 	local gui = service.New("ScreenGui")
 	local toggle = service.New("ImageButton", gui)
 	local gTable = client.UI.Register(gui)
+	
+	local useCustomIcon
 
 	if client.UI.Get("HelpButton", gui, true) then
 		gui:Destroy()
 		gTable:Destroy()
 		return nil
+	end
+	if client.HelpButtonImage == "rbxassetid://357249130" then
+		useCustomIcon = false
+	else
+		useCustomIcon = true
 	end
 
 	gTable.Name = "HelpButton"
@@ -30,7 +37,11 @@ return function(data, env)
 	toggle.BackgroundTransparency = 1
 	toggle.Position = UDim2.new(1, -45, 1, -45)
 	toggle.Size = UDim2.new(0, 40, 0, 40)
-	toggle.Image = "http://www.roblox.com/asset/?id=7059706594"
+	if useCustomIcon then
+		toggle.Image = client.HelpButtonImage
+	else
+		toggle.Image = "http://www.roblox.com/asset/?id=7059706594"
+	end
 	toggle.ImageTransparency = 0
 
 	--if client.UI.Get("Chat") then

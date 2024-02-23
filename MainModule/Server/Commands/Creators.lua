@@ -303,6 +303,27 @@ return function(Vargs, env)
 					end)
 				end
 			end,
+		};
+
+		ClearOldLogs = {
+			Prefix = Settings.Prefix;
+			Commands = {"clearoldlogs","flusholdlogs"};
+			Description = "Clears old logs";
+			AdminLevel = "Creators";
+			Function = function(plr: Player)
+				local ans = Remote.GetGui(plr, "YesNoPrompt", {
+					Question = `Are you sure you want to clear old logs (this will be saved in old logs)`;
+					Title = `Clear Old Logs`;
+					Icon = server.MatIcons.Info;
+					Size = {300, 200};
+				})
+				if ans == "Yes" then
+					Core.RemoveData("OldCommandLogs")
+					Functions.Hint("Old Logs Cleared (this will be saved in old logs)", {plr})
+				else
+					Functions.Hint("Operation cancelled", {plr})
+				end
+			end,
 		}
 
 		--[[

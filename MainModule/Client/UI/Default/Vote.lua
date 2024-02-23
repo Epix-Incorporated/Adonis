@@ -1,4 +1,3 @@
-
 client = nil
 service = nil
 
@@ -14,7 +13,7 @@ return function(data, env)
 	local window = client.UI.Make("Window",{
 		Name  = "Vote";
 		Title = "Vote";
-		Size  = {300,200};
+		Size  = {300, 200};
 		Icon = client.MatIcons.Poll;
 		OnClose = function()
 			if not selected then
@@ -22,7 +21,7 @@ return function(data, env)
 			end
 		end
 	})
-	local quesText = window:Add("TextLabel",{
+	local quesText = window:Add("TextLabel", {
 		Text = question;
 		TextScaled = true;
 		TextWrapped = true;

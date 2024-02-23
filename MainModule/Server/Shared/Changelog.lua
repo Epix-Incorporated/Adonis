@@ -1,7 +1,17 @@
 return {
-	"Version: 249";
+	"Version: 250";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v250 2024-02-23 12:10 UTC] @Dimenpsyonal";
+	":oldlogs now works correctly with LinkedLists";
+	"> use :clearoldlogs to purge any corrupted logs";
+	"Entry UI now looks less weird";
+	"Fixed RunCommand not targeting players correctly";
+	"Added !commspanel as a command for CommsPanel";
+	"Fixed all the themes not sending their messages to CommsPanel";
+	"Windows XP theme now supports custom icons";
+	"Loader now uses a Config instance for Config";
 	"";
 	"[v249 2024-02-12 10:00 UTC] @Dimenpsyonal";
 	"Fixed Unity notifications not showing up in Comms Panel";

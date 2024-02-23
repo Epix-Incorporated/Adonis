@@ -90,6 +90,18 @@ return function(data, env)
 		fadeOut()
 	end
 
+	local log  = {
+		Type = "Small Screen Message";
+		Title = title;
+		Message = message;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsPanel:Fire(log)
+
 	task.spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = "rbxassetid://7152561753"

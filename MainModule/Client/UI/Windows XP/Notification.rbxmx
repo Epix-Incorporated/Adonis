@@ -178,6 +178,18 @@ return function(data, env)
 	frame.Name = name
 	main.Text = text
 
+	local log  = {
+		Type = "Notification";
+		Title = name;
+		Message = text;
+		Icon = icon or 0;
+		Time = os.date("%X");
+		Function = clickfunc;
+	}
+	
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsPanel:Fire(log)
+
 	main.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if clickfunc then

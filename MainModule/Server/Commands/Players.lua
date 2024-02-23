@@ -164,7 +164,7 @@ return function(Vargs, env)
 
 		CommsPanel = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"notifications", "comms", "nc"};
+			Commands = {"notifications", "comms", "nc", "commspanel"};
 			Args = {};
 			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline";
 			AdminLevel = "Players";

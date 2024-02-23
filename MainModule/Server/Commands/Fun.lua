@@ -206,7 +206,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor", "freeadmin"};--//add more :)
+			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor", "freeadmin", "hackadmin"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -2723,7 +2723,62 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `Cannot support R15 for {plr.Name} [Dog Transformation Error]`})
+							local character = plr.Character
+							if character:FindFirstChild("Shirt") then
+								character.Shirt.Parent = plr.Character.HumanoidRootPart
+							end
+							
+							if character:FindFirstChild("Pants") then
+							    character.Pants.Parent = character.HumanoidRootPart
+							end
+							
+							local torso = character:WaitForChild("UpperTorso") or character:WaitForChild("Torso")
+							local head = plr.Character:WaitForChild("Head")
+							
+							torso.Transparency = 1
+							
+							for _, v in torso:GetChildren() do
+							    if v:IsA("Motor6D") then
+							        local lc0 = Instance.new("CFrameValue")
+							        lc0.Name = "LastC0"
+							        lc0.Value = v.C0
+							        lc0.Parent = v
+							    end
+							end
+							
+							torso.Neck.C0 = CFrame.new(0, -0.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+							
+							local humanoidDescription = Instance.new("HumanoidDescription")
+							humanoidDescription.RightShoulderAngle = 90
+							humanoidDescription.LeftShoulderAngle = -90
+							humanoidDescription.RightHipAngle = 90
+							humanoidDescription.LeftHipAngle = -90
+							human:ApplyDescription(humanoidDescription)
+							
+							local seat = Instance.new("Seat")
+							seat.Name = "Adonis_Torso"
+							seat.TopSurface = Enum.SurfaceType.Smooth
+							seat.BottomSurface = Enum.SurfaceType.Smooth
+							seat.Size = Vector3.new(3, 1, 4)
+							
+							local attachment = Instance.new("Attachment")
+							attachment.Parent = seat
+							
+							local vectorForce = Instance.new("VectorForce")
+							vectorForce.Force = Vector3.new(0, 2000, 0)
+							vectorForce.Parent = seat
+							vectorForce.Attachment0 = attachment
+							
+							seat.CFrame = torso.CFrame
+							seat.Parent = character
+							
+							torso.Waist.C0 = CFrame.new(0, 0.5, 0)
+							
+							for _, v in character:GetDescendants() do
+							    if v:IsA("BasePart") then
+							        v.BrickColor = BrickColor.new("Brown")
+							    end
+							end
 						end
 					end
 				end
@@ -3329,105 +3384,107 @@ return function(Vargs, env)
 					local char = p.Character
 					local human = char:FindFirstChildOfClass("Humanoid")
 
-					if human and human.RigType == Enum.HumanoidRigType.R15 then
-						if human:FindFirstChild("BodyDepthScale") then
-							human.BodyDepthScale.Value = 0.1
-						end
-					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
-						local torso = char:FindFirstChild("Torso")
-						local root = char:FindFirstChild("HumanoidRootPart")
-						local welds = {}
-
-						torso.Anchored = true
-						torso.BottomSurface = 0
-						torso.TopSurface = 0
-
-						for _, v in char:GetChildren() do
-							if v:IsA("BasePart") then
-								v.Anchored = true
+					if human then
+						if human.RigType == Enum.HumanoidRigType.R15 then
+							if human:FindFirstChild("BodyDepthScale") then
+								human.BodyDepthScale.Value = 0.1
 							end
-						end
+						elseif human.RigType == Enum.HumanoidRigType.R6 then
+							local torso = char:FindFirstChild("Torso")
+							local root = char:FindFirstChild("HumanoidRootPart")
+							local welds = {}
 
-						local function size(part)
-							for _, v in part:GetChildren() do
-								if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
-									local p1 = v.Part1
-									local c0 = {v.C0:components()}
-									local c1 = {v.C1:components()}
-
-									c0[3] = c0[3]*num
-									c1[3] = c1[3]*num
-
-									p1.Anchored = true
-									v.Part1 = nil
-
-									v.C0 = CFrame.new(unpack(c0))
-									v.C1 = CFrame.new(unpack(c1))
-
-									if p1.Name ~= "Head" and p1.Name ~= "Torso" then
-										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
-									elseif p1.Name ~= "Torso" then
-										p1.Anchored = true
-										for _, m in p1:GetChildren() do
-											if m:IsA("Weld") then
-												m.Part0 = nil
-												m.Part1.Anchored = true
-											end
-										end
-
-										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
-
-										for _, m in p1:GetChildren() do
-											if m:IsA("Weld") then
-												m.Part0 = p1
-												m.Part1.Anchored = false
-											end
-										end
-									end
-
-									if v.Parent == torso then
-										p1.BottomSurface = 0
-										p1.TopSurface = 0
-									end
-
-									p1.Anchored = false
-									v.Part1 = p1
-
-									if v.Part0 == torso then
-										table.insert(welds, v)
-										p1.Anchored = true
-										v.Part0 = nil
-									end
-								elseif v:IsA("CharacterMesh") then
-									local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
-									local msh = service.New("SpecialMesh")
-								elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
-									v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
+							torso.Anchored = true
+							torso.BottomSurface = 0
+							torso.TopSurface = 0
+	
+							for _, v in char:GetChildren() do
+								if v:IsA("BasePart") then
+									v.Anchored = true
 								end
-								size(v)
 							end
-						end
-
-						size(char)
-
-						torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
-
-						for i, v in welds do
-							v.Part0 = torso
-							v.Part1.Anchored = false
-						end
-
-						for i, v in char:GetChildren() do
-							if v:IsA("BasePart") then
-								v.Anchored = false
+	
+							local function size(part)
+								for _, v in part:GetChildren() do
+									if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
+										local p1 = v.Part1
+										local c0 = {v.C0:components()}
+										local c1 = {v.C1:components()}
+	
+										c0[3] = c0[3]*num
+										c1[3] = c1[3]*num
+	
+										p1.Anchored = true
+										v.Part1 = nil
+	
+										v.C0 = CFrame.new(unpack(c0))
+										v.C1 = CFrame.new(unpack(c1))
+	
+										if p1.Name ~= "Head" and p1.Name ~= "Torso" then
+											p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
+										elseif p1.Name ~= "Torso" then
+											p1.Anchored = true
+											for _, m in p1:GetChildren() do
+												if m:IsA("Weld") then
+													m.Part0 = nil
+													m.Part1.Anchored = true
+												end
+											end
+	
+											p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
+	
+											for _, m in p1:GetChildren() do
+												if m:IsA("Weld") then
+													m.Part0 = p1
+													m.Part1.Anchored = false
+												end
+											end
+										end
+	
+										if v.Parent == torso then
+											p1.BottomSurface = 0
+											p1.TopSurface = 0
+										end
+	
+										p1.Anchored = false
+										v.Part1 = p1
+	
+										if v.Part0 == torso then
+											table.insert(welds, v)
+											p1.Anchored = true
+											v.Part0 = nil
+										end
+									elseif v:IsA("CharacterMesh") then
+										local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
+										local msh = service.New("SpecialMesh")
+									elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
+										v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
+									end
+									size(v)
+								end
 							end
-						end
-
-						Functions.MakeWeld(root, torso, CFrame.new(), CFrame.new())
-
-						local cape = char:FindFirstChild("ADONIS_CAPE")
-						if cape then
-							cape.Size = cape.Size*num
+	
+							size(char)
+	
+							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
+	
+							for i, v in welds do
+								v.Part0 = torso
+								v.Part1.Anchored = false
+							end
+	
+							for i, v in char:GetChildren() do
+								if v:IsA("BasePart") then
+									v.Anchored = false
+								end
+							end
+	
+							Functions.MakeWeld(root, torso, CFrame.new(), CFrame.new())
+	
+							local cape = char:FindFirstChild("ADONIS_CAPE")
+							if cape then
+								cape.Size = cape.Size*num
+							end
 						end
 					end
 				end
