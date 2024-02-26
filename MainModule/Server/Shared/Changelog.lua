@@ -1,7 +1,9 @@
 return {
-	"Version: 250";
+	"Version: 251";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v251 2024-xx-xx xx:xx UTC] @Maintainer";
 	"";
 	"[v250 2024-02-23 12:10 UTC] @Dimenpsyonal";
 	":oldlogs now works correctly with LinkedLists";
