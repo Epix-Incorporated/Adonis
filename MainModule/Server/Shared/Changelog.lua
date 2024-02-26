@@ -4,6 +4,8 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v251 2024-xx-xx xx:xx UTC] @Maintainer";
+	"Performance stats window can now be resized";
+	"Added search bar to ban window";
 	"";
 	"[v250 2024-02-23 12:10 UTC] @Dimenpsyonal";
 	":oldlogs now works correctly with LinkedLists";
