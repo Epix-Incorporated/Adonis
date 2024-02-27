@@ -294,11 +294,10 @@ return function(data, env)
 			tabWindow:Ready()
 		end
 	end
-	
-	local chatMod = Remote.Get("Setting", {"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-	local commandPrefix = chatMod.Prefix
 
 	if window then
+		local chatMod = Remote.Get("Setting", {"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+		local commandPrefix = chatMod.Prefix
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
