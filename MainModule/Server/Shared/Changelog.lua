@@ -3,9 +3,10 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v251 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
+	"Happy leap day!";
 	"Performance stats window can now be resized";
-	"Added search bar to ban window";
+	"Bans list now has a search bar";
 	"";
 	"[v250 2024-02-23 12:10 UTC] @Dimenpsyonal";
 	":oldlogs now works correctly with LinkedLists";
