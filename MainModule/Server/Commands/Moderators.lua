@@ -951,6 +951,7 @@ return function(Vargs, env)
 							local filtered = service.BroadcastFilter(message, p)
 							if filtered ~= message then
 								Remote.MakeGui(p, "Output", {
+									Title = "Filter error",
 									Message = "A message filtering error occurred; please try again."
 								})
 							else
