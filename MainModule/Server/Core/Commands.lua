@@ -43,6 +43,7 @@ return function(Vargs, GetEnv)
 			Disabled = t.boolean,
 			NoStudio = t.boolean,
 			NoLog = t.boolean,
+			Dangerous = t.boolean,
 			NonChattable = t.boolean,
 			AllowDonors = t.boolean,
 			Donors = t.boolean,
