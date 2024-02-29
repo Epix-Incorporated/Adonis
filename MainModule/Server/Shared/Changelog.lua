@@ -1,7 +1,12 @@
 return {
-	"Version: 250";
+	"Version: 251";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
+	"Happy leap day!";
+	"Performance stats window can now be resized";
+	"Bans list now has a search bar";
 	"";
 	"[v250 2024-02-23 12:10 UTC] @Dimenpsyonal";
 	":oldlogs now works correctly with LinkedLists";
