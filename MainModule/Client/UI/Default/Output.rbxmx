@@ -271,7 +271,7 @@ return function(data, env)
 	local titleData = data.Title or ""
 	local colorIn = data.Color
 
-	local formattedMessage = `<b>{titleData}</b> {messageData}`
+	local formattedMessage = `<b>{titleData}</b>: {messageData}`
 	
 	local found = client.UI.Get("Output")
 	if found then
