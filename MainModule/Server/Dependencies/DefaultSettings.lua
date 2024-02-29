@@ -277,6 +277,7 @@ settings.CommandCooldowns = {
 settings.FunCommands = true				-- Are fun commands enabled?
 settings.PlayerCommands = true			-- Are player-level utility commands enabled?
 settings.AgeRestrictedCommands = true	-- Are age-locked commands enabled?
+settings.WarnDangerousCommand = false	-- Do dangerous commands ask for confirmation?
 settings.CommandFeedback = false		-- Should players be notified when commands with non-obvious effects are run on them?
 settings.CrossServerCommands = true		-- Are commands which affect more than one server enabled?
 settings.ChatCommands = true			-- If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands
@@ -450,6 +451,7 @@ descs.Allowed_API_Calls = [[ Allowed calls ]]
 descs.FunCommands = [[ Are fun commands enabled? ]]
 descs.PlayerCommands = [[ Are players commands enabled? ]]
 descs.AgeRestrictedCommands = [[ Are age-restricted commands enabled? ]]
+descs.WarnDangerousCommand = [[ Do dangerous commands ask for confirmation before executing?]]
 descs.CommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands ]]
@@ -592,6 +594,8 @@ order = {
 	" ";
 	"FunCommands";
 	"PlayerCommands";
+	"AgeRestrictedCommands";
+	"WarnDangerousCommand";
 	"CommandFeedback";
 	"CrossServerCommands";
 	"ChatCommands";
