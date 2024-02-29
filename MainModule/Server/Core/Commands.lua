@@ -73,6 +73,7 @@ return function(Vargs, GetEnv)
 				NoStudio = false;
 				NoLog = false;
 				NonChattable = false;
+				Dangerous = false;
 				AllowDonors = false;
 				Donors = false;
 				CrossServerDenied = false;
