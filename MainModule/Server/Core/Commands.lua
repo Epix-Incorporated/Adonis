@@ -73,13 +73,14 @@ return function(Vargs, GetEnv)
 				NoStudio = false;
 				NoLog = false;
 				NonChattable = false;
+				Dangerous = false;
 				AllowDonors = false;
 				Donors = false;
 				CrossServerDenied = false;
 				IsCrossServer = false;
 				Filter = false;
 				Function = function(plr)
-					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
+					Remote.MakeGui(plr, "Output", {Title = "Error", Message = "No command implementation"})
 				end
 				}
 			do
