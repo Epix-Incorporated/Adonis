@@ -1208,7 +1208,7 @@ return function(Vargs, GetEnv)
 					function(err)
 						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
-							Title = "",
+							Title = "Error",
 							Message = error,
 							Color = Color3.new(1, 0, 0),
 						})
