@@ -43,6 +43,7 @@ return function(Vargs, GetEnv)
 			Disabled = t.boolean,
 			NoStudio = t.boolean,
 			NoLog = t.boolean,
+			Dangerous = t.boolean,
 			NonChattable = t.boolean,
 			AllowDonors = t.boolean,
 			Donors = t.boolean,
@@ -80,7 +81,7 @@ return function(Vargs, GetEnv)
 				IsCrossServer = false;
 				Filter = false;
 				Function = function(plr)
-					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
+					Remote.MakeGui(plr, "Output", {Title = "Error", Message = "No command implementation"})
 				end
 				}
 			do
