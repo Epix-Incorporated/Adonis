@@ -796,7 +796,7 @@ return function(Vargs, env)
 				end
 
 				if not chosenMat then
-					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = "Invalid material choice";})
+					Remote.MakeGui(plr, "Output", {Title = "Error"; Message = "Invalid material choice";})
 					return
 				end
 
@@ -2674,7 +2674,7 @@ return function(Vargs, env)
 						local human = plr.Character:FindFirstChildOfClass("Humanoid")
 
 						if not human then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
+							Remote.MakeGui(p, "Output", {Title = "Error"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
 							return
 						end
 
@@ -2723,7 +2723,7 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
-							Remote.MakeGui(plr, "Output", {Title = "Output"; Message = `This command does not yet support R15.`})
+							Remote.MakeGui(plr, "Output", {Title = "Nonfunctional"; Message = `This command does not yet support R15.`; Color = Color3.new(1,1,1)})
 						end
 					end
 				end
