@@ -470,6 +470,7 @@ descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting 
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
+descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 
@@ -611,6 +612,7 @@ order = {
 	"SongHint";
 	"TopBarShift";
 	"ReJail";
+	"DisableRejoinAtMaxPlayers";
 	"";
 	"AutoClean";
 	"AutoCleanDelay";
