@@ -172,7 +172,7 @@
 						<YS>0</YS>
 						<YO>0</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
@@ -1948,8 +1948,10 @@ return function(data, env)
 	local localplayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
 	local window = scr.Window
-	local msg = data.Message
-	local color = data.Color
+	local dataMessage = data.Message
+	local dataTitle = data.Title
+	local dataColor = data.Color
+	local formattedMessage = `<b>{dataTitle}</b>: {msg}`
 
 	local found = client.UI.Get("Output")
 	if found then
@@ -1960,9 +1962,9 @@ return function(data, env)
 			end
 		end
 	end
-
-	window.Main.ScrollingFrame.ErrorText.Text = msg
-	window.Main.ScrollingFrame.ErrorText.TextColor3 = color
+	
+	window.Main.ScrollingFrame.ErrorText.Text = if title then formattedMessage else dataMessage end
+	window.Main.ScrollingFrame.ErrorText.TextColor3 = dataColor
 
 	window.Close.MouseButton1Down:Connect(function()
 		gTable.Destroy()
