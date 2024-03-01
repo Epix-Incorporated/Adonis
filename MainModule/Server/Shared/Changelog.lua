@@ -8,6 +8,9 @@ return {
 	"Output GUI changes";
 	"- now uses a new font";
 	"- can now be customised with title and colour";
+	"New setting: DisableRejoinAtMaxPlayers";
+	"- Can be used to stop players bypassing max server limits";
+	"Added WarnDangerousCommand setting, currently not functional";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
