@@ -405,9 +405,8 @@ return function(data, env)
 	local t1 = main.Title
 	local t2 = main.Message
 	local msg = data.Message
-	local title = data.Message
+	local title = data.Title
 	local color = data.Color or Color3.fromRGB(255, 78, 78)
-
 
 	local tweenInfo = TweenInfo.new(0.20)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
 	local consoleOpenTween = service.TweenService:Create(main, tweenInfo, {
