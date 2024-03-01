@@ -290,16 +290,17 @@ settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
 settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
-settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
-settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
-settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
-settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
-settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
-settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
-settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
-settings.AutoCleanDelay = 60	-- Time between auto cleans
-settings.AutoBackup = false 	-- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
-settings.ReJail = false			-- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
+settings.MaxLogs = 5000			           -- Maximum logs to save before deleting the oldest
+settings.SaveCommandLogs = true	           -- If command logs are saved to the datastores
+settings.Notification = true	           -- Whether or not to show the "You're an admin" and "Updated" notifications
+settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
+settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
+settings.Messages = {}			           -- A list of notification messages to show HeadAdmins and above on join
+settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
+settings.AutoCleanDelay = 60	           -- Time between auto cleans
+settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
+settings.ReJail = false			           -- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
+settings.DisableRejoinAtMaxPlayers = false -- If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount.
 
 settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
@@ -471,6 +472,7 @@ descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting 
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
+descs.DisableRejoinAtMaxPlayers =  [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 
@@ -614,6 +616,7 @@ order = {
 	"SongHint";
 	"TopBarShift";
 	"ReJail";
+	"DisableRejoinAtMaxPlayers";
 	"";
 	"AutoClean";
 	"AutoCleanDelay";
