@@ -1,5 +1,6 @@
 {
 	"properties": {
-		"RunContext": "Client"
+		"RunContext": "Client",
+		"Enabled": false
 	}
 }
