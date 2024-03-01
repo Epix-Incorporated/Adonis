@@ -44,7 +44,7 @@ return function(data, env)
 				"Render: %.1f fps\nPhysics: %.1f fps\nPing: %d ms",
 				1 / service["RunService"].RenderStepped:Wait(),
 				workspace:GetRealPhysicsFPS(),
-				service.Players.LocalPlayer:GetNetworkPing()
+				service.Players.LocalPlayer:GetNetworkPing() * 1000
 			)
 			task.wait(1)
 		until not gfps or not gTable.Active

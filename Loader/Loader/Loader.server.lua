@@ -82,7 +82,7 @@ else
 		ModuleID = 7510592873;  		--// https://www.roblox.com/library/7510592873/Adonis-MainModule
 		LoaderID = 7510622625;			--// https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
 		
-		--// Note: The nightly module is updated frequently with ever commit merged to the master branch on the Adonis repo.
+		--// Note: The nightly module is updated frequently with every commit merged to the master branch on the Adonis repo.
 		--// It is prone to breaking, unstable, untested, and should not be used for anything other than testing/feature preview.
 		NightlyMode = false;			--// If true, uses the nightly module instead of the current release module.
 		NightlyModuleID = 8612978896; 	--// https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
