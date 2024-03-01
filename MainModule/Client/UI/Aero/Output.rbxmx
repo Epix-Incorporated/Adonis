@@ -232,7 +232,7 @@
 						<YS>0</YS>
 						<YO>4</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
@@ -314,6 +314,7 @@ return function(data, env)
 	local t1 = main.Title
 	local t2 = main.Message
 	local msg = data.Message
+	local title = data.Title
 	local color = data.Color
 
 	local found = client.UI.Get("Output")
@@ -326,7 +327,10 @@ return function(data, env)
 		end
 	end
 
-	t2.Text = msg
+	t2.Text = if title then `<b>{title}</b>: {msg}` else msg end
+	if color then
+		t2.TextColor3 = color
+	end
 
 	task.spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
