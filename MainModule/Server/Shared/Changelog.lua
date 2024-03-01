@@ -4,6 +4,10 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v252 2024-xx-xx xx:xx UTC] @Maintainer";
+	"Ping readout now shows in Milliseconds";
+	"Output GUI changes";
+	"- now uses a new font";
+	"- can now be customised with title and colour";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
