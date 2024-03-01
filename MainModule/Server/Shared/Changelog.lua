@@ -11,6 +11,7 @@ return {
 	"New setting: DisableRejoinAtMaxPlayers";
 	"- Can be used to stop players bypassing max server limits";
 	"Added WarnDangerousCommand setting, currently not functional";
+	"Added lazy load for userpanel";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
