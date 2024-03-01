@@ -296,8 +296,7 @@ return function(data, env)
 	end
 
 	if window then
-		local chatMod = Remote.Get("Setting", {"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-		local commandPrefix = chatMod.Prefix
+		local commandPrefix = ":"
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
@@ -445,8 +444,10 @@ return function(data, env)
 		gTable = window.gTable
 		window:Ready()
 		local playerData = Remote.Get("PlayerData")
+		local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		local settingsData = Remote.Get("AllSettings")
 		Variables.Aliases = playerData.Aliases or {}
+		commandPrefix = chatMod.Prefix
 
 		for _, v in {donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad} do
 			v:Destroy()
