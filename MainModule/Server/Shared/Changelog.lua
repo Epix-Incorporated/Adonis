@@ -5,9 +5,9 @@ return {
 	"";
 	"[v252 2024-xx-xx xx:xx UTC] @Maintainer";
 	"Ping readout now shows in Milliseconds";
-	"Output GUI changes";
-	"- now uses a new font";
-	"- can now be customised with title and colour";
+	"Output GUI changes for all themes";
+	"- default and rounded now use a new font";
+	"- are now correctly customised with title and colour";
 	"New setting: DisableRejoinAtMaxPlayers";
 	"- Can be used to stop players bypassing max server limits";
 	"Added WarnDangerousCommand setting, currently not functional";
