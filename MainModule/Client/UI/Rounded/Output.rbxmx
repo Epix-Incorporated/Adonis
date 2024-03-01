@@ -422,6 +422,7 @@ return function(data, env)
 	local t1 = main.Title
 	local t2 = main.Message
 	local msg = data.Message
+	local title = data.Title
 	local color = data.Color
 	--[[
 	local found = client.UI.Get("Output")
@@ -434,8 +435,11 @@ return function(data, env)
 		end
 	end--]]
 
-	t2.Text = msg
-	t2.Font = "Arial"
+	t2.Text = if title then `<b>{title}</b>: {msg}` else msg end
+	t2.Font = "SourceSans"
+	if color then
+		t2.TextColor3 = color
+	end
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
 	gTable.Ready()
 	wait(5)
