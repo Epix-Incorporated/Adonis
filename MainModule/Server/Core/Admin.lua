@@ -1273,7 +1273,7 @@ return function(Vargs, GetEnv)
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
 
-			if (Settings.ChatCreateRobloxCommands) then
+			if Settings.ChatCreateRobloxCommands then
 				-- // Support for commands to be ran via TextChat
 				task.spawn(function()
 					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
