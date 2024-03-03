@@ -92,7 +92,7 @@ return function(Vargs, GetEnv)
 
 			if tab.__meta == "DLL" then
 				tab:AddToStartAndRemoveEndIfEnd(log, MaxLogs)
-			else 
+			else
 				table.insert(tab, 1, log)
 				if #tab > tonumber(MaxLogs) then
 					table.remove(tab, #tab)
@@ -123,13 +123,17 @@ return function(Vargs, GetEnv)
 			--	table.insert(logsToSave, Logs.Commands[i]);
 			--end
 
-			Core.UpdateData("OldCommandLogs", function(oldLogs) if typeof(oldLogs) ~= "table" then oldLogs = service.HttpService:JSONDecode(oldLogs) end
+			Core.UpdateData("OldCommandLogs", function(oldLogs)
+				if type(oldLogs) == "string" then
+					oldLogs = service.HttpService:JSONDecode(oldLogs)
+				end
+
 				local temp = {}
 
 				for _, m in logsToSave do
 					if m.__meta == "DLL" then
 						local newTab = m:GetAsTable()
-						
+
 						for i,v in pairs(newTab) do
 							table.insert(temp,v)
 						end
@@ -189,6 +193,6 @@ return function(Vargs, GetEnv)
 			end;
 		};
 	};
-	
+
 	Logs = Logs
 end
