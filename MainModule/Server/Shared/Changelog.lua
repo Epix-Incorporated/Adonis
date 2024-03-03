@@ -13,6 +13,8 @@ return {
 	"Added WarnDangerousCommand setting, currently not functional";
 	"Added lazy load for userpanel";
 	"Added :newdex as a command for new dex explorer";
+	"Fixed error with oldlogs";
+	"Fixed issue with keybind waiting for key to be selected";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
