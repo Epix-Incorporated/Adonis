@@ -997,6 +997,7 @@ return function(data, env)
 								Variables.WaitingForBind = false
 								if keyInputHandler then
 									keyInputHandler:Disconnect()
+									keyInputHandler = nil
 								end
 							end
 						end
