@@ -335,14 +335,12 @@ return function(data, env)
 	end
 
 	if window then	
-		local commandPrefix
-		local playerData
-		if Variables.FastLoadUserpanel then
-			commandPrefix = ":"
-			else
+		local commandPrefix = ":"
+		local playerData, chatMod, settingsData
+		if not Variables.FastLoadUserpanel then
 			playerData = Remote.Get("PlayerData")
-			local chatMod = Remote.Get("Setting", {"Prefix", "SpecialPrefix", "BatchKey", "AnyPrefix", "DonorCommands", "DonorCapes"})
-			local settingsData = Remote.Get("AllSettings")
+			chatMod = Remote.Get("Setting", {"Prefix", "SpecialPrefix", "BatchKey", "AnyPrefix", "DonorCommands", "DonorCapes"})
+			settingsData = Remote.Get("AllSettings")
 			Variables.Aliases = playerData.Aliases or {}
 			commandPrefix = {chatMod.Prefix}
 		end
@@ -495,8 +493,8 @@ return function(data, env)
 			gTable = window.gTable
 			window:Ready()
 			playerData = Remote.Get("PlayerData")
-			local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-			local settingsData = Remote.Get("AllSettings")
+			chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+			settingsData = Remote.Get("AllSettings")
 			Variables.Aliases = playerData.Aliases or {}
 			commandPrefix = chatMod.Prefix
 
