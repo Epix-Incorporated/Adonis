@@ -185,7 +185,7 @@ return function(data, env)
 			Text = "Userpanel FastLoad: ";
 			Desc = "- Enables/Disables fast loading of userpanel";
 			Entry = "Boolean";
-			Value = Variables.FastLoadUserpanel;
+			Value = Variables.FastLoadUserpane or false;
 			Function = function(enabled, toggle)
 				Variables.FastLoadUserpanel = enabled
 				local text = toggle.Text
