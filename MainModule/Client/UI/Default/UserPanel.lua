@@ -334,8 +334,15 @@ return function(data, env)
 		end
 	end
 
-	if window then
+	if window then	
 		local commandPrefix = ":"
+		if Variables.FastLoadUserpanel == false then
+			local playerData = Remote.Get("PlayerData")
+			local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+			local settingsData = Remote.Get("AllSettings")
+			Variables.Aliases = playerData.Aliases or {}
+			commandPrefix = {chatMod.Prefix}
+		end
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
@@ -469,28 +476,30 @@ return function(data, env)
 
 		end
 
-		local LOAD_TEXT = {
-			BackgroundTransparency = 1;
-			Size = UDim2.new(1, 0, 1, 0);
-			Text = "Loading...";
-			TextScaled = true;
-			TextColor3 = Color3.new(1, 1, 1);
-			TextXAlignment = Enum.TextXAlignment.Center;
-			TextYAlignment = Enum.TextYAlignment.Center;
-			Font = Enum.Font.SourceSansSemibold
-		}
+		if Variables.FastLoadUserpanel then
+			local LOAD_TEXT = {
+				BackgroundTransparency = 1;
+				Size = UDim2.new(1, 0, 1, 0);
+				Text = "Loading...";
+				TextScaled = true;
+				TextColor3 = Color3.new(1, 1, 1);
+				TextXAlignment = Enum.TextXAlignment.Center;
+				TextYAlignment = Enum.TextYAlignment.Center;
+				Font = Enum.Font.SourceSansSemibold
+			}
 
-		local donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad = donorTab:Add("TextLabel", LOAD_TEXT), keyTab:Add("TextLabel", LOAD_TEXT), aliasTab:Add("TextLabel", LOAD_TEXT), clientTab:Add("TextLabel", LOAD_TEXT), gameTab:Add("TextLabel", LOAD_TEXT)
-		gTable = window.gTable
-		window:Ready()
-		local playerData = Remote.Get("PlayerData")
-		local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-		local settingsData = Remote.Get("AllSettings")
-		Variables.Aliases = playerData.Aliases or {}
-		commandPrefix = chatMod.Prefix
+			local donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad = donorTab:Add("TextLabel", LOAD_TEXT), keyTab:Add("TextLabel", LOAD_TEXT), aliasTab:Add("TextLabel", LOAD_TEXT), clientTab:Add("TextLabel", LOAD_TEXT), gameTab:Add("TextLabel", LOAD_TEXT)
+			gTable = window.gTable
+			window:Ready()
+			local playerData = Remote.Get("PlayerData")
+			local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+			local settingsData = Remote.Get("AllSettings")
+			Variables.Aliases = playerData.Aliases or {}
+			commandPrefix = chatMod.Prefix
 
-		for _, v in {donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad} do
-			v:Destroy()
+			for _, v in {donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad} do
+				v:Destroy()
+			end
 		end
 
 		--// Donor Tab
