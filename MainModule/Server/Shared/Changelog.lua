@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v252 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v252 2024-03-xx xx:xx UTC] @Dimenpsyonal";
 	"Ping readout now shows in Milliseconds";
 	"Output GUI changes for all themes";
 	"> default and rounded now use a new font";
@@ -15,7 +15,7 @@ return {
 	"> Setting is enabled by default";
 	"Added WarnDangerousCommand setting, currently not functional";
 	"Added lazy load for userpanel - makes userpanel load faster";
-	"> Let us know if you don't like it!";
+	"> You can disable this in client settings";
 	"Added :newdex as a command for new dex explorer";
 	"Fixed error with oldlogs";
 	"Fixed issue with keybind waiting for key to be selected";
