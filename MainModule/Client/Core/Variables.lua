@@ -74,6 +74,7 @@ return function(Vargs, GetEnv)
 		ParticlesEnabled = true;
 		CapesEnabled = true;
 		HideChatCommands = false;
+		FastLoadUserpanel = true;
 		Particles = {};
 		KeyBinds = {};
 		Aliases = {};
