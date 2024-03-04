@@ -335,10 +335,12 @@ return function(data, env)
 	end
 
 	if window then	
-		local commandPrefix = ":"
-		if Variables.FastLoadUserpanel == false then
+		local commandPrefix
+		if Variables.FastLoadUserpanel then
+			commandPrefix = ":"
+			else
 			local playerData = Remote.Get("PlayerData")
-			local chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+			local chatMod = Remote.Get("Setting", {"Prefix", "SpecialPrefix", "BatchKey", "AnyPrefix", "DonorCommands", "DonorCapes"})
 			local settingsData = Remote.Get("AllSettings")
 			Variables.Aliases = playerData.Aliases or {}
 			commandPrefix = {chatMod.Prefix}
