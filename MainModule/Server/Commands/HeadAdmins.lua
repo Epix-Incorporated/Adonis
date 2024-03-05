@@ -16,6 +16,7 @@ return function(Vargs, env)
 			Description = `Bans the target player(s) from the game for the supplied amount of time; data-persistent; undo using {Settings.Prefix}untimeban`;
 			Filter = true;
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
 
@@ -50,6 +51,7 @@ return function(Vargs, env)
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
 
@@ -92,6 +94,7 @@ return function(Vargs, env)
 			Args = {"user"};
 			Description = "Removes the target user(s) from the timebans list";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
 					UseFakePlayer = true;
@@ -114,6 +117,7 @@ return function(Vargs, env)
 			Args = {"player/user", "reason"};
 			Description = "Bans the target player(s) from the game permanently; if they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				local reason = args[2] or "No reason provided"
@@ -139,6 +143,7 @@ return function(Vargs, env)
 			Args = {"user"};
 			Description = "Unbans the target user(s) from the game; saves";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
 					UseFakePlayer = true;
@@ -161,6 +166,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary admin; does not save";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				local senderLevel = data.PlayerData.Level
 
@@ -182,6 +188,7 @@ return function(Vargs, env)
 			Args = {"player/user"};
 			Description = "Makes the target player(s) an admin; saves";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				local senderLevel = data.PlayerData.Level
 

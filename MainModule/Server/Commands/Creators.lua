@@ -17,6 +17,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Filter = true;
 			Hidden = true;
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local reason = args[2] or "No reason provided"
 
@@ -53,6 +54,7 @@ return function(Vargs, env)
 			Description = "Removes the specified user(s) from the global ban list; saves";
 			AdminLevel = "Creators";
 			Hidden = true;
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
 					local UserId = Functions.GetUserIdFromNameAsync(i)
@@ -152,6 +154,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -173,6 +176,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do

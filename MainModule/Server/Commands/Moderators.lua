@@ -19,6 +19,7 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Disconnects the target player from the server";
 			AdminLevel = "Moderators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {
 					IsKicking = true;
@@ -343,6 +344,7 @@ return function(Vargs, env)
 			Commands = {"warn", "warning"};
 			Args = {"player/user", "reason"};
 			Filter = true;
+			Dangerous = true;
 			Description = "Warns players";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -383,6 +385,7 @@ return function(Vargs, env)
 			Commands = {"kickwarn", "kwarn", "kickwarning"};
 			Args = {"player/user", "reason"};
 			Filter = true;
+			Dangerous = true;
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -422,6 +425,7 @@ return function(Vargs, env)
 			Args = {"player/user", "warning reason"};
 			Description = "Removes the specified warning from the target player";
 			AdminLevel = "Moderators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target player(s) (argument #1)")
 				local reason = string.lower(assert(args[2], "Missing warning reason (argument #2)"))
@@ -473,6 +477,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"clearwarnings", "clearwarns"};
 			Args = {"player"};
+			Dangerous = true;
 			Description = "Clears any warnings on a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
