@@ -180,6 +180,19 @@ return function(data, env)
 					toggle.Text = "Default"
 				end
 			end
+		};
+		{
+			Text = "Userpanel FastLoad: ";
+			Desc = "- Enables/Disables fast loading of userpanel";
+			Entry = "Boolean";
+			Value = Variables.FastLoadUserpanel or false;
+			Function = function(enabled, toggle)
+				Variables.FastLoadUserpanel = enabled
+				local text = toggle.Text
+				toggle.Text = "Saving.."
+				Remote.Get("UpdateClient","FastLoadUserpanel",enabled)
+				toggle.Text = text
+			end
 		}
 	}
 

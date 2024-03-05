@@ -2,7 +2,7 @@
 
     MIT License
 
-    Copyright (c) 2022 Sceleratis (https://github.com/Sceleratis), Epix Incorporated, and the Adonis Community.
+    Copyright (c) 2016-2024 Sceleratis (https://github.com/Sceleratis), Epix Incorporated, and the Adonis Community.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

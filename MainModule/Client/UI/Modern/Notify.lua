@@ -1,4 +1,5 @@
----@diagnostic disable: undefined-global
+client = nil
+service = nil
 
 local Components = script.Parent.Components.AdonisModernComponents
 local Packages = Components.Parent.Packages
@@ -47,6 +48,18 @@ return function (Data)
 	})
 
 	-- ////////// Perform Animation Tasks
+
+	local log  = {
+		Type = "Small Screen Message";
+		Title = Data.Title;
+		Message = Data.Message;
+		Icon = Data.Image;
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsPanel:Fire(log)
 
 	local Handle = Roact.mount(App, service.UnWrap(service.PlayerGui), 'AdonisUI.Notification')
 	

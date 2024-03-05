@@ -4,6 +4,7 @@
 	<External>nil</External>
 	<Item class="UnionOperation" referent="RBX2FDCAA2249DD465981ECD38D3DCC9070">
 		<Properties>
+			<SharedString name="AeroMeshData">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
 			<bool name="Anchored">false</bool>
 			<Content name="AssetId"><url>https://www.roblox.com//asset/?id=12897011604</url></Content>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -32,6 +33,7 @@
 			<bool name="CanCollide">true</bool>
 			<bool name="CanQuery">true</bool>
 			<bool name="CanTouch">true</bool>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 			<bool name="CastShadow">true</bool>
 			<BinaryString name="ChildData"></BinaryString>
 			<SharedString name="ChildData2">yuZpQdnvvUBOTYh1jqZ2cA==</SharedString>
@@ -46,6 +48,9 @@
 				<FrictionWeight>0.5</FrictionWeight>
 				<ElasticityWeight>0.5</ElasticityWeight>
 			</PhysicalProperties>
+			<bool name="DefinesCapabilities">false</bool>
+			<bool name="EnableFluidForces">true</bool>
+			<token name="FluidFidelityInternal">0</token>
 			<token name="FormFactor">3</token>
 			<float name="FrontParamA">-0.5</float>
 			<float name="FrontParamB">0.5</float>
@@ -118,6 +123,8 @@
 		<Item class="Sound" referent="RBXF27DC9AB70F04BC293C21E8DEDA2ABB4">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
 				<float name="EmitterSize">10</float>
 				<NumberRange name="LoopRegion">0 60000 </NumberRange>
 				<bool name="Looped">false</bool>

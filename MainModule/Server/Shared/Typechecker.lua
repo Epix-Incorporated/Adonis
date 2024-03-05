@@ -1,7 +1,10 @@
---[[
-t: a runtime typechecker for Roblox 
-by osyrisrblx
-								]]
+--[[ 
+
+	t: a runtime typechecker for Roblox
+	by osyrisrblx
+	MIT License
+
+]]
 
 local t = {}
 
@@ -52,6 +55,15 @@ end
 	@returns True iff the condition is satisfied, false otherwise
 **--]]
 t.boolean = t.typeof("boolean")
+
+--[[**
+	ensures Lua primitive buffer type
+
+	@param value The value to check against
+
+	@returns True iff the condition is satisfied, false otherwise
+**--]]
+t.buffer = t.typeof("buffer")
 
 --[[**
 	ensures Lua primitive thread type
@@ -108,6 +120,15 @@ t.table = t.typeof("table")
 	@returns True iff the condition is satisfied, false otherwise
 **--]]
 t.userdata = t.type("userdata")
+
+--[[**
+	ensures Lua primitive vector type
+
+	@param value The value to check against
+
+	@returns True iff the condition is satisfied, false otherwise
+**--]]
+t.vector = t.type("vector")
 
 --[[**
 	ensures value is a number and non-NaN

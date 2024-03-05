@@ -1,6 +1,5 @@
 server = nil
 service = nil
-cPcall = nil
 Routine = nil
 GetEnv = nil
 origEnv = nil
@@ -725,13 +724,6 @@ return function(Vargs, GetEnv)
 
 		};
 
-		UnEncrypted = setmetatable({}, {
-			__newindex = function(_, ind, val)
-				warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands")
-				Remote.Commands[ind] = val
-			end
-		});
-
 		Commands = {
 			GetReturn = function(p: Player, args: {[number]: any})
 				local com = args[1]
@@ -789,12 +781,7 @@ return function(Vargs, GetEnv)
 							if not pcall(function()
 									obj:Destroy()
 								end) then
-								Remote.MakeGui(p ,"Notification", {
-									Title = "Error";
-									Icon = server.MatIcons.Error;
-									Message = "Cannot delete object.";
-									Time = 2;
-								})
+								Functions.Notification("Error", "Cannot delete object.", {p}, 2, "MatIcon://Error")
 							end
 						end
 					end
@@ -1007,7 +994,7 @@ return function(Vargs, GetEnv)
 					local title = string.format("Reply from %s (@%s)", p.DisplayName, p.Name)
 					local message = args[3]
 
-					local replyTicket = Functions.GetRandom()
+					local replyTicket = service.HttpService:GenerateGUID(false)
 					Variables.PMtickets[replyTicket] = p
 					Remote.MakeGui(target, "PrivateMessage", {
 						Title = title;
@@ -1025,6 +1012,46 @@ return function(Vargs, GetEnv)
 					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {args[2]}`)
 				end
 			end;
+
+			SaveScript = function(p: Player, args: {})
+				local se = Variables.ScriptEditor[tostring(p.UserId)]
+				local Name = args[1]["Name"]
+				local Variable = se[Name]
+				
+				Variable.Script = args[1]["Text"]
+			end,
+			RunScript = function(p: Player, args: {})
+				local se = Variables.ScriptEditor[tostring(p.UserId)]
+				local Name = args[1][1]
+				local Variable = se[Name]
+				
+				local oError = error
+				local newenv = GetEnv(getfenv(),{
+					print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
+					warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+					error = function(reason, level)
+						if level ~= nil and type(level) ~= "number" then
+							oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
+						end
+
+						Remote.MakeGui(p, "Output",{Title = 'Output'; Message = `LUA_DEMAND_ERROR: {reason}`})
+						oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
+					end;
+				})
+				
+				service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`,function()
+					local func,err = Core.Loadstring(Variable["Script"], newenv)
+					if func then
+						local Succ,Err = pcall(function()
+							func()
+						end)
+						
+						Remote.MakeGui(p,'Output',{Title = 'Output'; Message = Err})
+					else
+						Remote.MakeGui(p,'Output',{Title = 'Output'; Message = err})
+					end
+				end)
+			end,
 		};
 
 		NewSession = function(sessionType: string)
@@ -1035,7 +1062,7 @@ return function(Vargs, GetEnv)
 				Users = {};
 				Events = {};
 				SessionType = sessionType;
-				SessionKey = Functions.GetRandom();
+				SessionKey = service.HttpService:GenerateGUID(false);
 				SessionEvent = service.New("BindableEvent");
 
 				AddUser = function(self, p, defaultData)
@@ -1166,7 +1193,7 @@ return function(Vargs, GetEnv)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				local returns, finished
-				local key = Functions:GetRandom()
+				local key = service.HttpService:GenerateGUID(false)
 				local Yield = service.Yield();
 				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Release() end)
 
@@ -1268,7 +1295,7 @@ return function(Vargs, GetEnv)
 			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in themeData do theme[ind] = dat end end
-			Remote.Send(p,"RefreshUI",name,ignore,themeData,data or {})
+			Remote.Send(p,"RefreshUI",name,ignore,themeData or theme,data or {})
 		end;
 
 		NewParticle = function(p: Player, target: Instance, class: string, properties: { [string]: any })

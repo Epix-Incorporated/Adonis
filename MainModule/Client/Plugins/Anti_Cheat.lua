@@ -413,10 +413,9 @@ return function(Vargs)
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
+			local lastLogIndex = 0
 
 			local lookFor = {
-				"electron";
-				"celery"; -- // Not sure - someone check
 				"current identity is [0789]";
 				"gui made by kujo";
 				"tetanus reloaded hooked";
@@ -566,7 +565,7 @@ return function(Vargs)
 			end
 
 			local function soundIdCheck(Sound)
-				for _,v in pairs(soundIds) do
+				for _,v in ipairs(soundIds) do
 					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
 					end
@@ -590,13 +589,11 @@ return function(Vargs)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
-					if soundIdCheck(child) then
-						Detected("crash", "CMDx Detected; "..tostring(child))
-					else
-						wait()
+					for i = 1, 5 do
 						if soundIdCheck(child) then
 							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
+						task.wait(0.1)
 					end
 				end
 			end)
@@ -672,8 +669,6 @@ return function(Vargs)
 				end
 
 				--// Check Log History
-				--// TEMP DISABLED WHILE INVESTIGATING LAG SOURCE
-				--[[
 				local Logs = service.LogService.GetLogHistory(service.LogService)
 				local rawLogService = service.UnWrap(service.LogService)
 				local First = Logs[1]
@@ -711,12 +706,13 @@ return function(Vargs)
 				then
 					Detected("kick", "Bypass detected 0x48248")
 				else
-					for _, v in ipairs(Logs) do
+					for _, v in ipairs(Logs), Logs, lastLogIndex do
 						if check(v.message) then
 							Detected("crash", "Exploit detected; "..v.message)
 						end
 					end
-				end--]]
+					lastLogIndex = #Logs
+				end
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
@@ -868,8 +864,8 @@ return function(Vargs)
 				if
 					not success or
 					script.Archivable ~= false or
-					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or lastChanged2 - lastChanged1 > 60) or
-					lastChanged2 - lastChanged3 > 60 or
+					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or lastChanged2 - lastChanged1 > 90) or
+					lastChanged2 - lastChanged3 > 90 or
 					not checkEvent or
 					typeof(checkEvent) ~= "RBXScriptConnection" or
 					checkEvent.Connected ~= true
@@ -899,8 +895,8 @@ return function(Vargs)
 		task.spawn(xpcall, function()
 			while true do
 				if
-					not isStudio and math.abs(lastChanged3 - lastChanged1) > 60 or
-					math.abs(lastChanged3 - lastChanged2) > 60
+					not isStudio and math.abs(lastChanged3 - lastChanged1) > 90 or
+					math.abs(lastChanged3 - lastChanged2) > 90
 				then
 					opcall(Detected, "crash", "Tamper Protection 0xE28D")
 					oWait(1)

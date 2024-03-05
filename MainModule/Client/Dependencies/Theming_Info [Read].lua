@@ -20,7 +20,7 @@
 		
 		The above will go on until it either reaches a depth of 10 (BaseTheme10) or reaches 
 		a theme with no Base_Theme set. Usually the last theme in the sequence will be
-		the "Default" theme as it's Base_Theme is empty because it should never need to pull
+		the "Default" theme as its Base_Theme is empty because it should never need to pull
 		from any other themes.
 	
 	Basic theming related information;
@@ -46,12 +46,11 @@
 		GUIs (refer to Colorize theme.) These modules can also contain GUIs like a normal theme folder aswell.
 		If the theme module creates its own GUI on the fly, it must return something when it's done and handle all
 		of the GUI related code itself. Including registering the new GUi it created via 
-		local gTable,gIndex = client.UI.Register(GUIObjectHere). The module must handle every aspect of the GUI's
-		creation process that normally client.UI.Make would. If it returns a ScreenGui, the default code for the 
-		GUI will be used from the Hybrid theme, and it will be registered by the script like normal. If something 
-		other than nil that isn't a ScreenGui is returned, the script will ignore the rest of the normal loading 
-		process and return whatever the module returned. 
-		
+		local gTable,gIndex = client.UI.Register(GUIObjectHere)
+		The module must handle every aspect of the GUI's creation process that normally client.UI.Make would. If it 
+		returns a ScreenGui, the default code for the GUI will be used from the Hybrid theme, and it will be 
+		registered by the script like normal. If something other than nil that isn't a ScreenGui is returned, the 
+		script will ignore the rest of the normal loading process and return whatever the module returned. 
 		
 		Refer to the code and GUIs in the hybrid theme folder for examples. 
 		
@@ -63,14 +62,13 @@
 			GUI is ready to be displayed, otherwise unintended behaviour may occur. 
 	
 	
-	
 	Client UI Functions;
 	
 		client.UI.GetHolder()
 			- This will return the primary ScreenGui object that all GUIs will go into after becoming a TextLabel (not currently used)
 		
 		client.UI.Prepare(gui) 
-			- If gui is a ScreenGui; Transfers content to a new TextLabel and returns the new TextLabel; Else returns gui
+			- If gui is a ScreenGui; transfers content to a new TextLabel and returns the new TextLabel; Else returns gui
 			
 		client.UI.Make(guiName, guiData, themeData)
 			- Responsible for handling the creation and registering of new UI elements

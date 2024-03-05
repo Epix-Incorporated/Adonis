@@ -39,7 +39,6 @@
 					<string name="Name">Code</string>
 					<string name="ScriptGuid">{FF9CD312-BAED-4C80-A556-CDB411097412}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil

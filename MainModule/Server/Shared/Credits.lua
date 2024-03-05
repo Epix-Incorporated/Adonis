@@ -8,6 +8,7 @@ return {
 		{Text = "joritochip",				Desc = "Community Maintainer & WebPanel Developer"};
 		{Text = "Coasterteam",				Desc = "Community Maintainer & Development contributions (Kronos developer)"};
 		{Text = "Expertcoderz",				Desc = "Community Maintainer"};
+		{Text = "Dimenpsyonal",				Desc = "Community Maintainer"};
 	};
 
 	Contributors = {
@@ -27,7 +28,7 @@ return {
 		{Text = "@Awesomewebm", 		Desc = "Open Source Contributor"};
 		{Text = "@TheLegendarySpark",Desc = "Open Source Contributor"};
 		{Text = "@EasternBloxxer",			Desc = "Open Source Contributor"};
-		{Text = "@LiveFireExercise",	Desc = "Open Source Contributor"};
+		{Text = "@Dimenpsyonal",	Desc = "Open Source Contributor"};
 		{Text = "@policetonyR",		Desc = "Open Source Contributor"};
 		{Text = "@enescglyn",		Desc = "Open Source Contributor"};
 		{Text = "@EpicFazbear",		Desc = "Open Source Contributor"};
@@ -77,6 +78,15 @@ return {
 		{Text = "@bigbenster702",	Desc = "Open Source Contributor"};
 		{Text = "@WalkerOfBacon", 	Desc = "Open Source Contributor"};
 		{Text = "@wilsontulus", 	Desc = "Open Source Contributor"};
+		{Text = "@RealEthanPlayzDev", Desc = "Open Source Contributor"};
+		{Text = "@Redfuire", Desc = "Open Source Contributor"};
+		{Text = "@RadiantUwU", Desc = "Open Source Contributor"};
+		{Text = "@kaiserandaxl", Desc = "Open Source Contributor"};
+		{Text = "@StayBlue", Desc = "Open Source Contributor"};
+		{Text = "@chesse20", Desc = "Open Source Contributor"};
+		{Text = "@SuperCater", Desc = "Open Source Contributor"};
+		{Text = "@dylanjkl", Desc = "Open Source Contributor"};
+		{Text = "@theplayeroffire", Desc = "Open Source Contributor"};
 	};
 
 	Misc = {

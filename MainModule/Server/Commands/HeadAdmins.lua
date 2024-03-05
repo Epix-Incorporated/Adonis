@@ -18,9 +18,8 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
-				assert(args[2], "Missing duration (argument #2)")
 
-				local duration, valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
+				local duration, valid = assert(args[2], "Missing duration (argument #2)"):gsub("^(%d+)([smhd])$", function(val, unit)
 					return if unit == "s" then val
 						elseif unit == "m" then val * 60
 						elseif unit == "h" then val * 60 * 60
@@ -53,9 +52,8 @@ return function(Vargs, env)
 			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
-				assert(args[2], "Missing duration (argument #2)")
 
-				local duration, valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
+				local duration, valid = assert(args[2], "Missing duration (argument #2)"):gsub("^(%d+)([smhd])$", function(val, unit)
 					return if unit == "s" then val
 						elseif unit == "m" then val * 60
 						elseif unit == "h" then val * 60 * 60
@@ -169,13 +167,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins", true)
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are a temp administrator. Click to view commands.";
-							Time = 10;
-							Icon = server.MatIcons["Admin panel settings"];
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are a temp administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temporary admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -199,13 +191,7 @@ return function(Vargs, env)
 				do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins")
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
-							Time = 10;
-							Icon = server.MatIcons["Admin panel settings"];
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
-						})
+						Functions.Notification("Notification", "You are an administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a permanent admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -274,8 +260,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local trello = HTTP.Trello.API
 				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
-				assert(args[1], "Enter a valid list name")
-				local list = assert(trello.Boards.GetList(Settings.Trello_Primary, args[1]), "List not found.")
+				local list = assert(trello.Boards.GetList(Settings.Trello_Primary, assert(args[1], "Enter a valid list name")), "List not found.")
 
 				local cards = trello.Lists.GetCards(list.id)
 				local temp = table.create(#cards)
@@ -524,12 +509,7 @@ return function(Vargs, env)
 						Functions.Hint(string.format("Hidden %s from %d other player%s.", service.FormatPlayer(v), n, n == 1 and "" or "s"), {plr})
 					end
 
-					Remote.MakeGui(v, "Notification", {
-						Title = "Incognito Mode";
-						Icon = server.MatIcons["Privacy tip"];
-						Text = "You will cease to appear on the player list, on other players' screens.";
-						Time = 15;
-					})
+					Functions.Notification("Incognito Mode", "You will cease to appear on the player list, on other players' screens.", {v}, 15, "MatIcon://Privacy tip")
 				end
 			end
 		};

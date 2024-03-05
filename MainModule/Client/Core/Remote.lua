@@ -1,6 +1,5 @@
 client = nil
 service = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 GetEnv = nil
@@ -230,9 +229,9 @@ return function(Vargs, GetEnv)
 
 			ClientLog = function(args)
 				local MESSAGE_TYPE_COLORS = {
-					[Enum.MessageType.MessageWarning] = Color3.fromRGB(221, 187, 13),
-					[Enum.MessageType.MessageError] = Color3.fromRGB(255, 50, 14),
-					[Enum.MessageType.MessageInfo] = Color3.fromRGB(14, 78, 255)
+					[Enum.MessageType.MessageWarning] = Color3.fromRGB(222, 146, 55),
+					[Enum.MessageType.MessageError] = Color3.fromRGB(219, 75, 75),
+					[Enum.MessageType.MessageInfo] = Color3.fromRGB(137, 221, 255)
 				}
 				local tab = {}
 				local logHistory: {{message: string, messageType: Enum.MessageType, timestamp: number}} = service.LogService:GetLogHistory()
@@ -478,7 +477,7 @@ return function(Vargs, GetEnv)
 
 		OldGet = function(com,...)
 			local returns
-			local key = Functions:GetRandom()
+			local key = service.HttpService:GenerateGUID(false)
 			local waiter = service.New("BindableEvent");
 			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
 
