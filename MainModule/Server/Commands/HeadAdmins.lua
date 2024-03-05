@@ -51,7 +51,6 @@ return function(Vargs, env)
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
-			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
 

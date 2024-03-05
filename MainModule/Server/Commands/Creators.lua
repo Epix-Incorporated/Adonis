@@ -17,7 +17,6 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Filter = true;
 			Hidden = true;
-			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local reason = args[2] or "No reason provided"
 
@@ -54,7 +53,6 @@ return function(Vargs, env)
 			Description = "Removes the specified user(s) from the global ban list; saves";
 			AdminLevel = "Creators";
 			Hidden = true;
-			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
 					local UserId = Functions.GetUserIdFromNameAsync(i)
