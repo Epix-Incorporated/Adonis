@@ -1026,8 +1026,10 @@ return function(Vargs, GetEnv)
 							if not table.find(service.IncognitoPlayers, plr) then
 								table.insert(service.IncognitoPlayers, plr)
 							end
-
-							plr:Remove()
+							if plr.Character then
+								plr.Character:Destroy()
+							end
+							plr:Destroy()
 						end
 					]])
 				end

@@ -431,64 +431,50 @@ return function(Vargs, env)
 			end;
 		};
 
-		UnIncognito = {
-			Prefix = Settings.Prefix,
-			Commands = {"unincognito"},
-			Args = {"Player"},
-			Description = "Removes user out of Incognito to other players while ingame",
-			AdminLevel = "HeadAdmins",
-			Hidden = true,
-			Function = function(plr: Player, args: {string})
-				local visible = 0
-
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
-					if Variables.IncognitoPlayers[v] then
-						visible += 1
-						Variables.IncognitoPlayers[v] = nil
-
-						for _, plrs in service.Players:GetPlayers() do
-							if plrs == v then
-								continue
-							end
-
-							Remote.LoadCode(plrs, [[
-								for index, plr in ipairs(service.IncognitoPlayers) do
-									if plr.UserId == ]] .. v.UserId .. [[ then
-										plr.Parent = service.Players
-										table.remove(service.IncognitoPlayers, index)
-										return
-									end
-								end
-							]])
-						end
-
-					end
-
-				end
-
-				if visible ~= 0 then
-					Functions.Hint(string.format("Removed %d player(s) from Incognito.", visible), {plr})
-				end
-			end
-		},
-
 		Incognito = {
 			Prefix = Settings.Prefix;
 			Commands = {"incognito"};
-			Args = {"player"};
-			Description = "Removes the target player from other clients' perspectives (persists until rejoin)";
+			Args = {"player", "hideFromNonAdmins(default true)"};
+			Description = "Removes the target player from other clients' perspectives (persists until rejoin). Allows to set whether to hide only from nonadmins or from everyone.";
 			AdminLevel = "HeadAdmins";
-			Hidden = true;
 			Function = function(plr: Player, args: {string})
+				local hidefromEveryone = false
+				if args[2] then
+					if string.lower(args[2])=="false" then
+						hidefromEveryone = true
+					end
+				end
+
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					if Variables.IncognitoPlayers[v] then
 						Functions.Hint(`{service.FormatPlayer(v)} is already incognito.`, {plr})
 						continue
 					end
-					Variables.IncognitoPlayers[v] = os.time()
+					Variables.IncognitoPlayers[v] = {
+						time=os.time(),
+						hide_from_everyone=hidefromEveryone
+					}
+					v.CharacterAdded:Connect(function(character: Model) 
+						for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
+							if otherPlr == v then continue end
+							Remote.LoadCode(otherPlr, [[
+								local plrName = service.Players:GetNameFromUserIdAsync(]] .. v.UserId .. [[)
+								local character = service.Workspace:FindFirstChild(plrName)
+								if character:FindFirstChildWhichIsA("Humanoid") == nil then
+									for _, v in service.Workspace:GetChildren() do
+										if v.Name == plrName and v:IsA("Model") and v:FindFirstChildWhichIsA("Humanoid") ~= nil then
+											character = v
+											break
+										end
+									end
+								end
+								character:Destroy()
+							]])
+						end
+					end)
 
 					local n = 0
-					for _, otherPlr: Player in service.Players:GetPlayers() do
+					for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
 						if otherPlr == v then continue end
 						Remote.LoadCode(otherPlr, [[
 							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
@@ -496,8 +482,10 @@ return function(Vargs, env)
 								if not table.find(service.IncognitoPlayers, plr) then
 									table.insert(service.IncognitoPlayers, plr)
 								end
-
-								plr:Remove()
+								if plr.Character then
+									plr.Character:Destroy()
+								end
+								plr:Destroy()
 							end
 						]])
 						n += 1

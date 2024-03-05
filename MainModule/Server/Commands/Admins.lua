@@ -1556,38 +1556,5 @@ return function(Vargs, env)
 				Commands.UnDisplayName.Function(plr, args)
 			end
 		};
-
-		IncognitoPlayerList = {
-			Prefix = Settings.Prefix;
-			Commands = {"incognitolist", "incognitoplayers"};
-			Args = {"autoupdate? (default: true)"};
-			Description = "Displays a list of incognito players in the server";
-			AdminLevel = "Admins";
-			Hidden = true;
-			ListUpdater = function(plr: Player)
-				local tab = {}
-				for p: Player, t: number in Variables.IncognitoPlayers do
-					if p.Parent == service.Players then
-						table.insert(tab, {
-							Text = service.FormatPlayer(p);
-							Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
-						})
-					end
-				end
-				return tab
-			end;
-			Function = function(plr: Player, args: {string})
-				local autoUpdate = string.lower(args[1])
-				Remote.RemoveGui(plr, "IncognitoPlayerList")
-				Remote.MakeGui(plr, "List", {
-					Name = "IncognitoPlayerList";
-					Title = "Incognito Players";
-					Icon = server.MatIcons["Admin panel settings"];
-					Tab = Logs.ListUpdaters.IncognitoPlayerList(plr);
-					Update = "IncognitoPlayerList";
-					AutoUpdate = if not args[1] or (autoUpdate == "true" or autoUpdate == "yes") then 1 else nil;
-				})
-			end
-		};
 	}
 end
