@@ -20,6 +20,7 @@ return {
 	"Fixed error with oldlogs";
 	"Fixed issue with keybind waiting for key to be selected";
 	"Updated rojo meta.json files";
+	"Fixed text being editable in lists";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
