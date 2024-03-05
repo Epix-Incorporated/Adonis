@@ -1201,23 +1201,6 @@ return function(Vargs, GetEnv)
 
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
-				if com.Dangerous and Settings.WarnDangerousActions then
-					-- more checks
-					for i, argname in ipairs(cmdArgs) do
-						if string.find(argname, "player") ~= nil or string.find(argname, "plr") ~= nil then
-							local playersamount = #(service.GetPlayers(args[i]));
-							if playersamount > 1 then
-								if Remote.GetGui(plr, "YesNoPrompt", {
-									Question = string.format("Are you sure you want to proceed? (%s%s selected %s with %s players)", com.Prefix, string.lower(coma), args[i], playersamount);
-									Title = string.format("Dangerous command (%s%s)", com.Prefix, string.lower(coma))
-								}) == "No" then
-									Functions.Hint(string.format("Aborted command %s%s", com.Prefix, string.lower(coma)))
-									return
-								end
-							end
-						end
-					end
-				end
 				local ran, error = TrackTask(
 					`{plr.Name}: {coma}`,
 					com.Function,
