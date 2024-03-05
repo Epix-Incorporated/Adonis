@@ -1424,7 +1424,7 @@ return function(Vargs, env)
 			Commands = {"nil"};
 			Args = {"player"};
 			Hidden = true;
-			Description = "Sends the target player(s) to nil, where they will not show up on the player list and not normally be able to interact with the game";
+			Description = "[DEPRECATED] Sends the target player(s) to nil, kicks them to unexpected client behavior.";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
