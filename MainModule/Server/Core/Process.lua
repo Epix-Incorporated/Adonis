@@ -460,13 +460,13 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if commmand.Dangerous and Settings.WarnDangerousActions then
+				if command.Dangerous and Settings.WarnDangerousActions then
 					-- more checks
 					for i, argname in ipairs(cmdArgs) do
 						if string.find(argname, "player") ~= nil or string.find(argname, "plr") ~= nil then
 							local playersamount = #(service.GetPlayers(args[i]));
 							if playersamount > 1 then
-								if Remote.GetGui(plr, "YesNoPrompt", {
+								if Remote.GetGui(p, "YesNoPrompt", {
 									Question = string.format("Are you sure you want to proceed? (%s selected %s players)", msg, playersamount);
 									Title = "Dangerous command"
 								}) == "No" then
