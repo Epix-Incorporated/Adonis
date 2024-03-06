@@ -460,6 +460,24 @@ return function(Vargs, GetEnv)
 					end
 				end
 
+				if command.Dangerous and Settings.WarnDangerousCommand and not isSystem then
+					-- more checks
+					for i, argname in ipairs(cmdArgs) do
+						if string.find(argname, "player") ~= nil or string.find(argname, "plr") ~= nil then
+							local playersamount = #(service.GetPlayers(p, args[i]));
+							if playersamount > 1 then
+								if Remote.GetGui(p, "YesNoPrompt", {
+									Question = string.format("Are you sure you want to proceed? (%s selected %s possible players)", msg, playersamount);
+									Title = "Dangerous command"
+								}) == "No" then
+									Functions.Hint(string.format("Aborted command %s", msg), { p })
+									return
+								end
+							end
+						end
+					end
+				end
+
 				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog then
 					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {

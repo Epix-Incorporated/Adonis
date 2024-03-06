@@ -43,11 +43,11 @@ return function(Vargs, GetEnv)
 			Disabled = t.boolean,
 			NoStudio = t.boolean,
 			NoLog = t.boolean,
-			Dangerous = t.boolean,
 			NonChattable = t.boolean,
 			AllowDonors = t.boolean,
 			Donors = t.boolean,
 			Filter = t.boolean,
+			Dangerous = t.boolean,
 			Function = t.callback,
 			ListUpdater = t.optional(t.union(t.string, t.callback))
 		})
@@ -74,12 +74,12 @@ return function(Vargs, GetEnv)
 				NoStudio = false;
 				NoLog = false;
 				NonChattable = false;
-				Dangerous = false;
 				AllowDonors = false;
 				Donors = false;
 				CrossServerDenied = false;
 				IsCrossServer = false;
 				Filter = false;
+				Dangerous = false;
 				Function = function(plr)
 					Remote.MakeGui(plr, "Output", {Title = "Error", Message = "No command implementation"})
 				end

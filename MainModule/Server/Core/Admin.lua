@@ -1201,7 +1201,6 @@ return function(Vargs, GetEnv)
 
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
-
 				local ran, error = TrackTask(
 					`{plr.Name}: {coma}`,
 					com.Function,

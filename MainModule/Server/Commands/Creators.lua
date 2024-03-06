@@ -152,6 +152,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -173,6 +174,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do
