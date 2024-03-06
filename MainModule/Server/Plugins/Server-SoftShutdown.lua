@@ -161,4 +161,28 @@ return function(Vargs, GetEnv)
 			-- done
 		end
 	}
+	Commands.GlobalSoftShutdown = {
+		Prefix = Settings.Prefix;
+		Commands = {"globalsoftshutdown", "globalrestart", "globalsshutdown", "grestart"};
+		Args = {"reason"};
+		Description = "Performs a global restart on all servers.";
+		--Filter = true; -- will be filtered by the soft shutdown command anyway.
+		AdminLevel = "HeadAdmins";
+		CrossServerDenied = true;
+		IsCrossServer = true;
+		Function = function(plr: Player, args: {string})
+			if not Core.CrossServer("NewRunCommand", {
+				UserId = plr.UserId;
+				Name = plr.Name;
+				DisplayName = plr.DisplayName;
+				AccountAge = plr.AccountAge;
+				--MembershipType = plr.MembershipType; -- MessagingService doesn't accept Enums
+				FollowUserId = plr.FollowUserId;
+				AdminLevel = Admin.GetLevel(plr);
+				}, ":restart "..args[1])
+			then
+				error("CrossServer handler not ready (try again later)")
+			end
+		end
+	}
 end
