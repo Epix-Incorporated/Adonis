@@ -472,25 +472,36 @@ return function(data, env)
 
 		local LOAD_TEXT = {
 			BackgroundTransparency = 1;
-			Size = UDim2.new(1, 0, 1, 0);
-			Text = "Loading...";
-			TextScaled = true;
-			TextColor3 = Color3.new(1, 1, 1);
-			TextXAlignment = Enum.TextXAlignment.Center;
-			TextYAlignment = Enum.TextYAlignment.Center;
-			Font = Enum.Font.SourceSansSemibold
+			Size = UDim2.new(0, 14, 0, 14);
+			Position = Udim2.new(0.5, 0, 0.5, 0);
+			AnchorPoint = Vector2.new(0.5, 0.5);
+			Image = "rbxassetid://69395121";
+			ImageTransparency = 0.1;
+			ZIndex = 10;
 		}
 
-		local donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad = donorTab:Add("TextLabel", LOAD_TEXT), keyTab:Add("TextLabel", LOAD_TEXT), aliasTab:Add("TextLabel", LOAD_TEXT), clientTab:Add("TextLabel", LOAD_TEXT), gameTab:Add("TextLabel", LOAD_TEXT)
+		local loadingIcons = {donorTab:Add("ImageLabel", LOAD_TEXT), keyTab:Add("ImageLabel", LOAD_TEXT), aliasTab:Add("ImageLabel", LOAD_TEXT), clientTab:Add("ImageLabel", LOAD_TEXT), gameTab:Add("ImageLabel", LOAD_TEXT)}
 		gTable = window.gTable
 		window:Ready()
+
+		task.spawn(function()
+			local start = os.clock()
+
+			while loadingIcons[1].Parent do
+				for _, v in loadingIcons do
+					v.Rotation = -(os.clock() - start)/(1/60)*10
+				end
+				task.wait(1/60)
+			end
+		end)
+
 		playerData = Remote.Get("PlayerData")
 		chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		settingsData = Remote.Get("AllSettings")
 		Variables.Aliases = playerData.Aliases or {}
 		commandPrefix = chatMod.Prefix
 
-		for _, v in {donorLoad, keyLoad, aliasLoad, clientLoad, gameLoad} do
+		for _, v in loadingIcons do
 			v:Destroy()
 		end
 
