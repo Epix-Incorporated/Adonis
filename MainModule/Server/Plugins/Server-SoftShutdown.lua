@@ -45,7 +45,7 @@ return function(Vargs, GetEnv)
 		local waitTime = 5
 		local playersToTeleport = {}
 		local jobid
-		local startTask, TeleportTask = service.ThreadService.NewTask("Teleport Players", function()
+		local startTask, TeleportTask = service.Threads.NewTask("Teleport Players", function()
 			jobid = TeleportService:TeleportPartyAsync(game.PlaceId, playersToTeleport, {[PARAMETER_2_NAME] = true})
 		end)
 		local function teleport(player)
