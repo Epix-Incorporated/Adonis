@@ -24,11 +24,14 @@ return {
 	"Updated rojo meta.json files";
 	"Fixed text being editable in lists";
 	"Updated description of :nil to reflect Roblox changes";
+	"Contributors: Git/DrewBokman, Git/RadiantUwU, Git/ccuser44, Git/fxeP1";
+	"Git/karl-police and Git/kaiserandaxl";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
 	"Performance stats window can now be resized";
 	"Bans list now has a search bar";
+	"Contributors: Git/DrewBokman and Git/fxeP1";
 	"";
 	"[v250 2024-02-23 12:10 UTC] @Dimenpsyonal";
 	":oldlogs now works correctly with LinkedLists";
