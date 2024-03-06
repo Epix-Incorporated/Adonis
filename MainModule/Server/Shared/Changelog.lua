@@ -5,6 +5,7 @@ return {
 	"";
 	"[v252 2024-03-xx xx:xx UTC] @Dimenpsyonal";
 	"Ping readout now shows in Milliseconds";
+	":sword is now a fun command";
 	"Output GUI changes for all themes";
 	"> default and rounded now use a new font";
 	"> are now correctly customised with title and colour";
