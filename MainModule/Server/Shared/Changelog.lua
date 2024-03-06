@@ -13,7 +13,9 @@ return {
 	"New setting: ChatCreateRobloxCommands";
 	"> Toggles whether Adonis will make TextChat commands";
 	"> Setting is enabled by default";
-	"Added WarnDangerousCommand setting, currently not functional";
+	"New setting: WarnDangerousCommand";
+	"> Warns when a potentially dangerous action is about to be undertaken";
+	"> Setting is disabled by default";
 	"Added lazy load for userpanel - makes userpanel load faster";
 	"> You can disable this in client settings";
 	"Added :newdex as a command for new dex explorer";
@@ -21,6 +23,7 @@ return {
 	"Fixed issue with keybind waiting for key to be selected";
 	"Updated rojo meta.json files";
 	"Fixed text being editable in lists";
+	"Updated description of :nil to reflect Roblox changes";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
