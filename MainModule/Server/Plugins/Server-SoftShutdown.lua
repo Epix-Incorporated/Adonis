@@ -164,24 +164,70 @@ return function(Vargs, GetEnv)
 	Commands.GlobalSoftShutdown = {
 		Prefix = Settings.Prefix;
 		Commands = {"globalsoftshutdown", "globalrestart", "globalsshutdown", "grestart"};
-		Args = {"reason"};
-		Description = "Performs a global restart on all servers.";
-		--Filter = true; -- will be filtered by the soft shutdown command anyway.
+		Args = {"reason (default: none)", "time<s,m> (default: instant)", "abortable (default: true)"};
+		Description = "Performs a global restart on all servers after set time. (Abortable specifies whether VIP server owners can abort the restart on their own servers.)";
+		Filter = true;
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true;
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
-			if not Core.CrossServer("NewRunCommand", {
-				UserId = plr.UserId;
-				Name = plr.Name;
-				DisplayName = plr.DisplayName;
-				AccountAge = plr.AccountAge;
-				--MembershipType = plr.MembershipType; -- MessagingService doesn't accept Enums
-				FollowUserId = plr.FollowUserId;
-				AdminLevel = Admin.GetLevel(plr);
-				}, ":restart "..args[1])
+			local time
+			if args[2] then
+				time = string.lower(args[2])
+				if time:sub(-1,-1)=="s" then
+					time = tonumber(time:sub(1,-2))
+				elseif time:sub(-1,-1)=="m" then
+					time = tonumber(time:sub(1,-2))*60
+				else
+					error("Invalid time specified.");
+				end
+				assert(time, "Invalid time specified.")
+			end
+			if not Core.CrossServer("GlobalRestartRequest",
+				args[1] or "No reason specified.",
+				if args[2] then tonumber(args[2]) else args[2],
+				not (string.lower(args[3])=="no" or string.lower(args[3])=="false")
+				)
 			then
 				error("CrossServer handler not ready (try again later)")
+			end
+		end
+	}
+	Commands.AbortGlobalSoftShutdown = {
+		Prefix = Settings.Prefix;
+		Commands = {"abortglobalsoftshutdown", "abortglobalrestart", "abortglobalsshutdown", "abortgrestart"};
+		Args = {};
+		Description = "Aborts a global shutdown on all servers.";
+		Filter = true;
+		AdminLevel = "HeadAdmins";
+		CrossServerDenied = true;
+		IsCrossServer = true;
+		Function = function(plr: Player, args: {string})
+			if not Core.CrossServer("GlobalRestartRequest",
+				"[CRS_SRV]:abort",
+				0,
+				false
+				)
+			then
+				error("CrossServer handler not ready (try again later)")
+			end
+		end
+	}
+	Commands.VIPAbortGlobalServerRestart = {
+		Prefix = Settings.PlayerPrefix;
+		Commands = {"abortrestart"};
+		Args = {};
+		Description = "Aborts a global server restart";
+		NoStudio = true;
+		AdminLevel = "Players";
+		Disabled = game.PrivateServerOwnerId == 0; -- enabled only on VIP servers.
+		Function = function(plr: Player, args: {string})
+			assert(plr.UserId==game.PrivateServerOwnerId, "You don't have permission to run this command.")
+			for i,t in service.Threads.Tasks do
+				if t.Name == "GLOBALRESTART_COUNTDOWN" then
+					assert(t.abortable, "Failed to abort shutdown (access denied)")
+					t.Stop()
+				end
 			end
 		end
 	}
