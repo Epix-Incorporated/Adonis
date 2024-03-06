@@ -1431,7 +1431,7 @@ return function(Vargs, env)
 			Commands = {"nil"};
 			Args = {"player"};
 			Hidden = true;
-			Description = "Sends the target player(s) to nil, where they will not show up on the player list and not normally be able to interact with the game";
+			Description = `Deletes the player forcefully, causing them to be kicked for "unexpected client behaviour"`;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
