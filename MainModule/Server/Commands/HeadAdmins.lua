@@ -459,7 +459,7 @@ return function(Vargs, env)
 					Variables.IncognitoPlayers[v] = {
 						time=os.time(),
 						hide_from_everyone=hidefromEveryone,
-						hide_character=
+						hide_character=hideCharacter
 					}
 					if hideCharacter then
 						v.CharacterAdded:Connect(function(character: Model) 
