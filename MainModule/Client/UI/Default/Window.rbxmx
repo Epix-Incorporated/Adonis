@@ -1768,10 +1768,6 @@ return function(data, env)
 							TextEditable = false;
 							ClearTextOnFocus = false;
 						})
-
-						label:GetPropertyChangedSignal("Text"):Connect(function()
-							label.Text = ` {text}`
-						end)
 					else
 						label = create(onClick and "TextButton" or "TextLabel",{
 							Text = ` {text}`;
