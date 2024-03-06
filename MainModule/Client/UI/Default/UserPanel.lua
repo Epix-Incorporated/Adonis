@@ -470,17 +470,17 @@ return function(data, env)
 
 		end
 
-		local LOAD_TEXT = {
+		local LOAD_ICON = {
 			BackgroundTransparency = 1;
 			Size = UDim2.new(0, 14, 0, 14);
-			Position = Udim2.new(0.5, 0, 0.5, 0);
+			Position = UDim2.new(0.5, 0, 0.5, 0);
 			AnchorPoint = Vector2.new(0.5, 0.5);
 			Image = "rbxassetid://69395121";
 			ImageTransparency = 0.1;
 			ZIndex = 10;
 		}
 
-		local loadingIcons = {donorTab:Add("ImageLabel", LOAD_TEXT), keyTab:Add("ImageLabel", LOAD_TEXT), aliasTab:Add("ImageLabel", LOAD_TEXT), clientTab:Add("ImageLabel", LOAD_TEXT), gameTab:Add("ImageLabel", LOAD_TEXT)}
+		local loadingIcons = {donorTab:Add("ImageLabel", LOAD_ICON), keyTab:Add("ImageLabel", LOAD_ICON), aliasTab:Add("ImageLabel", LOAD_ICON), clientTab:Add("ImageLabel", LOAD_ICON), gameTab:Add("ImageLabel", LOAD_ICON)}
 		gTable = window.gTable
 		window:Ready()
 
