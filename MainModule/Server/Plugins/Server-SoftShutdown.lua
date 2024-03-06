@@ -43,6 +43,7 @@ return function(Vargs, GetEnv)
 		--// This is a reserved server
 
 		local waitTime = 5
+		local playersToTeleport = {}
 		local function teleport(player)
 			local joindata = player:GetJoinData()
 			local data = type(joindata) == "table" and joindata.TeleportData
@@ -61,7 +62,7 @@ return function(Vargs, GetEnv)
 
 				Logs:AddLog("Script", `Teleporting {player.Name} back to the main game`)
 				teleportedPlayers[player] = 1
-				TeleportService:Teleport(game.PlaceId, player, {[PARAMETER_2_NAME] = true})
+				table.insert(playersToTeleport, player)
 			end
 		end
 
@@ -69,6 +70,7 @@ return function(Vargs, GetEnv)
 		for _, player in ipairs(service.GetPlayers()) do
 			teleport(player)
 		end
+		TeleportService:TeleportPartyAsync(game.PlaceId, playersToTeleport, {[PARAMETER_2_NAME] = true})
 	end
 
 	Remote.Terminal.Commands.SoftShutdown = {
