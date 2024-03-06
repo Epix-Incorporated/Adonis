@@ -23,7 +23,6 @@ return {
 	"Fixed error with oldlogs";
 	"Fixed issue with keybind waiting for key to be selected";
 	"Updated rojo meta.json files";
-	"Fixed text being editable in lists";
 	"Updated description of :nil to reflect Roblox changes";
 	"Contributors: Git/DrewBokman, Git/RadiantUwU, Git/ccuser44, Git/fxeP1";
 	"Git/karl-police and Git/kaiserandaxl";
