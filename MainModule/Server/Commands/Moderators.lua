@@ -7140,7 +7140,6 @@ return function(Vargs, env)
 			Args = {"autoupdate? (default: true)"};
 			Description = "Displays a list of incognito players in the server";
 			AdminLevel = "Moderators";
-			Hidden = true;
 			ListUpdater = function(plr: Player)
 				local tab = {}
 				for p: Player, t: table in Variables.IncognitoPlayers do
@@ -7154,7 +7153,7 @@ return function(Vargs, env)
 				return tab
 			end;
 			Function = function(plr: Player, args: {string})
-				local autoUpdate = string.lower(args[1])
+				local autoUpdate = string.lower(args[1] or "false")
 				Remote.RemoveGui(plr, "IncognitoPlayerList")
 				Remote.MakeGui(plr, "List", {
 					Name = "IncognitoPlayerList";

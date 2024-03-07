@@ -1016,7 +1016,7 @@ return function(Vargs, GetEnv)
 
 				for v: Player, pdata: table in Variables.IncognitoPlayers do
 					--// Check if the Player still exists before doing incognito to prevent LoadCode spam.
-					if v == p or v.Parent == service.Players then
+					if v == p or v.Parent ~= service.Players then
 						continue
 					end
 					if level > 0 and not pdata.hide_from_everyone then
