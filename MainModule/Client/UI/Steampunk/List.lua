@@ -339,7 +339,7 @@ return function(data, env)
 		Position = UDim2.new(0, 5, 0, 5),
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
-		Font = Enum.Font.Arial,
+		Font = Enum.Font.SourceSans,
 		--TextColor3 = Color3.new(1, 1, 1);
 		Text = "",
 		PlaceholderText = "Search",
