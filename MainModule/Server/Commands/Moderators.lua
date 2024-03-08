@@ -2887,7 +2887,7 @@ return function(Vargs, env)
 							Parent = frame,
 							Text = service.FormatPlayer(v),
 							BackgroundTransparency = 1,
-							Font = Enum.Font.Arial,
+							Font = Enum.Font.SourceSans,
 							TextColor3 = Color3.new(1, 1, 1),
 							TextStrokeColor3 = Color3.new(0, 0, 0),
 							TextStrokeTransparency = 0,
