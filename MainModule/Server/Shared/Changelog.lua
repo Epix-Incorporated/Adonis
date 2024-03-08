@@ -24,8 +24,9 @@ return {
 	"Fixed issue with keybind waiting for key to be selected";
 	"Updated rojo meta.json files";
 	"Updated description of :nil to reflect Roblox changes";
+	"Fixed :unfly with SignalBehaviour set to deferred";
 	"Contributors: Git/DrewBokman, Git/RadiantUwU, Git/ccuser44, Git/fxeP1";
-	"Git/karl-police and Git/kaiserandaxl";
+	"Git/karl-police, Git/kaiserandaxl and Git/YetAnotherClown";
 	"";
 	"[v251 2024-02-29 13:15 UTC] @Dimenpsyonal";
 	"Happy leap day!";
