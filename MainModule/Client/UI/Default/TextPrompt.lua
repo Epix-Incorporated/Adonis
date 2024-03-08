@@ -46,7 +46,7 @@ return function(data, env)
 
 	local submit = window:Add("TextButton", {
 		Text = ">";
-		Font = "Arial";
+		Font = "SourceSans";
 		TextSize = 22;
 		Size = UDim2.new(0, 25, 0, 25);
 		Position = UDim2.new(1, -30, 1, -30);
