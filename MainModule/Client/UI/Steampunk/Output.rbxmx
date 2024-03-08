@@ -324,7 +324,7 @@ return function(data, env)
 	end
 	
 	t2.Text = if title then `<b>{title}</b>: {msg}` else msg end
-	t2.Font = "Arial"
+	t2.Font = "SourceSans"
 	if data.Color then
 		t2.TextColor3 = data.Color
 	end
