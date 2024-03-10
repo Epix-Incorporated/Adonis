@@ -1351,13 +1351,13 @@ return function(Vargs, env)
 						if v and service.Players:FindFirstChild(v.Name) then
 							local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 							table.insert(tab, {
-								Text = string.format("[%s] %s", v:GetNetworkPing(), service.FormatPlayer(v, true));
+								Text = string.format("[%d ms] %s", v:GetNetworkPing() * 1000, service.FormatPlayer(v, true));
 								Desc = string.format("Lower: %s | Health: %d | MaxHealth: %d | WalkSpeed: %d | JumpPower: %d | Humanoid Name: %s", v.Name:lower(), hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
 							})
 						else
 							table.insert(tab, {
 								Text = `[LOADING] {service.FormatPlayer(v, true)}`;
-								Desc = `Lower: {string.lower(v.Name)} | Ping: {v:GetNetworkPing()}`;
+								Desc = `Lower: {string.lower(v.Name)} | Ping: {v:GetNetworkPing() * 1000}`;
 							})
 						end
 					end
@@ -1725,7 +1725,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Functions.Hint(`{service.FormatPlayer(v)}'s Ping is {v:GetNetworkPing()}ms`, {plr})
+					Functions.Hint(`{service.FormatPlayer(v)}'s Ping is {v:GetNetworkPing() * 1000}ms`, {plr})
 				end
 			end
 		};
