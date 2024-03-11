@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v252 2024-03-xx xx:xx UTC] @Dimenpsyonal";
+	"[v252 2024-03-11 18:00 UTC] @Dimenpsyonal";
 	"Ping readout now shows in Milliseconds";
 	":sword is now a fun command";
 	"Output GUI changes for all themes";
