@@ -1,7 +1,10 @@
 return {
-	"Version: 252";
+	"Version: 253";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v253 2024-03-xx xx:xx UTC] @Maintainer";
+	"Made CrossServerCommands actually enable/disable cross-server functions";
 	"";
 	"[v252 2024-03-11 18:00 UTC] @Dimenpsyonal";
 	"Ping readout now shows in Milliseconds";
