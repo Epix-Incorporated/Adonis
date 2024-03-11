@@ -322,15 +322,16 @@ return function(data, env)
 			end
 		end
 	end
-	
-	t2.Text = if title then `<b>{title}</b>: {msg}` else msg end
+	local formattedMessage = msg
+	if title then formattedMessage = `<b>{title}</b>: {msg}` end
+	t2.Text = formattedMessage
 	t2.Font = "Arial"
-	if data.Color then
-		t2.TextColor3 = data.Color
+	if color then
+		t2.TextColor3 = color
 	end
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
 	gTable.Ready()
-	wait(5)
+	task.wait(5)
 	gTable.Destroy()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
