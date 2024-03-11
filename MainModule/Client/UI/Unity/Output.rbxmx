@@ -431,14 +431,17 @@ return function(data, env)
 	end
 	t2.TextColor3 = color
 	main.BackgroundColor3 = color
-	t2.Text = if title then `<b>{title}</b>: {msg}` else msg end
+
+	local formattedMessage = msg
+	if title then formattedMessage = `<b>{title}</b>: {msg}` end
+	t2.Text = formattedMessage
 	t2.Font = "Gotham"
 	consoleOpenTween:Play()
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
 	gTable.Ready()
-	wait(5)
+	task.wait(5)
 	consoleCloseTween:Play()
-	wait(2)
+	task.wait(2)
 	gTable.Destroy()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
