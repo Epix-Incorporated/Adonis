@@ -359,6 +359,7 @@ return function(Vargs, GetEnv)
 	end
 
 	Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and MsgService:SubscribeAsync(subKey, function(...)
+		if not Settings.CrossServerCommands then return end -- Ignore when disabled
 		return Process.CrossServerMessage(...)
 	end)
 
