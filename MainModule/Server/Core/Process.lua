@@ -460,6 +460,24 @@ return function(Vargs, GetEnv)
 					end
 				end
 
+				if command.Dangerous and Settings.WarnDangerousCommand and not isSystem then
+					-- more checks
+					for i, argname in ipairs(cmdArgs) do
+						if string.find(argname, "player") ~= nil or string.find(argname, "plr") ~= nil then
+							local playersamount = #(service.GetPlayers(p, args[i]));
+							if playersamount > 1 then
+								if Remote.GetGui(p, "YesNoPrompt", {
+									Question = string.format("Are you sure you want to proceed? (%s selected %s possible players)", msg, playersamount);
+									Title = "Dangerous command"
+								}) == "No" then
+									Functions.Hint(string.format("Aborted command %s", msg), { p })
+									return
+								end
+							end
+						end
+					end
+				end
+
 				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog then
 					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
@@ -483,9 +501,9 @@ return function(Vargs, GetEnv)
 					if not opts.IgnoreErrors then
 						if type(cmdError) == "string" then
 							AddLog("Errors", `[{matched}] {cmdError}`)
-	
+
 							cmdError = cmdError:match("%d: (.+)$") or cmdError
-	
+
 							if not isSystem then
 								Remote.MakeGui(p, "Output", {
 									Message = cmdError,
@@ -626,7 +644,7 @@ return function(Vargs, GetEnv)
 						end
 					else
 						local msg = string.sub(msg, 1, Process.MsgStringLimit)
-						
+
 						if Settings.ChatCommands then
 							if Admin.DoHideChatCmd(p, msg) then
 								Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
@@ -730,8 +748,8 @@ return function(Vargs, GetEnv)
 						return "REMOVED"
 					end
 				end
-				
-				do 
+
+				do
 					local Removed = false
 					local success, err = pcall(function()
 						for filter,func in pairs(server.Variables.PlayerJoinFilters) do
@@ -749,8 +767,8 @@ return function(Vargs, GetEnv)
 						return "REMOVED"
 					end
 				end
-				
-				
+
+
 			end)
 
 			if not ran then
@@ -828,8 +846,8 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
-			for _,rateLimit in RateLimiter do 
-				if not rateLimit.Caches then 
+			for _,rateLimit in RateLimiter do
+				if not rateLimit.Caches then
 					continue
 				end
 				rateLimit.Caches[p.UserId] = nil
@@ -864,7 +882,7 @@ return function(Vargs, GetEnv)
 					trackTargets[p] = nil
 					local otherPlr = service.Players:FindFirstChild(otherPlrName)
 					if otherPlr then
-						task.defer(Remote.RemoveLocal, otherPlr, `{p.Name}Tracker`)
+						task.defer(Remote.RemoveLocal, otherPlr, `{p.Name}_Tracker`)
 					end
 				end
 			end
@@ -926,7 +944,7 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection and Settings.AllowClientAntiExploit then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
-					
+
 					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
 						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})
@@ -966,7 +984,7 @@ return function(Vargs, GetEnv)
 					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-            
+
 						task.wait(1)
 						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 
@@ -993,7 +1011,7 @@ return function(Vargs, GetEnv)
 									window:Ready()
 							]]))
 						end
-						
+
 						if level >= 300 and #Settings.Messages > 0 then
 							for _, Message in Settings.Messages do
 								task.delay(1, Functions.Notification, "Message", tostring(Message), {p}, math.round((#Message/19)+2.5))
@@ -1037,7 +1055,7 @@ return function(Vargs, GetEnv)
 		CharacterAdded = function(p, char, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key]
-										
+
 			local args = {...}
 
 			if keyData then
@@ -1061,11 +1079,11 @@ return function(Vargs, GetEnv)
 						Message = Variables.NotifMessage
 					})
 				end
-											
-				if 
-					(not args[1] or 
+
+				if
+					(not args[1] or
 						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil or args[1].FinishedLoading == true))
-					and 
+					and
 						(Settings.Console and (not Settings.Console_AdminsOnly or level > 0)) then
 					Remote.RefreshGui(p, "Console")
 				end
@@ -1115,8 +1133,8 @@ return function(Vargs, GetEnv)
 					and char:WaitForChild("HumanoidRootPart", 2)
 				then
 					for otherPlrName, trackTargets in Variables.TrackingTable do
-						if trackTargets[p] then
-							server.Commands.Track.Function(service.Players[otherPlrName], {`@{p.Name}`, "true"})
+						if trackTargets[p] and service.Players:FindFirstChild(otherPlrName) then
+							Admin.RunCommandAsPlayer(`{Settings.Prefix}track`, service.Players[otherPlrName], `@{p.Name}`, "true")
 						end
 					end
 				end

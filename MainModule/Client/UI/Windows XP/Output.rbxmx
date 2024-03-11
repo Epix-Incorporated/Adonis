@@ -172,7 +172,7 @@
 						<YS>0</YS>
 						<YO>0</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
@@ -451,7 +451,7 @@
 								<YS>0.5</YS>
 								<YO>0</YO>
 							</UDim2>
-							<bool name="RichText">false</bool>
+							<bool name="RichText">true</bool>
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">false</bool>
@@ -1948,12 +1948,14 @@ return function(data, env)
 	local localplayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
 	local window = scr.Window
-	local msg = data.Message
-	local color = data.Color
+	local dataMessage = data.Message
+	local dataTitle = data.Title
+	local dataColor = data.Color
+	local formattedMessage = msg
 
 	local found = client.UI.Get("Output")
 	if found then
-		for i,v in pairs(found) do
+		for _,v in found do
 			local p = v.Object
 			if p and p.Parent then
 				p.Window.Position = UDim2.new(0.5, 0, 0.5, p.Window.Position.Y.Offset+160)
@@ -1961,8 +1963,12 @@ return function(data, env)
 		end
 	end
 
-	window.Main.ScrollingFrame.ErrorText.Text = msg
-	window.Main.ScrollingFrame.ErrorText.TextColor3 = color
+	if title then 
+		formattedMessage = `<b>{dataTitle}</b>: {msg}` 
+	end
+
+	window.Main.ScrollingFrame.ErrorText.Text = formattedMessage
+	window.Main.ScrollingFrame.ErrorText.TextColor3 = dataColor
 
 	window.Close.MouseButton1Down:Connect(function()
 		gTable.Destroy()
@@ -1973,12 +1979,12 @@ return function(data, env)
 		sound.SoundId = "rbxassetid://160715357"
 		sound.Volume = 2
 		sound:Play()
-		wait(0.8)
+		task.wait(0.8)
 		sound:Destroy()
 	end)
 
 	gTable.Ready()
-	wait(5)
+	task.wait(5)
 	gTable.Destroy()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>

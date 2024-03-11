@@ -796,7 +796,7 @@ return function(Vargs, env)
 				end
 
 				if not chosenMat then
-					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = "Invalid material choice";})
+					Remote.MakeGui(plr, "Output", {Title = "Error"; Message = "Invalid material choice";})
 					return
 				end
 
@@ -1069,6 +1069,28 @@ return function(Vargs, env)
 					end)
 				end
 			end;
+		};
+
+		Sword = {
+			Prefix = Settings.Prefix;
+			Commands = {"sword", "givesword"};
+			Args = {"player", "allow teamkill (default: true)"};
+			Description = "Gives the target player(s) a sword";
+			AdminLevel = "Moderators";
+			Fun = true;
+			Function = function(plr: Player, args: {string})
+				local sword = service.Insert(125013769)
+				local config = sword:FindFirstChild("Configurations")
+				if config then
+					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
+				end
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+					if Backpack then
+						sword:Clone().Parent = Backpack
+					end
+				end
+			end
 		};
 
 		iloveyou = {
@@ -2674,7 +2696,7 @@ return function(Vargs, env)
 						local human = plr.Character:FindFirstChildOfClass("Humanoid")
 
 						if not human then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
+							Remote.MakeGui(p, "Output", {Title = "Error"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
 							return
 						end
 
@@ -2723,62 +2745,7 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
-							local character = plr.Character
-							if character:FindFirstChild("Shirt") then
-								character.Shirt.Parent = plr.Character.HumanoidRootPart
-							end
-							
-							if character:FindFirstChild("Pants") then
-							    character.Pants.Parent = character.HumanoidRootPart
-							end
-							
-							local torso = character:WaitForChild("UpperTorso") or character:WaitForChild("Torso")
-							local head = plr.Character:WaitForChild("Head")
-							
-							torso.Transparency = 1
-							
-							for _, v in torso:GetChildren() do
-							    if v:IsA("Motor6D") then
-							        local lc0 = Instance.new("CFrameValue")
-							        lc0.Name = "LastC0"
-							        lc0.Value = v.C0
-							        lc0.Parent = v
-							    end
-							end
-							
-							torso.Neck.C0 = CFrame.new(0, -0.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
-							
-							local humanoidDescription = Instance.new("HumanoidDescription")
-							humanoidDescription.RightShoulderAngle = 90
-							humanoidDescription.LeftShoulderAngle = -90
-							humanoidDescription.RightHipAngle = 90
-							humanoidDescription.LeftHipAngle = -90
-							human:ApplyDescription(humanoidDescription)
-							
-							local seat = Instance.new("Seat")
-							seat.Name = "Adonis_Torso"
-							seat.TopSurface = Enum.SurfaceType.Smooth
-							seat.BottomSurface = Enum.SurfaceType.Smooth
-							seat.Size = Vector3.new(3, 1, 4)
-							
-							local attachment = Instance.new("Attachment")
-							attachment.Parent = seat
-							
-							local vectorForce = Instance.new("VectorForce")
-							vectorForce.Force = Vector3.new(0, 2000, 0)
-							vectorForce.Parent = seat
-							vectorForce.Attachment0 = attachment
-							
-							seat.CFrame = torso.CFrame
-							seat.Parent = character
-							
-							torso.Waist.C0 = CFrame.new(0, 0.5, 0)
-							
-							for _, v in character:GetDescendants() do
-							    if v:IsA("BasePart") then
-							        v.BrickColor = BrickColor.new("Brown")
-							    end
-							end
+							Remote.MakeGui(plr, "Output", {Title = "Nonfunctional"; Message = `This command does not yet support R15.`; Color = Color3.new(1,1,1)})
 						end
 					end
 				end

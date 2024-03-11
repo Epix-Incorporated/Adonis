@@ -1201,14 +1201,13 @@ return function(Vargs, GetEnv)
 
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
-
 				local ran, error = TrackTask(
 					`{plr.Name}: {coma}`,
 					com.Function,
 					function(err)
 						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
-							Title = "",
+							Title = "Error",
 							Message = error,
 							Color = Color3.new(1, 0, 0),
 						})
@@ -1273,61 +1272,63 @@ return function(Vargs, GetEnv)
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
 
-			-- // Support for commands to be ran via TextChat
-			task.spawn(function()
-				local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
+			if Settings.ChatCreateRobloxCommands then
+				-- // Support for commands to be ran via TextChat
+				task.spawn(function()
+					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
 
-				if container then
-					for _, v in container:GetChildren() do
-						if string.sub(v.Name, 1, 7) == "Adonis_" then
-							v:Destroy()
-						end
-					end
-
-					local blacklistedCommands = {}
-
-					for _, v in container:GetDescendants() do
-						if v:IsA("TextChatCommand") then
-							blacklistedCommands[v.PrimaryAlias] = true
-							blacklistedCommands[v.SecondaryAlias] = true
-						end
-					end
-
-					for name, data in Commands do
-						local command1, command2 = nil, nil
-
-						if type(data) ~= "table" or data.Hidden then
-							continue
-						end
-
-						for _, v in data.Commands do
-							if not blacklistedCommands["/"..data.Prefix..v] then
-								if not command1 then
-									command1 = "/"..data.Prefix..v
-								else
-									command2 = "/"..data.Prefix..v
-								end
+					if container then
+						for _, v in container:GetChildren() do
+							if string.sub(v.Name, 1, 7) == "Adonis_" then
+								v:Destroy()
 							end
 						end
 
-						if command1 then
-							local command = Instance.new("TextChatCommand")
+						local blacklistedCommands = {}
 
-							command.Name = "Adonis_"..name
-							command.PrimaryAlias = command1
-							command.SecondaryAlias = command2 or ""
-							command.Parent = container
-							command.Triggered:Connect(function(textSource, text)
-								local player = service.Players:GetPlayerByUserId(textSource.UserId)
+						for _, v in container:GetDescendants() do
+							if v:IsA("TextChatCommand") then
+								blacklistedCommands[v.PrimaryAlias] = true
+								blacklistedCommands[v.SecondaryAlias] = true
+							end
+						end
 
-								if player then
-									Process.Command(player, string.sub(text, 2))
+						for name, data in Commands do
+							local command1, command2 = nil, nil
+
+							if type(data) ~= "table" or data.Hidden then
+								continue
+							end
+
+							for _, v in data.Commands do
+								if not blacklistedCommands["/"..data.Prefix..v] then
+									if not command1 then
+										command1 = "/"..data.Prefix..v
+									else
+										command2 = "/"..data.Prefix..v
+									end
 								end
-							end)
+							end
+
+							if command1 then
+								local command = Instance.new("TextChatCommand")
+
+								command.Name = "Adonis_"..name
+								command.PrimaryAlias = command1
+								command.SecondaryAlias = command2 or ""
+								command.Parent = container
+								command.Triggered:Connect(function(textSource, text)
+									local player = service.Players:GetPlayerByUserId(textSource.UserId)
+
+									if player then
+										Process.Command(player, string.sub(text, 2))
+									end
+								end)
+							end
 						end
 					end
-				end
-			end)
+				end)
+			end
 		end;
 
 		GetCommand = function(Command)

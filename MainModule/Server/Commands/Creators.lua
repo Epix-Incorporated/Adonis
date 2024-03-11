@@ -152,6 +152,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -173,6 +174,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -277,14 +279,14 @@ return function(Vargs, env)
 					
 					local oError = error
 					local newenv = setfenv(getfenv(),{
-						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `PRINT: {str}`}) end;
-						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `WARN: {str}`}) end;
+						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "WARN"; Message = `{str}`}) end;
+						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "WARN"; Message = `{str}`}) end;
 						error = function(reason, level)
 							if level ~= nil and type(level) ~= "number" then
 								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 							end
 
-							Remote.MakeGui(plr, "Output",{Title = 'Output'; Message = `LUA_DEMAND_ERROR: {reason}`})
+							Remote.MakeGui(plr, "Output",{Title = "LUA_DEMAND_ERROR"; Message = `{reason}`})
 							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 						end;
 					})
@@ -296,9 +298,9 @@ return function(Vargs, env)
 								func()
 							end)
 
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = Err})
+							Remote.MakeGui(plr,'Output',{Title = 'ScriptEditor error'; Message = Err})
 						else
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = err})
+							Remote.MakeGui(plr,'Output',{Title = 'ScriptEditor error'; Message = err})
 						end
 					end)
 				end

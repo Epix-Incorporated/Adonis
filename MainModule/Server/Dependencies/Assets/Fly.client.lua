@@ -238,7 +238,9 @@ function DPadifyInput(direction, isGame)
 	if yDir == 0 then HandleInput("Forward", isGame, false); HandleInput("Backward", isGame, false) end
 end
 
-listenConnection(part.DescendantRemoving, function(Inst)
+task.spawn(function()
+	local Inst = part.DescendantRemoving:Wait()
+
 	if Inst == bPos or Inst == bGyro or Inst == speedVal or Inst == noclip then
 		if conn then
 			conn:Disconnect()
@@ -247,7 +249,7 @@ listenConnection(part.DescendantRemoving, function(Inst)
 		for _, Signal in pairs(RBXConnections) do
 			Signal:Disconnect()
 		end
-		
+
 		contextService:UnbindAction("Toggle Flight")
 
 		Stop()

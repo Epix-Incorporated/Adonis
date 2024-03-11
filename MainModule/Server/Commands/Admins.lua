@@ -19,6 +19,7 @@ return function(Vargs, env)
 			Args = {"player/user", "rank"};
 			Description = "Sets the admin rank of the target user(s); THIS SAVES!";
 			AdminLevel = "Admins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				assert(args[1], "Missing target user (argument #1)")
 				local rankName = assert(args[2], "Missing rank name (argument #2)")
@@ -62,6 +63,7 @@ return function(Vargs, env)
 			Args = {"player", "rank"};
 			Description = `Identical to {Settings.Prefix}setrank, but doesn't save`;
 			AdminLevel = "Admins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				assert(args[1], "Missing target player (argument #1)")
 				local rankName = assert(args[2], "Missing rank name (argument #2)")
@@ -101,6 +103,7 @@ return function(Vargs, env)
 			Args = {"player", "level"};
 			Description = "Sets the target player(s) permission level for the current server; does not save";
 			AdminLevel = "Admins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 				local newLevel = assert(tonumber(args[2]), "Level must be a number")
@@ -125,6 +128,7 @@ return function(Vargs, env)
 			Args = {"player/user / list entry", "temp? (true/false) (default: false)"};
 			Description = "Removes admin/moderator ranks from the target player(s); saves unless <temp> is 'true'";
 			AdminLevel = "Admins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local target = assert(args[1], "Missing target user (argument #1)")
 				local temp = args[2] and args[2]:lower() == "true"
@@ -197,6 +201,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Removes the target players' admin powers for this server; does not save";
 			AdminLevel = "Admins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 
@@ -223,6 +228,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary moderator; does not save";
 			AdminLevel = "Admins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 
@@ -244,6 +250,7 @@ return function(Vargs, env)
 			Args = {"player/user"};
 			Description = "Makes the target player(s) a moderator; saves";
 			AdminLevel = "Admins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 
@@ -1424,7 +1431,7 @@ return function(Vargs, env)
 			Commands = {"nil"};
 			Args = {"player"};
 			Hidden = true;
-			Description = "Sends the target player(s) to nil, where they will not show up on the player list and not normally be able to interact with the game";
+			Description = `Deletes the player forcefully, causing them to be kicked for "unexpected client behaviour"`;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do

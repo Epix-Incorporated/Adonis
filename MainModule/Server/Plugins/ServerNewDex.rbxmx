@@ -154,7 +154,7 @@
 	
 	Commands.DexExplorerNew = {
 		Prefix = Settings.Prefix;
-		Commands = {"dexNew";"dexNewExplorer";};
+		Commands = {"dexnew";"dexnewexplorer";"newdex";};
 		Args = {};
 		Description = "Lets you explore the game using new Dex [Credits to LorekeeperZinnia]";
 		AdminLevel = 300;

@@ -432,6 +432,7 @@ return function(Vargs, env)
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
+				assert(#(service.Players:GetPlayers()) < service.Players.MaxPlayers or not Settings.DisableRejoinAtMaxPlayers, "Cannot rejoin while server is at max capacity.")
 				service.TeleportService:TeleportAsync(game.PlaceId, {plr}, service.New("TeleportOptions", {
 					ServerInstanceId = game.JobId
 				}))
@@ -453,6 +454,7 @@ return function(Vargs, env)
 				if UserId then
 					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
 					if success then
+						assert(jobId ~= service.DataModel.JobId, "You're already in this server!")
 						if found and placeId and jobId then
 							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
 								ServerInstanceId = jobId

@@ -334,13 +334,9 @@ return function(data, env)
 		end
 	end
 
-	if window then
-		local playerData   = Remote.Get("PlayerData")
-		local chatMod 	   = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-		local settingsData = Remote.Get("AllSettings")
-
-		Variables.Aliases = playerData.Aliases or {}
-
+	if window then	
+		local commandPrefix = ":"
+		local playerData, chatMod, settingsData
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
@@ -404,7 +400,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						Remote.Send("ProcessCommand", `{chatMod.Prefix}cmds`)
+						Remote.Send("ProcessCommand", `{commandPrefix}cmds`)
 					end
 				}
 			})
@@ -474,13 +470,47 @@ return function(data, env)
 
 		end
 
+		local LOAD_ICON = {
+			BackgroundTransparency = 1;
+			Size = UDim2.new(0, 14, 0, 14);
+			Position = UDim2.new(0.5, 0, 0.5, 0);
+			AnchorPoint = Vector2.new(0.5, 0.5);
+			Image = "rbxassetid://69395121";
+			ImageTransparency = 0.1;
+			ZIndex = 10;
+		}
+
+		local loadingIcons = {donorTab:Add("ImageLabel", LOAD_ICON), keyTab:Add("ImageLabel", LOAD_ICON), aliasTab:Add("ImageLabel", LOAD_ICON), clientTab:Add("ImageLabel", LOAD_ICON), gameTab:Add("ImageLabel", LOAD_ICON)}
+		gTable = window.gTable
+		window:Ready()
+
+		task.spawn(function()
+			local start = os.clock()
+
+			while loadingIcons[1].Parent do
+				for _, v in loadingIcons do
+					v.Rotation = -(os.clock() - start)/(1/60)*10
+				end
+				task.wait(1/60)
+			end
+		end)
+
+		playerData = Remote.Get("PlayerData")
+		chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+		settingsData = Remote.Get("AllSettings")
+		Variables.Aliases = playerData.Aliases or {}
+		commandPrefix = chatMod.Prefix
+
+		for _, v in loadingIcons do
+			v:Destroy()
+		end
 
 		--// Donor Tab
 		do
-			local donorData       = playerData.Donor
+			local donorData = playerData.Donor
 			local currentMaterial = donorData and donorData.Cape.Material
-			local currentTexture  = donorData and donorData.Cape.Image
-			local currentColor    = donorData and donorData.Cape.Color
+			local currentTexture = donorData and donorData.Cape.Image
+			local currentColor = donorData and donorData.Cape.Color
 
 			if type(currentColor) == "table" then
 				currentColor = Color3.new(unpack(currentColor, 1, 3))
@@ -979,6 +1009,7 @@ return function(data, env)
 								Variables.WaitingForBind = false
 								if keyInputHandler then
 									keyInputHandler:Disconnect()
+									keyInputHandler = nil
 								end
 							end
 						end

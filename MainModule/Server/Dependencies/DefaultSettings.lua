@@ -277,6 +277,7 @@ settings.CommandCooldowns = {
 settings.FunCommands = true				-- Are fun commands enabled?
 settings.PlayerCommands = true			-- Are player-level utility commands enabled?
 settings.AgeRestrictedCommands = true	-- Are age-locked commands enabled?
+settings.WarnDangerousCommand = false	-- Do dangerous commands ask for confirmation?
 settings.CommandFeedback = false		-- Should players be notified when commands with non-obvious effects are run on them?
 settings.CrossServerCommands = true		-- Are commands which affect more than one server enabled?
 settings.ChatCommands = true			-- If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands
@@ -284,21 +285,23 @@ settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictl
 settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
+settings.ChatCreateRobloxCommands = true	-- Whether "/" commands for Roblox should get created in new Chat
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
 settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
-settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
-settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
-settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
-settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
-settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
-settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
-settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
-settings.AutoCleanDelay = 60	-- Time between auto cleans
-settings.AutoBackup = false 	-- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
-settings.ReJail = false			-- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
+settings.MaxLogs = 5000			           -- Maximum logs to save before deleting the oldest
+settings.SaveCommandLogs = true	           -- If command logs are saved to the datastores
+settings.Notification = true	           -- Whether or not to show the "You're an admin" and "Updated" notifications
+settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
+settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
+settings.Messages = {}			           -- A list of notification messages to show HeadAdmins and above on join
+settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
+settings.AutoCleanDelay = 60	           -- Time between auto cleans
+settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
+settings.ReJail = false			           -- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
+settings.DisableRejoinAtMaxPlayers = false -- If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount.
 
 settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
@@ -450,11 +453,13 @@ descs.Allowed_API_Calls = [[ Allowed calls ]]
 descs.FunCommands = [[ Are fun commands enabled? ]]
 descs.PlayerCommands = [[ Are players commands enabled? ]]
 descs.AgeRestrictedCommands = [[ Are age-restricted commands enabled? ]]
+descs.WarnDangerousCommand = [[ Do dangerous commands ask for confirmation before executing?]]
 descs.CommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands ]]
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
+descs.ChatCreateRobloxCommands = [[ Whether "/" commands for Roblox should get created in new Chat ]]
 
 
 descs.BanMessage = [[ Message shown to banned users ]]
@@ -469,6 +474,7 @@ descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting 
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
+descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 
@@ -592,6 +598,8 @@ order = {
 	" ";
 	"FunCommands";
 	"PlayerCommands";
+	"AgeRestrictedCommands";
+	"WarnDangerousCommand";
 	"CommandFeedback";
 	"CrossServerCommands";
 	"ChatCommands";
@@ -599,6 +607,7 @@ order = {
 	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
+	"ChatCreateRobloxCommands";
 	" ";
 	"BanMessage";
 	"LockMessage";
@@ -610,6 +619,7 @@ order = {
 	"SongHint";
 	"TopBarShift";
 	"ReJail";
+	"DisableRejoinAtMaxPlayers";
 	"";
 	"AutoClean";
 	"AutoCleanDelay";

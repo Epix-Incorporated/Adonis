@@ -350,7 +350,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
+							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -368,7 +368,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr, "Output", {Message = "Invalid number!"})
+							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -591,6 +591,7 @@ return function(Vargs, GetEnv)
 
 								if plrCount == 0 and not options.DontError then
 									Remote.MakeGui(plr, "Output", {
+										Title = "Missing player";
 										Message = if not options.NoFakePlayer then `No user named '{s}' exists`
 											else `No players matching '{s}' were found!`;
 									})
