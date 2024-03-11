@@ -25,6 +25,8 @@ return {
 	"Updated rojo meta.json files";
 	"Updated description of :nil to reflect Roblox changes";
 	"Fixed :unfly with SignalBehaviour set to deferred";
+	"Fixed :untrack and process";
+	"Now use ms for network ping";
 	"Contributors: Git/DrewBokman, Git/RadiantUwU, Git/ccuser44, Git/fxeP1";
 	"Git/karl-police, Git/kaiserandaxl and Git/YetAnotherClown";
 	"";
