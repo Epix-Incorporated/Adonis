@@ -5,6 +5,8 @@ return {
 	"";
 	"[v253 2024-03-xx xx:xx UTC] @Maintainer";
 	"Made CrossServerCommands actually enable/disable cross-server functions";
+	"Patch another server environment grab method (requires existing backdoor)";
+	"Also adds in type-checking support to _G API for future todo";
 	"";
 	"[v252 2024-03-11 18:00 UTC] @Dimenpsyonal";
 	"Ping readout now shows in Milliseconds";
