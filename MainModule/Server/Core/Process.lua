@@ -404,7 +404,7 @@ return function(Vargs, GetEnv)
 				if not command then
 					if opts.Check then
 						Remote.MakeGui(p, "Output", {
-							Title = "Output";
+							Title = "Invalid command";
 							Message = if Settings.SilentCommandDenials
 								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
 								else string.format("'%s' is not a valid command.", msg);
