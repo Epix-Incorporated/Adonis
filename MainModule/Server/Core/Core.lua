@@ -150,6 +150,8 @@ return function(Vargs, GetEnv)
 			DataStoreEnabled = true;
 			LocalDatastore = true;
 
+			CrossServerCommands = true;
+
 			Creators = true;
 			Permissions = true;
 
