@@ -196,6 +196,7 @@ return function(Vargs, env)
 			Args = {"player", "command"};
 			Description = "Runs a command as the target player(s)";
 			AdminLevel = "Creators";
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target player (argument #1)")
 				assert(args[2], "Missing command string (argument #2)")
@@ -248,6 +249,7 @@ return function(Vargs, env)
 			Commands = {"scripteditor", "se"};
 			Args = {"new/edit/delete/run","name"};
 			Description = "Opens Script editor";
+			CrossServerDenied = true;																
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
