@@ -1048,7 +1048,7 @@ return function(Vargs, GetEnv)
 								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 							end
 	
-							Remote.MakeGui(p, "Output",{Title = 'Output'; Message = `LUA_DEMAND_ERROR: {reason}`})
+							Remote.MakeGui(p, "Output",{Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
 							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 						end;
 					})
@@ -1061,9 +1061,9 @@ return function(Vargs, GetEnv)
 								func()
 							end)
 							
-							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = Err})
+							Remote.MakeGui(p, "Output", {Title = "Error"; Message = Err})
 						else
-							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = err})
+							Remote.MakeGui(p, "Output", {Title = "Error"; Message = err})
 						end
 					end)
 				end
