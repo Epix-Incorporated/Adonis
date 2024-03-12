@@ -1,7 +1,9 @@
 return {
-	"Version: 253";
+	"Version: 254";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v254 2024-03-xx xx:xx UTC] @Maintainer";
 	"";
 	"[v253 2024-03-12 09:06 UTC] @Dimenpsyonal";
 	"🔒 Security update";
