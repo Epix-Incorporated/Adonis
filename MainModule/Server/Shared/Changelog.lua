@@ -1,7 +1,19 @@
 return {
-	"Version: 252";
+	"Version: 253";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v253 2024-03-12 09:06 UTC] @Dimenpsyonal";
+	"🔒 Security update";
+	"Added animation exploit detection (anticheat)";
+	"Added redundancy checks to RunScript remote command";
+	"Turned on CrossServerDenied for scripteditor and sudo";
+	"Made CrossServerCommands actually enable/disable cross-server functions";
+	"Added CrossServerCommands to Datastore Blacklist";
+	"Modified :showlogs to make it not error";
+	"Patch another server environment grab method (requires existing backdoor)";
+	"Also adds in type-checking support to _G API for future todo";
+	"More env-grab patches coming soon!";
 	"";
 	"[v252 2024-03-11 18:00 UTC] @Dimenpsyonal";
 	"Ping readout now shows in Milliseconds";
