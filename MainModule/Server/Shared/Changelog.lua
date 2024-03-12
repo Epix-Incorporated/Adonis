@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v253 2024-03-12 xx:xx UTC] @Dimenpsyonal";
+	"[v253 2024-03-12 09:06 UTC] @Dimenpsyonal";
 	"🔒 Security update";
 	"Added animation exploit detection (anticheat)";
 	"Added redundancy checks to RunScript remote command";
