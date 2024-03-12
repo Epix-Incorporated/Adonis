@@ -1,7 +1,11 @@
 return {
-	"Version: 253";
+	"Version: 253.2";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[Patch v253.2 17:05 UTC] @Dimenpsyonal";
+	"Reverted meta json change, fixes console error spam";
+	"Fixed the 'Updated!' message not having an icon";
 	"";
 	"[Patch v253.1 15:37 UTC] @Dimenpsyonal";
 	"Revert change to HTTP checks";
