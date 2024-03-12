@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[Patch v253.1 15:37 UTC] @Dimenpsyonal";
+	"Revert change to HTTP checks";
+	"";
 	"[v253 2024-03-12 09:06 UTC] @Dimenpsyonal";
 	"🔒 Security update";
 	"Added animation exploit detection (anticheat)";
