@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v254 2024-03-xx xx:xx UTC] @Maintainer";
+	"Fixed TeamTest making Adonis not load";
 	"";
 	"[Patch v253.2 17:05 UTC] @Dimenpsyonal";
 	"Reverted meta json change, fixes console error spam";
