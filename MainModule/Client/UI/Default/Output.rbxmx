@@ -272,7 +272,7 @@ return function(data, env)
 	local colorIn = data.Color
 
 	local formattedMessage
-	if titleData then 
+	if titleData and titleData ~= "" then 
 		formattedMessage = `<b>{titleData}</b>: {messageData}`
 	else
 		formattedMessage = messageData
