@@ -499,9 +499,6 @@ descs.AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionalit
 descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
 descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
 
-descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
-descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is achieved by offsetting them by -35 into the transparent region where Roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifications to appear in that region. ]]
-
 descs.ExploitNotifications = [[ Notify all moderators and higher-ups when a player is kicked or crashed from the AntiExploit ]]
 descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]
 descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
