@@ -1550,8 +1550,12 @@ return function(Vargs, GetEnv)
 				return false, "This command cannot be used in Roblox Studio."
 			end
 
-			if opts.CrossServer and cmd.CrossServerDenied then
+			if opts.CrossServer and cmd.CrossServerDenied then -- Ignore when disabled then
 				return false, "This command may not be run across servers (cross-server-blacklisted)."
+			end
+
+			if cmd.CrossServer and not Settings.CrossServerCommands then
+				return false, "This command has been disabled due to CrossServerCommands being disabled"
 			end
 
 			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then

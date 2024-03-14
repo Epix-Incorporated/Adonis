@@ -271,7 +271,12 @@ return function(data, env)
 	local titleData = data.Title or ""
 	local colorIn = data.Color
 
-	local formattedMessage = `<b>{titleData}</b>: {messageData}`
+	local formattedMessage
+	if titleData and titleData ~= "" then 
+		formattedMessage = `<b>{titleData}</b>: {messageData}`
+	else
+		formattedMessage = messageData
+	end
 	
 	local found = client.UI.Get("Output")
 	if found then

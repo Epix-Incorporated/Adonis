@@ -326,8 +326,11 @@ return function(data, env)
 			end
 		end
 	end
-
-	t2.Text = if title then `<b>{title}</b>: {msg}` else msg end
+	if title then 
+		t2.Text = `<b>{title}</b>: {msg}`
+	else
+		t2.Text = msg
+	end
 	if color then
 		t2.TextColor3 = color
 	end

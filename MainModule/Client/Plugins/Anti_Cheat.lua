@@ -337,7 +337,7 @@ return function(Vargs)
 					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
 					local coreUrls = getCoreUrls()
 
-					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() >= 750) then
+					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() * 1000 >= 750) then
 						rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
 							if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
 								activated = true
@@ -540,6 +540,7 @@ return function(Vargs)
 					if
 						not string.find(string.lower(Message), "failed to load", 1, true) and
 						not string.find(string.lower(Message), "meshcontentprovider failed to process", 1, true) and
+						not string.find(string.lower(Message), "unknown 'active' animation:", 1, true) and
 						(string.match(string.lower(Message), string.lower(v)) or string.match(Message, v))
 					then
 						return true

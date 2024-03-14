@@ -673,14 +673,37 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return new or "Filter Error"
 		end;
 
-		MetaFunc = function(func, filterArgs: boolean?)
+		RecursiveMtSearch = function(tab)
+			for index, val in tab do 
+				if typeof(val) == "table" or typeof(val) == "userdata" then
+					if getmetatable(val) ~= nil or service.RecursiveMtSearch(val) then
+						return true
+					end
+				end
+			end
+			return false
+		end,
+
+		MetaFunc = function(func, filterArgs: boolean?, argumentTypes: {() -> boolean}?)
 			return service.NewProxy({
 				__call = function(tab,...)
 					if filterArgs then
-						for _, v in {...} do
-							if (type(v) == "table" or typeof(v) == "userdata") and getmetatable(v) ~= nil then
-								return nil
+						local success, res = pcall(function(...)
+							if service.RecursiveMtSearch({...}) then
+								--// Prevent grabbing env through metatables
+								return false
 							end
+							if argumentTypes then
+								for index, val in {...} do 
+									if argumentTypes[index] and not argumentTypes[index](val) then
+										return false
+									end
+								end
+							end
+							return true
+						end, ...)
+						if not success or res == false then
+							return nil
 						end
 					end
 

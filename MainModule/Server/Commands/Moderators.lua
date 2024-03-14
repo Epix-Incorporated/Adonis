@@ -323,7 +323,8 @@ return function(Vargs, env)
 			Description = "Makes a hint";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint(service.BroadcastFilter(assert(args[1], "Missing message"), plr), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				assert(args[1], "Missing message")
+				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr)), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
@@ -555,15 +556,15 @@ return function(Vargs, env)
 						local TextToUse = args[2]
 						if data.Options.Chat ~= true then
 							TextToUse = service.SanitizeXML(args[2] or "Hello world!")
-						end 
+						end
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{
 							service.Filter(TextToUse, plr, v)
 							}</font>`)
-					else 
+					else
 						Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
 					end
-					
+
 				end
 			end
 		};
@@ -1351,13 +1352,13 @@ return function(Vargs, env)
 						if v and service.Players:FindFirstChild(v.Name) then
 							local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 							table.insert(tab, {
-								Text = string.format("[%s] %s", v:GetNetworkPing(), service.FormatPlayer(v, true));
+								Text = string.format("[%d ms] %s", v:GetNetworkPing() * 1000, service.FormatPlayer(v, true));
 								Desc = string.format("Lower: %s | Health: %d | MaxHealth: %d | WalkSpeed: %d | JumpPower: %d | Humanoid Name: %s", v.Name:lower(), hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
 							})
 						else
 							table.insert(tab, {
 								Text = `[LOADING] {service.FormatPlayer(v, true)}`;
-								Desc = `Lower: {string.lower(v.Name)} | Ping: {v:GetNetworkPing()}`;
+								Desc = `Lower: {string.lower(v.Name)} | Ping: {v:GetNetworkPing() * 1000}`;
 							})
 						end
 					end
@@ -1713,7 +1714,7 @@ return function(Vargs, env)
 			Description = "Command Box";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr,"CommandBox")																																																																													
+				Remote.MakeGui(plr,"CommandBox")
 			end;
 		};
 
@@ -1725,7 +1726,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Functions.Hint(`{service.FormatPlayer(v)}'s Ping is {v:GetNetworkPing()}ms`, {plr})
+					Functions.Hint(`{service.FormatPlayer(v)}'s Ping is {v:GetNetworkPing() * 1000}ms`, {plr})
 				end
 			end
 		};
@@ -2401,7 +2402,7 @@ return function(Vargs, env)
 
 					if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
 						local Atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
-						
+
 						Atmosphere.Name = Variables.OriginalAtmosphereSettings.Name
 						Atmosphere.Density = Variables.OriginalAtmosphereSettings.Density
 						Atmosphere.Offset = Variables.OriginalAtmosphereSettings.Offset
@@ -2539,7 +2540,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Clip = {
 			Prefix = Settings.Prefix;
 			Commands = {"clip", "unnoclip"};
@@ -2552,7 +2553,7 @@ return function(Vargs, env)
 					if old then
 						if old.Clip.Value then
 							old.Clip.Value = false
-							
+
 							task.delay(.5,function() old:Destroy() end)
 
 							if Settings.CommandFeedback then
@@ -2808,7 +2809,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		BubbleChat = {
 			Prefix = Settings.Prefix;
 			Commands = {"bchat", "dchat", "bubblechat", "dialogchat"};
@@ -2838,7 +2839,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators",
 			Function = function(plr: Player, args: { string })
 				local plrChar = assert(plr.Character, "You don't have a character")
-				local plrHum = assert(plrChar:FindFirstChildOfClass("Humanoid", "You don't have a humanoid"))
+				local plrHum = assert(plrChar:FindFirstChildOfClass("Humanoid"), "You don't have a humanoid")
 
 				local persistent = args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes")
 				if persistent and type(Variables.TrackingTable[plr.Name]) ~= "table" then
@@ -2908,14 +2909,14 @@ return function(Vargs, env)
 							beam.Color3 = v.TeamColor.Color
 						end)
 						local plrCharRemovingConn = plr.CharacterRemoving:Once(function()
-							Remote.RemoveLocal(plr, `{v.Name}Tracker`)
+							Remote.RemoveLocal(plr, `{v.Name}_Tracker`)
 							teamChangeConn:Disconnect()
 							if charRemovingConn then
 								charRemovingConn:Disconnect()
 							end
 						end)
 						charRemovingConn = v.CharacterRemoving:Once(function()
-							Remote.RemoveLocal(plr, `{v.Name}Tracker`)
+							Remote.RemoveLocal(plr, `{v.Name}_Tracker`)
 							teamChangeConn:Disconnect()
 							plrCharRemovingConn:Disconnect()
 						end)
@@ -2937,7 +2938,7 @@ return function(Vargs, env)
 				else
 					local trackTargets = Variables.TrackingTable[plr.Name]
 					for _, v in service.GetPlayers(plr, args[1]) do
-						Remote.RemoveLocal(plr, `{v.Name}Tracker`)
+						Remote.RemoveLocal(plr, `{v.Name}_Tracker`)
 						if trackTargets then
 							trackTargets[v] = nil
 						end
@@ -4619,7 +4620,7 @@ return function(Vargs, env)
 			Description = "Teleport player1(s) to player2, a waypoint, or specific coords, use :tp player1 waypoint-WAYPOINTNAME to use waypoints, x,y,z for coords";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				
+
 				if args[2] and (string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")) then
 					local m = string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")
 					local point
@@ -4629,7 +4630,7 @@ return function(Vargs, env)
 							point=v
 						end
 					end
-					
+
 					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if point then
 							local Character = v.Character
@@ -4876,7 +4877,7 @@ return function(Vargs, env)
 					for i = (l-1) * math.floor(numPlayers/lines) + 1, l * math.floor(numPlayers/lines) do
 						local char = players[i].Character
 						if not char then continue end
-						
+
 						char:SetAttribute("ADONIS_isTeleporting", true)
 						task.delay(0.5, function() if char then char:SetAttribute("ADONIS_isTeleporting", nil) end end)
 
@@ -4907,7 +4908,7 @@ return function(Vargs, env)
 					for i = lines*math.floor(numPlayers/lines)+1, lines*math.floor(numPlayers/lines) + numPlayers%lines do
 						local char = players[i].Character
 						if not char then continue end
-						
+
 						char:SetAttribute("ADONIS_isTeleporting", true)
 						task.delay(0.5, function() if char then char:SetAttribute("ADONIS_isTeleporting", nil) end end)
 
@@ -4968,7 +4969,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemoveLeaderstat = {
 			Prefix = Settings.Prefix;
 			Commands = {"removestats", "delstat"};
@@ -5001,7 +5002,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		NewStat = {
 			Prefix = Settings.Prefix;
 			Commands = {"newstat", "createstat", "cstat"};
@@ -5015,19 +5016,19 @@ return function(Vargs, env)
 				end
 				local statType = if args[2] then args[2]:lower() else "number"
 				local FilteredStatName = service.BroadcastFilter(statName, plr)
-				
+
 				if FilteredStatName ~= statName then
 					error("Stat name is filtered! Sorry!")
 				end
-				
-				for _,p in service.GetPlayers() do 
+
+				for _,p in service.GetPlayers() do
 					local leaderstats = p:FindFirstChild("leaderstats") or service.New("Folder")
 					leaderstats.Name = "leaderstats"
-					if statName then 
-						if not leaderstats:FindFirstChild(FilteredStatName) then 
-							local newStat = service.New(if statType == "number" then "NumberValue" else "StringValue") 
+					if statName then
+						if not leaderstats:FindFirstChild(FilteredStatName) then
+							local newStat = service.New(if statType == "number" then "NumberValue" else "StringValue")
 							newStat.Name = FilteredStatName
-							if statType ~= "number" then 
+							if statType ~= "number" then
 								newStat.Value = "N/A"
 							end
 							newStat.Parent = leaderstats
@@ -5037,7 +5038,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		AddToStat = {
 			Prefix = Settings.Prefix;
 			Commands = {"add", "addtostat", "addstat"};
@@ -5137,7 +5138,7 @@ return function(Vargs, env)
 								else
 									bCreateNewDefaultClothing = true
 								end
-								
+
 								if bCreateNewDefaultClothing then
 									-- Set a new specified clothing.
 									local humDescClone = humanoidAppliedDesc:Clone()
@@ -5424,7 +5425,7 @@ return function(Vargs, env)
 				end
 			end,
 		},
-		
+
 		AvatarItem = {
 			Prefix = Settings.Prefix;
 			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
@@ -5457,7 +5458,7 @@ return function(Vargs, env)
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-						
+
 						if not typeEnum then
 							if v.Character:GetAttribute("LoadingSavedOutfit") then continue end
 
@@ -5506,7 +5507,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemoveTShirt = {
 			Prefix = Settings.Prefix;
 			Commands = {"removetshirt", "untshirt", "notshirt"};
@@ -6254,7 +6255,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		GivePackage = {
 			Prefix = Settings.Prefix;
 			Commands = {"package", "givepackage", "setpackage", "bundle"};
@@ -6315,7 +6316,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				local target = service.GetPlayers(plr, assert(args[2], "Missing username or UserId"), {
 					AllowUnknownUsers = true;
-				}) 
+				})
 				if target then
 					target = target[1]
 					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target.UserId)
@@ -6476,11 +6477,11 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player)
 				local Count = if Logs.Errors.__meta == "DLL" then Logs.Errors.count else #Logs.Errors
 				local tab = table.create(Count)
-				for i, v in 
-					if Logs.Errors.__meta == "DLL" then 
-						Logs.Errors:GetAsTable() 
-					else 
-						Logs.Errors 
+				for i, v in
+					if Logs.Errors.__meta == "DLL" then
+						Logs.Errors:GetAsTable()
+					else
+						Logs.Errors
 				do
 					table.insert(tab, i, {
 						Time = v.Time;
@@ -6629,11 +6630,11 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player)
 				local Count = if Logs.Commands.__meta == "DLL" then Logs.Commands.count else #Logs.Commands
 				local tab = table.create(Count)
-				for i, v in 
-					if Logs.Commands.__meta == "DLL" then 
-						Logs.Commands:GetAsTable() 
-						else 
-						Logs.Commands 
+				for i, v in
+					if Logs.Commands.__meta == "DLL" then
+						Logs.Commands:GetAsTable()
+						else
+						Logs.Commands
 				do
 					table.insert(tab, i, {
 						Time = v.Time;
@@ -6698,12 +6699,16 @@ return function(Vargs, env)
 		ShowLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"showlogs", "showcommandlogs"};
-			Args = {"player", "autoupdate? (default: false)"};
+			Args = {"autoupdate? (default: false)", "player"};
 			Description = "Shows the target player(s) the command logs.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local str = `{Settings.Prefix}logs{args[2] or ""}`
-				for _, v in service.GetPlayers(plr, args[1]) do
+				local autoUpdate = false
+				if args[1] and table.find({"yes", "true", "1", "autoupdate", "on"}, args[1]:lower()) then
+					autoUpdate = true
+				end
+				local str = `{Settings.Prefix}logs {tostring(autoUpdate) or ""}`
+				for _, v in service.GetPlayers(plr, args[2]) do
 					Admin.RunCommandAsPlayer(str, v)
 				end
 			end
