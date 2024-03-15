@@ -461,7 +461,6 @@ descs.SilentCommandDenials = [[ If true, there will be no differences between th
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
 descs.ChatCreateRobloxCommands = [[ Whether "/" commands for Roblox should get created in new Chat ]]
 
-
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
 descs.SystemTitle = [[ Title to display in :sm ]]
@@ -474,7 +473,7 @@ descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting 
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
-descs.DisableRejoinAtMaxPlayers =  [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
+descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 
@@ -499,32 +498,6 @@ descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 descs.AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionality ]]
 descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
 descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
-
-descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
-descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is achieved by offsetting them by -35 into the transparent region where Roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifications to appear in that region. ]]
-
-descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
-
-descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
-descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
-descs.AutoCleanDelay = [[ Time between auto cleans ]]
-
-descs.CustomChat = [[ Custom chat ]]
-descs.PlayerList = [[ Custom playerlist ]]
-
-descs.Console = [[ Command console ]]
-descs.Console_AdminsOnly = [[ Makes it so if the console is enabled, only admins will see it ]]
-
-descs.DonorCommands = [[ Show your support for the script and let donors use commands like !sparkles ]]
-descs.DonorCapes = [[ Determines if donors have capes ]]
-descs.LocalCapes = [[ Makes Donor capes local instead of removing them ]]
-
-descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
-descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
-descs.HelpButtonImage = [[ Sets the image used for the Adonis help button above. ]]
-
-descs.Detection = [[ Attempts to detect certain known exploits ]]
-descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
 descs.ExploitNotifications = [[ Notify all moderators and higher-ups when a player is kicked or crashed from the AntiExploit ]]
 descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]

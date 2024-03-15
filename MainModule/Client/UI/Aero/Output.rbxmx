@@ -326,11 +326,13 @@ return function(data, env)
 			end
 		end
 	end
-	if title then 
-		t2.Text = `<b>{title}</b>: {msg}`
+	local formattedMessage
+	if titleData and titleData ~= "" then 
+		formattedMessage = `<b>{titleData}</b>: {messageData}`
 	else
-		t2.Text = msg
+		formattedMessage = messageData
 	end
+	t2.Text = formattedMessage
 	if color then
 		t2.TextColor3 = color
 	end

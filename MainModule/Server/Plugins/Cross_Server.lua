@@ -317,6 +317,10 @@ return function(Vargs, GetEnv)
 
 	--// Handlers
 	Core.CrossServer = function(...)
+		if not Core.SubEvent then
+			return false
+		end
+
 		local data = {ServerId, ...};
 		service.Queue("CrossServerMessageQueue", function()
 			--// rate limiting
@@ -358,9 +362,11 @@ return function(Vargs, GetEnv)
 		end
 	end
 
-	Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and MsgService:SubscribeAsync(subKey, function(...)
-		if not Settings.CrossServerCommands then return end -- Ignore when disabled
-		return Process.CrossServerMessage(...)
+	Routine(function()
+		Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and MsgService:SubscribeAsync(subKey, function(...)
+			if not Settings.CrossServerCommands then return end -- Ignore when disabled
+			return Process.CrossServerMessage(...)
+		end)
 	end)
 
 	--// Check for additions added by other modules in core before this one loaded

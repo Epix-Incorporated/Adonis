@@ -1,7 +1,12 @@
 return {
-	"Version: 253.2";
+	"Version: 254";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v254 2024-03-15 17:11 UTC] @Dimenpsyonal";
+	"Fixed TeamTest making Adonis not load";
+	"Added extra datastore protection";
+	"Re-added specific icon to updated notification";
 	"";
 	"[Patch v253.2 17:05 UTC] @Dimenpsyonal";
 	"Reverted meta json change, fixes console error spam";

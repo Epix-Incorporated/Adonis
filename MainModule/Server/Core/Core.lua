@@ -177,6 +177,8 @@ return function(Vargs, GetEnv)
 			Ranks = true;
 			Commands = true;
 
+			CodeExecution = true;
+
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
 		};
@@ -186,6 +188,7 @@ return function(Vargs, GetEnv)
 			AdminRank = true;
 			AdminLevel = true;
 			LastLevelUpdate = true;
+			Groups = true;
 		};
 		
 		UpdatePlayerConnection = function(p)
