@@ -310,7 +310,7 @@ return function(data, env)
 	local t1 = main.Title
 	local t2 = main.Message
 	local msg = data.Message
-	local title = data.Message
+	local title = data.Title
 	local color = data.Color
 	
 	local found = client.UI.Get("Output")
