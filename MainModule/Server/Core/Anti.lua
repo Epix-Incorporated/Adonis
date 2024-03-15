@@ -1,9 +1,4 @@
-server = nil
-service = nil
-Routine = nil
-GetEnv = nil
-origEnv = nil
-logError = nil
+server, service, Routine, GetEnv, origEnv, logError = nil, nil, nil, nil, nil, nil
 
 --// Anti-Exploit
 return function(Vargs, GetEnv)
