@@ -6723,7 +6723,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local Duration, Valid
 				if args[2] then
-					if args[2]:lower() ~= ("inf" or "infinite" or "infinity" or "unlimited") then
+					if args[2]:lower() ~= table.find({"inf", "infinite", "infinity", "unlimited"}, string.lower(args[2])) then
 						Duration, Valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
 							return if unit == "s" then val
 								elseif unit == "m" then val * 60
