@@ -177,6 +177,8 @@ return function(Vargs, GetEnv)
 			Ranks = true;
 			Commands = true;
 
+			CodeExecution = true;
+
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
 		};
