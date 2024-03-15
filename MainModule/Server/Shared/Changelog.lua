@@ -1,7 +1,12 @@
 return {
-	"Version: 254";
+	"Version: 255";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v255 2024-03-xx xx:xx UTC] @Maintainer";
+	"Added duration to :mute";
+	"Text in :serverlist is now selectable";
+	"Enhanced output for Windows XP and Rounded";
 	"";
 	"[v254 2024-03-15 17:11 UTC] @Dimenpsyonal";
 	"Fixed TeamTest making Adonis not load";
