@@ -1947,9 +1947,9 @@ return function(data, env)
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
+	local window = scr.Window
 	local errorTextBox = window.Main.ScrollingFrame.ErrorText
 	local titleTextBox = window.Title
-	local window = scr.Window
 	local message = data.Message
 	local title = data.Title
 	local color = data.Color
