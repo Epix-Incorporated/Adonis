@@ -188,6 +188,7 @@ return function(Vargs, GetEnv)
 			AdminRank = true;
 			AdminLevel = true;
 			LastLevelUpdate = true;
+			Groups = true;
 		};
 		
 		UpdatePlayerConnection = function(p)
