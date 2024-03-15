@@ -1951,7 +1951,7 @@ return function(data, env)
 	local dataMessage = data.Message
 	local dataTitle = data.Title
 	local dataColor = data.Color
-	local formattedMessage = msg
+	local formattedMessage = dataMessage
 
 	local found = client.UI.Get("Output")
 	if found then
@@ -1963,9 +1963,7 @@ return function(data, env)
 		end
 	end
 
-	if title then 
-		formattedMessage = `<b>{dataTitle}</b>: {msg}` 
-	end
+	if dataTitle and dataTitle ~= "" then formattedMessage = `<b>{dataTitle}</b>: {dataMessage}` end
 
 	window.Main.ScrollingFrame.ErrorText.Text = formattedMessage
 	window.Main.ScrollingFrame.ErrorText.TextColor3 = dataColor
