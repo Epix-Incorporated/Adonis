@@ -6717,10 +6717,25 @@ return function(Vargs, env)
 		Mute = {
 			Prefix = Settings.Prefix;
 			Commands = {"mute", "silence"};
-			Args = {"player"};
+			Args = {"player", "duration (optional)"};
 			Description = "Makes it so the target player(s) can't talk";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
+				local Duration, Valid
+				if args[2] then
+					if args[2]:lower() ~= table.find({"inf", "infinite", "infinity", "unlimited"}, string.lower(args[2])) then
+						Duration, Valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
+							return if unit == "s" then val
+								elseif unit == "m" then val * 60
+								elseif unit == "h" then val * 60 * 60
+								else val * 60 * 60 * 24
+						end)
+						assert(Valid > 0, "Invalid duration value (argument #2)")
+					else
+						Duration = math.huge
+					end
+				end
+				
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if Admin.CheckAuthority(plr, v, "mute", false) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat", false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
@@ -6737,6 +6752,25 @@ return function(Vargs, env)
 								Target = v.UserId;
 								Moderator = plr.UserId;
 							})
+							
+							Functions.Hint(`Muted {service.FormatPlayer(v)}`, {plr})
+							
+							Functions.Notification("Notification", `You have been muted!`, {v}, 10, "MatIcon://Warning")
+						end
+						
+						if Duration then
+							local endTime = os.time()+Duration
+							
+							service.TrackTask(`Thread: MuteDuration :: {tostring(v.UserId)}`, function()
+								while true do
+									if os.time() < endTime then
+										task.wait(1)
+									else
+										Commands.UnMute.Function(plr, {v.Name})
+										break;
+									end
+								end
+							end)
 						end
 					end
 				end
@@ -6761,6 +6795,10 @@ return function(Vargs, env)
 						Target = v.UserId;
 						Moderator = plr.UserId;
 					})
+					
+					Functions.Hint(`Unmuted {service.FormatPlayer(v)}`, {plr})
+					
+					Functions.Notification("Notification", `You have been unmuted!`, {v}, 10, "MatIcon://Warning")
 				end
 			end
 		};
