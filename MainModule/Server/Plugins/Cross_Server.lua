@@ -154,7 +154,7 @@ return function(Vargs, GetEnv)
 	Commands.CrossServerList = {
 		Prefix = Settings.Prefix;
 		Commands = {"serverlist", "gameservers", "crossserverlist", "listservers"};
-		Args = {};
+		Args = {"autoupdate? (default: true)"};
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
@@ -215,7 +215,8 @@ return function(Vargs, GetEnv)
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
 					OnClose = `client.Remote.PlayerEvent('{updateKey}')`,
-					AutoUpdate = 1,
+					AutoUpdate = if args[1] and (args[1]:lower() == "false" or args[1]:lower() == "no") then nil else 1,
+					TextSelectable = true;
 				})
 
 				delay(500, doDisconnect)
