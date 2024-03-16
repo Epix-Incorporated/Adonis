@@ -1032,22 +1032,38 @@ return function(Vargs, GetEnv)
 				--// [-150x261x247x316x246x243x238x248x302x316x261x247x316x246x234x247x247x302]
 				--// END_ReF - 100392_659
 
-				for v: Player in Variables.IncognitoPlayers do
+				for v: Player, pdata: table in Variables.IncognitoPlayers do
 					--// Check if the Player still exists before doing incognito to prevent LoadCode spam.
-					if v == p or v.Parent == service.Players then
+					if v == p or v.Parent ~= service.Players then
 						continue
 					end
-
-					Remote.LoadCode(p, [[
-						local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-						if plr then
-							if not table.find(service.IncognitoPlayers, plr) then
-								table.insert(service.IncognitoPlayers, plr)
+					if level > 0 and not pdata.hide_from_everyone then
+						continue
+					end
+					if pdata.hide_character then
+						Remote.LoadCode(p, [[
+							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+							if plr then
+								if not table.find(service.IncognitoPlayers, plr) then
+									table.insert(service.IncognitoPlayers, plr)
+								end
+								if plr.Character then
+									plr.Character:Destroy()
+								end
+								plr:Destroy()
 							end
-
-							plr:Remove()
-						end
-					]])
+						]])
+					else
+						Remote.LoadCode(p, [[
+							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+							if plr then
+								if not table.find(service.IncognitoPlayers, plr) then
+									table.insert(service.IncognitoPlayers, plr)
+								end
+								plr:Destroy()
+							end
+						]])
+					end
 				end
 			end
 		end;
