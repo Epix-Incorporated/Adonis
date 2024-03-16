@@ -5,6 +5,7 @@ return {
 	"";
 	"[v255 2024-03-xx xx:xx UTC] @Maintainer";
 	"Added duration to :mute";
+	"Added global restart system";
 	"Text in :serverlist is now selectable";
 	"Enhanced output for Windows XP and Rounded";
 	"";
