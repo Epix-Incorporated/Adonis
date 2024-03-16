@@ -8,6 +8,8 @@ return {
 	"Added global restart system";
 	"Text in :serverlist is now selectable";
 	"Enhanced output for Windows XP and Rounded";
+	"Fixed incognito mode";
+	"Restart will now keep player layouts";
 	"";
 	"[v254 2024-03-15 17:11 UTC] @Dimenpsyonal";
 	"Fixed TeamTest making Adonis not load";
