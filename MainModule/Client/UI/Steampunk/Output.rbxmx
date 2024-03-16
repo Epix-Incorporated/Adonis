@@ -310,7 +310,7 @@ return function(data, env)
 	local t1 = main.Title
 	local t2 = main.Message
 	local msg = data.Message
-	local title = data.Message
+	local title = data.Title
 	local color = data.Color
 	
 	local found = client.UI.Get("Output")
@@ -324,7 +324,7 @@ return function(data, env)
 	end
 
 	local formattedMessage = msg
-	if title then formattedMessage = `<b>{title}</b>: {msg}` end
+	if title and title ~= "" then formattedMessage = `<b>{title}</b>: {msg}` end
 	t2.Text = formattedMessage
 	t2.Font = "Arial"
 	if color then

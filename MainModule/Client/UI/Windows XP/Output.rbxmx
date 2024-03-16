@@ -1947,11 +1947,11 @@ return function(data, env)
 	local localplayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
 	local window = scr.Window
-	local dataMessage = data.Message
-	local dataTitle = data.Title
-	local dataColor = data.Color
-
-	local formattedMessage = msg
+	local errorTextBox = window.Main.ScrollingFrame.ErrorText
+	local titleTextBox = window.Title
+	local message = data.Message
+	local title = data.Title
+	local color = data.Color
 
 	local found = client.UI.Get("Output")
 	if found then
@@ -1963,12 +1963,13 @@ return function(data, env)
 		end
 	end
 
-	if dataTitle then 
-		formattedMessage = `<b>{dataTitle}</b>: {dataMessage}` 
-	end
 
-	window.Main.ScrollingFrame.ErrorText.Text = formattedMessage
-	window.Main.ScrollingFrame.ErrorText.TextColor3 = dataColor
+	if title and title ~= "" then titleTextBox.Text = title else titleTextBox.Text = "Error" end
+
+	errorTextBox.Text = message
+	if color then
+		errorTextBox.TextColor3 = color
+	end
 
 	window.Close.MouseButton1Down:Connect(function()
 		gTable.Destroy()

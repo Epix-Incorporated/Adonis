@@ -432,7 +432,7 @@ return function(data, env)
 	main.BackgroundColor3 = color
 
 	local formattedMessage = msg
-	if title then formattedMessage = `<b>{title}</b>: {msg}` end
+	if title and title ~= "" then formattedMessage = `<b>{title}</b>: {msg}` end
 	t2.Text = formattedMessage
 	t2.Font = "Gotham"
 	consoleOpenTween:Play()

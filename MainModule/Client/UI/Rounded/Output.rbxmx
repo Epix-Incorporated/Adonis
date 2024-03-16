@@ -427,16 +427,16 @@ return function(data, env)
 	--[[
 	local found = client.UI.Get("Output")
 	if found then
-		for i,v in pairs(found) do
+		for _, v in found do
 			local p = v.Object
 			if p and p.Parent then
 				p.Main.Position = UDim2.new(0, 0, 0.35, p.Main.Position.Y.Offset+50)
 			end
 		end
 	end--]]
-	local formattedMessage = msg
-	if title then formattedMessage = `<b>{title}</b>: {msg}` end
-	t2.Text = formattedMessage
+
+	if title and title ~= "" then t1.Text = title end
+	t2.Text = msg
 	t2.Font = "SourceSans"
 	if color then
 		t2.TextColor3 = color

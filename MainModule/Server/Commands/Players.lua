@@ -640,7 +640,7 @@ return function(Vargs, env)
 
 		ScriptInfo = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"info", "about", "userpanel"};
+			Commands = {"info", "about", "userpanel", "script", "scriptinfo"};
 			Args = {};
 			Description = "Shows info about the admin system (Adonis)";
 			AdminLevel = "Players";
