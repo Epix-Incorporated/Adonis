@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v255 2024-03-xx xx:xx UTC] @Maintainer";
+	"[v255 2024-03-18 09:05 UTC] @Dimenpsyonal";
 	"Added duration to :mute";
 	"Added global restart system";
 	"Text in :serverlist is now selectable";
