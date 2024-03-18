@@ -1,7 +1,15 @@
 return {
-	"Version: 254";
+	"Version: 255";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v255 2024-03-18 09:05 UTC] @Dimenpsyonal";
+	"Added duration to :mute";
+	"Added global restart system";
+	"Text in :serverlist is now selectable";
+	"Enhanced output for Windows XP and Rounded";
+	"Fixed incognito mode";
+	"Restart will now keep player layouts";
 	"";
 	"[v254 2024-03-15 17:11 UTC] @Dimenpsyonal";
 	"Fixed TeamTest making Adonis not load";
