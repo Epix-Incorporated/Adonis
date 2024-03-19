@@ -127,7 +127,7 @@ return function(Vargs, env)
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "game-ban", false) then
-						Admin.AddBan(v, reason, true, plr)
+						Admin.AddBan(v, reason, true, plr, "Global")
 						Functions.Hint(`Game-banned {service.FormatPlayer(v, true)}`, {plr})
 					else
 						Functions.Hint(`Unable to game-ban {service.FormatPlayer(v, true)} (insufficient permission level)`, {plr})

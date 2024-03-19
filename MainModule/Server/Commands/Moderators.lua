@@ -116,7 +116,7 @@ return function(Vargs, env)
 					else
 						table.insert(tab, {
 							Text = `{v.Name}:{v.UserId}`,
-							Desc = string.format("Issued by: %s | Minutes left: %d", v.Moderator or "%UNKNOWN%", minutes)
+							Desc = string.format("Issued by: %s | Reason: %s | Minutes left: %d", v.Moderator or "%UNKNOWN%", v.Reason, minutes)
 						})
 					end
 				end
@@ -1933,12 +1933,19 @@ return function(Vargs, env)
 					local entry = type(v) == "string" and v
 					local reason = "No reason provided"
 					local moderator = "%UNKNOWN%"
+					
+					local banType = if v.BanType == "Server" then 
+						"SERVER" 
+					elseif v.BanType == "Global" then
+						"GLOBAL" 
+					else "UNKNOWN";
+				
 					count +=1
 					if type(v) == "table" then
 						if v.Name and v.UserId then
-							entry = `{v.Name}:{v.UserId}`
+							entry = `[{banType}] {v.Name}:{v.UserId}`
 						elseif v.UserId then
-							entry = `ID: {v.UserId}`
+							entry = `[{banType}] ID: {v.UserId}`
 						elseif v.Name then
 							entry = v.Name
 						end
@@ -1964,6 +1971,7 @@ return function(Vargs, env)
 					Icon = server.MatIcons.Gavel;
 					Tab = Logs.ListUpdaters.BanList(plr);
 					Update = "BanList";
+					TextSelectable = true;
 				})
 			end;
 		};
