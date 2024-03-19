@@ -1048,12 +1048,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		AddBan = function(p, reason, doSave, moderator)
+		AddBan = function(p, reason, doSave, moderator, banType)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				Reason = reason;
 				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
+				BanType = banType
 			}
 
 			table.insert(Settings.Banned, value)--`{p.Name}:{p.UserId}`
