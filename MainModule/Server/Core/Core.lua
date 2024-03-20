@@ -495,7 +495,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadExistingPlayer = function(p)
-			warn(`Loading existing player: {p}`)
+			AddLog(Logs.Script, {
+				Text = `Loading existing player: {p}`;
+				Desc = "Loading player that joined before Adonis loaded";
+			})
 
 			TrackTask(`Thread: Setup Existing Player: {p}`, function()
 				Process.PlayerAdded(p)
