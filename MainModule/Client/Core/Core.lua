@@ -168,7 +168,12 @@ return function(Vargs, GetEnv)
 
 					if not Core.Key then
 						log("~! Getting key from server")
-						Remote.Fire(`{client.DepsName}GET_KEY`)
+						Core.Key = Remote.Get(`{client.DepsName}GET_KEY`)
+						if Core.Key then
+							client.Finish_Loading()
+						else
+							Remote.Fire(`{client.DepsName}GET_KEY`)
+						end
 					end
 				end
 			end
