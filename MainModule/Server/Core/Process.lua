@@ -317,21 +317,41 @@ return function(Vargs, GetEnv)
 
 						if type(com) == "string" then
 							if com == `{keys.Special}GET_KEY` then
-								if keys.LoadingStatus == "WAITING_FOR_KEY" then
-									Remote.Fire(p, `{keys.Special}GIVE_KEY`, keys.Key)
-									keys.LoadingStatus = "LOADING"
-									keys.RemoteReady = true
+								if cliData.Mode == "Get" then
+									AddLog("RemoteFires", {
+										Text = `{p.Name} requested key from server`,
+										Desc = "Player requested key from server",
+										Player = p;
+									})
 
-									AddLog("Script", string.format("%s requested client keys", p.Name))
-									--else
-									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
+									if keys.LoadingStatus == "WAITING_FOR_KEY" then
+										keys.LoadingStatus = "LOADING"
+										keys.RemoteReady = true
+										AddLog("Script", string.format("%s requested client keys", p.Name))
+
+										return keys.Key
+										--else
+										--Anti.Detected(p, "kick","Communication Key Error (r10003)")
+									end
+								elseif cliData.Mode == "Fire" then
+									if keys.LoadingStatus == "WAITING_FOR_KEY" then
+										Remote.Fire(p, `{keys.Special}GIVE_KEY`, keys.Key)
+										keys.LoadingStatus = "LOADING"
+										keys.RemoteReady = true
+
+										AddLog("Script", string.format("%s requested client keys", p.Name))
+										--else
+										--Anti.Detected(p, "kick","Communication Key Error (r10003)")
+									end
+
+									AddLog("RemoteFires", {
+										Text = `{p.Name} requested key from server`,
+										Desc = "Player requested key from server",
+										Player = p;
+									})
+								else
+									Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
-
-								AddLog("RemoteFires", {
-									Text = `{p.Name} requested key from server`,
-									Desc = "Player requested key from server",
-									Player = p;
-								})
 							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
