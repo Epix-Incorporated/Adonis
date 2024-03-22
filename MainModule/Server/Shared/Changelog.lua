@@ -1,7 +1,15 @@
 return {
-	"Version: 255";
+	"Version: 256";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v256 2024-03-xx xx:xx UTC] @Maintainer";
+	":banlist text is now selectable"; 
+	":timebanlist actually giving reasons";
+	"and specified if a ban is a global ban or a server ban";
+	"LoadExistingPlayer no longer warns while loading a player";
+	"Added back old :alert sound";
+	"Make getting the key from the server a RemoteFunction";
 	"";
 	"[v255 2024-03-18 09:05 UTC] @Dimenpsyonal";
 	"Added duration to :mute";
