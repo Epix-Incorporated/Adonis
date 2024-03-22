@@ -253,8 +253,19 @@ return function(Vargs, GetEnv)
 					rTable.Events.Security = secure(event, event.Name, remoteParent)
 					rTable.Events.FuncSec = secure(func, func.Name, event)
 
-					func.OnServerInvoke = Process.Remote;
-					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, Process.Remote)
+					func.OnServerInvoke = function(p, cliData, com, ...)
+						if server.Typechecker.interface({Mode = server.Typechecker.string})(cliData) then
+							cliData.Mode = "Get"
+							return Process.Remote(p, cliData, com, ...)
+						end
+						return nil
+					end;
+					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, function(p, cliData, com, ...)
+						if server.Typechecker.interface({Mode = server.Typechecker.string})(cliData) then
+							cliData.Mode = "Fire"
+							Process.Remote(p, cliData, com, ...)
+						end
+					end)
 
 					Core.RemoteEvent = rTable
 					event.Parent = remoteParent
