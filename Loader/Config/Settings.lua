@@ -147,8 +147,6 @@ settings.RecursiveTools = false					 -- Whether tools that are included in sub-c
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
-
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
 		Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
@@ -293,6 +291,7 @@ settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
 settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
+settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
 settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	-- Time between auto cleans
