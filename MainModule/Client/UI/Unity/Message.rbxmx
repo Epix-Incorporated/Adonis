@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBXBEEEB990441C4EDA986D35DD2B39144B">
+	<Item class="ScreenGui" referent="RBX52035323653448b8abc7a6e547511e87">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -25,7 +25,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Frame" referent="RBXF2746B41858549AC9B38388CEF7D4D37">
+		<Item class="Frame" referent="RBXdc23cbb92e9a4da0974ebd78b1329c2e">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -88,7 +88,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">7</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBX3DF06B5731B247688DB01291C01D52CD">
+			<Item class="TextLabel" referent="RBXb055080846784466abc6d3d2c35b7603">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -116,10 +116,9 @@
 					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/GothamSSm.json</url></Family>
+						<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
 						<Weight>400</Weight>
 						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/GothamSSm-Book.otf</url></CachedFaceId>
 					</Font>
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
@@ -182,7 +181,7 @@
 					<int name="ZIndex">7</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX0482145E8EB343D1AF1CCA59C6A4D3AD">
+			<Item class="TextLabel" referent="RBX7e68020537f74308add15805c5268cae">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -210,10 +209,9 @@
 					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/GothamSSm.json</url></Family>
+						<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
 						<Weight>400</Weight>
 						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/GothamSSm-Book.otf</url></CachedFaceId>
 					</Font>
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
@@ -277,7 +275,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Folder" referent="RBX4BDC954ED5FA41A285B196417D3D2950">
+		<Item class="Folder" referent="RBX6387707db28d418bb396baab940bfe4b">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -286,14 +284,14 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX7B2736CE82C64C5E9C87F168078C5EA6">
+			<Item class="ModuleScript" referent="RBXdc87b72052154c0c99d4e090a86941b3">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{9B24055C-6C47-4633-B36A-7F2EC2C091D0}</string>
+					<string name="ScriptGuid">{226f2b96-44f5-4c0c-9c8d-4c216a3423ce}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 Pcall = nil
 Routine = nil
@@ -458,7 +456,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX4BC1E2591A6C4F5191BB1468D97F8012">
+			<Item class="BoolValue" referent="RBX5c83ba0c377f42c48c322c24734a9ae3">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -469,7 +467,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX82CCA613C47740089BE0152281E7116A">
+			<Item class="BoolValue" referent="RBX3bd8619a1beb4181adc55fb49174d4fb">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>

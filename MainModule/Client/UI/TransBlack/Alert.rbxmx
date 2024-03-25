@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX6EECD6904D9848858A5F1882A2D0B126">
+	<Item class="ScreenGui" referent="RBX8ae8818f613d41cda8137867635d6102">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">true</bool>
@@ -25,7 +25,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Frame" referent="RBXBBE588EB42CE4658AEFF581BB45B1976">
+		<Item class="Frame" referent="RBXbacb9ee289c84406ad2e97f633466a95">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -88,7 +88,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Frame" referent="RBX5F2B1D658F3E4EF1A4F85D9A63531864">
+			<Item class="Frame" referent="RBXf2a1f253bf5847388239ee62bf7d5cef">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -151,7 +151,7 @@
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBXB5F5132D810E49D08B5761F5CF93C8F7">
+				<Item class="TextLabel" referent="RBX7d2c4fe4a87c4df382e67825dbfa606d">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -187,6 +187,8 @@
 						<bool name="Interactable">true</bool>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
 						<int name="MaxVisibleGraphemes">-1</int>
 						<string name="Name">Question</string>
 						<Ref name="NextSelectionDown">null</Ref>
@@ -243,7 +245,7 @@
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBXE6F2F96F90DB4DD5918E99DE1D3EC6BE">
+				<Item class="TextButton" referent="RBXc7ce1f1a731f4d1ab35e2296c50835db">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -272,14 +274,15 @@
 						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Draggable">false</bool>
 						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 							<Weight>400</Weight>
 							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
 						</Font>
 						<bool name="Interactable">true</bool>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
+						<string name="LocalizationMatchIdentifier"></string>
+						<string name="LocalizationMatchedSourceText"></string>
 						<int name="MaxVisibleGraphemes">-1</int>
 						<bool name="Modal">false</bool>
 						<string name="Name">Ok</string>
@@ -340,7 +343,7 @@
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBXEFCF6699C1614D2D95C3D75F9C5FE093">
+			<Item class="TextLabel" referent="RBXf0fbb42229e346f0bbeba965feb99679">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -376,6 +379,8 @@
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
+					<string name="LocalizationMatchIdentifier"></string>
+					<string name="LocalizationMatchedSourceText"></string>
 					<int name="MaxVisibleGraphemes">-1</int>
 					<string name="Name">Title</string>
 					<Ref name="NextSelectionDown">null</Ref>
@@ -433,7 +438,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Folder" referent="RBXB4535F8F2582439BA061742A7AE4A5E5">
+		<Item class="Folder" referent="RBX8cfa42c6d7a746998b38bdc5f3b5a310">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -442,7 +447,7 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBX2D66C994D4534275918E30777B7FC4F3">
+			<Item class="BoolValue" referent="RBXe666670861de4e278fc4dc0ab3cdcc94">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -453,14 +458,14 @@
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX702858C25205429FA52327162B7F3E0E">
+			<Item class="ModuleScript" referent="RBXfb2c0c4e894d4387881f494c776c3285">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{B6CA6233-F9AD-4C8A-9E53-C71ACFDA165B}</string>
+					<string name="ScriptGuid">{12be3346-94cf-4f25-9596-228cd2e599b7}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 Pcall = nil
 Routine = nil
@@ -478,13 +483,14 @@ return function(data)
 	quest.Text = data.Message
 	gTable:Ready()
 	
-	local alarm=Instance.new('Sound',quest)
-	alarm.Volume=1
-	alarm.Looped=true
-	alarm.SoundId='http://www.roblox.com/asset/?id=138081509'
+	local alarm = Instance.new("Sound")
+	alarm.Parent = quest
+	alarm.Volume = 1
+	alarm.Looped = true
+	alarm.SoundId = "http://www.roblox.com/asset/?id=138081509"
 	alarm:Play()
 	
-	ok.MouseButton1Click:connect(function()
+	ok.MouseButton1Click:Connect(function()
 		gui:Destroy()
 		alarm:Stop()
 	end)
@@ -499,7 +505,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX00E79D64B40F4710A1B9D02896099D98">
+			<Item class="BoolValue" referent="RBX005bb127d15d4d7cb6b38407ed8dfdbc">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>

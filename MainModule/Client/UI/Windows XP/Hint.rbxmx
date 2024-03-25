@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Frame" referent="RBX3879c8d5e3f94b9884f21f77714aa528">
+	<Item class="Frame" referent="RBXf1e8b10a1dc64cbe9e559493163f5d9b">
 		<Properties>
 			<bool name="Active">false</bool>
 			<Vector2 name="AnchorPoint">
@@ -65,7 +65,7 @@
 			<bool name="Visible">true</bool>
 			<int name="ZIndex">1</int>
 		</Properties>
-		<Item class="Frame" referent="RBX042c91e1787f4775b583a904a9bf8d81">
+		<Item class="Frame" referent="RBXd3d0eca80eb8485a9a70127aa6d5fb88">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -128,7 +128,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBX0e552d1dd0f54fb4a0feb73e54de3a66">
+			<Item class="TextLabel" referent="RBX187fa65714cf406badb015c9cfdffdbe">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -156,10 +156,9 @@
 					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 						<Weight>400</Weight>
 						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
 					</Font>
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
@@ -198,7 +197,7 @@
 					<token name="SizeConstraint">0</token>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
-					<string name="Text">I need everyone who is testing to test like you have never tested before</string>
+					<string name="Text">Did you know? A herd of camels is called a Caravan.</string>
 					<Color3 name="TextColor3">
 						<R>0</R>
 						<G>0</G>
@@ -222,7 +221,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="ImageLabel" referent="RBX98b73ec1433e4f6198f5206d37ffd930">
+			<Item class="ImageLabel" referent="RBXa4f5e56e78d24b5fbad03820ad1251d2">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -320,7 +319,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Folder" referent="RBX162c240b2bf443d489bad5a79fafe408">
+		<Item class="Folder" referent="RBX48a99f10878a40faae246557d930780e">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -329,14 +328,14 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX3bdab785f47c43969d63eb12be53b0e4">
+			<Item class="ModuleScript" referent="RBXf872e4263aba4d00b25c54a107778f01">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">NoEnv-Code</string>
-					<string name="ScriptGuid">{28a1e3bd-8253-4eb5-ad8c-b01f7d2a649a}</string>
+					<string name="ScriptGuid">{2544f9c2-99ee-45cd-83e2-a5697707ebb9}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 Pcall = nil
 Routine = nil
@@ -449,7 +448,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX44f5517d1d324da1884b9b3005d2f26b">
+			<Item class="BoolValue" referent="RBXb660c217ce704de5b19b5cad2be42be1">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -460,7 +459,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXfbe50530f3d049d0b3ba03357c9e8dee">
+			<Item class="BoolValue" referent="RBX715c528171534b0bb02a7d8dbfcb7bf2">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>

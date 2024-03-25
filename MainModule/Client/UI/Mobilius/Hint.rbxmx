@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX56D4F8B831E440DF8EEBC1E54DBB510B">
+	<Item class="ScreenGui" referent="RBX020a4175bd27474eae3122bfcf844138">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -25,7 +25,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBXCA59B884D0BA4B979118C05EEE546099">
+		<Item class="Folder" referent="RBXb01a2779269f49c59fd3b2e2110b249e">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -34,14 +34,14 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX886B95A79880471CB45EBC274D39286A">
+			<Item class="ModuleScript" referent="RBX30051b38f05a4b83983e9e3dd2986f34">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">NoEnv-Code</string>
-					<string name="ScriptGuid">{2CB6BF6F-3DB8-4A81-AACE-7F269F90D1DC}</string>
+					<string name="ScriptGuid">{b370cb41-132f-423b-bbc8-840aee85e1a0}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 Pcall = nil
 Routine = nil
@@ -66,7 +66,7 @@ return function(data, env)
 	msg.Text = str
 	gTable:Ready()
 
-	wait(data.Time or 5)
+	task.wait(data.Time or 5)
 
 	gui:Destroy()
 end]]></ProtectedString>
@@ -74,7 +74,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXA7305A5A25CC4801B04DC439F7894486">
+			<Item class="BoolValue" referent="RBX700d268a3ff64144b24046eb8b54f524">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -86,7 +86,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX4F54CDC327EB41ED9DA1EFF460F4C369">
+		<Item class="Frame" referent="RBXeeaa5f20b38e4bf4a4da7894bc17464b">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -149,7 +149,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Frame" referent="RBX4D9B65B323644FF8B93028ADE8C2A0DC">
+			<Item class="Frame" referent="RBX11e95f9f77e342b08e8bffdd79d49d67">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -212,7 +212,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX413739C50CBB4418849705475EC94B66">
+				<Item class="TextLabel" referent="RBXcf9e3468595743d5ae52bcd9bd75726f">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -240,10 +240,9 @@ end]]></ProtectedString>
 						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Draggable">false</bool>
 						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 							<Weight>400</Weight>
 							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
 						</Font>
 						<bool name="Interactable">true</bool>
 						<int name="LayoutOrder">0</int>

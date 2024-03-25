@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX5cc0c86e92aa4246b6f1700ca408e877">
+	<Item class="ScreenGui" referent="RBXd0d0736d750b4db49a26d8e112b3db28">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -25,7 +25,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBX7b23ca92010040b5996c229e6e739f68">
+		<Item class="Folder" referent="RBX92d845c2245b4b05be7834dfe5696b1a">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -34,14 +34,14 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBXd264ac70b3454ecfa40b32b7c874a111">
+			<Item class="ModuleScript" referent="RBX3ef7131c6bc84887a53d789b5d01843c">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">NoEnv-Code</string>
-					<string name="ScriptGuid">{85feb60f-a6bc-438b-8d9a-aed70e96403b}</string>
+					<string name="ScriptGuid">{0b6a85f4-008e-4367-b996-8d28f6d1d09f}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 Pcall = nil
 Routine = nil
@@ -207,7 +207,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX20c5e060c65b4f8cbe989aef07a35327">
+			<Item class="BoolValue" referent="RBX42f091894e134afba38f46f7b1d2ce2c">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -218,7 +218,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX88938128c93f48cdb6f2f288172163f3">
+			<Item class="BoolValue" referent="RBX8b42ab6401c846f79a97b9f24597d3a4">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -230,7 +230,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ImageLabel" referent="RBX1164d3ec9d1d4a44ad450577b7650929">
+		<Item class="ImageLabel" referent="RBX6c4e4564aac94e40870fad2d4d6f127d">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -326,7 +326,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">0</int>
 			</Properties>
-			<Item class="UICorner" referent="RBX78e760d94bf74d3ba91cdbc0088ddcd0">
+			<Item class="UICorner" referent="RBXecf90bb42f954609a4c4c9ef90fffe22">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -340,7 +340,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX68f037539985433890123c71a637e500">
+			<Item class="TextLabel" referent="RBX3a86e63f16fb46d2b3603d0ad4ad3227">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -368,10 +368,9 @@ end]]></ProtectedString>
 					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 						<Weight>400</Weight>
 						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
 					</Font>
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
@@ -434,7 +433,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">7</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBXfa8f187964b94d28a13c06cf9206cb56">
+			<Item class="TextLabel" referent="RBXa1403a555a7c494ca41a5116bed9c943">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">

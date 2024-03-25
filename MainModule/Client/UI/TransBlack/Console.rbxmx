@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX2F995AC0DC01475D88C11FB341C9357A">
+	<Item class="ScreenGui" referent="RBXe41969d459754eff94bf57f9de664169">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">true</bool>
@@ -25,7 +25,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBX980024AB5AB04C69B4016C4E1084135A">
+		<Item class="Folder" referent="RBXd3b07de2143c4e10857aaf0db0fe58ee">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -34,7 +34,7 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBX012F8CCC39A648309B9E9618DEDDCDB9">
+			<Item class="BoolValue" referent="RBX3e2ee1ecfae94a04a7cbee7ad930bb41">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -46,7 +46,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextButton" referent="RBX3322ECF4716C4AB7A1D36E46B1E3A3BA">
+		<Item class="TextButton" referent="RBX78b5f835bf024fc2bf6f8ef596a3a634">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -83,6 +83,8 @@
 				<bool name="Interactable">true</bool>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
+				<string name="LocalizationMatchIdentifier"></string>
+				<string name="LocalizationMatchedSourceText"></string>
 				<int name="MaxVisibleGraphemes">-1</int>
 				<bool name="Modal">false</bool>
 				<string name="Name">Entry</string>
@@ -142,7 +144,7 @@
 				<int name="ZIndex">3</int>
 			</Properties>
 		</Item>
-		<Item class="Frame" referent="RBX8F06288E6A684C3F8EBA17AD86D51EBC">
+		<Item class="Frame" referent="RBX51ce01179286454db82db9f8c8e93be2">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -205,7 +207,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="ScrollingFrame" referent="RBX754B48C4A012419A800196327C00053C">
+			<Item class="ScrollingFrame" referent="RBX68bcda8ca94d475481de22cf65c32d7c">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -295,7 +297,7 @@
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX0D4A40240E21484399BA00B52C8C1E49">
+			<Item class="Frame" referent="RBX3557cc26bdbe46fa8f17703be5cb2c14">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -359,7 +361,7 @@
 					<int name="ZIndex">5</int>
 				</Properties>
 			</Item>
-			<Item class="TextBox" referent="RBX17167FC0B4CC426E976378262432CB7D">
+			<Item class="TextBox" referent="RBX897c88f09f224d39b038f2fc8e9068f6">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -388,14 +390,15 @@
 					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/LegacyArial.json</url></Family>
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 						<Weight>400</Weight>
 						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
 					</Font>
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
+					<string name="LocalizationMatchIdentifier"></string>
+					<string name="LocalizationMatchedSourceText"></string>
 					<int name="MaxVisibleGraphemes">-1</int>
 					<bool name="MultiLine">false</bool>
 					<string name="Name">TextBox</string>
@@ -461,7 +464,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="ScrollingFrame" referent="RBX5EF05C54190649DB9E4C7854F1B872C5">
+			<Item class="ScrollingFrame" referent="RBX53c984b906b146f596f89071c0ea259b">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">

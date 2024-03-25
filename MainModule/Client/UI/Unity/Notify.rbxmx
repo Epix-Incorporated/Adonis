@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBXC5B45BE4B82A4747B78EF0ABA1BC8E80">
+	<Item class="ScreenGui" referent="RBXe8d0b448b5a24cb98e719cbab1e0998c">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -25,7 +25,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBXB2DB1AC3F8A84F3B8D14E642174C7C77">
+		<Item class="Folder" referent="RBX05d97f56eda843aea94799fb57cad03b">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -34,14 +34,14 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX2EC20DD8D4AA4BA3870B03124ED3A3F6">
+			<Item class="ModuleScript" referent="RBX3a14768cb5704451ad9e6f0192eff0e8">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{B7814A23-0C90-4A3F-919C-A2A97EB7C781}</string>
+					<string name="ScriptGuid">{e11daa9e-4dc2-41aa-b064-329265e9b1ce}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 Pcall = nil
 Routine = nil
@@ -176,7 +176,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXABA436722EF04B4DBFA7DE264423F077">
+			<Item class="BoolValue" referent="RBX33a07727622049809f953836b5ec8757">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -187,7 +187,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX5021D533A82D411181AAC4D5909DEE1E">
+			<Item class="BoolValue" referent="RBX2be532b9f8ca4befa6d115b0f97fa11b">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -199,7 +199,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX167C04825B9C49C4B1DC1ABDB686F641">
+		<Item class="Frame" referent="RBX1991af0e37014a929f5ac47f4ddb551c">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -262,7 +262,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">4888894</int>
 			</Properties>
-			<Item class="Frame" referent="RBXC01EE552F6A14271966EAFC9F022E974">
+			<Item class="Frame" referent="RBX9b080421b0a54235a9c56544727dcfb8">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -325,7 +325,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">4888899</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX49BE1B5B38AF448480C035166D6FCACD">
+				<Item class="TextLabel" referent="RBX1d1beecc608c49a6b79de3f830bfe398">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -353,10 +353,9 @@ end]]></ProtectedString>
 						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Draggable">false</bool>
 						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/GothamSSm.json</url></Family>
+							<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
 							<Weight>400</Weight>
 							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/GothamSSm-Book.otf</url></CachedFaceId>
 						</Font>
 						<bool name="Interactable">true</bool>
 						<int name="LayoutOrder">0</int>
@@ -419,7 +418,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">488810000</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX150B196F3EC240D3B737EE6FF812C12D">
+				<Item class="TextLabel" referent="RBX4d52a20b89544dfabab2fa933a6e5fd1">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -447,10 +446,9 @@ end]]></ProtectedString>
 						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Draggable">false</bool>
 						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/GothamSSm.json</url></Family>
+							<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
 							<Weight>400</Weight>
 							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/GothamSSm-Book.otf</url></CachedFaceId>
 						</Font>
 						<bool name="Interactable">true</bool>
 						<int name="LayoutOrder">0</int>
@@ -513,7 +511,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">488810000</int>
 					</Properties>
 				</Item>
-				<Item class="UICorner" referent="RBX47FF2CA0033842F693CDE09A59DB0F2A">
+				<Item class="UICorner" referent="RBX4562ff9ecd04406299f87ed650078f17">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -527,7 +525,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXE8E1DF1BAE984BAE9E9B7B531164F906">
+				<Item class="TextLabel" referent="RBXf7e61c4ff0ec4cf0b4d815f627bbd1ea">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -555,10 +553,9 @@ end]]></ProtectedString>
 						<bool name="DefinesCapabilities">false</bool>
 						<bool name="Draggable">false</bool>
 						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/GothamSSm.json</url></Family>
+							<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
 							<Weight>400</Weight>
 							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/GothamSSm-Book.otf</url></CachedFaceId>
 						</Font>
 						<bool name="Interactable">true</bool>
 						<int name="LayoutOrder">0</int>
@@ -622,7 +619,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="UICorner" referent="RBXADBD2BDD02DF4F799C0C30D6B7EFDB84">
+			<Item class="UICorner" referent="RBXc18368f509f24e8d8096fd94cd2f689c">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>

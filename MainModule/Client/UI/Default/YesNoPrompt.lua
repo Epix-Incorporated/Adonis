@@ -33,7 +33,7 @@ return function(data, env)
 
 	local yes = window:Add("TextButton", {
 		Text = "Yes";
-		Font = Enum.Font.Arial;
+		Font = Enum.Font.SourceSans;
 		TextSize = 18;
 		AnchorPoint = Vector2.new(0, 1);
 		Size = UDim2.new(0.5, -7, 0, 30);
@@ -44,7 +44,7 @@ return function(data, env)
 
 	local no = window:Add("TextButton", {
 		Text = "No";
-		Font = Enum.Font.Arial;
+		Font = Enum.Font.SourceSans;
 		TextSize = 18;
 		AnchorPoint = Vector2.new(0, 1);
 		Size = UDim2.new(0.5, -7, 0, 30);

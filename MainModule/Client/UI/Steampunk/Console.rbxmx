@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBXA7E9E2A6439A40819C10104937C93200">
+	<Item class="ScreenGui" referent="RBX57d10cd0e85945f4ad9e82d2c532eb65">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">true</bool>
@@ -25,7 +25,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBX2D722C5FE13C4226B4B30F130D6C8640">
+		<Item class="Folder" referent="RBXf4e4fec47d364570829504d1a55e1100">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -34,7 +34,7 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBXE14F5550433E49519D3E73A8869966E5">
+			<Item class="BoolValue" referent="RBXc353b7b8364b4d50a0af4bcb02e42166">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -45,14 +45,14 @@
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX6624588DE5E54DD4A82231450BB41B1B">
+			<Item class="ModuleScript" referent="RBX94f9c6eca0d445d4bcfcbd7230e4a7ad">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{E310E889-1D87-40E9-BA7D-00D4AA19018A}</string>
+					<string name="ScriptGuid">{d3ee9d14-e3e5-4a83-a12d-61f4766036fc}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 Pcall = nil
 Routine = nil
@@ -338,7 +338,7 @@ end
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX49F69B653DA94CA5B6AAFB7A5D5E9C1E">
+			<Item class="BoolValue" referent="RBXb4bf1960d3604253995c8eba324ab3c5">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -350,7 +350,7 @@ end
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextButton" referent="RBXB380BC8F4CC2401ABCF762669B286724">
+		<Item class="TextButton" referent="RBX384c7f8ddd1f48fbb60aae0868b38045">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -387,6 +387,8 @@ end
 				<bool name="Interactable">true</bool>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
+				<string name="LocalizationMatchIdentifier"></string>
+				<string name="LocalizationMatchedSourceText"></string>
 				<int name="MaxVisibleGraphemes">-1</int>
 				<bool name="Modal">false</bool>
 				<string name="Name">Entry</string>
@@ -446,7 +448,7 @@ end
 				<int name="ZIndex">3</int>
 			</Properties>
 		</Item>
-		<Item class="Frame" referent="RBXE26D764DB1314CE6AA5E763128E2F62C">
+		<Item class="Frame" referent="RBX91a51bf6f6b1479a9e0f328980bd922f">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -509,7 +511,7 @@ end
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="ScrollingFrame" referent="RBXFED3ECF5EDD944D9B344B6CD031479CA">
+			<Item class="ScrollingFrame" referent="RBX635382a7c4814f9dbbc9ae3f52bf3ea6">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -599,7 +601,7 @@ end
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBXDDAFA87925574007B11EDE14DD3F1CEF">
+			<Item class="Frame" referent="RBX403325c1f81142a595787865972988bf">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -663,7 +665,7 @@ end
 					<int name="ZIndex">5</int>
 				</Properties>
 			</Item>
-			<Item class="TextBox" referent="RBX27BCB45C27914F1B841250C28AEFFF27">
+			<Item class="TextBox" referent="RBX830a15b2300048adbffcfe7a3a41f0d5">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -692,14 +694,15 @@ end
 					<bool name="DefinesCapabilities">false</bool>
 					<bool name="Draggable">false</bool>
 					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/LegacyArial.json</url></Family>
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
 						<Weight>400</Weight>
 						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
 					</Font>
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
+					<string name="LocalizationMatchIdentifier"></string>
+					<string name="LocalizationMatchedSourceText"></string>
 					<int name="MaxVisibleGraphemes">-1</int>
 					<bool name="MultiLine">false</bool>
 					<string name="Name">TextBox</string>
@@ -765,7 +768,7 @@ end
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="ScrollingFrame" referent="RBXC1B3EF84D6DD44449060DA9D520556FC">
+			<Item class="ScrollingFrame" referent="RBXc2b0cd095681409d8ae27d4ee8b7c523">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -855,7 +858,7 @@ end
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBXB8960315D6A54AD9A8E5EE1FD7767457">
+			<Item class="Frame" referent="RBXa553c8e4939f42258f3eb7b5563d0508">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -918,7 +921,7 @@ end
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ImageLabel" referent="RBXE61E2E53A2224EBB902FA5938C9A9D8A">
+				<Item class="ImageLabel" referent="RBX65a2f59b78b94a71acb7f9e931f5b73b">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1015,7 +1018,7 @@ end
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX7349025BEF824816AB001B369AA77C97">
+				<Item class="ImageLabel" referent="RBXa3263199bfd541bbb4fffb6f162ee9cb">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1112,7 +1115,7 @@ end
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBXF0DF5122420345388AEFFA482A980525">
+				<Item class="ImageLabel" referent="RBXdc6c2862b4de4a3faae3404219a8080f">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1209,7 +1212,7 @@ end
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX6E773C3DD9534160AF5C67FA6F9B1225">
+				<Item class="ImageLabel" referent="RBX3934d0ed019c444ea9b9be32e77ff546">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
