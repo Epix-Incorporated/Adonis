@@ -393,7 +393,6 @@ descs.RecursiveTools = [[ Whether tools that are included in sub-containers with
 
 descs.Theme = [[ UI theme; ]]
 descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
-descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
 
 descs.Ranks = [[ All admin permission level ranks; ]];
 descs.Moderators = [[ Mods; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -461,6 +460,7 @@ descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
+descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
@@ -539,7 +539,6 @@ order = {
 	" ";
 	"Theme";
 	"MobileTheme";
-	"DefaultTheme";
 	" ";
 	"Ranks";
 	" ";
@@ -601,6 +600,7 @@ order = {
 	"MaxLogs";
 	"SaveCommandLogs";
 	"Notification";
+	"DefaultTheme";
 	"SongHint";
 	"TopBarShift";
 	"";
