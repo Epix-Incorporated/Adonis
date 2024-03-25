@@ -290,17 +290,18 @@ settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
 settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
-settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
-settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
-settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
-settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
-settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
-settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
-settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
-settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
-settings.AutoCleanDelay = 60	-- Time between auto cleans
-settings.AutoBackup = false 	-- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
-
+settings.MaxLogs = 5000			           -- Maximum logs to save before deleting the oldest
+settings.SaveCommandLogs = true	           -- If command logs are saved to the datastores
+settings.Notification = true	           -- Whether or not to show the "You're an admin" and "Updated" notifications
+settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
+settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
+settings.DefaultTheme = "Default"		   -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
+settings.Messages = {}			           -- A list of notification messages to show HeadAdmins and above on join
+settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
+settings.AutoCleanDelay = 60	           -- Time between auto cleans
+settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
+settings.ReJail = false			           -- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
+settings.DisableRejoinAtMaxPlayers = false -- If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount.
 
 settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
@@ -467,10 +468,10 @@ descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
-descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
+descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
 descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
@@ -587,9 +588,9 @@ order = {
 	"MaxLogs";
 	"SaveCommandLogs";
 	"Notification";
-	"DefaultTheme";
 	"SongHint";
 	"TopBarShift";
+	"DefaultTheme";
 	"ReJail";
 	"DisableRejoinAtMaxPlayers";
 	"";
