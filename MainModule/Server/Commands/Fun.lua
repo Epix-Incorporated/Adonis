@@ -206,7 +206,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor", "freeadmin"};--//add more :)
+			Commands = {"trolled", "freebobuc", "freedonor", "adminpls", "enabledonor", "freeadmin", "hackadmin"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -602,7 +602,13 @@ return function(Vargs, env)
 						LeftLegColor = BrickColor.new("Artichoke").Color,
 						RightLegColor = BrickColor.new("Artichoke").Color,
 						TorsoColor = BrickColor.new("Artichoke").Color,
-						Face = math.random(1, 3) == 3 and 173789114 or 133360789
+						Face = math.random(1, 3) == 3 and 173789114 or 133360789,
+					}
+					
+					local ActionProperties = {
+						Speed = args[2] or nil,
+						Health = args[3] or nil,
+						Jumppower = args[4] or nil,
 					}
 
 					if humanoid and humanoid.RootPart and string.lower(humanoid.Name) ~= "zombie" and not humanoid.Parent:FindFirstChild("Infected") then
@@ -616,6 +622,10 @@ return function(Vargs, env)
 						end
 
 						task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+						
+						if ActionProperties.Speed then humanoid.WalkSpeed = ActionProperties.Speed end
+						if ActionProperties.Jumppower then humanoid.JumpPower = ActionProperties.Jumppower end
+						if ActionProperties.Health then humanoid.MaxHealth = ActionProperties.Health; humanoid.Health = ActionProperties.Health end
 
 						for _, part in humanoid.Parent:GetChildren() do
 							if part:IsA("BasePart") then
@@ -786,7 +796,7 @@ return function(Vargs, env)
 				end
 
 				if not chosenMat then
-					Remote.MakeGui(plr, "Output", {Title = "Output"; Message = "Invalid material choice";})
+					Remote.MakeGui(plr, "Output", {Title = "Error"; Message = "Invalid material choice";})
 					return
 				end
 
@@ -815,7 +825,7 @@ return function(Vargs, env)
 						for _, p in v.Character:GetChildren() do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
-							elseif p:IsA("Part") then
+							elseif p:IsA("BasePart") then
 								if args[2] then
 									local str = BrickColor.new("Institutional white").Color
 									local teststr = args[2]
@@ -1059,6 +1069,28 @@ return function(Vargs, env)
 					end)
 				end
 			end;
+		};
+
+		Sword = {
+			Prefix = Settings.Prefix;
+			Commands = {"sword", "givesword"};
+			Args = {"player", "allow teamkill (default: true)"};
+			Description = "Gives the target player(s) a sword";
+			AdminLevel = "Moderators";
+			Fun = true;
+			Function = function(plr: Player, args: {string})
+				local sword = service.Insert(125013769)
+				local config = sword:FindFirstChild("Configurations")
+				if config then
+					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
+				end
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+					if Backpack then
+						sword:Clone().Parent = Backpack
+					end
+				end
+			end
 		};
 
 		iloveyou = {
@@ -1897,7 +1929,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							local knownchar = v.Character
 							local speed = 10
@@ -1964,7 +1996,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						local color = ({"Really blue", "Really red", "Magenta", "Lime green", "Hot pink", "New Yeller", "White"})[math.random(1, 7)]
 						local hum=v.Character:FindFirstChild("Humanoid")
 						if not hum then return end
@@ -1990,7 +2022,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(Settings.AgeRestrictedCommands, "This command is disabled due to age restrictions")
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
 						local run = true
 						local k = service.New("StringValue", v.Character)
@@ -2061,7 +2093,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("ADONIS_BLEED") then return end
 						local run = true
 						local k = service.New("StringValue", v.Character)
@@ -2496,9 +2528,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
-						Admin.RunCommand(`{Settings.Prefix}freeze`, v.Name)
+					task.spawn(Pcall, function()
 						local char = v.Character
+						char.HumanoidRootPart.Anchored = true
 						local zeus = service.New("Model", char)
 						local cloud = service.New("Part", zeus)
 						cloud.Anchored = true
@@ -2664,7 +2696,7 @@ return function(Vargs, env)
 						local human = plr.Character:FindFirstChildOfClass("Humanoid")
 
 						if not human then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
+							Remote.MakeGui(p, "Output", {Title = "Error"; Message = `{plr.Name} doesn't have a Humanoid [Transformation Error]`})
 							return
 						end
 
@@ -2713,7 +2745,7 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
-							Remote.MakeGui(p, "Output", {Title = "Output"; Message = `Cannot support R15 for {plr.Name} [Dog Transformation Error]`})
+							Remote.MakeGui(plr, "Output", {Title = "Nonfunctional"; Message = `This command does not yet support R15.`; Color = Color3.new(1,1,1)})
 						end
 					end
 				end
@@ -3319,105 +3351,107 @@ return function(Vargs, env)
 					local char = p.Character
 					local human = char:FindFirstChildOfClass("Humanoid")
 
-					if human and human.RigType == Enum.HumanoidRigType.R15 then
-						if human:FindFirstChild("BodyDepthScale") then
-							human.BodyDepthScale.Value = 0.1
-						end
-					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
-						local torso = char:FindFirstChild("Torso")
-						local root = char:FindFirstChild("HumanoidRootPart")
-						local welds = {}
-
-						torso.Anchored = true
-						torso.BottomSurface = 0
-						torso.TopSurface = 0
-
-						for _, v in char:GetChildren() do
-							if v:IsA("BasePart") then
-								v.Anchored = true
+					if human then
+						if human.RigType == Enum.HumanoidRigType.R15 then
+							if human:FindFirstChild("BodyDepthScale") then
+								human.BodyDepthScale.Value = 0.1
 							end
-						end
+						elseif human.RigType == Enum.HumanoidRigType.R6 then
+							local torso = char:FindFirstChild("Torso")
+							local root = char:FindFirstChild("HumanoidRootPart")
+							local welds = {}
 
-						local function size(part)
-							for _, v in part:GetChildren() do
-								if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
-									local p1 = v.Part1
-									local c0 = {v.C0:components()}
-									local c1 = {v.C1:components()}
-
-									c0[3] = c0[3]*num
-									c1[3] = c1[3]*num
-
-									p1.Anchored = true
-									v.Part1 = nil
-
-									v.C0 = CFrame.new(unpack(c0))
-									v.C1 = CFrame.new(unpack(c1))
-
-									if p1.Name ~= "Head" and p1.Name ~= "Torso" then
-										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
-									elseif p1.Name ~= "Torso" then
-										p1.Anchored = true
-										for _, m in p1:GetChildren() do
-											if m:IsA("Weld") then
-												m.Part0 = nil
-												m.Part1.Anchored = true
-											end
-										end
-
-										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
-
-										for _, m in p1:GetChildren() do
-											if m:IsA("Weld") then
-												m.Part0 = p1
-												m.Part1.Anchored = false
-											end
-										end
-									end
-
-									if v.Parent == torso then
-										p1.BottomSurface = 0
-										p1.TopSurface = 0
-									end
-
-									p1.Anchored = false
-									v.Part1 = p1
-
-									if v.Part0 == torso then
-										table.insert(welds, v)
-										p1.Anchored = true
-										v.Part0 = nil
-									end
-								elseif v:IsA("CharacterMesh") then
-									local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
-									local msh = service.New("SpecialMesh")
-								elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
-									v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
+							torso.Anchored = true
+							torso.BottomSurface = 0
+							torso.TopSurface = 0
+	
+							for _, v in char:GetChildren() do
+								if v:IsA("BasePart") then
+									v.Anchored = true
 								end
-								size(v)
 							end
-						end
-
-						size(char)
-
-						torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
-
-						for i, v in welds do
-							v.Part0 = torso
-							v.Part1.Anchored = false
-						end
-
-						for i, v in char:GetChildren() do
-							if v:IsA("BasePart") then
-								v.Anchored = false
+	
+							local function size(part)
+								for _, v in part:GetChildren() do
+									if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
+										local p1 = v.Part1
+										local c0 = {v.C0:components()}
+										local c1 = {v.C1:components()}
+	
+										c0[3] = c0[3]*num
+										c1[3] = c1[3]*num
+	
+										p1.Anchored = true
+										v.Part1 = nil
+	
+										v.C0 = CFrame.new(unpack(c0))
+										v.C1 = CFrame.new(unpack(c1))
+	
+										if p1.Name ~= "Head" and p1.Name ~= "Torso" then
+											p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
+										elseif p1.Name ~= "Torso" then
+											p1.Anchored = true
+											for _, m in p1:GetChildren() do
+												if m:IsA("Weld") then
+													m.Part0 = nil
+													m.Part1.Anchored = true
+												end
+											end
+	
+											p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
+	
+											for _, m in p1:GetChildren() do
+												if m:IsA("Weld") then
+													m.Part0 = p1
+													m.Part1.Anchored = false
+												end
+											end
+										end
+	
+										if v.Parent == torso then
+											p1.BottomSurface = 0
+											p1.TopSurface = 0
+										end
+	
+										p1.Anchored = false
+										v.Part1 = p1
+	
+										if v.Part0 == torso then
+											table.insert(welds, v)
+											p1.Anchored = true
+											v.Part0 = nil
+										end
+									elseif v:IsA("CharacterMesh") then
+										local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
+										local msh = service.New("SpecialMesh")
+									elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
+										v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
+									end
+									size(v)
+								end
 							end
-						end
-
-						Functions.MakeWeld(root, torso, CFrame.new(), CFrame.new())
-
-						local cape = char:FindFirstChild("ADONIS_CAPE")
-						if cape then
-							cape.Size = cape.Size*num
+	
+							size(char)
+	
+							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
+	
+							for i, v in welds do
+								v.Part0 = torso
+								v.Part1.Anchored = false
+							end
+	
+							for i, v in char:GetChildren() do
+								if v:IsA("BasePart") then
+									v.Anchored = false
+								end
+							end
+	
+							Functions.MakeWeld(root, torso, CFrame.new(), CFrame.new())
+	
+							local cape = char:FindFirstChild("ADONIS_CAPE")
+							if cape then
+								cape.Size = cape.Size*num
+							end
 						end
 					end
 				end
@@ -3437,7 +3471,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						for _, p in v.Character:GetChildren() do
 							if p:IsA("Part") then
 								if p:FindFirstChild("Mesh") then p.Mesh:Destroy() end
@@ -3488,7 +3522,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(pcall, function()
+					task.spawn(Pcall, function()
 						if v.Character then
 							local head = v.Character.Head
 							local torso = v.Character:FindFirstChild("Torso") or v.Character.UpperTorso

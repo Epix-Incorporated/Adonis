@@ -197,7 +197,7 @@
 						<YS>0</YS>
 						<YO>4</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
@@ -261,18 +261,26 @@ return function(data, env)
 		setfenv(1, env)
 	end
 	
-	local playergui = service.PlayerGui
-	local localplayer = service.Players.LocalPlayer
+	local playerGui = service.PlayerGui
+	local localPlayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
 	local main = scr.Main
-	local t1 = main.Title
-	local t2 = main.Message
-	local msg = data.Message
-	local color = data.Color
+	local titleLabel = main.Title
+	local messageLabel = main.Message
+	local messageData = data.Message
+	local titleData = data.Title or ""
+	local colorIn = data.Color
+
+	local formattedMessage
+	if titleData and titleData ~= "" then 
+		formattedMessage = `<b>{titleData}</b>: {messageData}`
+	else
+		formattedMessage = messageData
+	end
 	
 	local found = client.UI.Get("Output")
 	if found then
-		for i,v in pairs(found) do
+		for _,v in pairs(found) do
 			local p = v.Object
 			if p and p.Parent then
 				p.Main.Position = UDim2.new(0, 0, 0.35, p.Main.Position.Y.Offset+50)
@@ -280,11 +288,13 @@ return function(data, env)
 		end
 	end
 	
-	t2.Text = msg
-	t2.Font = "Arial"
-	--t2.Position = UDim2.new(0, 0, 0.35, 0)
+	messageLabel.Text = formattedMessage
+	messageLabel.Font = Enum.Font.SourceSans
+	if data.Color then
+		messageLabel.TextColor3 = data.Color
+	end
 	gTable.Ready()
-	wait(5)
+	task.wait(5)
 	gTable.Destroy()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>

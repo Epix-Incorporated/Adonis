@@ -337,7 +337,7 @@ return function(Vargs)
 					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
 					local coreUrls = getCoreUrls()
 
-					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() >= 750) then
+					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() * 1000 >= 750) then
 						rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
 							if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
 								activated = true
@@ -413,6 +413,7 @@ return function(Vargs)
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
+			local lastLogIndex = 0
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -539,6 +540,7 @@ return function(Vargs)
 					if
 						not string.find(string.lower(Message), "failed to load", 1, true) and
 						not string.find(string.lower(Message), "meshcontentprovider failed to process", 1, true) and
+						not string.find(string.lower(Message), "unknown 'active' animation:", 1, true) and
 						(string.match(string.lower(Message), string.lower(v)) or string.match(Message, v))
 					then
 						return true
@@ -668,8 +670,6 @@ return function(Vargs)
 				end
 
 				--// Check Log History
-				--// TEMP DISABLED WHILE INVESTIGATING LAG SOURCE
-				--[[
 				local Logs = service.LogService.GetLogHistory(service.LogService)
 				local rawLogService = service.UnWrap(service.LogService)
 				local First = Logs[1]
@@ -707,12 +707,13 @@ return function(Vargs)
 				then
 					Detected("kick", "Bypass detected 0x48248")
 				else
-					for _, v in ipairs(Logs) do
+					for _, v in ipairs(Logs), Logs, lastLogIndex do
 						if check(v.message) then
 							Detected("crash", "Exploit detected; "..v.message)
 						end
 					end
-				end--]]
+					lastLogIndex = #Logs
+				end
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()

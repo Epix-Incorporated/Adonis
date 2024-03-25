@@ -135,21 +135,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GivePlayerPoints = { --// obsolete since ROBLOX discontinued player points
-			Prefix = Settings.Prefix;
-			Commands = {"giveppoints", "giveplayerpoints", "sendplayerpoints"};
-			Args = {"player", "amount"};
-			Hidden = true;
-			Description = "Lets you give <player> <amount> player points";
-			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string})
-				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
-				end
-			end
-		};
-
 		Settings = {
 			Prefix = "";
 			Commands = {":adonissettings", `{Settings.Prefix}settings`, `{Settings.Prefix}adonissettings`};
@@ -167,6 +152,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -188,6 +174,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
 			AdminLevel = "Creators";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -209,6 +196,7 @@ return function(Vargs, env)
 			Args = {"player", "command"};
 			Description = "Runs a command as the target player(s)";
 			AdminLevel = "Creators";
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target player (argument #1)")
 				assert(args[2], "Missing command string (argument #2)")
@@ -255,6 +243,92 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Terminal")
 			end
 		};
+
+		ScriptEditor = {
+			Prefix = Settings.Prefix;
+			Commands = {"scripteditor", "se"};
+			Args = {"new/edit/delete/run","name"};
+			Description = "Opens Script editor";
+			CrossServerDenied = true;																
+			AdminLevel = "Creators";
+			Function = function(plr: Player, args: {string})
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				local Operation = assert(args[1], "Operation not defined (argument #1)")
+				local Name = assert(args[2], "Name not defined (argument #2)")
+				local se = Variables.ScriptEditor[tostring(plr.UserId)]
+				if not se then
+					se = {}
+					Variables.ScriptEditor[tostring(plr.UserId)] = se
+				end
+				
+				if Operation:lower() == "new" then
+					se[Name] = {
+						Script = false;
+					}
+					
+					Commands.ScriptEditor.Function(plr,{"edit",Name})
+				elseif Operation:lower() == "edit" then
+					Remote.MakeGui(plr, "ScriptEditor",{
+						Name = Name;
+						Script = se[Name].Script
+					})
+				elseif Operation:lower() == "delete" then
+					assert(se[Name], "No script found")
+					
+					se[Name] = nil
+				elseif Operation:lower() == "run" then
+					assert(se[Name], "No script found")
+					
+					local oError = error
+					local newenv = setfenv(getfenv(),{
+						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "WARN"; Message = `{str}`}) end;
+						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "WARN"; Message = `{str}`}) end;
+						error = function(reason, level)
+							if level ~= nil and type(level) ~= "number" then
+								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
+							end
+
+							Remote.MakeGui(plr, "Output",{Title = "LUA_DEMAND_ERROR"; Message = `{reason}`})
+							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
+						end;
+					})
+
+					service.TrackTask(`Thread: ScriptEditor: {plr.UserId}: {Name}`,function()
+						local func,err = Core.Loadstring(se[Name]["Script"], newenv)
+						if func then
+							local Succ,Err = pcall(function()
+								func()
+							end)
+
+							Remote.MakeGui(plr,'Output',{Title = 'ScriptEditor error'; Message = Err})
+						else
+							Remote.MakeGui(plr,'Output',{Title = 'ScriptEditor error'; Message = err})
+						end
+					end)
+				end
+			end,
+		};
+
+		ClearOldLogs = {
+			Prefix = Settings.Prefix;
+			Commands = {"clearoldlogs","flusholdlogs"};
+			Description = "Clears old logs";
+			AdminLevel = "Creators";
+			Function = function(plr: Player)
+				local ans = Remote.GetGui(plr, "YesNoPrompt", {
+					Question = `Are you sure you want to clear old logs (this will be saved in old logs)`;
+					Title = `Clear Old Logs`;
+					Icon = server.MatIcons.Info;
+					Size = {300, 200};
+				})
+				if ans == "Yes" then
+					Core.RemoveData("OldCommandLogs")
+					Functions.Hint("Old Logs Cleared (this will be saved in old logs)", {plr})
+				else
+					Functions.Hint("Operation cancelled", {plr})
+				end
+			end,
+		}
 
 		--[[
 		TaskManager = { --// Unfinished

@@ -34,7 +34,7 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "Logging Module Initialized");
 	end;
 
-	local UseDLL = server.Settings.UseLinkedListsInLogs == true or server.Settings.UseLinkedListsInLogs == nil
+	local UseDLL = not (server.Settings.UseLinkedListsInLogs == false or server.Data.DisableLinkedListsInLogs)
 
 	server.Logs = {
 		Init = Init;
@@ -92,7 +92,7 @@ return function(Vargs, GetEnv)
 
 			if tab.__meta == "DLL" then
 				tab:AddToStartAndRemoveEndIfEnd(log, MaxLogs)
-			else 
+			else
 				table.insert(tab, 1, log)
 				if #tab > tonumber(MaxLogs) then
 					table.remove(tab, #tab)
@@ -115,7 +115,7 @@ return function(Vargs, GetEnv)
 				return
 			end
 
-			local logsToSave = Logs.Commands --{}
+			local logsToSave = {Logs.Commands} --{}
 			local maxLogs = Logs.OldCommandLogsLimit
 			--local numLogsToSave = 200; --// Save the last X logs from this server
 
@@ -124,21 +124,33 @@ return function(Vargs, GetEnv)
 			--end
 
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
+				if type(oldLogs) == "string" then
+					oldLogs = service.HttpService:JSONDecode(oldLogs)
+				end
+
 				local temp = {}
 
 				for _, m in logsToSave do
-					local isTable = type(m) == "table"
-					local newTab = if isTable then service.CloneTable(m) else m
+					if m.__meta == "DLL" then
+						local newTab = m:GetAsTable()
 
-					if (isTable and not newTab.NoSave) or not isTable then
-						if isTable and newTab.Player then
-							local p = newTab.Player
-							newTab.Player = {
-								Name = p.Name;
-								UserId = p.UserId;
-							}
+						for i,v in pairs(newTab) do
+							table.insert(temp,v)
 						end
-						table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
+					else
+						local isTable = type(m) == "table"
+						local newTab = if isTable then service.CloneTable(m) else m
+
+						if (isTable and not newTab.NoSave) or not isTable then
+							if isTable and newTab.Player then
+								local p = newTab.Player
+								newTab.Player = {
+									Name = p.Name;
+									UserId = p.UserId;
+								}
+							end
+							table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
+						end
 					end
 				end
 
@@ -161,11 +173,11 @@ return function(Vargs, GetEnv)
 					local diff = #temp - maxLogs
 
 					for i = 1, diff do
-						table.remove(temp, 1)
+						table.remove(temp, #temp)
 					end
 				end
 
-				return temp
+				return service.HttpService:JSONEncode(temp)
 			end)
 
 			print("Command logs saved!")
@@ -181,6 +193,6 @@ return function(Vargs, GetEnv)
 			end;
 		};
 	};
-	
+
 	Logs = Logs
 end

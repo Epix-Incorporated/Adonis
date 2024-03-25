@@ -99,6 +99,96 @@ return function(Vargs, GetEnv)
 			service.Events[`CRSSRV:{eventId}`]:Fire(...)
 		end;
 
+		GlobalRestartRequest = function(jobId, reason, countdown, abortable)
+			local taskobj
+			if reason == "[CRS_SRV]:abort" then
+				for i,t in service.Threads.Tasks do
+					if t.Name == "GLOBALRESTART_COUNTDOWN" then
+						pcall(task.cancel,t.Thread) -- forcefully close not caring about adonis's task system
+						coroutine.close(t.Thread)
+						t.Kill() -- mark it as killed so adonis sees it
+						Functions.Hint(`Server restart aborted. Server will no longer restart.`, service.GetPlayers())
+						return
+					end
+				end
+				return
+			end
+			if countdown then
+				Logs.AddLog("Script", {
+					`Global restart issued {countdown} seconds for "{reason}"`
+				});
+			else
+				Logs.AddLog("Script", {
+					`Global restart issued for "{reason}"`
+				});
+			end
+			if countdown then
+				do
+					local time
+					if countdown < 60 then time = `{countdown} seconds`
+					else time = `{math.floor(countdown/60)} minutes`
+					end
+					Functions.Hint(`Server restart in {time}.`, service:GetPlayers())
+				end
+				local forceful_exit = false
+				for i,t in service.Threads.Tasks do
+					if t.Name == "GLOBALRESTART_COUNTDOWN" then
+						pcall(task.cancel,t.Thread) -- forcefully close not caring about adonis's task system
+						coroutine.close(t.Thread)
+						t.Kill() -- mark it as killed so adonis sees it
+					end
+				end
+				taskobj = service.Threads.NewTask("THREAD: GLOBALRESTART_COUNTDOWN", function()
+					local brackets = {
+						[1800]="30 minutes",
+						[1200]="20 minutes",
+						[600]="10 minutes",
+						[300]="5 minutes",
+						[120]="2 minutes",
+						[60]="1 minute",
+						[30]="30 seconds",
+						[10]="10 seconds"
+					}
+					local currentbracket,lastbracket
+					local function updatebracket()
+						local i = 1
+						local lastt
+						for time,bracket in pairs(brackets) do
+							if time <= countdown then
+								currentbracket = brackets[lastt]
+							end
+							i+=1
+						end
+					end
+					updatebracket()
+					lastbracket = currentbracket
+					while countdown > 0 do
+						countdown -= task.wait(1)
+						if taskobj.R_Status == "Stopping" and abortable then
+							Functions.Hint(`Server restart aborted. Server will no longer restart.`, service.GetPlayers())
+							return
+						end
+						updatebracket()
+						if lastbracket ~= currentbracket then
+							Functions.Hint(`Server restart in {currentbracket}.`, service.GetPlayers())
+						end
+						lastbracket = currentbracket
+					end
+					Logs.AddLog("Script", {
+						`Server is restarting NOW. (issued global restart)`
+					});
+					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
+				end)
+				taskobj.abortable = abortable
+				taskobj.Start()
+				return
+			end
+			Logs.AddLog("Script", {
+				`Server is restarting NOW. (issued global restart)`
+			});
+			Admin.RunCommand(`{Settings.Prefix}restart`, reason)
+		end;
+
 		CrossServerVote = function(jobId, data)
 			local question = data.Question
 			local answers = data.Answers
@@ -154,7 +244,7 @@ return function(Vargs, GetEnv)
 	Commands.CrossServerList = {
 		Prefix = Settings.Prefix;
 		Commands = {"serverlist", "gameservers", "crossserverlist", "listservers"};
-		Args = {};
+		Args = {"autoupdate? (default: true)"};
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
@@ -215,7 +305,8 @@ return function(Vargs, GetEnv)
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
 					OnClose = `client.Remote.PlayerEvent('{updateKey}')`,
-					AutoUpdate = 1,
+					AutoUpdate = if args[1] and (args[1]:lower() == "false" or args[1]:lower() == "no") then nil else 1,
+					TextSelectable = true;
 				})
 
 				delay(500, doDisconnect)
@@ -317,6 +408,10 @@ return function(Vargs, GetEnv)
 
 	--// Handlers
 	Core.CrossServer = function(...)
+		if not Core.SubEvent then
+			return false
+		end
+
 		local data = {ServerId, ...};
 		service.Queue("CrossServerMessageQueue", function()
 			--// rate limiting
@@ -358,8 +453,11 @@ return function(Vargs, GetEnv)
 		end
 	end
 
-	Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and MsgService:SubscribeAsync(subKey, function(...)
-		return Process.CrossServerMessage(...)
+	Routine(function()
+		Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and MsgService:SubscribeAsync(subKey, function(...)
+			if not Settings.CrossServerCommands then return end -- Ignore when disabled
+			return Process.CrossServerMessage(...)
+		end)
 	end)
 
 	--// Check for additions added by other modules in core before this one loaded

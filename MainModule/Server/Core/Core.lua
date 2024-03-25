@@ -150,6 +150,8 @@ return function(Vargs, GetEnv)
 			DataStoreEnabled = true;
 			LocalDatastore = true;
 
+			CrossServerCommands = true;
+
 			Creators = true;
 			Permissions = true;
 
@@ -175,6 +177,8 @@ return function(Vargs, GetEnv)
 			Ranks = true;
 			Commands = true;
 
+			CodeExecution = true;
+
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
 		};
@@ -184,6 +188,7 @@ return function(Vargs, GetEnv)
 			AdminRank = true;
 			AdminLevel = true;
 			LastLevelUpdate = true;
+			Groups = true;
 		};
 		
 		UpdatePlayerConnection = function(p)
@@ -248,8 +253,19 @@ return function(Vargs, GetEnv)
 					rTable.Events.Security = secure(event, event.Name, remoteParent)
 					rTable.Events.FuncSec = secure(func, func.Name, event)
 
-					func.OnServerInvoke = Process.Remote;
-					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, Process.Remote)
+					func.OnServerInvoke = function(p, cliData, com, ...)
+						if server.Typechecker.interface({Mode = server.Typechecker.string})(cliData) then
+							cliData.Mode = "Get"
+							return Process.Remote(p, cliData, com, ...)
+						end
+						return nil
+					end;
+					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, function(p, cliData, com, ...)
+						if server.Typechecker.interface({Mode = server.Typechecker.string})(cliData) then
+							cliData.Mode = "Fire"
+							Process.Remote(p, cliData, com, ...)
+						end
+					end)
 
 					Core.RemoteEvent = rTable
 					event.Parent = remoteParent
@@ -490,7 +506,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadExistingPlayer = function(p)
-			warn(`Loading existing player: {p}`)
+			AddLog(Logs.Script, {
+				Text = `Loading existing player: {p}`;
+				Desc = "Loading player that joined before Adonis loaded";
+			})
 
 			TrackTask(`Thread: Setup Existing Player: {p}`, function()
 				Process.PlayerAdded(p)
@@ -1483,6 +1502,8 @@ return function(Vargs, GetEnv)
 				Message = MetaFunc(Functions.Message, true);
 
 				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin, true);
+
+				GetPlayers = MetaFunc(Functions.GetPlayers, true);
 			}
 
 			if Core.DebugMode == true then

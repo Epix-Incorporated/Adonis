@@ -350,7 +350,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
+							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -368,7 +368,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr, "Output", {Message = "Invalid number!"})
+							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -454,6 +454,8 @@ return function(Vargs, GetEnv)
 
 			if chatMod then
 				return require(chatMod)
+				elseif isTextChat then
+				return false
 			end
 			return nil
 		end;
@@ -556,7 +558,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{s:lower()}`) then
+							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{service.SanitizePattern(s:lower())}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -566,7 +568,7 @@ return function(Vargs, GetEnv)
 							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match(`^{s:lower()}`) then
+								if p and p.ClassName == "Player" and p.Name:lower():match(`^{service.SanitizePattern(s:lower())}`) then
 									table.insert(players, p)
 									plus()
 								end
@@ -589,6 +591,7 @@ return function(Vargs, GetEnv)
 
 								if plrCount == 0 and not options.DontError then
 									Remote.MakeGui(plr, "Output", {
+										Title = "Missing player";
 										Message = if not options.NoFakePlayer then `No user named '{s}' exists`
 											else `No players matching '{s}' were found!`;
 									})

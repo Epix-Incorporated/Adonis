@@ -37,18 +37,31 @@ return function(Vargs, GetEnv)
 			Remote.Commands[ind] = val
 			Logs:AddLog("Script", `Attempted to add {ind} to legacy Remote.Unencrypted. Moving to Remote.Commands`)
 		end
-	});
+	})
 	Functions.GetRandom = function(pLen)
 		local random = math.random
 		local format = string.format
 
 		local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
-		local Res = {};
+		local Res = {}
 		for Idx = 1, Len do
-			Res[Idx] = format('%02x', random(255));
-		end;
+			Res[Idx] = format('%02x', random(255))
+		end
 		return table.concat(Res)
-	end;
+	end
+	if HTTP.Trello.API then
+		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
+	end
+	for k, v in {-- Legacy aliases
+		[":giveppoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
+		[":giveplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
+		[":sendplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
+		[":flyclip <player>"] = ":fly <player> true";
+	} do
+		if not Variables.Aliases[k] then
+			Variables.Aliases[k] = v
+		end
+	end
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end

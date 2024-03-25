@@ -983,7 +983,6 @@ return function(data, env)
 	local InputService = service.UserInputService
 	local gIndex = data.gIndex
 	local gTable = data.gTable
-	warn(gTable.BindEvent)
 
 	local Event = gTable.BindEvent
 	local GUI = gTable.Object
@@ -1074,7 +1073,7 @@ return function(data, env)
 
 				point.Size = UDim2.fromOffset(sizeX, sizeY)
 				point.Position = UDim2.fromOffset(posX, posY)
-				point.Visible = true
+				point.Visible = text ~= ""
 			end)
 		end
 	end
@@ -1738,11 +1737,13 @@ return function(data, env)
 					local desc;
 					local color
 					local richText;
+					local onClick;
 
 					if type(v) == "table" then
 						text = v.Text
 						desc = v.Desc
 						color = v.Color
+						onClick = v.OnClick
 
 						if v.RichTextAllowed or entProps.RichTextAllowed then
 							richText = true
@@ -1768,7 +1769,7 @@ return function(data, env)
 							ClearTextOnFocus = false;
 						})
 					else
-						label = create("TextLabel",{
+						label = create(onClick and "TextButton" or "TextLabel",{
 							Text = ` {text}`;
 							ToolTip = desc;
 							AutomaticSize = if not entProps.ySize then Enum.AutomaticSize.Y else nil;
@@ -1781,6 +1782,7 @@ return function(data, env)
 							TextXAlignment = "Left";
 							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
 							RichText = richText or false;
+							OnClick = onClick;
 						})
 					end
 
@@ -2031,13 +2033,13 @@ return function(data, env)
 			Drag.Position = UDim2.new(0.5, -Drag.AbsoluteSize.X/2, 0.5, -Main.AbsoluteSize.Y/2)
 		end
 	end
-	
+
 	function setMinSize(Table)
 		if Table and typeof(Table) == "table" then
 			MinSize = Table
 		end
 	end
-	
+
 	function setMaxSize(Table)
 		if Table and typeof(Table) == "table" then
 			MaxSize = Table
@@ -2495,7 +2497,7 @@ return function(data, env)
 	api:SetSpecial("Refresh", DoRefresh)
 	api:SetSpecial("AddTitleButton", function(ignore, data) if type(ignore) == "table" and not data then data = ignore end return addTitleButton(data) end)
 	api:SetSpecial("Ready", function() if onReady then onReady() end gTable.Ready() BringToFront() end)
-	api:SetSpecial("BindEvent", function(ignore, ...) Event(...) end)
+	api:SetSpecial("BindEvent", function(ignore, ...) return Event(...) end)
 	api:SetSpecial("Hide", function(ignore, hide) doHide(hide) end)
 	api:SetSpecial("SetTitle", function(ignore, newTitle) Titlef.Text = newTitle end)
 	api:SetSpecial("SetPosition", function(ignore, newPos) setPosition(newPos) end)
@@ -5425,7 +5427,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>5</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>

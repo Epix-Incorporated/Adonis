@@ -32,6 +32,8 @@ return function(Vargs, GetEnv)
 		for _, v in Settings.MusicList or {} do table.insert(Variables.MusicList, v) end
 		for _, v in Settings.InsertList or {} do table.insert(Variables.InsertList, v) end
 		for _, v in Settings.CapeList or {} do table.insert(Variables.Capes, v) end
+		for k, v in Settings.Aliases or {} do Variables.Aliases[k] = v end
+		for k, v in Settings.Waypoints or {} do Variables.Waypoints[k] = v end
 
 		Variables.Init = nil
 		Logs:AddLog("Script", "Variables Module Initialized")
@@ -55,7 +57,9 @@ return function(Vargs, GetEnv)
 		AuthorizedToReply = {},
 		FrozenObjects = {},
 		ScriptBuilder = {},
+		ScriptEditor = {},
 		CachedDonors = {},
+		Aliases = {},
 		BanMessage = "Banned",
 		PlayerJoinFilters = {};
 		LockMessage = "Not Whitelisted",

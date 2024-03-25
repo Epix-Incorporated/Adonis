@@ -1,6 +1,5 @@
 server = nil
 service = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 GetEnv = nil
@@ -308,13 +307,14 @@ local service = wrappedEnv.Service
 			print(tack)
 			print(Remote.Get(plr,"Test"))
 			local tab = {
-				{
-					Children = {
-						{Class = "sdfhasdfjkasjdf"}
-				};
-					{{Something = "hi"}};
-				}
+			    {
+			    	Children = {
+			            {Class = "sdfhasdfjkasjdf"}
+			        }
+			    },
+ 			   {Something = "hi"}
 			}
+
 			local m, ret = Remote.Get(plr, "Test", tab)
 			if ret then
 				print(ret)
@@ -364,7 +364,6 @@ local service = wrappedEnv.Service
 		NoFilter = true;
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
-			--error("Disabled", 0)
 			--[[local ans = Remote.GetGui(plr, "YesNoPrompt", {
 				Icon = server.MatIcons.Warning;
 				Question = "Are you sure you want to load this script into the server env?";
@@ -387,7 +386,7 @@ local service = wrappedEnv.Service
 		Prefix = Settings.Prefix;
 		Commands = {"debuganti", "debuganticheat", "debugcheat", "debugantiexploit", "debugexploit", "debugantihack", "debughack"};
 		Args = {"player", "action", "info"};
-		Description = "Shows you how to use some syntax related things";
+		Description = "Allows you to make a mock anti cheat detection";
 		Hidden = true;
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})

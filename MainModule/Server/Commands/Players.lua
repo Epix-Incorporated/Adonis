@@ -151,13 +151,20 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Functions.Notification("Notification", assert(args[2], "Missing message"), {plr}, tonumber(assert(args[1], "Missing time amount")), "MatIcon://Notifications")
+				assert(args[1], "Missing time amount")
+				assert(args[2], "Missing message")
+				Remote.MakeGui(plr, "Notification", {
+					Title = "Notification";
+					Icon = server.MatIcons["Notifications"];
+					Message = args[2];
+					Time = tonumber(args[1]);
+				})
 			end
 		};
 
 		CommsPanel = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"notifications", "comms", "nc"};
+			Commands = {"notifications", "comms", "nc", "commspanel"};
 			Args = {};
 			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline";
 			AdminLevel = "Players";
@@ -247,9 +254,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local mats = {
 					"Brick", "Cobblestone", "Concrete", "CorrodedMetal", "DiamondPlate", "Fabric", "Foil", "ForceField", "Glass", "Granite",
-					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks"
-					--, "Rock", "Glacier", "Snow", "Sandstone", "Mud", "Basalt", "Ground", "CrackedLava", "Asphalt", "LeafyGrass", "Salt", "Limestone", "Pavement"
-					--Beta Features Materials
+					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks",
+					"Rock", "Glacier", "Snow", "Sandstone", "Mud", "Basalt", "Ground", "CrackedLava", "Asphalt", "LeafyGrass", "Salt", "Limestone", "Pavement"
 				}
 				for i, mat in mats do
 					mats[i] = {Text = mat; Desc = `Enum value: {Enum.Material[mat].Value}`}
@@ -291,14 +297,14 @@ return function(Vargs, env)
 			end
 		};
 
-		Ping = {
+		ClientPerfStats = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"ping", "latency"};
+			Commands = {"cstats", "clientperformance", "clientperformanceststs", "clientstats", "ping", "latency", "fps","framespersecond"};
 			Args = {};
-			Description = "Shows you your current ping (latency)";
+			Description = "Shows you your client performance stats";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "Ping")
+				Remote.MakeGui(plr, "PerfStats")
 			end
 		};
 
@@ -390,7 +396,12 @@ return function(Vargs, env)
 												answered = true
 												Commands.Teleport.Function(plr, {p.Name, `@{plr.Name}`})
 											else
-												Functions.Notification("Help Request", "Another admin has already responded to this request!", {plr}, 5, "MatIcon://Mail")
+												Remote.MakeGui(p, "Notification", {
+													Title = "Help Request";
+													Message = "Another admin has already responded to this request!";
+													Icon = server.MatIcons.Mail;
+													Time = 5;
+												})
 											end
 										end
 									end
@@ -421,6 +432,7 @@ return function(Vargs, env)
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
+				assert(#(service.Players:GetPlayers()) < service.Players.MaxPlayers or not Settings.DisableRejoinAtMaxPlayers, "Cannot rejoin while server is at max capacity.")
 				service.TeleportService:TeleportAsync(game.PlaceId, {plr}, service.New("TeleportOptions", {
 					ServerInstanceId = game.JobId
 				}))
@@ -442,6 +454,7 @@ return function(Vargs, env)
 				if UserId then
 					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
 					if success then
+						assert(jobId ~= service.DataModel.JobId, "You're already in this server!")
 						if found and placeId and jobId then
 							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
 								ServerInstanceId = jobId
@@ -615,14 +628,19 @@ return function(Vargs, env)
 				data.CustomTheme = args[1]
 				playerData.Client = data
 				Core.SavePlayer(plr, playerData)
-				Functions.Notification("Theme Changed", if args[1] then `UI theme set to '{args[1]}'!` else "UI theme reset to default.", {plr}, 5, "MatIcon://Palette")
+				Remote.MakeGui(plr, "Notification", {
+					Title = "Theme Changed";
+					Icon = server.MatIcons.Palette;
+					Message = if args[1] then `UI theme set to '{args[1]}'!` else "UI theme reset to default.";
+					Time = 5;
+				})
 				Remote.LoadCode(plr, `client.Variables.CustomTheme = {if args[1] then `[[{args[1]}]]` else "nil"}`)
 			end
 		};
 
 		ScriptInfo = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"info", "about", "userpanel"};
+			Commands = {"info", "about", "userpanel", "script", "scriptinfo"};
 			Args = {};
 			Description = "Shows info about the admin system (Adonis)";
 			AdminLevel = "Players";

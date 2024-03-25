@@ -16,6 +16,7 @@ return function(Vargs, env)
 			Description = `Bans the target player(s) from the game for the supplied amount of time; data-persistent; undo using {Settings.Prefix}untimeban`;
 			Filter = true;
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
 
@@ -92,6 +93,7 @@ return function(Vargs, env)
 			Args = {"user"};
 			Description = "Removes the target user(s) from the timebans list";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
 					UseFakePlayer = true;
@@ -114,6 +116,7 @@ return function(Vargs, env)
 			Args = {"player/user", "reason"};
 			Description = "Bans the target player(s) from the game permanently; if they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				local reason = args[2] or "No reason provided"
@@ -124,7 +127,7 @@ return function(Vargs, env)
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "game-ban", false) then
-						Admin.AddBan(v, reason, true, plr)
+						Admin.AddBan(v, reason, true, plr, "Global")
 						Functions.Hint(`Game-banned {service.FormatPlayer(v, true)}`, {plr})
 					else
 						Functions.Hint(`Unable to game-ban {service.FormatPlayer(v, true)} (insufficient permission level)`, {plr})
@@ -139,6 +142,7 @@ return function(Vargs, env)
 			Args = {"user"};
 			Description = "Unbans the target user(s) from the game; saves";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
 					UseFakePlayer = true;
@@ -161,6 +165,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary admin; does not save";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				local senderLevel = data.PlayerData.Level
 
@@ -182,6 +187,7 @@ return function(Vargs, env)
 			Args = {"player/user"};
 			Description = "Makes the target player(s) an admin; saves";
 			AdminLevel = "HeadAdmins";
+			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				local senderLevel = data.PlayerData.Level
 
@@ -431,76 +437,85 @@ return function(Vargs, env)
 			end;
 		};
 
-		UnIncognito = {
-			Prefix = Settings.Prefix,
-			Commands = {"unincognito"},
-			Args = {"Player"},
-			Description = "Removes user out of Incognito to other players while ingame",
-			AdminLevel = "HeadAdmins",
-			Hidden = true,
-			Function = function(plr: Player, args: {string})
-				local visible = 0
-
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
-					if Variables.IncognitoPlayers[v] then
-						visible += 1
-						Variables.IncognitoPlayers[v] = nil
-
-						for _, plrs in service.Players:GetPlayers() do
-							if plrs == v then
-								continue
-							end
-
-							Remote.LoadCode(plrs, [[
-								for index, plr in ipairs(service.IncognitoPlayers) do
-									if plr.UserId == ]] .. v.UserId .. [[ then
-										plr.Parent = service.Players
-										table.remove(service.IncognitoPlayers, index)
-										return
-									end
-								end
-							]])
-						end
-
-					end
-
-				end
-
-				if visible ~= 0 then
-					Functions.Hint(string.format("Removed %d player(s) from Incognito.", visible), {plr})
-				end
-			end
-		},
-
 		Incognito = {
 			Prefix = Settings.Prefix;
 			Commands = {"incognito"};
-			Args = {"player"};
-			Description = "Removes the target player from other clients' perspectives (persists until rejoin)";
+			Args = {"player", "hideFromNonAdmins(default true)", "hideCharacter(default true)"};
+			Description = "Removes the target player from other clients' perspectives (persists until rejoin). Allows to set whether to hide only from nonadmins or from everyone.";
 			AdminLevel = "HeadAdmins";
-			Hidden = true;
 			Function = function(plr: Player, args: {string})
+				local hidefromEveryone = false
+				local hideCharacter = true
+				if args[2] then
+					if string.lower(args[2])=="false" or string.lower(args[2])=="no" then
+						hidefromEveryone = true
+					end
+				end
+				if args[3] then
+					if string.lower(args[3])=="false" or string.lower(args[3])=="no" then
+						hideCharacter = false
+					end
+				end
+
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					if Variables.IncognitoPlayers[v] then
 						Functions.Hint(`{service.FormatPlayer(v)} is already incognito.`, {plr})
 						continue
 					end
-					Variables.IncognitoPlayers[v] = os.time()
+					Variables.IncognitoPlayers[v] = {
+						time=os.time(),
+						hide_from_everyone=hidefromEveryone,
+						hide_character=hideCharacter
+					}
+					if hideCharacter then
+						v.CharacterAdded:Connect(function(character: Model) 
+							for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
+								if otherPlr == v then continue end
+								Remote.LoadCode(otherPlr, [[
+									local plrName = service.Players:GetNameFromUserIdAsync(]] .. v.UserId .. [[)
+									local character = service.Workspace:FindFirstChild(plrName)
+									if character:FindFirstChildWhichIsA("Humanoid") == nil then
+										for _, v in service.Workspace:GetChildren() do
+											if v.Name == plrName and v:IsA("Model") and v:FindFirstChildWhichIsA("Humanoid") ~= nil then
+												character = v
+												break
+											end
+										end
+									end
+									character:Destroy()
+								]])
+							end
+						end)
+					end
 
 					local n = 0
-					for _, otherPlr: Player in service.Players:GetPlayers() do
+					for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
 						if otherPlr == v then continue end
-						Remote.LoadCode(otherPlr, [[
+						if hideCharacter then
+							Remote.LoadCode(otherPlr, [[
 							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-							if plr then
-								if not table.find(service.IncognitoPlayers, plr) then
-									table.insert(service.IncognitoPlayers, plr)
+								if plr then
+									if not table.find(service.IncognitoPlayers, plr) then
+										table.insert(service.IncognitoPlayers, plr)
+									end
+									if plr.Character then
+										plr.Character:Destroy()
+									end
+									plr:Destroy()
 								end
-
-								plr:Remove()
-							end
-						]])
+							]])
+						else
+							Remote.LoadCode(otherPlr, [[
+								local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+								if plr then
+									if not table.find(service.IncognitoPlayers, plr) then
+										table.insert(service.IncognitoPlayers, plr)
+									end
+									plr:Destroy()
+								end
+							]])
 						n += 1
+						end
 					end
 
 					if n == 0 then

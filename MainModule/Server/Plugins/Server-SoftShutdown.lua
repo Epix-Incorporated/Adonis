@@ -43,6 +43,11 @@ return function(Vargs, GetEnv)
 		--// This is a reserved server
 
 		local waitTime = 5
+		local playersToTeleport = {}
+		local jobid
+		local startTask, TeleportTask = service.Threads.NewTask("Teleport Players", function()
+			jobid = TeleportService:TeleportPartyAsync(game.PlaceId, playersToTeleport, {[PARAMETER_2_NAME] = true})
+		end)
 		local function teleport(player)
 			local joindata = player:GetJoinData()
 			local data = type(joindata) == "table" and joindata.TeleportData
@@ -56,19 +61,25 @@ return function(Vargs, GetEnv)
 					Time = 1000
 				})
 
-				wait(waitTime)
+				task.wait(waitTime)
 				waitTime /= 2
 
 				Logs:AddLog("Script", `Teleporting {player.Name} back to the main game`)
 				teleportedPlayers[player] = 1
-				TeleportService:Teleport(game.PlaceId, player, {[PARAMETER_2_NAME] = true})
+				table.insert(playersToTeleport, player)
 			end
 		end
 
-		service.Events.PlayerAdded:Connect(teleport)
+		service.Events.PlayerAdded:Connect(function(player)
+			if TeleportTask.Running then
+				TeleportTask.Finished:wait()
+			end
+			TeleportService:TeleportToPlaceInstance(game.PlaceId, jobid, player, "", {[PARAMETER_2_NAME] = true})
+		end)
 		for _, player in ipairs(service.GetPlayers()) do
 			teleport(player)
 		end
+		startTask()
 	end
 
 	Remote.Terminal.Commands.SoftShutdown = {
@@ -159,6 +170,76 @@ return function(Vargs, GetEnv)
 				Players.PlayerRemoving:Wait()
 			end
 			-- done
+		end
+	}
+	Commands.GlobalSoftShutdown = {
+		Prefix = Settings.Prefix;
+		Commands = {"globalsoftshutdown", "globalrestart", "globalsshutdown", "grestart"};
+		Args = {"reason (default: none)", "time<s,m> (default: instant)", "abortable (default: true)"};
+		Description = "Performs a global restart on all servers after set time. (Abortable specifies whether VIP server owners can abort the restart on their own servers.)";
+		Filter = true;
+		AdminLevel = "HeadAdmins";
+		CrossServerDenied = true;
+		IsCrossServer = true;
+		Function = function(plr: Player, args: {string})
+			local time
+			if args[2] then
+				time = string.lower(args[2])
+				if time:sub(-1,-1)=="s" then
+					time = tonumber(time:sub(1,-2))
+				elseif time:sub(-1,-1)=="m" then
+					time = tonumber(time:sub(1,-2))*60
+				else
+					error("Invalid time specified.");
+				end
+				assert(time, "Invalid time specified.")
+			end
+			if not Core.CrossServer("GlobalRestartRequest",
+				args[1] or "No reason specified.",
+				if args[2] then tonumber(args[2]) else args[2],
+				not (string.lower(args[3])=="no" or string.lower(args[3])=="false")
+				)
+			then
+				error("CrossServer handler not ready (try again later)")
+			end
+		end
+	}
+	Commands.AbortGlobalSoftShutdown = {
+		Prefix = Settings.Prefix;
+		Commands = {"abortglobalsoftshutdown", "abortglobalrestart", "abortglobalsshutdown", "abortgrestart"};
+		Args = {};
+		Description = "Aborts a global shutdown on all servers.";
+		Filter = true;
+		AdminLevel = "HeadAdmins";
+		CrossServerDenied = true;
+		IsCrossServer = true;
+		Function = function(plr: Player, args: {string})
+			if not Core.CrossServer("GlobalRestartRequest",
+				"[CRS_SRV]:abort",
+				0,
+				false
+				)
+			then
+				error("CrossServer handler not ready (try again later)")
+			end
+		end
+	}
+	Commands.VIPAbortGlobalServerRestart = {
+		Prefix = Settings.PlayerPrefix;
+		Commands = {"abortrestart"};
+		Args = {};
+		Description = "Aborts a global server restart";
+		NoStudio = true;
+		AdminLevel = "Players";
+		Disabled = game.PrivateServerOwnerId == 0; -- enabled only on VIP servers.
+		Function = function(plr: Player, args: {string})
+			assert(plr.UserId==game.PrivateServerOwnerId, "You don't have permission to run this command.")
+			for i,t in service.Threads.Tasks do
+				if t.Name == "GLOBALRESTART_COUNTDOWN" then
+					assert(t.abortable, "Failed to abort shutdown (access denied)")
+					t.Stop()
+				end
+			end
 		end
 	}
 end

@@ -789,7 +789,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			PlayerEvent = function(p: Player, args: {[number]: any})
-				if service.GetEvent(tostring(args[1]) .. p.UserId) then
+				if service.GetEvent(tostring(args[1]) .. p.UserId) then												
 					service.Events[tostring(args[1]) .. p.UserId]:Fire(unpack(args,2))
 				end
 			end;
@@ -1012,6 +1012,62 @@ return function(Vargs, GetEnv)
 					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {args[2]}`)
 				end
 			end;
+
+			SaveScript = function(p: Player, args: {})
+				local se = Variables.ScriptEditor[tostring(p.UserId)]
+				-- Ignore the request													
+				if not se then
+					return
+				end
+				local Name = args[1]["Name"]
+				local Variable = se[Name]
+				
+				Variable.Script = args[1]["Text"]
+			end,
+			RunScript = function(p: Player, args: {})
+				local adminLevel = Admin.GetLevel(p)
+
+				local command = Commands.ScriptEditor
+				-- This is redundant because the only way to gain an entry in Variables.ScriptEditor is to have the command run on yourself
+				-- However, better safe than sorry!													
+				if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then													
+					local se = Variables.ScriptEditor[tostring(p.UserId)]
+					-- Ignore the request													
+					if not se then
+						return
+					end
+					local Name = args[1][1]
+					local Variable = se[Name]
+					
+					local oError = error
+					local newenv = GetEnv(getfenv(),{
+						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
+						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+						error = function(reason, level)
+							if level ~= nil and type(level) ~= "number" then
+								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
+							end
+	
+							Remote.MakeGui(p, "Output",{Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
+							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
+						end;
+					})
+
+					-- TODO: Maybe make it not work with the server Env?													
+					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`,function()
+						local func,err = Core.Loadstring(Variable["Script"], newenv)
+						if func then
+							local Succ,Err = pcall(function()
+								func()
+							end)
+							
+							Remote.MakeGui(p, "Output", {Title = "Error"; Message = Err})
+						else
+							Remote.MakeGui(p, "Output", {Title = "Error"; Message = err})
+						end
+					end)
+				end
+			end,
 		};
 
 		NewSession = function(sessionType: string)
@@ -1255,7 +1311,7 @@ return function(Vargs, GetEnv)
 			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in themeData do theme[ind] = dat end end
-			Remote.Send(p,"RefreshUI",name,ignore,themeData,data or {})
+			Remote.Send(p,"RefreshUI",name,ignore,themeData or theme,data or {})
 		end;
 
 		NewParticle = function(p: Player, target: Instance, class: string, properties: { [string]: any })

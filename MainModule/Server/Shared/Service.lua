@@ -23,7 +23,7 @@ local methods = setmetatable({}, {
 
 				if RealMethods[class][index] ~= obj[index] then
 					if ErrorHandler then
-						ErrorHandler("MethodError", `{debug.traceback()} || Cached method doesn't match found method: {index}`, `Method: {index}`, index)
+						ErrorHandler("MethodError", `{debug.traceback()} || Cached method does not match found method: {index}`, `Method: {index}`, index)
 					end
 				end
 
@@ -673,18 +673,37 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return new or "Filter Error"
 		end;
 
-		EscapeSpecialCharacters = function(x)
-			return string.gsub(x, "([^%w])", "%%%1")
-		end;
+		RecursiveMtSearch = function(tab)
+			for index, val in tab do 
+				if typeof(val) == "table" or typeof(val) == "userdata" then
+					if getmetatable(val) ~= nil or service.RecursiveMtSearch(val) then
+						return true
+					end
+				end
+			end
+			return false
+		end,
 
-		MetaFunc = function(func, filterArgs: boolean?)
+		MetaFunc = function(func, filterArgs: boolean?, argumentTypes: {() -> boolean}?)
 			return service.NewProxy({
 				__call = function(tab,...)
 					if filterArgs then
-						for _, v in {...} do
-							if (type(v) == "table" or typeof(v) == "userdata") and getmetatable(v) ~= nil then
-								return nil
+						local success, res = pcall(function(...)
+							if service.RecursiveMtSearch({...}) then
+								--// Prevent grabbing env through metatables
+								return false
 							end
+							if argumentTypes then
+								for index, val in {...} do 
+									if argumentTypes[index] and not argumentTypes[index](val) then
+										return false
+									end
+								end
+							end
+							return true
+						end, ...)
+						if not success or res == false then
+							return nil
 						end
 					end
 
@@ -935,6 +954,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				[">"] = "&gt;",
 				["&"] = "&amp;"
 			})
+		end;
+
+		SanitizePattern = function(str)
+			return string.gsub(str, "([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
 		end;
 
 		GetCurrentLocale = function()

@@ -114,6 +114,7 @@ return { -- Decal IDs
 	["Subject"] = 7541586088,
 	["Supervised user circle"] = 7541909700,
 	["Supervisor account"] = 7541908582,
+	["System upgrade"] = 16188125076,
 	["Tag"] = 7541583168,
 	["Text format"] = 7541917278,
 	["Text snippet"] = 7541918313,

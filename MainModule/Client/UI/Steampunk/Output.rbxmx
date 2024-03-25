@@ -228,7 +228,7 @@
 						<YS>0</YS>
 						<YO>4</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
@@ -310,6 +310,7 @@ return function(data, env)
 	local t1 = main.Title
 	local t2 = main.Message
 	local msg = data.Message
+	local title = data.Title
 	local color = data.Color
 	
 	local found = client.UI.Get("Output")
@@ -321,12 +322,16 @@ return function(data, env)
 			end
 		end
 	end
-	
-	t2.Text = msg
+	local formattedMessage = msg
+	if title and title ~= "" then formattedMessage = `<b>{title}</b>: {msg}` end
+	t2.Text = formattedMessage
 	t2.Font = "Arial"
+	if color then
+		t2.TextColor3 = color
+	end
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
 	gTable.Ready()
-	wait(5)
+	task.wait(5)
 	gTable.Destroy()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>

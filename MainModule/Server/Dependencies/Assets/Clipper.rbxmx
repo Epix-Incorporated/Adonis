@@ -1,0 +1,75 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="LocalScript" referent="RBX72A6C836B7744AC9AA61E330388BD64F">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="DefinesCapabilities">false</bool>
+			<bool name="Disabled">true</bool>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">Clipper</string>
+			<token name="RunContext">0</token>
+			<string name="ScriptGuid">{CB07704A-5D5F-4007-B203-DA3FC3AFC116}</string>
+			<ProtectedString name="Source"><![CDATA[local Humanoid: Humanoid = script.Parent
+local Character = Humanoid.Parent
+
+local R6 = {
+	"Torso",
+	"HumanoidRootPart",
+	"Head"
+}
+
+local R15 = {
+	"HumanoidRootPart",
+	"LowerTorso",
+	"UpperTorso"
+}
+
+game:GetService("RunService").Stepped:Connect(function()
+	if script.Clip.Value then
+		for _, Object in pairs(Character:GetDescendants()) do
+			if Object:IsA("BasePart") and Object.CanCollide then
+				Object.CanCollide = false
+			end
+		end
+
+		Humanoid:ChangeState(11) -- Enum.HumanoidStateType.StrafingNoPhysics (semi-depricated but still working and fixes the colliding if in water).
+	else
+		if Humanoid.RigType == Enum.HumanoidRigType.R6 then
+			for _, Object in pairs(Character:GetDescendants()) do
+				if table.find(R6,Object.Name) and Object:IsA("BasePart") then
+					Object.CanCollide = true
+				end
+			end
+		elseif Humanoid.RigType == Enum.HumanoidRigType.R15 then
+			for _, Object in pairs(Character:GetDescendants()) do
+				if table.find(R15,Object.Name) and Object:IsA("BasePart") then
+					Object.CanCollide = true
+				end
+			end
+		end
+		
+		Humanoid:ChangeState(18) -- Enum.HumanoidStateType.None (Allows roblox to set set a state that isn't Enum.HumanoidStateType.StrafingNoPhysics)
+		
+		script:Destroy()
+	end
+end)
+]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="BoolValue" referent="RBXAC1F956D78F54625ABC7655A6C16E41C">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">Clip</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<bool name="Value">false</bool>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>

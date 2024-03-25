@@ -1,6 +1,5 @@
 server = nil
 service = nil
-cPcall = nil
 Routine = nil
 GetEnv = nil
 origEnv = nil
@@ -91,48 +90,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		local function protectHat(hat)
-			local handle = hat:WaitForChild("Handle", 30)
-
-			if handle then
-				task.defer(function()
-					local joint = handle:WaitForChild("AccessoryWeld")
-
-					local connection
-					connection = joint.AncestryChanged:Connect(function(_, parent)
-						if not connection.Connected or parent then
-							return
-						end
-
-						connection:Disconnect()
-
-						if handle and handle:CanSetNetworkOwnership() then
-							handle:SetNetworkOwner(nil)
-						end
-
-						Logs.AddLog(Logs.Script, {
-							Text = `AE: Hat joint deletion reset network ownership for player: {player}`;
-							Desc = `The AE reset joint handle network ownership for player: {player}`;
-							Player = player;
-						})
-					end)
-				end)
-
-				if handle:IsA("Part") then
-					local mesh = handle:FindFirstChildOfClass("SpecialMesh") or handle:WaitForChild("Mesh")
-
-					mesh.AncestryChanged:Connect(function(child, parent)
-						task.defer(function()
-							if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) and hat and hat.Parent then
-								mesh.Parent = handle
-								Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
-							end
-						end)
-					end)
-				end
-			end
-		end
-
 		local function onCharacterRemoving(character)
 			charGood = false
 		end
@@ -140,16 +97,8 @@ return function(Vargs, GetEnv)
 		local function onCharacterAdded(character)
 			charGood = true
 
-			for _, v in ipairs(character:GetChildren()) do
-				if v:IsA("Accoutrement") and Settings.ProtectHats == true and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
-					task.spawn(protectHat, v)
-				end
-			end
-
 			character.ChildAdded:Connect(function(child)
-				if child:IsA("Accoutrement") and Settings.ProtectHats == true and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
-					protectHat(child)
-				elseif child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
+				if child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
 					local count = 0
 
 					task.defer(function()
@@ -171,17 +120,6 @@ return function(Vargs, GetEnv)
 			end)
 
 			local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
-
-			if Settings.AntiHumanoidDeletion and game.PlaceId < 13308063561 then -- // Enable workspace.RejectCharacterDeletions instead
-				humanoid.AncestryChanged:Connect(function(child, parent)
-					task.defer(function()
-						if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
-							humanoid.Parent = character
-							Detected(player, "kill", "Humanoid removed")
-						end
-					end)
-				end)
-			end
 
 			humanoid.StateChanged:Connect(function(last, state)
 				if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead and humanoid then
@@ -205,6 +143,8 @@ return function(Vargs, GetEnv)
 
 					connection:Disconnect()
 
+					if service.Players.RespawnTime == math.huge then return end
+					
 					task.wait(service.Players.RespawnTime + 1.5)
 
 					if workspace:IsAncestorOf(humanoid) then

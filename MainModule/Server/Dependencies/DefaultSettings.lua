@@ -219,6 +219,7 @@ settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {
 settings.MusicList = {} 	-- List of songs to appear in the :musiclist	  Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
 settings.CapeList = {}		-- List of capes							  Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
 settings.InsertList = {} 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
+settings.Waypoints = {}     -- List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)}
 
 settings.OnStartup = {}		-- List of commands ran at server start								Format: {":notif TestNotif"}
 settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
@@ -276,6 +277,7 @@ settings.CommandCooldowns = {
 settings.FunCommands = true				-- Are fun commands enabled?
 settings.PlayerCommands = true			-- Are player-level utility commands enabled?
 settings.AgeRestrictedCommands = true	-- Are age-locked commands enabled?
+settings.WarnDangerousCommand = false	-- Do dangerous commands ask for confirmation?
 settings.CommandFeedback = false		-- Should players be notified when commands with non-obvious effects are run on them?
 settings.CrossServerCommands = true		-- Are commands which affect more than one server enabled?
 settings.ChatCommands = true			-- If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands
@@ -283,21 +285,23 @@ settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictl
 settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
+settings.ChatCreateRobloxCommands = true	-- Whether "/" commands for Roblox should get created in new Chat
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
 settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
-settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
-settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
-settings.UseLinkedListsInLogs = true -- If true then log system uses a linked-list system to store logs instead of tables - severely improves server performance & allows for large logs with little to no impact except slightly increased memory usage
-settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
-settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
-settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
-settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
-settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
-settings.AutoCleanDelay = 60	-- Time between auto cleans
-settings.AutoBackup = false 	-- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
+settings.MaxLogs = 5000			           -- Maximum logs to save before deleting the oldest
+settings.SaveCommandLogs = true	           -- If command logs are saved to the datastores
+settings.Notification = true	           -- Whether or not to show the "You're an admin" and "Updated" notifications
+settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
+settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
+settings.Messages = {}			           -- A list of notification messages to show HeadAdmins and above on join
+settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
+settings.AutoCleanDelay = 60	           -- Time between auto cleans
+settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
+settings.ReJail = false			           -- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
+settings.DisableRejoinAtMaxPlayers = false -- If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount.
 
 settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
@@ -414,6 +418,7 @@ descs.Whitelist = [[ People who can join if whitelist enabled; Format: {"Usernam
 descs.MusicList = [[ List of songs to appear in the script; Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
 descs.CapeList = [[ List of capes; Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}} ]]
 descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
+descs.Waypoints = [[ List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)} ]]
 descs.CustomRanks = [[ List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} ]]
 
 descs.OnStartup = [[ List of commands ran at server start								Format: {":notif TestNotif"} ]]
@@ -448,12 +453,13 @@ descs.Allowed_API_Calls = [[ Allowed calls ]]
 descs.FunCommands = [[ Are fun commands enabled? ]]
 descs.PlayerCommands = [[ Are players commands enabled? ]]
 descs.AgeRestrictedCommands = [[ Are age-restricted commands enabled? ]]
+descs.WarnDangerousCommand = [[ Do dangerous commands ask for confirmation before executing?]]
 descs.CommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands ]]
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
-
+descs.ChatCreateRobloxCommands = [[ Whether "/" commands for Roblox should get created in new Chat ]]
 
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
@@ -462,11 +468,12 @@ descs.SystemTitle = [[ Title to display in :sm ]]
 descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
-descs.UseLinkedListsInLogs = [[ If true then log system uses a linked-list system to store logs instead of tables - severely improves server performance & allows for large logs with little to no impact except slightly increased memory usage ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
+descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
+descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 
@@ -491,32 +498,6 @@ descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 descs.AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionality ]]
 descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
 descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
-
-descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
-descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is achieved by offsetting them by -35 into the transparent region where Roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifications to appear in that region. ]]
-
-descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
-
-descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
-descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
-descs.AutoCleanDelay = [[ Time between auto cleans ]]
-
-descs.CustomChat = [[ Custom chat ]]
-descs.PlayerList = [[ Custom playerlist ]]
-
-descs.Console = [[ Command console ]]
-descs.Console_AdminsOnly = [[ Makes it so if the console is enabled, only admins will see it ]]
-
-descs.DonorCommands = [[ Show your support for the script and let donors use commands like !sparkles ]]
-descs.DonorCapes = [[ Determines if donors have capes ]]
-descs.LocalCapes = [[ Makes Donor capes local instead of removing them ]]
-
-descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
-descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
-descs.HelpButtonImage = [[ Sets the image used for the Adonis help button above. ]]
-
-descs.Detection = [[ Attempts to detect certain known exploits ]]
-descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
 descs.ExploitNotifications = [[ Notify all moderators and higher-ups when a player is kicked or crashed from the AntiExploit ]]
 descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]
@@ -557,6 +538,7 @@ order = {
 	"MusicList";
 	"CapeList";
 	"InsertList";
+	"Waypoints";
 	"CustomRanks";
 	" ";
 	"OnStartup";
@@ -589,6 +571,8 @@ order = {
 	" ";
 	"FunCommands";
 	"PlayerCommands";
+	"AgeRestrictedCommands";
+	"WarnDangerousCommand";
 	"CommandFeedback";
 	"CrossServerCommands";
 	"ChatCommands";
@@ -596,6 +580,7 @@ order = {
 	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
+	"ChatCreateRobloxCommands";
 	" ";
 	"BanMessage";
 	"LockMessage";
@@ -603,10 +588,11 @@ order = {
 	" ";
 	"MaxLogs";
 	"SaveCommandLogs";
-	"UseLinkedListsInLogs";
 	"Notification";
 	"SongHint";
 	"TopBarShift";
+	"ReJail";
+	"DisableRejoinAtMaxPlayers";
 	"";
 	"AutoClean";
 	"AutoCleanDelay";

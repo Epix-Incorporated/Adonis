@@ -10,7 +10,7 @@ return function(data, env)
 		Name = "Credits",
 		Title = "Credits",
 		Icon = client.MatIcons.Grade,
-		Size = { 280, 300 },
+		Size = { 280, 340 },
 		AllowMultiple = false,
 	})
 	if not window then

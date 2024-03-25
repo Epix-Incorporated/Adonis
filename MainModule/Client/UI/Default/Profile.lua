@@ -141,7 +141,7 @@ return function(data, env)
 			if v[1] then
 				generaltab:Add("TextLabel", {
 					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, 32*c + 225);
+					Position = UDim2.new(0, 5, 0, 32*c + 285);
 					BackgroundTransparency = 0.4;
 					Text = v[2];
 					ToolTip = v[4];
@@ -388,6 +388,7 @@ return function(data, env)
 			{"Mouse Delta Sensitivity", data.GameData.MouseDeltaSensitivity, "The scale of the delta (change) output of the user’s Mouse"},
 			{"Mouse Enabled", boolToStr(data.GameData.MouseEnabled), "Whether the user’s device has a mouse available"},
 			-- NEEDS REFRESHABILITY {"OnScreenKeyboardVisible", data.GameData.OnScreenKeyboardVisible, "Whether an on-screen keyboard is currently visible on the user’s screen"},
+			{"Render Resolution", data.GameData.Resolution, "The render resolution on user's current device. May not reflect real resolution on high-DPI devices."},
 			{"Touch Enabled", boolToStr(data.GameData.TouchEnabled), "Whether the user’s current device has a touch-screen available"},
 			{"VR Enabled", boolToStr(data.GameData.VREnabled), "Whether the user is using a virtual reality headset"},
 			{"Source Place ID", data.GameData.SourcePlaceId, "The ID of the place from which the player was teleported to this game, if applicable"},

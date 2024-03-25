@@ -272,7 +272,17 @@ local GetVargTable = function()
 end
 
 local LoadModule = function(module, yield, envVars, noEnv)
-	local plugran, plug = pcall(require, module)
+	local isRaw = type(module) == "string"
+	local isValue = not isRaw and module:IsA("StringValue")
+	local plugran, plug
+
+	if isRaw then
+		plugran, plug = pcall(assert(assert(client.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module"))
+	elseif isValue then
+		plugran, plug = pcall(client.Core.LoadCode or function(...) return require(client.Shared.FiOne)(...) end, client.Functions.Base64Decode(module.Value), GetEnv({}, envVars))
+	else
+		plugran, plug = pcall(require, module)
+	end
 
 	if plugran then
 		if type(plug) == "function" then
@@ -280,7 +290,7 @@ local LoadModule = function(module, yield, envVars, noEnv)
 				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 				local ran, err = service.TrackTask(
 					`Plugin: {module}`,
-					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 					function(err)
 						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 					end,
@@ -291,7 +301,7 @@ local LoadModule = function(module, yield, envVars, noEnv)
 				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
 				local ran, err = service.TrackTask(
 					`Thread: Plugin: {module}`,
-					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+					((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 					function(err)
 						warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 					end,
@@ -331,21 +341,21 @@ client = setmetatable({
 	end,
 
 	--Kill = Kill;
-}, {
-	__index = function(self, ind)
-		if ind == "Kill" then
-			local ran, func = pcall(function()
-				return Kill()
-			end)
+	}, {
+	  __index = function(self, ind)
+	    if ind == "Kill" then
+ 	     local ran, func = pcall(function()
+	        return Kill()
+	      end)
 
-			if not ran or type(func) ~= "function" then
-				service.Players.LocalPlayer:Kick("Adonis (PlrClientIndexKlErr)")
-				while true do
-				end
-			end
+	      if not ran or type(func) ~= "function" then
+ 		   	service.Players.LocalPlayer:Kick("1x00353 Adonis (PlrClientIndexKlErr)")
+	        warn("Failed to retrieve Kill function")
+  	      return function() end
+    	  end
 
-			return func
-		end
+   	   return func
+  	  end
 	end,
 })
 

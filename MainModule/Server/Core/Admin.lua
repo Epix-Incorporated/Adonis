@@ -40,7 +40,7 @@ return function(Vargs, GetEnv)
 			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 				local function onNewTextchannel(textchannel: TextChannel)
 					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
-					
+
 					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
 						AddLog("Script", "Overriding ShouldDeliverCallback for " .. textchannel.Name)
 						textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
@@ -52,9 +52,9 @@ return function(Vargs, GetEnv)
 								local SenderPlayer = service.Players:GetPlayerByUserId(SenderId)
 								local Receiver = service.Players:GetPlayerByUserId(textSource.UserId)
 								local slowCache = Admin.SlowCache
-								
+
 								local IsOriginalSender = SenderPlayer == Receiver
-								
+
 								if not SenderPlayer then
 									return true
 								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
@@ -62,16 +62,16 @@ return function(Vargs, GetEnv)
 								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
 									if IsOriginalSender then
 										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
-									end 
-									
+									end
+
 									return false
 								elseif Admin.SlowMode and not Admin.CheckAdmin(SenderPlayer) and slowCache[SenderPlayer] and os.time() - slowCache[SenderPlayer] < Admin.SlowMode then
 									if IsOriginalSender then --// Only show this for the person sending! Hide for others, however
 										--Functions.Notification("You are chatting too fast!", string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer])), {SenderPlayer}, 10)
-										
+
 										server.Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are sending messages too fast! {string.format("(%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[SenderPlayer]))}`)
 									end
-									
+
 									return false
 								end
 
@@ -86,13 +86,13 @@ return function(Vargs, GetEnv)
 
 							return true
 						end
-					else 
+					else
 						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
 						server.Variables.TextChatSpeakers = {}
 						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
 							if not server.Variables.TextChatSpeakers[player] then
 								server.Variables.TextChatSpeakers[player] = {}
-							end 
+							end
 							table.insert(server.Variables.TextChatSpeakers[player], speaker)
 							--// Check if the player is muted or not
 							speaker:SetAttribute("OriginalCanSend", speaker.CanSend)
@@ -100,7 +100,7 @@ return function(Vargs, GetEnv)
 								speaker.CanSend = false
 							end
 						end
-						local function SpeakerAdded(speaker: TextSource) 
+						local function SpeakerAdded(speaker: TextSource)
 							if speaker.UserId and speaker.UserId > 0 then
 								local Player = service.Players:GetPlayerByUserId(speaker.UserId)
 								if Player then
@@ -126,38 +126,38 @@ return function(Vargs, GetEnv)
 								end
 							end
 						end
-						
+
 						textchannel.ChildAdded:Connect(function(textSource)
 							if textSource:IsA("TextSource") then
 								SpeakerAdded(textSource)
 							end
 						end)
-						
+
 						textchannel.ChildRemoved:Connect(function(textSource)
 							if textSource:IsA("TextSource") then
 								SpeakerRemoved(textSource)
 							end
 						end)
-						
-						for _,inst in textchannel:GetChildren() do 
+
+						for _,inst in textchannel:GetChildren() do
 							if inst:IsA("TextSource") then
 								SpeakerAdded(inst)
 							end
 						end
-						
+
 					end
 				end
-				
+
 				--// Only set this up once
 				--// This is for commands to tell us when a player should be muted
-				if not Settings.OverrideChatCallbacks then 
+				if not Settings.OverrideChatCallbacks then
 					service.Events.PlayerMuted:Connect(function(data)
 						local PlayerId = data.Target;
 						local ModId = data.Moderator;
 
 						local Player = service.Players:GetPlayerByUserId(PlayerId)
 						--// Loop through CanSend of a speaker
-						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do 
+						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do
 							speakers.CanSend = false
 						end
 						if Player then
@@ -170,7 +170,7 @@ return function(Vargs, GetEnv)
 
 						local Player = service.Players:GetPlayerByUserId(PlayerId)
 						--// Loop through CanSend of a speaker
-						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do 
+						for _,speakers : TextSource in if Player then server.Variables.TextChatSpeakers[Player] or {} else {} do
 							local original = speakers:GetAttribute("OriginalCanSend")
 							speakers.CanSend = if original ~= nil then original else true
 						end
@@ -182,7 +182,7 @@ return function(Vargs, GetEnv)
 						server.Remote.Send(p, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(130, 100, 130)">[Adonis Chat]: </font><b>You are muted!</b> Other players cannot see your messages.`)
 					end)
 				end
-					
+
 
 				local function onTextChannelsAdded(textChannels)
 					textChannels.ChildAdded:Connect(function(child)
@@ -190,7 +190,7 @@ return function(Vargs, GetEnv)
 							task.spawn(onNewTextchannel, child)
 						end
 					end)
-				
+
 					for _, v in textChannels:GetChildren() do
 						if v:IsA("TextChannel") then
 							task.spawn(onNewTextchannel, v)
@@ -203,7 +203,7 @@ return function(Vargs, GetEnv)
 						task.spawn(onTextChannelsAdded, child)
 					end
 				end)
-				
+
 				if service.TextChatService:FindFirstChild("TextChannels") then
 					task.spawn(pcall, onTextChannelsAdded, service.TextChatService:FindFirstChild("TextChannels"))
 				end
@@ -257,6 +257,8 @@ return function(Vargs, GetEnv)
 				end)
 
 				AddLog("Script", "ChatService Handler Loaded")
+			elseif chatService == false then
+				AddLog("Script", "Using TextChatService; Handler Loaded")
 			else
 				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
 				AddLog("Script", "ChatService Handler Not Found")
@@ -433,11 +435,11 @@ return function(Vargs, GetEnv)
 		local suppliedArgs = Admin.GetArgs(msg, numArgs) -- User supplied args (when running :alias arg)
 		local out = aliasCmd
 
-		local EscapeSpecialCharacters = service.EscapeSpecialCharacters
+		local SanitizePattern = service.SanitizePattern
 		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, EscapeSpecialCharacters(argType), replaceWith)
+				out = string.gsub(out, SanitizePattern(argType), replaceWith)
 			end
 		end
 
@@ -462,6 +464,14 @@ return function(Vargs, GetEnv)
 
 		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
 		AdminLevelCacheTimeout = 30;
+
+		CheckSlowMode = function(p: Player)
+			if Admin.SlowMode and Admin.SlowCache[p] and os.time() - Admin.SlowCache[p] < Admin.SlowMode then
+				return true
+			else
+				return false
+			end
+		end,
 
 		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
 			local pData = data or Core.GetPlayer(p)
@@ -510,9 +520,7 @@ return function(Vargs, GetEnv)
 				if not updateCache then
 					--> Feel free to adjust the time to update over or less than 300 seconds (5 minutes).
 					--> 300 seconds is recommended in the event of unexpected server breakdowns with Roblox and faster performance.
-					if existCache and (os.time()-existCache.LastUpdated > 300) then
-						canUpdate = true
-					elseif not existCache then
+					if (existCache and (os.time()-existCache.LastUpdated > 300)) or not existCache then
 						canUpdate = true
 					end
 				else
@@ -640,11 +648,16 @@ return function(Vargs, GetEnv)
 					local groupId = tonumber((string.match(filterData, "^%d+")))
 					if groupId then
 						local plrRank = Admin.GetGroupLevel(plr.UserId, groupId)
-						local requiredRank = tonumber((string.match(filterData, "^%d+:(.+)$")))
+						local requiredRank,noRank = tonumber((string.match(filterData, "^%d+:(.+)$"))), string.match(filterData,"^%d+$")
 						if requiredRank then
-							return plrRank == requiredRank or (requiredRank < 0 and plrRank >= math.abs(requiredRank))
+							if requiredRank < 0 then
+								return plrRank >= math.abs(requiredRank)
+							else
+								return plrRank == requiredRank
+							end
+						elseif noRank then
+							return plrRank > 0
 						end
-						return plrRank > 0
 					end
 					return false
 				elseif filterName == "item" then
@@ -1014,7 +1027,7 @@ return function(Vargs, GetEnv)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, `\n Reason: {ban.Reason or "(No reason provided.)"}\n Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
+						return true, `\n {ban.Reason or "(No reason provided.)"}\n | Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
 					end
 				end
 			end
@@ -1035,12 +1048,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		AddBan = function(p, reason, doSave, moderator)
+		AddBan = function(p, reason, doSave, moderator, banType)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				Reason = reason;
 				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
+				BanType = banType
 			}
 
 			table.insert(Settings.Banned, value)--`{p.Name}:{p.UserId}`
@@ -1177,7 +1191,7 @@ return function(Vargs, GetEnv)
 
 				TrackTask(`Command: {coma}`, com.Function, function(err)
 					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
-				end, nil, args)
+				end, false, args)
 			end
 		end;
 
@@ -1188,14 +1202,13 @@ return function(Vargs, GetEnv)
 
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
-
 				local ran, error = TrackTask(
 					`{plr.Name}: {coma}`,
 					com.Function,
 					function(err)
 						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
-							Title = "",
+							Title = "Error",
 							Message = error,
 							Color = Color3.new(1, 0, 0),
 						})
@@ -1260,61 +1273,63 @@ return function(Vargs, GetEnv)
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
 
-			-- // Support for commands to be ran via TextChat
-			task.spawn(function()
-				local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands")
+			if Settings.ChatCreateRobloxCommands then
+				-- // Support for commands to be ran via TextChat
+				task.spawn(function()
+					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
 
-				if container then
-					for _, v in container:GetChildren() do
-						if string.sub(v.Name, 1, 7) == "Adonis_" then
-							v:Destroy()
-						end
-					end
-
-					local blacklistedCommands = {}
-
-					for _, v in container:GetDescendants() do
-						if v:IsA("TextChatCommand") then
-							blacklistedCommands[v.PrimaryAlias] = true
-							blacklistedCommands[v.SecondaryAlias] = true
-						end
-					end
-
-					for name, data in Commands do
-						local command1, command2 = nil, nil
-
-						if type(data) ~= "table" or data.Hidden then
-							continue
-						end
-
-						for _, v in data.Commands do
-							if not blacklistedCommands["/"..data.Prefix..v] then
-								if not command1 then
-									command1 = "/"..data.Prefix..v
-								else
-									command2 = "/"..data.Prefix..v
-								end
+					if container then
+						for _, v in container:GetChildren() do
+							if string.sub(v.Name, 1, 7) == "Adonis_" then
+								v:Destroy()
 							end
 						end
 
-						if command1 then
-							local command = Instance.new("TextChatCommand")
+						local blacklistedCommands = {}
 
-							command.Name = "Adonis_"..name
-							command.PrimaryAlias = command1
-							command.SecondaryAlias = command2 or ""
-							command.Parent = container
-							command.Triggered:Connect(function(textSource, text)
-								local player = service.Players:GetPlayerByUserId(textSource.UserId)
+						for _, v in container:GetDescendants() do
+							if v:IsA("TextChatCommand") then
+								blacklistedCommands[v.PrimaryAlias] = true
+								blacklistedCommands[v.SecondaryAlias] = true
+							end
+						end
 
-								if player then
-									Process.Command(player, string.sub(text, 2))
+						for name, data in Commands do
+							local command1, command2 = nil, nil
+
+							if type(data) ~= "table" or data.Hidden then
+								continue
+							end
+
+							for _, v in data.Commands do
+								if not blacklistedCommands["/"..data.Prefix..v] then
+									if not command1 then
+										command1 = "/"..data.Prefix..v
+									else
+										command2 = "/"..data.Prefix..v
+									end
 								end
-							end)
+							end
+
+							if command1 then
+								local command = Instance.new("TextChatCommand")
+
+								command.Name = "Adonis_"..name
+								command.PrimaryAlias = command1
+								command.SecondaryAlias = command2 or ""
+								command.Parent = container
+								command.Triggered:Connect(function(textSource, text)
+									local player = service.Players:GetPlayerByUserId(textSource.UserId)
+
+									if player then
+										Process.Command(player, string.sub(text, 2))
+									end
+								end)
+							end
 						end
 					end
-				end
-			end)
+				end)
+			end
 		end;
 
 		GetCommand = function(Command)
@@ -1456,13 +1471,13 @@ return function(Vargs, GetEnv)
 		AliasFormat = function(aliases, msg)
 			local foundPlayerAlias = false --// Check if there's a player-defined alias first then otherwise check settings aliases
 
-			local CheckAliasBlacklist, EscapeSpecialCharacters = Admin.CheckAliasBlacklist, service.EscapeSpecialCharacters
+			local CheckAliasBlacklist, SanitizePattern = Admin.CheckAliasBlacklist, service.SanitizePattern
 
 			if aliases then
 				for alias, cmd in aliases do
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
-						local escAlias = EscapeSpecialCharacters(tAlias)
+						local escAlias = SanitizePattern(tAlias)
 						if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 							msg = FormatAliasArgs(alias, cmd, msg)
 						end
@@ -1471,10 +1486,10 @@ return function(Vargs, GetEnv)
 			end
 
 			--if not foundPlayerAlias then
-			for alias, cmd in Settings.Aliases do
+			for alias, cmd in Variables.Aliases do
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
-					local escAlias = EscapeSpecialCharacters(tAlias)
+					local escAlias = SanitizePattern(tAlias)
 					if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
 						msg = FormatAliasArgs(alias, cmd, msg)
 					end
@@ -1536,8 +1551,12 @@ return function(Vargs, GetEnv)
 				return false, "This command cannot be used in Roblox Studio."
 			end
 
-			if opts.CrossServer and cmd.CrossServerDenied then
+			if opts.CrossServer and cmd.CrossServerDenied then -- Ignore when disabled then
 				return false, "This command may not be run across servers (cross-server-blacklisted)."
+			end
+
+			if cmd.CrossServer and not Settings.CrossServerCommands then
+				return false, "This command has been disabled due to CrossServerCommands being disabled"
 			end
 
 			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then

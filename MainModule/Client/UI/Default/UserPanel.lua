@@ -58,8 +58,8 @@ return function(data, env)
 	local gTable
 	local window = UI.Make("Window", {
 		Name  = "UserPanel";
-		Title = "Adonis";
-		Icon = "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
+		Title = Variables.NightlyMode and "Adonis Nightly" or "Adonis";
+		Icon = Variables.NightlyMode and "rbxassetid://6877822142" or "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
 		Size  = {465, 325};
 		AllowMultiple = false;
 		OnClose = function()
@@ -103,14 +103,14 @@ return function(data, env)
 	end
 
 	local function promptPurchase(isGamepass, id)
-		if client.Variables.AllowThirdPartyPurchases == false then
+		if Variables.AllowThirdPartyPurchases == false then
 			createPurchaseWindow(isGamepass, id)
 		else
 			local logEvent, finishEvent
 
 			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
 				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
-					client.Variables.AllowThirdPartyPurchases = false
+					Variables.AllowThirdPartyPurchases = false
 
 					createPurchaseWindow(isGamepass, id)
 				end
@@ -137,16 +137,28 @@ return function(data, env)
 
 		local tabWindow = UI.Make("Window",{
 			Name  = `{name}EditSettingsTable`;
-			Title = name;
+			Title = if #tab > 0 then `{name} ({#tab})` else name;
 			Size  = {320, 300};
 			AllowMultiple = false;
 		})
 
 		if tabWindow then
 			--// Display tab & allow changes
-			local items = tabWindow:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
+
+			local searchbar = tabWindow:Add("TextBox",{
+				Size = UDim2.new(1, -10, 0, 20);
 				Position = UDim2.new(0, 5, 0, 5);
+				BackgroundTransparency = 0.5;
+				BorderSizePixel = 0;
+				TextColor3 = Color3.new(1, 1, 1);
+				Text = "";
+				PlaceholderText = "Search";
+				TextStrokeTransparency = 0.8;
+			})
+
+			local items = tabWindow:Add("ScrollingFrame", {
+				Size = UDim2.new(1, -10, 1, -60);
+				Position = UDim2.new(0, 5, 0, 30);
 				BackgroundTransparency = 1;
 			})
 
@@ -155,16 +167,17 @@ return function(data, env)
 				local inputBlock
 
 				local function showItems()
-					local num = 0
 					selected = nil
 					items:ClearAllChildren();
 
 					local fromOffset = UDim2.fromOffset
 					local listSize = UDim2.new(1, 0, 0, 25)
 
-					for i,v in ipairs(tab) do
+					local num = 0
+					for i = 1, #tab do
+						local Value = tab[i]
 						items:Add("TextButton", {
-							Text = tabToString(v);
+							Text = tabToString(Value);
 							Size = listSize;
 							Position = fromOffset(0, num*25);
 							Visible = true;
@@ -177,7 +190,7 @@ return function(data, env)
 								button.BackgroundTransparency = 0.5
 								selected = {
 									Index = i;
-									Value = v;
+									Value = Value;
 									Button = button;
 								}
 							end
@@ -189,26 +202,51 @@ return function(data, env)
 					items:ResizeCanvas(false, true)
 				end
 
+				searchbar:GetPropertyChangedSignal("Text"):Connect(function()
+					if searchbar.Text ~= "" then
+						local num = 0
+
+						local settingItems = items:GetChildren()
+						for i = 1, #settingItems do
+							local UI = settingItems[i]
+							if string.find(UI.Text, searchbar.Text) ~= nil then
+								UI.Position = UDim2.new(0, 0, 0, num*25);
+								UI.Visible = true
+								num += 1
+							else
+								UI.Visible = false
+							end
+						end
+
+						items:ResizeCanvas(false, true)
+					else
+						showItems()
+					end
+				end)
+
 				local entryText
 				local entryBox; entryBox = tabWindow:Add("Frame", {
 					Visible = false;
-					Size = UDim2.new(0, 200, 0, 75);
-					Position = UDim2.new(0.5, -100, 0.5, -100);
+					Size = UDim2.new(0, 241,0, 105);
+					BackgroundColor3 = Color3.fromRGB(45, 45, 45);
+					BorderColor3 = Color3.fromRGB(27, 42, 53);
+					Position = UDim2.new(0.434, -100,0.612, -100);
 					ZIndex = 100;
 					Children = {
 						{
 							Class = "TextLabel";
-							Text = "Entry:";
-							Position = UDim2.new(0, 15, 0, 10);
-							Size = UDim2.new(0, 40, 0, 25);
+							Text = "Entry";
+							Position = UDim2.new(0, 0, 0, 0);
+							Size = UDim2.new(0, 241, 0, 34);
 							BackgroundTransparency = 1;
+							TextSize = 16.000;
 							ZIndex = 100;
 						};
 						{
 							Class = "TextButton";
 							Text = "Add";
-							Position = UDim2.new(0.5, 0, 1, -30);
-							Size = UDim2.new(0.5, -20, 0, 20);
+							Position = UDim2.new(0.479, 0, 1, -30);
+							Size = UDim2.new(0.6, -20, 0, 20);
 							BackgroundTransparency = 1;
 							ZIndex = 100;
 							OnClicked = function()
@@ -228,7 +266,7 @@ return function(data, env)
 						{
 							Class = "TextButton";
 							Text = "Cancel";
-							Position = UDim2.new(0, 10, 1, -30);
+							Position = UDim2.new(-0.041, 10, 1, -30);
 							Size = UDim2.new(0.5, -20, 0, 20);
 							BackgroundTransparency = 1;
 							ZIndex = 100;
@@ -243,13 +281,14 @@ return function(data, env)
 				})
 
 				entryText = entryBox:Add("TextBox", {
-					Position = UDim2.new(0, 55, 0, 10);
-					Size = UDim2.new(1, -60, 0, 25);
+					Position = UDim2.new(0.043, 0, 0.324, 0);
+					Size = UDim2.new(0.928, 0, 0.238, 0);
 					Text = "";
 					PlaceholderText = "Type entry here";
 					TextScaled = true;
-					BackgroundColor3 = Color3.new(1,1,1);
-					BackgroundTransparency = 0.8;
+					TextWrapped = true;
+					BackgroundColor3 = Color3.fromRGB(58, 58, 58);
+					BackgroundTransparency = 0;
 					ZIndex = 100;
 				})
 
@@ -281,7 +320,7 @@ return function(data, env)
 					end
 				})
 
-				entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1,1,1), 0.25)
+				--entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1,1,1), 0.25)
 				showItems()
 			else
 				items:Add("TextLabel", {
@@ -295,13 +334,9 @@ return function(data, env)
 		end
 	end
 
-	if window then
-		local playerData   = Remote.Get("PlayerData")
-		local chatMod 	   = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-		local settingsData = Remote.Get("AllSettings")
-
-		Variables.Aliases = playerData.Aliases or {}
-
+	if window then	
+		local commandPrefix = ":"
+		local playerData, chatMod, settingsData
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
@@ -332,15 +367,16 @@ return function(data, env)
 		})
 
 		if data.Tab then
-			if string.lower(data.Tab) == "donate" then
+			local Tab = string.lower(data.Tab)
+			if Tab == "donate" then
 				donorTab:FocusTab()
-			elseif string.lower(data.Tab) == "keybinds" then
+			elseif Tab == "keybinds" then
 				keyTab:FocusTab()
-			elseif string.lower(data.Tab) == "aliases" then
+			elseif Tab == "aliases" then
 				aliasTab:FocusTab()
-			elseif string.lower(data.Tab) == "client" then
+			elseif Tab == "client" then
 				clientTab:FocusTab()
-			elseif string.lower(data.Tab) == "settings" then
+			elseif Tab == "settings" then
 				gameTab:FocusTab()
 			else
 				infoTab:FocusTab()
@@ -364,7 +400,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						Remote.Send("ProcessCommand", `{chatMod.Prefix}cmds`)
+						Remote.Send("ProcessCommand", `{commandPrefix}cmds`)
 					end
 				}
 			})
@@ -434,16 +470,50 @@ return function(data, env)
 
 		end
 
+		local LOAD_ICON = {
+			BackgroundTransparency = 1;
+			Size = UDim2.new(0, 14, 0, 14);
+			Position = UDim2.new(0.5, 0, 0.5, 0);
+			AnchorPoint = Vector2.new(0.5, 0.5);
+			Image = "rbxassetid://69395121";
+			ImageTransparency = 0.1;
+			ZIndex = 10;
+		}
+
+		local loadingIcons = {donorTab:Add("ImageLabel", LOAD_ICON), keyTab:Add("ImageLabel", LOAD_ICON), aliasTab:Add("ImageLabel", LOAD_ICON), clientTab:Add("ImageLabel", LOAD_ICON), gameTab:Add("ImageLabel", LOAD_ICON)}
+		gTable = window.gTable
+		window:Ready()
+
+		task.spawn(function()
+			local start = os.clock()
+
+			while loadingIcons[1].Parent do
+				for _, v in loadingIcons do
+					v.Rotation = -(os.clock() - start)/(1/60)*10
+				end
+				task.wait(1/60)
+			end
+		end)
+
+		playerData = Remote.Get("PlayerData")
+		chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+		settingsData = Remote.Get("AllSettings")
+		Variables.Aliases = playerData.Aliases or {}
+		commandPrefix = chatMod.Prefix
+
+		for _, v in loadingIcons do
+			v:Destroy()
+		end
 
 		--// Donor Tab
 		do
-			local donorData       = playerData.Donor
+			local donorData = playerData.Donor
 			local currentMaterial = donorData and donorData.Cape.Material
-			local currentTexture  = donorData and donorData.Cape.Image
-			local currentColor    = donorData and donorData.Cape.Color
+			local currentTexture = donorData and donorData.Cape.Image
+			local currentColor = donorData and donorData.Cape.Color
 
 			if type(currentColor) == "table" then
-				currentColor = Color3.new(currentColor[1],currentColor[2],currentColor[3])
+				currentColor = Color3.new(unpack(currentColor, 1, 3))
 			else
 				currentColor = BrickColor.new(currentColor).Color
 			end
@@ -866,7 +936,7 @@ return function(data, env)
 				if searchbar.Text ~= "" then
 					local num = 0
 					for i,UI: TextButton in pairs(binds:GetChildren()) do
-						if UI.Text:find(searchbar.Text) ~= nil then
+						if string.find(UI.Text, searchbar.Text) ~= nil then
 							UI.Visible = true
 							UI.Position = UDim2.new(0, 0, 0, num*25);
 							num += 1
@@ -880,7 +950,7 @@ return function(data, env)
 					getBinds()
 				end
 			end)
-			
+
 			local binderBox; binderBox = keyTab:Add("Frame", {
 				Visible = false;
 				Size = UDim2.new(0, 220, 0, 150);
@@ -939,6 +1009,7 @@ return function(data, env)
 								Variables.WaitingForBind = false
 								if keyInputHandler then
 									keyInputHandler:Disconnect()
+									keyInputHandler = nil
 								end
 							end
 						end
@@ -1131,7 +1202,7 @@ return function(data, env)
 				if searchbar.Text ~= "" then
 					local num = 0
 					for i,UI: TextButton in pairs(aliases:GetChildren()) do
-						if UI.Text:find(searchbar.Text) ~= nil then
+						if string.find(UI.Text, searchbar.Text) ~= nil then
 							UI.Visible = true
 							UI.Position = UDim2.new(0, 0, 0, num*25);
 							num += 1
@@ -1139,7 +1210,7 @@ return function(data, env)
 							UI.Visible = false
 						end
 					end
-					
+
 					aliases:ResizeCanvas(false, true)
 				else
 					getAliases()

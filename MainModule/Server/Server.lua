@@ -195,10 +195,12 @@ end
 local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(module) == "function"
+	local isRaw = type(module) == "string"
+	local isValue = not isFunc and not isRaw and module:IsA("StringValue")
 	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
-	local plug = (isFunc and module) or require(module)
+	local plug = (isFunc and module) or isValue and (server.Core.LoadCode or function(...) return require(server.Shared.FiOne)(...) end)(server.Functions.Base64Decode(module.Value), GetEnv({}, envVars)) or isRaw and assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
 
-	if server.Modules and type(module) ~= "function" then
+	if server.Modules and not isFunc and not isRaw then
 		table.insert(server.Modules,module)
 	end
 
@@ -206,7 +208,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 		if isCore then
 			local ran, err = service.TrackTask(
 				`CoreModule: {module}`,
-				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
 					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,
@@ -225,7 +227,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask(
 				`Plugin: {module}`,
-				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
 					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,
@@ -580,7 +582,9 @@ return service.NewProxy({
 		end
 
 		for _, module in pairs(data.ClientPlugins or {}) do
-			module:Clone().Parent = server.Client.Plugins
+			if type(module) ~= "string" then
+				module:Clone().Parent = server.Client.Plugins
+			end
 		end
 
 		for _, theme in pairs(data.Themes or {}) do
@@ -702,6 +706,17 @@ return service.NewProxy({
 			f(data)
 		end
 
+		-- // Load sourcecode clientside plugins
+		for _, module in pairs(data.ClientPlugins or {}) do
+			if type(module) == "string" then
+				local code = Instance.new("StringValue")
+
+				code.Name = service.HttpService:GenerateGUID(false)
+				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua"  or server.Core.Bytecode(module))
+				code.Parent = server.Client.Plugins
+			end
+		end
+
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
 		server.AllModulesLoaded = true
 		service.Events.AllModulesLoaded:Fire(os.time())
@@ -715,9 +730,9 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			print(`Loading Complete; Required by {data.Loader:GetFullName()}`)
+			print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; Required by {data.Loader:GetFullName()}{data.Model:FindFirstChild("Version") and (" version: "..data.Model.Version.Value) or ""}`)
 		else
-			print("Loading Complete; No loader location provided")
+			print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; No loader location provided`)
 		end
 
 		if server.Logs then

@@ -12,38 +12,42 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.1  # Using the latest version
         with:
-          ref: release
+          ref: refs/heads/release
           
       - name: Layout file name
         id: naming
         env:
           GIT_HASH: ${{ github.sha }}
           GITHUB_REPO: ${{ github.repository }}
-          GIT_REF: ${{ github.ref_name }}
+          GIT_REF: ${{ github.event.ref }}
           GIT_REF_TYPE: ${{ github.ref_type }}
           GITHUB_ACTION_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.release.prerelease }}
+          GITHUB_IS_PRE_RELEASE: ${{ github.event_name == 'release' && github.event.release.prerelease }}
         run: |
-         CUR_DATE_TIME=$(date +'%Y-%m-%d')
-         if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "release" ]
-         then
-           BUILD_TYPE="Stable"
-         elif [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] &&  [ "$GITHUB_ACTION_EVENT_NAME" == "tag" ]
+          CUR_DATE_TIME=$(date +'%Y-%m-%d')
+          if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "refs/heads/release" ]
+          then
+            BUILD_TYPE="Stable"
+          elif [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [[ "$GIT_REF" == "refs/tags/v"* ]]
           then
             BUILD_TYPE="Release"
-         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "false" ]
+          elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "false" ]
           then
             BUILD_TYPE="Release"
-         elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "true" ]
+          elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "true" ]
           then
             BUILD_TYPE="Beta"
-         else
-           exit 1
-         fi
-         echo "output_name=Adonis_${BUILD_TYPE}_${CUR_DATE_TIME}_$(echo $GIT_REF | sed 's/\//=/')_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
-
+          else
+            echo "Unexpected event or condition"
+            echo "Event name: $GITHUB_ACTION_EVENT_NAME"
+            echo "Ref: $GIT_REF"
+            echo "Ref type: $GIT_REF_TYPE"
+            echo "Is pre-release: $GITHUB_IS_PRE_RELEASE"
+            exit 1
+          fi
+          echo "output_name=Adonis_${BUILD_TYPE}_${GITHUB_REF#refs/*/}_$(git rev-parse --short "$GIT_HASH")" >> "$GITHUB_OUTPUT"
       - uses: ok-nick/setup-aftman@v0.4.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -54,7 +58,7 @@ jobs:
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
      
-      - uses: actions/upload-artifact@v4.0.0
+      - uses: actions/upload-artifact@v4.3.1
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
@@ -68,11 +72,11 @@ jobs:
       - name: Send Standalone Release to Discord channel
         uses: tsickert/discord-webhook@v5.4.0
         with:
-          webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
+          webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
       - name: Publish Loader
-        uses: fjogeleit/http-request-action@v1.15.0
+        uses: fjogeleit/http-request-action@v1.15.2
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
           method: "POST"
@@ -80,10 +84,9 @@ jobs:
           files: '{ "file": "loader.rbxm" }'
           customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
           timeout: 10000
-          preventFailureOnNoResponse: 'true'
           
       - name: Publish Module
-        uses: fjogeleit/http-request-action@v1.15.0
+        uses: fjogeleit/http-request-action@v1.15.2
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
           method: "POST"
@@ -91,4 +94,3 @@ jobs:
           files: '{ "file": "module.rbxm" }'
           customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
           timeout: 10000
-          preventFailureOnNoResponse: 'true'

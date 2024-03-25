@@ -1182,7 +1182,7 @@ return function(data, env)
 
 				point.Size = UDim2.fromOffset(sizeX, sizeY)
 				point.Position = UDim2.fromOffset(posX, posY)
-				point.Visible = true
+				point.Visible = text ~= ""
 			end)
 		end
 	end
@@ -2589,7 +2589,7 @@ return function(data, env)
 	api:SetSpecial("Refresh", DoRefresh)
 	api:SetSpecial("AddTitleButton", function(ignore, data) if type(ignore) == "table" and not data then data = ignore end return addTitleButton(data) end)
 	api:SetSpecial("Ready", function() if onReady then onReady() end gTable.Ready() BringToFront() end)
-	api:SetSpecial("BindEvent", function(ignore, ...) Event(...) end)
+	api:SetSpecial("BindEvent", function(ignore, ...) return Event(...) end)
 	api:SetSpecial("Hide", function(ignore, hide) doHide(hide) end)
 	api:SetSpecial("SetTitle", function(ignore, newTitle) Titlef.Text = newTitle end)
 	api:SetSpecial("SetPosition", function(ignore, newPos) setPosition(newPos) end)
@@ -5866,7 +5866,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>5</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>

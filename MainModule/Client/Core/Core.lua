@@ -168,7 +168,12 @@ return function(Vargs, GetEnv)
 
 					if not Core.Key then
 						log("~! Getting key from server")
-						Remote.Fire(`{client.DepsName}GET_KEY`)
+						Core.Key = Remote.Get(`{client.DepsName}GET_KEY`)
+						if Core.Key then
+							client.Finish_Loading()
+						else
+							Remote.Fire(`{client.DepsName}GET_KEY`)
+						end
 					end
 				end
 			end
@@ -409,12 +414,12 @@ return function(Vargs, GetEnv)
 							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
 								rawset(_G, "Adonis", AdonisGTable)
 							else
-								warn("⚠️ ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")
+								warn("⚠️ ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE! 0x02412")
 							end
 						end
 					end, true)
 				else
-					warn("The _G table was locked and the Adonis _G API could not be loaded")
+					warn("The _G table was locked and the Adonis _G API could not be loaded. Error code 0x02417")
 				end
 			end
 		end;
