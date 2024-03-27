@@ -229,7 +229,7 @@ return function(Vargs, GetEnv)
 								foundNum += 1
 							end
 						end
-						
+
 						if foundNum == 0 and useFakePlayer then
 							local ran, name = pcall(service.Players.GetNameFromUserIdAsync, service.Players, matched)
 							if ran or allowUnknownUsers then
@@ -376,7 +376,7 @@ return function(Vargs, GetEnv)
 							local p = getplr(v)
 							local character = p.Character
 							local Head = character and character:FindFirstChild("Head")
-							
+
 							if Head and p and p ~= plr and plr:DistanceFromCharacter(Head.Position) <= num then
 								table.insert(players,p)
 								plus()
@@ -454,7 +454,7 @@ return function(Vargs, GetEnv)
 
 			if chatMod then
 				return require(chatMod)
-				elseif isTextChat then
+			elseif isTextChat then
 				return false
 			end
 			return nil
@@ -982,7 +982,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-																									
+
 		SetAtmosphere = function(prop,value)
 			if service:FindFirstChildWhichIsA("Atmosphere")[prop] ~= nil then
 				service:FindFirstChildWhichIsA("Atmosphere")[prop] = value
@@ -1145,21 +1145,8 @@ return function(Vargs, GetEnv)
 
 			local oldArchivable = char.Archivable
 			char.Archivable = true
-			local rawClone = char:Clone()
+			local clone = char:Clone()
 			char.Archivable = oldArchivable
-			local clone = Instance.new("Actor")
-
-			clone.PrimaryPart = rawClone.PrimaryPart
-			clone.WorldPivot = rawClone.WorldPivot
-			--clone:ScaleTo(rawClone:GetScale())
-
-			for k, v in ipairs(rawClone:GetAttributes()) do
-				clone:SetAttribute(k, v)
-			end
-
-			for _, v in ipairs(rawClone:GetChildren()) do
-				v.Parent = clone
-			end
 
 			for i = 1, num do
 				local new = clone:Clone()
@@ -1418,16 +1405,16 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-		
-		AddJoinFilter = function(name, func) 
+
+		AddJoinFilter = function(name, func)
 			if server.Variables.PlayerJoinFilters[name] then
 				error(string.format("The Join Filter %s already exists!", name))
 			else
 				server.Variables.PlayerJoinFilters[name] = func
 			end
 		end;
-		
-		RemoveJoinFilter = function(name) 
+
+		RemoveJoinFilter = function(name)
 			if server.Variables.PlayerJoinFilters[name] then
 				server.Variables.PlayerJoinFilters[name] = nil
 			end
