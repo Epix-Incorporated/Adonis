@@ -11,6 +11,7 @@ return {
 	"Added back old :alert sound";
 	"Make getting the key from the server a RemoteFunction";
 	"Moved DefaultTheme further down the settings";
+	"Changed :bot command to not use actors";
 	"";
 	"[v255 2024-03-18 09:05 UTC] @Dimenpsyonal";
 	"Added duration to :mute";
