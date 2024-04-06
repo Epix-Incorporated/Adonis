@@ -65,7 +65,7 @@ body:
         - (Wine only) Linux touch
         - Chrome OS
         - Windows VM
-        - Non-standard/Unspecified compatibility
+        - Non-standard (explain in report)
       default: 0
   - type: textarea
     id: logs
