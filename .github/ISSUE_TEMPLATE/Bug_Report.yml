@@ -48,6 +48,26 @@ body:
       placeholder: ex. When I ran :shutdown, I expected the server to shut down, but instead...
     validations:
       required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      description: What type of Device are you using?
+      options:
+        - Unknown
+        - Windows
+        - Windows touch
+        - MAC
+        - MAC touch
+        - Android
+        - Apple mobile
+        - Amazon Fire OS
+        - (Wine only) Linux
+        - (Wine only) Linux touch
+        - Chrome OS
+        - Windows VM
+        - Non-standard/Unspecified compatibility
+      default: 0
   - type: textarea
     id: logs
     attributes:
