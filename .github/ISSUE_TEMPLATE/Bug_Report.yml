@@ -54,7 +54,6 @@ body:
       label: Device
       description: What type of Device are you using?
       options:
-        - Unknown
         - Windows
         - Windows touch
         - MAC
