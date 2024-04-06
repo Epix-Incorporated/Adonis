@@ -1314,9 +1314,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		CleanWorkspace = function()
-			for _, v in workspace:GetChildren() do
-				if v:IsA("BackpackItem") or v:IsA("Accoutrement") then
-					v:Destroy()
+			if workspace:FindFirstChildOfClass("BackpackItem") or workspace:FindFirstChildOfClass("Accoutrement") then
+				for _, v in workspace:GetChildren() do
+					if v:IsA("BackpackItem") or v:IsA("Accoutrement") then
+						v:Destroy()
+					end
 				end
 			end
 		end;
