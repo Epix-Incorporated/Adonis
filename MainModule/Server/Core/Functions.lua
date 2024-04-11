@@ -79,7 +79,7 @@ return function(Vargs, GetEnv)
 			["everyone"] = {
 				Match = "everyone";
 				Absolute = true;
-				Pefix = true;
+				Prefix = true;
 				Function = function(...)
 					return Functions.PlayerFinders.all.Function(...)
 				end
