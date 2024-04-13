@@ -275,7 +275,7 @@ return function(Vargs, env)
 			Args = {"players"};
 			AdminLevel = "Moderators";
 			Fun = true;
-			Description = "You're going to";
+			Description = "You're going to 🇧🇷.";
 			Function = function (plr, args)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local root = v.Character:FindFirstChild("HumanoidRootPart")
