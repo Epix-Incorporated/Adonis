@@ -1478,7 +1478,12 @@ return function(Vargs, GetEnv)
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
 						local escAlias = SanitizePattern(tAlias)
-						if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
+						local trimmedMsg = Functions.Trim(msg)
+						--// Use Adonis split to better support various characters that string.split can't handle properly
+						local aliasCharacters = Functions.Split(trimmedMsg, Settings.SplitKey)
+						--// Matching an alias can result in an infinite loop like running !fire with the alias !f, it will infinitely run the !f alias
+						--// If you have an alias !f
+						if escAlias == aliasCharacters[1] or string.match(trimmedMsg, `%s{escAlias}`) then
 							msg = FormatAliasArgs(alias, cmd, msg)
 						end
 					end
@@ -1499,7 +1504,7 @@ return function(Vargs, GetEnv)
 
 			return msg
 		end;
-
+										
 		StringToComLevel = function(str)
 			local strType = type(str)
 			if strType == "string" and string.lower(str) == "players" then
