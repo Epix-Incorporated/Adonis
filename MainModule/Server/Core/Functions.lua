@@ -528,7 +528,20 @@ return function(Vargs, GetEnv)
 					error(`String passed to GetPlayers is filtered: {argument}`, 2)
 				end
 
-				for s in argument:gmatch("([^,]+)") do
+				local selectors = argument:gmatch("([^,]+)")
+				
+				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
+				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
+				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors 
+				local MaxSelectors = Variables.MaxSafeSelectors or 400 -- 400 seems like a good "max" that won't ever be reached
+				
+				local index = 0
+
+				for s in selectors do
+					index += 1
+					if not AllowUnsafeSelectors and index > MaxSelectors then
+						break
+					end
 					local plrCount = 0
 					local function plus() plrCount += 1 end
 
