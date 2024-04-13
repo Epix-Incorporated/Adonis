@@ -1478,6 +1478,10 @@ return function(Vargs, GetEnv)
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
 						local escAlias = SanitizePattern(tAlias)
+						--// Ignore any "empty" aliases, aka aliases that would basically match any command
+						if string.len(Functions.Trim(escAlias)) == 0 then 
+							continue
+						end
 						local trimmedMsg = Functions.Trim(msg)
 						--// Use Adonis split to better support various characters that string.split can't handle properly
 						local aliasCharacters = Functions.Split(trimmedMsg, Settings.SplitKey)
