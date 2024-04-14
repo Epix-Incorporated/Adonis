@@ -14,6 +14,9 @@ return {
 	"Changed :bot command to not use actors";
 	"Optimise CleanWorkspace";
 	"Fix typeo in Functions";
+	"Fix accidental alias recursion";
+	"Fix empty aliases preventing any commands running";
+	"Implement AllowUnsafeSelectors";
 	"";
 	"[v255 2024-03-18 09:05 UTC] @Dimenpsyonal";
 	"Added duration to :mute";
