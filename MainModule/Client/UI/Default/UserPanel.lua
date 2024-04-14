@@ -1021,7 +1021,7 @@ return function(data, env)
 				Position = UDim2.new(0, 10, 0, 35);
 				Size = UDim2.new(1, -20, 0, 20);
 				ClearTextOnFocus = false;
-				PlaceholderText = ":refresh";
+				PlaceholderText = `{commandPrefix}refresh`;
 				TextChanged = function(newText, enter, box)
 					curCommandText = newText
 				end
@@ -1284,7 +1284,7 @@ return function(data, env)
 
 			commandBox = binderBox:Add("TextBox", {
 				Position = UDim2.new(0, 10, 0, 35);
-				PlaceholderText = ":fly <arg1> | :god <arg1>";
+				PlaceholderText = `{commandPrefix}fly <arg1> | {commandPrefix}god <arg1>`;
 				Size = UDim2.new(1, -20, 0, 20);
 				ClearTextOnFocus = false;
 				TextChanged = function(newText, enter, box)
@@ -1294,7 +1294,7 @@ return function(data, env)
 
 			aliasBox = binderBox:Add("TextBox", {
 				Text = "";
-				PlaceholderText = ":flygod";
+				PlaceholderText = `{commandPrefix}flygod`;
 				ClearTextOnFocus = false;
 				Position = UDim2.new(0, 10, 0, 90);
 				Size = UDim2.new(1, -20, 0, 20);
