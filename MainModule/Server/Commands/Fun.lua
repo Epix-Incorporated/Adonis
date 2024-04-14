@@ -1092,7 +1092,23 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		Tripmine = { --// D I S A S T E R
+			Prefix = Settings.Prefix;
+			Commands = {"tripmine", "subspacetripmine","subspace"};
+			Args = {"player"};
+			Description = "Gives the target player(s) a Subspace Tripmine";
+			AdminLevel = "Admins";
+			Fun = true;
+			Function = function(plr: Player, args: {string})
+				local subspace = service.Insert(11999247)
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+					if Backpack then
+						subspace:Clone().Parent = Backpack
+					end
+				end
+			end
+		};
 		iloveyou = {
 			Prefix = "?";
 			Commands = {"iloveyou", "alwaysnear", "alwayswatching"};
