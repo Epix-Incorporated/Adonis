@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v256 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 
 	":timebanlist actually giving reasons";
 	"and specified if a ban is a global ban or a server ban";
@@ -17,6 +17,7 @@ return {
 	"Fix accidental alias recursion";
 	"Fix empty aliases preventing any commands running";
 	"Implement AllowUnsafeSelectors";
+	"Added placeholder text for aliases and keybinds";
 	"";
 	"[v255 2024-03-18 09:05 UTC] @Dimenpsyonal";
 	"Added duration to :mute";
