@@ -1,7 +1,23 @@
 return {
-	"Version: 255";
+	"Version: 256";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
+	":banlist text is now selectable"; 
+	":timebanlist actually giving reasons";
+	"and specified if a ban is a global ban or a server ban";
+	"LoadExistingPlayer no longer warns while loading a player";
+	"Added back old :alert sound";
+	"Make getting the key from the server a RemoteFunction";
+	"Moved DefaultTheme further down the settings";
+	"Changed :bot command to not use actors";
+	"Optimise CleanWorkspace";
+	"Fix typeo in Functions";
+	"Fix accidental alias recursion";
+	"Fix empty aliases preventing any commands running";
+	"Implement AllowUnsafeSelectors";
+	"Added placeholder text for aliases and keybinds";
 	"";
 	"[v255 2024-03-18 09:05 UTC] @Dimenpsyonal";
 	"Added duration to :mute";

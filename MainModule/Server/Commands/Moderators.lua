@@ -116,7 +116,7 @@ return function(Vargs, env)
 					else
 						table.insert(tab, {
 							Text = `{v.Name}:{v.UserId}`,
-							Desc = string.format("Issued by: %s | Minutes left: %d", v.Moderator or "%UNKNOWN%", minutes)
+							Desc = string.format("Issued by: %s | Reason: %s | Minutes left: %d", v.Moderator or "%UNKNOWN%", v.Reason, minutes)
 						})
 					end
 				end
@@ -1458,6 +1458,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local head = plr.Character and (plr.Character:FindFirstChild("Head") or plr.Character:FindFirstChild("HumanoidRootPart"))
 				assert(head and head:IsA("BasePart"), "You don't have a character head or root part")
+				if not args[1] then return Functions.Hint("A name is required!", {plr}) end
+				
 				if workspace:FindFirstChild(`Camera: {args[1]}`) then
 					Functions.Hint(`{args[1]} Already Exists!`, {plr})
 				else
@@ -1481,6 +1483,30 @@ return function(Vargs, env)
 						MeshType = "Sphere";
 					})
 					table.insert(Variables.Cameras, {Brick = cam, Name = args[1]})
+					Functions.Hint(`Created camera {args[1]}`, {plr})
+				end
+			end
+		};
+		
+		RemoveCamera = {
+			Prefix = Settings.Prefix;
+			Commands = {"removecam", "delcam", "removecamera", "deletecamera"};
+			Args = {"camera"};
+			Description = "Deletes the camera if it exists";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i,v in Variables.Cameras do
+					if string.lower(args[1]) == v.Name then
+						local cam = workspace:FindFirstChild(v)
+						
+						Variables.Cameras[i] = nil
+						
+						if cam and cam:IsA("Part") then
+							cam:Destroy()
+						end
+						
+						Functions.Hint(`Deleted camera {v.Name}`, {plr})
+					end
 				end
 			end
 		};
@@ -1933,12 +1959,19 @@ return function(Vargs, env)
 					local entry = type(v) == "string" and v
 					local reason = "No reason provided"
 					local moderator = "%UNKNOWN%"
+					
+					local banType = if v.BanType == "Server" then 
+						"SERVER" 
+					elseif v.BanType == "Global" then
+						"GLOBAL" 
+					else "UNKNOWN";
+				
 					count +=1
 					if type(v) == "table" then
 						if v.Name and v.UserId then
-							entry = `{v.Name}:{v.UserId}`
+							entry = `[{banType}] {v.Name}:{v.UserId}`
 						elseif v.UserId then
-							entry = `ID: {v.UserId}`
+							entry = `[{banType}] ID: {v.UserId}`
 						elseif v.Name then
 							entry = v.Name
 						end
@@ -1964,6 +1997,7 @@ return function(Vargs, env)
 					Icon = server.MatIcons.Gavel;
 					Tab = Logs.ListUpdaters.BanList(plr);
 					Update = "BanList";
+					TextSelectable = true;
 				})
 			end;
 		};

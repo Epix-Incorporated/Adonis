@@ -79,7 +79,7 @@ return function(Vargs, GetEnv)
 			["everyone"] = {
 				Match = "everyone";
 				Absolute = true;
-				Pefix = true;
+				Prefix = true;
 				Function = function(...)
 					return Functions.PlayerFinders.all.Function(...)
 				end
@@ -229,7 +229,7 @@ return function(Vargs, GetEnv)
 								foundNum += 1
 							end
 						end
-						
+
 						if foundNum == 0 and useFakePlayer then
 							local ran, name = pcall(service.Players.GetNameFromUserIdAsync, service.Players, matched)
 							if ran or allowUnknownUsers then
@@ -376,7 +376,7 @@ return function(Vargs, GetEnv)
 							local p = getplr(v)
 							local character = p.Character
 							local Head = character and character:FindFirstChild("Head")
-							
+
 							if Head and p and p ~= plr and plr:DistanceFromCharacter(Head.Position) <= num then
 								table.insert(players,p)
 								plus()
@@ -454,7 +454,7 @@ return function(Vargs, GetEnv)
 
 			if chatMod then
 				return require(chatMod)
-				elseif isTextChat then
+			elseif isTextChat then
 				return false
 			end
 			return nil
@@ -528,7 +528,20 @@ return function(Vargs, GetEnv)
 					error(`String passed to GetPlayers is filtered: {argument}`, 2)
 				end
 
-				for s in argument:gmatch("([^,]+)") do
+				local selectors = argument:gmatch("([^,]+)")
+				
+				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
+				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
+				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors 
+				local MaxSelectors = Variables.MaxSafeSelectors or 400 -- 400 seems like a good "max" that won't ever be reached
+				
+				local index = 0
+
+				for s in selectors do
+					index += 1
+					if not AllowUnsafeSelectors and index > MaxSelectors then
+						break
+					end
 					local plrCount = 0
 					local function plus() plrCount += 1 end
 
@@ -982,7 +995,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-																									
+
 		SetAtmosphere = function(prop,value)
 			if service:FindFirstChildWhichIsA("Atmosphere")[prop] ~= nil then
 				service:FindFirstChildWhichIsA("Atmosphere")[prop] = value
@@ -1145,21 +1158,8 @@ return function(Vargs, GetEnv)
 
 			local oldArchivable = char.Archivable
 			char.Archivable = true
-			local rawClone = char:Clone()
+			local clone = char:Clone()
 			char.Archivable = oldArchivable
-			local clone = Instance.new("Actor")
-
-			clone.PrimaryPart = rawClone.PrimaryPart
-			clone.WorldPivot = rawClone.WorldPivot
-			--clone:ScaleTo(rawClone:GetScale())
-
-			for k, v in ipairs(rawClone:GetAttributes()) do
-				clone:SetAttribute(k, v)
-			end
-
-			for _, v in ipairs(rawClone:GetChildren()) do
-				v.Parent = clone
-			end
 
 			for i = 1, num do
 				local new = clone:Clone()
@@ -1327,9 +1327,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		CleanWorkspace = function()
-			for _, v in workspace:GetChildren() do
-				if v:IsA("BackpackItem") or v:IsA("Accoutrement") then
-					v:Destroy()
+			if workspace:FindFirstChildOfClass("BackpackItem") or workspace:FindFirstChildOfClass("Accoutrement") then
+				for _, v in workspace:GetChildren() do
+					if v:IsA("BackpackItem") or v:IsA("Accoutrement") then
+						v:Destroy()
+					end
 				end
 			end
 		end;
@@ -1418,16 +1420,16 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-		
-		AddJoinFilter = function(name, func) 
+
+		AddJoinFilter = function(name, func)
 			if server.Variables.PlayerJoinFilters[name] then
 				error(string.format("The Join Filter %s already exists!", name))
 			else
 				server.Variables.PlayerJoinFilters[name] = func
 			end
 		end;
-		
-		RemoveJoinFilter = function(name) 
+
+		RemoveJoinFilter = function(name)
 			if server.Variables.PlayerJoinFilters[name] then
 				server.Variables.PlayerJoinFilters[name] = nil
 			end

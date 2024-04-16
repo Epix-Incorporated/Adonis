@@ -256,7 +256,7 @@ return function(data, env)
 										Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
 										table.insert(tab, entryText.Text)
 									end
-									wait(0.5)
+									task.wait(0.5)
 									entryBox.Visible = false
 									inputBlock = false
 									showItems()
@@ -302,7 +302,7 @@ return function(data, env)
 							Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
 							table.remove(tab, selected.Index)
 							showItems()
-							wait(0.5)
+							task.wait(0.5)
 							inputBlock = false
 						end
 					end
@@ -334,7 +334,7 @@ return function(data, env)
 		end
 	end
 
-	if window then	
+	if window then
 		local commandPrefix = ":"
 		local playerData, chatMod, settingsData
 		local tabFrame = window:Add("TabFrame", {
@@ -535,7 +535,7 @@ return function(data, env)
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
-				wait(0.5)
+				task.wait(0.5)
 				dStatus.Text = "Donated"
 			end
 
@@ -1021,6 +1021,7 @@ return function(data, env)
 				Position = UDim2.new(0, 10, 0, 35);
 				Size = UDim2.new(1, -20, 0, 20);
 				ClearTextOnFocus = false;
+				PlaceholderText = `{commandPrefix}refresh`;
 				TextChanged = function(newText, enter, box)
 					curCommandText = newText
 				end
@@ -1283,6 +1284,7 @@ return function(data, env)
 
 			commandBox = binderBox:Add("TextBox", {
 				Position = UDim2.new(0, 10, 0, 35);
+				PlaceholderText = `{commandPrefix}fly <arg1> | {commandPrefix}god <arg1>`;
 				Size = UDim2.new(1, -20, 0, 20);
 				ClearTextOnFocus = false;
 				TextChanged = function(newText, enter, box)
@@ -1292,6 +1294,7 @@ return function(data, env)
 
 			aliasBox = binderBox:Add("TextBox", {
 				Text = "";
+				PlaceholderText = `{commandPrefix}flygod`;
 				ClearTextOnFocus = false;
 				Position = UDim2.new(0, 10, 0, 90);
 				Size = UDim2.new(1, -20, 0, 20);
@@ -1485,7 +1488,7 @@ return function(data, env)
 								end
 							end)
 
-							repeat wait() until gotKey
+							repeat task.wait() until gotKey
 
 							Variables.CustomConsoleKey = gotKey
 							event:Disconnect()

@@ -1048,12 +1048,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		AddBan = function(p, reason, doSave, moderator)
+		AddBan = function(p, reason, doSave, moderator, banType)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				Reason = reason;
 				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
+				BanType = banType
 			}
 
 			table.insert(Settings.Banned, value)--`{p.Name}:{p.UserId}`
@@ -1477,7 +1478,16 @@ return function(Vargs, GetEnv)
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
 						local escAlias = SanitizePattern(tAlias)
-						if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
+						--// Ignore any "empty" aliases, aka aliases that would basically match any command
+						if string.len(Functions.Trim(escAlias)) == 0 then 
+							continue
+						end
+						local trimmedMsg = Functions.Trim(msg)
+						--// Use Adonis split to better support various characters that string.split can't handle properly
+						local aliasCharacters = Functions.Split(trimmedMsg, Settings.SplitKey)
+						--// Matching an alias can result in an infinite loop like running !fire with the alias !f, it will infinitely run the !f alias
+						--// If you have an alias !f
+						if escAlias == aliasCharacters[1] or string.match(trimmedMsg, `%s{escAlias}`) then
 							msg = FormatAliasArgs(alias, cmd, msg)
 						end
 					end
@@ -1498,7 +1508,7 @@ return function(Vargs, GetEnv)
 
 			return msg
 		end;
-
+										
 		StringToComLevel = function(str)
 			local strType = type(str)
 			if strType == "string" and string.lower(str) == "players" then
