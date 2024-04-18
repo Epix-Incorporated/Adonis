@@ -68,7 +68,7 @@ jobs:
         run: rojo build -o module.rbxm .github/module.deploy.project.json
 
       - name: Send file nightly build to Discord channel
-        uses: tsickert/discord-webhook@v5.4.0
+        uses: tsickert/discord-webhook@v6.0.0
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
