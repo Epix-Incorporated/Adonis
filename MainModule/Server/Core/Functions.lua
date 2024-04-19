@@ -900,7 +900,7 @@ return function(Vargs, GetEnv)
 			end
 
 			-- ////////// Compatability for older plugins (before sender and image ares were introduced)
-			if sender ~= nil and type(sender) ~= "Instance" and type(sender) ~= "userdata" and type(sender) ~= "table" then
+			if sender ~= nil and typeof(sender) ~= "Instance" and typeof(sender) ~= "userdata" and type(sender) ~= "table" then
 				local oldVars = {
 					sender = sender,
 					title = title,
