@@ -605,8 +605,8 @@ return function(Vargs, GetEnv)
 								if plrCount == 0 and not options.DontError then
 									Remote.MakeGui(plr, "Output", {
 										Title = "Missing player";
-										Message = if not options.NoFakePlayer then `No user named "{s}" exists`
-											else `No players matching "{s}" were found!`;
+										Message = if not options.NoFakePlayer then `No user named '{s}' exists`
+											else `No players matching '{s}' were found!`;
 									})
 								end
 							end
