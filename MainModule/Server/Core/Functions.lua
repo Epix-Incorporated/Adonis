@@ -1395,11 +1395,11 @@ return function(Vargs, GetEnv)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
-				player:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
+				player:Kick(`Server Shutdown: {reason or "No Reason Given"}`)
 			end)
 
 			for _, v in service.Players:GetPlayers() do
-				v:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
+				v:Kick(`Server Shutdown: {reason or "No Reason Given"}`)
 			end
 		end;
 
