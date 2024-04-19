@@ -20,7 +20,7 @@ do
 	local triggered = false
 
 	local function loadingDetected(reason)
-		(localPlayer or Players.LocalPlayer):Kick(`:: Adonis Loader - Security ::\n{reason}`)
+		(localPlayer or Players.LocalPlayer):Kick(`:: Adonis Loader - Security :: {reason}`)
 		while true do end
 	end
 
