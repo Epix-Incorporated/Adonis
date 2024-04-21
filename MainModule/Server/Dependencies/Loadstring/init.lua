@@ -32,7 +32,7 @@ local luaU = require(script.LuaU)
 local loadBytecode, fiOne = require(script.FiOne)
 
 local function to1BasedIndex(tbl)
-	local tbl = table.move(tbl, 0, #tbl + (tbl[0] and 1), 1)
+	local tbl = table.move(tbl, 0, #tbl + (tbl[0] and 1 or 0), 1)
 	tbl[0] = nil
 
 	return tbl
