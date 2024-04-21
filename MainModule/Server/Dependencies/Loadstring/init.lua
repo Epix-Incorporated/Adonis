@@ -109,12 +109,12 @@ return function(str, env)
 		else
 			writer, buff = luaU:make_setS()
 			luaU:dump(LuaState, func, writer, buff)
-			f = fiOne.bc_to_state(fiOne.wrap_state(buff.data, env))
+			f = fiOne.wrap_state(fiOne.bc_to_state(buff.data), env)
 		end
 	end, function(err)
 		return `{err}\n\n--- Loadstring Stacktrace Begin --- \n{debug.traceback("",2)}\n--- Loadstring Stacktrace End --- \n`
 	end)
-	
+
 	if ran then
 		return f, buff and buff.data
 	else
