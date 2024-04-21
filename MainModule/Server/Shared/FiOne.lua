@@ -1089,4 +1089,10 @@ end
 
 return function(BCode, Env)
 	return wrap_lua_func(stm_lua_bytecode(BCode), Env or {})
-end
+end, {
+	bc_to_state = stm_lua_bytecode,--lua_bc_to_state,
+	wrap_state = wrap_lua_func,--lua_wrap_state,
+	opcode_rm = OPCODE_RM,
+	opcode_t = OPCODE_T,
+	opcode_m = OPCODE_M,
+}
