@@ -1093,7 +1093,7 @@ return setmetatable({
 	opcode_rm = OPCODE_RM,
 	opcode_t = OPCODE_T,
 	opcode_m = OPCODE_M,
-}, {__call = function(BCode, Env)
+}, {__call = function(BCode, Env) -- Backwards compatibility for legacy rerubi usage
 	return lua_wrap_state(lua_bc_to_state(BCode), Env or {})
 end})
 
