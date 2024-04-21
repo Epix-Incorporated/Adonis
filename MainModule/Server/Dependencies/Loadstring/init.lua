@@ -64,7 +64,7 @@ local function protoConvert(proto, opRemap, opType, opMode)
 			v.is_KC = mode.c == "OpArgK" and v.C > 0xFF
 
 			if op == 10 then -- decode NEWTABLE array size, store it as constant value
-				local e = bit32.band(bit32.rshift(data.B, 3), 31)
+				local e = bit32.band(bit32.rshift(v.B, 3), 31)
 				if e == 0 then
 					v.const = v.B
 				else
@@ -116,7 +116,7 @@ return function(str, env)
 	end)
 	
 	if ran then
-		return f, buff.data
+		return f, buff and buff.data
 	else
 		return nil, error
 	end
