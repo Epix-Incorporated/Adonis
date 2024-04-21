@@ -74,7 +74,7 @@ local function protoConvert(proto, opRemap, opType, opMode)
 		elseif regType == "ABx" then
 			v.is_K = mode.b == "OpArgK"
 		elseif regType == "AsBx" then
-			v.sBx, v.Bx = v.Bx - 131071, nil
+			v.sBx, v.Bx = v.Bx - 131071, nil -- Fix for signed registers being treated as unsigned 18 bit registers
 		end
 
 		if v.is_K then
