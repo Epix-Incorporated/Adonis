@@ -111,7 +111,7 @@
 
 	Commands.DexExplore = {
 		Prefix = Settings.Prefix;
-		Commands = {"dex";"dexexplorer";"dexexplorer"};
+		Commands = {"olddex";"dexold""};
 		Args = {};
 		Description = "Lets you explore the game using Dex [Credit to Raspberry Pi/Raspy_Pi/raspymgx/OpenOffset(?)]";
 		AdminLevel = 300;
