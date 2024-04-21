@@ -73,6 +73,8 @@ local function protoConvert(proto, opRemap, opType, opMode)
 			end
 		elseif regType == "ABx" then
 			v.is_K = mode.b == "OpArgK"
+		elseif regType == "AsBx" then
+			v.sBx, v.Bx = v.Bx - 131071, nil
 		end
 
 		if v.is_K then
