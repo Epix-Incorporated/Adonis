@@ -29,7 +29,7 @@ local luaX = require(script.LuaX)
 local luaY = require(script.LuaY)
 local luaZ = require(script.LuaZ)
 local luaU = require(script.LuaU)
-local loadBytecode, fiOne = require(script.FiOne)
+local fiOne = require(script.FiOne)
 
 local function to1BasedIndex(tbl)
 	local tbl = table.move(tbl, 0, #tbl + (tbl[0] and 1 or 0), 1)
@@ -105,11 +105,11 @@ return function(str, env)
 
 		if PROTO_CONVERT then
 			protoConvert(func, fiOne.opcode_rm, fiOne.opcode_t, fiOne.opcode_m)
-			f = loadBytecode(func, env)
+			f = fiOne.wrap_state(func, env)
 		else
 			writer, buff = luaU:make_setS()
 			luaU:dump(LuaState, func, writer, buff)
-			f = loadBytecode(buff.data, env)
+			f = fiOne.bc_to_state(fiOne.wrap_state(buff.data, env))
 		end
 	end, function(err)
 		return `{err}\n\n--- Loadstring Stacktrace Begin --- \n{debug.traceback("",2)}\n--- Loadstring Stacktrace End --- \n`
