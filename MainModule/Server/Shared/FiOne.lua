@@ -1087,12 +1087,13 @@ function wrap_lua_func(state, env, upvals)
 	return exec_wrap
 end
 
-return function(BCode, Env)
-	return wrap_lua_func(stm_lua_bytecode(BCode), Env or {})
-end, {
-	bc_to_state = stm_lua_bytecode,--lua_bc_to_state,
-	wrap_state = wrap_lua_func,--lua_wrap_state,
+return setmetatable({
+	bc_to_state = lua_bc_to_state,
+	wrap_state = lua_wrap_state,
 	opcode_rm = OPCODE_RM,
 	opcode_t = OPCODE_T,
 	opcode_m = OPCODE_M,
-}
+}, {__call = function(BCode, Env)
+	return lua_wrap_state(lua_bc_to_state(BCode), Env or {})
+end})
+
