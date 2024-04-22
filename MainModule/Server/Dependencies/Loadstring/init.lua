@@ -19,6 +19,7 @@ local DEPENDENCIES = {
 	"LuaX";
 	"LuaY";
 	"LuaZ";
+	"VirtualEnv";
 }
 
 for _, v in ipairs(DEPENDENCIES) do 
@@ -30,6 +31,7 @@ local luaY = require(script.LuaY)
 local luaZ = require(script.LuaZ)
 local luaU = require(script.LuaU)
 local fiOne = require(script.FiOne)
+local getvenv = require(script.VirtualEnv)
 
 local function to1BasedIndex(tbl)
 	local tbl = table.move(tbl, 0, #tbl + (tbl[0] and 1 or 0), 1)
@@ -92,26 +94,24 @@ local function protoConvert(proto, opRemap, opType, opMode)
 end
 
 luaX:init()
+script = nil
 local LuaState = {}
-
-getfenv().script = nil
 
 return function(str, env)
 	local f, writer, buff
-	env = env or getfenv(2)
-	local name = (type(env.script) == "userdata" and env.script:GetFullName())
+	local name = (env and type(env.script) == "userdata") and env.script:GetFullName()
 	local ran, error = xpcall(function()
 		local zio = luaZ:init(luaZ:make_getS(str), nil)
 		if not zio then return error() end
 		local func = luaY:parser(LuaState, zio, nil, name or "::Adonis::Loadstring::")
 
-		if PROTO_CONVERT then
+		if PROTO_CONVERT and env ~= "LuaC" then
 			protoConvert(func, fiOne.opcode_rm, fiOne.opcode_t, fiOne.opcode_m)
-			f = fiOne.wrap_state(func, env)
+			f = fiOne.wrap_state(func, env or getvenv())
 		else
 			writer, buff = luaU:make_setS()
 			luaU:dump(LuaState, func, writer, buff)
-			f = fiOne.wrap_state(fiOne.bc_to_state(buff.data), env)
+			f = fiOne.wrap_state(fiOne.bc_to_state(buff.data), env ~= "LuaC" and env or getvenv())
 		end
 	end, function(err)
 		return `{err}\n\n--- Loadstring Stacktrace Begin --- \n{debug.traceback("",2)}\n--- Loadstring Stacktrace End --- \n`
