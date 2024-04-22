@@ -11,7 +11,7 @@
 --]]
 
 local PROTO_CONVERT = true -- If proto conversion is used instead of serialise->deserialise
-local DEPENDANCIES = {
+local DEPENDENCIES = {
 	"FiOne";
 	"LuaK";
 	"LuaP";
@@ -21,7 +21,7 @@ local DEPENDANCIES = {
 	"LuaZ";
 }
 
-for _, v in ipairs(DEPENDANCIES) do 
+for _, v in ipairs(DEPENDENCIES) do 
 	script:WaitForChild(v)
 end
 
