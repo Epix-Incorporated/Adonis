@@ -593,7 +593,7 @@ return function(Vargs, GetEnv)
 
 		Bytecode = function(str: string)
 			if Core.BytecodeCache[str] then return Core.BytecodeCache[str] end
-			local f, buff = Core.Loadstring(str)
+			local f, buff = Core.Loadstring(str, "LuaC")
 			Core.BytecodeCache[str] = buff
 			return buff
 		end;
