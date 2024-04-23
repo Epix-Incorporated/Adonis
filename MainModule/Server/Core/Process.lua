@@ -581,23 +581,23 @@ return function(Vargs, GetEnv)
 				else
 					local target = `{Settings.SpecialPrefix}all`
 					if not b then
-						b = 'Global'
+						b = "Global"
 					end
 					if not service.Players:FindFirstChild(p.Name) then
-						b='Nil'
+						b="Nil"
 					end
-					if string.sub(a,1,1)=='@' then
-						b='Private'
-						target,a=string.match(a,'@(.%S+) (.+)')
-						Remote.Send(p,'Function','SendToChat',p,a,b)
-					elseif string.sub(a,1,1)=='#' then
-						if string.sub(a,1,7)=='#ignore' then
+					if string.sub(a,1,1)=="@" then
+						b="Private"
+						target,a=string.match(a,"@(.%S+) (.+)")
+						Remote.Send(p,"Function","SendToChat",p,a,b)
+					elseif string.sub(a,1,1)=="#" then
+						if string.sub(a,1,7)=="#ignore" then
 							target=string.sub(a,9)
-							b='Ignore'
+							b="Ignore"
 						end
-						if string.sub(a,1,9)=='#unignore' then
+						if string.sub(a,1,9)=="#unignore" then
 							target=string.sub(a,11)
-							b='UnIgnore'
+							b="UnIgnore"
 						end
 					end
 
@@ -1006,14 +1006,14 @@ return function(Vargs, GetEnv)
 					if Settings.Notification then
 
 						task.wait(1)
-						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}cmds")`))
 
 						if oldVer and newVer and newVer > oldVer then
-							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://System upgrade", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
+							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://System upgrade", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`))
 						end
 
 						if level > 300 and Core.DebugMode == true then
-							task.delay(1, Functions.Notification, "Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`))
+							task.delay(1, Functions.Notification, "Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`))
 						end
 
 						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
@@ -1118,7 +1118,7 @@ return function(Vargs, GetEnv)
 
 				if
 					(not args[1] or
-						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil or args[1].FinishedLoading == true))
+						(args[1] and type(args[1]) == "table" and args[1].FinishedLoading == nil or args[1].FinishedLoading == true))
 					and
 						(Settings.Console and (not Settings.Console_AdminsOnly or level > 0)) then
 					Remote.RefreshGui(p, "Console")
