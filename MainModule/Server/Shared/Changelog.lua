@@ -4,6 +4,8 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v257 2024-xx-xx xx:xx UTC] @Maintainer";
+	"Code quality improvements";
+	"Updated FiOne";
 	"";
 	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 

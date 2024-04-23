@@ -144,7 +144,7 @@ function LinkedList:Get(val : any)
 	local nodes = {}
 	local curr = self.snode 
 	local tinsert = table.insert
-	while curr and typeof(curr) == 'table' do 
+	while curr and type(curr) == "table" do 
 		if val then 
             --// Pass a function and Adonis will pass through the current node into it
             --// Return true to add it to the "list"
@@ -156,7 +156,7 @@ function LinkedList:Get(val : any)
                     .next: The next node in the list
                     .prev: The previous node in the list
             ]==]
-            if typeof(val) == 'function' then
+            if type(val) == "function" then
                 local success, found = pcall(val, curr)
                 if success and found then
                     tinsert(nodes, curr)
@@ -179,7 +179,7 @@ function LinkedList:GetAsTable(val : any)
 	local nodes = {}
 	local curr = self.snode 
 	local tinsert = table.insert
-	while curr and typeof(curr) == 'table' do 
+	while curr and type(curr) == "table" do 
         --// Pass a function and Adonis will pass through the current node into it
         --// Return true to add it to the "list"
         --// Final list will be returned after the call
@@ -191,7 +191,7 @@ function LinkedList:GetAsTable(val : any)
                 .prev: The previous node in the list
         ]==]
 		if val then 
-            if typeof(val) == 'function' then
+            if type(val) == "function" then
                 local success, found = pcall(val, curr)
                 if success and found then
                     tinsert(nodes, curr.data)
