@@ -1,3 +1,4 @@
+--# selene: allow(incorrect_standard_library_use)
 --[[
 	Credit to einsteinK.
 	Credit to Stravant for LBI.
