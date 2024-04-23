@@ -6,6 +6,7 @@ return {
 	"[v257 2024-xx-xx xx:xx UTC] @Maintainer";
 	"Code quality improvements";
 	"Updated FiOne";
+	"Fixed error with SoftShutdown process";
 	"";
 	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 
