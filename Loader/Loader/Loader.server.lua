@@ -30,7 +30,7 @@ local print = function(...)
 	print(":: Adonis ::", ...)
 end
 
-print("Loading...")
+if not data.SilentStartup then print("Loading...") end
 
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
@@ -88,6 +88,7 @@ else
 		NightlyModuleID = 8612978896; 	--// https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
 
 		DebugMode = true;
+		silentStartup = false
 	}
 
 	--// Init
@@ -152,7 +153,7 @@ else
 		table.insert(data.Themes, theme)
 	end
 
-	if tonumber(moduleId) then
+	if tonumber(moduleId) and not data.SilentStartup then
 		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
