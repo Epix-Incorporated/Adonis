@@ -30,8 +30,6 @@ local print = function(...)
 	print(":: Adonis ::", ...)
 end
 
-if not data.SilentStartup then print("Loading...") end
-
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 
@@ -90,6 +88,8 @@ else
 		DebugMode = true;
 		SilentStartup = false
 	}
+	
+	if not data.SilentStartup then print("Loading...") end
 
 	--// Init
 
