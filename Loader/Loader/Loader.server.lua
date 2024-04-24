@@ -88,7 +88,7 @@ else
 		NightlyModuleID = 8612978896; 	--// https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
 
 		DebugMode = true;
-		silentStartup = false
+		SilentStartup = false
 	}
 
 	--// Init
