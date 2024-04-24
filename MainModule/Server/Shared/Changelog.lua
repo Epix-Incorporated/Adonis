@@ -7,6 +7,8 @@ return {
 	"Code quality improvements";
 	"Updated FiOne";
 	"Fixed error with SoftShutdown process";
+	"Added silentstartup setting to loader";
+	" ^ Will mute non-errors for startup";
 	"";
 	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 
