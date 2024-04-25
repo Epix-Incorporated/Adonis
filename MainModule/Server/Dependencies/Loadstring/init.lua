@@ -44,7 +44,7 @@ end
 local function protoConvert(proto, opRemap, opType, opMode)
 	local const = table.create(#proto.k + 1)
 	proto.code, proto.lines, proto.subs = to1BasedIndex(proto.code), to1BasedIndex(proto.lineinfo), to1BasedIndex(proto.p)
-	proto.linfeinfo, proto.p = nil, nil
+	proto.lineinfo, proto.p = nil, nil
 	proto.max_stack, proto.maxstacksize = proto.maxstacksize, nil
 	proto.num_param, proto.numparams = proto.numparams, nil
 	proto.num_upval, proto.sizeupvalues = proto.sizeupvalues, nil
