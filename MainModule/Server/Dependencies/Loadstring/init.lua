@@ -106,7 +106,7 @@ return function(str, env)
 		local func = luaY:parser(LuaState, zio, nil, name or "::Adonis::Loadstring::")
 
 		if PROTO_CONVERT and env ~= "LuaC" then
-			protoConvert(func, fiOne.opcode_rm, fiOne.opcode_t, fiOne.opcode_m)
+			protoConvert(func, fiOne.OPCODE_RM, fiOne.OPCODE_T, fiOne.OPCODE_M)
 			f = fiOne.wrap_state(func, env or getvenv())
 		else
 			writer, buff = luaU:make_setS()
