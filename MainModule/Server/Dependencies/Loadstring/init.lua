@@ -48,7 +48,7 @@ local function protoConvert(proto, opRemap, opType, opMode)
 	proto.max_stack, proto.maxstacksize = proto.maxstacksize, nil
 	proto.num_param, proto.numparams = proto.numparams, nil
 	proto.num_upval, proto.sizeupvalues = proto.sizeupvalues, nil
-	proto.sizecode, proto.sizek, proto.sizelineinfo, proto.sizelocvars, proto.sizep = nil, nil, nil, nil, nil -- Clean up garbage values
+	proto.sizecode, proto.sizek, proto.sizelineinfo, proto.sizelocvars, proto.sizep, proto.nups = nil, nil, nil, nil, nil, nil -- Clean up garbage values
 
 	for i, v in to1BasedIndex(proto.k) do
 		const[i] = v.value
