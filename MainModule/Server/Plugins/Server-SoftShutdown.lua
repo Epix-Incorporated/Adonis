@@ -107,6 +107,7 @@ return function(Vargs, GetEnv)
 		Function = function(p,args,data)
 			if service.RunService:IsStudio() then return end
 			if #Players:GetPlayers() == 0 then return end
+			Variables.ServerLock = true
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
@@ -139,6 +140,7 @@ return function(Vargs, GetEnv)
 		AdminLevel = "Admins";
 		Function = function(plr: Player, args: {string})
 			if #Players:GetPlayers() == 0 then return end
+			Variables.ServerLock = true
 
 			if Core.DataStore then
 				Core.UpdateData("ShutdownLogs", function(logs)
@@ -165,7 +167,6 @@ return function(Vargs, GetEnv)
 					return logs
 				end)
 			end
-
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
