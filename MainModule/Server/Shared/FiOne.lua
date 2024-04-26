@@ -73,212 +73,132 @@ local OPCODE_RM = {
 
 -- opcode types for getting values
 local OPCODE_T = {
-	[0] = 'ABC',
-	'ABx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABx',
-	'ABC',
-	'ABx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'AsBx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'AsBx',
-	'AsBx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABx',
-	'ABC',
+	[0] = "ABC",
+	"ABx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABx",
+	"ABC",
+	"ABx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"AsBx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"AsBx",
+	"AsBx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABx",
+	"ABC",
 }
 
 local OPCODE_M = {
-	[0] = {b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgR', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgR'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgR', c = 'OpArgU'},
-	{b = 'OpArgR', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgN', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgN', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
+	[0] = {b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgK", c = "OpArgN"},
+	{b = "OpArgU", c = "OpArgU"},
+	{b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgU", c = "OpArgN"},
+	{b = "OpArgK", c = "OpArgN"},
+	{b = "OpArgR", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgN"},
+	{b = "OpArgU", c = "OpArgN"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgU", c = "OpArgU"},
+	{b = "OpArgR", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgR", c = "OpArgR"},
+	{b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgK", c = "OpArgK"},
+	{b = "OpArgR", c = "OpArgU"},
+	{b = "OpArgR", c = "OpArgU"},
+	{b = "OpArgU", c = "OpArgU"},
+	{b = "OpArgU", c = "OpArgU"},
+	{b = "OpArgU", c = "OpArgN"},
+	{b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgR", c = "OpArgN"},
+	{b = "OpArgN", c = "OpArgU"},
+	{b = "OpArgU", c = "OpArgU"},
+	{b = "OpArgN", c = "OpArgN"},
+	{b = "OpArgU", c = "OpArgN"},
+	{b = "OpArgU", c = "OpArgN"},
 }
 
--- int rd_int_basic(string src, int s, int e, int d)
+local intiger_types = {
+	[1] = buffer.readu8,
+	[2] = buffer.readu16,
+	[4] = buffer.readu32,
+}
+
+local intiger_write_type = {
+	[1] = buffer.writeu8,
+	[2] = buffer.writeu16,
+	[4] = buffer.writeu32,
+}
+
+-- int rd_int(string src, int s, int e)
 -- @src - Source binary string
 -- @s - Start index of a little endian integer
 -- @e - End index of the integer
--- @d - Direction of the loop
-local function rd_int_basic(src, s, e, d)
-	local num = 0
+local function rd_int(src, s, e)
+	return intiger_types[e - s + 1](src, s)
+end
 
-	-- if bb[l] > 127 then -- signed negative
-	-- 	num = num - 256 ^ l
-	-- 	bb[l] = bb[l] - 128
-	-- end
+-- number big_endian(string src, int s)
+-- @callback - Function to be called after bitswap
+-- @byte_count - Lenght of the number
+local function big_endian(callback, byte_count)
+	return function(src, s, e)
+		local e, write = (e or byte_count) * 8, intiger_write_type[e]
+		write(src, s, bit32.rshift(bit32.byteswap(rd_int(src, s, e)), 32 - e))
+		local n2 = callback(src, s)
+		write(src, s, bit32.rshift(bit32.byteswap(rd_int(src, s, e)), 32 - e))
 
-	for i = s, e, d do
-		local mul = 256 ^ math.abs(i - s)
-
-		num = num + mul * string.byte(src, i, i)
+		return n2
 	end
-
-	return num
-end
-
--- float rd_flt_basic(byte f1..8)
--- @f1..4 - The 4 bytes composing a little endian float
-local function rd_flt_basic(f1, f2, f3, f4)
-	local sign = (-1) ^ bit32.rshift(f4, 7)
-	local exp = bit32.rshift(f3, 7) + bit32.lshift(bit32.band(f4, 0x7F), 1)
-	local frac = f1 + bit32.lshift(f2, 8) + bit32.lshift(bit32.band(f3, 0x7F), 16)
-	local normal = 1
-
-	if exp == 0 then
-		if frac == 0 then
-			return sign * 0
-		else
-			normal = 0
-			exp = 1
-		end
-	elseif exp == 0x7F then
-		if frac == 0 then
-			return sign * (1 / 0)
-		else
-			return sign * (0 / 0)
-		end
-	end
-
-	return sign * 2 ^ (exp - 127) * (1 + normal / 2 ^ 23)
-end
-
--- double rd_dbl_basic(byte f1..8)
--- @f1..8 - The 8 bytes composing a little endian double
-local function rd_dbl_basic(f1, f2, f3, f4, f5, f6, f7, f8)
-	local sign = (-1) ^ bit32.rshift(f8, 7)
-	local exp = bit32.lshift(bit32.band(f8, 0x7F), 4) + bit32.rshift(f7, 4)
-	local frac = bit32.band(f7, 0x0F) * 2 ^ 48
-	local normal = 1
-
-	frac = frac + (f6 * 2 ^ 40) + (f5 * 2 ^ 32) + (f4 * 2 ^ 24) + (f3 * 2 ^ 16) + (f2 * 2 ^ 8) + f1 -- help
-
-	if exp == 0 then
-		if frac == 0 then
-			return sign * 0
-		else
-			normal = 0
-			exp = 1
-		end
-	elseif exp == 0x7FF then
-		if frac == 0 then
-			return sign * (1 / 0)
-		else
-			return sign * (0 / 0)
-		end
-	end
-
-	return sign * 2 ^ (exp - 1023) * (normal + frac / 2 ^ 52)
-end
-
--- int rd_int_le(string src, int s, int e)
--- @src - Source binary string
--- @s - Start index of a little endian integer
--- @e - End index of the integer
-local function rd_int_le(src, s, e) return rd_int_basic(src, s, e - 1, 1) end
-
--- int rd_int_be(string src, int s, int e)
--- @src - Source binary string
--- @s - Start index of a big endian integer
--- @e - End index of the integer
-local function rd_int_be(src, s, e) return rd_int_basic(src, e - 1, s, -1) end
-
--- float rd_flt_le(string src, int s)
--- @src - Source binary string
--- @s - Start index of little endian float
-local function rd_flt_le(src, s) return rd_flt_basic(string.byte(src, s, s + 3)) end
-
--- float rd_flt_be(string src, int s)
--- @src - Source binary string
--- @s - Start index of big endian float
-local function rd_flt_be(src, s)
-	local f1, f2, f3, f4 = string.byte(src, s, s + 3)
-	return rd_flt_basic(f4, f3, f2, f1)
-end
-
--- double rd_dbl_le(string src, int s)
--- @src - Source binary string
--- @s - Start index of little endian double
-local function rd_dbl_le(src, s) return rd_dbl_basic(string.byte(src, s, s + 7)) end
-
--- double rd_dbl_be(string src, int s)
--- @src - Source binary string
--- @s - Start index of big endian double
-local function rd_dbl_be(src, s)
-	local f1, f2, f3, f4, f5, f6, f7, f8 = string.byte(src, s, s + 7) -- same
-	return rd_dbl_basic(f8, f7, f6, f5, f4, f3, f2, f1)
 end
 
 -- to avoid nested ifs in deserializing
 local float_types = {
-	[4] = {little = rd_flt_le, big = rd_flt_be},
-	[8] = {little = rd_dbl_le, big = rd_dbl_be},
+	[4] = {little = buffer.readf32, big = big_endian(buffer.readf32)},
+	[8] = {little = buffer.readf64, big = big_endian(buffer.readf64)},
 }
 
 -- byte stm_byte(Stream S)
 -- @S - Stream object to read from
 local function stm_byte(S)
 	local idx = S.index
-	local bt = string.byte(S.source, idx, idx)
+	local bt = S.source[idx]
 
 	S.index = idx + 1
 	return bt
@@ -288,10 +208,9 @@ end
 -- @S - Stream object to read from
 -- @len - Length of string being read
 local function stm_string(S, len)
-	local pos = S.index + len
-	local str = string.sub(S.source, S.index, pos - 1)
+	local str = buffer.readsring(S.source, S.index, len)
 
-	S.index = pos
+	S.index += pos
 	return str
 end
 
@@ -342,11 +261,11 @@ local function stm_inst_list(S)
 		local mode = OPCODE_M[op]
 		local data = {value = ins, op = OPCODE_RM[op], A = bit32.band(bit32.rshift(ins, 6), 0xFF)}
 
-		if args == 'ABC' then
+		if args == "ABC" then
 			data.B = bit32.band(bit32.rshift(ins, 23), 0x1FF)
 			data.C = bit32.band(bit32.rshift(ins, 14), 0x1FF)
-			data.is_KB = mode.b == 'OpArgK' and data.B > 0xFF -- post process optimization
-			data.is_KC = mode.c == 'OpArgK' and data.C > 0xFF
+			data.is_KB = mode.b == "OpArgK" and data.B > 0xFF -- post process optimization
+			data.is_KC = mode.c == "OpArgK" and data.C > 0xFF
 
 			if op == 10 then -- decode NEWTABLE array size, store it as constant value
 				local e = bit32.band(bit32.rshift(data.B, 3), 31)
@@ -356,10 +275,10 @@ local function stm_inst_list(S)
 					data.const = bit32.lshift(bit32.band(data.B, 7) + 8, e - 1)
 				end
 			end
-		elseif args == 'ABx' then
+		elseif args == "ABx" then
 			data.Bx = bit32.band(bit32.rshift(ins, 14), 0x3FFFF)
-			data.is_K = mode.b == 'OpArgK'
-		elseif args == 'AsBx' then
+			data.is_K = mode.b == "OpArgK"
+		elseif args == "AsBx" then
 			data.sBx = bit32.band(bit32.rshift(ins, 14), 0x3FFFF) - 131071
 		end
 
@@ -482,12 +401,12 @@ local function lua_bc_to_state(src)
 	local stream = {
 		-- data
 		index = 1,
-		source = src,
+		source = typeof(src) == "buffer" and src or buffer.fromstring(src),
 	}
 
-	assert(stm_string(stream, 4) == '\27Lua', 'invalid Lua signature')
-	assert(stm_byte(stream) == 0x51, 'invalid Lua version')
-	assert(stm_byte(stream) == 0, 'invalid Lua format')
+	assert(stm_string(stream, 4) == "\27Lua", "invalid Lua signature")
+	assert(stm_byte(stream) == 0x51, "invalid Lua version")
+	assert(stm_byte(stream) == 0, "invalid Lua format")
 
 	little = stm_byte(stream) ~= 0
 	size_int = stm_byte(stream)
@@ -496,7 +415,7 @@ local function lua_bc_to_state(src)
 	size_num = stm_byte(stream)
 	flag_int = stm_byte(stream) ~= 0
 
-	rdr_func = little and rd_int_le or rd_int_be
+	rdr_func = little and rd_int or big_endian(rd_int)
 	stream.s_int = cst_int_rdr(size_int, rdr_func)
 	stream.s_szt = cst_int_rdr(size_szt, rdr_func)
 	stream.s_ins = cst_int_rdr(size_ins, rdr_func)
@@ -504,12 +423,12 @@ local function lua_bc_to_state(src)
 	if flag_int then
 		stream.s_num = cst_int_rdr(size_num, rdr_func)
 	elseif float_types[size_num] then
-		stream.s_num = cst_flt_rdr(size_num, float_types[size_num][little and 'little' or 'big'])
+		stream.s_num = cst_flt_rdr(size_num, float_types[size_num][little and "little" or "big"])
 	else
-		error('unsupported float size')
+		error("unsupported float size")
 	end
 
-	return stm_lua_func(stream, '@virtual')
+	return stm_lua_func(stream, "@virtual")
 end
 
 local function close_lua_upvalues(list, index)
@@ -517,7 +436,7 @@ local function close_lua_upvalues(list, index)
 		if uv.index >= index then
 			uv.value = uv.store[uv.index] -- store value
 			uv.store = uv
-			uv.index = 'value' -- self reference
+			uv.index = "value" -- self reference
 			list[i] = nil
 		end
 	end
@@ -538,7 +457,7 @@ local function on_lua_error(failed, err)
 	local src = failed.source
 	local line = failed.lines[failed.pc - 1]
 
-	error(string.format('%s:%i: %s', src, line, err), 0)
+	error(string.format("%s:%i: %s", src, line, err), 0)
 end
 
 local function run_lua_func(state, env, upvals)
@@ -965,9 +884,9 @@ local function run_lua_func(state, env, upvals)
 							local A = inst.A
 							local init, limit, step
 
-							init = assert(tonumber(memory[A]), '`for` initial value must be a number')
-							limit = assert(tonumber(memory[A + 1]), '`for` limit must be a number')
-							step = assert(tonumber(memory[A + 2]), '`for` step must be a number')
+							init = assert(tonumber(memory[A]), "`for` initial value must be a number")
+							limit = assert(tonumber(memory[A + 1]), "`for` limit must be a number")
+							step = assert(tonumber(memory[A + 2]), "`for` step must be a number")
 
 							memory[A] = init - step
 							memory[A + 1] = limit
@@ -1085,6 +1004,12 @@ function lua_wrap_state(proto, env, upval)
 	return wrapped
 end
 
-return function(BCode, Env)
+return setmetatable({
+	bc_to_state = lua_bc_to_state,
+	wrap_state = lua_wrap_state,
+	opcode_rm = OPCODE_RM,
+	opcode_t = OPCODE_T,
+	opcode_m = OPCODE_M,
+}, {__call = function(BCode, Env) -- Backwards compatibility for legacy rerubi usage
 	return lua_wrap_state(lua_bc_to_state(BCode), Env or {})
-end
+end})
