@@ -199,9 +199,7 @@ return function(Vargs, GetEnv)
 		--// Load custom user-supplied commands in settings.Commands
 
 		--// Cache potential plugin set commands
-		if #server.ServerPlugins > 1 then
-			Admin.CacheCommands()
-		end
+		Admin.CacheCommands()
 
 		local commandEnv = GetEnv(nil, {
 			script = server.Config and server.Config:FindFirstChild("Settings") or script;
