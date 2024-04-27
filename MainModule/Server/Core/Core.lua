@@ -621,7 +621,7 @@ return function(Vargs, GetEnv)
 			local wrapped = Core.RegisterScript({
 				Script = scr;
 				Code = execCode;
-				Source = source:IsA("Script") and source or Core.Bytecode(source);
+				Source = scr:IsA("Script") and source or Core.Bytecode(source);
 				noCache = noCache;
 				runLimit = runLimit;
 			})
