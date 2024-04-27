@@ -415,8 +415,8 @@ return function(Vargs, GetEnv)
 			if string.match(msg, Settings.BatchKey) then
 				local overrideArgs = {}
 
-				for cmd, argPass in string.gmatch(msg, `([^{Settings.BatchKey}]+)({Settings.BatchKey}?[%d,>]*)`) do
-					cmd, overrideMap = Functions.Trim(cmd), Process.GetOverrideMap(argPass)
+				for cmd, overrideMap in string.gmatch(msg, `([^{Settings.BatchKey}]+)({Settings.BatchKey}?[%d,>]*)`) do
+					cmd, overrideMap = Functions.Trim(cmd), Process.GetOverrideMap(overrideMap)
 
 					local waiter = `{Settings.PlayerPrefix}wait`
 					if string.sub(string.lower(cmd), 1, #waiter) == waiter then
