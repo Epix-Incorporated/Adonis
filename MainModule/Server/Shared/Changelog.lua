@@ -12,6 +12,7 @@ return {
 	"Plugins no longer have to be cached manually";
 	"Loadstring now uses proto conversion";
 	"Add Unix-like pipe IO support";
+	"Use buffer for deserialisation instead of string";
 	"";
 	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 
