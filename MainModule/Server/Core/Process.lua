@@ -384,6 +384,25 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		GetOverrideMap = function(str)
+			local inputs, outputs = string.match(str, `{Settings.BatchKey}([%d,]+)>([%d,]+)`)
+			local tbl1, tbl2 = {}, {}
+			local i = 0
+
+			for num in string.gmatch(inputs, "(%d+),?") do
+				table.insert(tbl1, tonumber(num) or 1)
+			end
+
+			for num in string.gmatch(outputs, "(%d+),?") do
+				i += 1
+				if tbl1[i] then
+					tbl2[tbl1[i]] = tonumber(num) or 1
+				end
+			end
+
+			return tbl2
+		end;
+
 		Command = function(p, msg, opts, noYield)
 			opts = opts or {}
 
