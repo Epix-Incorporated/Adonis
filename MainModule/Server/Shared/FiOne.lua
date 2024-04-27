@@ -208,9 +208,9 @@ end
 -- @S - Stream object to read from
 -- @len - Length of string being read
 local function stm_string(S, len)
-	local str = buffer.readsring(S.source, S.index, len)
+	local str = buffer.readstring(S.source, S.index, len)
 
-	S.index += pos
+	S.index += len
 	return str
 end
 
