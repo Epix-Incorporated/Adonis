@@ -672,6 +672,7 @@ return function(Vargs, GetEnv)
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
 					if not Admin.CheckSlowMode(p) then
+						msg = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.UnsanitiseXML(msg) or msg -- Hack to fix TextChatService invalidly XML escaping messages
 						local msg = string.sub(msg, 1, Process.MsgStringLimit)
 						local filtered = service.LaxFilter(msg, p)
 
