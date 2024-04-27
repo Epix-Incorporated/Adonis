@@ -1451,7 +1451,7 @@ return function(Vargs, GetEnv)
 						if data and data.Source then
 							local module;
 							if not exists then
-								module = require(srcScript:IsA("LocalScript") and server.Shared.FiOne:Clone() or Core.GetLoadstring(), true)
+								module = require(srcScript:IsA("LocalScript") and server.Shared.FiOne:Clone() or Core.GetLoadstring())
 								table.insert(Core.ScriptCache, {
 									Script = srcScript;
 									Source = data.Source;
