@@ -188,9 +188,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--// Cache commands
-		Admin.CacheCommands()
-
 		rawset(Commands, "Init", nil)
 		Logs.AddLog("Script", "Commands Module Initialized")
 	end
@@ -198,7 +195,7 @@ return function(Vargs, GetEnv)
 	local function RunAfterPlugins()
 		--// Load custom user-supplied commands in settings.Commands
 
-		--// Cache potential plugin set commands
+		--// Cache admin commands
 		Admin.CacheCommands()
 
 		local commandEnv = GetEnv(nil, {
