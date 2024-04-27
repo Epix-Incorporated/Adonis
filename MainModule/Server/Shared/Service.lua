@@ -947,7 +947,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		UnsanitizeXML = function(str)
-			return string.gsub(str, "&;", {
+			return string.gsub(str, "&%w+;", {
 				["&apos;"] = "'",
 				["&quot;"] = "\"",
 				["&lt;"] = "<",
