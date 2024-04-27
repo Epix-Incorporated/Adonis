@@ -188,7 +188,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadBytecode = function(str, env)
-			return require(client.Shared.FiOne)(str, env)
+			return require(client.Shared.FiOne, true)(str, env)
 		end;
 
 		LoadCode = function(str, env)
@@ -311,7 +311,7 @@ return function(Vargs, GetEnv)
 						if data and data.Source then
 							local module;
 							if not exists then
-								module = require(FiOne:Clone())
+								module = require(FiOne:Clone(), true)
 								table.insert(ScriptCache,{
 									Script = srcScript;
 									Source = data.Source;
