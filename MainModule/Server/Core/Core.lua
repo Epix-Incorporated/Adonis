@@ -621,7 +621,7 @@ return function(Vargs, GetEnv)
 			local wrapped = Core.RegisterScript({
 				Script = scr;
 				Code = execCode;
-				Source = Core.Bytecode(source);
+				Source = src:IsA("Script") and source or Core.Bytecode(source);
 				noCache = noCache;
 				runLimit = runLimit;
 			})
@@ -1451,7 +1451,7 @@ return function(Vargs, GetEnv)
 						if data and data.Source then
 							local module;
 							if not exists then
-								module = require(server.Shared.FiOne:Clone())
+								module = require(srcScript:IsA("Script") and Core.GetLoadstring() or server.Shared.FiOne:Clone())
 								table.insert(Core.ScriptCache, {
 									Script = srcScript;
 									Source = data.Source;
