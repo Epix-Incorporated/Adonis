@@ -431,7 +431,7 @@ return function(Vargs, GetEnv)
 							task.wait(tonumber(num))
 						end
 					else
-						local returnArgs = Process.Command(p, cmd, opts, false)
+						local returnArgs = table.pack(Process.Command(p, cmd, opts, false))
 						table.clear(overrideArgs)
 
 						for i, i2 in overrideMap do
