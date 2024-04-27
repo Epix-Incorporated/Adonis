@@ -713,10 +713,14 @@ local function run_lua_func(state, env, upvals)
 							return table.unpack(memory, A, A + len - 1)
 						else
 							--[[CONCAT]]
-							local B = inst.B
-							local str = memory[B]
+							local B, C = inst.B, inst.C
+							local success, str = pcall(table.concat, memory, "", B, C)
 
-							for i = B + 1, inst.C do str = str .. memory[i] end
+							if not success then
+								str = memory[B]
+
+								for i = B + 1, C do str = str .. memory[i] end
+							end
 
 							memory[inst.A] = str
 						end
