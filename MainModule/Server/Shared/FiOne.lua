@@ -171,7 +171,7 @@ local intiger_write_type = {
 -- @s - Start index of a little endian integer
 -- @e - End index of the integer
 local function rd_int(src, s, e)
-	return intiger_types[e - s + 1](src, s)
+	return intiger_types[e - s](src, s)
 end
 
 -- number big_endian(string src, int s)
@@ -198,7 +198,7 @@ local float_types = {
 -- @S - Stream object to read from
 local function stm_byte(S)
 	local idx = S.index
-	local bt = S.source[idx]
+	local bt = buffer.readu8(S.source, idx)
 
 	S.index = idx + 1
 	return bt
@@ -400,7 +400,7 @@ local function lua_bc_to_state(src)
 	-- stream object
 	local stream = {
 		-- data
-		index = 1,
+		index = 0,
 		source = typeof(src) == "buffer" and src or buffer.fromstring(src),
 	}
 
