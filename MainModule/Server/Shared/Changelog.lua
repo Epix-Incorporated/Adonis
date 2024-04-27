@@ -10,6 +10,7 @@ return {
 	"Added silentstartup setting to loader";
 	" ^ Will mute non-errors for startup";
 	"Plugins no longer have to be cached manually";
+	"Loadstring now uses proto conversion";
 	"";
 	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 
