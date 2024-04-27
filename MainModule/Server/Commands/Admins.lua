@@ -917,7 +917,8 @@ return function(Vargs, env)
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
-				assert(string.find(Core.Bytecode(assert(args[1], "Missing Script code (argument #2)")), "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
+				assert(string.find(bytecode, "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("Script", args[1], true)
 				cl.Name = "[Adonis] Script"
@@ -936,7 +937,8 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(string.find(Core.Bytecode(assert(args[1], "Missing LocalScript code (argument #2)")), "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[1]}`, true)
 				cl.Name = "[Adonis] LocalScript"
