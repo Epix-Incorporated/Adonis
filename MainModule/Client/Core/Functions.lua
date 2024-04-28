@@ -561,6 +561,7 @@ return function(Vargs, GetEnv)
 				"ScreenGui";
 				"GuiMain";
 				"Frame";
+				"CanvasGroup";
 				"TextButton";
 				"TextLabel";
 				"ImageButton";
