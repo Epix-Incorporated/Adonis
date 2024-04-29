@@ -880,7 +880,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Hint = function(message, players, duration, title, image)
-			duration = duration or (#tostring(message) / 19 + 2.5)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
@@ -965,6 +965,8 @@ return function(Vargs, GetEnv)
 
 		Notification = function(title, message, players, duration, icon, onClick)
 			icon = icon and icon:match("MatIcon://(.+)") or icon
+			duration = duration or (#tostring(message) / 19) + 2.5
+			
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
