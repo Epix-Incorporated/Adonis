@@ -28,6 +28,13 @@
 -- * luaX.LUA_QS used in luaX:lexerror (from luaconf.h)
 -- * luaX.LUA_COMPAT_LSTR in luaX:read_long_string (from luaconf.h)
 -- * luaX.MAX_INT used in luaX:inclinenumber (from llimits.h)
+-- Luau specific additions by ccuser44:
+--   * Added Luau number handling
+--   * Added post 5.1 string handling
+--   * Added env localisation aiding for parser
+--   * Made lexer pre-lex lex tree instead of using on-the-fly lexing.
+--     Necessary for env localisation and more efficient than building
+       a parse tree (which would require full pre-lexing as well)
 --
 -- To use the lexer:
 -- (1) luaX:init() to initialize the lexer
@@ -159,20 +166,59 @@ luaX.LUA_COMPAT_LSTR = 1
 --luaX.MAX_SIZET = 4294967293
 
 ------------------------------------------------------------------------
+-- LuaU specific constants
+-- * luaX.DEOP: Tokens that cause env deoptimisation
+-- * luaX.GLOBALVARS: Tokens that are globals in the env
+------------------------------------------------------------------------
+luaX.DEOP = {
+	["getf".."env"] = true, ["setf".."env"] = true, ["_".."ENV"] = true
+}
+luaX.GLOBALVARS = [[
+_G _VERSION
+
+assert collectgarbage dofile error getmetatable ipairs
+load loadfile module next pairs pcall
+print rawequal rawget rawset require select
+setmetatable tonumber tostring type unpack xpcall
+newproxy gcinfo warn
+
+game plugin script shared workspace
+
+coroutine debug io math os package
+string table bit32 utf8
+
+DebuggerManager delay PluginManager settings spawn tick
+time UserSettings wait
+
+task
+
+Axes BrickColor CatalogSearchParams CFrame Color3 ColorSequence
+ColorSequenceKeypoint DateTime DockWidgetPluginGuiInfo Enum Faces FloatCurveKey
+Font Instance NumberRange NumberSequence NumberSequenceKeypoint OverlapParams
+PathWaypoint PhysicalProperties Random Ray RaycastParams Rect
+Region3 Region3int16 RotationCurveKey SharedTable TweenInfo UDim
+UDim2 Vector2 Vector2int16 Vector3 Vector3int16
+]]
+
+------------------------------------------------------------------------
 -- initialize lexer
 -- * original luaX_init has code to create and register token strings
 -- * luaX.tokens: TK_* -> token
 -- * luaX.enums:  token -> TK_* (used in luaX:llex)
 ------------------------------------------------------------------------
 function luaX:init()
-  local tokens, enums = {}, {}
+  local tokens, enums, globalvars = {}, {}, {}
   for v in string.gmatch(self.RESERVED, "[^\n]+") do
     local _, _, tok, str = string.find(v, "(%S+)%s+(%S+)")
     tokens[tok] = str
     enums[str] = tok
   end
+  for v in string.gmatch(self.GLOBALVARS, "[^%s]+") do
+    globalvars[v] = true
+  end
   self.tokens = tokens
   self.enums = enums
+  self.globalvars = globalvars
 end
 
 ------------------------------------------------------------------------
@@ -304,6 +350,8 @@ function luaX:setinput(L, ls, z, source)
   ls.linenumber = 1
   ls.lastline = 1
   ls.source = source
+  ls.safeenv = true
+  ls.usedglobals = {}
   self:nextc(ls)  -- read first char
 end
 
@@ -335,17 +383,18 @@ function luaX:next(ls)
     ls.t.token = ls.lookahead.token
     ls.lookahead.token = "TK_EOS"  -- and discharge it
   else
-    ls.t.token = self:llex(ls, ls.t)  -- read next token
+    ls.t.token = self:poptk(ls)  -- read next token
   end
 end
 
 ------------------------------------------------------------------------
 -- fill in the lookahead buffer
 -- * utilized used in lparser.c:constructor
+-- * Does currently nothing because of lexer caching
 ------------------------------------------------------------------------
 function luaX:lookahead(ls)
   -- lua_assert(ls.lookahead.token == "TK_EOS")
-  ls.lookahead.token = self:llex(ls, ls.lookahead)
+  --ls.lookahead.token = self:llex(ls, ls.lookahead)
 end
 
 ------------------------------------------------------------------------
@@ -424,8 +473,7 @@ function luaX:str2d(s)
 		local sum = 0
 
 		for i = 1, string.len(bin) do
-			local num = string.sub(bin, i, i) == "1" and 1 or 0
-			sum = sum + num * math.pow(2, i - 1)
+			sum = sum + bit32.lshift(string.sub(bin, i, i) == "1" and 1 or 0, i - 1)
 		end
 
 		return sum
@@ -658,6 +706,51 @@ function luaX:read_string(ls, del, Token)
 end
 
 ------------------------------------------------------------------------
+-- lexer cache
+-- * Pre-lex the whole lex tree and then cache it
+--   Allow global optimisation by scanning all lex tokens before parsing
+------------------------------------------------------------------------
+
+function luaX:poptk(ls)
+	if ls.lexercache then
+		local tkdata = ls.lexercache
+		local data = tkdata[tkdata.n]
+		tkdata.n, tkdata[tkdata.n] = tkdata.n - 1, nil
+		ls.t.token, ls.t.seminfo, ls.linenumber = data.type or "TK_EOS", data.seminfo or "", data.line
+
+		return data.type
+	end
+
+	-- Generate lex tree stack
+	local tkdata = {}
+	ls.lexercache = tkdata
+	while true do
+		local type = luaX:llex(ls, ls.t)
+
+		table.insert(tkdata, {
+			type = type,
+			seminfo = ls.t.seminfo,
+			line = ls.linenumber,
+		})
+
+		if type == "TK_EOS" then
+			break
+		end
+	end
+
+	-- Reverse lex tree stack
+	local len = #tkdata
+	tkdata.n = len
+	ls.linenumber, ls.lastline, ls.lookahead.token = 1, 1, "TK_EOS"
+	for i = 1, math.floor(len/2) do
+		local j = len - i + 1
+		tkdata[i], tkdata[j] = tkdata[j], tkdata[i]
+	end
+
+	return self:poptk(ls)
+end
+
+------------------------------------------------------------------------
 -- main lexer function
 ------------------------------------------------------------------------
 function luaX:llex(ls, Token)
@@ -781,6 +874,14 @@ function luaX:llex(ls, Token)
         local ts = ls.buff
         local tok = self.enums[ts]
         if tok then return tok end  -- reserved word?
+
+		-- Global optimisation helper
+		if self.DEOP[ts] then
+		  ls.safeenv = false
+		elseif self.globalvars[ts] then
+		  ls.usedglobals[ts] = true
+		end
+
         Token.seminfo = ts
         return "TK_NAME"
       else
