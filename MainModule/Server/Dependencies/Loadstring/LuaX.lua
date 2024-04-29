@@ -34,7 +34,7 @@
 --   * Added env localisation aiding for parser
 --   * Made lexer pre-lex lex tree instead of using on-the-fly lexing.
 --     Necessary for env localisation and more efficient than building
-       a parse tree (which would require full pre-lexing as well)
+--     a parse tree (which would require full pre-lexing as well)
 --
 -- To use the lexer:
 -- (1) luaX:init() to initialize the lexer
