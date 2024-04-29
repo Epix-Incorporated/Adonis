@@ -747,6 +747,46 @@ function luaX:poptk(ls)
 		tkdata[i], tkdata[j] = tkdata[j], tkdata[i]
 	end
 
+	-- Ugly hack to support global localisation without parser logic
+	-- TODO: Switch to parser logic LOCALEXP(name) = GLOBALEXP(name), ...
+	local usedglobals = ls.usedglobals
+	if ls.safeenv and #usedglobals > 0 then
+		for i = #usedglobals, 1, -1 do
+			tkdata.n = tkdata.n + 2
+			tkdata[tkdata.n - 1], tkdata[tkdata.n] = {
+				type = "TK_NAME",
+				seminfo = usedglobals[i],
+				line = 1
+			}, {
+				type = ",",
+				seminfo = ",",
+				line = 1
+			}
+		end
+		tkdata[tkdata.n] = {
+			type = "=",
+			seminfo = "=",
+			line = 1
+		}
+		for i = #usedglobals, 1, -1 do
+			tkdata.n = tkdata.n + 2
+			tkdata[tkdata.n - 1], tkdata[tkdata.n] = {
+				type = "TK_NAME",
+				seminfo = usedglobals[i],
+				line = 1
+			}, {
+				type = ",",
+				seminfo = ",",
+				line = 1
+			}
+		end
+		tkdata[tkdata.n] = {
+			type = "TK_LOCAL",
+			seminfo = "local",
+			line = 1
+		}
+	end
+
 	return self:poptk(ls)
 end
 
@@ -879,7 +919,7 @@ function luaX:llex(ls, Token)
 		if self.DEOP[ts] then
 		  ls.safeenv = false
 		elseif self.globalvars[ts] then
-		  ls.usedglobals[ts] = true
+		  table.insert(ls.usedglobals, ts)
 		end
 
         Token.seminfo = ts
