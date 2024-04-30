@@ -583,7 +583,6 @@ return function(Vargs, GetEnv)
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
 								if p and p.ClassName == "Player" and string.match(string.lower(p.Name), `^{service.SanitizePattern(string.lower(s)}`) then
-								-- if p and p.ClassName == "Player" and p.Name:lower()(`^{service.SanitizePattern(s:lower())}`) then
 									table.insert(players, p)
 									plus()
 								end
@@ -782,7 +781,7 @@ return function(Vargs, GetEnv)
 
 			if remainder == 2 then
 				-- 16 input bits -> 3 hextets (2 full, 1 partial)
-				local b1, b2 = str:byte(-2, -1)
+				local b1, b2 = string.byte(str, -2, -1)
 				-- partial is 4 bits long, leaving 2 bits of zero padding ->
 				-- offset = 4
 				local word = b2 * 4 + b1 * 4 * 256
@@ -799,7 +798,7 @@ return function(Vargs, GetEnv)
 				out[nOut + 4] = "="
 			elseif remainder == 1 then
 				-- 8 input bits -> 2 hextets (2 full, 1 partial)
-				local b1 = str:byte(-1, -1)
+				local b1 = string.byte(str, -1, -1)
 				-- partial is 2 bits long, leaving 4 bits of zero padding ->
 				-- offset = 16
 				local word = b1 * 16
@@ -1578,7 +1577,7 @@ return function(Vargs, GetEnv)
 
 		ParseColor3 = function(str: string?)
 			if not str then return nil end
-			if str:lower() == "random" then
+			if string.lower(str) == "random" then
 				return Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
 			end
 
@@ -1605,7 +1604,7 @@ return function(Vargs, GetEnv)
 			if not str and allowNil then
 				return nil
 			end
-			if not str or str:lower() == "random" then
+			if not str or string.lower(str) == "random" then
 				return BrickColor.random()
 			end
 
