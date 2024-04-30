@@ -50,7 +50,6 @@ return function(Vargs, GetEnv)
 	local Kick = Player.Kick
 	local isXbox = service.GuiService:IsTenFootInterface()
 	local isMobile = service.UserInputService.TouchEnabled and not service.UserInputService.KeyboardEnabled and not service.UserInputService.MouseEnabled
-	local hyperionEnabled = not isXbox and not isMobile and (#tostring(tonumber(string.sub(tostring{}, 8))) > 10)
 
 	local function Init()
 		UI = client.UI;
