@@ -968,7 +968,7 @@ return function(Vargs, GetEnv)
 							return nil
 						end
 						--// Prevent loading from DB to Trello ranks
-						if curName:match("Trello") and curTable and curTable.IsExternal then
+						if string.match(curName, "Trello") and curTable and curTable.IsExternal then
 							return nil
 						end
 					end
@@ -1199,7 +1199,7 @@ return function(Vargs, GetEnv)
 							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
 						end
 						--// No adding to Trello or WebPanel rank users list via Datastore
-						if type(indList[3]) == 'string' and (indList[3]:match("Trello") or indList[3]:match("WebPanel")) then
+						if type(indList[3]) == 'string' and (string.match(indList[3], "Trello") or string.match(indList[3], "WebPanel")) then
 							return
 						end
 					end
