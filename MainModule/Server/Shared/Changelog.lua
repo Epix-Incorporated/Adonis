@@ -16,6 +16,7 @@ return {
 	"Added CanvasGroup to :viewgui";
 	"Fixed duration time in Functions";
 	"Added LuaU global import optimisation to loadstring";
+	"Uncapitalised command aliases for ShowTrelloBanList";
 	"";
 	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 
