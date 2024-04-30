@@ -47,7 +47,7 @@ jobs:
             echo "Is pre-release: $GITHUB_IS_PRE_RELEASE"
             exit 1
           fi
-          echo "output_name=Adonis_${BUILD_TYPE}_${GITHUB_REF#refs/*/}_$(git rev-parse --short "$GIT_HASH")" >> "$GITHUB_OUTPUT"
+          echo "output_name=Adonis_${BUILD_TYPE}_${GITHUB_REF#refs/*/}" >> "$GITHUB_OUTPUT"
       - uses: ok-nick/setup-aftman@v0.4.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

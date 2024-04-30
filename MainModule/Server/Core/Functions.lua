@@ -350,7 +350,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
+							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -368,7 +368,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
+							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -734,7 +734,7 @@ return function(Vargs, GetEnv)
 			end
 
 			local function cipher(str, key)
-				return (string.gsub(str, '.', function(s)
+				return (string.gsub(str, ".", function(s)
 					if not rot47_convertible(s) then return s end
 					return string.char(((string.byte(s) - base + key) % range) + base)
 				end))
@@ -880,7 +880,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Hint = function(message, players, duration, title, image)
-			duration = duration or (#tostring(message) / 19 + 2.5)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
@@ -895,12 +895,12 @@ return function(Vargs, GetEnv)
 		Message = function(sender, title, message, image, players, scroll, duration)
 
 			-- Currently not used
-			if sender == 'Adonis' or sender == 'HelpSystem' or sender == 'Command' then
+			if sender == "Adonis" or sender == "HelpSystem" or sender == "Command" then
 				sender = nil
 			end
 
 			-- ////////// Compatability for older plugins (before sender and image ares were introduced)
-			if sender ~= nil and typeof(sender) ~= 'Instance' and typeof(sender) ~= 'userdata' and typeof(sender) ~= 'table' then
+			if sender ~= nil and typeof(sender) ~= "Instance" and typeof(sender) ~= "userdata" and type(sender) ~= "table" then
 				local oldVars = {
 					sender = sender,
 					title = title,
@@ -925,11 +925,11 @@ return function(Vargs, GetEnv)
 
 			if image then
 				-- Support "MatIcon://" for fast access to maticons
-				local MatIcon = image:match('MatIcon://(.+)')
+				local MatIcon = image:match("MatIcon://(.+)")
 
 				if MatIcon then
 					image = server.MatIcons[MatIcon]
-				elseif sender and (image == 'HeadShot') then
+				elseif sender and (image == "HeadShot") then
 					image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
 				end
 			end
@@ -964,7 +964,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon, onClick)
-			icon = icon and icon:match('MatIcon://(.+)') or icon
+			icon = icon and icon:match("MatIcon://(.+)") or icon
+			duration = duration or (#tostring(message) / 19) + 2.5
+			
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
@@ -1252,7 +1254,7 @@ return function(Vargs, GetEnv)
 			if useMagicChars==nil then useMagicChars = true end
 
 			local tab = {}
-			local str = ''
+			local str = ""
 
 			local spat, epat, escquotpat, buf, quoted = [=[^(['"])]=], [=[(['"])$]=], [=[(\(['"]))]=], nil, nil
 
@@ -1350,10 +1352,10 @@ return function(Vargs, GetEnv)
 
 		GrabNilPlayers = function(name)
 			local AllGrabbedPlayers = {}
-			for _,v in service.NetworkServer:GetChildren() do
+			for _, v in service.NetworkServer:GetChildren() do
 				pcall(function()
 					if v:IsA("NetworkReplicator") then
-						if string.sub(string.lower(v:GetPlayer().Name),1,#name)==string.lower(name) or name=='all' then
+						if string.sub(string.lower(v:GetPlayer().Name), 1, #name) == string.lower(name) or name == "all" then
 							table.insert(AllGrabbedPlayers, (v:GetPlayer() or "NoPlayer"))
 						end
 					end
@@ -1391,7 +1393,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Shutdown = function(reason)
-			Functions.Message('Adonis', Settings.SystemTitle, "The server is shutting down...", 'MatIcon://Warning', service.Players:GetPlayers(), false, 5)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is shutting down...", "MatIcon://Warning", service.Players:GetPlayers(), false, 5)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
@@ -1407,15 +1409,16 @@ return function(Vargs, GetEnv)
 			if Admin.CheckDonor(plr) and Settings.DonorCapes then
 				local PlayerData = Core.GetPlayer(plr) or {Donor = {}}
 				local donor = PlayerData.Donor or {}
+
 				if donor and donor.Enabled then
-					local img,color,material
+					local img, color, material
 					if donor and donor.Cape then
-						img,color,material = donor.Cape.Image,donor.Cape.Color,donor.Cape.Material
+						img, color, material = donor.Cape.Image, donor.Cape.Color, donor.Cape.Material
 					else
-						img,color,material = '0','White','Neon'
+						img, color, material = "0", "White", "Neon"
 					end
 					if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-						Functions.Cape(plr,true,material,color,img)
+						Functions.Cape(plr, true, material, color, img)
 					end
 				end
 			end
@@ -1458,7 +1461,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		LaxCheckMatch = function(check, match, opts)
-			local keys = if opts and type(opts) == 'table' and opts.IgnoreKeys then opts.IgnoreKeys else {}
+			local keys = if opts and type(opts) == "table" and opts.IgnoreKeys then opts.IgnoreKeys else {}
 			if check == match then
 				return true
 			elseif type(check) == "table" and type(match) == "table" then

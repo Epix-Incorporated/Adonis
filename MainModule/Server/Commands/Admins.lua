@@ -917,21 +917,7 @@ return function(Vargs, env)
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
-				assert(args[1], "Missing Script code (argument #2)")
-
-				--[[Remote.RemoveGui(plr, "Prompt_MakeScript")
-				if
-					plr == false
-					or Remote.GetGui(plr, "YesNoPrompt", {
-						Name = "Prompt_MakeScript";
-						Size = {250, 200},
-						Title = "Script Confirmation";
-						Icon = server.MatIcons.Warning;
-						Question = "Are you sure you want to execute the code directly on the server? This action is irreversible and may potentially be dangerous; only run scripts that you trust!";
-						Delay = 2;
-					}) == "Yes"
-				then]]
-				local bytecode = Core.Bytecode(args[1])
+				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
 				assert(string.find(bytecode, "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("Script", args[1], true)
@@ -940,9 +926,6 @@ return function(Vargs, env)
 				task.wait()
 				cl.Disabled = false
 				Functions.Hint("Ran Script", {plr})
-				--[[else
-					Functions.Hint("Operation cancelled", {plr})
-				end]]
 			end
 		};
 
@@ -954,9 +937,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing LocalScript code (argument #2)")
-
-				local bytecode = Core.Bytecode(args[1])
+				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
 				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[1]}`, true)
