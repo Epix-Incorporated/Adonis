@@ -364,7 +364,7 @@ return function(Vargs, GetEnv)
 			["radius-"] = {
 				Match = "radius-";
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
-					local matched = string.match(msg, "%#(.*)")
+					local matched = string.match(msg, "radius%-(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
