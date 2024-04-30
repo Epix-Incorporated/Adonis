@@ -1026,7 +1026,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return service.FormatNumber(num / (10 ^ (3 * #ABBREVIATIONS)), false, separator) .. ABBREVIATIONS[#ABBREVIATIONS]
 			end
 
-			int = int:reverse()
+			int = string.reverse(int)
 			local newInt = ""
 			local counter = 1
 			for i = 1, #int do
@@ -1034,11 +1034,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					newInt ..= separator
 					counter = 1
 				end
-				newInt ..= int:sub(i, i)
+				newInt ..= string.sub(int, i, i)
 				counter += 1
 			end
 
-			return `{(if num < 0 then "-" else "")}{newInt:reverse()}{if dec then `.{dec}` else ""}`
+			return `{(if num < 0 then "-" else "")}{string.reverse(newInt)}{if dec then `.{dec}` else ""}`
 		end;
 
 		OwnsAsset = function(...)
