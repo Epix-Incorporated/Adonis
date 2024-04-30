@@ -346,7 +346,7 @@ return function(Vargs, GetEnv)
 			["#number"] = {
 				Match = "#";
 				Function = function(msg, plr, ...)
-					local matched = msg:match("%#(.*)")
+					local matched = string.match(msg, "%#(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
@@ -364,7 +364,7 @@ return function(Vargs, GetEnv)
 			["radius-"] = {
 				Match = "radius-";
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
-					local matched = msg:match("radius%-(.*)")
+					local matched = string.match(msg, "radius%-(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
@@ -524,12 +524,13 @@ return function(Vargs, GetEnv)
 				--// Default to the executor ("me")
 				return {plr}
 			else
-				if argument:match("^##") then
+																									
+				if string.match(argument, "^##") then
 					error(`String passed to GetPlayers is filtered: {argument}`, 2)
 				end
 
-				local selectors = argument:gmatch("([^,]+)")
-				
+				local selectors = string.gmatch(argument, "([^,]+)")
+
 				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
 				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
 				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors 
@@ -571,7 +572,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{service.SanitizePattern(s:lower())}`) then
+							if p and p.ClassName == "Player" and string.match(string.lower(p.DisplayName), `^{service.SanitizePattern(string.lower(s))}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -581,7 +582,7 @@ return function(Vargs, GetEnv)
 							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match(`^{service.SanitizePattern(s:lower())}`) then
+								if p and p.ClassName == "Player" and string.match(string.lower(p.Name), `^{service.SanitizePattern(string.lower(s))}`) then
 									table.insert(players, p)
 									plus()
 								end
@@ -748,6 +749,7 @@ return function(Vargs, GetEnv)
 		Base64Encode = function(str)
 			local floor = math.floor
 			local char = string.char
+			local sub = string.sub
 			local nOut = 0
 			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			local strLen = #str
@@ -755,7 +757,7 @@ return function(Vargs, GetEnv)
 
 			-- 3 octets become 4 hextets
 			for i = 1, strLen - 2, 3 do
-				local b1, b2, b3 = str:byte(i, i + 3)
+				local b1, b2, b3 = string.byte(str, i, i + 3)
 				local word = b3 + b2 * 256 + b1 * 256 * 256
 
 				local h4 = word % 64 + 1
@@ -766,10 +768,12 @@ return function(Vargs, GetEnv)
 				word = floor(word / 64)
 				local h1 = word % 64 + 1
 
-				out[nOut + 1] = alphabet:sub(h1, h1)
-				out[nOut + 2] = alphabet:sub(h2, h2)
-				out[nOut + 3] = alphabet:sub(h3, h3)
-				out[nOut + 4] = alphabet:sub(h4, h4)
+				
+																												
+				out[nOut + 1] = sub(alphabet,h1, h1)
+				out[nOut + 2] = sub(alphabet,h2, h2)
+				out[nOut + 3] = sub(alphabet,h3, h3)
+				out[nOut + 4] = sub(alphabet,h4, h4)
 				nOut = nOut + 4
 			end
 
@@ -777,7 +781,7 @@ return function(Vargs, GetEnv)
 
 			if remainder == 2 then
 				-- 16 input bits -> 3 hextets (2 full, 1 partial)
-				local b1, b2 = str:byte(-2, -1)
+				local b1, b2 = string.byte(str, -2, -1)
 				-- partial is 4 bits long, leaving 2 bits of zero padding ->
 				-- offset = 4
 				local word = b2 * 4 + b1 * 4 * 256
@@ -788,13 +792,13 @@ return function(Vargs, GetEnv)
 				word = floor(word / 64)
 				local h1 = word % 64 + 1
 
-				out[nOut + 1] = alphabet:sub(h1, h1)
-				out[nOut + 2] = alphabet:sub(h2, h2)
-				out[nOut + 3] = alphabet:sub(h3, h3)
+				out[nOut + 1] = sub(alphabet,h1, h1)
+				out[nOut + 2] = sub(alphabet,h2, h2)
+				out[nOut + 3] = sub(alphabet,h3, h3)
 				out[nOut + 4] = "="
 			elseif remainder == 1 then
 				-- 8 input bits -> 2 hextets (2 full, 1 partial)
-				local b1 = str:byte(-1, -1)
+				local b1 = string.byte(str, -1, -1)
 				-- partial is 2 bits long, leaving 4 bits of zero padding ->
 				-- offset = 16
 				local word = b1 * 16
@@ -803,8 +807,8 @@ return function(Vargs, GetEnv)
 				word = floor(word / 64)
 				local h1 = word % 64 + 1
 
-				out[nOut + 1] = alphabet:sub(h1, h1)
-				out[nOut + 2] = alphabet:sub(h2, h2)
+				out[nOut + 1] = sub(alphabet,h1, h1)
+				out[nOut + 2] = sub(alphabet,h2, h2)
 				out[nOut + 3] = "="
 				out[nOut + 4] = "="
 			end
@@ -816,6 +820,7 @@ return function(Vargs, GetEnv)
 		Base64Decode = function(str)
 			local floor = math.floor
 			local char = string.char
+			local sub = string.sub
 			local nOut = 0
 			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			local strLen = #str
@@ -825,12 +830,12 @@ return function(Vargs, GetEnv)
 
 			local alphabetLut = {}
 			for i = 1, #alphabet do
-				alphabetLut[alphabet:sub(i, i)] = i - 1
+				alphabetLut[sub(alphabet, i, i)] = i - 1
 			end
 
 			-- 4 hextets become 3 octets
 			for i = 1, strLen do
-				local ch = str:sub(i, i)
+				local ch = sub(str, i, i)
 				local byte = alphabetLut[ch]
 				if byte then
 					acc = acc * 64 + byte
@@ -925,7 +930,8 @@ return function(Vargs, GetEnv)
 
 			if image then
 				-- Support "MatIcon://" for fast access to maticons
-				local MatIcon = image:match("MatIcon://(.+)")
+				local MatIcon = string.match(image, "MatIcon://(.+)")
+				-- local MatIcon = image("MatIcon://(.+)")
 
 				if MatIcon then
 					image = server.MatIcons[MatIcon]
@@ -964,7 +970,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon, onClick)
-			icon = icon and icon:match("MatIcon://(.+)") or icon
+			icon = icon and string.match(icon, "MatIcon://(.+)") or icon
 			duration = duration or (#tostring(message) / 19) + 2.5
 			
 			for _, v in players do
@@ -1266,15 +1272,14 @@ return function(Vargs, GetEnv)
 
 			local keyPattern = "[^"..key.."]+"
 
-			if key:match("%s") then
+			if string.match(key, "%s") then
 				keyPattern = "%S+" -- If the key is a whitespace character, use any whitespace character as the pattern
 			end
-
-			for arg in msg:gmatch(keyPattern) do
-				local squoted = arg:match(spat)
-				local equoted = arg:match(epat)
-				local escaped = arg:match([=[(\*)['"]$]=])
-
+			for arg in string.gmatch(msg, keyPattern) do
+				local squoted = string.match(arg, spat)
+				local equoted = string.match(arg, epat)
+				local escaped = string.match(arg, [=[(\*)['"]$]=])
+																												
 				if #tab>=num then
 					break
 				elseif #tab>=num-1 then
@@ -1291,7 +1296,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if not buf then
-					local result = arg:gsub(spat, ""):gsub(epat, ""):gsub(escquotpat,"%2")
+					local result = string.gsub(string.gsub(string.gsub(arg, spat, ""), epat, ""), escquotpat, "%2")
 					str ..= result .. key
 					table.insert(tab,result)
 				end
@@ -1572,7 +1577,7 @@ return function(Vargs, GetEnv)
 
 		ParseColor3 = function(str: string?)
 			if not str then return nil end
-			if str:lower() == "random" then
+			if string.lower(str) == "random" then
 				return Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
 			end
 
@@ -1599,7 +1604,7 @@ return function(Vargs, GetEnv)
 			if not str and allowNil then
 				return nil
 			end
-			if not str or str:lower() == "random" then
+			if not str or string.lower(str) == "random" then
 				return BrickColor.random()
 			end
 
