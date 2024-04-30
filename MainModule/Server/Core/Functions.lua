@@ -572,7 +572,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and string.match(string.lower(p.DisplayName), `^{service.SanitizePattern(string.lower(s)}`) then																						
+							if p and p.ClassName == "Player" and string.match(string.lower(p.DisplayName), `^{service.SanitizePattern(string.lower(s)}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -758,7 +758,7 @@ return function(Vargs, GetEnv)
 
 			-- 3 octets become 4 hextets
 			for i = 1, strLen - 2, 3 do
-				local b1, b2, b3 = string.byte(str, i, i + 3)																							
+				local b1, b2, b3 = string.byte(str, i, i + 3)
 				local word = b3 + b2 * 256 + b1 * 256 * 256
 
 				local h4 = word % 64 + 1
@@ -1297,7 +1297,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if not buf then
-					local result = string.gsub(string.gsub(string.gsub(arg, spat, ""), epat, ""), escquotpat, "%2")																					
+					local result = string.gsub(string.gsub(string.gsub(arg, spat, ""), epat, ""), escquotpat, "%2")
 					str ..= result .. key
 					table.insert(tab,result)
 				end
