@@ -81,7 +81,7 @@ return function(Vargs, GetEnv)
 
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
-			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(hyperionEnabled and " - Hyperion is enabled" or isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
+			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
 			if action == "k".."i".."c".."k" then
 				if not isStudio then
