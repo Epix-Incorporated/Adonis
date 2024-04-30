@@ -1196,7 +1196,7 @@ return function(Vargs, env)
 
 		ShowTrelloBansList = {
 			Prefix = Settings.Prefix;
-			Commands = {"SyncedTrelloBans", "TrelloBans", "TrelloBanList", "ShowTrelloBans"};
+			Commands = {"trellobans", "trellobanlist", "tbl", "syncedtrellobans", "showtrellobans"};
 			Args = {};
 			Description = "Shows bans synced from Trello.";
 			TrelloRequired = true;
