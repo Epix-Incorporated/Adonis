@@ -199,6 +199,21 @@ PathWaypoint PhysicalProperties Random Ray RaycastParams Rect
 Region3 Region3int16 RotationCurveKey SharedTable TweenInfo UDim
 UDim2 Vector2 Vector2int16 Vector3 Vector3int16
 ]]
+luaX.expdepth = {
+	"(" = ")",
+	"{" = "}",
+	"[" = "]",
+	"TK_FUNCTION" = "TK_END",
+	"TK_DO" = "TK_END",
+	"TK_THEN" = "TK_END",
+	"TK_REPEAT" = "TK_UNTIL",
+}
+luaX.expcutoffstat = {
+	"TK_REPEAT" = true, "TK_IF" = true, ";" = true, "TK_WHILE" = true,
+	"TK_LOCAL" = true, "TK_BREAK" = true, "TK_CONTINUE" = true, "TK_ELSE" = true,
+	"TK_ELSEIF" = true, "TK_END" = true, "TK_DO" = true, "TK_IF" = true,
+	"TK_FOR" = true, "TK_REPEAT" = true,
+}
 
 ------------------------------------------------------------------------
 -- initialize lexer
@@ -352,6 +367,7 @@ function luaX:setinput(L, ls, z, source)
   ls.source = source
   ls.safeenv = true
   ls.usedglobals = {}
+  ls.setglobals = {}
   self:nextc(ls)  -- read first char
 end
 
@@ -457,7 +473,7 @@ function luaX:str2d(s)
 	-- conversion failed
 
 	if string.lower(string.sub(s, 1, 2)) == "0x" then  -- maybe an hexadecimal constant?
-		result = tonumber(s, 16)
+		result = tonumber(string.sub(s, 3), 16)
 		if result then return result end  -- most common case
 		-- Was: invalid trailing characters?
 		-- In C, this function then skips over trailing spaces.
@@ -465,18 +481,7 @@ function luaX:str2d(s)
 		-- If there is still something else, then it returns a false.
 		-- All this is not necessary using Lua's tonumber.
 	elseif string.lower(string.sub(s, 1, 2)) == "0b" then  -- binary intiger constants
-		if string.match(string.sub(s, 3), "[^01]") then
-			return nil
-		end
-
-		local bin = string.reverse(string.sub(s, 3))
-		local sum = 0
-
-		for i = 1, string.len(bin) do
-			sum = sum + bit32.lshift(string.sub(bin, i, i) == "1" and 1 or 0, i - 1)
-		end
-
-		return sum
+		return tonumber(string.sub(s, 3), 2)
 	end
 	return nil
 end
@@ -716,24 +721,46 @@ function luaX:poptk(ls)
 		local tkdata = ls.lexercache
 		local data = tkdata[tkdata.n]
 		tkdata.n, tkdata[tkdata.n] = tkdata.n - 1, nil
-		ls.t.token, ls.t.seminfo, ls.linenumber = data.type or "TK_EOS", data.seminfo or "", data.line
+		ls.t.token, ls.t.seminfo, ls.linenumber = data.type or "TK_EOS", data.seminfo or "", data.line or 0
 
 		return data.type
 	end
 
 	-- Generate lex tree stack
-	local tkdata = {}
+	local tkdata, depthstack, globalstack = {n = 0}, {n = 1, close = "", "EOS"}, {n = 1, {}}
 	ls.lexercache = tkdata
 	while true do
 		local type = luaX:llex(ls, ls.t)
+		local seminfo = ls.t.seminfo
+		local lasttoken = tkdata[tkdata.n]
 
 		table.insert(tkdata, {
 			type = type,
-			seminfo = ls.t.seminfo,
+			seminfo = seminfo,
 			line = ls.linenumber,
 		})
 
-		if type == "TK_EOS" then
+		if luaX.expcutoffstat[type] then
+			table.clear(globalstack[globalstack.n])
+		end
+
+		if luaX.expdepth[type] then
+			depthstack[depthstack.n + 1], depthstack.n, depthstack.close = type, depthstack.n + 1, luaX.expdepth[type]
+		else type == depthstack.close then
+			local oldindex, newindex = depthstack.n, depthstack.n - 1
+			depthstack[oldindex], depthstack.n, depthstack.close = nil, newindex, luaX.expdepth[depthstack[newindex]] or ""
+			globalstack[oldindex], globalstack.n = nil, newindex
+		end
+
+		if type == "TK_NAME" then
+			-- Global optimisation helper
+			if self.DEOP[seminfo] then
+				ls.safeenv = false
+			elseif self.globalvars[seminfo] then
+				ls.usedglobals[seminfo] = true
+				globalstack[globalstack.n][seminfo] = true
+			end
+		elseif type == "TK_EOS" then
 			break
 		end
 	end
@@ -914,14 +941,6 @@ function luaX:llex(ls, Token)
         local ts = ls.buff
         local tok = self.enums[ts]
         if tok then return tok end  -- reserved word?
-
-		-- Global optimisation helper
-		if self.DEOP[ts] then
-		  ls.safeenv = false
-		elseif self.globalvars[ts] then
-		  table.insert(ls.usedglobals, ts)
-		end
-
         Token.seminfo = ts
         return "TK_NAME"
       else
