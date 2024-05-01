@@ -3,17 +3,13 @@
 --// GitHub@Expertcoderz was here to make things look better
 
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
-
+	
 	local server = Vargs.Server
 	local service = Vargs.Service
 
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-
-	local Routine = env.Routine
 
 	local TeleportService: TeleportService = service.TeleportService
 	local Players: Players = service.Players
@@ -42,7 +38,7 @@ return function(Vargs, GetEnv)
 	end)
 
 	if isReservedServer then
-		Routine(function()
+		task.defer(function()
 			local waitTime = 5
 			local playersToTeleport = {}
 
@@ -64,9 +60,9 @@ return function(Vargs, GetEnv)
 						Time = 1000
 					})
 
-					task.wait(waitTime+5)
+					task.wait(waitTime + 5)
 					waitTime /= 2
-
+					
 					Logs:AddLog("Script", `Teleporting {player.Name} back to the main game`)
 					teleportedPlayers[player] = 1
 					table.insert(playersToTeleport, player)
@@ -110,6 +106,7 @@ return function(Vargs, GetEnv)
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+			
 			task.wait(2)
 
 			for _, v in Players:GetPlayers() do
@@ -169,6 +166,7 @@ return function(Vargs, GetEnv)
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+			
 			task.wait(1)
 
 			for _, v in Players:GetPlayers() do
@@ -202,10 +200,10 @@ return function(Vargs, GetEnv)
 			local time
 			if args[2] then
 				time = string.lower(args[2])
-				if time:sub(-1,-1)=="s" then
-					time = tonumber(time:sub(1,-2))
-				elseif time:sub(-1,-1)=="m" then
-					time = tonumber(time:sub(1,-2))*60
+				if string.sub(time, -1, -1) == "s" then
+					time = tonumber(string.sub(time, 1, -2))
+				elseif string.sub(time, -1, -1) == "m" then
+					time = tonumber(string.sub(time, 1, -2)) * 60
 				else
 					error("Invalid time specified.");
 				end
@@ -214,7 +212,7 @@ return function(Vargs, GetEnv)
 			if not Core.CrossServer("GlobalRestartRequest",
 				args[1] or "No reason specified.",
 				if args[2] then tonumber(args[2]) else args[2],
-				not (string.lower(args[3])=="no" or string.lower(args[3])=="false")
+				not (string.lower(args[3]) == "no" or string.lower(args[3]) == "false")
 				)
 			then
 				error("CrossServer handler not ready (try again later)")
