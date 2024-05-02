@@ -1,15 +1,7 @@
-server = nil
-service = nil
-Pcall = nil
-Routine = nil
-GetEnv = nil
-logError = nil
 
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -30,7 +22,7 @@ return function(Vargs, GetEnv)
 	Core.CrossServerCommands = {
 		ServerChat = function(jobId, data)
 			if data then
-				for _, v in ipairs(service.GetPlayers()) do
+				for _, v in service.GetPlayers() do
 					if Admin.GetLevel(v) > 0 then
 						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
@@ -81,7 +73,7 @@ return function(Vargs, GetEnv)
 
 		DataStoreUpdate = function(jobId, key, data)
 			if key and data then
-				Routine(Core.LoadData, key, data)
+				task.defer(Core.LoadData, key, data)
 			end
 		end;
 
@@ -202,7 +194,7 @@ return function(Vargs, GetEnv)
 			})
 
 			for _, v in service.GetPlayers() do
-				Routine(function()
+				task.defer(function()
 					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
 					if response and os.clock() - start <= 120 then
 						MsgService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
@@ -376,7 +368,7 @@ return function(Vargs, GetEnv)
 			if not answers then
 				anstab = {"Yes","No"}
 			else
-				for ans in answers:gmatch("([^,]+)") do
+				for ans in string.gmatch(answers, "([^,]+)") do
 					table.insert(anstab, ans)
 				end
 			end
@@ -453,7 +445,7 @@ return function(Vargs, GetEnv)
 		end
 	end
 
-	Routine(function()
+	task.defer(function()
 		Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and MsgService:SubscribeAsync(subKey, function(...)
 			if not Settings.CrossServerCommands then return end -- Ignore when disabled
 			return Process.CrossServerMessage(...)

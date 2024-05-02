@@ -5,9 +5,7 @@
 --]]
 
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
-
+	
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -17,7 +15,7 @@ return function(Vargs, GetEnv)
 
 	local OBJ_NAME_PREFIX = "Adonis_"
 
-	for _, child in ipairs(workspace:GetDescendants()) do
+	for _, child in workspace:GetDescendants() do
 		local objType, name = string.match(child.Name, `{OBJ_NAME_PREFIX}(.*): (.*)`)
 
 		if child:IsA("BasePart") and objType and name then
