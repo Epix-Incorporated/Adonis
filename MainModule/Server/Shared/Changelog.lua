@@ -3,6 +3,10 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[Patch v257.1 13:35 UTC] @Dimenpsyonal";
+	"Fix invalid lookahead buffer handling";
+	"Use LuaU string library matching";
+	"";
 	"[v257 2024-05-02 07:56 UTC] @Dimenpsyonal";
 	"Added silentstartup setting to loader";
 	" ^ Will mute non-errors for startup";
