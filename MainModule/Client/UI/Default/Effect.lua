@@ -1,16 +1,11 @@
-client = nil
-Pcall = nil
-Routine = nil
-service = nil
-gTable = nil
 
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed using service.HttpService:GenerateGUID(false)
 
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
+	
+	local client = env.client;
+	local service = env.service;
 	
 	local gui = service.New("ScreenGui")
 	local mode = data.Mode
@@ -165,7 +160,9 @@ return function(data, env)
 				task.wait(0.1)
 			end
 		end
+			
 		sound:Stop()
+			
 	elseif mode == "lifeoftheparty" then
 		local frame = Instance.new("Frame")
 		frame.BackgroundColor3 = Color3.new(0,0,0)
