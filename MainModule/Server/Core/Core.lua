@@ -223,7 +223,6 @@ return function(Vargs, GetEnv)
 					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false}, true, true)
 					local func = service.New("RemoteFunction", {Name = "__FUNCTION", Parent = event}, true, true)
 					local secureTriggered = true
-					local tripDet = math.random()
 
 					local function secure(ev, name, parent)
 						return ev.Changed:Connect(function()
@@ -244,7 +243,6 @@ return function(Vargs, GetEnv)
 					end
 
 					Core.DisconnectEvent()
-					Core.TripDet = tripDet
 
 					rTable.Events = {}
 					rTable.Object = event
