@@ -1,14 +1,6 @@
-server = nil
-service = nil
-Routine = nil
-GetEnv = nil
-origEnv = nil
-logError = nil
 
 --// Anti-Exploit
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -38,12 +30,13 @@ return function(Vargs, GetEnv)
 				player.CharacterAdded:Wait()
 			end
 
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode == true then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode then
 				Anti.CharacterCheck(player)
 			end
+			
 		end
 
-		if Settings.Detection == false then
+		if not Settings.Detection then
 			Logs:AddLog("Script", "Didn't load Adonis protection systems due to settings.Detection being set to false.")
 			return
 		end
@@ -59,6 +52,7 @@ return function(Vargs, GetEnv)
 		for _, v in service.Players:GetPlayers() do
 			task.spawn(onPlayerAdded, v)
 		end
+		
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
 
@@ -102,7 +96,7 @@ return function(Vargs, GetEnv)
 					local count = 0
 
 					task.defer(function()
-						for _, v in ipairs(character:GetChildren()) do
+						for _, v in character:GetChildren() do
 							if v:IsA("BackpackItem") then
 								count += 1
 								if count > 1 then

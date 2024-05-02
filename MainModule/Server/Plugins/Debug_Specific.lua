@@ -1,16 +1,9 @@
-server = nil
-service = nil
-Pcall = nil
-Routine = nil
-GetEnv = nil
-logError = nil
 
 --// This module is for stuff specific to debugging
 --// Most of this only runs when DebugMode is enabled
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
+
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -242,7 +235,7 @@ local service = wrappedEnv.Service
 		Function = function(plr: Player, args: {string})
 			--assert(args[1] and args[2],"Argument missing or nil")
 			Remote.Send(plr, "TestError")
-			Routine(function() plr.Bobobobobobobo.Hi = 1 end)
+			task.defer(function() plr.Bobobobobobobo.Hi = 1 end)
 			if not args[1] then
 				error("This is an intentional test error")
 			elseif args[1]:lower() == "error" then
@@ -303,54 +296,59 @@ local service = wrappedEnv.Service
 		Debug = true;
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
-			local tack = time()
-			print(tack)
+
 			print(Remote.Get(plr,"Test"))
+
 			local tab = {
-			    {
-			    	Children = {
-			            {Class = "sdfhasdfjkasjdf"}
-			        }
-			    },
- 			   {Something = "hi"}
+				{
+					Children = {
+						{
+							Class = "sdfhasdfjkasjdf"
+						}
+					}
+				},
+				{Something = "hi"}
 			}
 
-			local m, ret = Remote.Get(plr, "Test", tab)
-			if ret then
-				print(ret)
-				for i,v in next, ret do
-					print(i,v)
-					for i,v in next,v do
-						print(i,v)
-						for i,v in next,v do
-							print(i,v)
-							for i,v in next,v do
-								print(i,v)
-							end
-						end
-					end
-				end
-			end
-			print(time() - tack)
-			print("TESTING EVENT")
+			local FuncTime = os.clock();
+
+			local _, ret = Remote.Get(plr, "Test", tab)
+
+			print(`Remote.Get RETURN:`, ret)
+
+			warn(`Remote.Get TOOK: {os.clock() - FuncTime}`)
+
+			print("TESTING UI EVENTS..")
+
 			Remote.MakeGui(plr, "Settings", {
 				IsOwner = true
 			})
+			
+			local RemoteTime;
+			
 			local testColor = Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
 			print(testColor)
+			
 			local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
 				Icon = server.MatIcons["Bug report"];
 				Question = "Is this a test question?";
 			}), Remote.NewPlayerEvent(plr, "TestEvent", function(...)
-				print("EVENT WAS FIRED; WE GOT:")
-				print(...)
+				print("RemoteEvent Return:", ...)
+				warn(`Remote.Send TOOK: {os.clock() - RemoteTime}`)
 				print("THAT'D BE ALL")
 			end)
 			print(`PLAYER ANSWER: {ans}`)
-			wait(0.5)
-			print("SENDING REMOTE EVENT TEST")
+
+			task.wait(0.5)
+			
+			print("RemoteEvent Sending..")
+			
+			RemoteTime = os.clock();
+			
 			Remote.Send(plr, "TestEvent", "TestEvent", "hi mom I went thru the interwebs")
-			print("SENT")
+			
+			print("RemoteEvent Fired successfully")
+
 		end;
 	};
 
@@ -374,9 +372,10 @@ local service = wrappedEnv.Service
 			local func,err = Core.Loadstring(args[1],GetEnv())
 			if func then
 				func()
+				Functions.Hint("Ran script", {plr}, 3)
 			else
-				logError("DEBUG",err)
-				Functions.Hint(err,{plr})
+				server.LogError("DEBUG",err)
+				Functions.Hint(err,{plr}, 6)
 			end
 			--end
 		end
