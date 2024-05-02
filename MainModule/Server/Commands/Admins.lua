@@ -1412,7 +1412,7 @@ return function(Vargs, env)
 			Commands = {"nil"};
 			Args = {"player"};
 			Hidden = true;
-			Description = `Deletes the player forcefully, causing them to be kicked for "unexpected client behaviour"`;
+			Description = `Deletes the player forcefully, causing them to be kicked for "Player has been removed from the DataModel"`;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
