@@ -1,7 +1,26 @@
 return {
-	"Version: 256";
+	"Version: 257";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v257 2024-05-02 07:56 UTC] @Dimenpsyonal";
+	"Added silentstartup setting to loader";
+	" ^ Will mute non-errors for startup";
+	"Code quality improvements";
+	"Updated FiOne";
+	"Fixed error with SoftShutdown process";
+	"Plugins no longer have to be cached manually";
+	"Loadstring now uses proto conversion";
+	"Added Unix-like pipe IO support";
+	"Use buffer for deserialisation instead of string";
+	"Added CanvasGroup to :viewgui";
+	"Fixed duration time in Functions";
+	"Added LuaU global import optimisation to loadstring";
+	"Uncapitalised command aliases for ShowTrelloBanList";
+	"Removed hyperion debug info";
+	"Optimised string library functions";
+	"Added MatIcon to :place notification";
+	"Added plazaconnect as command for to :grplaza";
 	"";
 	"[v256 2024-04-16 08:40 UTC] @Dimenpsyonal";
 	":banlist text is now selectable"; 

@@ -830,7 +830,7 @@
 		[String] 	Icon		 - The window's icon
 		[Vector2]	CanvasSize	 - Sets the window's canvas size
 		[Table]		Size		 - Size of the window in absolute X,Y values
-		[UDim2] 	Position 	 - The window''s position on the screen
+		[UDim2] 	Position 	 - The window's position on the screen
 		[Table]		MinSize		 - The minimum AbsoluteSize of the window
 		[Table]		MaxSize		 - The maximum Absolutesize of the window
 		[Bool] 		NoHide		 - If true the minimize button will be removed
@@ -2035,13 +2035,13 @@ return function(data, env)
 	end
 
 	function setMinSize(Table)
-		if Table and typeof(Table) == "table" then
+		if Table and type(Table) == "table" then
 			MinSize = Table
 		end
 	end
 
 	function setMaxSize(Table)
-		if Table and typeof(Table) == "table" then
+		if Table and type(Table) == "table" then
 			MaxSize = Table
 		end
 	end

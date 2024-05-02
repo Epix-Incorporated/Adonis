@@ -350,7 +350,7 @@ return function(Vargs, GetEnv)
 										Player = p;
 									})
 								else
-									Anti.Detected(p, "kick","Communication Key Error (r10003)")
+									Anti.Detected(p, "kick", "Communication Key Error (r10003)")
 								end
 							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
@@ -384,12 +384,27 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		GetOverrideMap = function(str)
+			local inputs, outputs = string.match(str, `{Settings.BatchKey}([%d,]+)>([%d,]+)`)
+			local tbl1, tbl2 = {}, {}
+			local i = 0
+
+			for num in string.gmatch(inputs or "", "(%d+),?") do
+				table.insert(tbl1, tonumber(num) or 1)
+			end
+
+			for num in string.gmatch(outputs or "", "(%d+),?") do
+				i += 1
+				if tbl1[i] then
+					tbl2[tbl1[i]] = tonumber(num) or 1
+				end
+			end
+
+			return tbl2
+		end;
+
 		Command = function(p, msg, opts, noYield)
 			opts = opts or {}
-
-			--[[if Admin.IsBlacklisted(p) then
-				return false
-			end]]
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
 				msg = string.sub(msg, 1, Process.MsgStringLimit)
@@ -398,18 +413,32 @@ return function(Vargs, GetEnv)
 			msg = Functions.Trim(msg)
 
 			if string.match(msg, Settings.BatchKey) then
-				for cmd in string.gmatch(msg,`[^{Settings.BatchKey}]+`) do
-					cmd = Functions.Trim(cmd)
+				local overrideArgs = {}
+
+				for cmd, overrideMap in string.gmatch(msg, `([^{Settings.BatchKey}]+)({Settings.BatchKey}?[%d,>]*)`) do
+					cmd, overrideMap = Functions.Trim(cmd), Process.GetOverrideMap(overrideMap)
 
 					local waiter = `{Settings.PlayerPrefix}wait`
 					if string.sub(string.lower(cmd), 1, #waiter) == waiter then
-						local num = tonumber(string.sub(cmd, #waiter + 1))
+						local num = tonumber(overrideArgs[1] or string.sub(cmd, #waiter + 1))
+
+						if overrideMap[1] then
+							table.clear(overrideArgs)
+							overrideArgs[overrideMap[1]] = num
+						end
 
 						if num then
 							task.wait(tonumber(num))
 						end
 					else
-						Process.Command(p, cmd, opts, false)
+						local returnArgs = table.pack(Process.Command(p, cmd, opts, false))
+						table.clear(overrideArgs)
+
+						for i, i2 in overrideMap do
+							overrideArgs[i2] = returnArgs[i + 1]
+						end
+
+						opts.OverrideArgs = overrideArgs
 					end
 				end
 			else
@@ -498,6 +527,12 @@ return function(Vargs, GetEnv)
 					end
 				end
 
+				if opts.OverrideArgs then
+					for i, v in opts.OverrideArgs do
+						args[i] = v
+					end
+				end
+
 				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog then
 					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
@@ -517,7 +552,7 @@ return function(Vargs, GetEnv)
 				end
 
 				Admin.UpdateCooldown(pDat, command)
-				local ran, cmdError = TrackTask(taskName, command.Function, function(cmdError)
+				local returnArgs = table.pack(TrackTask(taskName, command.Function, function(cmdError)
 					if not opts.IgnoreErrors then
 						if type(cmdError) == "string" then
 							AddLog("Errors", `[{matched}] {cmdError}`)
@@ -539,7 +574,8 @@ return function(Vargs, GetEnv)
 				end, p, args, {
 					PlayerData = pDat,
 					Options = opts
-				})
+				}))
+				local ran, cmdError = returnArgs[1], returnArgs[2]
 
 				service.Events.CommandRan:Fire(p, {
 					Message = msg,
@@ -548,10 +584,12 @@ return function(Vargs, GetEnv)
 					Command = command,
 					Index = index,
 					Success = ran,
-					Error = if type(cmdError) == "string" then cmdError else nil,
+					Error = if not ran then cmdError else nil,
 					Options = opts,
 					PlayerData = pDat
 				})
+
+				return unpack(returnArgs)
 			end
 		end;
 
@@ -581,23 +619,23 @@ return function(Vargs, GetEnv)
 				else
 					local target = `{Settings.SpecialPrefix}all`
 					if not b then
-						b = 'Global'
+						b = "Global"
 					end
 					if not service.Players:FindFirstChild(p.Name) then
-						b='Nil'
+						b="Nil"
 					end
-					if string.sub(a,1,1)=='@' then
-						b='Private'
-						target,a=string.match(a,'@(.%S+) (.+)')
-						Remote.Send(p,'Function','SendToChat',p,a,b)
-					elseif string.sub(a,1,1)=='#' then
-						if string.sub(a,1,7)=='#ignore' then
+					if string.sub(a,1,1)=="@" then
+						b="Private"
+						target,a=string.match(a,"@(.%S+) (.+)")
+						Remote.Send(p,"Function","SendToChat",p,a,b)
+					elseif string.sub(a,1,1)=="#" then
+						if string.sub(a,1,7)=="#ignore" then
 							target=string.sub(a,9)
-							b='Ignore'
+							b="Ignore"
 						end
-						if string.sub(a,1,9)=='#unignore' then
+						if string.sub(a,1,9)=="#unignore" then
 							target=string.sub(a,11)
-							b='UnIgnore'
+							b="UnIgnore"
 						end
 					end
 
@@ -634,6 +672,7 @@ return function(Vargs, GetEnv)
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
 					if not Admin.CheckSlowMode(p) then
+						msg = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.UnsanitizeXML(msg) or msg -- Hack to fix TextChatService invalidly XML escaping messages
 						local msg = string.sub(msg, 1, Process.MsgStringLimit)
 						local filtered = service.LaxFilter(msg, p)
 
@@ -1006,14 +1045,14 @@ return function(Vargs, GetEnv)
 					if Settings.Notification then
 
 						task.wait(1)
-						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}cmds")`))
 
 						if oldVer and newVer and newVer > oldVer then
-							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://System upgrade", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}changelog')`))
+							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://System upgrade", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`))
 						end
 
 						if level > 300 and Core.DebugMode == true then
-							task.delay(1, Functions.Notification, "Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}debugcmds')`))
+							task.delay(1, Functions.Notification, "Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`))
 						end
 
 						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
@@ -1118,7 +1157,7 @@ return function(Vargs, GetEnv)
 
 				if
 					(not args[1] or
-						(args[1] and typeof(args[1]) == 'table' and args[1].FinishedLoading == nil or args[1].FinishedLoading == true))
+						(args[1] and type(args[1]) == "table" and args[1].FinishedLoading == nil or args[1].FinishedLoading == true))
 					and
 						(Settings.Console and (not Settings.Console_AdminsOnly or level > 0)) then
 					Remote.RefreshGui(p, "Console")

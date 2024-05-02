@@ -188,15 +188,15 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--// Cache commands
-		Admin.CacheCommands()
-
 		rawset(Commands, "Init", nil)
 		Logs.AddLog("Script", "Commands Module Initialized")
 	end
 
 	local function RunAfterPlugins()
 		--// Load custom user-supplied commands in settings.Commands
+
+		--// Cache admin commands
+		Admin.CacheCommands()
 
 		local commandEnv = GetEnv(nil, {
 			script = server.Config and server.Config:FindFirstChild("Settings") or script;

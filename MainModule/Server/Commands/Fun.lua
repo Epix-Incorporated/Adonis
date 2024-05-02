@@ -1065,7 +1065,7 @@ return function(Vargs, env)
 						end
 
 						task.wait(1)
-						p:Kick("\n\n\"I don't feel so good\"\n")
+						p:Kick('"I don\'t feel so good"')
 					end)
 				end
 			end;

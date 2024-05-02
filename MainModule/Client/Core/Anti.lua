@@ -50,7 +50,6 @@ return function(Vargs, GetEnv)
 	local Kick = Player.Kick
 	local isXbox = service.GuiService:IsTenFootInterface()
 	local isMobile = service.UserInputService.TouchEnabled and not service.UserInputService.KeyboardEnabled and not service.UserInputService.MouseEnabled
-	local hyperionEnabled = not isXbox and not isMobile and (#tostring(tonumber(string.sub(tostring{}, 8))) > 10)
 
 	local function Init()
 		UI = client.UI;
@@ -81,7 +80,7 @@ return function(Vargs, GetEnv)
 
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
-			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(hyperionEnabled and " - Hyperion is enabled" or isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
+			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
 			if action == "k".."i".."c".."k" then
 				if not isStudio then

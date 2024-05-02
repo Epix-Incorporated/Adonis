@@ -14,7 +14,9 @@ return function(Vargs, GetEnv)
 
 	local LastDateTime, Messages = "Loading...", {"The messages haven't loaded. Please comeback later..."}
 	task.spawn(xpcall, function()
-		print("Requiring Alerts Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/8096250407/Adonis-Alerts-Module"})
+		if not server.Core.SilentStartup then
+			print("Requiring Alerts Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/8096250407/Adonis-Alerts-Module"})
+		end
 
 		local r, AlertTab = xpcall(require, function()
 			warn("Something went wrong while requiring the urgent messages module");

@@ -346,11 +346,11 @@ return function(Vargs, GetEnv)
 			["#number"] = {
 				Match = "#";
 				Function = function(msg, plr, ...)
-					local matched = msg:match("%#(.*)")
+					local matched = string.match(msg, "%#(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
+							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -364,11 +364,11 @@ return function(Vargs, GetEnv)
 			["radius-"] = {
 				Match = "radius-";
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
-					local matched = msg:match("radius%-(.*)")
+					local matched = string.match(msg, "radius%-(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output', {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
+							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 							return;
 						end
 
@@ -524,11 +524,11 @@ return function(Vargs, GetEnv)
 				--// Default to the executor ("me")
 				return {plr}
 			else
-				if argument:match("^##") then
+				if string.match(argument, "^##") then
 					error(`String passed to GetPlayers is filtered: {argument}`, 2)
 				end
 
-				local selectors = argument:gmatch("([^,]+)")
+				local selectors = string.gmatch(argument, "([^,]+)")
 				
 				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
 				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
@@ -571,7 +571,7 @@ return function(Vargs, GetEnv)
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match(`^{service.SanitizePattern(s:lower())}`) then
+							if p and p.ClassName == "Player" and string.match(string.lower(p.DisplayName), `^{service.SanitizePattern(string.lower(s))}`) then
 								table.insert(players, p)
 								plus()
 							end
@@ -581,7 +581,7 @@ return function(Vargs, GetEnv)
 							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match(`^{service.SanitizePattern(s:lower())}`) then
+								if p and p.ClassName == "Player" and string.match(string.lower(p.Name), `^{service.SanitizePattern(string.lower(s))}`) then
 									table.insert(players, p)
 									plus()
 								end
@@ -734,7 +734,7 @@ return function(Vargs, GetEnv)
 			end
 
 			local function cipher(str, key)
-				return (string.gsub(str, '.', function(s)
+				return (string.gsub(str, ".", function(s)
 					if not rot47_convertible(s) then return s end
 					return string.char(((string.byte(s) - base + key) % range) + base)
 				end))
@@ -748,6 +748,8 @@ return function(Vargs, GetEnv)
 		Base64Encode = function(str)
 			local floor = math.floor
 			local char = string.char
+			local sub = string.sub
+																											
 			local nOut = 0
 			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			local strLen = #str
@@ -755,7 +757,7 @@ return function(Vargs, GetEnv)
 
 			-- 3 octets become 4 hextets
 			for i = 1, strLen - 2, 3 do
-				local b1, b2, b3 = str:byte(i, i + 3)
+				local b1, b2, b3 = string.byte(str, i, i + 3)
 				local word = b3 + b2 * 256 + b1 * 256 * 256
 
 				local h4 = word % 64 + 1
@@ -766,10 +768,10 @@ return function(Vargs, GetEnv)
 				word = floor(word / 64)
 				local h1 = word % 64 + 1
 
-				out[nOut + 1] = alphabet:sub(h1, h1)
-				out[nOut + 2] = alphabet:sub(h2, h2)
-				out[nOut + 3] = alphabet:sub(h3, h3)
-				out[nOut + 4] = alphabet:sub(h4, h4)
+				out[nOut + 1] = sub(alphabet,h1, h1)
+				out[nOut + 2] = sub(alphabet,h2, h2)
+				out[nOut + 3] = sub(alphabet,h3, h3)
+				out[nOut + 4] = sub(alphabet,h4, h4)
 				nOut = nOut + 4
 			end
 
@@ -788,9 +790,9 @@ return function(Vargs, GetEnv)
 				word = floor(word / 64)
 				local h1 = word % 64 + 1
 
-				out[nOut + 1] = alphabet:sub(h1, h1)
-				out[nOut + 2] = alphabet:sub(h2, h2)
-				out[nOut + 3] = alphabet:sub(h3, h3)
+				out[nOut + 1] = sub(alphabet,h1, h1)
+				out[nOut + 2] = sub(alphabet,h2, h2)
+				out[nOut + 3] = sub(alphabet,h3, h3)
 				out[nOut + 4] = "="
 			elseif remainder == 1 then
 				-- 8 input bits -> 2 hextets (2 full, 1 partial)
@@ -803,8 +805,8 @@ return function(Vargs, GetEnv)
 				word = floor(word / 64)
 				local h1 = word % 64 + 1
 
-				out[nOut + 1] = alphabet:sub(h1, h1)
-				out[nOut + 2] = alphabet:sub(h2, h2)
+				out[nOut + 1] = sub(alphabet,h1, h1)
+				out[nOut + 2] = sub(alphabet,h2, h2)
 				out[nOut + 3] = "="
 				out[nOut + 4] = "="
 			end
@@ -816,6 +818,8 @@ return function(Vargs, GetEnv)
 		Base64Decode = function(str)
 			local floor = math.floor
 			local char = string.char
+			local sub = string.sub
+			
 			local nOut = 0
 			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			local strLen = #str
@@ -825,12 +829,12 @@ return function(Vargs, GetEnv)
 
 			local alphabetLut = {}
 			for i = 1, #alphabet do
-				alphabetLut[alphabet:sub(i, i)] = i - 1
+				alphabetLut[sub(alphabet, i, i)] = i - 1
 			end
 
 			-- 4 hextets become 3 octets
 			for i = 1, strLen do
-				local ch = str:sub(i, i)
+				local ch = sub(str, i, i)
 				local byte = alphabetLut[ch]
 				if byte then
 					acc = acc * 64 + byte
@@ -880,7 +884,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Hint = function(message, players, duration, title, image)
-			duration = duration or (#tostring(message) / 19 + 2.5)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
@@ -895,12 +899,12 @@ return function(Vargs, GetEnv)
 		Message = function(sender, title, message, image, players, scroll, duration)
 
 			-- Currently not used
-			if sender == 'Adonis' or sender == 'HelpSystem' or sender == 'Command' then
+			if sender == "Adonis" or sender == "HelpSystem" or sender == "Command" then
 				sender = nil
 			end
 
 			-- ////////// Compatability for older plugins (before sender and image ares were introduced)
-			if sender ~= nil and typeof(sender) ~= 'Instance' and typeof(sender) ~= 'userdata' and typeof(sender) ~= 'table' then
+			if sender ~= nil and typeof(sender) ~= "Instance" and typeof(sender) ~= "userdata" and type(sender) ~= "table" then
 				local oldVars = {
 					sender = sender,
 					title = title,
@@ -925,11 +929,11 @@ return function(Vargs, GetEnv)
 
 			if image then
 				-- Support "MatIcon://" for fast access to maticons
-				local MatIcon = image:match('MatIcon://(.+)')
+				local MatIcon = string.match(image, "MatIcon://(.+)")
 
 				if MatIcon then
 					image = server.MatIcons[MatIcon]
-				elseif sender and (image == 'HeadShot') then
+				elseif sender and (image == "HeadShot") then
 					image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
 				end
 			end
@@ -964,7 +968,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon, onClick)
-			icon = icon and icon:match('MatIcon://(.+)') or icon
+			icon = icon and string.match(icon, "MatIcon://(.+)") or icon
+			duration = duration or (#tostring(message) / 19) + 2.5
+			
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
@@ -1252,7 +1258,7 @@ return function(Vargs, GetEnv)
 			if useMagicChars==nil then useMagicChars = true end
 
 			local tab = {}
-			local str = ''
+			local str = ""
 
 			local spat, epat, escquotpat, buf, quoted = [=[^(['"])]=], [=[(['"])$]=], [=[(\(['"]))]=], nil, nil
 
@@ -1264,14 +1270,14 @@ return function(Vargs, GetEnv)
 
 			local keyPattern = "[^"..key.."]+"
 
-			if key:match("%s") then
+			if string.match(key, "%s") then
 				keyPattern = "%S+" -- If the key is a whitespace character, use any whitespace character as the pattern
 			end
 
-			for arg in msg:gmatch(keyPattern) do
-				local squoted = arg:match(spat)
-				local equoted = arg:match(epat)
-				local escaped = arg:match([=[(\*)['"]$]=])
+			for arg in string.gmatch(msg, keyPattern) do
+				local squoted = string.match(arg, spat)
+				local equoted = string.match(arg, epat)
+				local escaped = string.match(arg, [=[(\*)['"]$]=])
 
 				if #tab>=num then
 					break
@@ -1289,7 +1295,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if not buf then
-					local result = arg:gsub(spat, ""):gsub(epat, ""):gsub(escquotpat,"%2")
+					local result = string.gsub(string.gsub(string.gsub(arg, spat, ""), epat, ""), escquotpat, "%2")	
 					str ..= result .. key
 					table.insert(tab,result)
 				end
@@ -1350,10 +1356,10 @@ return function(Vargs, GetEnv)
 
 		GrabNilPlayers = function(name)
 			local AllGrabbedPlayers = {}
-			for _,v in service.NetworkServer:GetChildren() do
+			for _, v in service.NetworkServer:GetChildren() do
 				pcall(function()
 					if v:IsA("NetworkReplicator") then
-						if string.sub(string.lower(v:GetPlayer().Name),1,#name)==string.lower(name) or name=='all' then
+						if string.sub(string.lower(v:GetPlayer().Name), 1, #name) == string.lower(name) or name == "all" then
 							table.insert(AllGrabbedPlayers, (v:GetPlayer() or "NoPlayer"))
 						end
 					end
@@ -1391,15 +1397,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		Shutdown = function(reason)
-			Functions.Message('Adonis', Settings.SystemTitle, "The server is shutting down...", 'MatIcon://Warning', service.Players:GetPlayers(), false, 5)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is shutting down...", "MatIcon://Warning", service.Players:GetPlayers(), false, 5)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
-				player:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
+				player:Kick(`Server Shutdown: {reason or "No Reason Given"}`)
 			end)
 
 			for _, v in service.Players:GetPlayers() do
-				v:Kick(`Server Shutdown:\n\n{reason or "No Reason Given"}`)
+				v:Kick(`Server Shutdown: {reason or "No Reason Given"}`)
 			end
 		end;
 
@@ -1407,15 +1413,16 @@ return function(Vargs, GetEnv)
 			if Admin.CheckDonor(plr) and Settings.DonorCapes then
 				local PlayerData = Core.GetPlayer(plr) or {Donor = {}}
 				local donor = PlayerData.Donor or {}
+
 				if donor and donor.Enabled then
-					local img,color,material
+					local img, color, material
 					if donor and donor.Cape then
-						img,color,material = donor.Cape.Image,donor.Cape.Color,donor.Cape.Material
+						img, color, material = donor.Cape.Image, donor.Cape.Color, donor.Cape.Material
 					else
-						img,color,material = '0','White','Neon'
+						img, color, material = "0", "White", "Neon"
 					end
 					if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-						Functions.Cape(plr,true,material,color,img)
+						Functions.Cape(plr, true, material, color, img)
 					end
 				end
 			end
@@ -1458,7 +1465,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		LaxCheckMatch = function(check, match, opts)
-			local keys = if opts and type(opts) == 'table' and opts.IgnoreKeys then opts.IgnoreKeys else {}
+			local keys = if opts and type(opts) == "table" and opts.IgnoreKeys then opts.IgnoreKeys else {}
 			if check == match then
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
