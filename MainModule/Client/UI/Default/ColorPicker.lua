@@ -1,15 +1,16 @@
-client, service = nil, nil
 
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
 	
+	local client = env.client;
+	local service = env.service;
+
+	--// Colors
 	local color = data.Color or Color3.new(1, 1, 1)
 	local red, green, blue = color.r, color.g, color.b
 	local redSlider, greenSlider, blueSlider
 	local redBox, greenBox, blueBox
 	local redGradient, greenGradient, blueGradient
+	
 	local ySize = 25
 	local returnColor
 	local gTable
@@ -70,8 +71,8 @@ return function(data, env)
 		BoxText = red*255;
 		BackgroundTransparency = 1;
 		TextSize = 20;
-		Size = UDim2.new(1, -20, 0, ySize-5);
-		Position = UDim2.new(0, 10, 0, ySize*0);
+		Size = UDim2.new(1, -20, 0, ySize - 5);
+		Position = UDim2.new(0, 10, 0, ySize * 0);
 		TextChanged = function(newText, focusLost, enterPressed)
 			if tonumber(newText) then
 				local doRet
@@ -98,8 +99,8 @@ return function(data, env)
 		BoxText = green*255;
 		BackgroundTransparency = 1;
 		TextSize = 20;
-		Size = UDim2.new(1, -20, 0, ySize-5);
-		Position = UDim2.new(0, 10, 0, ySize*2);
+		Size = UDim2.new(1, -20, 0, ySize - 5);
+		Position = UDim2.new(0, 10, 0, ySize * 2);
 		TextChanged = function(newText, focusLost, enterPressed)
 			if tonumber(newText) then
 				local doRet = false
@@ -126,8 +127,8 @@ return function(data, env)
 		BoxText = blue*255;
 		BackgroundTransparency = 1;
 		TextSize = 20;
-		Size = UDim2.new(1, -20, 0, ySize-5);
-		Position = UDim2.new(0, 10, 0, ySize*4);
+		Size = UDim2.new(1, -20, 0, ySize - 5);
+		Position = UDim2.new(0, 10, 0, ySize * 4);
 		TextChanged = function(newText, focusLost, enterPressed)
 			if tonumber(newText) then
 				local doRet = false
@@ -151,8 +152,8 @@ return function(data, env)
 	
 	redSlider = window:Add("Slider", {
 		Percent = color.r;
-		Size = UDim2.new(1, -20, 0, ySize-5);
-		Position = UDim2.new(0, 10, 0, ySize*1);
+		Size = UDim2.new(1, -20, 0, ySize - 5);
+		Position = UDim2.new(0, 10, 0, ySize * 1);
 		OnSlide = function(value)
 			red = value
 			updateColors()
@@ -161,8 +162,8 @@ return function(data, env)
 	
 	greenSlider = window:Add("Slider", {
 		Percent = color.r;
-		Size = UDim2.new(1, -20, 0, ySize-5);
-		Position = UDim2.new(0, 10, 0, ySize*3);
+		Size = UDim2.new(1, -20, 0, ySize - 5);
+		Position = UDim2.new(0, 10, 0, ySize * 3);
 		OnSlide = function(value)
 			green = value
 			updateColors()
@@ -171,8 +172,8 @@ return function(data, env)
 	
 	blueSlider = window:Add("Slider", {
 		Percent = color.r;
-		Size = UDim2.new(1, -20, 0, ySize-5);
-		Position = UDim2.new(0, 10, 0, ySize*5);
+		Size = UDim2.new(1, -20, 0, ySize - 5);
+		Position = UDim2.new(0, 10, 0, ySize * 5);
 		OnSlide = function(value)
 			blue = value
 			updateColors()
