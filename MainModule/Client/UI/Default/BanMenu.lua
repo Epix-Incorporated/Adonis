@@ -401,7 +401,7 @@ return function(data, env)
 					if searchBar.Text ~= "" then
 						local ind = 0
 						for _,v in pairs(PossiblePlayers:GetChildren()) do
-							if string.find(v.Text, searchBar.Text) ~= nil then
+							if string.find(v.Text, searchBar.Text) then
 								v.Visible = true
 								v.Position = UDim2.new(0, 0, 0, 25*ind)
 								ind += 1
