@@ -225,18 +225,14 @@
 					<string name="Name">Code</string>
 					<string name="ScriptGuid">{067D324A-7F37-4CCB-8CA2-634D5A0ED48D}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
-Pcall = nil
-Routine = nil
-service = nil
-gTable = nil
 
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
+
+	local client = env.client;
+	local service = env.service;
 	
 	local gui = script.Parent.Parent
 	local playergui = service.PlayerGui
@@ -334,7 +330,7 @@ return function(data, env)
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
 	end
 	
-	wait(data.Time or 5)
+	task.wait(data.Time or 5)
 	
 	if gui and gui.Parent then 
 		moveGuis(-2,gui)
