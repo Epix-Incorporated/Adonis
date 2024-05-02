@@ -1,9 +1,8 @@
-client, service = nil, nil
 
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
+	
+	local client = env.client;
+	local service = env.service;
 	
 	local generate = nil
 
@@ -71,7 +70,7 @@ return function(data, env)
 		end
 		
 		for i, friend in ipairs(friendDictionary) do
-			if friend.UserName:sub(1, #filter):lower() == filter:lower() or friend.DisplayName:sub(1, #filter):lower() == filter:lower() then
+			if string.lower(string.sub(friend.UserName, 1, #filter)) == string.lower(filter) or string.lower(string.sub(friend.DisplayName, 1, #filter)) == string.lower(filter) then
 				local entry = scroller:Add("TextLabel", {
 					Text = `             {if friend.UserName == friend.DisplayName then friend.UserName else `{friend.DisplayName} (@{friend.UserName})`}`;
 					ToolTip = `Location: {friend.LastLocation}`;
@@ -87,7 +86,7 @@ return function(data, env)
 					Position = UDim2.new(1, -120, 0, 0);
 					TextXAlignment = "Right";
 				})
-				spawn(function()
+				task.defer(function()
 					entry:Add("ImageLabel", {
 						Image = service.Players:GetUserThumbnailAsync(friend.VisitorId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
 						BackgroundTransparency = 1;
