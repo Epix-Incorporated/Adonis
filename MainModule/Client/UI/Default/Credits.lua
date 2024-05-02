@@ -1,7 +1,4 @@
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
 
 	local client = env.client
 	local service = env.service
@@ -13,6 +10,7 @@ return function(data, env)
 		Size = { 280, 340 },
 		AllowMultiple = false,
 	})
+	
 	if not window then
 		return
 	end
