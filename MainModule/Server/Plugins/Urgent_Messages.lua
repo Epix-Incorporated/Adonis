@@ -1,9 +1,5 @@
-server = nil;
-service = nil;
 
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -34,7 +30,7 @@ return function(Vargs, GetEnv)
 		local function checkDoNotify(p, data)
 			local lastMessage = data.LastUrgentMessage or 0;
 
-			if lastMessage < MessageVersion and os.time()-MessageDate <= MessageDuration then
+			if lastMessage < MessageVersion and os.time() - MessageDate <= MessageDuration then
 				if MessageAdminType == "Players" then
 					return true
 				elseif MessageAdminType == "Donors" then
@@ -59,7 +55,7 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		for _, p in ipairs(service.Players:GetPlayers()) do
+		for _, p in service.Players:GetPlayers() do
 			task.spawn(pcall, onPlayerAdded, p)
 		end
 
