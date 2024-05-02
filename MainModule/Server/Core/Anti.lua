@@ -50,7 +50,7 @@ return function(Vargs, GetEnv)
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(`:: Adonis Anti Cheat ::\n{info}`) end)
+			pcall(function() service.UnWrap(p):Kick(`:: Adonis Anti Cheat :: {info}`) end)
 
 			task.wait(1)
 
