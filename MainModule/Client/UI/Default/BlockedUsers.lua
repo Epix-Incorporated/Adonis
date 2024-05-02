@@ -1,10 +1,8 @@
-client = nil
-service = nil
 
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
+	
+	local client = env.client;
+	local service = env.service;
 	
 	local getData = nil
 
@@ -78,7 +76,7 @@ return function(data, env)
 						end
 					})
 				end
-				spawn(function()
+				task.spawn(function()
 					entry:Add("ImageLabel", {
 						Image = service.Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
 						BackgroundTransparency = 1;
