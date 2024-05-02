@@ -1,11 +1,9 @@
-client,service = nil,nil
 
 return function(data,env)
-	if env then
-		setfenv(1, env)
-	end
 	
-	local Enabled = false
+	local client = env.client;
+	local service = env.service;
+	local Enabled = false;
 	
 	local window = client.UI.Make("Window",{
 		Title = "Command Box";
