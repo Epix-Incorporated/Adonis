@@ -536,7 +536,7 @@ return service.NewProxy({
 			AdonisDebugEnabled.Value = true
 			AdonisDebugEnabled.Parent = Folder.Parent.Client
 		end
-		
+
 		setfenv(1, setmetatable({}, {__metatable = unique}))
 
 		--// Server Variables
@@ -587,7 +587,19 @@ return service.NewProxy({
 			end
 		end
 
+		if type(server.Settings.HiddenThemes) == "table" then
+			for _, theme in ipairs(server.Client.UI:GetChildren()) do
+				if table.find(server.Settings.HiddenThemes, theme.Name) then
+					theme:SetAttribute("Hidden", true)
+				end
+			end
+		end
+
 		for _, theme in pairs(data.Themes or {}) do
+			if type(server.Settings.HiddenThemes) == "table" and table.find(server.Settings.HiddenThemes, theme.Name) then
+				theme:SetAttribute("Hidden", true)
+			end
+
 			theme:Clone().Parent = server.Client.UI
 		end
 

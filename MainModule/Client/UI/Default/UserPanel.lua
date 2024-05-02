@@ -1508,7 +1508,7 @@ return function(data, env)
 						local themes = {"Game Theme"}
 						for _, v in ipairs(client.UIFolder:GetChildren()) do
 							local theme = (string.sub(v.Name, 1, 5) == "NoEnv" and string.sub(v.Name, 7)) or v.Name
-							if theme ~= "README" then
+							if theme ~= "README" and v:GetAttribute("Hidden") ~= true then
 								table.insert(themes, theme)
 							end
 						end
