@@ -4637,14 +4637,14 @@ return function(Vargs, env)
 
 		GRPlaza = {
 			Prefix = Settings.Prefix;
-			Commands = {"grplaza", "grouprecruitingplaza", "groupplaza"};
+			Commands = {"plazaconnect", "grplaza", "grouprecruitingplaza", "groupplaza"};
 			Args = {"player"};
-			Description = "Teleports the target player(s) to the Group Recruiting Plaza to look for potential group members";
+			Description = "Teleports the target player(s) to Plaza Connect to look for potential group members";
 			NoStudio = true;
 			Hidden = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Notification("Teleport", "Click to teleport to GRP", service.GetPlayers(plr, args[1]), 30, "MatIcon://QR code scanner", Core.Bytecode("service.TeleportService:Teleport(5118029260)"))
+				Functions.Notification("Teleport", "Click to teleport to Plaza Connect", service.GetPlayers(plr, args[1]), 30, "MatIcon://QR code scanner", Core.Bytecode("service.TeleportService:Teleport(5118029260)"))
 			end
 		};
 
