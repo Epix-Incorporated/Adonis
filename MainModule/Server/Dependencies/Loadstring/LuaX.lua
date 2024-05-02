@@ -726,14 +726,14 @@ function luaX:poptk(ls)
 	end
 
 	-- Generate lex tree stack
-	local tkdata, depthstack, globalstack = {n = 0}, {n = 1, close = "", "EOS"}, {n = 1, {}}
-	ls.lexercache = tkdata
+	local tkdata, depthstack, globalstack, usedglobals = {n = 0}, {n = 1, close = "", "EOS"}, {n = 1, {}}, ls.usedglobals
+	ls.lexercache, ls.usedglobals.string = tkdata, true
 	while true do
 		local type = luaX:llex(ls, ls.t)
 		local seminfo = ls.t.seminfo
 		local lasttoken = tkdata[tkdata.n]
 
-		table.insert(tkdata, {
+		tkdata.n, tkdata[tkdata.n + 1] = tkdata.n + 1, {
 			type = type,
 			seminfo = seminfo,
 			line = ls.linenumber,
@@ -745,20 +745,30 @@ function luaX:poptk(ls)
 
 		if luaX.expdepth[type] then
 			depthstack[depthstack.n + 1], depthstack.n, depthstack.close = type, depthstack.n + 1, luaX.expdepth[type]
-		else type == depthstack.close then
+		elseif type == depthstack.close then
 			local oldindex, newindex = depthstack.n, depthstack.n - 1
 			depthstack[oldindex], depthstack.n, depthstack.close = nil, newindex, luaX.expdepth[depthstack[newindex]] or ""
 			globalstack[oldindex], globalstack.n = nil, newindex
 		end
 
 		if type == "TK_NAME" then
+			if lasttoken.type == "TK_NAME" then
+				table.clear(globalstack[globalstack.n])
+			end
+
 			-- Global optimisation helper
 			if self.DEOP[seminfo] then
 				ls.safeenv = false
 			elseif self.globalvars[seminfo] then
-				ls.usedglobals[seminfo] = true
+				usedglobals[seminfo] = true
 				globalstack[globalstack.n][seminfo] = true
 			end
+		elseif type == "=" then
+			local foundglobals = globalstack[globalstack.n]
+			for k, _ in pairs(foundglobals) do
+				usedglobals[k] = foundglobals[k]
+			end
+			table.clear(foundglobals)
 		elseif type == "TK_EOS" then
 			break
 		end
@@ -768,7 +778,7 @@ function luaX:poptk(ls)
 	local len = #tkdata
 	tkdata.n = len
 	ls.linenumber, ls.lastline, ls.lookahead.token = 1, 1, "TK_EOS"
-	for i = 1, math.floor(len/2) do
+	for i = 1, math.floor(len / 2) do
 		local j = len - i + 1
 		tkdata[i], tkdata[j] = tkdata[j], tkdata[i]
 	end
@@ -777,11 +787,11 @@ function luaX:poptk(ls)
 	-- TODO: Switch to parser logic LOCALEXP(name) = GLOBALEXP(name), ...
 	local usedglobals = ls.usedglobals
 	if ls.safeenv and #usedglobals > 0 then
-		for i = #usedglobals, 1, -1 do
+		for _, v in pairs(usedglobals) do
 			tkdata.n = tkdata.n + 2
 			tkdata[tkdata.n - 1], tkdata[tkdata.n] = {
 				type = "TK_NAME",
-				seminfo = usedglobals[i],
+				seminfo = v,
 				line = 1
 			}, {
 				type = ",",
@@ -794,11 +804,11 @@ function luaX:poptk(ls)
 			seminfo = "=",
 			line = 1
 		}
-		for i = #usedglobals, 1, -1 do
+		for _, v in pairs(usedglobals) do
 			tkdata.n = tkdata.n + 2
 			tkdata[tkdata.n - 1], tkdata[tkdata.n] = {
 				type = "TK_NAME",
-				seminfo = usedglobals[i],
+				seminfo = v,
 				line = 1
 			}, {
 				type = ",",
