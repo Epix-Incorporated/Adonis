@@ -1,9 +1,8 @@
-client,service = nil,nil
 
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
+	
+	local client = env.client;
+	local service = env.service;
 	
 	local AdminLevel = data.AdminLevel
 	local CanBan = data.CanBan
@@ -107,11 +106,11 @@ return function(data, env)
 				local function getPlayers()
 					PossiblePlayers:ClearAllChildren()
 					local ind = 0
-					for i,v in pairs(game.Players:GetPlayers()) do
+					for _,v in pairs(game.Players:GetPlayers()) do
 						local button:TextButton = PossiblePlayers:Add("TextButton",{
 							Text = `{v.DisplayName} (@{v.Name})`;
 							Size = UDim2.new(1, 0, 0, 25);
-							Position = UDim2.new(0, 0, 0, 25*ind);
+							Position = UDim2.new(0, 0, 0, 25 * ind);
 							ZIndex = 5
 						})
 						
@@ -133,8 +132,8 @@ return function(data, env)
 				searchBar:GetPropertyChangedSignal("Text"):Connect(function()
 					if searchBar.Text ~= "" then
 						local ind = 0
-						for i,v in pairs(PossiblePlayers:GetChildren()) do
-							if v.Text:find(searchBar.Text) ~= nil then
+						for _,v in pairs(PossiblePlayers:GetChildren()) do
+							if not string.find(v.Text, searchBar.Text) then
 								v.Visible = true
 								v.Position = UDim2.new(0, 0, 0, 25*ind)
 								ind += 1
@@ -229,7 +228,7 @@ return function(data, env)
 				local function getPlayers()
 					PossiblePlayers:ClearAllChildren()
 					local ind = 0
-					for i,v in pairs(game.Players:GetPlayers()) do
+					for _,v in pairs(game.Players:GetPlayers()) do
 						local button:TextButton = PossiblePlayers:Add("TextButton",{
 							Text = `{v.DisplayName} (@{v.Name})`;
 							Size = UDim2.new(1, 0, 0, 25);
@@ -255,7 +254,7 @@ return function(data, env)
 				searchBar:GetPropertyChangedSignal("Text"):Connect(function()
 					if searchBar.Text ~= "" then
 						local ind = 0
-						for i,v in pairs(PossiblePlayers:GetChildren()) do
+						for _,v in pairs(PossiblePlayers:GetChildren()) do
 							if v.Text:find(searchBar.Text) ~= nil then
 								v.Visible = true
 								v.Position = UDim2.new(0, 0, 0, 25*ind)
@@ -375,7 +374,7 @@ return function(data, env)
 				local function getPlayers()
 					PossiblePlayers:ClearAllChildren()
 					local ind = 0
-					for i,v in pairs(game.Players:GetPlayers()) do
+					for _,v in pairs(game.Players:GetPlayers()) do
 						local button:TextButton = PossiblePlayers:Add("TextButton",{
 							Text = `{v.DisplayName} (@{v.Name})`;
 							Size = UDim2.new(1, 0, 0, 25);
@@ -390,7 +389,7 @@ return function(data, env)
 
 						ind += 1
 					end
-					PossiblePlayers:ResizeCanvas(false,true)
+					PossiblePlayers:ResizeCanvas(false, true)
 				end
 
 				PossiblePlayers.Visible = false
@@ -401,7 +400,7 @@ return function(data, env)
 				searchBar:GetPropertyChangedSignal("Text"):Connect(function()
 					if searchBar.Text ~= "" then
 						local ind = 0
-						for i,v in pairs(PossiblePlayers:GetChildren()) do
+						for _,v in pairs(PossiblePlayers:GetChildren()) do
 							if v.Text:find(searchBar.Text) ~= nil then
 								v.Visible = true
 								v.Position = UDim2.new(0, 0, 0, 25*ind)
