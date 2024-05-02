@@ -399,7 +399,7 @@ function luaX:next(ls)
     ls.t.token = ls.lookahead.token
     ls.lookahead.token = "TK_EOS"  -- and discharge it
   else
-    ls.t.token = self:poptk(ls)  -- read next token
+    ls.t.token, ls.t.seminfo, ls.linenumber = self:poptk(ls)  -- read next token
   end
 end
 
@@ -410,7 +410,7 @@ end
 ------------------------------------------------------------------------
 function luaX:lookahead(ls)
   -- lua_assert(ls.lookahead.token == "TK_EOS")
-  --ls.lookahead.token = self:llex(ls, ls.lookahead)
+  ls.lookahead.token, ls.lookahead.seminfo, ls.lookahead.linenumber = self:poptk(ls)--self:llex(ls, ls.lookahead)
 end
 
 ------------------------------------------------------------------------
@@ -721,9 +721,8 @@ function luaX:poptk(ls)
 		local tkdata = ls.lexercache
 		local data = tkdata[tkdata.n]
 		tkdata.n, tkdata[tkdata.n] = tkdata.n - 1, nil
-		ls.t.token, ls.t.seminfo, ls.linenumber = data.type or "TK_EOS", data.seminfo or "", data.line or 0
 
-		return data.type
+		return data.type or "TK_EOS", data.seminfo or "", data.line
 	end
 
 	-- Generate lex tree stack
