@@ -1,9 +1,8 @@
-client, service = nil, nil
 
 return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
+	
+	local client = env.client;
+	local service = env.service;
 	
 	local gTable
 	local getList
@@ -27,7 +26,7 @@ return function(data, env)
 	function newEntry(obj, name, isBack, top, color)
 		local new = scroller:Add("TextLabel", {
 			Text = `  {name}`;
-			ToolTip = ("Class: %s | Children%s"):format(obj.ClassName or "Unknown", if #obj:GetChildren() ~= 0 then ": "..#obj:GetChildren().." | Descendants: "..#obj:GetDescendants() else "/Descendants: 0");
+			ToolTip = string.format("Class: %s | Children%s", obj.ClassName or "Unknown", if #obj:GetChildren() ~= 0 then ": "..#obj:GetChildren().." | Descendants: "..#obj:GetDescendants() else "/Descendants: 0");
 			TextXAlignment = "Left";
 			Size = UDim2.new(1, 0, 0, 26);
 		})
@@ -53,7 +52,7 @@ return function(data, env)
 		if open then new.LayoutOrder -= 10 end
 		if top then new.LayoutOrder -= 10 end
 
-		if not (obj.Parent == game and obj.Name:sub(1, 1):upper() == obj.Name:sub(1, 1)) then
+		if not (obj.Parent == game and string.upper(string.sub(obj.Name, 1, 1)) == string.sub(obj.Name, 1, 1)) then
 			local del = new:Add("TextButton", {
 				Text = "Delete";
 				Size = UDim2.new(0, 80, 1, 0);
@@ -93,7 +92,7 @@ return function(data, env)
 		
 		for i,v in ipairs(obj:GetChildren()) do
 			pcall(function()
-				if string.find(v.Name:lower(), filter:lower()) or string.find(v.ClassName:lower(), filter:lower()) then
+				if string.find(string.lower(v.Name), string.lower(filter)) or string.find(string.lower(v.ClassName), string.lower(filter)) then
 					newEntry(v, v.Name)
 				end
 			end)
