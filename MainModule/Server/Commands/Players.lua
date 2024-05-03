@@ -79,7 +79,7 @@ return function(Vargs, env)
 					end
 					if ind then break end
 				end
-				assert(cmd, "Command '{args[1]}' is either not found or beyond your permission level")
+				assert(cmd, `Command '{args[1]}' is either not found or beyond your permission level`)
 
 				local SanitizeXML = service.SanitizeXML
 
@@ -102,7 +102,7 @@ return function(Vargs, env)
 						{Text = `<b>Admin Level:</b> {Admin.FormatCommandAdminLevel(cmd)}`, Desc = "Rank required to run the command"},
 						{Text = `<b>Description:</b> {SanitizeXML(cmd.Description)}`, Desc = "Command description"},
 						{Text = `<b>Attributes:</b> {if #cmdAttribs == 0 then "-" else table.concat(cmdAttribs, "; ")}`, Desc = "Extra data about the command"},
-						{Text = `<b>Index:</b> {SanitizeXML(tostring(ind))}`, Desc = "The internal command index/bdentifier"},
+						{Text = `<b>Index:</b> {SanitizeXML(tostring(ind))}`, Desc = "The internal command index/identifier"},
 					};
 					RichText = true;
 					Size = {400, 225};
@@ -139,7 +139,7 @@ return function(Vargs, env)
 			Description = "Shows you the command prefix using the :cmds command";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint("{Settings.Prefix}cmds", {plr})
+				Functions.Hint(`{Settings.Prefix}cmds`, {plr})
 			end
 		};
 
@@ -366,7 +366,7 @@ return function(Vargs, env)
 					elseif pending and pending.Pending then
 						error("You already have a pending request")
 					else
-						service.TrackTask("Thread: {plr} Help Request Handler", function()
+						service.TrackTask(`Thread: {plr} Help Request Handler`, function()
 							Functions.Hint("Request sent", {plr})
 
 							pending = {
@@ -461,13 +461,13 @@ return function(Vargs, env)
 							}))
 							Functions.Hint("Teleporting...", {plr})
 						else
-							Functions.Hint("{service.Players:GetNameFromUserIdAsync(UserId)} was not found playing this game", {plr})
+							Functions.Hint(`{service.Players:GetNameFromUserIdAsync(UserId)} was not found playing this game`, {plr})
 						end
 					else
 						Functions.Hint(`Unexpected internal error: {found}`, {plr})
 					end
 				else
-					Functions.Hint("'{args[1]}' is not a valid Roblox user", {plr})
+					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
 				end
 			end
 		};
@@ -476,7 +476,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"joinfriend", "globaljoin"};
 			Args = {"username"};
-			Description = "Joins your friend outside/bnside of the game (must be online)";
+			Description = "Joins your friend outside/inside of the game (must be online)";
 			NoStudio = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
@@ -502,7 +502,7 @@ return function(Vargs, env)
 
 					Functions.Hint("You are not a friend of the specified user", {plr})
 				else
-					Functions.Hint("'{args[1]}' is not a valid Roblox user", {plr})
+					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
 				end
 			end
 		};
@@ -755,7 +755,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(plr, "service.GuiService:InspectPlayerFromUserId({v.UserId})")
+					Remote.LoadCode(plr, `service.GuiService:InspectPlayerFromUserId({v.UserId})`)
 				end
 			end
 		};
@@ -788,9 +788,9 @@ return function(Vargs, env)
 				end
 
 				if nilNum > 0 and Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
-					Functions.Hint("There are currently {num} player(s); {nilNum} are nil or loading", {plr})
+					Functions.Hint(`There are currently {num} player(s); {nilNum} are nil or loading`, {plr})
 				else
-					Functions.Hint("There are {num} player(s)", {plr})
+					Functions.Hint(`There are {num} player(s)`, {plr})
 				end
 			end
 		};
@@ -976,7 +976,7 @@ return function(Vargs, env)
 				local elevated = Admin.CheckAdmin(plr)
 
 				local serverInfo = select(2, xpcall(function()
-					local res = service.HttpService:JSONDecode(service.HttpService:GetAsync("http://bp-api.com/json"))
+					local res = service.HttpService:JSONDecode(service.HttpService:GetAsync("http://ip-api.com/json"))
 					return {
 						country = res.country,
 						city = res.city,
@@ -1010,7 +1010,7 @@ return function(Vargs, env)
 			Description = "Shows you information about the specified Roblox group";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local groupId = assert(args[1] and tonumber(args[1]), "Missing/bnvalid group ID")
+				local groupId = assert(args[1] and tonumber(args[1]), "Missing/invalid group ID")
 				local groupInfo = assert(select(2, xpcall(service.GroupService.GetGroupInfoAsync, function() return nil end, service.GroupService, groupId)), "Error fetching data")
 				local tab = {
 					`Name: {groupInfo.Name}`,
