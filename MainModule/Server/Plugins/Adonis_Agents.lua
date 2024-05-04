@@ -28,7 +28,7 @@ return function(Vargs, GetEnv)
 		end
 	};
 
-	Admin.AgentCache = setmetatable({}, {__mode = "k")
+	Admin.AgentCache = setmetatable({}, {__mode = "k"})
 	HTTP.Trello.CheckAgent = function(p)
 		if Admin.AgentCache[p] ~= nil then
 			return Admin.AgentCache[p]
