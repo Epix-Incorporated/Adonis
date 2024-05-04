@@ -20,7 +20,7 @@ return function(Vargs, GetEnv)
 		Fun = false;
 		AdminLevel = "Players";
 		Function = function(plr,args)
-			local temp   {}
+			local temp = {}
 			for i, v in HTTP.Trello.Agents do
 				table.insert(temp, {Text = v, Desc = "A Trello agent"})
 			end
