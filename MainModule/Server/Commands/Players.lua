@@ -30,7 +30,7 @@ return function(Vargs, env)
 					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
 						Text = Admin.FormatCommand(cmd),
-						Desc = string.format("[%s] %s", permissionDesc, cmd.Description or "(No description provided)"),
+						Desc = `[{permissionDesc}] {cmd.Description or "(No description provided)"}`,
 						Filter = permissionDesc
 					})
 					cmdCount += 1
@@ -48,7 +48,7 @@ return function(Vargs, env)
 				table.sort(tab, function(a, b) return a.Text < b.Text end)
 
 				Remote.MakeGui(plr, "List", {
-					Title = `Commands - {cmdCount}`;
+					Title = "Commands";
 					Table = tab;
 					TitleButtons = {
 						{
