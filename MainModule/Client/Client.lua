@@ -606,18 +606,6 @@ return service.NewProxy({
 				ServiceSpecific.PlayerGui = PlayerGui
 			end)
 		end
-
-		--[[
-		-- // Doesn't seem to be used anymore
-
-		ServiceSpecific.SafeTweenSize = function(obj, ...)
-			pcall(obj.TweenSize, obj, ...)
-		end;
-		ServiceSpecific.SafeTweenPos = function(obj, ...)
-			pcall(obj.TweenPosition, obj, ...)
-		end;
-		]]
-
 		ServiceSpecific.Filter = function(str, from, to)
 			return client.Remote.Get("Filter", str, (to and from) or service.Player, to or from)
 		end
@@ -744,7 +732,7 @@ return service.NewProxy({
 				continue
 			end
 
-			LoadModule(module, false, { script = module }) --noenv
+			LoadModule(module, false, { script = module, cPcall = client.cPcall }) --noenv
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
@@ -758,37 +746,6 @@ return service.NewProxy({
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
 		client.AllModulesLoaded = true
 		service.Events.AllModulesLoaded:Fire(os.time())
-
-		--[[client = service.ReadOnly(client, {
-			[client.Variables] = true;
-			[client.Handlers] = true;
-			G_API = true;
-			G_Access = true;
-			G_Access_Key = true;
-			G_Access_Perms = true;
-			Allowed_API_Calls = true;
-			HelpButtonImage = true;
-			Finish_Loading = true;
-			RemoteEvent = true;
-			ScriptCache = true;
-			Returns = true;
-			PendingReturns = true;
-			EncodeCache = true;
-			DecodeCache = true;
-			Received = true;
-			Sent = true;
-			Service = true;
-			Holder = true;
-			GUIs = true;
-			LastUpdate = true;
-			RateLimits = true;
-
-			Init = true;
-			RunAfterInit = true;
-			RunAfterLoaded = true;
-			RunAfterPlugins = true;
-		}, true)--]]
-
 		service.Events.ClientInitialized:Fire()
 
 		log("~! Return success")
