@@ -261,13 +261,6 @@ return function(Vargs, GetEnv)
 			end;
 		};
 
-		UnEncrypted = setmetatable({}, {
-			__newindex = function(_, ind, val)
-				warn("Remote.UnEncrypted is deprecated; moving", ind, "to Remote.Commands")
-				Remote.Commands[ind] = val
-			end
-		});
-
 		Commands = {
 			GetReturn = function(args)
 				print("THE SERVER IS ASKING US FOR A RETURN");
