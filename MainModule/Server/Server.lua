@@ -701,7 +701,7 @@ return service.NewProxy({
 		end
 
 		for _, module in pairs(data.ServerPlugins or {}) do
-			LoadModule(module, false, {script = module})
+			LoadModule(module, false, {script = module, cPcall = server.cPcall})
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
