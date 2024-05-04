@@ -29,7 +29,7 @@ return function(Vargs, GetEnv)
 			return coroutine.resume(coroutine.create(func), ...)
 		end, ...)
 	end
-	server.cPcall, service.cPcall = cPcall
+	server.cPcall, service.cPcall = cPcall, cPcall
 	Remote.UnEncrypted = setmetatable({}, {
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
