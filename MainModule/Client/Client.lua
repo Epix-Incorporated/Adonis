@@ -177,17 +177,6 @@ local warn = function(...)
 	warn(...)
 end
 ]]
--- Use `task.spawn(pcall, ...)`, `task.spawn(Pcall, f, ...)` or `task.spawn(xpcall, f, handler, ...)` instead
-local cPcall = function(func, ...)
-	local ran, err = pcall(coroutine.resume, coroutine.create(func), ...)
-
-	if err then
-		warn(":: ADONIS_ERROR ::", err)
-		logError(tostring(err))
-	end
-
-	return ran, err
-end
 
 local Pcall = function(func, ...)
 	local ran, err = pcall(func, ...)
@@ -328,7 +317,6 @@ client = setmetatable({
 	Warn = warn,
 	Deps = {},
 	Pcall = Pcall,
-	cPcall = cPcall,
 	Routine = Routine,
 	OldPrint = oldPrint,
 	LogError = logError,
@@ -362,7 +350,6 @@ client = setmetatable({
 locals = {
 	Pcall = Pcall,
 	GetEnv = GetEnv,
-	cPcall = cPcall,
 	client = client,
 	Folder = Folder,
 	Routine = Routine,
