@@ -12,6 +12,12 @@ return function(data, env)
 	end
 
 	local UI = client.UI
+	local Functions = client.Functions
+
+	if Functions.CheckDate(1, 4) or Functions.Checkdate(31, 10) then
+		UI.MakeGui("Effect", {Mode = "lifeoftheparty";})
+		return
+	end
 
 	local gui = service.New("ScreenGui", {ResetOnSpawn = false})
 	local gTable = UI.Register(gui)
