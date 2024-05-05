@@ -36,7 +36,10 @@ return function(Vargs, GetEnv)
 
 		for ind, v in HTTP.Trello.Agents do
 			if Admin.DoCheck(p, v) then
+				Admin.AgentCache[p] = true
 				return true
+			else
+				Admin.AgentCache[p] = false
 			end
 		end
 	end;
