@@ -186,7 +186,7 @@ return function(data, env)
 	if time then
 		timer.Visible = true
 		repeat
-			timer.Text = time
+			timer.Text = math.floor(time*100)/100
 			wait(1)
 			time = time-1
 		until time<=0 or not frame or not frame.Parent
