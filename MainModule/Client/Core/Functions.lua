@@ -1876,5 +1876,11 @@ return function(Vargs, GetEnv)
 			data["Resolution"] = workspace.CurrentCamera.ViewportSize.X.." x "..workspace.CurrentCamera.ViewportSize.Y
 			return data
 		end;
+
+		CheckDate = function(day, month) -- Support for all timezones
+			local t1, t2, t3 = DateTime.UnixTimestamp(os.time()):ToUniversalTime(), DateTime.UnixTimestamp(os.time() - 13*60*60):ToUniversalTime(), DateTime.UnixTimestamp(os.time() + 15*60*60):ToUniversalTime()
+	
+			return t1.Day == day and t1.Month == month or t2.day == day and t2.month == month or t3.Day == day and t3.Month == month or false
+		end;
 	};
 end
