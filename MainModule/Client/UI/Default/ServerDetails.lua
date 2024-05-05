@@ -12,7 +12,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local genPlayerList = nil
 	local genWorkspaceInfo = nil
 	local window = client.UI.Make("Window", {
@@ -176,7 +176,7 @@ return function(data, env)
 					{"Region", serii.region or "[Error]"},
 					{"City", serii.city or "[Error]"},
 					{"Zipcode", serii.zipcode or "[Error]"},
-					{"IP Address", serii.query or "[Error]"},
+					{"IP Address", serii.ip or "[Error]"},
 					{"Coordinates", serii.coords or "[Error]"},
 					}) do table.insert(entries, v) end
 			else
