@@ -689,6 +689,7 @@ return service.NewProxy({
 
 		--// Variables that rely on core modules being initialized
 		server.Logs.Errors = ErrorLogs
+		server.Core.SilentStartup = data.SilentStartup
 
 		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
 		for _, f in pairs(runAfterInit) do
