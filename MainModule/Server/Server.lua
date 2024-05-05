@@ -158,13 +158,6 @@ local function Pcall(func, ...)
 	return pSuccess, pError
 end
 
--- Use `task.spawn(pcall, ...)`, `task.spawn(Pcall, f, ...)` or `task.spawn(xpcall, f, handler, ...)` instead
-local function cPcall(func, ...)
-	return Pcall(function(...)
-		return coroutine.resume(coroutine.create(func), ...)
-	end, ...)
-end
-
 local function Routine(func, ...)
 	return coroutine.resume(coroutine.create(func), ...)
 end
@@ -320,7 +313,6 @@ server = {
 	Running = true;
 	Modules = {};
 	Pcall = Pcall;
-	cPcall = cPcall;
 	Routine = Routine;
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
@@ -339,7 +331,6 @@ locals = {
 	Routine = Routine;
 	Folder = Folder;
 	GetEnv = GetEnv;
-	cPcall = cPcall;
 	Pcall = Pcall;
 };
 
@@ -710,7 +701,7 @@ return service.NewProxy({
 		end
 
 		for _, module in pairs(data.ServerPlugins or {}) do
-			LoadModule(module, false, {script = module})
+			LoadModule(module, false, {script = module, cPcall = server.cPcall})
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)

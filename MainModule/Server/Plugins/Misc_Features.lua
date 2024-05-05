@@ -1,7 +1,6 @@
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
 
 return function(Vargs, GetEnv)
-
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -24,6 +23,13 @@ return function(Vargs, GetEnv)
 	end
 
 	-- // Backwards compatibility
+	local Pcall = server.Pcall
+	local function cPcall(func, ...)
+		return Pcall(function(...)
+			return coroutine.resume(coroutine.create(func), ...)
+		end, ...)
+	end
+	server.cPcall, service.cPcall = cPcall, cPcall
 	Remote.UnEncrypted = setmetatable({}, {
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
