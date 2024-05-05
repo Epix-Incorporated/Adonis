@@ -235,7 +235,7 @@ return function(data, env)
 		timer.Visible = true
 		task.spawn(function()
 			repeat
-				timer.Text = time
+				timer.Text = math.floor(time*100)/100
 				--timer.Size=UDim2.new(0,timer.TextBounds.X,0,10)
 				task.wait(1)
 				time = time-1
