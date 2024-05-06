@@ -20,13 +20,6 @@ jobs:
       
       - name: Layout file name
         id: naming
-        env:
-          GIT_HASH: ${{ github.sha }}
-          GITHUB_REPO: ${{ github.repository }}
-          GIT_REF: ${{ github.ref_name }}
-          GIT_REF_TYPE: ${{ github.ref_type }}
-          GITHUB_ACTION_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.isPrerelease }}
         run: |
          CUR_DATE_TIME=$(date +'%Y-%m-%d')
          echo "output_name=Adonis_Fallback_${CUR_DATE_TIME}_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
