@@ -31,8 +31,8 @@ return {
     "DefaultTheme           <font color = 'rgb(255, 162, 0)'>[Has been forced to 'Default'.]</font>";
     "SaveAdmins             <font color = 'rgb(255, 162, 0)'>[Has been forced to 'Default'.]</font>";
     "FunCommands            <font color = 'rgb(255, 162, 0)'>[Has been forced disabled.]</font>";
-    "PlayerCommands         <font color = 'rgb(255, 162, 0)'>[Has been forced enabled.]</font>";
-    "CommandFeedback        <font color = 'rgb(255, 162, 0)'>[Has been forced enabled.]</font>";
+    "PlayerCommands         <font color = 'rgb(0, 255, 0)'>[Has been forced enabled.]</font>";
+    "CommandFeedback        <font color = 'rgb(0, 255, 0)'>[Has been forced enabled.]</font>";
     "CrossServerCommands    <font color = 'rgb(255, 162, 0)'>[Has been forced disabled.]</font>";
     "ChatCommands           <font color = 'rgb(255, 162, 0)'>[Has been forced enabled.]</font>";
     "CodeExecution          <font color = 'rgb(255, 162, 0)'>[Has been forced disabled.]</font>";
@@ -79,7 +79,3 @@ return {
     "";
     "UI Themes              <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
 }
-
-
-
-				
