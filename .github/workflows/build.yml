@@ -24,7 +24,7 @@ jobs:
          CUR_DATE_TIME=$(date +'%Y-%m-%d')
          echo "output_name=Adonis_Fallback_${CUR_DATE_TIME}_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
 
-      - uses: Roblox/setup-foreman@v3.1.0
+      - uses: Roblox/setup-foreman@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
