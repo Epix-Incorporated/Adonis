@@ -32,6 +32,7 @@ end
 
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
+local InsertService = game:GetService("InsertService")
 
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
 if mutex then
@@ -157,7 +158,20 @@ else
 		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
-	local module = require(moduleId)
+	local success, module = xpcall(require, warn, moduleId)
+	if not success and type(moduleId) == "number" then -- Backup method for loading 
+		warn(`Failed to require Adonis mainmodule {moduleId} due to {module}. If this does not work please purchase the Adonis mainmodule in your inventory. Using backup method...`)
+		local assets = InsertService:LoadAsset(moduleId)
+
+		for _, v in assets do
+			if v:IsA("ModuleScript") then
+				module = require(v)
+				break
+			end
+		end
+
+		assert(type(module) ~= "string", module)
+	end
 	local response = module(data)
 
 	if response == "SUCCESS" then
