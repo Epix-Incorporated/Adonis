@@ -48,7 +48,7 @@ return function(Vargs, GetEnv)
 		local command = Commands[v]
 
 		if command then
-			v.Agent = true
+			command.Agent = true
 		end
 	end
 end
