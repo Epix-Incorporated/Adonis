@@ -70,6 +70,7 @@ return function(Vargs, GetEnv)
 			Bans = {};
 			Music = {};
 			InsertList = {};
+			Agents = {};
 
 			Overrides = {
 				{
@@ -158,6 +159,12 @@ return function(Vargs, GetEnv)
 					end
 				},
 				{
+					Lists = {"Agents","Agent List","Agentlist"},
+					Process = function(card, data)
+						table.insert(data.Agents, card.name)
+					end
+				},
+				{
 					Lists = {"Permissions", "Permission List", "Permlist"},
 					Process = function(card)
 						local com, level = string.match(card.name, "^(.*):(.*)")
@@ -202,6 +209,7 @@ return function(Vargs, GetEnv)
 						Whitelist = {};
 						Blacklist = {};
 						InsertList = {};
+						Agents = {};
 						Ranks = {
 							["Moderators"] = {},
 							["Admins"] = {},
@@ -265,6 +273,7 @@ return function(Vargs, GetEnv)
 						HTTP.Trello.Music = data.Music
 						HTTP.Trello.InsertList = data.InsertList
 						HTTP.Trello.Mutes = data.Mutes
+						HTTP.Trello.Agents = data.Agents
 
 						Variables.Blacklist.Lists.Trello = data.Blacklist
 						Variables.Whitelist.Lists.Trello = data.Whitelist
