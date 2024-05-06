@@ -1125,6 +1125,16 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		StopAnimation = function(player)
+			if player.Character then
+				local human = player.Character:FindFirstChildOfClass("Humanoid")
+				if human and not human:FindFirstChildOfClass("Animator") then
+					service.New("Animator", human)
+				end
+				Remote.Send(player,"Function","StopAnimation")
+			end
+		end;
+
 		GetEnumValue = function(enum, item)
 			local valid = false
 			for _,v in enum:GetEnumItems() do
