@@ -1017,7 +1017,7 @@ return function(Vargs, GetEnv)
 			local animator = human and human:FindFirstChildOfClass("Animator") or human and human:WaitForChild("Animator", 9e9)
 			if not animator then return end
 			for _, v in animator:GetPlayingAnimationTracks() do
-				if v.Name == "ADONIS_Animation" then v:Stop() ; human.Jump = true end
+				if v.Name == "ADONIS_Animation" then v:Stop() end
 			end
 		end;
 
