@@ -29,7 +29,6 @@ jobs:
           GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.isPrerelease }}
         run: |
          CUR_DATE_TIME=$(date +'%Y-%m-%d')
-         fi
          echo "output_name=Adonis_Fallback_${CUR_DATE_TIME}_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
 
       - uses: ok-nick/setup-aftman@v0.4.2
