@@ -3,39 +3,54 @@ name: rojo
 on:
   push:
     branches: [fallback]
+    tags: 
+      - v**
   pull_request:
     branches: [fallback]
+  release:
+    types: [published]
+  workflow_dispatch:
+
 jobs:
   build:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4.1.1
       
-      - name: Get current date
-        id: date
-        run: echo "curDate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-        #run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Layout file name
+        id: naming
+        env:
+          GIT_HASH: ${{ github.sha }}
+          GITHUB_REPO: ${{ github.repository }}
+          GIT_REF: ${{ github.ref_name }}
+          GIT_REF_TYPE: ${{ github.ref_type }}
+          GITHUB_ACTION_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_IS_PRE_RELEASE: ${{ github.event_name  == 'release' && github.event.isPrerelease }}
+        run: |
+         CUR_DATE_TIME=$(date +'%Y-%m-%d')
+         fi
+         echo "output_name=Adonis_Fallback_${CUR_DATE_TIME}_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
 
-      - uses: Roblox/setup-foreman@v1
+      - uses: ok-nick/setup-aftman@v0.4.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: rojo build -o Adonis_Fallback_${{ env.curDate }}.rbxm .github/build.project.json
+        run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4.3.1
         with:
-          name: Adonis_Fallback_${{ env.curDate }}
-          path: Adonis_Fallback_${{ env.curDate }}.rbxm
+          name: ${{ steps.naming.outputs.output_name }}
+          path: ${{ steps.naming.outputs.output_name }}.rbxm
           
       - name: Build Fallback MainModule
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'fallback'
         run: rojo build -o module.rbxm .github/module.deploy.project.json
 
-      - name: Send file Fallback build to Discord channel
-        uses: tsickert/discord-webhook@v3.0.0
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+      - name: Send file fallback build to Discord channel
+        uses: tsickert/discord-webhook@v6.0.0
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'fallback'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
-          filename: Adonis_Fallback_${{ steps.date.outputs.date }}.rbxm
+          filename: ${{ steps.naming.outputs.output_name }}.rbxm
