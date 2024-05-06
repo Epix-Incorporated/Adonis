@@ -171,7 +171,7 @@ else
 
 		model.Name = "Adonis_Loader"
 	else
-		error(" !! Adonis MainModule failed to load !! ")
+		error(" Adonis bruh moment ")
 	end
 end
 
