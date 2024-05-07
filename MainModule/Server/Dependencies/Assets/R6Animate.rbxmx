@@ -471,7 +471,7 @@ Humanoid.Swimming:Connect(onSwimming)
 
 -- main program
 
-local runService = game:service("RunService");
+local runService = game:GetService("RunService");
 
 -- initialize to idle
 playAnimation("idle", 0.1, Humanoid)
