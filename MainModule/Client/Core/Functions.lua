@@ -1761,7 +1761,7 @@ return function(Vargs, GetEnv)
 
 			}
 
-			game:service("ContentProvider"):Preload(`rbxassetid://{audioId}`)
+			game:GetService("ContentProvider"):Preload(`rbxassetid://{audioId}`)
 
 			local function getText(str)
 				local tab = {}
