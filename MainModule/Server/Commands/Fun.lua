@@ -1375,6 +1375,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {Mode = "Off";})
+					Functions.StopAnimation(v)
 				end
 			end
 		};
