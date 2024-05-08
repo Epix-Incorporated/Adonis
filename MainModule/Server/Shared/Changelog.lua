@@ -1,7 +1,20 @@
 return {
-	"Version: 257";
+	"Version: 258";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v258 2024-xx-xx xx:xx UTC] @Maintainer";
+	"Plugin clean-up";
+	"Fix invalid lookahead buffer handling";
+	"Removing TripDet";
+	"removing \n from kick messages";
+	"Addition of HiddenThemes setting";
+	"Enhance user ID integration and fix command info display issues";
+	"Update ServerDetails IP API";
+	"Fix floating points and revert default duration to notification UI";
+	"Remove cPcall";
+	"Backup method for loader in case requireid fails";
+	"Re-add Epix Agents";
 	"";
 	"[Patch v257.1 13:35 UTC] @Dimenpsyonal";
 	"Fix invalid lookahead buffer handling";
