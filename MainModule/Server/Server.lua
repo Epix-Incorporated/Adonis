@@ -734,7 +734,7 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			if not server.Core.SilentStartup then
+			if not data.SilentStartup then
 				print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; Required by {data.Loader:GetFullName()}{data.Model:FindFirstChild("Version") and (" version: "..data.Model.Version.Value) or ""}`)
 			end
 		else
