@@ -39,7 +39,7 @@ return function(Vargs, GetEnv)
 
 	server.HTTP = {
 		Init = Init;
-		HttpEnabled = service.HttpService.HttpEnabled
+		HttpEnabled = service.HttpService.HttpEnabled;
 		LoadstringEnabled = pcall(loadstring, "");
 
 		CheckHttp = function()
