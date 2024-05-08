@@ -39,13 +39,7 @@ return function(Vargs, GetEnv)
 
 	server.HTTP = {
 		Init = Init;
-		HttpEnabled = (function()
-			local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://www.google.com/robots.txt")
-			if not success and res:find("Http requests are not enabled.") then
-				return false
-			end
-			return true
-		end)();
+		HttpEnabled = service.HttpService.HttpEnabled;
 		LoadstringEnabled = pcall(loadstring, "");
 
 		CheckHttp = function()
