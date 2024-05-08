@@ -995,6 +995,7 @@ return function(data)
 	client.UI.Make("Notification",{
 		Title = "New Message";
 		Message = "New Message from "..player.Name..". Click to here to view.";
+		Icon = client.MatIcons.Notifications;
 		Time = false;
 		OnClick = function() gTable:Ready() Frame.Visible = true end;
 		OnClose = function() gTable:Destroy() end;
