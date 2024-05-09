@@ -86,6 +86,9 @@ else
 		NightlyMode = false;			--// If true, uses the nightly module instead of the current release module.
 		NightlyModuleID = 8612978896; 	--// https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
 
+		--// Module used in case MainModule is unavailable, containing only essential commands
+		IncidentModuleId = 17438792001; --// https://create.roblox.com/store/asset/17438792001/
+
 		DebugMode = true;
 		SilentStartup = false
 	}
