@@ -16,7 +16,6 @@ return function(data, env)
 
 	if Functions.CheckDate(1, 4) or Functions.Checkdate(31, 10) then
 		UI.MakeGui("Effect", {Mode = "lifeoftheparty";})
-		return
 	end
 
 	local gui = service.New("ScreenGui", {ResetOnSpawn = false})
