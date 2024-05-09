@@ -20,6 +20,8 @@ jobs:
       
       - name: Layout file name
         id: naming
+        env:
+         GIT_HASH: ${{ github.sha }}
         run: |
          CUR_DATE_TIME=$(date +'%Y-%m-%d')
          echo "output_name=Adonis_Fallback_${CUR_DATE_TIME}_$(git rev-parse --short "$GIT_HASH")" >> $GITHUB_OUTPUT
