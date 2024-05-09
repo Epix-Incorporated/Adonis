@@ -27,6 +27,7 @@ jobs:
       - uses: Roblox/setup-foreman@v3.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          allow-external-github-orgs: true
 
       - name: Build
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
