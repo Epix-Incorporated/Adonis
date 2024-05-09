@@ -1,13 +1,9 @@
 {
-    "name": "Adonis_Rojo",
+    "name": "Adonis_ACIM_Rojo",
     "tree": {
         "$className": "Folder",
         "MainModule": {
             "$path": "../MainModule"
-        },
-        "Adonis_Loader": {
-            "$className": "Model",
-            "$path": "../Loader"
         }
     }
 }
