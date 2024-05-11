@@ -452,12 +452,14 @@ local function StartFreecam()
 	PlayerState.Push()
 	RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
 	Input.StartCapture()
+	UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 end
 
 local function StopFreecam()
 	Input.StopCapture()
 	RunService:UnbindFromRenderStep("Freecam")
 	PlayerState.Pop()
+	UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 end
 
 ------------------------------------------------------------------------
@@ -484,7 +486,6 @@ do
 	end
 
 	local function HandleActivationInput(action, state, input)
-		if UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter then return end
 		if state == Enum.UserInputState.Begin then
 			if input.KeyCode == FREECAM_MACRO_KB[#FREECAM_MACRO_KB] then
 				CheckMacro(FREECAM_MACRO_KB)
