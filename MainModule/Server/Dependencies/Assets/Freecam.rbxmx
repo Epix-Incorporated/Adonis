@@ -272,7 +272,8 @@ local Input = {} do
 				Enum.KeyCode.D, Enum.KeyCode.K,
 				Enum.KeyCode.E, Enum.KeyCode.I,
 				Enum.KeyCode.Q, Enum.KeyCode.Y,
-				Enum.KeyCode.Up, Enum.KeyCode.Down
+				Enum.KeyCode.Up, Enum.KeyCode.Down,
+				Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift
 			)
 			ContextActionService:BindActionAtPriority("FreecamMousePan",          MousePan,   false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
 			ContextActionService:BindActionAtPriority("FreecamMouseWheel",        MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
@@ -483,6 +484,7 @@ do
 	end
 
 	local function HandleActivationInput(action, state, input)
+		if UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter then return end
 		if state == Enum.UserInputState.Begin then
 			if input.KeyCode == FREECAM_MACRO_KB[#FREECAM_MACRO_KB] then
 				CheckMacro(FREECAM_MACRO_KB)
