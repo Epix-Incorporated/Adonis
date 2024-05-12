@@ -53,7 +53,7 @@ return {
 	"Moved DefaultTheme further down the settings";
 	"Changed :bot command to not use actors";
 	"Optimise CleanWorkspace";
-	"Fix typeo in Functions";
+	"Fix typo in Functions";
 	"Fix accidental alias recursion";
 	"Fix empty aliases preventing any commands running";
 	"Implement AllowUnsafeSelectors";
