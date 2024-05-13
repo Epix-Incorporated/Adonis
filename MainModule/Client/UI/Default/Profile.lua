@@ -109,6 +109,8 @@ return function(data, env)
 			{"Membership", player.MembershipType.Name, "The player's Roblox membership type (Premium)"},
 			{"Can Chat", data.CanChatGet[1] and boolToStr(data.CanChatGet[2]) or "[Error]", "Does the player's account settings allow them to chat?"},
 			{"Safe Chat Enabled", data.SafeChat, "[Admins Only] Does the player have safe chat applied?"},
+			{"Mail Verified", data.MailVerified, "[Admins Only] Does the player have verified their mail?"},
+			{"Phone/ID Verified", data.IDVerified, "[Admins Only] Does the player have verified their non-VoIP phone / ID?"},
 			}) do
 			generaltab:Add("TextLabel", {
 				Text = `  {v[1]}: `;
@@ -130,9 +132,8 @@ return function(data, env)
 		for _, v in ipairs({
 			{data.IsServerOwner, "Private Server Owner", client.MatIcons.Grade, "User owns the current private server"},
 			{data.IsDonor, "Adonis Donor", "rbxassetid://6877822142", "User has purchased the Adonis donation pass/shirt"},
-			{player:GetRankInGroup(886423) == 10, "Adonis Contributor (GitHub)", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
+			{player:GetRankInGroup(886423) == 10, "Adonis Open-Source Contributor", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
 			{player:GetRankInGroup(886423) >= 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system (see credit list)"},
-			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
 			{player.UserId == 1237666 or player.UserId == 698712377, "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You're looking at the creator of the Adonis admin system!"},
 			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "Roblox Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
 			{player:IsInGroup(3514227), "DevForum Member", "rbxassetid://6383940476", "User is a member of the Roblox Developer Forum"},
@@ -140,7 +141,7 @@ return function(data, env)
 			if v[1] then
 				generaltab:Add("TextLabel", {
 					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, 32*c + 225);
+					Position = UDim2.new(0, 5, 0, 32*c + 285);
 					BackgroundTransparency = 0.4;
 					Text = v[2];
 					ToolTip = v[4];
@@ -387,6 +388,7 @@ return function(data, env)
 			{"Mouse Delta Sensitivity", data.GameData.MouseDeltaSensitivity, "The scale of the delta (change) output of the user’s Mouse"},
 			{"Mouse Enabled", boolToStr(data.GameData.MouseEnabled), "Whether the user’s device has a mouse available"},
 			-- NEEDS REFRESHABILITY {"OnScreenKeyboardVisible", data.GameData.OnScreenKeyboardVisible, "Whether an on-screen keyboard is currently visible on the user’s screen"},
+			{"Render Resolution", data.GameData.Resolution, "The render resolution on user's current device. May not reflect real resolution on high-DPI devices."},
 			{"Touch Enabled", boolToStr(data.GameData.TouchEnabled), "Whether the user’s current device has a touch-screen available"},
 			{"VR Enabled", boolToStr(data.GameData.VREnabled), "Whether the user is using a virtual reality headset"},
 			{"Source Place ID", data.GameData.SourcePlaceId, "The ID of the place from which the player was teleported to this game, if applicable"},
