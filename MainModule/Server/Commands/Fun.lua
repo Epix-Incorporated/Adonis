@@ -5056,13 +5056,13 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				local id = string.lower(assert(args[2], "Missing soundid!"))
 
-				for i, v in Variables.MusicList do
+				for _, v in Variables.MusicList do
 					if id == string.lower(v.Name) then
 						id = v.ID
 					end
 				end
 
-				for i, v in HTTP.Trello.Music do
+				for _, v in HTTP.Trello.Music do
 					if id == string.lower(v.Name) then
 						id = v.ID
 					end
@@ -5087,12 +5087,12 @@ return function(Vargs, env)
 						head.face:Destroy()
 					end
 
-					if head:IsA("MeshPart") and table.find(Variables.AnimatedFaces, tonumber(head.MeshId:match("%d%d%d+"))) then
+					if head:IsA("MeshPart") and table.find(Variables.AnimatedFaces, tonumber(string.match(head.MeshId, "%d%d%d+"))) then
 						head.TextureID = ""
 						if head:FindFirstChildOfClass("SurfaceAppearance") then
 							head:FindFirstChildOfClass("SurfaceAppearance"):Destroy()
 						end
-					elseif head:FindFirstChildOfClass("SpecialMesh") and table.find(Variables.AnimatedFaces, tonumber(head:FindFirstChildOfClass("SpecialMesh").MeshId:match("%d%d%d+"))) then
+					elseif head:FindFirstChildOfClass("SpecialMesh") and table.find(Variables.AnimatedFaces, tonumber(string.match(head:FindFirstChildOfClass("SpecialMesh").MeshId, "%d%d%d+"))) then
 						head:FindFirstChildOfClass("SpecialMesh").TextureId = ""
 					end
 
@@ -5152,7 +5152,9 @@ return function(Vargs, env)
 					sound.Parent = head
 
 					if not sound:FindFirstChild("Singer") then
-						Deps.Assets.Singer:Clone().Parent = sound
+						local Singer = Deps.Assets.Singer:Clone();
+						Singer.Parent = sound;
+						Singer.Enabled = true;
 					end
 				end
 			end
