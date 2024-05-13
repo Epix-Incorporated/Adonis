@@ -6873,10 +6873,7 @@ return function(Vargs, env)
 					freecam.ResetOnSpawn = false
 					freecam.Freecam.Disabled = false
 					freecam.Parent = plrgui
-
-					if Settings.CommandFeedback then
-						Functions.Notification("Notification", "Freecam has been enabled. Press Shift+P to toggle freecam on or off.", {v}, 15)
-					end
+					Functions.Notification("Notification", "Freecam has been enabled. Press Shift+P, or F to toggle freecam on or off.", {v}, 15)
 				end
 			end
 		};

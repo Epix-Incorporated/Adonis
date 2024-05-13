@@ -522,8 +522,6 @@ do
 			StopFreecam()
 		end
 	end
-	
-	ToggleFreecam() -- Runs the freecam automatically
 end]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
