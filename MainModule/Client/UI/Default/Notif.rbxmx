@@ -6,12 +6,19 @@
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
+			<bool name="ClipToDeviceSafeArea">true</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">false</bool>
-			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">Notif</string>
 			<bool name="ResetOnSpawn">true</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
+			<token name="SafeAreaCompatibility">1</token>
+			<token name="ScreenInsets">2</token>
+			<token name="SelectionBehaviorDown">0</token>
+			<token name="SelectionBehaviorLeft">0</token>
+			<token name="SelectionBehaviorRight">0</token>
+			<token name="SelectionBehaviorUp">0</token>
+			<bool name="SelectionGroup">false</bool>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
@@ -28,9 +35,8 @@
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{E0BA5844-2063-427D-9E02-C897CC48F00E}</string>
+					<string name="ScriptGuid">{ABB7F88C-A41C-43DC-9DFD-2E329AC8EE5C}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
@@ -120,7 +126,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">0</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">3</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -139,7 +150,13 @@ end]]></ProtectedString>
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>1</XS>
 					<XO>0</XO>
@@ -155,6 +172,7 @@ end]]></ProtectedString>
 					<G>1</G>
 					<B>1</B>
 				</Color3>
+				<token name="TextDirection">0</token>
 				<bool name="TextScaled">false</bool>
 				<float name="TextSize">18</float>
 				<Color3 name="TextStrokeColor3">
