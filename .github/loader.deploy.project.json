@@ -1,7 +1,0 @@
-{
-	"name": "Adonis_Loader",
-	"tree": {
-		"$className": "Model",
-		"$path": "../Loader"
-	}
-}
