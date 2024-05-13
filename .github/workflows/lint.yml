@@ -3,21 +3,22 @@ name: lint
 on:
   push:
     branches:
-    - master
+    - fallback
   pull_request:
     branches:
-    - master
+    - fallback
 
 jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4.1.4
 
-    - uses: Roblox/setup-foreman@v1
+    - uses: Roblox/setup-foreman@v3.1.0
       with:
           token: ${{ SECRETS.GITHUB_TOKEN }}
+          allow-external-github-orgs: true
 
     - name: Lint
       run: |
