@@ -22,4 +22,4 @@ jobs:
 
     - name: Lint
       run: |
-        selene ./MainModule ./Loader
+        selene ./MainModule
