@@ -272,7 +272,8 @@ local Input = {} do
 				Enum.KeyCode.D, Enum.KeyCode.K,
 				Enum.KeyCode.E, Enum.KeyCode.I,
 				Enum.KeyCode.Q, Enum.KeyCode.Y,
-				Enum.KeyCode.Up, Enum.KeyCode.Down
+				Enum.KeyCode.Up, Enum.KeyCode.Down,
+				Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift
 			)
 			ContextActionService:BindActionAtPriority("FreecamMousePan",          MousePan,   false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
 			ContextActionService:BindActionAtPriority("FreecamMouseWheel",        MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
@@ -451,12 +452,14 @@ local function StartFreecam()
 	PlayerState.Push()
 	RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
 	Input.StartCapture()
+	UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 end
 
 local function StopFreecam()
 	Input.StopCapture()
 	RunService:UnbindFromRenderStep("Freecam")
 	PlayerState.Pop()
+	UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 end
 
 ------------------------------------------------------------------------
