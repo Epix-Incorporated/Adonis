@@ -1,5 +1,4 @@
-client = nil
-service = nil
+client, service = nil, nil
 
 --// Ported from Kronos
 
