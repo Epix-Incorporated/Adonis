@@ -625,10 +625,10 @@ return service.NewProxy({
 	  	local function applyColour(line)
 			local prefix = line:sub(1, 2)
 
-  	  	  	if prefix == "[v" or prefix == "[1" or prefix == "[0" or line:sub(1, 1) == "v" then
-      	  	  	return `<font color='#FFA500'>{line}</font>`
+  	  	  	if prefix == "[v" or prefix == "[1" or prefix == "[0" or prefix == "1." or line:sub(1, 1) == "v" then
+      	  	  	return `<font color='#8FAEFF'>{line}</font>`
   	  	  	elseif line:sub(1, 6) == "[Patch" then
-  	  	  	  	return `<font color='#FF0000'>{line}</font>`
+  	  	  	  	return `<font color='#F0B654'>{line}</font>`
   	  	  	elseif line:sub(1, 9) == "Version: " then
 				return `<b>{line}</b>`
 			else
