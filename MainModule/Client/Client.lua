@@ -557,6 +557,21 @@ return service.NewProxy({
 
 		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
 		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
+		client.FormattedChangelog = {}
+
+		local function applyColour(line)
+    		if line:sub(1, 2) == "[v" or line:sub(1, 2) == "[1" or line:sub(1, 2) == "[0" or line:sub(1, 1) == "v" then
+    			return "<font color='#FFA500'>" .. line .. "</font>"
+  		  	elseif line:sub(1, 6) == "[Patch" then
+  		      return "<font color='#FF0000'>" .. line .. "</font>"
+  		  else
+  				return line
+  			end
+		end
+
+		for _, line in ipairs(client.Changelog) do
+        	table.insert(client.FormattedChangelog, applyColour(line))
+  	 	end
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
 			client.MatIcons = setmetatable({}, {
