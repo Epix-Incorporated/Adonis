@@ -557,7 +557,7 @@ return service.NewProxy({
 
 		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
 		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
-		client.FormattedChangelog = table.create#client.Changelog)
+		client.FormattedChangelog = table.create(#client.Changelog)
 
 	  	local function applyColour(line)
 			local prefix = line:sub(1, 2)
