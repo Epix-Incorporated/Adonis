@@ -6895,10 +6895,7 @@ return function(Vargs, env)
 
 						Remote.Send(v, "Function", "SetView", "reset")
 						service.Debris:AddItem(freecam, 2)
-
-						if Settings.CommandFeedback then
-							Functions.Notification("Notification", "Freecam has been disabled.", {v}, 15)
-						end
+						Functions.Notification("Notification", "Freecam has been disabled.", {v}, 15)
 					end
 				end
 			end

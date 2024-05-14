@@ -407,6 +407,7 @@ local PlayerState = {} do
 
 	-- Restore state
 	function PlayerState.Pop()
+		if cameraFieldOfView == nil then return end
 		for name, isEnabled in pairs(coreGuis) do
 			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType[name], isEnabled)
 		end
@@ -519,6 +520,8 @@ do
 		if a == "End" or a == "Stop" then
 			RF.OnClientInvoke = nil
 			Debris:AddItem(RF, 0.5)
+			ContextActionService:UnbindAction("FreecamToggle")
+			ContextActionService:UnbindAction("FreecamToggle2")
 			StopFreecam()
 		end
 	end
