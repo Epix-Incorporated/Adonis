@@ -414,8 +414,9 @@ return function(data, env)
 					MouseButton1Down = function()
 						UI.Make("List", {
 							Title = "Changelog";
-							Table = client.Changelog;
+							Table = client.FormattedChangelog;
 							RichText = true;
+							Size = {500, 400};
 						})
 					end
 				}
