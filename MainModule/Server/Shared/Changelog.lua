@@ -3,11 +3,11 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v258 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v258 2024-05-14 18:00 UTC] @Dimenpsyonal";
 	"Plugin clean-up";
 	"Fix invalid lookahead buffer handling";
 	"Remove TripDet";
-	"Remove \n from kick messages";
+	"Remove newlines from kick messages";
 	"Add of HiddenThemes setting";
 	"Enhance user ID integration and fix command info display issues";
 	"Update ServerDetails IP API";
