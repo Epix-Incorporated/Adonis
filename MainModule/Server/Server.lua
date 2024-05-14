@@ -619,6 +619,21 @@ return service.NewProxy({
 		server.Changelog = require(server.Shared.Changelog)
 		server.Credits = require(server.Shared.Credits)
 		server.DLL = require(server.Shared.DoubleLinkedList)
+		server.FormattedChangelog = {}
+
+		local function applyColour(line)
+    		if line:sub(1, 2) == "[v" or line:sub(1, 2) == "[1" or line:sub(1, 2) == "[0" or line:sub(1, 1) == "v" then
+    			return "<font color='#FFA500'>" .. line .. "</font>"
+  		  	elseif line:sub(1, 6) == "[Patch" then
+  		      return "<font color='#FF0000'>" .. line .. "</font>"
+  		  else
+  				return line
+  			end
+		end
+
+		for _, line in ipairs(server.Changelog) do
+        	table.insert(server.FormattedChangelog, applyColour(line))
+  	 	end
 
 		do
 			local MaterialIcons = require(server.Shared.MatIcons)
