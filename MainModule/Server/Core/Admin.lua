@@ -1588,7 +1588,7 @@ return function(Vargs, GetEnv)
 				return false, "This command is not permitted as chat message (non-chattable command)."
 			end
 
-			local permAllowed = (cmd.Donors and (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors)))
+			local permAllowed = (cmd.Donors and (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))) or (cmd.Agent and HTTP.Trello.CheckAgent) and HTTP.Trello.CheckAgent(pDat.Player)
 				or Admin.CheckComLevel(adminLevel, comLevel)
 
 			if permAllowed and not ignoreCooldown and type(pDat.Player) == "userdata" then

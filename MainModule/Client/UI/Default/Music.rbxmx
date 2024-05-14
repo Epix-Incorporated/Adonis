@@ -8,8 +8,7 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Music</string>
 			<string name="ScriptGuid">{C3964A12-AC9F-4411-87D7-F7B291A534D7}</string>
-			<ProtectedString name="Source"><![CDATA[client = nil
-service = nil
+			<ProtectedString name="Source"><![CDATA[client, service = nil, nil
 
 return function(data, env)
 	if env then

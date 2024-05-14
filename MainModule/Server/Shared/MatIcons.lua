@@ -17,6 +17,7 @@ return { -- Decal IDs
 	["Add circle"] = 7541498940,
 	["Add circle outline"] = 7541499713,
 	["Add moderator"] = 7495454078,
+	["Alert"] = 7467248902,
 	["Admin panel settings"] = 7495455898,
 	["Announcement"] = 7495456913,
 	["Arrow back"] = 7541501140,

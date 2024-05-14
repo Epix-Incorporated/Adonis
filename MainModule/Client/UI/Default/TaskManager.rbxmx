@@ -2600,10 +2600,7 @@
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
 					<string name="ScriptGuid">{8A117246-F894-4E2A-BC81-DA79139EC24A}</string>
-					<ProtectedString name="Source"><![CDATA[client = nil
-Pcall = nil
-Routine = nil
-service = nil
+					<ProtectedString name="Source"><![CDATA[client, Pcall, Routine, service = nil, nil, nil, nil
 
 --// All global vars will be wiped/replaced except script
 local function Expand(ent, point)

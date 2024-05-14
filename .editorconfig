@@ -9,3 +9,18 @@ indent_style = tab
 indent_size = 4
 trim_trailing_whitespace = true
 end_of_line = lf
+
+[*.toml]
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+end_of_line = lf
+
+[*.yml]
+end_of_line = lf
+
+[*.md]
+end_of_line = lf
+
+[*.rbxmx]
+end_of_line = lf

@@ -961,11 +961,7 @@ local setMinSize
 local setMaxSize
 local apiIfy
 
-client = nil
-Pcall = nil
-Routine = nil
-service = nil
-GetEnv = nil
+client, Pcall, Routine, service, GetEnv = nil, nil, nil, nil, nil
 
 local function isGui(child)
 	return child:IsA("GuiObject");

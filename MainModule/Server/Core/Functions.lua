@@ -587,11 +587,28 @@ return function(Vargs, GetEnv)
 								end
 							end
 
+							--// Check for user IDs
+							if tonumber(s) then
+								for _, v in parent:GetChildren() do
+									local p = getplr(v)
+									if p and p.ClassName == "Player" and p.UserId == tonumber(s) then
+										table.insert(players, p)
+										plus()
+									end
+								end
+							end
+
 							if plrCount == 0 then
 								if not options.NoFakePlayer then
 									--// Attempt to retrieve non-ingame user
-
-									local UserId = Functions.GetUserIdFromNameAsync(s)
+									local UserId
+									if Functions.GetUserIdFromNameAsync(s) then
+										UserId = Functions.GetUserIdFromNameAsync(s)
+									else
+										if tonumber(s) then
+											UserId = s
+										end
+									end
 									if UserId or options.AllowUnknownUsers then
 										table.insert(players, Functions.GetFakePlayer({
 											Name = s;
@@ -969,7 +986,6 @@ return function(Vargs, GetEnv)
 
 		Notification = function(title, message, players, duration, icon, onClick)
 			icon = icon and string.match(icon, "MatIcon://(.+)") or icon
-			duration = duration or (#tostring(message) / 19) + 2.5
 			
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
@@ -1106,6 +1122,16 @@ return function(Vargs, GetEnv)
 					service.New("Animator", human)
 				end
 				Remote.Send(player,"Function","PlayAnimation",animId)
+			end
+		end;
+
+		StopAnimation = function(player)
+			if player.Character then
+				local human = player.Character:FindFirstChildOfClass("Humanoid")
+				if human and not human:FindFirstChildOfClass("Animator") then
+					service.New("Animator", human)
+				end
+				Remote.Send(player,"Function","StopAnimation")
 			end
 		end;
 

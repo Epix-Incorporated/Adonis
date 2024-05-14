@@ -199,7 +199,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local WOT = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
+				-- Broken sounds: {130872377, 142633540, 217714490, 227499602, 259702986, 3657191505, 4881542521}
+				local WOT = {754995791, 160715357, 6884041159}
 				Remote.Send(plr, "Function", "PlayAudio", WOT[math.random(1, #WOT)])
 			end
 		};
@@ -1375,6 +1376,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {Mode = "Off";})
+					Functions.StopAnimation(v)
 				end
 			end
 		};
@@ -5054,13 +5056,13 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				local id = string.lower(assert(args[2], "Missing soundid!"))
 
-				for i, v in Variables.MusicList do
+				for _, v in Variables.MusicList do
 					if id == string.lower(v.Name) then
 						id = v.ID
 					end
 				end
 
-				for i, v in HTTP.Trello.Music do
+				for _, v in HTTP.Trello.Music do
 					if id == string.lower(v.Name) then
 						id = v.ID
 					end
@@ -5085,12 +5087,12 @@ return function(Vargs, env)
 						head.face:Destroy()
 					end
 
-					if head:IsA("MeshPart") and table.find(Variables.AnimatedFaces, tonumber(head.MeshId:match("%d%d%d+"))) then
+					if head:IsA("MeshPart") and table.find(Variables.AnimatedFaces, tonumber(string.match(head.MeshId, "%d%d%d+"))) then
 						head.TextureID = ""
 						if head:FindFirstChildOfClass("SurfaceAppearance") then
 							head:FindFirstChildOfClass("SurfaceAppearance"):Destroy()
 						end
-					elseif head:FindFirstChildOfClass("SpecialMesh") and table.find(Variables.AnimatedFaces, tonumber(head:FindFirstChildOfClass("SpecialMesh").MeshId:match("%d%d%d+"))) then
+					elseif head:FindFirstChildOfClass("SpecialMesh") and table.find(Variables.AnimatedFaces, tonumber(string.match(head:FindFirstChildOfClass("SpecialMesh").MeshId, "%d%d%d+"))) then
 						head:FindFirstChildOfClass("SpecialMesh").TextureId = ""
 					end
 
@@ -5150,7 +5152,9 @@ return function(Vargs, env)
 					sound.Parent = head
 
 					if not sound:FindFirstChild("Singer") then
-						Deps.Assets.Singer:Clone().Parent = sound
+						local Singer = Deps.Assets.Singer:Clone();
+						Singer.Parent = sound;
+						Singer.Enabled = true;
 					end
 				end
 			end

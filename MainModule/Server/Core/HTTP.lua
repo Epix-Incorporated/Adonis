@@ -39,13 +39,7 @@ return function(Vargs, GetEnv)
 
 	server.HTTP = {
 		Init = Init;
-		HttpEnabled = (function()
-			local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://www.google.com/robots.txt")
-			if not success and res:find("Http requests are not enabled.") then
-				return false
-			end
-			return true
-		end)();
+		HttpEnabled = service.HttpService.HttpEnabled;
 		LoadstringEnabled = pcall(loadstring, "");
 
 		CheckHttp = function()
@@ -70,6 +64,7 @@ return function(Vargs, GetEnv)
 			Bans = {};
 			Music = {};
 			InsertList = {};
+			Agents = {};
 
 			Overrides = {
 				{
@@ -158,6 +153,12 @@ return function(Vargs, GetEnv)
 					end
 				},
 				{
+					Lists = {"Agents","Agent List","Agentlist"},
+					Process = function(card, data)
+						table.insert(data.Agents, card.name)
+					end
+				},
+				{
 					Lists = {"Permissions", "Permission List", "Permlist"},
 					Process = function(card)
 						local com, level = string.match(card.name, "^(.*):(.*)")
@@ -202,6 +203,7 @@ return function(Vargs, GetEnv)
 						Whitelist = {};
 						Blacklist = {};
 						InsertList = {};
+						Agents = {};
 						Ranks = {
 							["Moderators"] = {},
 							["Admins"] = {},
@@ -265,6 +267,7 @@ return function(Vargs, GetEnv)
 						HTTP.Trello.Music = data.Music
 						HTTP.Trello.InsertList = data.InsertList
 						HTTP.Trello.Mutes = data.Mutes
+						HTTP.Trello.Agents = data.Agents
 
 						Variables.Blacklist.Lists.Trello = data.Blacklist
 						Variables.Whitelist.Lists.Trello = data.Whitelist

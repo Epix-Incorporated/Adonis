@@ -223,7 +223,6 @@ return function(Vargs, GetEnv)
 					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false}, true, true)
 					local func = service.New("RemoteFunction", {Name = "__FUNCTION", Parent = event}, true, true)
 					local secureTriggered = true
-					local tripDet = math.random()
 
 					local function secure(ev, name, parent)
 						return ev.Changed:Connect(function()
@@ -244,7 +243,6 @@ return function(Vargs, GetEnv)
 					end
 
 					Core.DisconnectEvent()
-					Core.TripDet = tripDet
 
 					rTable.Events = {}
 					rTable.Object = event
@@ -434,7 +432,7 @@ return function(Vargs, GetEnv)
 				if not p.Parent then
 					return false
 				elseif not parentObj then
-					p:Kick("\n[CLI-102495] Loading Error \nPlayerGui Missing (Waited 10 Minutes)")
+					p:Kick("[CLI-102495] Loading Error - PlayerGui Missing (Waited 10 Minutes)")
 					return false
 				end
 
@@ -486,14 +484,14 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not ok then
-					p:Kick(`\n[CLI-192385] Loading Error \n[HookClient Error: {err}]`)
+					p:Kick(`[CLI-192385] Loading Error [HookClient Error: {err}]`)
 					return false
 				else
 					return true
 				end
 			else
 				if p and p.Parent then
-					p:Kick("\n[CLI-5691283] Loading Error \n[HookClient: Keys Missing]")
+					p:Kick("[CLI-5691283] Loading Error [HookClient: Keys Missing]")
 				end
 			end
 		end;

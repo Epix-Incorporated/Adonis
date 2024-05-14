@@ -1,7 +1,6 @@
 server = nil
 client = nil
 Pcall = nil
-cPcall = nil
 Routine = nil
 logError = nil
 
@@ -1459,7 +1458,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Routine = Routine;
 		Running = true;
 		Pcall = Pcall;
-		cPcall = cPcall;
 		Threads = Threads;
 		DataModel = game;
 		WrapService = WrapService;

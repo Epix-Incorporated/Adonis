@@ -32,6 +32,7 @@ end
 
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
+local InsertService = game:GetService("InsertService")
 
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
 if mutex then
@@ -84,6 +85,9 @@ else
 		--// It is prone to breaking, unstable, untested, and should not be used for anything other than testing/feature preview.
 		NightlyMode = false;			--// If true, uses the nightly module instead of the current release module.
 		NightlyModuleID = 8612978896; 	--// https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
+
+		--// Module used in case MainModule is unavailable, containing only essential commands
+		Backup = 17438792001; 	--// https://create.roblox.com/store/asset/17438792001/
 
 		DebugMode = true;
 		SilentStartup = false
@@ -157,7 +161,20 @@ else
 		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
-	local module = require(moduleId)
+	local success, module = xpcall(require, warn, moduleId)
+	if not success and type(moduleId) == "number" then -- Backup method for loading 
+		warn(`Failed to require Adonis mainmodule {moduleId} due to {module}. If this does not work please purchase the Adonis mainmodule in your inventory. Using backup method...`)
+		local assets = InsertService:LoadAsset(moduleId)
+
+		for _, v in assets do
+			if v:IsA("ModuleScript") then
+				module = require(v)
+				break
+			end
+		end
+
+		assert(type(module) ~= "string", module)
+	end
 	local response = module(data)
 
 	if response == "SUCCESS" then

@@ -177,17 +177,6 @@ local warn = function(...)
 	warn(...)
 end
 ]]
--- Use `task.spawn(pcall, ...)`, `task.spawn(Pcall, f, ...)` or `task.spawn(xpcall, f, handler, ...)` instead
-local cPcall = function(func, ...)
-	local ran, err = pcall(coroutine.resume, coroutine.create(func), ...)
-
-	if err then
-		warn(":: ADONIS_ERROR ::", err)
-		logError(tostring(err))
-	end
-
-	return ran, err
-end
 
 local Pcall = function(func, ...)
 	local ran, err = pcall(func, ...)
@@ -328,7 +317,6 @@ client = setmetatable({
 	Warn = warn,
 	Deps = {},
 	Pcall = Pcall,
-	cPcall = cPcall,
 	Routine = Routine,
 	OldPrint = oldPrint,
 	LogError = logError,
@@ -362,7 +350,6 @@ client = setmetatable({
 locals = {
 	Pcall = Pcall,
 	GetEnv = GetEnv,
-	cPcall = cPcall,
 	client = client,
 	Folder = Folder,
 	Routine = Routine,
@@ -570,6 +557,28 @@ return service.NewProxy({
 
 		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
 		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
+		client.FormattedChangelog = table.create(#client.Changelog)
+
+		--// Create formatted changelog from standard changelog
+	  	local function applyColour(line)
+			local prefix = line:sub(1, 2)
+
+  	  	  	if prefix == "[v" or prefix == "[1" or prefix == "[0" or prefix == "1." or line:sub(1, 1) == "v" then
+      	  	  	return `<font color='#8FAEFF'>{line}</font>`
+  	  	  	elseif line:sub(1, 6) == "[Patch" then
+  	  	  	  	return `<font color='#F0B654'>{line}</font>`
+  	  	  	elseif line:sub(1, 9) == "Version: " then
+				return `<b>{line}</b>`
+			else
+  	  	  	  	return line
+  	  	  	end
+	  	end
+
+		for i, line in ipairs(client.Changelog) do
+        	client.FormattedChangelog[i] = applyColour(line)
+  	 	end
+		
+		--// Setup MatIcons
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
 			client.MatIcons = setmetatable({}, {
@@ -619,18 +628,6 @@ return service.NewProxy({
 				ServiceSpecific.PlayerGui = PlayerGui
 			end)
 		end
-
-		--[[
-		-- // Doesn't seem to be used anymore
-
-		ServiceSpecific.SafeTweenSize = function(obj, ...)
-			pcall(obj.TweenSize, obj, ...)
-		end;
-		ServiceSpecific.SafeTweenPos = function(obj, ...)
-			pcall(obj.TweenPosition, obj, ...)
-		end;
-		]]
-
 		ServiceSpecific.Filter = function(str, from, to)
 			return client.Remote.Get("Filter", str, (to and from) or service.Player, to or from)
 		end
@@ -757,7 +754,7 @@ return service.NewProxy({
 				continue
 			end
 
-			LoadModule(module, false, { script = module }) --noenv
+			LoadModule(module, false, { script = module, cPcall = client.cPcall }) --noenv
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
@@ -771,37 +768,6 @@ return service.NewProxy({
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
 		client.AllModulesLoaded = true
 		service.Events.AllModulesLoaded:Fire(os.time())
-
-		--[[client = service.ReadOnly(client, {
-			[client.Variables] = true;
-			[client.Handlers] = true;
-			G_API = true;
-			G_Access = true;
-			G_Access_Key = true;
-			G_Access_Perms = true;
-			Allowed_API_Calls = true;
-			HelpButtonImage = true;
-			Finish_Loading = true;
-			RemoteEvent = true;
-			ScriptCache = true;
-			Returns = true;
-			PendingReturns = true;
-			EncodeCache = true;
-			DecodeCache = true;
-			Received = true;
-			Sent = true;
-			Service = true;
-			Holder = true;
-			GUIs = true;
-			LastUpdate = true;
-			RateLimits = true;
-
-			Init = true;
-			RunAfterInit = true;
-			RunAfterLoaded = true;
-			RunAfterPlugins = true;
-		}, true)--]]
-
 		service.Events.ClientInitialized:Fire()
 
 		log("~! Return success")

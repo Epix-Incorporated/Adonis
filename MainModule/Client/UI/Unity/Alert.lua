@@ -19,7 +19,7 @@ return function(data, env)
 		Name  = "Alert";
 		Title = "Alert";
 		Size  = {300,150};
-		Icon = "rbxassetid://7467248902";
+		Icon = client.MatIcons.Alert;
 		AllowMultiple = false;
 		OnClose = function()
 			alarm:Stop()

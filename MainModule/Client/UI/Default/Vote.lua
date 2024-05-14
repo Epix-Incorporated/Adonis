@@ -1,5 +1,4 @@
-client = nil
-service = nil
+client, service = nil, nil
 
 return function(data, env)
 	if env then
