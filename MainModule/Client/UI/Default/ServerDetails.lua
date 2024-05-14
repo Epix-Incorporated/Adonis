@@ -163,6 +163,10 @@ return function(data, env)
 		end)
 
 	end
+	
+	local success, isAmerica = xpcall(function()
+		return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
+	end, function() return false end)
 
 	do
 
@@ -175,7 +179,7 @@ return function(data, env)
 					{"Country", serii.country or "[Error]"},
 					{"Region", serii.region or "[Error]"},
 					{"City", serii.city or "[Error]"},
-					{"Zipcode", serii.zipcode or "[Error]"},
+					{if isAmerica then "Zipcode" else "Postcode", serii.zipcode or "[Error]"},
 					{"IP Address", serii.ip or "[Error]"},
 					{"Coordinates", serii.coords or "[Error]"},
 					}) do table.insert(entries, v) end
