@@ -529,6 +529,7 @@ return function(Vargs, env)
 					Title = "Change Log";
 					Icon = server.MatIcons["Text snippet"];
 					Table = server.Changelog;
+					RichText = true;
 					Size = {500, 400};
 				})
 			end
