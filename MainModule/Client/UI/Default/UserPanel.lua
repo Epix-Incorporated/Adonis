@@ -415,6 +415,7 @@ return function(data, env)
 						UI.Make("List", {
 							Title = "Changelog";
 							Table = client.Changelog;
+							RichText = true;
 						})
 					end
 				}
