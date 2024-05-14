@@ -23,7 +23,10 @@ return {
 	"Fix for :freecam locking mouse in the center of the screen due to shift-lock activation";
 	":freecam now consistently gives out toggle instructions";
 	"Singer localscript changes";
-	"Fix :unfreecam breaking player's camera when they had it toggled off, added mandatory feedback when run";
+	"Fix :unfreecam breaking player's camera when they had it toggled off";
+	"Add mandatory feedback :unfreecam when run";
+	"Changelog is now formatted";
+	"Client changelog is now same size as server changelog";
 	"";
 	"[Patch v257.1 13:35 UTC] @Dimenpsyonal";
 	"Fix invalid lookahead buffer handling";
