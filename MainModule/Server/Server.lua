@@ -621,14 +621,17 @@ return service.NewProxy({
 		server.DLL = require(server.Shared.DoubleLinkedList)
 		server.FormattedChangelog = table.create(#server.Changelog)
 
+		--// Create formatted changelog from standard changelog
 	  	local function applyColour(line)
 			local prefix = line:sub(1, 2)
 
   	  	  	if prefix == "[v" or prefix == "[1" or prefix == "[0" or line:sub(1, 1) == "v" then
-      	  	  	return "<font color='#FFA500'>" .. line .. "</font>"
+      	  	  	return `<font color='#FFA500'>{line}</font>`
   	  	  	elseif line:sub(1, 6) == "[Patch" then
-  	  	  	  	return "<font color='#FF0000'>" .. line .. "</font>"
-  	  	  	else
+  	  	  	  	return `<font color='#FF0000'>{line}</font>`
+  	  	  	elseif line:sub(1, 9) == "Version: " then
+				return `<b>{line}</b>`
+			else
   	  	  	  	return line
   	  	  	end
 	  	end
@@ -637,6 +640,7 @@ return service.NewProxy({
           	server.FormattedChangelog[i] = applyColour(line)
   	  	end
 
+		--// Setup MaterialIcons 
 		do
 			local MaterialIcons = require(server.Shared.MatIcons)
 			server.MatIcons = setmetatable({}, {
