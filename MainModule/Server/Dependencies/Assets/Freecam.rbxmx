@@ -492,7 +492,7 @@ do
 				CheckMacro(FREECAM_MACRO_KB)
 			end
 			
-			if input.KeyCode == Enum.KeyCode.F then
+			if input.KeyCode == Enum.KeyCode.F or input.KeyCode == Enum.KeyCode.DPadLeft then
 				ToggleFreecam()
 			end
 		end
