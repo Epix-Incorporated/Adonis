@@ -501,6 +501,7 @@ do
 
 	ContextActionService:BindActionAtPriority("FreecamToggle", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, FREECAM_MACRO_KB[#FREECAM_MACRO_KB])
 	ContextActionService:BindActionAtPriority("FreecamToggle2", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.F)
+	ContextActionService:BindActionAtPriority("FreecamToggleDPAD", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.DPadLeft)
 	
 	RF.OnClientInvoke = function(a, b, c)
 		if a == "Disable" and enabled then
@@ -522,6 +523,7 @@ do
 			Debris:AddItem(RF, 0.5)
 			ContextActionService:UnbindAction("FreecamToggle")
 			ContextActionService:UnbindAction("FreecamToggle2")
+			ContextActionService:UnbindAction("FreecamToggleDPAD")
 			StopFreecam()
 		end
 	end
