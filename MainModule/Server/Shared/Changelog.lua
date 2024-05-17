@@ -1,7 +1,11 @@
 return {
-	"Version: 258";
+	"Version: 259";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v259 2024-xx-xx xx:xx UTC] @Maintainer";
+	"Fix Unity not supporting Richtext on pages 2+";
+	"Controller now has a freecam toggle, DPadLeft";
 	"";
 	"[v258 2024-05-14 18:00 UTC] @Dimenpsyonal";
 	"Plugin clean-up";
