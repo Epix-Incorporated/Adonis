@@ -254,8 +254,8 @@ return function(data, env)
 					scroller:GenerateList(getPage(currentListTab, PageCounter), {
 						RichTextAllowed = RichText;
 						TextSelectable = TextSelectable;
-					});
-				end
+					})
+					end
 
 				lastPageButton.BackgroundTransparency = origLTrans;
 				nextPageButton.BackgroundTransparency = origNTrans;
