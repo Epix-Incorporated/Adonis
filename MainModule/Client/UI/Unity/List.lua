@@ -251,7 +251,10 @@ return function(data, env)
 					end
 
 					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {
+						RichTextAllowed = RichText;
+						TextSelectable = TextSelectable;
+					});
 				end
 
 				lastPageButton.BackgroundTransparency = origLTrans;
@@ -304,7 +307,10 @@ return function(data, env)
 					end
 
 					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {
+						RichTextAllowed = RichText;
+						TextSelectable = TextSelectable;
+					});
 				end
 
 				lastPageButton.BackgroundTransparency = origLTrans;
