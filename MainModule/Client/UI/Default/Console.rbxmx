@@ -546,7 +546,8 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-
+	local player = service.Players.LocalPlayer
+	local playergui = player.PlayerGui
 	local UI = client.UI
 	local Remote = client.Remote
 	local Variables = client.Variables
@@ -706,14 +707,22 @@ return function(data, env)
 		opened = true
 	end
 
+	local function isInConsoleBounds(pos)
+		for i,v in ipairs(playergui:GetGuiObjectsAtPosition(pos.X, pos.Y)) do
+			if v == gui or v == gui.Frame then return true end
+		end
+		return false
+	end
+
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
-			if string.len(text.Text) > 1 then
-				Remote.Send("ProcessCommand", text.Text)
+			if text.Text ~= '' and string.len(text.Text) > 1 then
+				Remote.Send('ProcessCommand', text.Text)
 			end
+			closeConsole()
+		elseif not isInConsoleBounds(player:GetMouse()) then
+			closeConsole()
 		end
-
-		closeConsole()
 	end)
 
 	text:GetPropertyChangedSignal("Text"):Connect(function()
