@@ -5,7 +5,11 @@ return {
 	"";
 	"[v259 2024-xx-xx xx:xx UTC] @Maintainer";
 	"Fix Unity not supporting Richtext on pages 2+";
-	"Controller now has a freecam toggle, DPadLeft";
+	"Add freecam toggle for Controller, DPadLeft";
+	"Fix Console UI unfocusing on click in certain themes";
+	"Add not-zipcode";
+	"Protect metamethod detectors";
+	"Implement IP cache for ServerDetails";
 	"";
 	"[v258 2024-05-14 18:00 UTC] @Dimenpsyonal";
 	"Plugin clean-up";
