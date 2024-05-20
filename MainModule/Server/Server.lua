@@ -629,7 +629,7 @@ return service.NewProxy({
       	  	  	return `<font color='#8FAEFF'>{line}</font>`
   	  	  	elseif line:sub(1, 6) == "[Patch" then
   	  	  	  	return `<font color='#F0B654'>{line}</font>`
-  	  	  	elseif line:sub(1, 9) == "Version: " then
+  	  	  	elseif line:sub(1, 9) == "Version: " or line:sub(1,2) == "# " then
 				return `<b>{line}</b>`
 			else
   	  	  	  	return line
