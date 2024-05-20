@@ -8,6 +8,7 @@ return function(data, env)
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
 	local Tabs = data.Tabs
+	local Icon = data.Icon
 	local Tab = data.Table or data.Tab
 	local Update = data.Update
 	local UpdateArg = data.UpdateArg
@@ -178,7 +179,7 @@ return function(data, env)
 		Name  = "List";
 		Title = Title;
 		Size  = Size or {240, 225};
-		Icon = "rbxassetid://7467255930";
+		Icon = Icon or "rbxassetid://7467255930";
 		MinSize = {150, 100};
 		OnRefresh = Update and function()
 			Tab = client.Remote.Get("UpdateList", Update, unpack(UpdateArgs or {UpdateArg}))
