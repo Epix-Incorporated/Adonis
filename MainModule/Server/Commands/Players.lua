@@ -598,7 +598,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "List", {
 					Title = "Usage";
 					Tab = usage;
-					Icon = "MatIcon://Quick reference":
+					Icon = "MatIcon://Quick reference";
 					Size = {300, 250};
 					RichText = true;
 				})
