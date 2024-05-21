@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v259 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v259 2024-05-21 19:10 UTC] @Dimenpsyonal";
 	"Make Unity List support custom icons";
 	"Add not-zipcode";
 	"Add MatIcon to :usage";
