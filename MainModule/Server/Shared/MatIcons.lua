@@ -96,6 +96,7 @@ return { -- Decal IDs
 	["Person off"] = 7549505192,
 	["Person remove"] = 7549506692,
 	["Person search"] = 7549514426,
+	["Policy"] = 17570230934,
 	["Poll"] = 7549517343,
 	["Priority high"] = 7541925009,
 	["Privacy tip"] = 7541923707,
