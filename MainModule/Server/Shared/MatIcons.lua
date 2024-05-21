@@ -6,8 +6,9 @@
 		Sourced from Google LLC:
 			https://fonts.google.com/icons
 			('Sharp' style, white colored)
+			
 	════════════════════════════════════════════
-	https://www.roblox.com/library/7646623585
+	https://create.roblox.com/store/asset/7646623585
 ]]
 
 return { -- Decal IDs
@@ -99,6 +100,7 @@ return { -- Decal IDs
 	["Priority high"] = 7541925009,
 	["Privacy tip"] = 7541923707,
 	["QR code scanner"] = 7543119186,
+	["Quick reference"] = 17557073691;
 	["Refresh"] = 7549521656,
 	["Remove moderator"] = 7536810074,
 	["Reply"] = 7541922000,

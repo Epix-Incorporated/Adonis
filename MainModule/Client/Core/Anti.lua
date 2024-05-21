@@ -197,7 +197,7 @@ return function(Vargs, GetEnv)
 	end
 
 	do
-		local callStacks = {
+		local callStacks = table.freeze{
 			indexInstance = {},
 			newindexInstance = {},
 			namecallInstance = {},
@@ -242,8 +242,8 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		local detectors = {
-			indexInstance = {"kick", function()
+		local detectors = table.freeze{
+			indexInstance = table.freeze{"kick", function()
 				local callstackInvalid = false
 				local metamethod
 
@@ -274,7 +274,7 @@ return function(Vargs, GetEnv)
 
 				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
 			end},
-			newindexInstance = {"kick", function()
+			newindexInstance = table.freeze{"kick", function()
 				local callstackInvalid = false
 				local metamethod
 
@@ -306,7 +306,7 @@ return function(Vargs, GetEnv)
 
 				return not compareTables(errorMessages["newindexInstance"], {err, err2, err3})
 			end},
-			namecallInstance = {"kick", function()
+			namecallInstance = table.freeze{"kick", function()
 				local callstackInvalid = false
 				local metamethod
 
@@ -336,7 +336,7 @@ return function(Vargs, GetEnv)
 
 				return not compareTables(errorMessages["namecallInstance"], {err, err2, err3})
 			end},
-			indexEnum = {"kick", function()
+			indexEnum = table.freeze{"kick", function()
 				local callstackInvalid = false
 				local metamethod
 
@@ -367,7 +367,7 @@ return function(Vargs, GetEnv)
 
 				return not compareTables(errorMessages["indexEnum"], {err, err2, err3})
 			end},
-			namecallEnum = {"kick", function()
+			namecallEnum = table.freeze{"kick", function()
 				local callstackInvalid = false
 				local metamethod
 
@@ -397,7 +397,7 @@ return function(Vargs, GetEnv)
 
 				return not compareTables(errorMessages["namecallEnum"], {err, err2, err3})
 			end},
-			eqEnum = {"kick", function()
+			eqEnum = table.freeze{"kick", function()
 				return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
 			end},
 		}

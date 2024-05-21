@@ -8,6 +8,7 @@ return function(data, env)
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
 	local Tabs = data.Tabs
+	local Icon = data.Icon
 	local Tab = data.Table or data.Tab
 	local Update = data.Update
 	local UpdateArg = data.UpdateArg
@@ -178,7 +179,7 @@ return function(data, env)
 		Name  = "List";
 		Title = Title;
 		Size  = Size or {240, 225};
-		Icon = "rbxassetid://7467255930";
+		Icon = Icon or "rbxassetid://7467255930";
 		MinSize = {150, 100};
 		OnRefresh = Update and function()
 			Tab = client.Remote.Get("UpdateList", Update, unpack(UpdateArgs or {UpdateArg}))
@@ -251,8 +252,11 @@ return function(data, env)
 					end
 
 					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
-				end
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {
+						RichTextAllowed = RichText;
+						TextSelectable = TextSelectable;
+					})
+					end
 
 				lastPageButton.BackgroundTransparency = origLTrans;
 				nextPageButton.BackgroundTransparency = origNTrans;
@@ -304,7 +308,10 @@ return function(data, env)
 					end
 
 					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {
+						RichTextAllowed = RichText;
+						TextSelectable = TextSelectable;
+					});
 				end
 
 				lastPageButton.BackgroundTransparency = origLTrans;

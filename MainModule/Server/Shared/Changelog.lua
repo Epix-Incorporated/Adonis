@@ -1,7 +1,19 @@
 return {
-	"Version: 258";
+	"Version: 259";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v259 2024-05-21 19:10 UTC] @Dimenpsyonal";
+	"Make Unity List support custom icons";
+	"Add not-zipcode";
+	"Add MatIcon to :usage";
+	"# Open Source changes:";
+	"(Git/ccuser44) Protect metamethod detectors (#1520)";
+	"(Git/Sqikerz) Add freecam toggle for Controller, DPadLeft (#1531)";
+	"(Git/Sqikerz) Fix Unity not supporting Richtext on pages 2+ (#1533)";
+	"(Git/Sqikerz) Fix Console UI unfocusing on click in certain themes (#1534)";
+	"(Git/fxeP1) Implement IP cache for ServerDetails (#1535)";
+	"(Git/ocelot81) Revert HttpEnabled check (#1536)";
 	"";
 	"[v258 2024-05-14 18:00 UTC] @Dimenpsyonal";
 	"Plugin clean-up";

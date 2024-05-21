@@ -631,6 +631,8 @@ return service.NewProxy({
   	  	  	  	return `<font color='#F0B654'>{line}</font>`
   	  	  	elseif line:sub(1, 9) == "Version: " then
 				return `<b>{line}</b>`
+			elseif line:sub(1,2) == "# " then
+				return `<b>{string.sub(line, 3)}</b>`
 			else
   	  	  	  	return line
   	  	  	end
