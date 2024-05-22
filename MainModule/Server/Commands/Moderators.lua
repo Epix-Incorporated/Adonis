@@ -3775,13 +3775,16 @@ return function(Vargs, env)
 								obj.Transparency = 1
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 1
-								elseif obj:FindFirstChildOfClass("BillboardGui") then
+								end
+								if obj:FindFirstChildOfClass("BillboardGui") then
 									obj:FindFirstChildOfClass("BillboardGui").Enabled = false
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 1
 							elseif obj:IsA("ForceField") then
 								obj.Visible = false
+							elseif obj:IsA("BillboardGui") then
+								obj.Enabled = false
 							elseif obj.Name == "Head" then
 								local face = obj:FindFirstChildOfClass("Decal")
 								if face then
@@ -3808,13 +3811,16 @@ return function(Vargs, env)
 								obj.Transparency = 0
 								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 0
-								elseif obj:FindFirstChildOfClass("BillboardGui") then
+								end
+								if obj:FindFirstChildOfClass("BillboardGui") then
 									obj:FindFirstChildOfClass("BillboardGui").Enabled = true
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
 							elseif obj:IsA("ForceField") and obj.Name ~="ADONIS_FULLGOD" then
 								obj.Visible = true
+							elseif obj:IsA("BillboardGui") then
+								obj.Enabled = true
 							elseif obj.Name == "Head" then
 								local face = obj:FindFirstChildOfClass("Decal")
 								if face then
