@@ -439,7 +439,7 @@ return function(Vargs, GetEnv)
 		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, SanitizePattern(argType), replaceWith)
+				out = string.gsub(out, SanitizePattern(argType), SanitizePattern(replaceWith))
 			end
 		end
 
@@ -1479,7 +1479,7 @@ return function(Vargs, GetEnv)
 					if not Admin.CheckAliasBlacklist(tAlias) then
 						local escAlias = SanitizePattern(tAlias)
 						--// Ignore any "empty" aliases, aka aliases that would basically match any command
-						if string.len(Functions.Trim(escAlias)) == 0 then 
+						if string.len(Functions.Trim(escAlias)) == 0 then
 							continue
 						end
 						local trimmedMsg = Functions.Trim(msg)
@@ -1508,7 +1508,7 @@ return function(Vargs, GetEnv)
 
 			return msg
 		end;
-										
+
 		StringToComLevel = function(str)
 			local strType = type(str)
 			if strType == "string" and string.lower(str) == "players" then
