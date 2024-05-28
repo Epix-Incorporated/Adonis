@@ -666,6 +666,9 @@ return function(Vargs, GetEnv)
 				elseif filterName == "gamepass" then
 					local gamepassId = tonumber((string.match(filterData, "^%d+")))
 					return gamepassId and service.CheckPassOwnership(plr, gamepassId)
+				elseif filterName == "subscription" then
+					local subscriptionId = string.match(filterData, "^EXP%-%d+$")
+					return subscriptionId and service.CheckSubscriptionStatus(plr, subscriptionId)
 				else
 					local username, userId = string.match(check, "^(.*):(.*)")
 					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
