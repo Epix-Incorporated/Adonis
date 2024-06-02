@@ -1962,9 +1962,7 @@ return function(Vargs, env)
 					
 					local banType = if v.BanType == "Server" then 
 						"SERVER" 
-					elseif v.BanType == "Global" then
-						"GLOBAL" 
-					else "UNKNOWN";
+					else "GLOBAL";
 				
 					count +=1
 					if type(v) == "table" then
@@ -1973,7 +1971,7 @@ return function(Vargs, env)
 						elseif v.UserId then
 							entry = `[{banType}] ID: {v.UserId}`
 						elseif v.Name then
-							entry = v.Name
+							entry = `[{banType}] {v.Name}`
 						end
 						if v.Reason then
 							reason = v.Reason
@@ -1981,6 +1979,8 @@ return function(Vargs, env)
 						if v.Moderator then
 							moderator = v.Moderator
 						end
+					else
+						entry = `[{banType}] {v}`
 					end
 					table.insert(tab, {
 						Text = tostring(entry),
