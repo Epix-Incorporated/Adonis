@@ -460,6 +460,7 @@ local function on_lua_error(failed, err)
 	error(string.format("%s:%i: %s", src, line, err), 0)
 end
 
+-- ccuser44 added multithreading support
 local function new_threaded_closure(proto, env, upval)
 	local actor = Instance.new("Actor")
 	local clone = script:Clone()
@@ -493,7 +494,7 @@ local function new_threaded_closure(proto, env, upval)
 
 		actor:SendMessage("run_callback", currentTag, ...)
 
-		local args = table.pack(coroutine.resume())
+		local args = table.pack(coroutine.resume(routine))
 
 		connection:Disconnect()
 
