@@ -460,6 +460,51 @@ local function on_lua_error(failed, err)
 	error(string.format("%s:%i: %s", src, line, err), 0)
 end
 
+local function new_threaded_closure(proto, env, upval)
+	local actor = Instance.new("Actor")
+	local clone = script:Clone()
+	local runner = script.Runner:Clone()
+	local event = Instance.new("BindableEvent")
+	local tag = 0
+
+	for _, v in clone:GetChildren() do
+		if v:IsA("Actor") then
+			v:Destroy()
+		end
+	end
+
+	clone.Parent = actor
+	runner.Parent = clone
+	event.Name = "ReturnPass"
+	event.Parent = clone
+	actor.Parent = script
+
+	actor:SendMessage("lua_wrap_state", proto, env, upval)
+
+	return function(...)
+		tag = tag + 1
+		local currentTag = tag
+		local routine = coroutine.create(function() return coroutine.yield() end)
+		local connection = event.Event:Connect(function(eventTag, ...)
+			if eventTag == currentTag then
+				coroutine.resume(routine, ...)
+			end
+		end)
+
+		actor:SendMessage("run_callback", currentTag, ...)
+
+		local args = table.pack(coroutine.resume())
+
+		connection:Disconnect()
+
+		if not args[1] then
+			error(args[2], 2)
+		end
+
+		return table.unpack(args, 2)
+	end
+end
+
 local function run_lua_func(state, env, upvals)
 	local code = state.code
 	local subs = state.subs
@@ -854,7 +899,7 @@ local function run_lua_func(state, env, upvals)
 								pc = pc + nups
 							end
 
-							memory[inst.A] = lua_wrap_state(sub, env, uvlist)
+							memory[inst.A] = (sub.source and string.sub(sub.source, 1, 39) == "SUPER_SECRET_ADONIS_MULTITHREAD_PREFIX_") and new_threaded_closure(sub, env, uvlist) or lua_wrap_state(sub, env, uvlist)
 						else
 							--[[TESTSET]]
 							local A = inst.A
