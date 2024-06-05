@@ -2468,7 +2468,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"resetstats", "rs"};
 			Args = {"player"};
-			Description = "Sets target player(s)'s leader stats to 0";
+			Description = "Sets target player(s)'s leader stats to 0 (N/A if it's a string)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, string.lower(args[1])) do
