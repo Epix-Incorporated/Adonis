@@ -2475,7 +2475,7 @@ return function(Vargs, env)
 					task.spawn(pcall, function()
 						if v and v:FindFirstChild("leaderstats") then
 							for a, q in v.leaderstats:GetChildren() do
-								if q:IsA("IntValue") or q:IsA("NumberValue") then q.Value = 0 end
+								if q:IsA("IntValue") or q:IsA("NumberValue") then q.Value = 0 elseif q:IsA("StringValue") then q.Value = "N/A" end
 							end
 						end
 					end)
