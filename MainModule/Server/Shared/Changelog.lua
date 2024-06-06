@@ -7,6 +7,8 @@ return {
 	"(Git/fxeP1) Fix issue with escape character selectors (#1539)";
 	"(Git/supercoolspy) Add subscription rank filter (#1541)";
 	"(Git/WalkerOfBacon) Update to :bans (#1542)";
+	"(Git/Sqikerz) Add Prefix related BlockedSettings (#1546)";
+	"(Git/WalkerOfBacon) :resetstats also resetting leaderstats that are strings (#1548)";
 	"";
 	"[v259 2024-05-21 19:10 UTC] @Dimenpsyonal";
 	"Make Unity List support custom icons";
