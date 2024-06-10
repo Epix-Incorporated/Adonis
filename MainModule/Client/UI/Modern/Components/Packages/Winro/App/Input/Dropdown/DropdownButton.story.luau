@@ -9,13 +9,13 @@ local Roact = require(Packages.Roact)
 local new = Roact.createElement
 
 local DropdownRoot = script.Parent
-local ComboBox = require(DropdownRoot.ComboBox)
+local DropdownButton = require(DropdownRoot.DropdownButton)
 
 local BORDER_PADDING = UDim.new(0, 8)
 
-local ComboBoxStory = Roact.PureComponent:extend(script.Name)
+local DropdownButtonStory = Roact.PureComponent:extend(script.Name)
 
-function ComboBoxStory:render()
+function DropdownButtonStory:render()
 	local props = self.props
 
 	return WithTheme(function(Theme)
@@ -31,24 +31,11 @@ function ComboBoxStory:render()
 				PaddingRight = BORDER_PADDING,
 				PaddingTop = BORDER_PADDING,
 			}),
-			ComboBox = new(ComboBox, {
-				DropdownButtonProps = {
-					Disabled = props.Disabled,
-				},
-				SelectedOption = self.state.SelectedOption,
-				OnOptionSelected = function(Option, ...)
-					print(Option, ...)
-					self:setState({
-						SelectedOption = Option
-					})
-				end,
-				Options = {
-					'Option A',
-					'Option B',
-					'Option C',
-					'Option D',
-					'Really really long option text',
-				}
+			Button = new(DropdownButton, {
+				AnchorPoint = Vector2.new(0, 0),
+				Disabled = props.Disabled,
+				Position = UDim2.fromScale(0, 0),
+				[Roact.Event.Activated] = print
 			})
 		})
 	end)
@@ -60,12 +47,12 @@ return {
 	},
 	stories = {
 		DropdownButton = function (props)
-			return new(ComboBoxStory, Sift.Dictionary.join({
+			return new(DropdownButtonStory, Sift.Dictionary.join({
 				BackgroundTransparency = 0,
 			}, props.controls))
 		end,
 		NoBackground = function(props)
-			return new(ComboBoxStory, Sift.Dictionary.join({
+			return new(DropdownButtonStory, Sift.Dictionary.join({
 				BackgroundTransparency = 1,
 			}, props.controls))
 		end
