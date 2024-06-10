@@ -294,7 +294,7 @@ return function(Vargs, env)
 			Description = `Same as {Settings.Prefix}n but says whatever you want the title to be instead of your name.`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Notify(service.BroadcastFilter(assert(args[1], "Missing title"), plr), service.BroadcastFilter(assert(args[2], "Missing message")	, plr), service.GetPlayers())
+				Functions.Notify(service.BroadcastFilter(assert(args[1]:gsub(`"`, ""), "Missing title"), plr), service.BroadcastFilter(assert(args[2], "Missing message")	, plr), service.GetPlayers())
 			end
 		};
 
@@ -2468,7 +2468,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"resetstats", "rs"};
 			Args = {"player"};
-			Description = "Sets target player(s)'s leader stats to 0 (N/A if it's a string)";
+			Description = "Sets target player(s)'s leader stats to 0";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, string.lower(args[1])) do
@@ -2515,7 +2515,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cape", "givecape"};
 			Args = {"player", "name/color", "material", "reflectance", "id"};
-			Description = `Gives the target player(s) the cape specified, do {Settings.Prefix}capes to view a list of available capes`;
+			Description = "Gives the target player(s) the cape specified, do Settings.Prefixcapes to view a list of available capes ";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local color="White"
@@ -4441,7 +4441,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing team name")
 				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					for a, tm in service.Teams:GetChildren() do
-						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
+						if string.lower(tm.Name) == string.lower(args[2]) or string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
 							if Settings.CommandFeedback then
 								Functions.Notification("Team", `You are now on the '{tm.Name}' team.`, {v}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
@@ -4485,7 +4485,7 @@ return function(Vargs, env)
 				end
 
 				if args[2] then
-					for s in string.gmatch(args[2], "(%w+)") do
+					for s in string.gmatch(args[2]:gsub(`"`, ""), "(%w+)") do
 						table.insert(tArgs, s)
 					end
 				end
