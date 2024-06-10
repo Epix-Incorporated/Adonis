@@ -1,6 +1,8 @@
 # Change line endings to LF
 *.lua text=auto
 *.lua eol=lf
+*.luau text=auto
+*.luau eol=lf
 *.json text=auto
 *.json eol=lf
 *.rbxmx text=auto
