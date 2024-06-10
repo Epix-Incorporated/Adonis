@@ -651,7 +651,7 @@ return function(Vargs, env)
 				local teamColor = Functions.ParseBrickColor(args[2])
 				service.New("Team", {
 					Parent = service.Teams;
-					Name = teamName;
+					Name = teamName:gsub(`"`, "");
 					TeamColor = teamColor;
 					AutoAssignable = false;
 				})
@@ -1398,7 +1398,7 @@ return function(Vargs, env)
 				for _, v in service.Players:GetPlayers() do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = args[1];
+						Title = args[1]:gsub(`"`, "");
 						Message = args[2];
 						Time = (#tostring(args[1]) / 19) + 2.5;
 						--service.Filter(args[1],plr, v);
