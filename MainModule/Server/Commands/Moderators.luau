@@ -2515,7 +2515,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cape", "givecape"};
 			Args = {"player", "name/color", "material", "reflectance", "id"};
-			Description = "Gives the target player(s) the cape specified, do Settings.Prefixcapes to view a list of available capes ";
+			Description = "Gives the target player(s) the cape specified, do {Settings.Prefix}capes to view a list of available capes ";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local color="White"
