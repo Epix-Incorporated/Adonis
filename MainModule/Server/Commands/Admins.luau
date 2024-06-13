@@ -647,11 +647,12 @@ return function(Vargs, env)
 			Description = "Make a new team with the specified name and color";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local teamName = assert(args[1], "Missing team name (argument #1)")
+				local teamName = assert(args[1]:gsub(`"`, ""), "Missing team name (argument #1)")
 				local teamColor = Functions.ParseBrickColor(args[2])
+
 				service.New("Team", {
 					Parent = service.Teams;
-					Name = teamName:gsub(`"`, "");
+					Name = teamName;
 					TeamColor = teamColor;
 					AutoAssignable = false;
 				})
