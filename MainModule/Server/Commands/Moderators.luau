@@ -2468,7 +2468,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"resetstats", "rs"};
 			Args = {"player"};
-			Description = "Sets target player(s)'s leader stats to 0";
+			Description = "Sets target player(s)'s leader stats to 0 (N/A if it's a string)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, string.lower(args[1])) do
@@ -2515,7 +2515,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cape", "givecape"};
 			Args = {"player", "name/color", "material", "reflectance", "id"};
-			Description = "Gives the target player(s) the cape specified, do {Settings.Prefix}capes to view a list of available capes ";
+			Description = `Gives the target player(s) the cape specified, do {Settings.Prefix}capes to view a list of available capes`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local color="White"
