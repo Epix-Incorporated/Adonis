@@ -4,7 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v260 2024-xx-xx xx:xx UTC] @Maintainer";
-	"Fix slowmode warn font"
+	"Fix slowmode warn font";
 	"(Git/fxeP1) Fix issue with escape character selectors (#1539)";
 	"(Git/supercoolspy) Add subscription rank filter (#1541)";
 	"(Git/WalkerOfBacon) Update to :bans (#1542)";
