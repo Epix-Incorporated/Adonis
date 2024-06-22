@@ -181,7 +181,8 @@ end
 local Pcall = function(func, ...)
 	local ran, err = pcall(func, ...)
 
-	if err then
+	-- Log the error if the protected-call did not complete successfully
+	if not ran and err then
 		logError(tostring(err))
 	end
 
