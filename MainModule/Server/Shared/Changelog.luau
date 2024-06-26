@@ -5,6 +5,8 @@ return {
 	"";
 	"[v260 2024-xx-xx xx:xx UTC] @Maintainer";
 	"Fix slowmode warn font";
+	"Convert open-source files to use .luau";
+	"# Open Source changes:";
 	"(Git/fxeP1) Fix issue with escape character selectors (#1539)";
 	"(Git/supercoolspy) Add subscription rank filter (#1541)";
 	"(Git/WalkerOfBacon) Update to :bans (#1542)";
@@ -13,6 +15,9 @@ return {
 	"(Git/wilsontulus) Use humans.txt + IsStudio for simple HttpEnabled check (#1557)";
 	"(Git/wilsontulus) Whitelist RBLX VR Controls Scheme from CoreGui Images Check (#1558)";
 	"(Git/EasternBloxxer) Made Remote.MakeLocal parent to PlayerGui instead of Player (#1559)";
+	"(Git/wilsontulus) Fix for :invisible command's BillboardGui invisibility function (#1538)";
+	"(Git/Hedreon) whoops (#1547)";
+	"(Git/Hedreon) Add missing 'by' term in both settings files (#1543)";
 	"";
 	"[v259 2024-05-21 19:10 UTC] @Dimenpsyonal";
 	"Make Unity List support custom icons";
