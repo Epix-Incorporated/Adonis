@@ -1174,7 +1174,7 @@ return function(Vargs, env)
 		ViewRules = table.freeze({
 			Prefix = "";
 			Commands = table.freeze({
-				"!rules", "!viewrules", "!listrules, (function(prefix)
+				"!rules", "!viewrules", "!listrules", (function(prefix)
 					if type(givenPrefix) ~= "string" or rawget(Settings, "PlayerPrefix") == "!" then
 						return nil
 					else
