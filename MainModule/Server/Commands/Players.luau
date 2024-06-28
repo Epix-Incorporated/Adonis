@@ -1170,5 +1170,41 @@ return function(Vargs, env)
 				service.MarketplaceService:PromptPurchase(plr, assetId, false)
 			end
 		};
+
+		-- UNDER NO CIRCUMSTANCE SHALL EPIX INCORPORATED OR ANY ADONIS CONTRIBUTORS BE LIABLE FOR USAGE OF ADONIS ADMIN.
+		-- THE GAME CREATOR IS SOLELY RESPONSIBLE FOR ALL USAGE OF ADONIS ADMIN.
+		-- YOU ARE NOT ALLOWED IN ANY WAY REMOVE, MODIFY OR TAMPER WITH THIS MESSAGE.
+		-- YOU ARE NOT ALLOWED TO REMOVE THE RULES COMMAND FROM ADONIS AND SHALL ALWAYS MAKE THE RULES PAGE EASILY ACCESSIBLE
+		ViewRules = table.freeze({
+			Prefix = "";
+			Commands = table.freeze({
+				"!rules", "!viewrules", "!listrules, (function(prefix)
+					if type(givenPrefix) ~= "string" or rawget(Settings, "PlayerPrefix") == "!" then
+						return nil
+					else
+						return prefix.."rules", prefix.."viewrules", prefix.."listrules"
+					end
+				end)(rawget(Settings, "PlayerPrefix"))
+			);
+			Args = table.freeze({});
+			Description = "Lists all available commands";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local rules = {"Game rules:"}
+
+				for i, v in Settings.Rules do
+					table.insert(rules, `[{i}] {v}`)
+				end
+
+				table.insert(rules, `[{#Settings.Rules + 1}] The game creator reserves the right, in its sole discretion, to ban any user at any time, for any reason without prior warning if allowed by Roblox Terms of Service.`)
+				table.insert(rules, " ~ ")
+				table.insert(rules, "UNDER NO CIRCUMSTANCE SHALL EPIX INCORPORATED OR ANY ADONIS CONTRIBUTORS BE LIABLE FOR USAGE OF ADONIS ADMIN. THE GAME CREATOR IS SOLELY RESPONSIBLE FOR ALL USAGE OF ADONIS ADMIN. YOU ARE NOT ALLOWED IN ANY WAY REMOVE, MODIFY OR TAMPER WITH THIS MESSAGE. YOU ARE NOT ALLOWED TO REMOVE THE RULES COMMAND FROM ADONIS AND SHALL ALWAYS MAKE THE RULES PAGE EASILY ACCESSIBLE")
+
+				Remote.MakeGui(plr, "List", {
+					Title = "Rules";
+					Table = tab;
+				})
+			end
+		});
 	};
 end
