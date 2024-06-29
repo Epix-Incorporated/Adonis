@@ -615,6 +615,20 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		IsVerified = function(p)
+			if Settings.VerifiedAdminsOnly then
+				if not p:IsVerified() and not Variables.IsStudio and not Admin.IsPlaceOwner(p) then -- :IsVerified() always returns false in studio, so give them admin. | Creators should obviously bypass this.
+					return false
+				else
+					-- TODO: REMOVE REMOVE REMOVE
+					if p.UserId == -2 then return false end
+					return true
+				end
+			else
+				return true
+			end
+		end;
+
 		DoCheck = function(pObj, check, banCheck)
 			local pType = typeof(pObj)
 			local cType = typeof(check)
@@ -669,6 +683,8 @@ return function(Vargs, GetEnv)
 				elseif filterName == "subscription" then
 					local subscriptionId = string.match(filterData, "^EXP%-%d+$")
 					return subscriptionId and service.CheckSubscriptionStatus(plr, subscriptionId)
+				elseif filterName == "isverified" then
+					return (plr:IsVerified() or Admin.IsPlaceOwner(plr) or Variables.IsStudio)
 				else
 					local username, userId = string.match(check, "^(.*):(.*)")
 					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
@@ -739,6 +755,10 @@ return function(Vargs, GetEnv)
 			data.AdminRank = rank
 			data.LastLevelUpdate = os.time()
 
+			if not Admin.IsVerified(p) then
+				return 0, "Player"
+			end
+
 			AddLog("Script", {
 				Text = `Updating cached level for {p.Name}`;
 				Desc = `Updating the cached admin level for {p.Name}`;
@@ -763,6 +783,10 @@ return function(Vargs, GetEnv)
 			local lastUpdate = data.LastLevelUpdate or 0
 			local clients = Remote.Clients
 			local key = tostring(p.UserId)
+
+			if not Admin.IsVerified(p) then
+				return 0, "Player"
+			end
 
 			local currentTime = os.time()
 
@@ -790,6 +814,10 @@ return function(Vargs, GetEnv)
 			--[[if data and data.AdminLevelOverride then
 				return data.AdminLevelOverride
 			end--]]
+
+			if not Admin.IsVerified(p) then
+				return 0, "Player"
+			end
 
 			for _, admin in Admin.SpecialLevels do
 				if doCheck(p, admin.Player) then
@@ -936,6 +964,10 @@ return function(Vargs, GetEnv)
 			local list = rank and Settings.Ranks[rank]
 			local levelName, newRank, newList
 
+			if not Admin.IsVerified(p) then
+				return false, "Player is not verified"
+			end
+
 			if type(level) == "string" then
 				local newRank = Settings.Ranks[level]
 				levelName = newRank and level
@@ -985,6 +1017,7 @@ return function(Vargs, GetEnv)
 			end
 
 			Admin.UpdateCachedLevel(p)
+			return true
 		end;
 
 		CheckDonor = function(p)
@@ -1573,6 +1606,10 @@ return function(Vargs, GetEnv)
 
 			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then
 				return true, nil
+			end
+
+			if not Admin.IsVerified(pDat.Player) and comLevel > 0 then
+				return false, "This game requires admins to be ID or Phone Number verified."
 			end
 
 			if Admin.IsBlacklisted(pDat.Player) then

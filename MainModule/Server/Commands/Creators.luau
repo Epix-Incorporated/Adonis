@@ -158,9 +158,13 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
-						Admin.AddAdmin(v, "HeadAdmins")
-						Functions.Notification("Notification", "You are a head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
-						Functions.Hint(`{service.FormatPlayer(v)} is now a permanent head admin`, {plr})
+						local requestSuccess, reason = Admin.AddAdmin(v, "HeadAdmins")
+						if requestSuccess then
+							Functions.Notification("Notification", "You are a head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+							Functions.Hint(`{service.FormatPlayer(v)} is now a permanent head admin`, {plr})
+						else
+							Functions.Hint(`Failed to set rank of {service.FormatPlayer(v, true)}, {reason}`, {plr})
+						end
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})
 					end
@@ -180,9 +184,13 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
-						Admin.AddAdmin(v, "HeadAdmins", true)
-						Functions.Notification("Notification", "You are a temp head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
-						Functions.Hint(`{service.FormatPlayer(v)} is now a temporary head admin`, {plr})
+						local requestSuccess, reason = Admin.AddAdmin(v, "HeadAdmins", true)
+						if requestSuccess then
+							Functions.Notification("Notification", "You are a temp head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+							Functions.Hint(`{service.FormatPlayer(v)} is now a temporary head admin`, {plr})
+						else
+							Functions.Hint(`Failed to set rank of {service.FormatPlayer(v, true)}, {reason}`, {plr})
+						end
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})
 					end
