@@ -620,8 +620,6 @@ return function(Vargs, GetEnv)
 				if not p:IsVerified() and not Variables.IsStudio and not Admin.IsPlaceOwner(p) then -- :IsVerified() always returns false in studio, so give them admin. | Creators should obviously bypass this.
 					return false
 				else
-					-- TODO: REMOVE REMOVE REMOVE
-					if p.UserId == -2 then return false end
 					return true
 				end
 			else
