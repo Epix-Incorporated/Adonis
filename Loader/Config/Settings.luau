@@ -461,6 +461,7 @@ descs.ChatCommands = [[ If false you will not be able to run commands via the ch
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
 descs.ChatCreateRobloxCommands = [[ Whether "/" commands for Roblox should get created in new Chat ]]
+descs.VerifiedAdminsOnly = [[ If true, only users that are ID or Phone Number verified can hold an admin rank or run commands with permissions over player. ]]
 
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
@@ -578,6 +579,7 @@ order = {
 	"CrossServerCommands";
 	"ChatCommands";
 	"CreatorPowers";
+	"VerifiedAdminsOnly";
 	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
