@@ -572,7 +572,7 @@ return service.NewProxy({
 			module:Clone().Parent = shared
 		end
 
-		for _, module in pairs(data.ClientPlugins or {}) do
+		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) ~= "string" then
 				module:Clone().Parent = server.Client.Plugins
 			end
@@ -586,7 +586,7 @@ return service.NewProxy({
 			end
 		end
 
-		for _, theme in pairs(data.Themes or {}) do
+		for _, theme in ipairs(data.Themes or {}) do
 			if type(server.Settings.HiddenThemes) == "table" and table.find(server.Settings.HiddenThemes, theme.Name) then
 				theme:SetAttribute("Hidden", true)
 			end
@@ -594,7 +594,7 @@ return service.NewProxy({
 			theme:Clone().Parent = server.Client.UI
 		end
 
-		for _, pkg in pairs(data.Packages or {}) do
+		for _, pkg in ipairs(data.Packages or {}) do
 			LoadPackage(pkg, Folder.Parent, false)
 		end
 
@@ -715,7 +715,7 @@ return service.NewProxy({
 		server.Core.SilentStartup = data.SilentStartup
 
 		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
-		for _, f in pairs(runAfterInit) do
+		for _, f in ipairs(runAfterInit) do
 			f(data)
 		end
 
@@ -724,17 +724,17 @@ return service.NewProxy({
 			LoadModule(module, false, {script = module}, true, true) --noenv
 		end
 
-		for _, module in pairs(data.ServerPlugins or {}) do
+		for _, module in ipairs(data.ServerPlugins or {}) do
 			LoadModule(module, false, {script = module, cPcall = server.cPcall})
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
-		for _, f in pairs(runAfterPlugins) do
+		for _, f in ipairs(runAfterPlugins) do
 			f(data)
 		end
 
 		-- // Load sourcecode clientside plugins
-		for _, module in pairs(data.ClientPlugins or {}) do
+		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) == "string" then
 				local code = Instance.new("StringValue")
 
@@ -752,7 +752,7 @@ return service.NewProxy({
 		--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
 
 		--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
-		for _, f in pairs(runLast) do
+		for _, f in ipairs(runLast) do
 			f(data)
 		end
 
