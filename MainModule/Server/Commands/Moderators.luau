@@ -6539,7 +6539,6 @@ return function(Vargs, env)
 					Table = Logs.ListUpdaters.ErrorLogs(plr);
 					Dots = true;
 					Update = "ErrorLogs";
-					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
