@@ -682,7 +682,7 @@ return function(Vargs, GetEnv)
 					local subscriptionId = string.match(filterData, "^EXP%-%d+$")
 					return subscriptionId and service.CheckSubscriptionStatus(plr, subscriptionId)
 				elseif filterName == "isverified" then
-					return (plr:IsVerified() or Admin.IsPlaceOwner(plr) or Variables.IsStudio)
+					return plr:IsVerified()
 				else
 					local username, userId = string.match(check, "^(.*):(.*)")
 					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
