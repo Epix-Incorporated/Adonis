@@ -298,6 +298,9 @@ settings.TopBarShift = false	           -- By default hints and notifications wi
 settings.DefaultTheme = "Default"		   -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 settings.HiddenThemes = {}				   -- Hide themes from the theme selector tab inside the userpanel. Each theme name must be the specific name such as "Mobilius"
 settings.Messages = {}			           -- A list of notification messages to show HeadAdmins and above on join
+settings.Rules = {"No exploiting.", "Be respectful.",
+"Be ethical.", "Use common sense.", "No griefing."
+}										   -- List of rules for the game
 settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	           -- Time between auto cleans
 settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
@@ -478,6 +481,8 @@ descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players i
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 
+descs.Rules = [[ List of rules for the game ]]
+
 descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 descs.AutoCleanDelay = [[ Time between auto cleans ]]
@@ -594,6 +599,8 @@ order = {
 	"DefaultTheme";
 	"ReJail";
 	"DisableRejoinAtMaxPlayers";
+	"";
+	"Rules";
 	"";
 	"AutoClean";
 	"AutoCleanDelay";

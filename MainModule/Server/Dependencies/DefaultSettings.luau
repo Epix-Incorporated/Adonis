@@ -140,14 +140,13 @@ settings.HideScript = true						 -- When the game starts the Adonis_Loader model
 settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO ANYTHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
-settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
+settings.LocalDatastore = false					 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
-settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
-settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
+settings.Storage = game:GetService("ServerStorage")  -- Where things like tools are stored
+settings.RecursiveTools = false						 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
@@ -158,7 +157,7 @@ settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Defa
 			settings.Ranks = {
 				["Moderators"] = {
 					Level = 100;
-					Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+					Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID"; "Subscription:SubscriptionId";}
 				}
 			}
 
@@ -284,7 +283,7 @@ settings.ChatCommands = true			-- If false you will not be able to run commands 
 settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictly used for debugging; I can't debug without full access to the script
 settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
-settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
+settings.OverrideChatCallbacks = true	-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
 settings.ChatCreateRobloxCommands = true	-- Whether "/" commands for Roblox should get created in new Chat
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
@@ -296,8 +295,12 @@ settings.SaveCommandLogs = true	           -- If command logs are saved to the d
 settings.Notification = true	           -- Whether or not to show the "You're an admin" and "Updated" notifications
 settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
+settings.DefaultTheme = "Default"		   -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 settings.HiddenThemes = {}				   -- Hide themes from the theme selector tab inside the userpanel. Each theme name must be the specific name such as "Mobilius"
 settings.Messages = {}			           -- A list of notification messages to show HeadAdmins and above on join
+settings.Rules = {"No exploiting.", "Be respectful.",
+"Be ethical.", "Use common sense.", "No griefing."
+}										   -- List of rules for the game
 settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	           -- Time between auto cleans
 settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
@@ -400,7 +403,6 @@ descs.RecursiveTools = [[ Whether tools that are included in sub-containers with
 
 descs.Theme = [[ UI theme; ]]
 descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
-descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
 
 descs.Ranks = [[ All admin permission level ranks; ]];
 descs.Moderators = [[ Mods; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -473,10 +475,13 @@ descs.Notification = [[ Whether or not to show the "You're an admin" and "Update
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
+descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
 descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
+
+descs.Rules = [[ List of rules for the game ]]
 
 descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
@@ -524,7 +529,6 @@ order = {
 	" ";
 	"Theme";
 	"MobileTheme";
-	"DefaultTheme";
 	" ";
 	"Ranks";
 	" ";
@@ -592,8 +596,11 @@ order = {
 	"Notification";
 	"SongHint";
 	"TopBarShift";
+	"DefaultTheme";
 	"ReJail";
 	"DisableRejoinAtMaxPlayers";
+	"";
+	"Rules";
 	"";
 	"AutoClean";
 	"AutoCleanDelay";
