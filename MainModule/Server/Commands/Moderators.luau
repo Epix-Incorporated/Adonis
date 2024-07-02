@@ -1940,6 +1940,7 @@ return function(Vargs, env)
 					Title = "Admin List";
 					Icon = server.MatIcons["Admin panel settings"];
 					Table = Logs.ListUpdaters.AdminList(plr);
+					TextSelectable = true;
 					Update = "AdminList";
 					RichText = true;
 				})
@@ -6579,6 +6580,7 @@ return function(Vargs, env)
 					Tab = Logs.ListUpdaters.JoinLogs(plr);
 					Dots = true;
 					Update = "JoinLogs";
+					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 				})
 			end
@@ -6597,6 +6599,7 @@ return function(Vargs, env)
 					Tab = Logs.ListUpdaters.LeaveLogs(plr);
 					Dots = true;
 					Update = "LeaveLogs";
+					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 				})
 			end
@@ -6615,6 +6618,7 @@ return function(Vargs, env)
 					Tab = Logs.ListUpdaters.ChatLogs(plr);
 					Dots = true;
 					Update = "ChatLogs";
+					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
@@ -6635,6 +6639,7 @@ return function(Vargs, env)
 					Table = Logs.ListUpdaters.RemoteLogs(plr);
 					Dots = true;
 					Update = "RemoteLogs";
+					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
@@ -6655,6 +6660,7 @@ return function(Vargs, env)
 					Table = Logs.ListUpdaters.ScriptLogs(plr);
 					Dots = true;
 					Update = "ScriptLogs";
+					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
@@ -6691,6 +6697,7 @@ return function(Vargs, env)
 					Table = Logs.ListUpdaters.Logs(plr);
 					Dots = true;
 					Update = "Logs";
+					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
@@ -6727,6 +6734,7 @@ return function(Vargs, env)
 					Table = Logs.ListUpdaters.OldLogs(plr);
 					Dots = true;
 					Update = "OldLogs";
+					TextSelectable = true;
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
@@ -6856,7 +6864,7 @@ return function(Vargs, env)
 					table.insert(list, `[Trello] {v}`)
 				end
 
-				Remote.MakeGui(plr, "List", {Title = "Mute List", Table = list})
+				Remote.MakeGui(plr, "List", {Title = "Mute List", Table = list, TextSelectable = true})
 			end
 		};
 
