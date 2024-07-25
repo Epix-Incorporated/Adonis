@@ -1170,5 +1170,39 @@ return function(Vargs, env)
 				service.MarketplaceService:PromptPurchase(plr, assetId, false)
 			end
 		};
+		Coordinates = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"coordinates", "coords", "position"};
+			Args = {};
+			Description = "Shows your current position in the game world";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local guiName = "CoordinatesDisplay"
+				Remote.RemoveGui(plr, guiName)
+				local updater
+
+				updater = plr.CharacterAdded:Connect(function(char)
+					local rootPart = char:WaitForChild("HumanoidRootPart")
+					while rootPart and plr.Parent do
+						if Remote.GetGui(plr, guiName) then
+							Remote.UpdateGui(plr, guiName, {
+								Message = string.format("X: %.2f, Y: %.2f, Z: %.2f", rootPart.Position.X, rootPart.Position.Y, rootPart.Position.Z)
+							})
+						else
+							updater:Disconnect()
+						end
+						task.wait(0.2)
+					end
+				end)
+
+				local initialPos = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character.HumanoidRootPart.Position or Vector3.new()
+				Remote.MakeGui(plr, "Coords", {
+					Title = "Coordinates";
+					Message = string.format("X: %.2f, Y: %.2f, Z: %.2f", initialPos.X, initialPos.Y, initialPos.Z);
+					Time = math.huge;
+					Name = guiName;
+				})
+			end;
+		};
 	};
 end
