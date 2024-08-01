@@ -1961,7 +1961,7 @@ return function(Vargs, env)
 					local reason = "No reason provided"
 					local moderator = "%UNKNOWN%"
 					
-					local banType = if v.BanType == "Server" then 
+					local banType = if typeof(v) == 'table' and v.BanType == "Server" then 
 						"SERVER" 
 					else "GLOBAL";
 				
