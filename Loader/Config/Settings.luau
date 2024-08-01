@@ -482,7 +482,6 @@ descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 descs.AutoCleanDelay = [[ Time between auto cleans ]]
 
-descs.CustomChat = [[ Custom chat ]]
 descs.PlayerList = [[ Custom playerlist ]]
 
 descs.Console = [[ Command console ]]
@@ -599,7 +598,6 @@ order = {
 	"AutoCleanDelay";
 	"AutoBackup";
 	" ";
-	"CustomChat";
 	"PlayerList";
 	" ";
 	"Console";

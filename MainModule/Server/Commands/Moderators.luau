@@ -1099,34 +1099,6 @@ return function(Vargs, env)
 			end
 		};
 
-		ShowChat = {
-			Prefix = Settings.Prefix;
-			Commands = {"chat", "customchat"};
-			Args = {"player"};
-			Description = "Opens the custom chat GUI";
-			AdminLevel = "Moderators";
-			Hidden = not Settings.CustomChat;
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.MakeGui(v, "Chat")
-				end
-			end
-		};
-
-		RemoveChat = {
-			Prefix = Settings.Prefix;
-			Commands = {"unchat", "uncustomchat"};
-			Args = {"player"};
-			Description = "Closes the custom chat GUI";
-			AdminLevel = "Moderators";
-			Hidden = not Settings.CustomChat;
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.RemoveGui(v, "Chat")
-				end
-			end
-		};
-
 		UnColorCorrection = {
 			Prefix = Settings.Prefix;
 			Commands = {"uncolorcorrection", "uncorrection", "uncolorcorrectioneffect"};

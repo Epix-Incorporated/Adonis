@@ -257,10 +257,6 @@ return function(Vargs, GetEnv)
 			Rates = 10;
 			Reset = 1;
 		};
-		CustomChat = {
-			Rates = 10;
-			Reset = 1;
-		};
 		RateLog = {
 			Rates = 10;
 			Reset = 2;
@@ -292,7 +288,6 @@ return function(Vargs, GetEnv)
 			Remote = 0.01;
 			Command = 0.1;
 			Chat = 0.1;
-			CustomChat = 0.1;
 			RateLog = 10;
 		};
 
@@ -600,67 +595,6 @@ return function(Vargs, GetEnv)
 						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
 				end
-			end
-		end;
-
-		CustomChat = function(p, a, b, canCross)
-			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "CustomChat")
-
-			if didPassRate and not Admin.IsMuted(p) then
-				if type(a) == "string" then
-					a = string.sub(a, 1, Process.MsgStringLimit)
-				end
-
-				if b == "Cross" then
-					if canCross and Admin.CheckAdmin(p) then
-						Core.CrossServer("ServerChat", {Player = p.Name, Message = a})
-						--Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
-					end
-				else
-					local target = `{Settings.SpecialPrefix}all`
-					if not b then
-						b = "Global"
-					end
-					if not service.Players:FindFirstChild(p.Name) then
-						b="Nil"
-					end
-					if string.sub(a,1,1)=="@" then
-						b="Private"
-						target,a=string.match(a,"@(.%S+) (.+)")
-						Remote.Send(p,"Function","SendToChat",p,a,b)
-					elseif string.sub(a,1,1)=="#" then
-						if string.sub(a,1,7)=="#ignore" then
-							target=string.sub(a,9)
-							b="Ignore"
-						end
-						if string.sub(a,1,9)=="#unignore" then
-							target=string.sub(a,11)
-							b="UnIgnore"
-						end
-					end
-
-					for _, v in service.GetPlayers(p, target, {
-						DontError = true;
-						})
-					do
-						if
-							p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore"
-							or b == "Global"
-							or b == "Team" and p.TeamColor == v.TeamColor
-							or b == "Local" and p:DistanceFromCharacter(v.Character.Head.Position) < 80
-							or b == "Admins" and Admin.CheckAdmin(p)
-							or b == "Private" and v.Name ~= p.Name
-							or b == "Nil"
-						then
-							Remote.Send(v, "Handler", "ChatHandler", p, service.Filter(a, p, v), b)
-						end
-					end
-				end
-
-				service.Events.CustomChat:Fire(p,a,b)
-			elseif not didPassRate and RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", curRate))
-				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, curRate))
 			end
 		end;
 
@@ -1166,14 +1100,6 @@ return function(Vargs, GetEnv)
 				if Settings.HelpButton then
 					Remote.MakeGui(p, "HelpButton")
 				end
-
-				--if Settings.CustomChat then
-				--	MakeGui(p, "Chat")
-				--end
-
-				--if Settings.PlayerList then
-				--	MakeGui(p, "PlayerList")
-				--end
 
 				if level < 1 then
 					if Settings.AntiNoclip and Settings.AllowClientAntiExploit then
