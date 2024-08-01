@@ -13,7 +13,7 @@
         },
 
         "LICENSE": {
-          "$path": "LICENSE.lua"
+          "$path": "LICENSE.luau"
         },
         
         "Adonis_Loader": {
@@ -21,7 +21,7 @@
           "$path": "Loader",
 
           "LICENSE": {
-            "$path": "LICENSE.lua"
+            "$path": "LICENSE.luau"
           }
         }
       }
