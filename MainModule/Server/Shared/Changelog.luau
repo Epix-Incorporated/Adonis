@@ -6,6 +6,7 @@ return {
 	"[v260 2024-08-01 09:10 UTC] @Dimenpsyonal";
 	"Fix slowmode warn font";
 	"Convert open-source files to use .luau";
+	"Actually fix :bans";
 	"# Open Source changes:";
     "(Git/wilsontulus) Fix for :invisible command's BillboardGui invisibility function (#1538)";
     "(Git/fxeP1) Fix issue with escape character selectors (#1539)";
