@@ -973,13 +973,6 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			ProcessCustomChat = function(p: Player, args: {[number]: any})
-				if type(args[1]) == "string" and type(args[2]) == "string" then
-					Process.Chat(p,args[1],"CustomChat")
-					Process.CustomChat(p, args[1], args[2], true)
-				end
-			end;
-
 			PrivateMessage = function(p: Player,args: {[number]: any})
 				if type(args[1]) ~= "string" then return end
 

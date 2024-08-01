@@ -1099,34 +1099,6 @@ return function(Vargs, env)
 			end
 		};
 
-		ShowChat = {
-			Prefix = Settings.Prefix;
-			Commands = {"chat", "customchat"};
-			Args = {"player"};
-			Description = "Opens the custom chat GUI";
-			AdminLevel = "Moderators";
-			Hidden = not Settings.CustomChat;
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.MakeGui(v, "Chat")
-				end
-			end
-		};
-
-		RemoveChat = {
-			Prefix = Settings.Prefix;
-			Commands = {"unchat", "uncustomchat"};
-			Args = {"player"};
-			Description = "Closes the custom chat GUI";
-			AdminLevel = "Moderators";
-			Hidden = not Settings.CustomChat;
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.RemoveGui(v, "Chat")
-				end
-			end
-		};
-
 		UnColorCorrection = {
 			Prefix = Settings.Prefix;
 			Commands = {"uncolorcorrection", "uncorrection", "uncolorcorrectioneffect"};
@@ -1459,7 +1431,7 @@ return function(Vargs, env)
 				local head = plr.Character and (plr.Character:FindFirstChild("Head") or plr.Character:FindFirstChild("HumanoidRootPart"))
 				assert(head and head:IsA("BasePart"), "You don't have a character head or root part")
 				if not args[1] then return Functions.Hint("A name is required!", {plr}) end
-				
+
 				if workspace:FindFirstChild(`Camera: {args[1]}`) then
 					Functions.Hint(`{args[1]} Already Exists!`, {plr})
 				else
@@ -1487,7 +1459,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemoveCamera = {
 			Prefix = Settings.Prefix;
 			Commands = {"removecam", "delcam", "removecamera", "deletecamera"};
@@ -1498,13 +1470,13 @@ return function(Vargs, env)
 				for i,v in Variables.Cameras do
 					if string.lower(args[1]) == v.Name then
 						local cam = workspace:FindFirstChild(v)
-						
+
 						Variables.Cameras[i] = nil
-						
+
 						if cam and cam:IsA("Part") then
 							cam:Destroy()
 						end
-						
+
 						Functions.Hint(`Deleted camera {v.Name}`, {plr})
 					end
 				end
@@ -1960,11 +1932,11 @@ return function(Vargs, env)
 					local entry = type(v) == "string" and v
 					local reason = "No reason provided"
 					local moderator = "%UNKNOWN%"
-					
-					local banType = if typeof(v) == 'table' and v.BanType == "Server" then 
-						"SERVER" 
+
+					local banType = if typeof(v) == 'table' and v.BanType == "Server" then
+						"SERVER"
 					else "GLOBAL";
-				
+
 					count +=1
 					if type(v) == "table" then
 						if v.Name and v.UserId then
@@ -6784,7 +6756,7 @@ return function(Vargs, env)
 						Duration = math.huge
 					end
 				end
-				
+
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if Admin.CheckAuthority(plr, v, "mute", false) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat", false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
@@ -6801,15 +6773,15 @@ return function(Vargs, env)
 								Target = v.UserId;
 								Moderator = plr.UserId;
 							})
-							
+
 							Functions.Hint(`Muted {service.FormatPlayer(v)}`, {plr})
-							
+
 							Functions.Notification("Notification", `You have been muted!`, {v}, 10, "MatIcon://Warning")
 						end
-						
+
 						if Duration then
 							local endTime = os.time()+Duration
-							
+
 							service.TrackTask(`Thread: MuteDuration :: {tostring(v.UserId)}`, function()
 								while true do
 									if os.time() < endTime then
@@ -6837,16 +6809,15 @@ return function(Vargs, env)
 					for k, m in Settings.Muted do
 						if Admin.DoCheck(v, m) then
 							table.remove(Settings.Muted, k)
-							--Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat", true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
 						end
 					end
 					service.Events.PlayerUnMuted:Fire({
 						Target = v.UserId;
 						Moderator = plr.UserId;
 					})
-					
+
 					Functions.Hint(`Unmuted {service.FormatPlayer(v)}`, {plr})
-					
+
 					Functions.Notification("Notification", `You have been unmuted!`, {v}, 10, "MatIcon://Warning")
 				end
 			end
