@@ -53,7 +53,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Set DebugMode off
-        run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.lua 
+        run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.luau
         
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
