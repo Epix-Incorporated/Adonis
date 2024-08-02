@@ -43,13 +43,17 @@ return function(Vargs, env)
 
 				for _, p in Functions.GetPlayers(plr, args[1], {NoFakePlayer = false})do
 					if senderLevel > Admin.GetLevel(p) then
-						Admin.AddAdmin(p, rankName)
-						Functions.Notification(
-							"Notification",
-							`You are {if string.lower(string.sub(rankName, 1, 3)) == "the" then "" elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(string.sub(rankName, 1, 3)) ~= "uni" then "an " else "a "}{rankName}. Click to view commands.`,
-							{p}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`)
-						)
-						Functions.Hint(`{service.FormatPlayer(p, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
+						local requestSuccess, reason = Admin.AddAdmin(p, rankName)
+						if requestSuccess then
+							Functions.Notification(
+								"Notification",
+								`You are {if string.lower(string.sub(rankName, 1, 3)) == "the" then "" elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(string.sub(rankName, 1, 3)) ~= "uni" then "an " else "a "}{rankName}. Click to view commands.`,
+								{p}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`)
+							)
+							Functions.Hint(`{service.FormatPlayer(p, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
+						else
+							Functions.Hint(`Failed to set rank of {service.FormatPlayer(p, true)}, {reason}`, {plr})
+						end
 					else
 						Functions.Hint(`You do not have permission to set the rank of {service.FormatPlayer(p, true)}`, {plr})
 					end
@@ -87,9 +91,13 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if senderLevel > Admin.GetLevel(v) then
-						Admin.AddAdmin(v, rankName, true)
-						Functions.Notification("Notification", `You are a temp {rankName}. Click to view commands.`, {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
-						Functions.Hint(`{service.FormatPlayer(v, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
+						local requestSuccess, reason = Admin.AddAdmin(v, rankName, true)
+						if requestSuccess then
+							Functions.Notification("Notification", `You are a temp {rankName}. Click to view commands.`, {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+							Functions.Hint(`{service.FormatPlayer(v, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
+						else
+							Functions.Hint(`Failed to set rank of {service.FormatPlayer(v, true)}, {reason}`, {plr})
+						end
 					else
 						Functions.Hint(`You do not have permission to set the rank of {service.FormatPlayer(v, true)}`, {plr})
 					end
@@ -234,9 +242,13 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
 					if senderLevel > Admin.GetLevel(v) then
-						Admin.AddAdmin(v, "Moderators", true)
-						Functions.Notification("Notification", "You are a temp moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
-						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temp moderator`, {plr})
+						local requestSuccess, reason = Admin.AddAdmin(v, "Moderators", true)
+						if requestSuccess then
+							Functions.Notification("Notification", "You are a temp moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+							Functions.Hint(`{service.FormatPlayer(v, true)} is now a temp moderator`, {plr})
+						else
+							Functions.Hint(`Failed to set rank of {service.FormatPlayer(v, true)}, {reason}`, {plr})
+						end
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
 					end
@@ -259,9 +271,13 @@ return function(Vargs, env)
 					})
 				do
 					if senderLevel > Admin.GetLevel(v) then
-						Admin.AddAdmin(v, "Moderators")
-						Functions.Notification("Notification", "You are a moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
-						Functions.Hint(`{service.FormatPlayer(v, true)} is now a moderator`, {plr})
+						local requestSuccess, reason = Admin.AddAdmin(v, "Moderators")
+						if requestSuccess then
+							Functions.Notification("Notification", "You are a moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+							Functions.Hint(`{service.FormatPlayer(v, true)} is now a moderator`, {plr})
+						else
+							Functions.Hint(`Failed to set rank of {service.FormatPlayer(v, true)}, {reason}`, {plr})
+						end
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
 					end
