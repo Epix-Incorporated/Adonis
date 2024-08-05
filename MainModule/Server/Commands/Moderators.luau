@@ -3754,6 +3754,13 @@ return function(Vargs, env)
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 1
+							elseif obj:IsA("Tool") then
+								for _, Descendant in obj:GetDescendants() do
+									if Descendant:IsA("BasePart") or Descendant:IsA("Decal") or Descendant:IsA("UnionOperation") then
+										Descendant:SetAttribute('ADONIS_OriginalTransparency',Descendant.Transparency)
+										Descendant.Transparency = 1
+									end
+								end
 							elseif obj:IsA("ForceField") then
 								obj.Visible = false
 							elseif obj:IsA("BillboardGui") then
@@ -3790,6 +3797,14 @@ return function(Vargs, env)
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
+							elseif obj:IsA("Tool") then
+								for _, Descendant in obj:GetDescendants() do
+									if Descendant:IsA("BasePart") or Descendant:IsA("Decal") or Descendant:IsA("UnionOperation") then
+										local Transparency = Descendant:GetAttribute('ADONIS_OriginalTransparency') or 0
+										Descendant.Transparency = Transparency
+										Descendant:SetAttribute('ADONIS_OriginalTransparency',nil)
+									end
+								end
 							elseif obj:IsA("ForceField") and obj.Name ~="ADONIS_FULLGOD" then
 								obj.Visible = true
 							elseif obj:IsA("BillboardGui") then
