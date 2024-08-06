@@ -7,6 +7,11 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local logError
+	local DataStoreService = game:GetService("DataStoreService")
+	local AuditLogsDataStore = DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
+	if not AuditLogsDataStore then
+		warn("Failed to initialize the DataStore. Please ensure it is configured in game settings.")
+	end
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -529,12 +534,12 @@ return function(Vargs, GetEnv)
 				end
 
 				local selectors = string.gmatch(argument, "([^,]+)")
-				
+
 				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
 				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
 				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors 
 				local MaxSelectors = Variables.MaxSafeSelectors or 400 -- 400 seems like a good "max" that won't ever be reached
-				
+
 				local index = 0
 
 				for s in selectors do
@@ -766,7 +771,7 @@ return function(Vargs, GetEnv)
 			local floor = math.floor
 			local char = string.char
 			local sub = string.sub
-																											
+
 			local nOut = 0
 			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			local strLen = #str
@@ -836,7 +841,7 @@ return function(Vargs, GetEnv)
 			local floor = math.floor
 			local char = string.char
 			local sub = string.sub
-			
+
 			local nOut = 0
 			local alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			local strLen = #str
@@ -986,7 +991,7 @@ return function(Vargs, GetEnv)
 
 		Notification = function(title, message, players, duration, icon, onClick)
 			icon = icon and string.match(icon, "MatIcon://(.+)") or icon
-			
+
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
@@ -1039,6 +1044,33 @@ return function(Vargs, GetEnv)
 				else
 					Variables.LocalEffects[i] = nil
 				end
+			end
+		end;
+
+		LogAdminAction = function(plr, action, targetPlayerName, additionalDetails)
+			local logEntry = {
+				Timestamp = os.time(),
+				ModeratorId = plr.UserId,
+				ModeratorName = plr.Name,
+				Action = action,
+				TargetPlayer = targetPlayerName,
+				AdditionalDetails = additionalDetails or "N/A",
+			}
+
+			-- Attempt to log the action under the moderator's UserId
+			local key = "AuditLogs_" .. tostring(plr.UserId)
+
+			local success, errMessage = pcall(function()
+				-- Get existing logs
+				local existingLogs = AuditLogsDataStore:GetAsync(key) or {}
+				table.insert(existingLogs, logEntry)
+				AuditLogsDataStore:SetAsync(key, existingLogs)
+			end)
+
+			if not success then
+				warn("Failed to log audit entry for UserId " .. tostring(plr.UserId) .. ": " .. errMessage)
+			else
+				print("Audit log entry saved for:", plr.Name)
 			end
 		end;
 

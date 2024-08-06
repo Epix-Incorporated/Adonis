@@ -1,7 +1,11 @@
 return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-
+	local DataStoreService = game:GetService("DataStoreService")
+	local AuditLogsDataStore = DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
+	if not AuditLogsDataStore then
+		warn("Failed to initialize the DataStore. Please ensure it is configured in game settings.")
+	end
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
@@ -37,6 +41,7 @@ return function(Vargs, env)
 				do
 					if Admin.CheckAuthority(plr, v, "time-ban", false) then
 						Admin.AddTimeBan(v, duration, reason, plr)
+						Functions.LogAdminAction(plr, "Time Ban", v.Name, `Duration: {args[2]}, Reason: {reason}`)
 						Functions.Hint(`Time-banned {service.FormatPlayer(v, true)} for {args[2]}`, {plr})
 					end
 				end
@@ -75,7 +80,7 @@ return function(Vargs, env)
 						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 
 						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
-
+						Functions.LogAdminAction(plr, "Direct Time Ban", actualName or i, `Duration: {args[2]}, Reason: {reason}`)
 						Functions.Hint(
 							`Time-banned {if getNameSuccess then `@{actualName}` else `'{i}'`} for {args[2]}`,
 							{plr}
@@ -100,6 +105,7 @@ return function(Vargs, env)
 					AllowUnknownUsers = true;
 					})
 				do
+					Functions.LogAdminAction(plr, "Un-Time Ban", v.Name, "Removed from timeban list")
 					Functions.Hint(
 						if Admin.RemoveTimeBan(v.Name)
 							then `{service.FormatPlayer(v, true)} has been un-time-banned`
@@ -128,6 +134,7 @@ return function(Vargs, env)
 				do
 					if Admin.CheckAuthority(plr, v, "game-ban", false) then
 						Admin.AddBan(v, reason, true, plr, "Global")
+						Functions.LogAdminAction(plr, "Permanent Ban", v.Name, reason)
 						Functions.Hint(`Game-banned {service.FormatPlayer(v, true)}`, {plr})
 					else
 						Functions.Hint(`Unable to game-ban {service.FormatPlayer(v, true)} (insufficient permission level)`, {plr})
@@ -149,6 +156,7 @@ return function(Vargs, env)
 					AllowUnknownUsers = true;
 					})
 				do
+					Functions.LogAdminAction(plr, "Unbanned", v.Name, "N/A")
 					Functions.Hint(
 						if Admin.RemoveBan(v.Name, true)
 							then `{service.FormatPlayer(v, true)} has been unbanned from the game`
@@ -172,6 +180,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins", true)
+						Functions.LogAdminAction(plr, "Temporary Admin", v.Name, "Temporary admin granted.")
 						Functions.Notification("Notification", "You are a temp administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temporary admin`, {plr})
 					else
@@ -197,6 +206,7 @@ return function(Vargs, env)
 				do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins")
+						Functions.LogAdminAction(plr, "Permanent Admin", v.Name, "Granted permanent admin rights.")
 						Functions.Notification("Notification", "You are an administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a permanent admin`, {plr})
 					else
@@ -570,6 +580,68 @@ return function(Vargs, env)
 						Functions.Hint(string.format("Successfully awarded badge '%s' for %s", badgeInfo.Name, service.FormatPlayer(v)), {plr})
 					else
 						Functions.Hint(string.format("ERROR: Failed to award badge '%s' for %s due to an unexpected internal error", badgeInfo.Name, service.FormatPlayer(v)), {plr})
+					end
+				end
+			end
+		};
+
+		AuditLogs = {
+			Prefix = Settings.Prefix;
+			Commands = {"auditlogs", "moderationlogs", "modlogs"};
+			Args = {"player"};
+			Description = "Fetches the recent moderation activity logs of the specified moderator or admin.";
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string})
+				local targetPlayers = service.GetPlayers(plr, args[1], {NoFakePlayer = true})
+
+				if #targetPlayers == 0 then
+					Functions.Hint("No player found with the specified name.", {plr})
+					return
+				end
+
+				for _, targetPlayer in ipairs(targetPlayers) do
+					local userId = targetPlayer.UserId
+					local key = "AuditLogs_" .. tostring(userId)
+
+					local success, auditLogs = pcall(function()
+						return AuditLogsDataStore:GetAsync(key) or {}
+					end)
+
+					if not success then
+						warn("Failed to retrieve audit logs for UserId " .. tostring(userId) .. ": " .. auditLogs)
+						Functions.Hint("Error retrieving logs.", {plr})
+						return
+					end
+
+					local filteredLogs = {}
+					print("Checking audit logs for:", targetPlayer.Name, "with UserId:", userId)
+					print(auditLogs)
+
+					for _, log in ipairs(auditLogs) do
+						local moderatorName = Functions.GetNameFromUserIdAsync(log.ModeratorId) or "Unknown"
+						local targetUserName = log.TargetPlayer
+
+						if type(targetUserName) == "table" then
+							targetUserName = targetUserName.Name or "Unknown" 
+						elseif targetUserName == nil then
+							targetUserName = "Unknown"
+						end
+
+						local timestamp = os.date("%Y-%m-%d %H:%M:%S", log.Time)
+
+						local logText = string.format("%s | %s | %s", moderatorName, log.Action, timestamp)
+						local logEntry = { Text = logText .. " | " .. targetUserName, Desc = log.Details }
+						table.insert(filteredLogs, logEntry)
+					end
+
+					if #filteredLogs == 0 then
+						Functions.Hint(`No audit logs found for {targetPlayer.Name}`, {plr})
+					else
+						Remote.MakeGui(plr, "List", {
+							Title = `Audit Logs for {targetPlayer.Name}`,
+							Table = filteredLogs,
+							Update = "filteredLogs"
+						})
 					end
 				end
 			end

@@ -33,6 +33,7 @@ return function(Vargs, env)
 						else
 							v:Kick(args[2])
 						end
+						Functions.LogAdminAction(plr, "Kick", v.Name, args[2] or "No reason provided")
 						Functions.Hint(`Kicked {playerName}`, {plr})
 					end
 				end
@@ -366,6 +367,7 @@ return function(Vargs, env)
 							Message = reason;
 							Time = os.time();
 						})
+						Functions.LogAdminAction(plr, "Warned", v.Name, reason)
 						service.Events.WarningAdded:Fire(v, args[2], plr)
 
 						--// Check if its a fake player, this should allow it to save.
@@ -405,7 +407,7 @@ return function(Vargs, env)
 							Message = reason;
 							Time = os.time();
 						})
-
+						Functions.LogAdminAction(plr, "Kick Warning", v.Name, reason)
 						service.Events.WarningAdded:Fire(v, reason, plr)
 
 						if typeof(v) == "Instance" then
@@ -462,7 +464,7 @@ return function(Vargs, env)
 							end
 						end
 
-
+						Functions.LogAdminAction(plr, "Removed Warning", v.Name, `Reason: {reason}`)
 						--// Check if its a fake player, this should allow it to save.
 						if service.Wrapped(v) then
 							task.defer(Core.SavePlayerData, v, playerData)
@@ -490,7 +492,7 @@ return function(Vargs, env)
 					if service.Wrapped(v) then
 						task.defer(Core.SavePlayerData, v, playerData)
 					end
-
+					Functions.LogAdminAction(plr, "Clear Warnings", v.Name, "Warnings cleared")
 					Functions.Notification("Notification", `Cleared warning(s) for {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
 				end
 			end
