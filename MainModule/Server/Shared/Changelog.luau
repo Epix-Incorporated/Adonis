@@ -1,7 +1,11 @@
 return {
-	"Version: 260";
+	"Version: 261";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v261 2024-xx-xx xx:xx UTC] @Maintainer";
+	"(Git/EasternBloxxer) Set Removed to true when player fails a Join Filter (#1572)";
+    "(Git/EasternBloxxer) Make :invisible also make currently equipped tool invisible (#1573)";
 	"";
 	"[v260 2024-08-01 09:10 UTC] @Dimenpsyonal";
 	"Fix slowmode warn font";
