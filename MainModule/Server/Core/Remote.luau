@@ -75,6 +75,10 @@ return function(Vargs, GetEnv)
 			DonorCommands = true;
 			DonorCapes = true;
 			SplitKey = true;
+			Prefix = true;
+			PlayerPrefix = true;
+			SpecialPrefix = true;
+			ConsoleKeyCode = true;
 		};
 
 		--// Settings that are never sent to the client
