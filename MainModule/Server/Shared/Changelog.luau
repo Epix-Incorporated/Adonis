@@ -4,7 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[Patch v260.1 2024-08-10 20:06 UTC] @Coasterteam";
-	"Fix console not opening for non-admins";
+	"Fix console not opening for non-creators";
 	"";
 	"[v260 2024-08-01 09:10 UTC] @Dimenpsyonal";
 	"Fix slowmode warn font";
