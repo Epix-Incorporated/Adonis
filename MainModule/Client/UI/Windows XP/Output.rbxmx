@@ -1964,7 +1964,9 @@ return function(data, env)
 		end
 	end
 
-	if title and title ~= "" then titleTextBox.Text = title else titleTextBox.Text = "Error" end
+	if title and title ~= "" then 
+		titleTextBox.Text = title else titleTextBox.Text = "Error" 
+	end
 
 	errorTextBox.Text = message
 	if color then
