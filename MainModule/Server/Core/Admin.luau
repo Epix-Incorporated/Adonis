@@ -439,7 +439,7 @@ return function(Vargs, GetEnv)
 		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, SanitizePattern(argType), SanitizePattern(replaceWith))
+				out = string.gsub(out, SanitizePattern(argType), replaceWith)
 			end
 		end
 
