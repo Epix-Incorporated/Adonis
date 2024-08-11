@@ -270,13 +270,6 @@ return function(data, env)
 	local messageData = data.Message
 	local titleData = data.Title or ""
 	local colorIn = data.Color
-
-	local formattedMessage
-	if titleData and titleData ~= "" then 
-		formattedMessage = `<b>{titleData}</b>: {messageData}`
-	else
-		formattedMessage = messageData
-	end
 	
 	local found = client.UI.Get("Output")
 	if found then
@@ -288,7 +281,7 @@ return function(data, env)
 		end
 	end
 	
-	messageLabel.Text = formattedMessage
+	messageLabel.Text = messageData
 	messageLabel.Font = Enum.Font.SourceSans
 	if data.Color then
 		messageLabel.TextColor3 = data.Color
