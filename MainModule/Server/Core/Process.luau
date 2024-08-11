@@ -750,6 +750,7 @@ return function(Vargs, GetEnv)
 							if success and res == false then
 								p:Kick(`::Adonis:: {message or Settings.CustomJoinFilterKickMessage or "You are not allowed to join this experience"}`)
 								Logs.AddLog(server.Logs.Script, `{tostring(p)} failed the join filter {filter}`)
+								Removed = true
 								break
 							elseif not success then
 								Logs.AddLog(server.Logs.Errors, `{filter} failed for {res}`)
