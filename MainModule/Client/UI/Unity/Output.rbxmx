@@ -432,10 +432,8 @@ return function(data, env)
 	t2.TextColor3 = color
 	main.BackgroundColor3 = color
 
-	local formattedMessage = msg
-	if title and title ~= "" then formattedMessage = `<b>{title}</b>: {msg}` end
-	t2.Text = formattedMessage
-	t2.Font = "Gotham"
+	t2.Text = msg
+	t2.FontFace = Font.new("rbxasset://fonts/families/Montserrat.json")
 	consoleOpenTween:Play()
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
 	gTable.Ready()
