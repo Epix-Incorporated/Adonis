@@ -434,7 +434,9 @@ return function(data, env)
 			end
 		end
 	end--]]
-
+	if title and title ~= "" then
+		t1.Text = title
+	end
 	t2.Text = msg
 	t2.Font = "SourceSans"
 	if color then
@@ -442,7 +444,7 @@ return function(data, env)
 	end
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
 	gTable.Ready()
-	wait(5)
+	task.wait(5)
 	gTable.Destroy()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
