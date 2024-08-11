@@ -435,7 +435,6 @@ return function(data, env)
 		end
 	end--]]
 
-	if title and title ~= "" then t1.Text = title end
 	t2.Text = msg
 	t2.Font = "SourceSans"
 	if color then
