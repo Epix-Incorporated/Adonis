@@ -1,7 +1,10 @@
 return {
-	"Version: 261";
+	"Version: 260";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
+	"Fixed alias arguments (#1581)";
 	"";
 	"[Patch v260.1 2024-08-10 20:06 UTC] @Coasterteam";
 	"Fix console not opening for non-creators";
