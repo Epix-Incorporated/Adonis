@@ -3,9 +3,8 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v261 2024-xx-xx xx:xx UTC] @Maintainer";
-	"(Git/EasternBloxxer) Set Removed to true when player fails a Join Filter (#1572)";
-    "(Git/EasternBloxxer) Make :invisible also make currently equipped tool invisible (#1573)";
+	"[Patch v260.1 2024-08-10 20:06 UTC] @Coasterteam";
+	"Fix console not opening for non-creators";
 	"";
 	"[v260 2024-08-01 09:10 UTC] @Dimenpsyonal";
 	"Fix slowmode warn font";
