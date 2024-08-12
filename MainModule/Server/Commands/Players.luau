@@ -453,9 +453,12 @@ return function(Vargs, env)
 				local UserId = Functions.GetUserIdFromNameAsync(args[1])
 				if UserId then
 					local success, samePlace, errorMessage, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
+					
 					if success then
-						assert(samePlace, "You're already in their server!")
-
+						if samePlace then
+							error("You're already in this server!")
+						end
+				
 						if placeId and jobId then
 							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
 								ServerInstanceId = jobId
