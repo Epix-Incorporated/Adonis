@@ -12,6 +12,7 @@ return {
 	"Fix console not opening for non-creators";
 	"";
 	"[v260 2024-08-01 09:10 UTC] @Dimenpsyonal";
+	"Remove :chat and related commands";
 	"Fix slowmode warn font";
 	"Convert open-source files to use .luau";
 	"Actually fix :bans";
