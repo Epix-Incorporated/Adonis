@@ -1,4 +1,5 @@
 --!native
+--!optimize 2
 --# selene: allow(divide_by_zero, multiple_statements, mixed_table)
 --[[
 FiOne
