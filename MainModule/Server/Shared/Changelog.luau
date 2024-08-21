@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v261 2024-xx-xx xx:xx UTC] @Maintainer";
+	"(Git/Mars7383) Fix typo in Loadstring dependency affecting :ss (#1587)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
