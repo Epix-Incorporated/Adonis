@@ -5,6 +5,9 @@ return {
 	"";
 	"[v261 2024-xx-xx xx:xx UTC] @Maintainer";
 	"(Git/Mars7383) Fix typo in Loadstring dependency affecting :ss (#1587)";
+	"(Git/bsqi) Fix Join command (#1584)";
+	"(Git/24rr) New System: Audit Logs (#1568)";
+	"(Git/24rr) New Command: coordinates (#1568)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
