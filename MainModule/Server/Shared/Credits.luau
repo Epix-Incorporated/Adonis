@@ -94,6 +94,7 @@ return {
 		{Text = "@Sqikerz", 		Desc = "Open Source Contributor"};
 		{Text = "@cl1ents", 		Desc = "Open Source Contributor"};
 		{Text = "@Hedreon", 		Desc = "Open Source Contributor"};
+		{Text = "@Mars7383", 		Desc = "Open Source Contributor"};
 	};
 
 	Misc = {
