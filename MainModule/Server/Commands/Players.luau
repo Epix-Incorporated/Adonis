@@ -452,10 +452,14 @@ return function(Vargs, env)
 
 				local UserId = Functions.GetUserIdFromNameAsync(args[1])
 				if UserId then
-					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
+					local success, samePlace, errorMessage, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
+					
 					if success then
-						assert(jobId ~= service.DataModel.JobId, "You're already in this server!")
-						if found and placeId and jobId then
+						if samePlace then
+							error("You're already in this server!")
+						end
+				
+						if placeId and jobId then
 							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
 								ServerInstanceId = jobId
 							}))
@@ -464,7 +468,7 @@ return function(Vargs, env)
 							Functions.Hint(`{service.Players:GetNameFromUserIdAsync(UserId)} was not found playing this game`, {plr})
 						end
 					else
-						Functions.Hint(`Unexpected internal error: {found}`, {plr})
+						Functions.Hint(`Unexpected internal error: {errorMessage or samePlace}`, {plr})
 					end
 				else
 					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
