@@ -1,11 +1,7 @@
 return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	local DataStoreService = game:GetService("DataStoreService")
-	local AuditLogsDataStore = DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
-	if not AuditLogsDataStore then
-		warn("Failed to initialize the DataStore. Please ensure it is configured in game settings.")
-	end
+	local AuditLogsDataStore = service.DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
