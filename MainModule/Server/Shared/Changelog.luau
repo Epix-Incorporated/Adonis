@@ -1,10 +1,12 @@
 return {
-	"Version: 260";
+	"Version: 261";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[v261 2024-xx-xx xx:xx UTC] @Maintainer";
+	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
-	"Fixed alias arguments (#1581)";
+	"Fix alias arguments (#1581)";
 	"Set Removed to true when player fails a Join Filter (#1572)";
 	"Fix :invisible not making currently equipped tool invisible (#1573)";
 	"";
