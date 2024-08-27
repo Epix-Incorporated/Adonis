@@ -122,7 +122,6 @@ return function(Vargs, GetEnv)
 					table.insert(auditLogs, log)
 				end
 			end
-			print("Retrieved logs for userId:", playerId, "Count:", #auditLogs)
 			return auditLogs
 		end;
 
