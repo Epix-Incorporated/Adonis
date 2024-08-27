@@ -8,6 +8,7 @@ return {
 	"(Git/bsqi) Fix Join command (#1584)";
 	"(Git/24rr) New System: Audit Logs (#1568)";
 	"(Git/24rr) New Command: coordinates (#1568)";
+	"(Git/PurpleCreativity) Remove ;cut command (#1590)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
