@@ -1,9 +1,11 @@
 return {
-	"Version: 261";
+	"Version: 261 [Pre-release – Alpha]";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v261 2024-xx-xx xx:xx UTC] @Maintainer";
+	"[v261 Pre-release 2024-08-29 14:32 UTC] @Dimenpsyonal";
+	"#Not for release until the following issues are resolved:";
+	"#Audit logs need be integrated into datastore";
 	"(Git/Mars7383) Fix typo in Loadstring dependency affecting :ss (#1587)";
 	"(Git/bsqi) Fix Join command (#1584)";
 	"(Git/24rr) New System: Audit Logs (#1568)";
