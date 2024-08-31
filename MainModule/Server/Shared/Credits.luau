@@ -4,9 +4,9 @@ return {
 		{Text = "Kohltastrophe (Scripth)",	Desc = "For his help with various things and some code"};
 		{Text = "einsteinK",				Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best programmer I know"};
 		{Text = "Rerumu (Shining_Diamando)",Desc = "Numerous contributions (Endless stairs, FiOne, Parser, Steampunk theme)"};
-		{Text = "Cald_fan", 				Desc = "Community Maintainer & WebPanel Creator & Maintainer"};
-		{Text = "joritochip",				Desc = "Community Maintainer & WebPanel Developer"};
-		{Text = "Coasterteam",				Desc = "Community Maintainer & Development contributions (Kronos developer)"};
+		{Text = "Cald_fan", 				Desc = "WebPanel Maintainer & Creator"};
+		{Text = "joritochip",				Desc = "Senior Maintainer & WebPanel Developer"};
+		{Text = "Coasterteam",				Desc = "Senior Maintainer & Development contributions (Kronos developer)"};
 		{Text = "Expertcoderz",				Desc = "Community Maintainer"};
 		{Text = "Dimenpsyonal",				Desc = "Community Maintainer"};
 	};
