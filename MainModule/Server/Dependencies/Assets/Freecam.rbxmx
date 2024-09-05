@@ -272,7 +272,8 @@ local Input = {} do
 				Enum.KeyCode.D, Enum.KeyCode.K,
 				Enum.KeyCode.E, Enum.KeyCode.I,
 				Enum.KeyCode.Q, Enum.KeyCode.Y,
-				Enum.KeyCode.Up, Enum.KeyCode.Down
+				Enum.KeyCode.Up, Enum.KeyCode.Down,
+				Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift
 			)
 			ContextActionService:BindActionAtPriority("FreecamMousePan",          MousePan,   false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
 			ContextActionService:BindActionAtPriority("FreecamMouseWheel",        MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
@@ -406,6 +407,7 @@ local PlayerState = {} do
 
 	-- Restore state
 	function PlayerState.Pop()
+		if cameraFieldOfView == nil then return end
 		for name, isEnabled in pairs(coreGuis) do
 			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType[name], isEnabled)
 		end
@@ -451,12 +453,14 @@ local function StartFreecam()
 	PlayerState.Push()
 	RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
 	Input.StartCapture()
+	UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 end
 
 local function StopFreecam()
 	Input.StopCapture()
 	RunService:UnbindFromRenderStep("Freecam")
 	PlayerState.Pop()
+	UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 end
 
 ------------------------------------------------------------------------
@@ -488,7 +492,7 @@ do
 				CheckMacro(FREECAM_MACRO_KB)
 			end
 			
-			if input.KeyCode == Enum.KeyCode.F then
+			if input.KeyCode == Enum.KeyCode.F or input.KeyCode == Enum.KeyCode.DPadLeft then
 				ToggleFreecam()
 			end
 		end
@@ -497,6 +501,7 @@ do
 
 	ContextActionService:BindActionAtPriority("FreecamToggle", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, FREECAM_MACRO_KB[#FREECAM_MACRO_KB])
 	ContextActionService:BindActionAtPriority("FreecamToggle2", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.F)
+	ContextActionService:BindActionAtPriority("FreecamToggleDPAD", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.DPadLeft)
 	
 	RF.OnClientInvoke = function(a, b, c)
 		if a == "Disable" and enabled then
@@ -516,11 +521,12 @@ do
 		if a == "End" or a == "Stop" then
 			RF.OnClientInvoke = nil
 			Debris:AddItem(RF, 0.5)
+			ContextActionService:UnbindAction("FreecamToggle")
+			ContextActionService:UnbindAction("FreecamToggle2")
+			ContextActionService:UnbindAction("FreecamToggleDPAD")
 			StopFreecam()
 		end
 	end
-	
-	ToggleFreecam() -- Runs the freecam automatically
 end]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>

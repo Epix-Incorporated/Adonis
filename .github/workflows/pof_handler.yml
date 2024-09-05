@@ -1,0 +1,53 @@
+name: Proof-of-work handler
+
+permissions:
+  issues: write
+  contents: read
+
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  check_comment_job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.1
+
+      - name: Check comment and image
+        run: |
+          comment_body=$(jq -r '.comment.body' "$GITHUB_EVENT_PATH")
+          comment_body_lowercase=$(echo $comment_body | awk '{print tolower($0)}')
+
+          if [[ $comment_body_lowercase =~ "(p\-?o\-?f|proof[-_\s]*of[-_\s]*work)\:?.*\!\[.*\]\(.+\)" ]]; then
+            echo "Found proper pof"
+            echo "remove_label=true" >> $GITHUB_OUTPUT
+          else
+            echo "Proof-of-work invalid or didnt exist"
+            echo "remove_label=false" >> $GITHUB_OUTPUT
+          fi
+
+  remove_label_job:
+    needs: check_comment_job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Remove pof label
+        if: ${{ needs.check_comment_job.outputs.remove_label == 'true' }}
+        uses: actions/github-script@v7.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            async function amogus({ context }) {
+              const octokit = context.github;
+              const issue_number = context.payload.issue.number;
+
+              await octokit.issues.removeLabel({
+                ...context.repo,
+                issue_number: issue_number,
+                name: "⌛needs PoF"
+              });
+            }
+
+            amogus(require("@actions/github"));

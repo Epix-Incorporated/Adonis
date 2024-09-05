@@ -1,15 +1,14 @@
 <div align="center">
 
 # 📜 Adonis Contribution Guidelines
-*Updated on 2022-06-25 18:35 UTC by Expertcoderz*
 
-![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png")
+![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png)
 
 Adonis is an ever-expanding, frequently updated, slightly complicated, system. To keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
 ## Q: Who's in charge of handling pull requests (PRs)?
 
-**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip) and [@Expertcoderz](https://github.com/Expertcoderz)) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
+**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz)) and [@Dimenpsyonal](https://github.com/Dimenpsyonal) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
 
 Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
 
@@ -24,6 +23,8 @@ A short explanation/clarification may be appended to the title, and should be in
 Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
 
 **Description:** The description of a PR should be comprehensive and either describe, or list and describe the specific additions, changes, and/or removals made by the PR, and their full rationale.
+
+**Proof of functionality:** A PR must contain some form of you showcasing your PR working inside Roblox. This is to ensure that no breaking PRs are merged and to maintain a high quality of Pull Request. This can be a video or some other form of media which adequately displays that your PR is functional. Exceptions will be made for small PRs that are obviously functional such as fixing typos, tweaking minor functionality, etc.
   
 ℹ️ **The above rules do not apply to individual commit names and descriptions.**
 
@@ -51,9 +52,18 @@ Also, try to double-check any text for spelling issues. Some of us frequently ma
 
 Finally, ***be sure to make file changes based on the latest version of the ``master`` branch, not ``release``!*** Outdated and conflicting code is often a pain to deal with.
 
+## Q: How can I sync the Rojo project with Roblox Studio?
+
+**A:** Please check for [Rojo Documentation for full details](https://rojo.space/docs/v7/getting-started/installation/), but in short, you'll need to install the Rojo CLI if you don't already have it. If you don't have the Aftman toolchain manager, [install it](https://github.com/LPGhatguy/aftman#installation). Then, inside the Adonis folder, run `aftman install`. Finally, run `rojo plugin install` to add the plugin to your studio.
+
+**Please note, that if you have installed a plugin from the Roblox Plugin Marketplace created by LPGhatguy, it will not work correctly and has been deprecated, DO NOT use this plugin, it WILL cause side effects, such as UI font size issues.**
+Alternatively, if you prefer, you may also download the plugin from the [Creator Marketplace](https://create.roblox.com/marketplace/asset/13916111004/Rojo), but do note your version may get out of sync without warning.
+
+After installing Rojo, you can serve it by running `rojo serve` or by using the [optional VSCode plugin](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo). Then, connect thru the Rojo Plugin in Studio and accept the changes.
+
 ## Q: What can I contribute to the Wiki?
 
-**A:** Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when developing plugins for Adonis. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.)
+**A:** Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when developing plugins for Adonis. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.) To add wiki contributions, message a maintainer with information regarding your requested fix and it will be reviewed.
 
 ## Q: My contribution was accepted. Now what?
 
@@ -73,8 +83,8 @@ Discord server: <https://discord.com/invite/H5RvTP3>
 
 ### That's all, folks!
 
-Feel free to make inquiries on our Discord server.
+Feel free to make enquiries on our Discord server.
   
-<sub>Adonis Contribution Guide 2022</sub>
+<sub>Adonis Contribution Guide 2024</sub>
 
 </div>

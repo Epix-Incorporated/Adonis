@@ -532,9 +532,8 @@
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{A498B0DF-7292-49E2-B329-C1BFA0FD3078}</string>
+					<string name="ScriptGuid">{B657D7B2-F9BE-4DCF-9B3B-B447F129FD08}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
@@ -547,7 +546,8 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-
+	local player = service.Players.LocalPlayer
+	local playergui = player.PlayerGui
 	local UI = client.UI
 	local Remote = client.Remote
 	local Variables = client.Variables
@@ -707,21 +707,32 @@ return function(data, env)
 		opened = true
 	end
 
+	local function isInConsoleBounds(pos)
+		for i,v in ipairs(playergui:GetGuiObjectsAtPosition(pos.X, pos.Y)) do
+			if v == gui or v == gui.Frame then return true end
+		end
+		return false
+	end
+
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
-			if string.len(text.Text) > 1 then
-				Remote.Send("ProcessCommand", text.Text)
+			if text.Text ~= '' and string.len(text.Text) > 1 then
+				Remote.Send('ProcessCommand', text.Text)
 			end
+			closeConsole()
+		elseif not isInConsoleBounds(player:GetMouse()) then
+			closeConsole()
 		end
-
-		closeConsole()
 	end)
 
 	text:GetPropertyChangedSignal("Text"):Connect(function()
 		if text.Text ~= "" and openConsole then
 			if string.sub(text.Text, string.len(text.Text)) == "	" then
 				if players:FindFirstChild("Entry 0") then
-					text.Text = `{string.sub(text.Text, 1, (string.len(text.Text) - 1))}{players["Entry 0"].Text} `
+					local args = string.split(tostring(text.Text), " ") -- Get command args
+					local textWithoutLastArg = string.sub(text.Text, 1, string.len(text.Text) - string.len(args[#args])) -- Remove the last arg
+					
+					text.Text = `{textWithoutLastArg}{players["Entry 0"].Text} ` -- Combine the text witout the last arg and the player name
 				elseif scroll:FindFirstChild("Entry 0") then
 					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
 				else

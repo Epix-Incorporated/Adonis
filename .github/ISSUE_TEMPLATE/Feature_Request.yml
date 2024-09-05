@@ -1,0 +1,32 @@
+name: Feature request
+description: Request a feature
+labels: ["✨ enhancement"] # , "triage" # I wish...
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request! Also note that not recieving a response does not mean that your request has been ignored.
+    validations:
+      required: false
+  - type: dropdown
+    id: segment
+    attributes:
+      label: What part of Adonis is this related to?
+      options:
+        - Loader/Settings
+        - Command
+        - User Interface
+        - Documentation
+        - GitHub Repository
+        - Anti-Exploit
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: What are you suggesting?
+      placeholder: ex. Add a new command that does XYZ
+    validations:
+      required: true
+  

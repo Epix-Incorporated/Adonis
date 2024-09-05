@@ -41,7 +41,12 @@
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -118,7 +123,12 @@
 					<bool name="ClearTextOnFocus">true</bool>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -564,7 +574,12 @@
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">16</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>600</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Semibold.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -799,7 +814,7 @@
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">NoEnv-Code</string>
-					<string name="ScriptGuid">{D3ADB31E-582B-4AC1-89DB-C1BEA60D38FC}</string>
+					<string name="ScriptGuid">{375DAD5C-E915-48E5-BAC3-C821A0ACFE7D}</string>
 					<ProtectedString name="Source"><![CDATA[																																																				--[[
 																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -815,14 +830,15 @@
 		[String] 	Icon		 - The window's icon
 		[Vector2]	CanvasSize	 - Sets the window's canvas size
 		[Table]		Size		 - Size of the window in absolute X,Y values
-		[UDim2] 	Position 	 - The window''s position on the screen
+		[UDim2] 	Position 	 - The window's position on the screen
 		[Table]		MinSize		 - The minimum AbsoluteSize of the window
 		[Table]		MaxSize		 - The maximum Absolutesize of the window
 		[Bool] 		NoHide		 - If true the minimize button will be removed
 		[Bool] 		Walls		 - If true the window will be snapped back when dragged off the screen
 		[Bool] 		NoClose		 - If true the close button will be removed
 		[Bool]		CanKeepAlive - If false the window will be destroyed when the user respawns
-		[Bool]		SizeLocked	 - IF true the window cannot be resized
+		[Bool]		SizeLocked	 - If true the window cannot be resized
+		[Bool]		NoDrag		 - If true window can't be dragged
 		[Function]	OnClose		 - Called when the window closes
 		[Function]	OnResize	 - Called when the window is resized by the user
 		[Function]	OnReady		 - Called when window:Ready() is called
@@ -852,6 +868,8 @@
 		:Add(string Class, table Data)	- Adds a new object of Class to the window with properties specified by Data
 		:Hide(bool doHide)				- Forces the window to minimize or maximize
 		:SetTitle(string newTitle)		- Sets the window's title
+		:SetMinSize(table newMinSize)	- Sets the minimum allowed window size
+		:SetMaxSize(table newMaxSize)	- Sets the maximum allowed window size
 		:SetPosition(UDim2 newPos)		- Sets the window's position
 		:SetSize(table newSize)			- Sets the window's size; Must be a table containing X and Y absolute sizes
 		:GetPosition()					- Gets the window's position
@@ -939,14 +957,11 @@ local setPosition
 local checkMouse
 local isInFrame
 local setSize
+local setMinSize
+local setMaxSize
 local apiIfy
 
-client = nil
-cPcall = nil
-Pcall = nil
-Routine = nil
-service = nil
-GetEnv = nil
+client, Pcall, Routine, service, GetEnv = nil, nil, nil, nil, nil
 
 local function isGui(child)
 	return child:IsA("GuiObject");
@@ -976,6 +991,7 @@ return function(data, env)
 	local Walls = data.Walls
 	local noHide = data.NoHide
 	local noClose = data.NoClose
+	local noDrag = data.NoDrag
 	local onReady = data.OnReady
 	local onClose = data.OnClose
 	local onResize = data.OnResize
@@ -995,7 +1011,6 @@ return function(data, env)
 	local isClosed = false
 	local Resizing = false
 	local Refreshing = false
-	local DragEnabled = true
 	local checkProperty = service.CheckProperty
 	local specialInsts = {}
 	local inExpandable
@@ -1054,7 +1069,7 @@ return function(data, env)
 
 				point.Size = UDim2.fromOffset(sizeX, sizeY)
 				point.Position = UDim2.fromOffset(posX, posY)
-				point.Visible = true
+				point.Visible = text ~= ""
 			end)
 		end
 	end
@@ -1718,11 +1733,13 @@ return function(data, env)
 					local desc;
 					local color
 					local richText;
+					local onClick;
 
 					if type(v) == "table" then
 						text = v.Text
 						desc = v.Desc
 						color = v.Color
+						onClick = v.OnClick
 
 						if v.RichTextAllowed or entProps.RichTextAllowed then
 							richText = true
@@ -1734,6 +1751,7 @@ return function(data, env)
 						label = create("TextBox",{
 							Text = ` {text}`;
 							ToolTip = desc;
+							AutomaticSize = if not entProps.ySize then Enum.AutomaticSize.Y else nil;
 							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 							Visible = true;
 							BackgroundTransparency = 1;
@@ -1747,9 +1765,10 @@ return function(data, env)
 							ClearTextOnFocus = false;
 						})
 					else
-						label = create("TextLabel",{
+						label = create(onClick and "TextButton" or "TextLabel",{
 							Text = ` {text}`;
 							ToolTip = desc;
+							AutomaticSize = if not entProps.ySize then Enum.AutomaticSize.Y else nil;
 							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 							Visible = true;
 							BackgroundTransparency = 1;
@@ -1759,6 +1778,7 @@ return function(data, env)
 							TextXAlignment = "Left";
 							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
 							RichText = richText or false;
+							OnClick = onClick;
 						})
 					end
 
@@ -2007,6 +2027,18 @@ return function(data, env)
 			Drag.Position = UDim2.new(0, newPos[1], 0, newPos[2])
 		elseif Size and not newPos then
 			Drag.Position = UDim2.new(0.5, -Drag.AbsoluteSize.X/2, 0.5, -Main.AbsoluteSize.Y/2)
+		end
+	end
+
+	function setMinSize(Table)
+		if Table and type(Table) == "table" then
+			MinSize = Table
+		end
+	end
+
+	function setMaxSize(Table)
+		if Table and type(Table) == "table" then
+			MaxSize = Table
 		end
 	end
 
@@ -2420,9 +2452,11 @@ return function(data, env)
 
 		Event(InputService.InputBegan, function(input)
 			if inFrame and GUI.DisplayOrder == 101 and not dragDragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then--isInFrame(input.Position.X, input.Position.Y, object) then
-				dragDragging = true
-				BringToFront()
-				dragOffset = Vector2.new(Drag.AbsolutePosition.X - input.Position.X, Drag.AbsolutePosition.Y - input.Position.Y)
+				if not noDrag then
+					dragDragging = true
+					BringToFront()
+					dragOffset = Vector2.new(Drag.AbsolutePosition.X - input.Position.X, Drag.AbsolutePosition.Y - input.Position.Y)
+				end
 			end
 		end)
 
@@ -2459,11 +2493,13 @@ return function(data, env)
 	api:SetSpecial("Refresh", DoRefresh)
 	api:SetSpecial("AddTitleButton", function(ignore, data) if type(ignore) == "table" and not data then data = ignore end return addTitleButton(data) end)
 	api:SetSpecial("Ready", function() if onReady then onReady() end gTable.Ready() BringToFront() end)
-	api:SetSpecial("BindEvent", function(ignore, ...) Event(...) end)
+	api:SetSpecial("BindEvent", function(ignore, ...) return Event(...) end)
 	api:SetSpecial("Hide", function(ignore, hide) doHide(hide) end)
 	api:SetSpecial("SetTitle", function(ignore, newTitle) Titlef.Text = newTitle end)
 	api:SetSpecial("SetPosition", function(ignore, newPos) setPosition(newPos) end)
 	api:SetSpecial("SetSize", function(ignore, newSize) setSize(newSize) end)
+	api:SetSpecial("SetMinSize",function(ignore, Table) setMinSize(Table) end)
+	api:SetSpecial("SetMaxSize",function(ignore, Table) setMaxSize(Table) end)
 	api:SetSpecial("GetPosition", function() return Drag.AbsolutePosition end)
 	api:SetSpecial("GetSize", function() return Main.AbsoluteSize end)
 	api:SetSpecial("IsVisible", isVisible)
@@ -2519,7 +2555,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -2596,7 +2637,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -2686,7 +2732,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -2763,7 +2814,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -2934,7 +2990,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">2</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>700</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arialbd.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3197,7 +3258,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">2</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>700</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arialbd.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3278,7 +3344,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">9</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/ComicNeueAngular.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/ComicNeue-Angular-Bold.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3357,7 +3428,12 @@ end]]></ProtectedString>
 						<int name="BorderSizePixel">1</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
-						<token name="Font">9</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/ComicNeueAngular.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/ComicNeue-Angular-Bold.ttf</url></CachedFaceId>
+						</Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -3435,7 +3511,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">5</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>300</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Light.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -4777,7 +4858,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">1</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -4854,7 +4940,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -5007,7 +5098,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">true</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -5084,7 +5180,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -5163,7 +5264,12 @@ end]]></ProtectedString>
 				<int name="BorderSizePixel">0</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<token name="Font">1</token>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
 				<int name="MaxVisibleGraphemes">-1</int>
@@ -5297,7 +5403,12 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -5312,7 +5423,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>5</YO>
 					</UDim2>
-					<bool name="RichText">false</bool>
+					<bool name="RichText">true</bool>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
