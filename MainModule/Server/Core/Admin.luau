@@ -928,6 +928,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			service.Events.AdminRemoved:Fire(p)
 			Admin.UpdateCachedLevel(p)
 		end;
 
@@ -984,6 +985,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			service.Events.AdminAdded:Fire(p)
 			Admin.UpdateCachedLevel(p)
 		end;
 
