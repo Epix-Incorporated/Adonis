@@ -160,7 +160,7 @@ return function(data, env)
 								Name = "Message";
 								Size = UDim2.new(1, 0, 0, 10);
 								Position = UDim2.new(0, 0, 0, 14);
-								Text = `   {msg or "<font color='rbxassetid://12905453822'>An error has occured</font>"}`;
+								Text = `   {msg or "<font color='rgb(230,0,0)'>An error has occured</font>"}`;
 								TextXAlignment = "Left";
 								TextYAlignment = "Top";
 								AutomaticSize = "Y";
