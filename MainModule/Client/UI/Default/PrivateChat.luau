@@ -4,25 +4,18 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
 	local Owner = data.FromPlayer;
 	local SessionKey = data.SessionKey;
 	local SessionName = data.SessionName;
 	local CanManageUsers = data.CanManageUsers;
 
-	local debounce = false
-	local gTable
-	local newMessage
+	local debounce, gTable, selectedPlayer = false, nil, nil
+	local peerList, messageObjs = {}, {}
 
 	local window, chatlog, reply, playerList, send, layout, sessionEvent;
-	local peerList = {};
-	local messageObjs = {};
-
-	local selectedPlayer = nil;
 
 	local function sendIt()
 		local text = service.Trim(reply.Text)
-
 		if text ~= "" then
 			client.Remote.Send("Session", SessionKey, "SendMessage", text)
 		end
@@ -30,33 +23,63 @@ return function(data, env)
 
 	local function promptAddUser()
 		local list = {}
-		for _,v in service.Players:GetPlayers() do
-			local good = true;
-			for _, peer in peerList do
-				if peer.UserId == v.UserId then
-					good = false;
-					break;
+		local searchBar, playerList
+
+		local window = client.UI.Make("Window", {
+			Name = "Add User";
+			Title = "Add User";
+			Size = {300, 400};
+		})
+
+		searchBar = window:Add("TextBox", {
+			Size = UDim2.new(1, -10, 0, 30);
+			Position = UDim2.new(0, 5, 0, 5);
+			Text = "";
+			PlaceholderText = "Search player...";
+			ClearTextOnFocus = false;
+		})
+
+		playerList = window:Add("ScrollingFrame", {
+			Size = UDim2.new(1, -10, 1, -45);
+			Position = UDim2.new(0, 5, 0, 40);
+			BackgroundTransparency = 0.9;
+		})
+
+		local function updateList()
+			playerList:ClearAllChildren()
+			local searchText = searchBar.Text:lower()
+			local yPos = 0
+			for _, v in service.Players:GetPlayers() do
+				local good = true
+				for _, peer in peerList do
+					if peer.UserId == v.UserId then
+						good = false
+						break
+					end
+				end
+				if good and (searchText == "" or v.Name:lower():find(searchText) or v.DisplayName:lower():find(searchText)) then
+					local button = playerList:Add("TextButton", {
+						Text = service.FormatPlayer(v);
+						Size = UDim2.new(1, 0, 0, 30);
+						Position = UDim2.new(0, 0, 0, yPos);
+						BackgroundTransparency = 0.5;
+					})
+					button.MouseButton1Click:Connect(function()
+						window:Close()
+						client.Remote.Send("Session", SessionKey, "AddPlayerToSession", service.UnWrap(v))
+					end)
+					yPos = yPos + 35
 				end
 			end
-
-			if good then
-				table.insert(list, {
-					Text = service.FormatPlayer(v);
-					Data = service.UnWrap(v);
-				})
-			end
+			playerList.CanvasSize = UDim2.new(0, 0, 0, yPos)
 		end
 
-		local answer = client.UI.Make("SelectionPrompt", {
-			Name = "Add User";
-			Options = list;
-		});
+		searchBar:GetPropertyChangedSignal("Text"):Connect(updateList)
+		updateList()
 
-		if answer then
-			client.Remote.Send("Session", SessionKey, "AddPlayerToSession", answer)
-		end
-	end;
-
+		window:Ready()
+	end
+	
 	local function updatePeerList(peers)
 		playerList:ClearAllChildren()
 		peerList = peers
@@ -137,7 +160,7 @@ return function(data, env)
 								Name = "Message";
 								Size = UDim2.new(1, 0, 0, 10);
 								Position = UDim2.new(0, 0, 0, 14);
-								Text = `   {msg or "<font color='rgb(230,0,0)'>An error has occured</font>"}`;
+								Text = `   {msg or "<font color='rbxassetid://12905453822'>An error has occured</font>"}`;
 								TextXAlignment = "Left";
 								TextYAlignment = "Top";
 								AutomaticSize = "Y";
@@ -206,7 +229,6 @@ return function(data, env)
 			table.remove(messageObjs, 1)
 		end
 	end
-
 	local function systemMessage(msg)
 		newMessage({
 			PlayerName = "* SYSTEM *";
@@ -237,15 +259,15 @@ return function(data, env)
 		Size = UDim2.new(1, -105, 1, -45);
 		CanvasSize = UDim2.new(0, 0, 0, 0);
 		BackgroundTransparency = 0.9;
-		--AutomaticCanvasSize = "Y";
+		AutomaticCanvasSize = "Y";
 	})
 
 	reply = window:Add("TextBox", {
-		Text = ""; --"Enter reply";
+		Text = "";
 		PlaceholderText = "";
 		Size = UDim2.new(1, -70, 0, 30);
 		Position = UDim2.new(0, 5, 1, -35);
-		ClearTextOnFocus = false;--true;
+		ClearTextOnFocus = false;
 		TextScaled = true;
 	})
 
@@ -324,7 +346,7 @@ return function(data, env)
 				PlayerName = p.Name;
 				PlayerDisplayName = p.DisplayName;
 				Message = data.Message;
-				Icon = p.Icon or 0; --// replace with user avatar later
+				Icon = p.Icon or 0;
 			});
 		end
 	end
@@ -335,8 +357,8 @@ return function(data, env)
 			if cmd == "PlayerSentMessage" then
 				local p = vargs[1]
 				local message = vargs[2]
-
 				if newMessage then
+					print('sdf')
 					newMessage({
 						PlayerName = p.Name;
 						PlayerDisplayName = p.DisplayName;
