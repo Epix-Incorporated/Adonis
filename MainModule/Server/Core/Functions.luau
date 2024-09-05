@@ -461,6 +461,42 @@ return function(Vargs, GetEnv)
 			return nil
 		end;
 
+		AddTextChannel = function(options)
+			assert(options.Name, "The channel name is required")
+			
+			if service.TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService then
+				local chat = Functions.GetChatService()
+
+				--// No need to check for if the channel already exists, roblox does that for us
+
+				local channel = chat:AddChannel(options.Name)
+				channel.WelcomeMessage = options.WelcomeMessage
+				channel.AutoJoin = options.AutoJoin or false
+				channel.Private = options.Private or true
+				channel.Joinable = options.Joinable or false
+				channel.Leavable = options.Leavable or false
+							
+				return channel
+			end
+			
+			--// Support for new chat (when roblox adds channels to that chat) here later
+			warn("The new roblox chat is not supported with text channels.")
+		end,
+		
+		RemoveTextChannel = function(name)
+			if service.TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService then
+				local chat = Functions.GetChatService()
+				
+				--// No need to check for if the channel already exists, roblox does that for us
+				
+				chat:RemoveChannel(name)
+				return
+			end
+			
+			--// Support for new chat (when roblox adds channels to that chat) here later
+			warn("The new roblox chat is not supported with text channels.")
+		end,
+
 		ArgsToString = function(args)
 			local str = ""
 			for i, arg in args do
