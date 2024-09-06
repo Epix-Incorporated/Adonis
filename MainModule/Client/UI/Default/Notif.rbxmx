@@ -54,6 +54,7 @@ return function(data, env)
 	local label = gui.LABEL
 	local str = data.Message
 	local topbar = client.UI.Get("TopBar")
+	local topshift
 	
 	client.UI.Remove("Notif",script.Parent.Parent)
 	
@@ -68,11 +69,17 @@ return function(data, env)
 
 	table.insert(client.Variables.CommunicationsHistory, log) 
 	service.Events.CommsPanel:Fire(log)
+	
+	if client.Variables.TopBarShift == true then
+		topshift = true
+	else
+		topshift = false
+	end
 
 	
 	if str and type(str)=="string" then
 		label.Text = str
-		label.Position = UDim2.new(0, 0, 0, ((topbar and 40) or 0) - 35)
+		label.Position = UDim2.new(0, 0, 0, ((topshift and 0) or -35))
 		gTable:Ready()
 	else
 		gui:Destroy()
