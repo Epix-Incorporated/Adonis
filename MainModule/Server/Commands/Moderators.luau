@@ -1351,6 +1351,7 @@ return function(Vargs, env)
 					Size = {300, 240};
 					AutoUpdate = if not args[1] or (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Update = "PlayerList";
+					TextSelectable = true;
 				})
 			end
 		};
