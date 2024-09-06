@@ -270,7 +270,7 @@ return function(Vargs, GetEnv)
 					if not Admin.CheckAdmin(plr) then return end
 
 					local speaker = chatService:GetSpeaker(plr.Name)
-					if not speaker or not speaker:IsInChannel("Admins") then speaker:JoinChannel("Admins") return end
+					if speaker and not speaker:IsInChannel("Admins") then speaker:JoinChannel("Admins") return end
 				end)
 
 				service.Events.AdminAdded:Connect(function(plr)
