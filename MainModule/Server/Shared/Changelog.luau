@@ -14,6 +14,7 @@ return {
 	"(Git/EasternBloxxer) Made dex fetch api dump on server start (#1591)";
 	"(Git/ScriptedConnor) Fix TopBarShift for :setmessage (#1593)";
 	"(Git/ScriptedConnor) Add Text Selections to the :players Command (#1597)";
+	"(Git/jun022222222) Made mats & colors list selectable (#1599)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
