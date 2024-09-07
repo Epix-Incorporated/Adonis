@@ -153,7 +153,7 @@ return function(data, env)
 				TextColor3 = Color3.new(1, 1, 1);
 				Text = "";
 				PlaceholderText = "Search";
-				TextStrokeTransparency = 0.8;
+				TextStrokeTransparency = 1;
 			})
 
 			local items = tabWindow:Add("ScrollingFrame", {
@@ -882,7 +882,7 @@ return function(data, env)
 				TextColor3 = Color3.new(1, 1, 1);
 				Text = "";
 				PlaceholderText = "Search";
-				TextStrokeTransparency = 0.8;
+				TextStrokeTransparency = 1;
 			})
 
 			local function getBinds()
@@ -1144,7 +1144,7 @@ return function(data, env)
 				TextColor3 = Color3.new(1, 1, 1);
 				Text = "";
 				PlaceholderText = "Search";
-				TextStrokeTransparency = 0.8;
+				TextStrokeTransparency = 1;
 			})
 
 			local aliases = aliasTab:Add("ScrollingFrame", {
