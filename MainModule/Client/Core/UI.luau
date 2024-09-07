@@ -271,8 +271,16 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Get rid of an old Config folder and throw the new combination Config folder in
-				local new = foundConfigs[1].Found:Clone()
+				local found = foundConfigs[1].Found
+				local new = found:Clone()
 				local oldFolder = new:FindFirstChild'Config'
+
+				-- Keep a reference to the original element in case the script relies on a dependancy
+				-- found in the UI theme's directory
+				local originalReferenceValue = Instance.new("ObjectValue")
+				originalReferenceValue.Value = found
+				originalReferenceValue.Name = "OriginalReference"
+				originalReferenceValue.Parent = new
 
 				if oldFolder then oldFolder:Destroy() end
 
