@@ -214,12 +214,14 @@ return function(Vargs, env)
 				for i, bc in brickColorNames do
 					bc = BrickColor.new(bc)
 					table.insert(children, {
-						Class = "TextLabel";
+						Class = "TextBox";
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, 30*(i-1));
 						BackgroundTransparency = 1;
 						TextXAlignment = "Left";
 						Text = `  {bc.Name}`;
+						TextEditable = false;
+						ClearTextOnFocus = false;
 						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.r*255, bc.g*255, bc.b*255, bc.Number);
 						ZIndex = 11;
 						Children = {
@@ -260,7 +262,7 @@ return function(Vargs, env)
 				for i, mat in mats do
 					mats[i] = {Text = mat; Desc = `Enum value: {Enum.Material[mat].Value}`}
 				end
-				Remote.MakeGui(plr, "List", {Title = "Materials"; Tab = mats;})
+				Remote.MakeGui(plr, "List", {Title = "Materials"; Tab = mats; TextSelectable = true;})
 			end
 		};
 
