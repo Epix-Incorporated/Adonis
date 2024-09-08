@@ -6,14 +6,15 @@ return {
 	"[v261 Pre-release 2024-08-29 14:32 UTC] @Dimenpsyonal";
 	"#Not for release until the following issues are resolved:";
 	"#Audit logs need be integrated into datastore";
-	"(Git/Mars7383) Fix typo in Loadstring dependency affecting :ss (#1587)";
-	"(Git/bsqi) Fix Join command (#1584)";
 	"(Git/24rr) New System: Audit Logs (#1568)";
 	"(Git/24rr) New Command: coordinates (#1568)";
+	"(Git/bsqi) Fix Join command (#1584)";
+	"(Git/Mars7383) Fix typo in Loadstring dependency affecting :ss (#1587)";
 	"(Git/PurpleCreativity) Remove ;cut command (#1590)";
 	"(Git/EasternBloxxer) Made dex fetch api dump on server start (#1591)";
 	"(Git/ScriptedConnor) Fix TopBarShift for :setmessage (#1593)";
 	"(Git/ScriptedConnor) Add Text Selections to the :players Command (#1597)";
+	"(Git/omwot) Improve Modern theme (#1598)";
 	"(Git/jun022222222) Made mats & colors list selectable (#1599)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
