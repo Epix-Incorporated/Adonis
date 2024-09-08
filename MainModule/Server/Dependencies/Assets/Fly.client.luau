@@ -42,6 +42,10 @@ function Check()
 	end
 end
 
+function tranVec(num)
+	return Vector3.new(num, num, num)
+end
+
 function getCF(part, isFor)
 	local cframe = part.CFrame
 	local noRot = CFrame.new(cframe.p)
@@ -63,10 +67,10 @@ function Start()
 	end)
 
 	bPos.Position = part.Position
-	bPos.MaxForce = math.huge
+	bPos.MaxForce = tranVec(math.huge)
 
 	bGyro.CFrame = part.CFrame
-	bGyro.MaxTorque = 9e9
+	bGyro.MaxTorque = tranVec(9e9)
 
 	antiLoop = antiReLoop
 
@@ -146,11 +150,11 @@ function Stop()
 	human.PlatformStand = false
 
 	if bPos then
-		bPos.MaxForce = 0
+		bPos.MaxForce = tranVec(0)
 	end
 
 	if bGyro then
-		bGyro.MaxTorque = 0
+		bGyro.MaxTorque = tranVec(0)
 	end
 
 	if conn then
