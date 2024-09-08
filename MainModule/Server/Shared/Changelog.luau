@@ -13,6 +13,7 @@ return {
 	"(Git/PurpleCreativity) Remove ;cut command (#1590)";
 	"(Git/EasternBloxxer) Made dex fetch api dump on server start (#1591)";
 	"(Git/ScriptedConnor) Fix TopBarShift for :setmessage (#1593)";
+	"(Git/jun022222222) Replace Coords.luau (#1595)";
 	"(Git/ScriptedConnor) Add Text Selections to the :players Command (#1597)";
 	"(Git/omwot) Improve Modern theme (#1598)";
 	"(Git/jun022222222) Made mats & colors list selectable (#1599)";
