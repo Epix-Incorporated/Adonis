@@ -7,7 +7,9 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local logError
-	local AuditLogsDataStore = service.DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
+	local AuditLogsDataStore; pcall(function()
+		AuditLogsDataStore = service.DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
+	end)
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -533,7 +535,7 @@ return function(Vargs, GetEnv)
 
 				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
 				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
-				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors 
+				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors
 				local MaxSelectors = Variables.MaxSafeSelectors or 400 -- 400 seems like a good "max" that won't ever be reached
 
 				local index = 0
@@ -965,12 +967,13 @@ return function(Vargs, GetEnv)
 						Scroll = scroll;
 						Time = duration;
 						Image = image;
+						UserId = sender and sender.UserId or nil;
 					})
 				end)
 			end
 		end;
 
-		Notify = function(title, message, players, duration)
+		Notify = function(title, message, players, duration, author)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
@@ -980,6 +983,7 @@ return function(Vargs, GetEnv)
 						Title = title;
 						Message = message;
 						Time = duration;
+						UserId = author and author.UserId or nil;
 					})
 				end)
 			end
@@ -1349,7 +1353,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if not buf then
-					local result = string.gsub(string.gsub(string.gsub(arg, spat, ""), epat, ""), escquotpat, "%2")	
+					local result = string.gsub(string.gsub(string.gsub(arg, spat, ""), epat, ""), escquotpat, "%2")
 					str ..= result .. key
 					table.insert(tab,result)
 				end
