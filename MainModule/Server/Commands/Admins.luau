@@ -943,16 +943,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
-
-				local cl = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[1]}`, true)
-				cl.Name = "[Adonis] LocalScript"
-				cl.Disabled = true
-				cl.Parent = plr:FindFirstChildOfClass("Backpack")
-				task.wait()
-				cl.Disabled = false
-				Functions.Hint("Ran LocalScript on your client", {plr})
+				Commands.LoadLocalScript.Function(plr, {`@{plr.Name}`, args[1]})
 			end
 		};
 
@@ -970,14 +961,26 @@ return function(Vargs, env)
 				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local new = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[2]}`, true)
-				for i, v in service.GetPlayers(plr, args[1]) do
+				local function cloneScript(targetPlayer)
+					local playerName = if targetPlayer == plr then "your client" else service.FormatPlayer(targetPlayer)
+					
+					local backpack = targetPlayer:FindFirstChildOfClass("Backpack")
+					if not backpack then 
+						Functions.Hint(`Couldn't run LocalScript on {playerName} (Backpack missing?)`, {plr})
+						return
+					end
+					
 					local cl = new:Clone()
 					cl.Name = "[Adonis] LocalScript"
 					cl.Disabled = true
-					cl.Parent = v:FindFirstChildOfClass("Backpack")
-					task.wait()
+					cl.Parent = targetPlayer:FindFirstChildOfClass("Backpack")
+					task.wait(.1)
 					cl.Disabled = false
-					Functions.Hint(`Ran LocalScript on {service.FormatPlayer(v)}`, {plr})
+					Functions.Hint(`Ran LocalScript on {playerName}`, {plr})
+				end
+				
+				for i, v in service.GetPlayers(plr, args[1]) do
+					task.spawn(cloneScript, v)
 				end
 			end
 		};
