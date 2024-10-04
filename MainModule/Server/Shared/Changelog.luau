@@ -19,6 +19,7 @@ return {
 	"(Git/jun022222222) Make mats & colors list selectable (#1599)";
 	"(Git/24rr) Add a search player bar for :privatechat (#1594)";
 	"(Git/cl1ents) Update MakeLocalScript and LoadLocalScript commands (#1603)";
+	"(Git/PurpleCreativity) Prevent Anti.RemovePlayer from kicking if in studio (#1605)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
