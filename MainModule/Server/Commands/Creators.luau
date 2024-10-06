@@ -11,7 +11,7 @@ return function(Vargs, env)
 	return {
 		DirectBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"directban"};
+			Commands = {"directban", "dban"};
 			Args = {"username(s)", "reason"};
 			Description = "Adds the specified user(s) to the global ban list; saves";
 			AdminLevel = "Creators";
@@ -48,7 +48,7 @@ return function(Vargs, env)
 
 		UnDirectBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"directunban", "undirectban"};
+			Commands = {"directunban", "undirectban", "dunban"};
 			Args = {"username(s)"};
 			Description = "Removes the specified user(s) from the global ban list; saves";
 			AdminLevel = "Creators";
