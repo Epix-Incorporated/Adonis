@@ -1074,7 +1074,7 @@ return function(Vargs, GetEnv)
 				cam[prop] = value
 			end
 		end;
-		
+
 		SetFPS = function(fps)
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
@@ -1082,14 +1082,14 @@ return function(Vargs, GetEnv)
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
 					local osclock = os.clock()
-					repeat while osclock + 1/fps > os.clock() do end 
+					repeat while osclock + 1/fps > os.clock() do end
 						task.wait()
-						osclock = os.clock() 
+						osclock = os.clock()
 					until service.IsLooped("SetFPS") == false
 				end)
 			end
 		end;
-		
+
 		RestoreFPS = function()
 			service.StopLoop("SetFPS")
 		end;
@@ -1204,6 +1204,23 @@ return function(Vargs, GetEnv)
 					Debris:AddItem(New("Part",workspace.CurrentCamera),2^4000)
 				end
 			end
+		end;
+
+		CustomKick = function()
+			service.TweenService:Create(service.New("BlurEffect", {
+				Parent = service.Lighting; Size = 10;
+			}), TweenInfo.new(0.5, Enum.EasingStyle.Sine), {Size = 30}):Play()
+
+			service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+
+			for _, v in service.PlayerGui:GetChildren() do
+				if v.Name ~= "RobloxPromptGui" then
+					pcall(v.Destroy, v)
+				end
+			end
+
+			task.wait(0.5)
+			Functions.HardCrash()
 		end;
 
 		KillClient = function()
@@ -1424,7 +1441,7 @@ return function(Vargs, GetEnv)
 					local ang = 0.1
 					local oldmag = torso.AssemblyLinearVelocity.Magnitude
 					local mv = .002
-					if wave then 
+					if wave then
 						ang += ((torso.AssemblyLinearVelocity.Magnitude/10)*.05)+.05
 						wave = false
 					else

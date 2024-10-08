@@ -963,13 +963,13 @@ return function(Vargs, env)
 				local new = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[2]}`, true)
 				local function cloneScript(targetPlayer)
 					local playerName = if targetPlayer == plr then "your client" else service.FormatPlayer(targetPlayer)
-					
+
 					local backpack = targetPlayer:FindFirstChildOfClass("Backpack")
-					if not backpack then 
+					if not backpack then
 						Functions.Hint(`Couldn't run LocalScript on {playerName} (Backpack missing?)`, {plr})
 						return
 					end
-					
+
 					local cl = new:Clone()
 					cl.Name = "[Adonis] LocalScript"
 					cl.Disabled = true
@@ -978,7 +978,7 @@ return function(Vargs, env)
 					cl.Disabled = false
 					Functions.Hint(`Ran LocalScript on {playerName}`, {plr})
 				end
-				
+
 				for i, v in service.GetPlayers(plr, args[1]) do
 					task.spawn(cloneScript, v)
 				end
@@ -1258,6 +1258,55 @@ return function(Vargs, env)
 					if Admin.CheckAuthority(plr, v, "GPU-crash") then
 						Remote.Send(v, "Function", "GPUCrash")
 					end
+				end
+			end
+		};
+
+		CustomKick = {
+			Prefix = Settings.Prefix;
+			Commands = {"ckick", "customkick", "customcrash"};
+			Args = {"player", "title", "message"};
+			Description = "Disconnects (crashes) the target player with a custom Roblox dialog";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				assert(args[3], "Argument(s) missing or nil")
+
+				local title = service.BroadcastFilter(args[2], plr)
+				assert(title == args[2], "Title was filtered: "..title)
+
+				local msg = service.BroadcastFilter(args[3], plr)
+				assert(msg == args[3], "Message was filtered: "..msg)
+
+				for _, v in service.GetPlayers(plr, args[1], {
+					IsKicking = true;
+					NoFakePlayer = false;
+					})
+				do
+					if not Admin.CheckAuthority(plr, v, "custom-kick") then
+						continue
+					end
+
+					local plrgui = v:FindFirstChildOfClass("PlayerGui")
+					if not plrgui then
+						Remote.MakeGui(plr, "Output", {
+							Message = `Failed to custom-kick {service.FormatPlayer(v)} (PlayerGui not found)`;
+						})
+						continue
+					end
+
+					local promptGui = Deps.Assets.RobloxPromptGui:Clone()
+					promptGui.promptOverlay.ErrorPrompt.TitleFrame.ErrorTitle.Text = title
+					promptGui.promptOverlay.ErrorPrompt.MessageArea.ErrorFrame.ErrorMessage.Text = msg
+					promptGui.Parent = plrgui
+
+					Remote.Send(v, "Function", "CustomKick")
+					task.delay(5, function()
+						if v.Parent == service.Players then
+							-- make sure they're really kicked
+							v:Kick("Unexpected Error")
+						end
+					end)
+					Functions.Hint(`Custom-kicking {service.FormatPlayer(v)}`, {plr})
 				end
 			end
 		};
