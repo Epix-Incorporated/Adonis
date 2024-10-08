@@ -290,7 +290,7 @@ return function(Vargs, env)
 
 		GetScript = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"getscript", "getadonis"};
+			Commands = {"getscript", "getadonis", "getadmin"};
 			Args = {};
 			Description = "Prompts you to take a copy of the script";
 			AdminLevel = "Players";
