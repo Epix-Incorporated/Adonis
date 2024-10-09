@@ -26,6 +26,7 @@ return function(Vargs, GetEnv)
 		Variables = server.Variables
 		Settings = server.Settings
 
+		Variables.TextChannels = service.TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService and Functions.GetChatService().ChatChannels or {}
 		Variables.BanMessage = Settings.BanMessage
 		Variables.LockMessage = Settings.LockMessage
 
@@ -53,6 +54,7 @@ return function(Vargs, GetEnv)
 		RunAfterInit = AfterInit,
 		ZaWarudo = false,
 		CodeName = math.random(),
+		TextChannels = {},
 		IsStudio = service.RunService:IsStudio(), -- Used to check if Adonis is running inside Roblox Studio as things like TeleportService and DataStores (if API Access is disabled) do not work in Studio
 		AuthorizedToReply = {},
 		FrozenObjects = {},
