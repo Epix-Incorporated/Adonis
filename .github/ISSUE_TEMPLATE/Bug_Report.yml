@@ -48,6 +48,14 @@ body:
       placeholder: ex. When I ran :shutdown, I expected the server to shut down, but instead...
     validations:
       required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce:
+      description: What are the steps to reproduce this issue?
+      placeholder: ex. 1. Attempt to ban Sceleratis 2. Get hacked by Sceleratis instead 3. Have your disappointment be immeasurable
+    validations:
+      required: true
   - type: dropdown
     id: device
     attributes:
