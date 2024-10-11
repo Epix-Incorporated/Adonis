@@ -91,7 +91,7 @@ return function(Vargs, GetEnv)
 					end
 				--end
 			elseif action == "c".."r".."a".."s".."h" then
-				if isStudio then
+				if not isStudio then
 					Kill(info)
 				end
 			end
