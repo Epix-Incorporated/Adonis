@@ -83,15 +83,17 @@ return function(Vargs, GetEnv)
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
 			if action == "k".."i".."c".."k" then
-				if not isStudio then
-					if nocrash then
+				--if not isStudio then  -- // Kinda dumb that it will crash in studio but not kick??
+					if nocrash or isStudio then
 						Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
 					else
 						Disconnect(info)
 					end
-				end
+				--end
 			elseif action == "c".."r".."a".."s".."h" then
-				Kill(info)
+				if isStudio then
+					Kill(info)
+				end
 			end
 		end
 		return true
@@ -329,12 +331,26 @@ return function(Vargs, GetEnv)
 				pcall(metamethod, rawGame, proxyDetector)
 
 				if callstackInvalid or success or success2 or success3 then
-					return true
+					if not isStudio then
+						return true
+					else
+						print("[Anti-Hook]: Please disable your debugger, scriptwatch and all other debugging tools as well as script tracking plugins, pentesting tools, exploit simulators and all other tools that use debugging APIs. Beware of any plugins or high security context scripts as they may be using debugging APIs. If this issue persist please issue a help ticket to Epix Incorporated")
+						return false
+					end
 				elseif not errorMessages["namecallInstance"] then
 					errorMessages["namecallInstance"] = {err, err2, err3}
 				end
 
-				return not compareTables(errorMessages["namecallInstance"], {err, err2, err3})
+				if not compareTables(errorMessages["namecallInstance"], {err, err2, err3}) then
+					if not isStudio then
+						return true
+					else
+						print("[Anti-Hook]: Please disable your debugger, scriptwatch and all other debugging tools as well as script tracking plugins, pentesting tools, exploit simulators and all other tools that use debugging APIs. Beware of any plugins or high security context scripts as they may be using debugging APIs. If this issue persist please issue a help ticket to Epix Incorporated")
+						return false
+					end
+				else
+					return false
+				end
 			end},
 			indexEnum = table.freeze{"kick", function()
 				local callstackInvalid = false
