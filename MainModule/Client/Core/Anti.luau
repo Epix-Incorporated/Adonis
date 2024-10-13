@@ -82,18 +82,14 @@ return function(Vargs, GetEnv)
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
-			if action == "k".."i".."c".."k" then
-				--if not isStudio then  -- // Kinda dumb that it will crash in studio but not kick??
-					if nocrash or isStudio then
-						Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
-					else
-						Disconnect(info)
-					end
-				--end
-			elseif action == "c".."r".."a".."s".."h" then
-				if not isStudio then
-					Kill(info)
+			if action == "k".."i".."c".."k" and not isStudio then
+				if nocrash then
+					Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
+				else
+					Disconnect(info)
 				end
+			elseif action == "c".."r".."a".."s".."h" and not isStudio then
+				Kill(info)
 			end
 		end
 		return true
