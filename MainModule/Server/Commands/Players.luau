@@ -984,7 +984,7 @@ return function(Vargs, env)
 				local elevated = Admin.CheckAdmin(plr)
 
 				local serverInfo = select(2, xpcall(function()
-					local res = Variables.IPInfo or service.HttpService:JSONDecode(service.HttpService:GetAsync("https://ipinfo.io/json"))
+					local res = Variables.IPInfo or service.HttpService:JSONDecode(service.HttpService:GetAsync(Variables.IPInfoUrl))
 					if not Variables.IPInfo then
 						Variables.IPInfo = res
 					end
