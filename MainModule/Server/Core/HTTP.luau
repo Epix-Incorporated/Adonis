@@ -43,7 +43,7 @@ return function(Vargs, GetEnv)
 			if service.RunService:IsStudio() then
 				return service.HttpService.HttpEnabled
 			else
-				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://www.google.com/humans.txt")
+				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
 				if not success and res:find("Http requests are not enabled.") then
 					return false
 				end
