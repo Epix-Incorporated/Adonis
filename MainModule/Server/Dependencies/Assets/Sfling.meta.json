@@ -1,0 +1,12 @@
+{
+	"properties": {
+		"Disabled": true
+	},
+	"Children": [
+		{
+			"Name": "Strength",
+			"ClassName": "NumberValue",
+			"Value": 0
+		}
+	]
+}
