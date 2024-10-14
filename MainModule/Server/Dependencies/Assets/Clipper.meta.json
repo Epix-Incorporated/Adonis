@@ -1,0 +1,12 @@
+{
+	"properties": {
+		"Disabled": true
+	},
+	"Children": [
+		{
+			"Name": "Clip",
+			"ClassName": "BoolValue",
+			"Value": false
+		}
+	]
+}
