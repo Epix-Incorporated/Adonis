@@ -1,0 +1,16 @@
+{
+	"properties": {
+		"Disabled": true
+	},
+	"Children": [
+		{
+			"Name": "Num",
+			"ClassName": "NumberValue",
+			"Value": 3214.431999999999789
+		},
+		{
+			"Name": "Type",
+			"ClassName": "StringValue"
+		}
+	]
+}
