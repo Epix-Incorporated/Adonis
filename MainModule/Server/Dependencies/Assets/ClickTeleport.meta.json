@@ -1,0 +1,15 @@
+{
+	"properties": {
+		"Disabled": true
+	},
+	"Children": [
+		{
+			"Name": "Mode",
+			"ClassName": "StringValue"
+		},
+		{
+			"Name": "Target",
+			"ClassName": "StringValue"
+		}
+	]
+}
