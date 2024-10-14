@@ -1,0 +1,11 @@
+{
+	"properties": {
+		"Disabled": true
+	},
+	"Children": [
+		{
+			"Name": "Event",
+			"ClassName": "BindableEvent"
+		}
+	]
+}
