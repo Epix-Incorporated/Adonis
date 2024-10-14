@@ -2,6 +2,10 @@ std = "roblox"
 # Packages external to Adonis, such as Roact.
 exclude = ["MainModule/Client/UI/Modern/Components/Packages/**"]
 
+[config]
+
+empty_if = { comments_count = true }
+
 [rules]
 
 # Because Adonis is a large and old codebase, there are too many warnings for anyone to 
@@ -13,4 +17,3 @@ multiple_statements = "allow"
 shadowing = "allow"
 unscoped_variables = "allow"
 unused_variable = "allow"
-empty_if = { comments_count = true }
