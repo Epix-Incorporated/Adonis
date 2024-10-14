@@ -1,3 +1,5 @@
+-- selene: allow(empty_if)
+
 local char = script.Parent
 local event = script.Event
 
@@ -228,9 +230,10 @@ local function updateBot()
 end
 
 local function init()
-	local str = Instance.new("StringValue",char)
+	local str = Instance.new("StringValue")
 	str.Name = "isBot"
 	str.Value = props.SpecialKey
+	str.Value = char
 
 	hum.Died:Connect(function()
 		Debris:AddItem(char, 1)
