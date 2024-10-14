@@ -1,0 +1,23 @@
+{
+	"properties": {
+		"Disabled": true
+	},
+	"Children": [
+		{
+			"Name": "Mode",
+			"ClassName": "StringValue"
+		},
+		{
+			"Name": "Model",
+			"ClassName": "ObjectValue"
+		},
+		{
+			"Name": "mParent",
+			"ClassName": "ObjectValue"
+		},
+		{
+			"Name": "Runner",
+			"ClassName": "ObjectValue"
+		},
+	]
+}
