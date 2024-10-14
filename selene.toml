@@ -13,3 +13,4 @@ multiple_statements = "allow"
 shadowing = "allow"
 unscoped_variables = "allow"
 unused_variable = "allow"
+empty_if = { comments_count = true }
