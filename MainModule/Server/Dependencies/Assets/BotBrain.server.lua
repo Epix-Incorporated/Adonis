@@ -1,5 +1,3 @@
--- selene: allow(empty_if)
-
 local char = script.Parent
 local event = script.Event
 
