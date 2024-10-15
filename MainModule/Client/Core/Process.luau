@@ -50,37 +50,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-		--[[client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
-
 			Process.RunLast = nil;
 	end
 
@@ -131,7 +100,6 @@ return function(Vargs, GetEnv)
 					local comString = Remote.Decrypt(com,Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
-						--local ran,err = pcall(command, args) --task service.Threads.RunTask(`REMOTE:{comString}`,command,args)
 						local rets = {service.TrackTask(`Remote: {comString}`, command, false, args)}
 						if not rets[1] then
 							logError(rets[2])
@@ -152,10 +120,6 @@ return function(Vargs, GetEnv)
 			if Message and Message ~= "nil" and Message ~= "" and (string.find(Message,":: Adonis ::") or string.find(Message,script.Name) or Script == script) then
 				logError(`{Message} - {Trace}`)
 			end
-
-			--if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
-				--Anti.Detected("log",`Scriptless/Traceless error found. Script: {Script} - Trace: {Trace}`)
-			--end
 		end;
 
 		Chat = function(msg)
