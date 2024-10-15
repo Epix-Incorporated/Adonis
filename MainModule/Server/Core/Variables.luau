@@ -65,6 +65,8 @@ return function(Vargs, GetEnv)
 		LockMessage = "Not Whitelisted",
 		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605", 5212082, 5212081}, --// Strings are items; numbers are gamepasses
 		WebPanel_Initiated = false,
+		HTTPCheckUrl = "https://www.google.com/humans.txt",
+		IPInfoUrl = "https://ipinfo.io/json",
 		AnimatedFaces = {
 			-- R15 (Hopefully)
 			14719428401, 12936561806, 12936887700, 12937016609, 12937135097, 12939014597, 12945364777, 12945456452, 14374800823, 14367118483, 13674780763,
@@ -77,6 +79,7 @@ return function(Vargs, GetEnv)
 			-- R6
 			14366393007
 		},
+
 		LightingSettings = {
 			Ambient = Lighting.Ambient,
 			OutdoorAmbient = Lighting.OutdoorAmbient,
