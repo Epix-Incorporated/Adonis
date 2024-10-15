@@ -973,7 +973,7 @@ return function(Vargs, env)
 						ObjectCount = #Variables.Objects;
 						CameraCount = #Variables.Cameras;
 						NilPlayerCount = nilPlayers;
-						HttpEnabled = HTTP.CheckHttp();
+						HttpEnabled = HTTP.HttpEnabled;
 						LoadstringEnabled = HTTP.LoadstringEnabled;
 					}
 				end
