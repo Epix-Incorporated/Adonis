@@ -244,57 +244,6 @@ return function(Vargs, env)
 			end;
 		};
 
-		MakeList = {
-			Prefix = Settings.Prefix;
-			Commands = {"makelist", "newlist", "newtrellolist", "maketrellolist"};
-			Args = {"name"};
-			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
-			TrelloRequired = true;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "You need to supply a list name.")
-
-				local trello = HTTP.Trello.API
-				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
-
-				local list = trello.Boards.MakeList(Settings.Trello_Primary, args[1])
-				Functions.Hint(`Made list {list.name}`, {plr})
-			end
-		};
-
-		ViewList = {
-			Prefix = Settings.Prefix;
-			Commands = {"viewlist", "viewtrellolist"};
-			Args = {"name"};
-			Description = "Views the specified Trello list from the primary board set in Settings.";
-			TrelloRequired = true;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {string})
-				local trello = HTTP.Trello.API
-				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
-				local list = assert(trello.Boards.GetList(Settings.Trello_Primary, assert(args[1], "Enter a valid list name")), "List not found.")
-
-				local cards = trello.Lists.GetCards(list.id)
-				local temp = table.create(#cards)
-				for _, v in cards do
-					table.insert(temp, {Text = v.name, Desc = v.desc})
-				end
-				Remote.MakeGui(plr, "List", {Title = list.name; Tab = temp})
-			end
-		};
-
-		MakeCard = {
-			Prefix = Settings.Prefix;
-			Commands = {"makecard", "maketrellocard", "createcard"};
-			Args = {};
-			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
-			TrelloRequired = true;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "CreateCard")
-			end
-		};
-
 		FullClear = {
 			Prefix = Settings.Prefix;
 			Commands = {"fullclear", "clearinstances", "fullclr"};
