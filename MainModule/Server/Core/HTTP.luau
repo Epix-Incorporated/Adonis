@@ -52,10 +52,6 @@ return function(Vargs, GetEnv)
 		end)();
 		LoadstringEnabled = pcall(loadstring, "");
 
-		CheckHttp = function()
-			return HTTP.HttpEnabled
-		end;
-
 		WebPanel = {
 			Moderators = {};
 			Admins = {};
@@ -202,7 +198,7 @@ return function(Vargs, GetEnv)
 					return;
 				end
 
-				if not HTTP.CheckHttp() then
+				if not HTTP.HttpEnabled then
 					warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
 					return;
 				else
