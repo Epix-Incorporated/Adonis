@@ -1,6 +1,4 @@
-
 return function(Vargs, GetEnv)
-
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
