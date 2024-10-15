@@ -44,7 +44,7 @@ return function(Vargs, GetEnv)
 		local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
 		local Res = {}
 		for Idx = 1, Len do
-			Res[Idx] = format('%02x', random(255))
+			Res[Idx] = format("%02x", random(255))
 		end
 		return table.concat(Res)
 	end
@@ -61,7 +61,7 @@ return function(Vargs, GetEnv)
 			Variables.Aliases[k] = v
 		end
 	end
-	Http.CheckHttp = function()
+	HTTP.CheckHttp = function()
 		return HTTP.HttpEnabled
 	end
 
