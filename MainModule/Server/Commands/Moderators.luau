@@ -1168,40 +1168,6 @@ return function(Vargs, env)
 			end
 		};
 
-		ShowTrelloBansList = {
-			Prefix = Settings.Prefix;
-			Commands = {"trellobans", "trellobanlist", "syncedtrellobans", "showtrellobans"};
-			Args = {};
-			Description = "Shows bans synced from Trello.";
-			TrelloRequired = true;
-			AdminLevel = "Moderators";
-			ListUpdater = function(plr: Player)
-				local tab = table.create(#HTTP.Trello.Bans)
-				for _, banData in HTTP.Trello.Bans do
-					table.insert(tab, {
-						Text = banData.Name,
-						Desc = banData.Reason or "No reason specified",
-					})
-				end
-				table.insert(tab, 1, `# Banned Users: {#HTTP.Trello.Bans}`)
-				table.insert(tab, 2, "―――――――――――――――――――――――")
-				return tab
-			end;
-			Function = function(plr: Player, args: {string})
-				local trello = HTTP.Trello.API
-				if not Settings.Trello_Enabled or trello == nil then
-					Functions.Notification("Trello Synced Ban List", "Trello has not been enabled.", {plr})
-				else
-					Remote.MakeGui(plr, "List", {
-						Title = "Trello Synced Bans List";
-						Icon = server.MatIcons.Gavel;
-						Tab = Logs.ListUpdaters.ShowTrelloBansList(plr);
-						Update = "ShowTrelloBansList";
-					})
-				end
-			end;
-		};
-
 		HandTo = {
 			Prefix = Settings.Prefix;
 			Commands = {"handto"};
