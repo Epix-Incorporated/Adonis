@@ -286,10 +286,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--[[Settings.HeadAdmins = Settings.Ranks.HeadAdmins.Users;
-		Settings.Admins = Settings.Ranks.Admins.Users;
-		Settings.Moderators = Settings.Ranks.Moderators.Users;--]]
-
 		if Settings.CustomRanks then
 			local Ranks = Settings.Ranks
 			for name, users in Settings.CustomRanks do
@@ -787,10 +783,6 @@ return function(Vargs, GetEnv)
 			local checkTable = Admin.CheckTable
 			local doCheck = Admin.DoCheck
 
-			--[[if data and data.AdminLevelOverride then
-				return data.AdminLevelOverride
-			end--]]
-
 			for _, admin in Admin.SpecialLevels do
 				if doCheck(p, admin.Player) then
 					return admin.Level, admin.Rank
@@ -866,13 +858,6 @@ return function(Vargs, GetEnv)
 						Level = level,
 						Rank = rankName
 					}
-
-					--[[if doSave then
-						local data = Core.GetPlayer(p)
-						if data then
-							data.AdminLevelOverride = level;
-						end
-					end--]]
 				end
 			elseif level == "Reset" then
 				Admin.SpecialLevels[tostring(p.UserId)] = nil
@@ -988,12 +973,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		CheckDonor = function(p)
-			--if not Settings.DonorPerks then return false end
 			local key = tostring(p.UserId)
 			if Variables.CachedDonors[key] then
 				return true
 			else
-				--if p.UserId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
 				local pGroup = Admin.GetPlayerGroup(p, 886423)
 				for _, pass in Variables.DonorPass do
 					if p.Parent ~= service.Players then
@@ -1060,7 +1043,7 @@ return function(Vargs, GetEnv)
 				BanType = banType
 			}
 
-			table.insert(Settings.Banned, value)--`{p.Name}:{p.UserId}`
+			table.insert(Settings.Banned, value)
 
 			if doSave then
 				Core.DoSave({
@@ -1186,12 +1169,6 @@ return function(Vargs, GetEnv)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
-				--local task,ran,error = service.Threads.TimeoutRunTask(`SERVER_COMMAND: {coma}`,com.Function,60*5,false,args)
-				--[[local ran, error = TrackTask(`Command: {coma}`, com.Function, false, args)
-				if error then
-					--logError("SERVER","Command",error)
-				end]]
-
 				TrackTask(`Command: {coma}`, com.Function, function(err)
 					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
 				end, false, args)
@@ -1227,8 +1204,6 @@ return function(Vargs, GetEnv)
 						},
 					}
 				)
-
-				--local task,ran,error = service.Threads.TimeoutRunTask(`COMMAND:{plr.Name}: {coma}`,com.Function,60*5,plr,args)
 			end
 		end;
 
@@ -1497,7 +1472,6 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			--if not foundPlayerAlias then
 			for alias, cmd in Variables.Aliases do
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
@@ -1507,7 +1481,6 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-			--end
 
 			return msg
 		end;
