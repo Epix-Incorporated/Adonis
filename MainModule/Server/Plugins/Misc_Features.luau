@@ -61,6 +61,9 @@ return function(Vargs, GetEnv)
 			Variables.Aliases[k] = v
 		end
 	end
+	Http.CheckHttp = function()
+		return HTTP.HttpEnabled
+	end
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end
