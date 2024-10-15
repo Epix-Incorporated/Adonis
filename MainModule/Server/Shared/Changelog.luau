@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[v261 Pre-release 2024-08-29 14:32 UTC] @Dimenpsyonal";
+	"(Git/Expertcoderz) Add :ckick command (#1614)";
 	"#Not for release until the following issues are resolved:";
 	"#Audit logs need be integrated into datastore";
 	"(Git/24rr) New System: Audit Logs (#1568)";
@@ -20,6 +21,8 @@ return {
 	"(Git/24rr) Add a search player bar for :privatechat (#1594)";
 	"(Git/cl1ents) Update MakeLocalScript and LoadLocalScript commands (#1603)";
 	"(Git/PurpleCreativity) Prevent Anti.RemovePlayer from kicking if in studio (#1605)";
+	"(Git/ccuser44) Make HTTP constant URLs to Variables (#1618)";
+	"(Git/ccuser44) Convert README XML to Lua (#1619)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
