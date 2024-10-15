@@ -895,43 +895,6 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			TrelloOperation = function(p: Player, args: {[number]: any})
-				local adminLevel = Admin.GetLevel(p)
-
-				local data = args[1]
-				if data.Action == "MakeCard" then
-					local command = Commands.MakeCard
-					if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then
-						local trello = HTTP.Trello.API
-
-						local listName = data.List
-						local name = data.Name
-						local desc = data.Desc
-
-						for _, overrideList in HTTP.Trello.GetOverrideLists() do
-							if service.Trim(string.lower(overrideList)) == service.Trim(string.lower(listName)) then
-								Functions.Hint("You cannot create a card in that list", {p})
-								return
-							end
-						end
-
-						local lists = trello.getLists(Settings.Trello_Primary)
-						local list = trello.getListObj(lists, listName)
-						if list then
-							local card = trello.makeCard(list.id, name, desc)
-							Functions.Hint(`Made card "{card.name}" in list "{list.name}"`, {p})
-							Logs.AddLog(Logs.Script,{
-								Text = `{p} performed Trello operation`;
-								Desc = "Player created a Trello card";
-								Player = p;
-							})
-						else
-							Functions.Hint(`"{listName}" does not exist"`, {p})
-						end
-					end
-				end
-			end;
-
 			ClientLoaded = function(p: Player, args: {[number]: any})
 				local key = tostring(p.UserId)
 				local client = Remote.Clients[key]
