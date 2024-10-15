@@ -1281,25 +1281,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			tab.Kill = kill
 			RunningLoops[index] = tab
 
-
 			if noYield then
 				service.TrackTask(`Thread: Loop: {name}`, loop, false)
 			else
 				service.TrackTask(`Loop: {name}`, loop, false)
 			end
-
-			--[[local task = service.Threads.RunTask(`LOOP:{name}`, loop)
-
-			if not noYield then
-				task.Finished:wait()
-				kill()
-			end--]]
-
-			--[[if noYield then
-				Routine(loop)
-			else
-				loop()
-			end--]]
 
 			return tab
 		end;
