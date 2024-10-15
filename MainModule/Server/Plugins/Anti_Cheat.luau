@@ -22,8 +22,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunAfterPlugins(data)
-		Logs:AddLog("Script", "Anti Plugin Module RunAfterPlugins Finished");
-
 		local function onPlayerAdded(player)
 			if not player.Character then
 				player.CharacterAdded:Wait()
@@ -32,7 +30,6 @@ return function(Vargs, GetEnv)
 			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode then
 				Anti.CharacterCheck(player)
 			end
-			
 		end
 
 		if not Settings.Detection then
@@ -53,6 +50,7 @@ return function(Vargs, GetEnv)
 		end
 		
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
+		Logs:AddLog("Script", "Anti Plugin Module RunAfterPlugins Finished")
 	end
 
 	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
