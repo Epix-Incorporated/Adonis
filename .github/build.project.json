@@ -1,5 +1,6 @@
 {
 	"name": "Adonis_Rojo",
+	"emitLegacyScripts": true,
 	"tree": {
 		"$className": "Folder",
 		"MainModule": {
