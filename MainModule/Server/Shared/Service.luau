@@ -1075,7 +1075,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end
 
-				return service.CloneTable(cache.results)
+				return table.clone(cache.results)
 			end
 		end;
 
@@ -1195,7 +1195,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end
 
-				return service.CloneTable(existingCache.results)
+				return table.clone(existingCache.results)
 			end
 		end;
 
