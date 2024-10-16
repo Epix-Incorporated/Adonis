@@ -42,7 +42,7 @@ return function(Vargs, GetEnv)
 	local GetEnv = env.GetEnv
 
 	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
-	local CloneTable, TrackTask
+	local TrackTask
 	local function Init()
 		UI = client.UI;
 		Anti = client.Anti;
@@ -53,7 +53,6 @@ return function(Vargs, GetEnv)
 		Remote = client.Remote;
 		Deps = client.Deps;
 
-		CloneTable = service.CloneTable;
 		TrackTask = service.TrackTask;
 
 		UI.Init = nil;
@@ -147,19 +146,19 @@ return function(Vargs, GetEnv)
 			data = data or {}
 
 			local ran, func = pcall(require, module)
-			local newEnv = GetEnv(env, {
+			local newEnv = GetEnv(env, { -- // Is this really necessary?
 				script = module,
-				client = CloneTable(client),
-				service = CloneTable(service)
+				client = setmetatable(table.clone(client), {__index = function(_, k) return client[k] end}),
+				service = setmetatable(table.clone(service), {__index = function(_, k) return service[k] end})
 			})
 
 			if newEnv.service.Threads then
-				newEnv.service.Threads = CloneTable(service.Threads)
+				newEnv.service.Threads = table.clone(service.Threads)
 			end
 
-			for i,v in newEnv.client do
+			for i,v in newEnv.client do -- // Is this really necessary?
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
-					newEnv.client[i] = CloneTable(v)
+					newEnv.client[i] = setmetatable(table.clone(v), {__index = function(_, k) return v[k] end})
 				end
 			end
 
