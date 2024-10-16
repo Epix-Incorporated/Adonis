@@ -165,7 +165,6 @@ return function(Vargs, GetEnv)
 		GetNew = function(theme, name)
 			local foundConfigs = {}
 			local endConfig = {}
-			local endConfValues = {}
 
 			local confFolder = Instance.new("Folder")
 			local debounce = false
