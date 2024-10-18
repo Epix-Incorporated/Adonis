@@ -891,6 +891,7 @@ return function(Vargs, env)
 				for _, v: Player in players do
 					task.defer(function()
 						local gameData
+						local elevated = plr == v or elevated
 
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
