@@ -550,18 +550,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 	},{
-		CloneTable = function(tab)
-			local new = (getmetatable(tab) ~= nil and setmetatable({},{
-				__index = function(t, ind)
-					return tab[ind]
-				end
-			})) or {}
-			for i,v in tab do
-				new[i] = v
-			end
-			return new
-		end;
-				
 		DeepCopy = function(tab)
 			local new = (getmetatable(tab) ~= nil and setmetatable({},{
 				__index = function(t, ind)
@@ -1075,7 +1063,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end
 
-				return service.CloneTable(cache.results)
+				return table.clone(cache.results)
 			end
 		end;
 
@@ -1195,7 +1183,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end
 
-				return service.CloneTable(existingCache.results)
+				return table.clone(existingCache.results)
 			end
 		end;
 

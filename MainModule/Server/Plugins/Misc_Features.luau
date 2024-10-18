@@ -30,6 +30,9 @@ return function(Vargs, GetEnv)
 		end, ...)
 	end
 	server.cPcall, service.cPcall = cPcall, cPcall
+	service.CloneTable = function(tbl)
+		return getmetatable(tbl) and setmetatable(table.clone(tbl), {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
+	end
 	Remote.UnEncrypted = setmetatable({}, {
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")

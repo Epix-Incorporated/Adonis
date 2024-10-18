@@ -162,7 +162,7 @@ return function(Vargs, GetEnv)
 						end
 					else
 						local isTable = type(m) == "table"
-						local newTab = if isTable then service.CloneTable(m) else m
+						local newTab = if isTable then table.clone(m) else m
 
 						if (isTable and not newTab.NoSave) or not isTable then
 							if isTable and newTab.Player then

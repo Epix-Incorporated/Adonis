@@ -12,7 +12,6 @@ return function(Vargs, GetEnv)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	local cloneTable = service.CloneTable;
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local AddLog, TrackTask, Defaults
@@ -544,9 +543,9 @@ return function(Vargs, GetEnv)
 					end
 
 					Admin.GroupsCache[uid] = cacheTab
-					return cloneTable(cacheTab.Groups)
+					return table.clone(cacheTab.Groups)
 				else
-					return cloneTable((existCache and existCache.Groups) or {})
+					return table.clone((existCache and existCache.Groups) or {})
 				end
 			end
 		end;
