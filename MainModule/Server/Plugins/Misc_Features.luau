@@ -54,6 +54,12 @@ return function(Vargs, GetEnv)
 	if HTTP.Trello.API then
 		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
 	end
+	--// Old settings/plugins backwards compatibility
+	for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
+		if Settings[rank] and not Settings.CustomRanks[rank] then
+			Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
+		end
+	end
 	for k, v in {-- Legacy aliases
 		[":giveppoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
 		[":giveplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
