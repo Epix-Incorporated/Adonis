@@ -1,5 +1,11 @@
 --!native
--- Multithreader - ccuser44
+--[[
+	Description: Wrapper for FiOne multithread closures
+	Author: github@ccuser44
+	Date: 2024
+	License: CC0
+]]
+
 local fiOne = require(script.FiOne)
 local actor = script.Parent
 local event = script.ReturnPass
