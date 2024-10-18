@@ -11,8 +11,8 @@ local actor = script.Parent
 local event = script.ReturnPass
 local callback = function(...) return ... end
 
-actor:BindToMessage("lua_wrap_state", function(proto, env, upval)
-	callback = fiOne.lua_wrap_state(proto, env, upval)
+actor:BindToMessage("wrap_state", function(proto, env, upval)
+	callback = fiOne.wrap_state(proto, env, upval)
 end)
 
 actor:BindToMessageParallel("run_callback", function(tag, ...)
