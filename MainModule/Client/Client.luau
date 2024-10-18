@@ -277,7 +277,6 @@ local LoadModule = function(module, yield, envVars, noEnv)
 	if plugran then
 		if type(plug) == "function" then
 			if yield then
-				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 				local ran, err = service.TrackTask(
 					`Plugin: {module}`,
 					((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
@@ -288,7 +287,6 @@ local LoadModule = function(module, yield, envVars, noEnv)
 					GetEnv
 				)
 			else
-				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
 				local ran, err = service.TrackTask(
 					`Thread: Plugin: {module}`,
 					((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),

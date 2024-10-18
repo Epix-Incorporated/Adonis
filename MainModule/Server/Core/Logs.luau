@@ -138,13 +138,8 @@ return function(Vargs, GetEnv)
 				return
 			end
 
-			local logsToSave = {Logs.Commands} --{}
+			local logsToSave = {Logs.Commands}
 			local maxLogs = Logs.OldCommandLogsLimit
-			--local numLogsToSave = 200; --// Save the last X logs from this server
-
-			--for i = #Logs.Commands, i = math.max(#Logs.Commands - numLogsToSave, 1), -1 do
-			--	table.insert(logsToSave, Logs.Commands[i]);
-			--end
 
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				if type(oldLogs) == "string" then

@@ -980,7 +980,6 @@ return function(Vargs, GetEnv)
 			PrivateMessage = function(p: Player,args: {[number]: any})
 				if type(args[1]) ~= "string" then return end
 
-				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
 				local target = Variables.PMtickets[args[1]]
 				if target or Admin.CheckAdmin(p) then
 					if target then
@@ -1219,7 +1218,6 @@ return function(Vargs, GetEnv)
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
 					task.delay(600, function() if not finished then event:Fire() end end)
 					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
-					--returns = returns or {event:Wait()}
 					Yield:Wait();
 					Yield:Destroy();
 

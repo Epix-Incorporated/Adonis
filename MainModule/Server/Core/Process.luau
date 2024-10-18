@@ -957,7 +957,6 @@ return function(Vargs, GetEnv)
 			if Remote.Clients[key] then
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == workspace then
-					--service.Threads.TimeoutRunTask(`{p.Name};CharacterAdded`,Process.CharacterAdded,60,p)
 					local ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, false, p, p.Character, {FinishedLoading = true})
 					if not ran then
 						logError(err)
@@ -1107,13 +1106,6 @@ return function(Vargs, GetEnv)
 						Remote.Send(p, "LaunchAnti", "HumanoidState")
 					end
 				end
-
-				--// Check muted
-				--[=[for ind,admin in Settings.Muted do
-					if Admin.DoCheck(p, admin) then
-						Remote.LoadCode(p, [[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
-					end
-				end--]=]
 
 				task.spawn(Functions.Donor, p)
 

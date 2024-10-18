@@ -195,15 +195,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				GetEnv
 			)
 			return err
-
-		 --[[elseif yield then (all pcalls yield by default for a quite a while time now)
-			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),function(err)
-				warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
-			end, GetVargTable())
-			return err;]]
 		else
-			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask(
 				`Plugin: {module}`,
 				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
@@ -254,11 +246,7 @@ local function LoadPackage(package, folder, runNow)
 end;
 
 local function CleanUp()
-	--local env = getfenv(2)
-	--local ran,ret = pcall(function() return env.script:GetFullName() end)
 	print("Beginning Adonis cleanup & shutdown process...")
-	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
-	--local loader = server.Core.ClientLoader
 	local data = service.UnWrap(server.Data)
 	if type(data) == "table" and typeof(service.UnWrap(data.Config)) == "Instance" then
 		local Settings: ModuleScript = service.UnWrap(data.Config):FindFirstChild("Settings")
@@ -285,9 +273,6 @@ local function CleanUp()
 			table.remove(RbxEvents, i)
 		end
 	end)
-	--loader.Archivable = false
-	--loader.Disabled = true
-	--loader:Destroy()
 	if server.Core and server.Core.RemoteEvent then
 		pcall(server.Core.DisconnectEvent)
 	end
@@ -644,7 +629,6 @@ return service.NewProxy({
 			})
 		end
 
-
 		--// Load services
 		for ind, serv in ipairs(SERVICES_WE_USE) do
 			local temp = service[serv]
@@ -723,7 +707,7 @@ return service.NewProxy({
 				local code = Instance.new("StringValue")
 
 				code.Name = service.HttpService:GenerateGUID(false)
-				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua"  or server.Core.Bytecode(module))
+				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua" or server.Core.Bytecode(module))
 				code.Parent = server.Client.Plugins
 			end
 		end

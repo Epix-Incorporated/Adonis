@@ -3,7 +3,6 @@
 --// GitHub@Expertcoderz was here to make things look better
 
 return function(Vargs, GetEnv)
-	
 	local server = Vargs.Server
 	local service = Vargs.Service
 
@@ -257,4 +256,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 	}
+
+	Logs:AddLog("Script", "Soft Shutdown Module Loaded");
 end

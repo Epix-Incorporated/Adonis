@@ -59,36 +59,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-		--[[client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
 		UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
 		UI.RunLast = nil;
 	end
@@ -194,7 +164,6 @@ return function(Vargs, GetEnv)
 		GetNew = function(theme, name)
 			local foundConfigs = {}
 			local endConfig = {}
-			local endConfValues = {}
 
 			local confFolder = Instance.new("Folder")
 			local debounce = false
@@ -206,7 +175,7 @@ return function(Vargs, GetEnv)
 				if folder then
 					local baseValue = folder:FindFirstChild("Base_Theme")
 					local baseTheme = baseValue and baseValue.Value
-					local foundGUI = folder:FindFirstChild(name) --local foundGUI = (baseValue and folder:FindFirstChild(name)) or UIFolder.Default:FindFirstChild(name)
+					local foundGUI = folder:FindFirstChild(name)
 
 					if foundGUI then
 						local config = foundGUI:FindFirstChild("Config")
@@ -326,7 +295,6 @@ return function(Vargs, GetEnv)
 					end
 
 					local mult = foundConf.AllowMultiple
-					--local keep = foundConf.CanKeepAlive
 
 					local allowMult = mult and mult.Value or true
 					local found, num = UI.Get(name)

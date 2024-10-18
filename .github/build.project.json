@@ -1,13 +1,14 @@
 {
-    "name": "Adonis_Rojo",
-    "tree": {
-        "$className": "Folder",
-        "MainModule": {
-            "$path": "../MainModule"
-        },
-        "Adonis_Loader": {
-            "$className": "Model",
-            "$path": "../Loader"
-        }
-    }
+	"name": "Adonis_Rojo",
+	"emitLegacyScripts": true,
+	"tree": {
+		"$className": "Folder",
+		"MainModule": {
+			"$path": "../MainModule"
+		},
+		"Adonis_Loader": {
+			"$className": "Model",
+			"$path": "../Loader"
+		}
+	}
 }

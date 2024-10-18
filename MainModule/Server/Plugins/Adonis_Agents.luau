@@ -51,4 +51,6 @@ return function(Vargs, GetEnv)
 			command.Agent = true
 		end
 	end
+
+	Logs:AddLog("Script", "Adonis Agents module loaded")
 end
