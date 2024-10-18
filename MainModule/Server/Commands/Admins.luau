@@ -1384,50 +1384,6 @@ return function(Vargs, env)
 			end
 		};
 
-		TrelloBan = {
-			Prefix = Settings.Prefix;
-			Commands = {"trelloban"};
-			Args = {"player/user", "reason"};
-			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
-			Filter = true;
-			CrossServerDenied = true;
-			TrelloRequired = true;
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {any})
-				local trello = HTTP.Trello.API
-				if not Settings.Trello_Enabled or trello == nil then
-					Functions.Notification("Trelloban", "Trello has not been configured.", {plr}, 10, "MatIcon://Description")
-					return
-				end
-
-				local lists = trello.getLists(Settings.Trello_Primary)
-				local list = trello.getListObj(lists, {"Banlist", "Ban List", "Bans"})
-
-				local level = data.PlayerData.Level
-				local reason = string.format("Administrator: %s\nReason: %s", service.FormatPlayer(plr), (args[2] or "N/A"))
-
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
-					if level > Admin.GetLevel(v) then
-						trello.makeCard(
-							list.id,
-							string.format("%s:%d", (v and tostring(v.Name) or tostring(v)), v.UserId),
-							reason
-						)
-
-						pcall(function() v:Kick(reason) end)
-						Functions.LogAdminAction(plr, "Trello Ban", v.Name, `Reason: {args[2] or "N/A"}`)
-						Functions.Notification("Notification", `Trello-banned {service.FormatPlayer(v, true)}`, {plr}, 5, "MatIcons://Gavel")
-					end
-				end
-
-				HTTP.Trello.Update()
-			end;
-		};
-
 		BanMenu = {
 			Prefix = Settings.Prefix;
 			Commands = {"banmenu"};
