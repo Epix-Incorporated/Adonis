@@ -1212,7 +1212,7 @@ return function(Vargs, env)
 			end;
 		};
 
-		BuyItem = {
+		Wait = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"wait"};
 			Args = {"time"};
