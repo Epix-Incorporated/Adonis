@@ -412,29 +412,14 @@ return function(Vargs, GetEnv)
 
 				for cmd, overrideMap in string.gmatch(msg, `([^{Settings.BatchKey}]+)({Settings.BatchKey}?[%d,>]*)`) do
 					cmd, overrideMap = Functions.Trim(cmd), Process.GetOverrideMap(overrideMap)
+					local returnArgs = table.pack(Process.Command(p, cmd, opts, false))
+					table.clear(overrideArgs)
 
-					local waiter = `{Settings.PlayerPrefix}wait`
-					if string.sub(string.lower(cmd), 1, #waiter) == waiter then
-						local num = tonumber(overrideArgs[1] or string.sub(cmd, #waiter + 1))
-
-						if overrideMap[1] then
-							table.clear(overrideArgs)
-							overrideArgs[overrideMap[1]] = num
-						end
-
-						if num then
-							task.wait(tonumber(num))
-						end
-					else
-						local returnArgs = table.pack(Process.Command(p, cmd, opts, false))
-						table.clear(overrideArgs)
-
-						for i, i2 in overrideMap do
-							overrideArgs[i2] = returnArgs[i + 1]
-						end
-
-						opts.OverrideArgs = overrideArgs
+					for i, i2 in overrideMap do
+						overrideArgs[i2] = returnArgs[i + 1]
 					end
+
+					opts.OverrideArgs = overrideArgs
 				end
 			else
 				local pData = opts.PlayerData or (p and Core.GetPlayer(p))
