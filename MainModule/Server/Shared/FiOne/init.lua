@@ -480,6 +480,7 @@ local function new_threaded_closure(proto, env, upval)
 	event.Name = "ReturnPass"
 	event.Parent = clone
 	actor.Parent = script
+	runner.Disabled = false
 
 	actor:SendMessage("lua_wrap_state", proto, env, upval)
 
