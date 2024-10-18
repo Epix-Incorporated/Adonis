@@ -1219,7 +1219,7 @@ return function(Vargs, env)
 			Description = "Waits for the desired amount of time in seconds. Only works with batch commands";
 			AdminLevel = -math.huge;
 			Function = function(plr: Player, args: {string})
-				task.wait(tonunber(args[1]) or 0)
+				task.wait(tonumber(args[1]) or 0)
 
 				return args
 			end
