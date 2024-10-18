@@ -461,6 +461,7 @@ local function on_lua_error(failed, err)
 end
 
 -- ccuser44 added multithreading support
+-- TODO: Create multiple threads for closure and use a module and/or round robin load balancer to distribute usage
 local function new_threaded_closure(proto, env, upval)
 	local actor = Instance.new("Actor")
 	local clone = script:Clone()
