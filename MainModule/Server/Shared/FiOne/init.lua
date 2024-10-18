@@ -477,6 +477,7 @@ local function new_threaded_closure(proto, env, upval)
 
 	clone.Parent = actor
 	runner.Parent = clone
+	runner.Name = "MultithreadRunner_"..tostring(math.random())
 	event.Name = "ReturnPass"
 	event.Parent = clone
 	actor.Parent = script
