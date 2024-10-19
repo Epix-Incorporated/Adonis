@@ -3678,11 +3678,7 @@ return function(Vargs, env)
 					end
 
 					if human and char:isA("Model") then
-						char:ScaleTo(num)					
-						if not human:GetAttribute("Adonis_OriginalHipHeight") then
-							human:SetAttribute("Adonis_OriginalHipHeight", human.HipHeight)
-						end
-						human.HipHeight = human:GetAttribute("Adonis_OriginalHipHeight") * num
+						char:ScaleTo(num)
 					elseif human and human.RigType == Enum.HumanoidRigType.R15 then
 						for _, val in human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
