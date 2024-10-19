@@ -125,7 +125,7 @@ else
 		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
 		table.insert(data.Messages, {
 			Title = "Warning!";
-			Icon = "rbxassetid://7495468117";
+			Icon = "maticon://Dangerous";
 			Message = "Settings module error detected; using default settings.";
 			Time = 15;
 		})

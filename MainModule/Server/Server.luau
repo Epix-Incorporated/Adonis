@@ -693,7 +693,16 @@ return service.NewProxy({
 		end
 
 		for _, module in ipairs(data.ServerPlugins or {}) do
-			LoadModule(module, false, {script = module, cPcall = server.cPcall})
+			xpcall(LoadModule, function(reason)
+				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
+				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
+				table.insert(server.messages, {
+					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
+					Icon = "maticon://Dangerous",
+					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,
+					Time = 15
+				})
+			end, module, false, {script = module, cPcall = server.cPcall})
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
@@ -738,7 +747,7 @@ return service.NewProxy({
 				Desc = "Adonis has finished loading";
 			})
 		else
-			warn("SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
+			warn("CRITICAL ERROR! SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
 		end
 		service.Events.ServerInitialized:Fire();
 
