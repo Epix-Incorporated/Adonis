@@ -511,14 +511,18 @@ return function(Vargs, GetEnv)
 
 			AudioLib = function(p,args)
 				local AdminLevel = Admin.GetLevel(p)
+
 				if Commands.Music and Admin.CheckComLevel(AdminLevel, Commands.Music) then
 					if not server.Functions.AudioLib then
 						local audioLibFolder = service.SoundService:FindFirstChild("ADONIS_AUDIOLIB")
+
 						if not audioLibFolder then
 							audioLibFolder = service.New("Folder")
 							audioLibFolder.Name = "ADONIS_AUDIOLIB"
+							audioLibFolder.Archivable = false
 							audioLibFolder.Parent = service.SoundService
 						end
+
 						server.Functions.AudioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
 					end
 
@@ -531,10 +535,10 @@ return function(Vargs, GetEnv)
 
 		Terminal = {
 			Data = {};
-			Format = function(msg,data) (data or {}).Text = msg end;
-			Output = function(tab,msg,mata) table.insert(tab,Remote.Terminal.Format(msg,mata)) end;
-			GetCommand = function(cmd) for i,com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
-			LiveOutput = function(p,data,type) Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
+			Format = function(msg, data) (data or {}).Text = msg end;
+			Output = function(tab, msg, mata) table.insert(tab, Remote.Terminal.Format(msg, mata)) end;
+			GetCommand = function(cmd) for i, com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
+			LiveOutput = function(p, data, type) Remote.FireEvent(p, "TerminalLive", {Data = data; Type = type or "Terminal";}) end;
 			Commands = {
 				Help = {
 					Usage = "help";
