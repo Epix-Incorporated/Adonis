@@ -1373,43 +1373,41 @@ return function(Vargs, GetEnv)
 		end;
 
 		FormatCommandArguments = function(command)
-			local text = ""
+			local text = table.create(#command.Args)
 			for i, arg in command.Args do
-				text ..= `<{arg}>`
-				if i < #command.Args then
-					text ..= Settings.SplitKey
-				end
+				text[i] = `<{arg}>`
 			end
-			return text
+			return table.concat(text, Settings.SplitKey)
 		end;
 
 		FormatCommand = function(command, cmdn)
-			local text = (command.Prefix or "")..tostring(command.Commands[cmdn or 1])
-			if #command.Args > 0 then
-				text ..= Settings.SplitKey .. Admin.FormatCommandArguments(command)
-			end
-			return text
+			return table.concat({
+				(command.Prefix or ""),
+				tostring(command.Commands[cmdn or 1]),
+				#command.Args > 0 and Settings.SplitKey or "",
+				#command.Args > 0 and Admin.FormatCommandArguments(command) or ""
+			})
 		end;
 
 		FormatCommandAdminLevel = function(command)
 			local levels = if type(command.AdminLevel) == "table"
 				then table.clone(command.AdminLevel)
 				else {command.AdminLevel}
-			local permissionDesc = ""
+			local permissionDesc = table.create(#levels)
+
 			for i, lvl in levels do
 				if type(lvl) == "number" then
 					local list, name, data = Admin.LevelToList(lvl)
-					permissionDesc ..= `{name or "No Rank"}; Level {lvl}`
+					permissionDesc[i] = `{name or "No Rank"}; Level {lvl}`
 				elseif type(lvl) == "string" then
 					local numLvl = Admin.StringToComLevel(lvl)
-					permissionDesc ..= `{lvl}; Level {numLvl or "Unknown"}`
-				end
-
-				if i < #levels then
-					permissionDesc ..= ", "
+					permissionDesc[i] = `{lvl}; Level {numLvl or "Unknown"}`
+				else
+					permissionDesc[i] = "N/A"
 				end
 			end
-			return permissionDesc
+
+			return table.concat(permissionDesc, ", ")
 		end;
 
 		CheckTable = function(p, tab)
