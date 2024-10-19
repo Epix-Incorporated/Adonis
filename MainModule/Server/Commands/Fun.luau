@@ -3677,15 +3677,12 @@ return function(Vargs, env)
 						continue
 					end
 
-					if char:isA("Model") then --If character is a model then we use this method
-						char:ScaleTo(num) --Uses the Roblox Model:ScaleTo method to set the scale value of the character model
-						--see; https://create.roblox.com/docs/reference/engine/classes/Model#ScaleTo
-					
+					if human and char:isA("Model") then
+						char:ScaleTo(num)					
 						if not human:GetAttribute("Adonis_OriginalHipHeight") then
-							human:SetAttribute("Adonis_OriginalHipHeight", human.HipHeight) -- Saves the original hip height of the character
+							human:SetAttribute("Adonis_OriginalHipHeight", human.HipHeight)
 						end
-						human.HipHeight = human:GetAttribute("Adonis_OriginalHipHeight") * num --Corrects humanoid hip hight to match new character size
-					
+						human.HipHeight = human:GetAttribute("Adonis_OriginalHipHeight") * num
 					elseif human and human.RigType == Enum.HumanoidRigType.R15 then
 						for _, val in human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
