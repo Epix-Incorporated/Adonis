@@ -1016,7 +1016,7 @@ return function(Vargs, GetEnv)
 									{p},
 									isString and math.round((#message/19)+2.5) or not isString and message.Time or 10,
 									not isString and message.Icon,
-									not isString and onClick
+									not isString and message.onClick
 								)
 							end
 						end
