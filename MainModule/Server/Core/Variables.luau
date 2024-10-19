@@ -28,6 +28,7 @@ return function(Vargs, GetEnv)
 
 		Variables.BanMessage = Settings.BanMessage
 		Variables.LockMessage = Settings.LockMessage
+		Variables.DisableRejoinAtMaxPlayers = Settings.DisableRejoinAtMaxPlayers or Variables.DisableRejoinAtMaxPlayers
 
 		for _, v in Settings.MusicList or {} do table.insert(Variables.MusicList, v) end
 		for _, v in Settings.InsertList or {} do table.insert(Variables.InsertList, v) end
