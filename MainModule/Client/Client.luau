@@ -319,7 +319,6 @@ client = setmetatable({
 	Routine = Routine,
 	OldPrint = oldPrint,
 	LogError = logError,
-	TestEvent = Instance.new("RemoteEvent"),
 
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
