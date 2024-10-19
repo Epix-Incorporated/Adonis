@@ -464,11 +464,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		ArgsToString = function(args)
-			local str = ""
+			local str = table.create(args.n or #args)
 			for i, arg in args do
-				str ..= `Arg{i}: {arg}; `
+				str[i] = `Arg{i}: {arg}; `
 			end
-			return string.sub(str, 1, -3)
+			return string.sub(table.concat(str), 1, -3)
 		end;
 
 		GetPlayers = function(plr, argument, options)
@@ -1024,8 +1024,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetAtmosphere = function(prop,value)
-			if service:FindFirstChildWhichIsA("Atmosphere")[prop] ~= nil then
-				service:FindFirstChildWhichIsA("Atmosphere")[prop] = value
+			local atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+			if atmosphere then
+				atmosphere[prop] = value
 				Variables.AtmosphereSettings[prop] = value
 				for _, p in service.GetPlayers() do
 					Remote.SetAtmosphere(p, prop, value)
