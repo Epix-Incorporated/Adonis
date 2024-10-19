@@ -1014,9 +1014,9 @@ return function(Vargs, GetEnv)
 									not isString and message.Title or "Message",
 									isString and message or not isString and message.Message or "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 									{p},
-									isString and math.round((#body/19)+2.5) or not isString and message.Time or 10,
+									isString and math.round((#message/19)+2.5) or not isString and message.Time or 10,
 									not isString and message.Icon,
-									not isStringonClick
+									not isString on Click
 								)
 							end
 						end
