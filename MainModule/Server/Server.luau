@@ -688,7 +688,7 @@ return service.NewProxy({
 		end
 
 		--// Load Plugins; enforced NoEnv policy, make sure your plugins has the 2nd argument defined!
-		for _, module in ipairs(server.PluginsFolder:GetChildre()) do
+		for _, module in ipairs(server.PluginsFolder:GetChildren()) do
 			LoadModule(module, false, {script = module}, true, true) --noenv
 		end
 
@@ -699,8 +699,8 @@ return service.NewProxy({
 				table.insert(server.messages, {
 					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
 					Icon = "maticon://Dangerous",
-					Message = string.match(reason, "Requested module experienced an error while loading") and "Invalid code or code errors before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`
-					Time
+					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,
+					Time = 15
 				})
 			end, module, false, {script = module, cPcall = server.cPcall})
 		end
