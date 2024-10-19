@@ -2365,27 +2365,18 @@ return function(Vargs, env)
 				end
 
 				-- Atmosphere
-				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-					Variables.OriginalAtmosphereSettings = {
-						Name = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Name,
-						Density = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Density,
-						Offset = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Offset,
-						Color = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Color,
-						Decay = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Decay,
-						Glare = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Glare,
-						Haze = service.Lighting:FindFirstChildWhichIsA("Atmosphere").Haze,
-					}
-
-					if service.Lighting:FindFirstChildWhichIsA("Atmosphere") ~= nil then
-						local Atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
-
-						Atmosphere.Name = Variables.OriginalAtmosphereSettings.Name
-						Atmosphere.Density = Variables.OriginalAtmosphereSettings.Density
-						Atmosphere.Offset = Variables.OriginalAtmosphereSettings.Offset
-						Atmosphere.Color = Variables.OriginalAtmosphereSettings.Color
-						Atmosphere.Decay = Variables.OriginalAtmosphereSettings.Decay
-						Atmosphere.Glare = Variables.OriginalAtmosphereSettings.Glare
-						Atmosphere.Haze = Variables.OriginalAtmosphereSettings.Haze
+				local atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+				if atmosphere then
+					if Variables.OriginalAtmosphereSettings.Name then
+						atmosphere.Name = Variables.OriginalAtmosphereSettings.Name
+						atmosphere.Density = Variables.OriginalAtmosphereSettings.Density
+						atmosphere.Offset = Variables.OriginalAtmosphereSettings.Offset
+						atmosphere.Color = Variables.OriginalAtmosphereSettings.Color
+						atmosphere.Decay = Variables.OriginalAtmosphereSettings.Decay
+						atmosphere.Glare = Variables.OriginalAtmosphereSettings.Glare
+						atmosphere.Haze = Variables.OriginalAtmosphereSettings.Haze
+					else
+						atmosphere:Destroy()
 					end
 				end
 			end
@@ -4034,7 +4025,7 @@ return function(Vargs, env)
 				local color = assert(Functions.ParseColor3(args[1]), "Invalid color provided")
 
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-					Remote.SetAtmosphere(color)
+					Remote.SetAtmosphere("Color", color)
 				end
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
