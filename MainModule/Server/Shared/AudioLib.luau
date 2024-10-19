@@ -1,5 +1,4 @@
 local AudioLib = {}
-local SoundService = game:GetService("SoundService")
 
 function AudioLib.new(container)
 	local self = {}
@@ -48,6 +47,7 @@ function AudioLib.new(container)
 	if not self.Sound then
 		self.Sound = Instance.new("Sound")
 		self.Sound.Name = "AudioLib_Sound"
+		self.Sound.Archivable = false
 		self.Sound.Parent = container -- Don't ask me why I have to do this.
 		self.Sound.Ended:Connect(function() self:SoundEnded() end)
 		self:UpdateSound(self.DefaultProperties)
