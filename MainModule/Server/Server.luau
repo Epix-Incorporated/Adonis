@@ -704,7 +704,7 @@ return service.NewProxy({
 		-- // Load sourcecode clientside plugins
 		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) == "string" then
-				local code = Instance.new("StringValue")
+				local code = service.New("StringValue")
 
 				code.Name = service.HttpService:GenerateGUID(false)
 				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua" or server.Core.Bytecode(module))
