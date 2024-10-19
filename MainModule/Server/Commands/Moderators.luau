@@ -3025,7 +3025,9 @@ return function(Vargs, env)
 								service.Debris:AddItem(clone, service.Players.RespawnTime)
 							end)
 
-							clone.Archivable = oldArchivable
+							clone.Archivable = false
+							clone.ModelStreamingBehavior = Enum.ModelStreamingBehavior.Atomic
+							clone.LevelOfDetail = Enum.ModelLevel.StreamingMesh
 							clone.Parent = workspace
 							if appearenceId and not avatarType then
 								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
