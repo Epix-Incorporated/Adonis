@@ -47,6 +47,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local Lighting = service.Lighting
+	local atmosphere = Lighting:FindFirstChildWhichIsA("Atmosphere")
 	
 	server.Variables = {
 		Init = Init,
@@ -117,7 +118,15 @@ return function(Vargs, GetEnv)
 		
 		AtmosphereSettings = {},
 
-		OriginalAtmosphereSettings = {},
+		OriginalAtmosphereSettings = {
+			Name = atmosphere.Name,
+			Density = atmosphere.Density,
+			Offset = atmosphere.Offset,
+			Color = atmosphere.Color,
+			Decay = atmosphere.Decay,
+			Glare = atmosphere.Glare,
+			Haze = atmosphere.Haze,
+		},
 
 		PMtickets = {};
 
