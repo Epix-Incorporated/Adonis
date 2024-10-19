@@ -1289,11 +1289,12 @@ return function(Vargs, GetEnv)
 							end
 
 							if command1 then
-								local command = Instance.new("TextChatCommand")
+								local command = service.New("TextChatCommand")
 
 								command.Name = "Adonis_"..name
 								command.PrimaryAlias = command1
 								command.SecondaryAlias = command2 or ""
+								command.Archivable = false
 								command.Parent = container
 								command.Triggered:Connect(function(textSource, text)
 									local player = service.Players:GetPlayerByUserId(textSource.UserId)
