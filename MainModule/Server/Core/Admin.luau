@@ -278,13 +278,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--// Old settings/plugins backwards compatibility
-		for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
-			if Settings[rank] then
-				Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
-			end
-		end
-
 		if Settings.CustomRanks then
 			local Ranks = Settings.Ranks
 			for name, users in Settings.CustomRanks do
@@ -299,46 +292,6 @@ return function(Vargs, GetEnv)
 
 		if Settings.CommandCooldowns then
 			for cmdName, cooldownData in Settings.CommandCooldowns do
-				local realCmd = Admin.GetCommand(cmdName)
-
-				if realCmd then
-					if cooldownData.Player then
-						realCmd.PlayerCooldown = cooldownData.Player
-					end
-
-					if cooldownData.Server then
-						realCmd.ServerCooldown = cooldownData.Server
-					end
-
-					if cooldownData.Cross then
-						realCmd.CrossCooldown = cooldownData.Cross
-					end
-				end
-			end
-		end
-
-		if Settings.CommandCooldowns then
-			for cmdName, cooldownData in Settings.CommandCooldowns do
-				local realCmd = Admin.GetCommand(cmdName)
-
-				if realCmd then
-					if cooldownData.Player then
-						realCmd.PlayerCooldown = cooldownData.Player
-					end
-
-					if cooldownData.Server then
-						realCmd.ServerCooldown = cooldownData.Server
-					end
-
-					if cooldownData.Cross then
-						realCmd.CrossCooldown = cooldownData.Cross
-					end
-				end
-			end
-		end
-
-		if Settings.CommandCooldowns then
-			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
 				local realCmd = Admin.GetCommand(cmdName)
 
 				if realCmd then
