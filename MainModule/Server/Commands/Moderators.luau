@@ -2554,28 +2554,19 @@ return function(Vargs, env)
 					end
 				end
 
-				local Color = BrickColor.new("White")
-				if args[3] then
-					local R,G,B = string.match(args[3],"(%d+),(%d+),(%d+)")
-					if R and G and B then
-						R,G,B = tonumber(R),tonumber(G),tonumber(B); if R>255 then R=255 end; if G>255 then G=255 end;if B>255 then B=255 end;
-						Color = Color3.fromRGB(R,G,B)
-					elseif string.lower(args[3]) == "rainbow" then
-						Color = "rainbow"
-					else
-						Color = BrickColor.new(args[3]) or BrickColor.new("White")
-					end
-				end
+				local Color = string.lower(args[3]) == "rainbow" and "rainbow" or string.match(args[3], "%d") and Functions.ParseColor3(args[3]) or Functions.ParseBrickColor(args[3], true) or BrickColor.new("White")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local cHumanoidRootPart	= v.Character and v.Character.PrimaryPart or v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if cHumanoidRootPart then
-
 						local CF = CFrame.new(cHumanoidRootPart.CFrame.p + Vector3.new(0, 1, 0))
 						local OrigPos = cHumanoidRootPart.Position
 
 						local Model = service.New("Model", {
 							Name = `{v.Name}_ADONISJAIL`,
+							Archivable = false,
+							LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh,
+							ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 						})
 						local top = service.New("Part", {
 							Locked = true,
@@ -4025,7 +4016,7 @@ return function(Vargs, env)
 				local color = assert(Functions.ParseColor3(args[1]), "Invalid color provided")
 
 				if service.Lighting:FindFirstChildWhichIsA("Atmosphere") then
-					Remote.SetAtmosphere("Color", color)
+					Functions.SetAtmosphere("Color", color)
 				end
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
