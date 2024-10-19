@@ -2130,6 +2130,7 @@ return function(Vargs, env)
 								end
 
 								task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+								poisoned:Destroy()
 							end
 						end
 					end)
