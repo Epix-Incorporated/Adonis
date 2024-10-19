@@ -3680,12 +3680,12 @@ return function(Vargs, env)
 					if char:isA("Model") then --If character is a model then we use this method
 						char:ScaleTo(num) --Uses the Roblox Model:ScaleTo method to set the scale value of the character model
 						--see; https://create.roblox.com/docs/reference/engine/classes/Model#ScaleTo
-						--[[ --Unsure if this is required to meet adonis standards
-						if not char:SetAttribute("Adonis_HipHeight", num) then
-							char:SetAttribute("Adonis_HipHeight", human.HipHeight)
-						end --]] -- I do not know about command prosedures eg: if we save the original value to recover later
-						human.HipHeight = human.HipHeight * num --Corrects humanoid hip hight to match new character size
-						--fixDensity(char) --Do I need this for model:ScaleTo?
+					
+						if not human:GetAttribute("Adonis_OriginalHipHeight") then
+							human:SetAttribute("Adonis_OriginalHipHeight", human.HipHeight) -- Saves the original hip height of the character
+						end
+						human.HipHeight = human:GetAttribute("Adonis_OriginalHipHeight") * num --Corrects humanoid hip hight to match new character size
+					
 					elseif human and human.RigType == Enum.HumanoidRigType.R15 then
 						for _, val in human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
