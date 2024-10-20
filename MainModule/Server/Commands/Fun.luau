@@ -3372,9 +3372,6 @@ return function(Vargs, env)
 											p1.Anchored = true
 											v.Part0 = nil
 										end
-									elseif v:IsA("CharacterMesh") then
-										local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
-										local msh = service.New("SpecialMesh")
 									elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
 										v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
 									end
