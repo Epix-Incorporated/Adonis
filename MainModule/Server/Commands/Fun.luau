@@ -459,41 +459,15 @@ return function(Vargs, env)
 				end
 
 				if not Variables.ZaWarudoDebounce then
-					Variables.ZaWarudoDebounce = true
-					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
-						local audio = service.New("Sound", service.SoundService)
-						audio.SoundId = "rbxassetid://676242549"
-						audio.Volume = 0.5
-						audio:Play()
-						task.wait(2)
-						for i, part in Variables.FrozenObjects do
-							part.Anchored = false
-						end
-
-						local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
-						if old then
-							for i = -2, 0, 0.1 do
-								old.Saturation = i
-								task.wait(0.01)
-							end
-							old:Destroy()
-						end
-
-						local audio = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
-						if audio then
-							audio:Stop()
-							audio:Destroy()
-						end
-
-						Variables.ZaWarudo:Disconnect()
-						Variables.FrozenObjects = {}
-						Variables.ZaWarudo = false
-						audio:Destroy()
+						Admin.RunCommandAsPlayer(`{Settings.Prefix}unzawarudo`, plr)
 					else
+						Variables.ZaWarudoDebounce = true
+						task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://274698941"
 						audio.Volume = 10
+						audio.Name = "ADONIS_ZAWARUDO_AUDIO"
 						audio:Play()
 						task.wait(2.25)
 						doPause(workspace)
@@ -518,7 +492,52 @@ return function(Vargs, env)
 						clock.Looped = true
 						clock.Volume = 1
 						clock:Play()
+						Variables.ZaWarudoDebounce = false
 					end
+				end
+			end
+		};
+
+		UnZaWarudo = {
+			Prefix = Settings.Prefix;
+			Commands = {"unzawarudo", "unstoptime"};
+			Args = {};
+			Fun = true;
+			Description = "Stops zawarudo";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				if not Variables.ZaWarudoDebounce then
+					Variables.ZaWarudoDebounce = true
+					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
+					local audio = service.New("Sound", service.SoundService)
+					audio.SoundId = "rbxassetid://676242549"
+					audio.Volume = 0.5
+					audio.Name = "ADONIS_ZAWARUDO_AUDIO"
+					audio:Play()
+					task.wait(2)
+					for i, part in Variables.FrozenObjects do
+						part.Anchored = false
+					end
+
+					local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
+					if old then
+						for i = -2, 0, 0.1 do
+							old.Saturation = i
+							task.wait(0.01)
+						end
+						old:Destroy()
+					end
+
+					local clock = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
+					if clock then
+						clock:Stop()
+						clock:Destroy()
+					end
+
+					audio:Destroy()
+					Variables.ZaWarudo:Disconnect()
+					Variables.FrozenObjects = {}
+					Variables.ZaWarudo = false
 					Variables.ZaWarudoDebounce = false
 				end
 			end
