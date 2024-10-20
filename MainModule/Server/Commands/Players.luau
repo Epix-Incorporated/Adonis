@@ -1176,6 +1176,7 @@ return function(Vargs, env)
 				service.MarketplaceService:PromptPurchase(plr, assetId, false)
 			end
 		};
+
 		Coordinates = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"coordinates", "coords", "position"};
@@ -1209,6 +1210,19 @@ return function(Vargs, env)
 					Name = guiName;
 				})
 			end;
+		};
+
+		Wait = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"wait"};
+			Args = {"time"};
+			Description = "Waits for the desired amount of time in seconds. Only works with batch commands";
+			AdminLevel = -math.huge;
+			Function = function(plr: Player, args: {string})
+				task.wait(tonumber(args[1]) or 0)
+
+				return args
+			end
 		};
 	};
 end
