@@ -28,6 +28,7 @@ return function(Vargs, GetEnv)
 
 		Variables.BanMessage = Settings.BanMessage
 		Variables.LockMessage = Settings.LockMessage
+		Variables.SizeLimit = Settings.SizeLimit or Variables.SizeLimit
 
 		for _, v in Settings.MusicList or {} do table.insert(Variables.MusicList, v) end
 		for _, v in Settings.InsertList or {} do table.insert(Variables.InsertList, v) end
@@ -68,6 +69,7 @@ return function(Vargs, GetEnv)
 		WebPanel_Initiated = false,
 		HTTPCheckUrl = "https://www.google.com/humans.txt",
 		IPInfoUrl = "https://ipinfo.io/json",
+		SizeLimit = 20,
 		AnimatedFaces = {
 			-- R15 (Hopefully)
 			14719428401, 12936561806, 12936887700, 12937016609, 12937135097, 12939014597, 12945364777, 12945456452, 14374800823, 14367118483, 13674780763,
