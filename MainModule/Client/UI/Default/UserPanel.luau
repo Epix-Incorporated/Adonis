@@ -25,15 +25,11 @@ local canEditTables = {
 
 local function tabToString(tab)
 	if type(tab) == "table" then
-		local str = ""
+		local str = table.create(#tab)
 		for i, v in tab do
-			if #str > 0 then
-				str ..= "; "
-			end
-
-			str ..= `{i}: {v}`
+			table.insert(str, `{i}: {v}`)
 		end
-		return str
+		return table.concat(str, "; ")
 	else
 		return tostring(tab)
 	end
