@@ -1020,7 +1020,7 @@ return function(Vargs, env)
 
 				for _,v : Instance in service.StarterGui:GetChildren() do
 					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
-						table.insert(result, v.Name:gsub("%[Adonis%] ", ""))
+						table.insert(result, (v.Name:gsub("%[Adonis%] ", "")))
 					end
 				end
 
