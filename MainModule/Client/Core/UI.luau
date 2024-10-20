@@ -317,7 +317,7 @@ return function(Vargs, GetEnv)
 
 							local ran, ret = rets[1], rets[2]
 							if ret ~= nil then
-								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
+								if type(ret) == "userdata" and ret:IsA("ScreenGui") then
 									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
 
 									if not data.NoEnv and code then
