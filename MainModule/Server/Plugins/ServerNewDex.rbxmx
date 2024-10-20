@@ -279,7 +279,7 @@ return serviceUtils
 				<int name="DisplayOrder">0</int>
 				<bool name="Enabled">false</bool>
 				<string name="Name">Dex_Client</string>
-				<bool name="ResetOnSpawn">true</bool>
+				<bool name="ResetOnSpawn">false</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
 				<token name="SafeAreaCompatibility">1</token>
 				<token name="ScreenInsets">1</token>
