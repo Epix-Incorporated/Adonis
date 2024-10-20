@@ -566,8 +566,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return new
 		end,
 
-		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
-
 		Timer = function(t,func,check)
 			local start = time()
 			local event; event = service.RunService.RenderStepped:Connect(function()
@@ -1006,22 +1004,15 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 
 			int = int:reverse()
-			local newInt = ""
-			local counter = 1
+			local newInt = table.create(#int + math.floor((#int - 1) / 3))
 			for i = 1, #int do
-				if counter > 3 then
-					newInt ..= separator
-					counter = 1
+				if i % 3 == 1 and i ~= 1 then
+					table.insert(newInt, separator)
 				end
-				newInt ..= int:sub(i, i)
-				counter += 1
+				table.insert(newInt, int:sub(i, i))
 			end
 
-			return `{(if num < 0 then "-" else "")}{newInt:reverse()}{if dec then `.{dec}` else ""}`
-		end;
-
-		OwnsAsset = function(...)
-			return service.CheckAssetOwnership(...)
+			return `{(if num < 0 then "-" else "")}{table.concat(newInt):reverse()}{if dec then `.{dec}` else ""}`
 		end;
 
 		GetProductInfo = function(assetId, infoType)
