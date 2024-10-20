@@ -3638,13 +3638,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local sizeLimit = Settings.SizeLimit or 20
-				local num = math.clamp(tonumber(args[2]) or 1, 0.001, sizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
+				local num = math.clamp(tonumber(args[2]) or 1, 0.001, Variables.SizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
 
 				if not args[2] or not tonumber(args[2]) then
 					num = 1
 					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
-				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
+				elseif tonumber(args[2]) and tonumber(args[2]) > Variables.SizeLimit then
 					Functions.Hint(`Size changed to the maximum {num} [Argument #2 (size multiplier) went over the size limit]`, {plr})
 				end
 
@@ -3671,7 +3670,7 @@ return function(Vargs, env)
 					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
 					if not resizeAttributeValue then
 						char:SetAttribute("Adonis_Resize", num)
-					elseif resizeAttributeValue * num < sizeLimit then
+					elseif resizeAttributeValue * num < Variables.SizeLimit then
 						char:SetAttribute("Adonis_Resize", resizeAttributeValue * num)
 					else
 						Functions.Hint(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
