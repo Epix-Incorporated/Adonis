@@ -2325,6 +2325,8 @@ return function(Vargs, env)
 							end
 						end)
 					end
+					-- Remove Dex
+					Remote.RemoveLocal(v, "Dex_Explorer", "PlayerGui")
 				end
 			end
 		};
