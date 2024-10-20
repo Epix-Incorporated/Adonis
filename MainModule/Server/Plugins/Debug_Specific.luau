@@ -15,7 +15,6 @@ return function(Vargs, GetEnv)
 		return
 	end
 
-	
 	--[[
 	--// Unfortunately not viable
 	--// TODO: Make this viable perhaps? If done so, expose as a :terminal command
@@ -230,7 +229,7 @@ local service = wrappedEnv.Service
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
-		AdminLevel = "Creators";
+		AdminLevel = "Players";
 		Function = function(plr: Player, args: {string})
 			--assert(args[1] and args[2],"Argument missing or nil")
 			Remote.Send(plr, "TestError")
@@ -252,7 +251,7 @@ local service = wrappedEnv.Service
 		Description = "Test Big List";
 		Hidden = true;
 		Debug = true;
-		AdminLevel = "Creators";
+		AdminLevel = "Admins";
 		Function = function(plr: Player, args: {string})
 			local list = {}
 
@@ -386,7 +385,9 @@ local service = wrappedEnv.Service
 		Args = {"player", "action", "info"};
 		Description = "Allows you to make a mock anti cheat detection";
 		Hidden = true;
-		AdminLevel = "Creators";
+		Debug = true;
+		NoFilter = true;
+		AdminLevel = "HeadAdmins";
 		Function = function(plr: Player, args: {string})
 			for _, v in service.GetPlayers(plr, args[1]) do
 				Anti.Detected(v, table.unpack(args, 2))
