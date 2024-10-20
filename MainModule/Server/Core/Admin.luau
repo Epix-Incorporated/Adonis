@@ -255,6 +255,37 @@ return function(Vargs, GetEnv)
 					return false
 				end)
 
+				--// "Admins" chat
+				Functions.AddTextChannel({
+					Name = "Admins",
+					WelcomeMessage = "This is a channel between all server admins.",
+					Private = true,
+					Joinable = false,
+					Leavable = false,	
+				})
+					
+				service.HookEvent("PlayerAdded",function(plr)
+					if not Variables.TextChannels["admins"] then return end					
+					if not Admin.CheckAdmin(plr) then return end
+
+					local speaker = chatService:GetSpeaker(plr.Name)
+					if speaker and not speaker:IsInChannel("Admins") then speaker:JoinChannel("Admins") return end
+				end)
+
+				service.Events.AdminAdded:Connect(function(plr)
+					if not Variables.TextChannels["admins"] then return end
+
+					local speaker = chatService:GetSpeaker(plr.Name)
+					if speaker and not speaker:IsInChannel("Admins") then speaker:JoinChannel("Admins") end
+				end)
+
+				service.Events.AdminRemoved:Connect(function(plr)						
+					if not Variables.TextChannels["admins"] then return end
+
+					local speaker = chatService:GetSpeaker(plr.Name)
+					if speaker and speaker:IsInChannel("Admins") then speaker:LeaveChannel("Admins") end
+				end)
+
 				AddLog("Script", "ChatService Handler Loaded")
 			elseif chatService == false then
 				AddLog("Script", "Using TextChatService; Handler Loaded")
@@ -865,6 +896,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			service.Events.AdminRemoved:Fire(p)
 			Admin.UpdateCachedLevel(p)
 		end;
 
@@ -921,6 +953,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			service.Events.AdminAdded:Fire(p)
 			Admin.UpdateCachedLevel(p)
 		end;
 
