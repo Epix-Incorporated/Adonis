@@ -349,7 +349,7 @@ return function(Vargs, GetEnv)
 			["#number"] = {
 				Match = "#";
 				Function = function(msg, plr, ...)
-					local matched = string.match(msg, "%#(.*)")
+					local matched = string.match(msg, "#(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
