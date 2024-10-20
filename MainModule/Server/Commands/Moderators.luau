@@ -6134,31 +6134,6 @@ return function(Vargs, env)
 			end
 		};
 
-		TestFilter = {
-			Prefix = Settings.Prefix;
-			Commands = {"testfilter", "filtertest", "tfilter"};
-			Args = {"player", "text"};
-			NoFilter = true;
-			Description = "Test out Roblox's text filtering on a player";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing text to filter")
-				local temp = {{Text=`Original: {args[2]}`, Desc = args[2]}}
-				if service.RunService:IsStudio() then
-					table.insert(temp, {Text="!! The string has not been filtered !!", Desc="Text filtering does not work in studio"})
-				end
-				for _, v in service.GetPlayers(plr, args[1]) do
-					table.insert(temp, {Text = `-- {v.DisplayName} --`, Desc = `{v.UserId} ({v.Name})`})
-					table.insert(temp, {Text = `ChatForUser: {service.TextService:FilterStringAsync(args[2], v.UserId):GetChatForUserAsync(v.UserId)}`})
-					table.insert(temp, {Text = `NonChatForBroadcast: {service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForBroadcastAsync()}`})
-					table.insert(temp, {Text = `NonChatForUser: {service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForUserAsync(v.UserId)}`})
-
-				end
-				Remote.MakeGui(plr, "List", {Title = "Filtering Results", Tab = temp})
-			end
-		};
-
 		DisplayName = {
 			Prefix = Settings.Prefix;
 			Commands = {"displayname", "dname"};
