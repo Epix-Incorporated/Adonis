@@ -1,4 +1,3 @@
-
 --// This module is for stuff specific to debugging
 --// Most of this only runs when DebugMode is enabled
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
@@ -111,6 +110,32 @@ return function(Vargs, GetEnv)
 			})
 		end
 	}
+
+	Commands.TestFilter = {
+		Prefix = Settings.Prefix;
+		Commands = {"testfilter", "filtertest", "tfilter"};
+		Args = {"player", "text"};
+		NoFilter = true;
+		Debug = true;
+		Description = "Test out Roblox's text filtering on a player";
+		AdminLevel = "Moderators";
+		Function = function(plr: Player, args: {string})
+			assert(args[1], "Missing player name")
+			assert(args[2], "Missing text to filter")
+			local temp = {{Text=`Original: {args[2]}`, Desc = args[2]}}
+			if service.RunService:IsStudio() then
+				table.insert(temp, {Text="!! The string has not been filtered !!", Desc="Text filtering does not work in studio"})
+			end
+			for _, v in service.GetPlayers(plr, args[1]) do
+				table.insert(temp, {Text = `-- {v.DisplayName} --`, Desc = `{v.UserId} ({v.Name})`})
+				table.insert(temp, {Text = `ChatForUser: {service.TextService:FilterStringAsync(args[2], v.UserId):GetChatForUserAsync(v.UserId)}`})
+				table.insert(temp, {Text = `NonChatForBroadcast: {service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForBroadcastAsync()}`})
+				table.insert(temp, {Text = `NonChatForUser: {service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForUserAsync(v.UserId)}`})
+
+			end
+			Remote.MakeGui(plr, "List", {Title = "Filtering Results", Tab = temp})
+		end
+	};
 
 	Commands.GetDebugAdonisEnvScript = {
 		Prefix = Settings.Prefix;
