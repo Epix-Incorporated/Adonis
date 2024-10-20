@@ -932,6 +932,7 @@ return function(Vargs, env)
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 							CmdPrefix = Settings.Prefix;
 							CmdSplitKey = Settings.SplitKey;
+							OnlineFriends = v:GetFriendsOnline();
 						})
 					end)
 				end
