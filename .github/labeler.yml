@@ -1,3 +1,5 @@
+'⌛needs PoF':
+  - '^(?!.*What part of Adonis is this related to)(?i:(?!.*(p\-?o\-?f|proof[\-_\s]*of[\-_\s]*work)\:?[\r\n]*)).*$'
 '⚡ command':
   - '### What part of Adonis is this related to\?\s+Command'
 '📱 UI':
