@@ -1,4 +1,5 @@
 --!native
+--!nolint TableOperations
 --# selene: allow(divide_by_zero, multiple_statements, mixed_table)
 --[[
 FiOne
@@ -462,10 +463,13 @@ end
 
 -- ccuser44 added multithreading support
 -- TODO: Create multiple threads for closure and use a module and/or round robin load balancer to distribute usage
+local isClient, actorContainer
 local function new_threaded_closure(proto, env, upval)
+	isClient = isClient or game:GetService("RunService"):IsClient()
+	actorContainer = actorContainer or script
 	local actor = Instance.new("Actor")
 	local clone = script:Clone()
-	local runner = script.Runner:Clone()
+	local runner = script[isClient and "LocalRunner" or "Runner"]:Clone()
 	local event = Instance.new("BindableEvent")
 	local tag = 0
 
@@ -475,30 +479,31 @@ local function new_threaded_closure(proto, env, upval)
 		end
 	end
 
-	clone.Parent = actor
-	runner.Parent = clone
-	runner.Name = "MultithreadRunner_"..tostring(math.random())
 	event.Name = "ReturnPass"
-	event.Parent = clone
-	actor.Parent = script
+	event.Parent = runner
+	clone.Parent = runner
 	runner.Disabled = false
+	runner.Parent = actor
+	actor.Name = "MultithreadRunner_"..tostring(math.random())
+	actor.Parent = actorContainer
 
-	actor:SendMessage("lua_wrap_state", proto, env, upval)
+	task.defer(actor.SendMessage, actor, "wrap_state", proto, env, upval)
+
+	task.wait()
 
 	return function(...)
 		tag = tag + 1
 		local currentTag = tag
-		local routine = coroutine.create(function() return coroutine.yield() end)
+		local routine = coroutine.running()
 		local connection = event.Event:Connect(function(eventTag, ...)
 			if eventTag == currentTag then
 				coroutine.resume(routine, ...)
 			end
 		end)
 
-		actor:SendMessage("run_callback", currentTag, ...)
+		task.defer(actor.SendMessage, actor, "run_callback", currentTag, ...)
 
-		local args = table.pack(coroutine.resume(routine))
-
+		local args = table.pack(coroutine.yield())
 		connection:Disconnect()
 
 		if not args[1] then
