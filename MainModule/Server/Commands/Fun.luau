@@ -1215,6 +1215,10 @@ return function(Vargs, env)
 						humanoid.WalkSpeed = 0
 
 						ufo.Name = "ADONIS_UFO"
+						ufo.Archivable = false
+						ufo.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
+						ufo.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
+						ufo:AddPersistentPlayer(p)
 						ufo.PrimaryPart = primary
 						ufo:PivotTo(tPos*CFrame.new(0, 500, 0))
 
@@ -1530,6 +1534,10 @@ return function(Vargs, env)
 
 						van.PrimaryPart = van.Primary
 						van.Name = "ADONIS_VAN"
+						van.Archivable = false
+						van.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
+						van.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
+						van:AddPersistentPlayer(p)
 						van.Parent = workspace
 						humanoid.Name = "NoResetForYou"
 						humanoid.WalkSpeed = 0
@@ -1644,7 +1652,7 @@ return function(Vargs, env)
 				hat.ChickenSounds.Disabled = true
 				table.insert(hats, hat)
 				table.insert(Variables.Objects, hat)
-				hat.Parent = workspace
+				hat.Parent = workspace.Terrain
 				hat.CFrame = plr.Character.Head.CFrame
 				service.StopLoop("ChickenSpam")
 				service.StartLoop("ChickenSpam", 5, function()
@@ -1658,7 +1666,7 @@ return function(Vargs, env)
 						table.insert(tempHats, v)
 						table.insert(tempHats, nhat)
 						table.insert(Variables.Objects, nhat)
-						nhat.Parent = workspace
+						nhat.Parent = workspace.Terrain
 						nhat.Quacker.Disabled = false
 						nhat.CFrame = v.CFrame*CFrame.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100))*CFrame.Angles(math.random(-360, 360), math.random(-360, 360), math.random(-360, 360))
 					end
@@ -1692,6 +1700,7 @@ return function(Vargs, env)
 					p.Anchored = true
 					p.CanCollide = false
 					p.Archivable = false
+					p.Name = "ADONIS_Tornado"
 					--local tornado = deps.Tornado:Clone()
 					--tornado.Parent = p
 					--tornado.Disabled = false
@@ -4970,6 +4979,7 @@ return function(Vargs, env)
 
 						local pipe = Deps.Assets.Pipe:Clone()
 						pipe.Name = "Pipe"
+						pipe.Archivable = false
 						pipe.Parent = workspace
 						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
 
