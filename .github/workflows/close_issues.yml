@@ -18,6 +18,6 @@ jobs:
 
       - name: Close BTools issue 
         if: github.event.label.name == '❌ invalid' && (contains(github.event.issue.body, 'F3X/Building Tools')) &&
-        run: gh issue close --comment "We use F3X for our building tools system. Please [make an issue ticket](https://github.com/F3XTeam/RBX-Building-Tools/issues/new) on the F3X Team BTools repository. \~ Yours truly - E🅱️ix Agents" --reason "not planned" "1"
+        run: gh issue close --comment "We use F3X for our building tools system. Please [make an issue ticket](https://github.com/F3XTeam/RBX-Building-Tools/issues/new) on the F3X Team BTools repository." --reason "not planned" "1"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
