@@ -308,10 +308,6 @@ return function(data, env)
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
 
-	if (container:IsA("ScreenGui")) then
-		container.IgnoreGuiInset, container.ClipToDeviceSafeArea = not client.Variables.TopBarShift, true
-	end
-
 	container.Position = UDim2.new(0, 0, 0, (notif and 30 or 0))
 
 	local children = container:GetChildren()
