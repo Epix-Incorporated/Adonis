@@ -1,0 +1,23 @@
+name: Close invalid issues
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  close-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.1
+
+      - name: Close issue
+        if: github.event.label.name == '❌ invalid' && !(contains(github.event.issue.body, 'F3X/Building Tools')) &&
+        run: gh issue close --comment "This issue has been closed as invalid. Please look at our [contribution guide](https://github.com/Epix-Incorporated/Adonis/blob/master/CONTRIBUTING.md)" --reason "not planned" "1"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close BTools issue 
+        if: github.event.label.name == '❌ invalid' && (contains(github.event.issue.body, 'F3X/Building Tools')) &&
+        run: gh issue close --comment "We use F3X for our building tools system. Please [make an issue ticket](https://github.com/F3XTeam/RBX-Building-Tools/issues/new) on the F3X Team BTools repository." --reason "not planned" "1"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

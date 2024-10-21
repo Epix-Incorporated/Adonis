@@ -10,5 +10,9 @@
   - '### What part of Adonis is this related to\?\s+GitHub Repository'
 '🖇️ loader':
   - '### What part of Adonis is this related to\?\s+Loader/Settings'
+'trello':
+  - '### What part of Adonis is this related to\?\s+Trello'
+'❌ invalid'
+  - '### What part of Adonis is this related to\?\s+F3X/Building Tools'
 '🎏 miscellaneous':
   - '### What part of Adonis is this related to\?\s+Other'
