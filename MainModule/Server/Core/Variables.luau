@@ -72,6 +72,7 @@ return function(Vargs, GetEnv)
 		IPInfoUrl = "https://ipinfo.io/json",
 		SizeLimit = 20,
 		ChatCreateRobloxCommands = true,
+		Variables.OriginalGravity = workspace.Gravity,
 		AnimatedFaces = {
 			-- R15 (Hopefully)
 			14719428401, 12936561806, 12936887700, 12937016609, 12937135097, 12939014597, 12945364777, 12945456452, 14374800823, 14367118483, 13674780763,
