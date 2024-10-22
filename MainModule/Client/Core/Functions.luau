@@ -1876,7 +1876,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetFriendsOnline(maxFriends)
+		GetFriendsOnline = function(maxFriends)
 			return service.Players.LocalPlayer:GetFriendsOnline(maxFriends)
 		end;
 
