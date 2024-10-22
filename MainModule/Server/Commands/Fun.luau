@@ -4796,10 +4796,6 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				if not Variables.OriginalGravity then
-					Variables.OriginalGravity = workspace.Gravity
-				end
-
 				workspace.Gravity = args[1] == "fix" and Variables.OriginalGravity or assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
 			end
 		};
