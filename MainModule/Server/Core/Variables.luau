@@ -121,16 +121,24 @@ return function(Vargs, GetEnv)
 			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
 		},
 		
-		AtmosphereSettings = {},
+		AtmosphereSettings = {
+			Name = atmosphere and atmosphere.Name,
+			Density = atmosphere and atmosphere.Density,
+			Offset = atmosphere and atmosphere.Offset,
+			Color = atmosphere and atmosphere.Color,
+			Decay = atmosphere and atmosphere.Decay,
+			Glare = atmosphere and atmosphere.Glare,
+			Haze = atmosphere and atmosphere.Haze,
+		},
 
 		OriginalAtmosphereSettings = {
-			Name = atmosphere.Name,
-			Density = atmosphere.Density,
-			Offset = atmosphere.Offset,
-			Color = atmosphere.Color,
-			Decay = atmosphere.Decay,
-			Glare = atmosphere.Glare,
-			Haze = atmosphere.Haze,
+			Name = atmosphere and atmosphere.Name,
+			Density = atmosphere and atmosphere.Density,
+			Offset = atmosphere and atmosphere.Offset,
+			Color = atmosphere and atmosphere.Color,
+			Decay = atmosphere and atmosphere.Decay,
+			Glare = atmosphere and atmosphere.Glare,
+			Haze = atmosphere and atmosphere.Haze,
 		},
 
 		PMtickets = {};
