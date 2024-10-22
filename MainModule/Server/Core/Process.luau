@@ -92,6 +92,56 @@ return function(Vargs, GetEnv)
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
 
+		task.spawn(function()
+			local oldVer = (level > 300) and tonumber(Core.GetData("VersionNumber"))
+			local newVer = (level > 300) and Server.Version
+			Process.SaveDatastoreVersionDebounce = true
+
+			if oldVer and newVer and newVer > oldVer then
+				table.insert(server.Messages, {
+					Level = 1;
+					Title = "Updated!";
+					Message = "Click to view the changelog.";
+					Time = 10;
+					Icon = "MatIcon://System upgrade";
+					onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`);
+				})
+			end
+		end)
+
+		if Core.DebugMode == true then
+			table.insert(server.Messages, {
+				Level = 301;
+				Title = "Debug Mode Enabled";
+				Message = "Adonis is currently running in Debug Mode.";
+				Time = 10;
+				Icon = "MatIcon://Bug report";
+				onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`);
+			})
+		end
+
+		if Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
+			table.insert(server.Messages, {
+				Level = 301;
+				Title = "Warning!";
+				Message = "Using default datastore key!";
+				Time = 15;
+				Icon = "MatIcon://Description";
+				onClick = Core.Bytecode([[
+					local window = client.UI.Make("Window", {
+						Title = "How to change the DataStore key";
+						Size = {700,300};
+						Icon = "rbxassetid://7510994359";
+					})
+
+					window:Add("ImageLabel", {
+						Image = "rbxassetid://1059543904";
+					})
+
+					window:Ready()
+			]]})
+		end
+
 		--// Load client onto existing players
 		if existingPlayers then
 			for i, p in existingPlayers do
@@ -973,46 +1023,32 @@ return function(Vargs, GetEnv)
 				end
 
 				if level > 0 then
-					local oldVer = (level > 300) and Core.GetData("VersionNumber")
-					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
-
 					if Settings.Notification then
-
 						task.wait(1)
 						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}cmds")`))
 
-						if oldVer and newVer and newVer > oldVer then
-							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://System upgrade", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`))
-						end
+						if #server.Messages > 0 then
+							for _, message in server.Messages do
+								local isString = type(message) == "string"
 
-						if level > 300 and Core.DebugMode == true then
-							task.delay(1, Functions.Notification, "Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`))
-						end
-
-						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
-							task.delay(1, Functions.Notification, "Warning!", "Using default datastore key!", {p}, 15, "MatIcon://Description", Core.Bytecode([[
-									local window = client.UI.Make("Window", {
-										Title = "How to change the DataStore key";
-										Size = {700,300};
-										Icon = "rbxassetid://7510994359";
-									})
-
-									window:Add("ImageLabel", {
-										Image = "rbxassetid://1059543904";
-									})
-
-									window:Ready()
-							]]))
-						end
-
-						if level >= 300 and #Settings.Messages > 0 then
-							for _, Message in Settings.Messages do
-								task.delay(1, Functions.Notification, "Message", tostring(Message), {p}, math.round((#Message/19)+2.5))
+								if level >= (not isString and message.Level or 300) then
+									task.delay(
+										1,
+										Functions.Notification,
+										not isString and message.Title or "Message",
+										isString and message or not isString and message.Message or "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+										{p},
+										isString and math.round((#message/19)+2.5) or not isString and message.Time or 10,
+										not isString and message.Icon,
+										not isString and message.onClick
+									)
+								end
 							end
 						end
 					end
 
-					if newVer then
+					if Process.SaveDatastoreVersionDebounce then
+						Process.SaveDatastoreVersionDebounce = false
 						Core.SetData("VersionNumber", newVer)
 					end
 				end
