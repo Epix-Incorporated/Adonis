@@ -282,6 +282,7 @@ end;
 
 server = {
 	Running = true;
+	Version = 0;
 	Modules = {};
 	Pcall = Pcall;
 	Routine = Routine;
@@ -482,17 +483,25 @@ return service.NewProxy({
 
 		--// Begin Script Loading
 		data = service.Wrap(data or {})
+		local silentStartup = data and data.SilentStartup or false
 
-		if not (data and data.Loader) then
+		if not (data and data.Loader) and not silentStartup then
 			warn("WARNING: MainModule loaded without using the loader!")
 		end
 
-		if data and data.ModuleID == 8612978896 then
-			warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
+		if data and (data.ModuleID == 8612978896 or data.NightlyMode) then
+			data.NightlyMode = true
+
+			if not silentStartup then
+				warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
+			end
 		end
 
 		if data and data.DebugMode == true then
-			warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
+			if not silentStartup then
+				warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
+			end
+
 			local AdonisDebugEnabled = service.New("BoolValue")
 			AdonisDebugEnabled.Name = "ADONIS_DEBUGMODE_ENABLED"
 			AdonisDebugEnabled.Value = true
@@ -517,6 +526,7 @@ return service.NewProxy({
 		server.LoadModule = LoadModule
 		server.LoadPackage = LoadPackage
 		server.ServiceSpecific = ServiceSpecific
+		server.Data.LoaderVersion = server.Data.LoaderVersion or (server.Model and server.Model:FindFirstChild("Version")) and tonumber(server.Model.Version.Value)
 
 		server.Shared = Folder.Shared
 		server.ServerPlugins = data.ServerPlugins
@@ -588,6 +598,7 @@ return service.NewProxy({
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
 		server.Changelog = require(server.Shared.Changelog)
+		server.Version = server.Changelog and tonumber(string.match(server.Changelog[1], "^%[?%w*:? [Vv]?(%d+)")) or server.Version -- Set server version from changelog
 		server.Credits = require(server.Shared.Credits)
 		server.DLL = require(server.Shared.DoubleLinkedList)
 		server.FormattedChangelog = table.create(#server.Changelog)
@@ -717,19 +728,17 @@ return service.NewProxy({
 		service.Events.AllModulesLoaded:Fire(os.time())
 
 		--// Queue handler
-		--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
+		--service.StartLoop("QueueHandler", "Heartbeat", service.ProcessQueue)
 
 		--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
 		for _, f in ipairs(runLast) do
 			f(data)
 		end
 
-		if data.Loader then
-			if not data.SilentStartup then
-				print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; Required by {data.Loader:GetFullName()}{data.Model:FindFirstChild("Version") and (" version: "..data.Model.Version.Value) or ""}`)
-			end
-		else
-			print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; No loader location provided`)
+		if data.Loader and not silentStartup then
+			print(`Loading version {data.NightlyMode and "Nightly" or server.Version} Complete; Required by {data.Loader:GetFullName()}{data.LoaderVersion and (" version: "..data.LoaderVersion) or ""}`)
+		elseif not silentStartup then
+			print(`Loading version {data.NightlyMode and "Nightly" or server.Version} Complete; No loader location provided`)
 		end
 
 		if server.Logs then
