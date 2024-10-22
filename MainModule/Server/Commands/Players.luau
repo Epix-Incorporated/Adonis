@@ -977,6 +977,7 @@ return function(Vargs, env)
 						NilPlayerCount = nilPlayers;
 						HttpEnabled = HTTP.HttpEnabled;
 						LoadstringEnabled = HTTP.LoadstringEnabled;
+						ServerSpeed = workspace:GetRealPhysicsFPS();
 					}
 				end
 
@@ -1006,6 +1007,7 @@ return function(Vargs, env)
 					PrivateServerId = game.PrivateServerId;
 					PrivateServerOwnerId = game.PrivateServerOwnerId;
 					ServerStartTime = server.ServerStartTime;
+					ServerSpeed = workspace:GetRealPhysicsFPS();
 					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
 					ServerInternetInfo = serverInfo;
 					Refreshables = Logs.ListUpdaters.ServerDetails(plr);
