@@ -157,13 +157,12 @@ return function(data, env)
 			while wait(0.5) do
 				local timeNow = os.time()
 				if not displays["Server Speed"] or not displays["Server Age"] then break end
-				displays["Server Speed"].Text = math.round(service.Workspace:GetRealPhysicsFPS())
+				displays["Server Speed"].Text = math.round(data.ServerSpeed or 0)
 				displays["Server Age"].Text = string.format("%ds (%d min)", string.format(timeNow - data.ServerStartTime, "%.1f"), math.round((timeNow - data.ServerStartTime)/60))
 			end
 		end)
-
 	end
-	
+
 	local success, isAmerica = xpcall(function()
 		return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
 	end, function() return false end)
@@ -374,6 +373,7 @@ return function(data, env)
 		local workspaceInfo = data.Refreshables.WorkspaceInfo
 		if workspaceInfo then
 			local i, currentPos = 0, 0
+			data.ServerSpeed = workspaceInfo.ServerSpeed or data.ServerSpeed
 			for _, v in ipairs({
 				{"Streaming Enabled", boolToStr(service.Workspace.StreamingEnabled)},
 				{"Interpolation Throttling", service.Workspace.InterpolationThrottling.Name},
