@@ -465,7 +465,7 @@ return function(Vargs, env)
 						Variables.ZaWarudoDebounce = true
 						task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 						local audio = service.New("Sound", service.SoundService)
-						audio.SoundId = "" -- Old audio: "rbxassetid://274698941"
+						audio.SoundId = "rbxassetid://8762717966" -- Old audio: "rbxassetid://274698941"
 						audio.Volume = 10
 						audio.Name = "ADONIS_ZAWARUDO_AUDIO"
 						audio:Play()
@@ -488,7 +488,7 @@ return function(Vargs, env)
 						audio:Destroy()
 						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
-						clock.SoundId = "rbxassetid://8762717966" -- Other new audio: "rbxassetid://850256806" Old audio "rbxassetid://160189066"
+						clock.SoundId = "rbxassetid://9133682204" -- Other new audio: "rbxassetid://850256806" Old audio "rbxassetid://160189066"
 						clock.Looped = true
 						clock.Volume = 1
 						clock:Play()
