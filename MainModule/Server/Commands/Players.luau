@@ -932,7 +932,7 @@ return function(Vargs, env)
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 							CmdPrefix = Settings.Prefix;
 							CmdSplitKey = Settings.SplitKey;
-							OnlineFriends = Remote.Get(v, "Fuction", "GetFriendsOnline");
+							OnlineFriends = Remote.Get(v, "Function", "GetFriendsOnline");
 						})
 					end)
 				end
