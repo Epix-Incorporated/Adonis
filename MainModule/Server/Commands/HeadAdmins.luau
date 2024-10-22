@@ -308,8 +308,6 @@ return function(Vargs, env)
 					Name = Lighting.Name,
 					Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
 				}
-				Variables.LightingSettings = table.clone(Variables.OriginalLightingSettings)
-				Variables.LightingSettings.Sky = nil
 				Variables.OriginalAtmosphereSettings = {
 					Name = atmosphere and atmosphere.Name,
 					Density = atmosphere and atmosphere.Density,
@@ -319,7 +317,6 @@ return function(Vargs, env)
 					Glare = atmosphere and atmosphere.Glare,
 					Haze = atmosphere and atmosphere.Haze,
 				}
-				Variables.AtmosphereSettings = table.clone(Variables.OriginalAtmosphereSettings)
 
 				local tempmodel = service.New("Model", {
 					Name = "BACKUP_MAP_MODEL"
