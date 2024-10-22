@@ -1876,6 +1876,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		GetFriendsOnline(maxFriends)
+			return service.Players.LocalPlayer:GetFriendsOnline(maxFriends)
+		end;
+
 		GetUserInputServiceData = function(args)
 			local data = {}
 			local props = {
