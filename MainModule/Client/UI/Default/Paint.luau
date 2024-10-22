@@ -1,10 +1,12 @@
+local buffer = buffer -- // Adonis doesnt support buffers yet!
 client, service = nil, nil
 
 return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
+	local Variables = client.Variables
 	local mouse = service.Players.LocalPlayer:GetMouse()
 	local hold = false
 
@@ -23,7 +25,7 @@ return function(data, env)
 	local pixelCount = topbar:Add("TextLabel", {
 		Size = UDim2.new(0, 100, 1, -8);
 		Position = UDim2.new(1, -180, 0, 4);
-		Text = "Pixels: 0";
+		Text = `Pixels: {Variables.CanUseEditableImages and "N/A" or "0"}`;
 		TextXAlignment = "Right";
 		BackgroundTransparency = 1;
 	})
@@ -34,7 +36,18 @@ return function(data, env)
 		BackgroundColor3 = Color3.new(1, 1, 1);
 		ClipsDescendants = true;
 	})
-	
+
+	local rawCanvas = Variables.CanUseEditableImages and canvas:Add("ImageLabel", {
+		Position = UDim2.new(0, 0, 0, 0);
+		Size = UDim2. new(1, 0, 1, 0);
+		Active = false;
+		BorderSizePixel = 0;
+		Image = "rbxtemp://0";
+	})
+	local editableImage = Variables.CanUseEditableImages and rawCanvas:Add("EditableImage", {
+		Size = rawCanvas.AbsoluteSize;
+	})
+
 	local pointer = canvas:Add("Frame", {
 		Position = UDim2.new(0, 0, 0, 0);
 		Size = UDim2.new(0, 4, 0, 4);
@@ -57,10 +70,14 @@ return function(data, env)
 
 		if hold == false then return end
 
-		local pixel = pointer:Clone()
-		pixel.Name = "Pixel"
-		pixel.Parent = canvas
-		pixelCount.Text = `Pixels: {pixelCount.Text:sub(9) + 1}`
+		if Variables.CanUseEditableImages then
+			editableImage:DrawCircle(offset, pointer.Size.X.Offset, pointer.BackgroundColor3, 0, Enum.ImageCombineType.Overwrite)
+		else
+			local pixel = pointer:Clone()
+			pixel.Name = "Pixel"
+			pixel.Parent = canvas
+			pixelCount.Text = `Pixels: {pixelCount.Text:sub(9) + 1}`
+		end
 	end)
 	
 	local clearButton = topbar:Add("TextButton", {
@@ -69,13 +86,21 @@ return function(data, env)
 		Text = "Clear";
 		TextXAlignment = "Center";
 		OnClick = function()
-			local children = canvas:GetChildren()
-			for i, child in pairs (children) do
+			for i, child in canvas:GetChildren() do
 				if child.Name == "Pixel" then
 					child:Destroy()
 				end
 			end
-			pixelCount.Text = "Pixels: 0"
+
+			if Variables.CanUseEditableImages then
+				local size = editableImage.Size
+				local newImage = buffer.create(size.X * size.Y * 4)
+
+				buffer.fill(newImage, 0, 255)
+				editableImage:WritePixelsBuffer(Vector2.new(0, 0), size, buffer.create(size.X * size.Y * 4))
+			end
+
+			pixelCount.Text = `Pixels: {Variables.CanUseEditableImages and "N/A" or "0"}`
 		end
 	})
 
