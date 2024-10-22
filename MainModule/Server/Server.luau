@@ -598,7 +598,7 @@ return service.NewProxy({
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
 		server.Changelog = require(server.Shared.Changelog)
-		server.Version = server.Changelog and tonumber(string.match(server.Changelog[1], "^%[?%w*:? [Vv]?(%d+)")) or server.Version -- Set server version from changelog
+		server.Version = server.Changelog and tonumber(string.match(server.Changelog[1], "^%[?%w*:? ?[Vv]?(%d+)")) or server.Version -- Set server version from changelog
 		server.Credits = require(server.Shared.Credits)
 		server.DLL = require(server.Shared.DoubleLinkedList)
 		server.FormattedChangelog = table.create(#server.Changelog)
