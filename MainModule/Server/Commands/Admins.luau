@@ -713,6 +713,7 @@ return function(Vargs, env)
 
 				Variables.RestoringMap = true
 				Functions.Hint("Restoring Map...", service.Players:GetPlayers())
+				workspace.Gravity = Variables.OriginalGravity
 
 				for _, obj in workspace:GetChildren() do
 					if obj.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(obj) then
@@ -738,6 +739,7 @@ return function(Vargs, env)
 
 				task.wait()
 
+				Admin.RunCommand(`{Settings.Prefix}fixlighting`)
 				Admin.RunCommand(`{Settings.Prefix}respawn`, "all")
 				Variables.RestoringMap = false
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
