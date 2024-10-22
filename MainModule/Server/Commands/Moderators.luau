@@ -6665,16 +6665,16 @@ return function(Vargs, env)
 		ShowLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"showlogs", "showcommandlogs"};
-			Args = {"autoupdate? (default: false)", "player"};
+			Args = {"player", "autoupdate? (default: false)"};
 			Description = "Shows the target player(s) the command logs.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local autoUpdate = false
-				if args[1] and table.find({"yes", "true", "1", "autoupdate", "on"}, args[1]:lower()) then
+				if args[2] and table.find({"yes", "true", "1", "autoupdate", "on"}, args[2]:lower()) then
 					autoUpdate = true
 				end
 				local str = `{Settings.Prefix}logs {tostring(autoUpdate) or ""}`
-				for _, v in service.GetPlayers(plr, args[2]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Admin.RunCommandAsPlayer(str, v)
 				end
 			end
