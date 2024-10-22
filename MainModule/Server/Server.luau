@@ -307,7 +307,7 @@ locals = {
 };
 
 service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
-	local extra = {...}
+	local extra = table.pack(...)
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog("Script", {
@@ -482,14 +482,16 @@ return service.NewProxy({
 		end
 
 		--// Begin Script Loading
-		data = service.Wrap(data or {})
-		local silentStartup = data and data.SilentStartup or false
+		data = service.Wrap(data or {}) or {}
+		local silentStartup = data.SilentStartup or false
 
-		if not (data and data.Loader) and not silentStartup then
+		if not data.Loader and not silentStartup then
 			warn("WARNING: MainModule loaded without using the loader!")
+		elseif data.Loader and not data.LoaderVersion and server.Model then
+			data.LoaderVersion = server.Model:FindFirstChild("Version") and tonumber(server.Model.Version.Value)
 		end
 
-		if data and (data.ModuleID == 8612978896 or data.NightlyMode) then
+		if data.NightlyMode or data.ModuleID == 8612978896 then
 			data.NightlyMode = true
 
 			if not silentStartup then
@@ -497,7 +499,7 @@ return service.NewProxy({
 			end
 		end
 
-		if data and data.DebugMode == true then
+		if data.DebugMode == true then
 			if not silentStartup then
 				warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
 			end
@@ -518,7 +520,7 @@ return service.NewProxy({
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
 		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}
-		server.Data = data or {}
+		server.Data = data
 		server.Model = data.Model or service.New("Model")
 		server.ModelParent = data.ModelParent or service.ServerScriptService;
 		server.Loader = data.Loader or service.New("Script")
@@ -526,7 +528,6 @@ return service.NewProxy({
 		server.LoadModule = LoadModule
 		server.LoadPackage = LoadPackage
 		server.ServiceSpecific = ServiceSpecific
-		server.Data.LoaderVersion = server.Data.LoaderVersion or (server.Model and server.Model:FindFirstChild("Version")) and tonumber(server.Model.Version.Value)
 
 		server.Shared = Folder.Shared
 		server.ServerPlugins = data.ServerPlugins
@@ -539,7 +540,7 @@ return service.NewProxy({
 		--// THIS NEEDS TO BE DONE **BEFORE** ANY EVENTS ARE CONNECTED
 		if server.Settings.HideScript and data.Model then
 			data.Model.Parent = nil
-			script:Destroy()
+			--script:Destroy() -- Unnecessary and potentially harmful?
 		end
 
 		--// Copy client themes, plugins, and shared modules to the client folder
