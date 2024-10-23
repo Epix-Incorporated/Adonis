@@ -54,6 +54,17 @@ local function loadModuleAsset(moduleId: number)
 	error(`Failed to find any matching ModuleScripts for {moduleId}.`)
 end
 
+-- Support yieldable xpcall
+local function yxpcall(f, callback, ...)
+	local args = table.pack(pcall(f, ...))
+
+	if not args[1] then
+		callback(args[2])
+	else
+		return table.unpack(args, 2)
+	end
+end
+
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
 if mutex then
 	if mutex:IsA("StringValue") then
@@ -183,29 +194,29 @@ else
 		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
-	local success, module = xpcall(require, warn, moduleId)
+	local success, module = pcall(require, moduleId)
 
 	--// Backup method for loading Adonis
 	if not success and type(moduleId) == "number" then -- ccuser44 was here
 		warn(`Failed to load Adonis MainModule {moduleId} due to {module}! If this does not work please purchase the Adonis MainModule to your inventory. Using backup method...`)
-		xpcall(function()
+		yxpcall(function()
 			module = loadModuleAsset(moduleId)
 		end, function(reason)
 			warn(`Failed to load Adonis mainmodule {moduleId} via :LoadAsset() method due to {reason}! Loading the backup MainModule...`)
-			xpcall(function()
+			yxpcall(function()
 				module = assert(require(data.Backup), "Backup module returned invalid values!")
 			end, function(reason)
 				warn(`Failed to load Adonis backup MainModule {data.Backup} due to {reason}! If this does not work please purchase the Adonis backup MainModule to your inventory. Using backup method...`)
-				xpcall(function()
+				yxpcall(function()
 					module = loadModuleAsset(data.Backup)
 				end, function(reason)
-					warn(`FATAL ERROR. Failed to load Adonis backup MainModule {moduleId} via :LoadAsset() method due to {reason}! Adonis can't be booted up! Please contact the Adonis helpers immediately and add both the regular MainModule and the backup MainModule to your user&group inventory!`)
+					warn(`FATAL ERROR! Failed to load Adonis backup MainModule {moduleId} via :LoadAsset() method due to {reason}! Adonis can't be booted up! Please contact the Adonis helpers immediately and add both the regular MainModule and the backup MainModule to your user&group inventory!`)
 				end)
 			end)
 		end)
 	end
 
-	local response = assert(module, "FATAL ERROR. Adonis bootstrap function is missing!")(data)
+	local response = assert(module, "FATAL ERROR! Adonis bootstrap function is missing!")(data)
 
 	if response == "SUCCESS" then
 		if data.Settings and data.Settings.HideScript and not data.DebugMode and not RunService:IsStudio() then
