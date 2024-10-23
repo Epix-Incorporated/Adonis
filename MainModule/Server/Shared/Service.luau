@@ -1027,7 +1027,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						results = {
 							Created = false;
 						};
-						lastUpdated = os.clock();
+						lastUpdated = -math.huge;
 					}
 					assetInfoCache[`{assetId}-{infoType}`] = cache
 				end
