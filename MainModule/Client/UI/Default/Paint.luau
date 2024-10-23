@@ -24,7 +24,7 @@ return function(data, env)
 
 	local pixelCount = topbar:Add("TextLabel", {
 		Size = UDim2.new(0, 100, 1, -8);
-		Position = UDim2.new(1, -180, 0, 4);
+		Position = UDim2.new(1, -180 - (Variables.CanUseEditableImages and 75 or 0), 0, 4);
 		Text = `Pixels: {Variables.CanUseEditableImages and "N/A" or "0"}`;
 		TextXAlignment = "Right";
 		BackgroundTransparency = 1;
@@ -41,8 +41,9 @@ return function(data, env)
 		Position = UDim2.new(0, 0, 0, 0);
 		Size = UDim2. new(1, 0, 1, 0);
 		Active = false;
+		BackgroundTransparency = 1;
 		BorderSizePixel = 0;
-		Image = "rbxtemp://0";
+		Image = "rbxtemp://0"; -- // TODO: Replace when EditableImage:GetContent() becomes available (without FFlag)
 	})
 	local editableImage = Variables.CanUseEditableImages and rawCanvas:Add("EditableImage", {
 		Size = rawCanvas.AbsoluteSize;
@@ -51,6 +52,7 @@ return function(data, env)
 	local pointer = canvas:Add("Frame", {
 		Position = UDim2.new(0, 0, 0, 0);
 		Size = UDim2.new(0, 4, 0, 4);
+		AnchorPoint = Vector2.new(0.5, 0.5);
 		BackgroundColor3 = Color3.new(0, 0, 0);
 		BackgroundTransparency = 0;
 		Visible = false;
@@ -65,13 +67,13 @@ return function(data, env)
 	end)
 
 	canvas.MouseMoved:Connect(function(x, y)
-		local offset = Vector2.new(math.abs(x - canvas.AbsolutePosition.X), math.abs(y - canvas.AbsolutePosition.Y - 36))
+		local offset = Vector2.new(math.abs(x - canvas.AbsolutePosition.X), math.abs(y - canvas.AbsolutePosition.Y)) - service.GuiService:GetGuiInset()
 		pointer.Position = UDim2.new(0, offset.X, 0, offset.Y)
 
 		if hold == false then return end
 
 		if Variables.CanUseEditableImages then
-			editableImage:DrawCircle(offset, pointer.Size.X.Offset, pointer.BackgroundColor3, 0, Enum.ImageCombineType.Overwrite)
+			editableImage:DrawCircle(offset, math.ceil(pointer.Size.X.Offset / 2), pointer.BackgroundColor3, 0, Enum.ImageCombineType.Overwrite)
 		else
 			local pixel = pointer:Clone()
 			pixel.Name = "Pixel"
@@ -80,7 +82,7 @@ return function(data, env)
 		end
 	end)
 	
-	local clearButton = topbar:Add("TextButton", {
+	topbar:Add("TextButton", {
 		Size = UDim2.new(0, 70, 1, -8);
 		Position = UDim2.new(1, -75, 0, 4);
 		Text = "Clear";
@@ -103,6 +105,40 @@ return function(data, env)
 			pixelCount.Text = `Pixels: {Variables.CanUseEditableImages and "N/A" or "0"}`
 		end
 	})
+
+	if Variables.CanUseEditableImages then
+		local uploadDebounce = -math.huge
+
+		topbar:Add("TextButton", {
+			Size = UDim2.new(0, 70, 1, -8);
+			Position = UDim2.new(1, -150, 0, 4);
+			Text = "Upload";
+			ToolTip = "Upload your paint creation as decal on the creator store.";
+			TextXAlignment = "Center";
+			OnClick = function()
+				if os.clock() > uploadDebounce + 2.5 then
+					uploadDebounce = os.clock()
+					local decal = service.New("Decal")
+
+					decal.Name = "Adonis_PaintDecal"
+					decal.Texture = rawCanvas.Image
+					editableImage:Clone().Parent = decal
+
+					-- // Prompt user to upload decal
+					local success, reason = pcall(service.AssetService.PromptCreateAssetAsync, service.AssetService, service.Players.LocalPlayer, decal, Enum.AssetType.Decal)
+
+					if not success then
+						client.UI.Make("Notification", {
+							Title = "Uploading decal failed";
+							Message = `Uploading decal failed due to: {reason}.`;
+							Icon = client.MatIcons["Error"];
+							Time = 10;
+						})
+					end
+				end
+			end
+		})
+	end
 
 	topbar:Add("TextLabel", {
 		Text = " Color: ";
