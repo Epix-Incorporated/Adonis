@@ -97,7 +97,7 @@ else
 
 		Loader = loader;
 		Runner = runner;
-		LoaderVersion = (model and model:FindFirstChild("Version")) and tonumber(model.Version.Value)
+		LoaderVersion = (model and model:FindFirstChild("Version")) and tonumber(model.Version.Value);
 
 		ModuleID = 7510592873;  		--// https://www.roblox.com/library/7510592873/Adonis-MainModule
 		LoaderID = 7510622625;			--// https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
