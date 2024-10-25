@@ -509,25 +509,34 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			AudioLib = function(p,args)
+			AudioLib = function(p, args)
 				local AdminLevel = Admin.GetLevel(p)
-
 				if Commands.Music and Admin.CheckComLevel(AdminLevel, Commands.Music) then
-					if not server.Functions.AudioLib then
-						local audioLibFolder = service.SoundService:FindFirstChild("ADONIS_AUDIOLIB")
+					local audioLib = Functions.AudioLib
 
+					if not Functions.AudioLib then
+						local audioLibFolder = service.SoundService:FindFirstChild("ADONIS_AUDIOLIB")
 						if not audioLibFolder then
 							audioLibFolder = service.New("Folder")
 							audioLibFolder.Name = "ADONIS_AUDIOLIB"
-							audioLibFolder.Archivable = false
 							audioLibFolder.Parent = service.SoundService
 						end
-
-						server.Functions.AudioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
+						audioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
+						Functions.AudioLib = audioLib
 					end
 
-					if type(args[1]) == "table" and type(Functions.AudioLib[args[1][1]]) == "function" then
-						return Functions.AudioLib[args[1][1]](Functions.AudioLib, args[1][2])
+					if type(args[1]) == "table" then
+						args = service.UnWrap(args[1])
+					else
+						return
+					end
+
+					if args[1] == "index" then
+						return audioLib[args[2]]
+					elseif args[1] == "newindex" then
+						audioLib[args[2]] = args[3]
+					elseif args[1] == "call" then
+						return audioLib[args[2]](audioLib, table.unpack(args, 3))
 					end
 				end
 			end;
