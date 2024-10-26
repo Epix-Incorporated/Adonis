@@ -195,9 +195,7 @@ return function(Vargs, GetEnv)
 
 					local commandLevel = command:GetAttribute("AdminLevel")
 
-					if commandLevel == "Donor" and not isDonor then
-						command.Parent = nil
-					elseif type(commandLevel) == "number" and commandLevel > adminLevel then
+					if type(commandLevel) == "number" and commandLevel > adminLevel or commandLevel == "Donor" and not isDonor then
 						command.Parent = nil
 					end
 				end
