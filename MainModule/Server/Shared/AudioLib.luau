@@ -17,8 +17,7 @@ function AudioLib.new(object)
 		_container = nil,
 		_connections = {},
 		_rawPlaylist = {
-			Position = 0,
-			nil
+			Position = 0
 		},
 		_proxyProperties = {
 			-- // Properties
