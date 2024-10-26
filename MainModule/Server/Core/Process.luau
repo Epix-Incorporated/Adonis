@@ -93,10 +93,9 @@ return function(Vargs, GetEnv)
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
 
 		task.spawn(function()
-			local oldVer = (level > 300) and tonumber(Core.GetData("VersionNumber"))
-			local newVer = (level > 300) and Server.Version
+			local oldVer = tonumber(Core.GetData("VersionNumber"))
 
-			if oldVer and newVer and newVer > oldVer then
+			if oldVer and server.Version and newVer > server.Version then
 				Process.SaveDatastoreVersionDebounce = true
 				table.insert(server.Messages, {
 					Level = 1;
@@ -1049,7 +1048,7 @@ return function(Vargs, GetEnv)
 
 					if Process.SaveDatastoreVersionDebounce then
 						Process.SaveDatastoreVersionDebounce = false
-						Core.SetData("VersionNumber", newVer)
+						Core.SetData("VersionNumber", server.Version)
 					end
 				end
 
