@@ -292,7 +292,6 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 	local container = Instance.new("Model")
 	container.Name = "ADONIS_NUCLEAREXPLOSION"
 	container.Archivable = false
-	container.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
 	container.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
 	container.Parent = workspace
 	table.insert(nukeIgnore, container)
