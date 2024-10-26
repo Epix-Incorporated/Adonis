@@ -1730,7 +1730,7 @@ return function(Vargs, GetEnv)
 
 		GetAliases = function(player)
 			local aliases = table.clone(Variables.Aliases)
-			local pData = player and Core.GetPlayer(player))
+			local pData = player and Core.GetPlayer(player)
 
 			if pData and pData.Aliases then
 				for alias, command in pData.Aliases do
