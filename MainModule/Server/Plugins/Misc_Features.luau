@@ -33,7 +33,7 @@ return function(Vargs, GetEnv)
 	service.CloneTable = function(tbl)
 		return getmetatable(tbl) and setmetatable(table.clone(tbl), {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
 	end
-	Remote.UnEncrypted = setmetatable({}, {
+	Remote.UnEncrypted = setmetatable({}, { -- TODO: Start adding a server.Messages message and remove later
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
 			Remote.Commands[ind] = val
@@ -55,9 +55,9 @@ return function(Vargs, GetEnv)
 		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
 	end
 	for k, v in {-- Legacy aliases
-		[`{Settings.Prefix}giveppoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end`,
-		[`{Settings.Prefix}giveplayerpoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end`,
-		[`{Settings.Prefix}sendplayerpoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end`,
+		[`{Settings.Prefix}giveppoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
+		[`{Settings.Prefix}giveplayerpoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
+		[`{Settings.Prefix}sendplayerpoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
 		[`{Settings.Prefix}flyclip <player>"] = `{Settings.Prefix}fly <player> true`;
 		[`{Settings.Prefix}showlogs true <player>"] = `{Settings.Prefix}showlogs <player> true`; -- TODO: Remove legacy :showlogs aliases, only temporarily here.
 		[`{Settings.Prefix}showlogs false <player>"] = `{Settings.Prefix}showlogs <player> false`;
@@ -75,6 +75,8 @@ return function(Vargs, GetEnv)
 	HTTP.CheckHttp = function()
 		return HTTP.HttpEnabled
 	end
+	-- TODO: Remove \\/
+	service.OwnsAsset = service.CheckAssetOwnership
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end
