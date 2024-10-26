@@ -485,6 +485,7 @@ return function(Vargs, env)
 							task.wait(0.01)
 						end
 
+						task.wait(2.5)
 						audio:Destroy()
 						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
@@ -506,7 +507,7 @@ return function(Vargs, env)
 			Description = "Stops zawarudo";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				if not Variables.ZaWarudoDebounce then
+				if not Variables.ZaWarudoDebounce and Variables.ZaWarudo then
 					Variables.ZaWarudoDebounce = true
 					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					local audio = service.New("Sound", service.SoundService)
