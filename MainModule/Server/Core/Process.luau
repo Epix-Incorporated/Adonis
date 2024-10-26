@@ -139,7 +139,7 @@ return function(Vargs, GetEnv)
 					})
 
 					window:Ready()
-			]]})
+			]])})
 		end
 
 		--// Load client onto existing players
