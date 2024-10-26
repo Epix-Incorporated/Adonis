@@ -42,8 +42,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function AfterInit(data)
-		server.Variables.CodeName = service.HttpService:GenerateGUID(false)
-
 		Variables.RunAfterInit = nil
 		Logs:AddLog("Script", "Finished Variables AfterInit")
 	end
@@ -55,7 +53,7 @@ return function(Vargs, GetEnv)
 		Init = Init,
 		RunAfterInit = AfterInit,
 		ZaWarudo = false,
-		CodeName = math.random(),
+		CodeName = service.HttpService:GenerateGUID(false),
 		IsStudio = service.RunService:IsStudio(), -- Used to check if Adonis is running inside Roblox Studio as things like TeleportService and DataStores (if API Access is disabled) do not work in Studio
 		AuthorizedToReply = {},
 		FrozenObjects = {},
