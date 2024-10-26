@@ -63,10 +63,7 @@ return function(data, env)
 		Shuffle = false,
 		Autoplay = false
 	}
-	local fakePlaylist = {
-		Position = 0,
-		nil
-	}
+	local fakePlaylist = {Position = 0}
 	local getRequestMade = service.GoodSignal.new()
 
 	if canUseGlobal then
@@ -80,7 +77,7 @@ return function(data, env)
 			elseif args[2] == "Playlist" then
 				return fakePlaylist
 			else
-				error(string.format(`The index {args[2]} is not supported with compatibility get!`), 2)
+				error(`The index {args[2]} is not supported with compatibility get!`, 2)
 			end
 		elseif args[1] == "newindex" then
 			propertyCache[args[2]] = args[3]
