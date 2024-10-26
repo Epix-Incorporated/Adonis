@@ -95,7 +95,7 @@ return function(Vargs, GetEnv)
 		task.spawn(function()
 			local oldVer = tonumber(Core.GetData("VersionNumber"))
 
-			if oldVer and server.Version and newVer > server.Version then
+			if oldVer and server.Version and server.Version > oldVer then
 				Process.SaveDatastoreVersionDebounce = true
 				table.insert(server.Messages, {
 					Level = 1;
