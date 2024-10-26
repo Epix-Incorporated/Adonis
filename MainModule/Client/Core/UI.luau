@@ -114,21 +114,35 @@ return function(Vargs, GetEnv)
 
 		LoadModule = function(module, data, env)
 			data = data or {}
+			local function safeTableClone(t) -- TODO: Make RFC on Luau repo to allow table.clone to work with closed metatables
+				local success, result = pcall(table.clone, t)
 
+				if success then
+					return result
+				else
+					local newT = setmetatable({}, {__index = function(_, k) return t[k] end})
+
+					for k, v in t do
+						newT[k] = v
+					end
+
+					return newT
+				end
+			end
 			local ran, func = pcall(require, module)
-			local newEnv = GetEnv(env, { -- // Is this really necessary?
+			local newEnv = GetEnv(env, {
 				script = module,
-				client = setmetatable(table.clone(client), {__index = function(_, k) return client[k] end}),
-				service = setmetatable(table.clone(service), {__index = function(_, k) return service[k] end})
+				client = safeTableClone(client),
+				service = safeTableClone(service)
 			})
 
 			if newEnv.service.Threads then
 				newEnv.service.Threads = table.clone(service.Threads)
 			end
 
-			for i,v in newEnv.client do -- // Is this really necessary?
+			for i,v in newEnv.client do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
-					newEnv.client[i] = setmetatable(table.clone(v), {__index = function(_, k) return v[k] end})
+					newEnv.client[i] = safeTableClone(v)
 				end
 			end
 
