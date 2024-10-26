@@ -1727,5 +1727,18 @@ return function(Vargs, GetEnv)
 			Functions.Hint(`You don't have permission to {actionName} {service.FormatPlayer(target)}`, {p})
 			return false
 		end;
+
+		GetAliases = function(player)
+			local aliases = table.clone(Variables.Aliases)
+			local pData = player and Core.GetPlayer(player))
+
+			if pData and pData.Aliases then
+				for alias, command in pData.Aliases do
+					aliases[alias] = command
+				end
+			end
+
+			return aliases
+		end;
 	}
 end
