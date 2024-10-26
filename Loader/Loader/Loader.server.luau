@@ -210,6 +210,7 @@ else
 				yxpcall(function()
 					module = loadModuleAsset(data.Backup)
 				end, function(reason)
+					module = nil
 					warn(`FATAL ERROR! Failed to load Adonis backup MainModule {moduleId} via :LoadAsset() method due to {reason}! Adonis can't be booted up! Please contact the Adonis helpers immediately and add both the regular MainModule and the backup MainModule to your user&group inventory!`)
 				end)
 			end)
