@@ -101,11 +101,11 @@ return function(data, env)
 
 		local entries = {
 			{"Game ID", game.GameId},
-			{"Game Creator", `{service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name} (#{data.CreatorId})`},
+			{"Game Creator", `{((service.GetProductInfo(game.PlaceId) or {Creator = {Name = "[Error]"}}).Creator or {Name = "[Error]"}).Name} (#{data.CreatorId})`},
 			-- selene: allow(incorrect_standard_library_use)
 			{"Creator Type", game.CreatorType.Name},
 			{"Place ID", game.PlaceId},
-			{"Place Name", service.MarketPlace:GetProductInfo(game.PlaceId).Name or "[Error]"},
+			{"Place Name", (service.GetProductInfo(game.PlaceId) or {Name = "[Error"}).Name or "[Error]"},
 			{"Place Version", game.PlaceVersion},
 			"",
 			{"Server Job ID", game.JobId or "[Error]"},
