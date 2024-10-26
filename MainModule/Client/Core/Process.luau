@@ -50,7 +50,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-			Process.RunLast = nil;
+		Process.RunLast = nil;
 	end
 
 	local function RunAfterLoaded(data)
@@ -180,17 +180,17 @@ return function(Vargs, GetEnv)
 			local data = Remote.Get("PlayerData")
 			local adminLevel, isDonor = data.AdminLevel, data.isDonor
 	
-			if service.TextChatService and service.TextChatService.ChatVersion == TextChatService then
+			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 				local function onCommandAdded(command)
 					if not command:IsA("TextChatCommand") then
 						return
 					elseif string.sub(command.Name, 1, 7) ~= "Adonis_" then
 						return
-					elseif not process.TextChatCommands[command.Name] then
-						process.TextChatCommands[command.Name] = command
-					elseif process.TextChatCommands[command.Name] ~= command then
-						process.TextChatCommands[command.Name]:Destroy()
-						process.TextChatCommands[command.Name] = command
+					elseif not Process.TextChatCommands[command.Name] then
+						Process.TextChatCommands[command.Name] = command
+					elseif Process.TextChatCommands[command.Name] ~= command then
+						Process.TextChatCommands[command.Name]:Destroy()
+						Process.TextChatCommands[command.Name] = command
 					end
 
 					local commandLevel = command:GetAttribute("AdminLevel")
