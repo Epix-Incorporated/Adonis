@@ -2556,7 +2556,7 @@ return function(Vargs, env)
 					end
 				end
 
-				local Color = string.lower(args[3]) == "rainbow" and "rainbow" or string.match(args[3], "%d") and Functions.ParseColor3(args[3]) or Functions.ParseBrickColor(args[3], true) or BrickColor.new("White")
+				local Color = args[3] and (string.lower(args[3]) == "rainbow" and "rainbow" or string.match(args[3], "%d") and Functions.ParseColor3(args[3]) or Functions.ParseBrickColor(args[3], true)) or BrickColor.new("White")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local cHumanoidRootPart	= v.Character and v.Character.PrimaryPart or v.Character and v.Character:FindFirstChild("HumanoidRootPart")
