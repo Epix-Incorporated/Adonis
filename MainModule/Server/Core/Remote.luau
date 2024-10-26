@@ -79,6 +79,7 @@ return function(Vargs, GetEnv)
 			PlayerPrefix = true;
 			SpecialPrefix = true;
 			ConsoleKeyCode = true;
+			MusicList = true;
 		};
 
 		--// Settings that are never sent to the client
