@@ -895,7 +895,7 @@ return function(data, env)
 	getSongs(personalTab, client.Functions.Playlist().Playlist or {})
 	local musicList = client.Remote.Get("Variable", "MusicList") or {}
 	getSongs(gameTab, musicList)
-	getSongs(adonisTab, table.move(service.DeepCopy(musicList), 1, #musicList - #client.Remote.Get("Setting", "MusicList"), 1, {}))
+	getSongs(adonisTab, table.move(service.DeepCopy(musicList), 1, #musicList - #(client.Remote.Get("Setting", "MusicList") or {}), 1, {}))
 	activeSongList = availableSongLists["Personal"] or {}
 
 	task.spawn(function()
