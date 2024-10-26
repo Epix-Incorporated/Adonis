@@ -239,7 +239,7 @@ return function(Vargs, GetEnv)
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
 			local disced = false
-			local updateKey = `SERVERPING_{math.random()}`
+			local updateKey = `SERVERPING_{service.HttpService:GenerateGUID(false)}`
 			local replyList = {}
 			local listener = service.Events.ServerPingReplyReceived:Connect(function(jobId, data)
 				if jobId then
