@@ -81,7 +81,7 @@ return function(Vargs, GetEnv)
 						})
 					end
 				},
-				{ -- // Was this really a good idea? Since when should databases run code
+				{
 					Lists = {"Commands", "Command List"},
 					Process = function(card)
 						if not HTTP.Trello.PerformedCommands[tostring(card.id)] then
