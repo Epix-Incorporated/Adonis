@@ -1245,8 +1245,8 @@ return function(Vargs, GetEnv)
 
 				new.Name = player.Name
 				new.Archivable = false
-				new.ModelStreamingBehavior = Enum.ModelStreamingBehavior.Atomic
-				new.LevelOfDetail = Enum.ModelLevel.StreamingMesh
+				new.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+				new.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
 				new:PivotTo(pos * CFrame.Angles(0, math.rad((360/num)*i+90), 0) * CFrame.new((num*0.2)+5, 0, 0) * CFrame.Angles(0, math.pi / 2, 0))
 
 				hum.WalkSpeed = speed
