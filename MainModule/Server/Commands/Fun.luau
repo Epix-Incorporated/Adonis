@@ -1216,7 +1216,6 @@ return function(Vargs, env)
 
 						ufo.Name = "ADONIS_UFO"
 						ufo.Archivable = false
-						ufo.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
 						ufo.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
 						ufo:AddPersistentPlayer(p)
 						ufo.PrimaryPart = primary
@@ -1535,7 +1534,6 @@ return function(Vargs, env)
 						van.PrimaryPart = van.Primary
 						van.Name = "ADONIS_VAN"
 						van.Archivable = false
-						van.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
 						van.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
 						van:AddPersistentPlayer(p)
 						van.Parent = workspace
