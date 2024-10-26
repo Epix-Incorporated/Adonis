@@ -55,18 +55,18 @@ return function(Vargs, GetEnv)
 		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
 	end
 	for k, v in {-- Legacy aliases
-		[`{Settings.Prefix}giveppoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
-		[`{Settings.Prefix}giveplayerpoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
-		[`{Settings.Prefix}sendplayerpoints <player> <amount>"] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
-		[`{Settings.Prefix}flyclip <player>"] = `{Settings.Prefix}fly <player> true`;
-		[`{Settings.Prefix}showlogs true <player>"] = `{Settings.Prefix}showlogs <player> true`; -- TODO: Remove legacy :showlogs aliases, only temporarily here.
-		[`{Settings.Prefix}showlogs false <player>"] = `{Settings.Prefix}showlogs <player> false`;
-		[`{Settings.Prefix}showlogs yes <player>"] = `{Settings.Prefix}showlogs <player> true`;
-		[`{Settings.Prefix}showlogs no <player>"] = `{Settings.Prefix}showlogs <player> false`;
-		[`{Settings.Prefix}showcommandlogs true <player>"] = `{Settings.Prefix}showlogs <player> true`;
-		[`{Settings.Prefix}showcommandlogs false <player>"] = `{Settings.Prefix}showlogs <player> false`;
-		[`{Settings.Prefix}showcommandlogs yes <player>"] = `{Settings.Prefix}showlogs <player> true`;
-		[`{Settings.Prefix}showcommandlogs no <player>"] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}giveppoints <player> <amount>`] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
+		[`{Settings.Prefix}giveplayerpoints <player> <amount>`] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
+		[`{Settings.Prefix}sendplayerpoints <player> <amount>`] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
+		[`{Settings.Prefix}flyclip <player>`] = `{Settings.Prefix}fly <player> true`;
+		[`{Settings.Prefix}showlogs true <player>`] = `{Settings.Prefix}showlogs <player> true`; -- TODO: Remove legacy :showlogs aliases, only temporarily here.
+		[`{Settings.Prefix}showlogs false <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showlogs yes <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showlogs no <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showcommandlogs true <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showcommandlogs false <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showcommandlogs yes <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showcommandlogs no <player>`] = `{Settings.Prefix}showlogs <player> false`;
 	} do
 		if not Variables.Aliases[k] then
 			Variables.Aliases[k] = v
