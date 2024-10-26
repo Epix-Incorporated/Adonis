@@ -1211,7 +1211,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			task.wait(0.5)
+			task.wait(0.6)
 			Functions.HardCrash()
 		end;
 
