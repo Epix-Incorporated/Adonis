@@ -3010,8 +3010,8 @@ return function(Vargs, env)
 							end)
 
 							clone.Archivable = false
-							clone.ModelStreamingBehavior = Enum.ModelStreamingBehavior.Atomic
-							clone.LevelOfDetail = Enum.ModelLevel.StreamingMesh
+							clone.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+							clone.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
 							clone.Parent = workspace
 							if appearenceId and not avatarType then
 								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
