@@ -1278,7 +1278,7 @@ return function(Vargs, GetEnv)
 					Damage = damage;
 					Health = health;
 					WalkSpeed = speed;
-					SpecialKey = math.random();
+					SpecialKey = service.HttpService:GenerateGUID(false);
 				})
 
 				if walk then
