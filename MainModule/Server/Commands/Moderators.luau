@@ -2567,7 +2567,6 @@ return function(Vargs, env)
 						local Model = service.New("Model", {
 							Name = `{v.Name}_ADONISJAIL`,
 							Archivable = false,
-							LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh,
 							ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 						})
 						local top = service.New("Part", {
@@ -3011,7 +3010,6 @@ return function(Vargs, env)
 
 							clone.Archivable = false
 							clone.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
-							clone.LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
 							clone.Parent = workspace
 							if appearenceId and not avatarType then
 								clone.Name = Functions.GetNameFromUserIdAsync(appearenceId)
