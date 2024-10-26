@@ -176,7 +176,7 @@ return function(Vargs, GetEnv)
 			service.Events.CharacterRemoving:Fire()
 		end;
 
-		HandleTextChatCommands()
+		HandleTextChatCommands = function()
 			local data = Remote.Get("PlayerData")
 			local adminLevel, isDonor = data.AdminLevel, data.isDonor
 	
