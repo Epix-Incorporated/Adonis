@@ -1957,7 +1957,7 @@ return function(Vargs, env)
 				local answers = args[2]
 				local anstab = {}
 				local responses = {}
-				local voteKey = `ADONISVOTE{math.random()}`;
+				local voteKey = `ADONISVOTE{service.HttpService:GenerateGUID(false)}`;
 				local players = service.GetPlayers(plr, args[1])
 				local startTime = os.clock();
 
@@ -2042,7 +2042,7 @@ return function(Vargs, env)
 				local answers = args[2]
 				local anstab = {}
 				local responses = {}
-				local voteKey = `ADONISVOTE{math.random()}`;
+				local voteKey = `ADONISVOTE{service.GenerateGUID(false)}`;
 				local players = service.GetPlayers(plr, args[1])
 				local startTime = os.clock();
 
