@@ -486,8 +486,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			else
-				local pData = opts.PlayerData or (p and Core.GetPlayer(p))
-				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg
+				msg = Admin.AliasFormat(Admin.GetAliases(p), msg) or msg
 
 				if string.match(msg, Settings.BatchKey) then
 					return Process.Command(p, msg, opts, false)
