@@ -17,7 +17,6 @@
 	local Variables = Server.Variables;
 	local Commands = Server.Commands;
 
-	local logError = Server.logError
 	local Settings = Server.Settings;
 	local Anti = Server.Anti;
 	local Functions = Server.Functions;
@@ -62,8 +61,8 @@
 			Logs:AddLog("Script", "Successfully loaded reflection metadata to Dex")
 		else
 			Logs:AddLog("Script", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
-			--Logs:AddLog("Error", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
-			logError("Access to HttpService is not enabled! Dex api dump could not be fetched!")
+			Logs:AddLog("Error", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
+			--logError("Access to HttpService is not enabled! Dex api dump could not be fetched!")
 		end
 	end)
 
