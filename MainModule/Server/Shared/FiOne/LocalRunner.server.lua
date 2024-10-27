@@ -1,5 +1,5 @@
 --!native
---!optimise 2
+--!optimize 2
 --[[
 	Description: Wrapper for FiOne multithread closures
 	Author: github@ccuser44
