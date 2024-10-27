@@ -40,6 +40,7 @@ return function(Vargs, GetEnv)
 				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
 				server.HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
 			end
+			Logs:AddLog("Script", "Successfully pooled HttpEnabled")
 		end)
 
 		HTTP.Init = nil;
