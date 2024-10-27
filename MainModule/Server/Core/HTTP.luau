@@ -32,6 +32,16 @@ return function(Vargs, GetEnv)
 			HTTP.Trello.API = require(server.Deps.TrelloAPI)(Settings.Trello_AppKey, Settings.Trello_Token)
 		end
 
+		-- Check HTTP asynchronously
+		task.spawn(function()
+			if service.RunService:IsStudio() then
+				server.HTTP.HttpEnabled = service.HttpService.HttpEnabled
+			else
+				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
+				server.HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
+			end
+		end)
+
 		HTTP.Init = nil;
 		Logs:AddLog("Script", "HTTP Module Initialized")
 	end;
@@ -198,14 +208,4 @@ return function(Vargs, GetEnv)
 			end;
 		};
 	};
-
-	-- Check HTTP asynchronously
-	task.spawn(function()
-		if service.RunService:IsStudio() then
-			server.HTTP.HttpEnabled = service.HttpService.HttpEnabled
-		else
-			local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
-			server.HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
-		end
-	end)
 end
