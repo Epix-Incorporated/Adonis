@@ -23,11 +23,15 @@ return {
 	"(Git/PurpleCreativity) Prevent Anti.RemovePlayer from kicking if in studio (#1605)";
 	"(Git/ccuser44) Make HTTP constant URLs to Variables (#1618)";
 	"(Git/ccuser44) Convert README XML to Lua (#1619)";
-	"(Git/ccuser44) Remove service.CloneTable (#1628)";
 	"(Git/ccuser44) Remove bloat & Fix stuff (#1623)";
 	"(Git/ccuser44) Move Trello commands to a plugin (#1624)";
 	"(Git/ccuser44) Remove unnecessary table.isfrozen check (#1627)";
+	"(Git/ccuser44) Remove service.CloneTable (#1628)";
 	"(Git/ccuser44) Fix leap year handling (#1629)";
+	"(Git/ccuser44) Move rank backwards compatibility to plugin and remove junk (#1630)";
+	"(Git/ccuser44) Move DisableRejoinAtMaxPlayers from Settings to Variables (#1634)";
+	"(Git/ccuser44) Fix erroneous plugins bricking Adonis (#1635)";
+	"(Git/ccuser44) Lock server on soft shutdown after 1 minute (#1638)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
