@@ -31,7 +31,7 @@ return function(Vargs, GetEnv)
 	end
 	server.cPcall, service.cPcall = cPcall, cPcall
 	service.CloneTable = function(tbl)
-		return getmetatable(tbl) and setmetatable(table.clone(tbl), {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
+		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
 	end
 	Remote.UnEncrypted = setmetatable({}, { -- TODO: Start adding a server.Messages message and remove later
 		__newindex = function(_, ind, val)
@@ -83,6 +83,7 @@ return function(Vargs, GetEnv)
 	end
 	-- TODO: Remove \\/
 	service.OwnsAsset = service.CheckAssetOwnership
+	Functions.CatchError = server.Pcall
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end
