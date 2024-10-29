@@ -390,16 +390,6 @@ return function(Vargs, GetEnv)
 			};
 		};
 
-		CatchError = function(func, ...)
-			local ret = {pcall(func, ...)}
-
-			if not ret[1] then
-				logError(ret[2] or "Unknown error occurred")
-			else
-				return unpack(ret, 2)
-			end
-		end;
-
 		GetFakePlayer = function(options)
 			local fakePlayer = service.Wrap(service.New("Folder", {
 				Name = options.Name or "Fake_Player";
