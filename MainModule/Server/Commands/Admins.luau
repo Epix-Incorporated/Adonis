@@ -556,12 +556,10 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local F3X = require(580330877)()
-				do
-					service.New("StringValue", {
-						Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
-						Parent = F3X
-					})
-				end
+				service.New("StringValue", {
+					Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
+					Parent = F3X
+				})
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
