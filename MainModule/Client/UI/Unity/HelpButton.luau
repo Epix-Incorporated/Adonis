@@ -70,16 +70,27 @@ return function(data, env)
 	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	--end
 
-	toggle.MouseButton1Down:Connect(
-		function()
-			local found = client.UI.Get("UserPanel", nil, true)
-			if found then
-				found.Object:Destroy()
-			else
-				client.UI.Make("UserPanel", {})
-			end
+	toggle.MouseButton1Down:Connect(function()
+		if (client.Functions.CheckDate(1, 4) or client.Functions.CheckDate(31, 10)) and client.Functions.PromptClown then -- OH NO!!!!! :O
+			client.Functions.PromptClown()
 		end
-	)
+
+		local found = client.UI.Get("UserPanel", nil, true)
+		if found then
+			found.Object:Destroy()
+		else
+			client.UI.Make("UserPanel", {})
+		end
+	end)
+
+	-- Preload clown assets to prevent 
+	if (client.Functions.CheckDate(1, 4) or client.Functions.CheckDate(31, 10)) and not client.Variables.MaximusTrollicus and client.Functions.PreloadClown then
+		local connection
+		connection = toggle.MouseEnter:Connect(function()
+			client.Functions.PreloadClown()
+			connection:Disconnect()
+		end)
+	end
 
 	gTable:Ready()
 end

@@ -12,6 +12,8 @@ return function(data, env)
 	end
 
 	local UI = client.UI
+	local Variables = client.Variables
+	local Functions = client.Functions
 
 	local gui = service.New("ScreenGui", {ResetOnSpawn = false})
 	local gTable = UI.Register(gui)
@@ -40,6 +42,10 @@ return function(data, env)
 	--end
 
 	toggle.MouseButton1Down:Connect(function()
+		if (client.Functions.CheckDate(1, 4) or client.Functions.CheckDate(31, 10)) and client.Functions.PromptClown then -- OH NO!!!!! :O
+			client.Functions.PromptClown()
+		end
+
 		local found = UI.Get("UserPanel", nil, true)
 		if found then
 			found.Object:Destroy()
@@ -47,6 +53,15 @@ return function(data, env)
 			UI.Make("UserPanel")
 		end
 	end)
+
+	-- Preload clown assets to prevent 
+	if (client.Functions.CheckDate(1, 4) or client.Functions.CheckDate(31, 10)) and not client.Variables.MaximusTrollicus and client.Functions.PreloadClown then
+		local connection
+		connection = toggle.MouseEnter:Connect(function()
+			client.Functions.PreloadClown()
+			connection:Disconnect()
+		end)
+	end
 
 	gTable:Ready()
 end
