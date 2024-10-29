@@ -38,7 +38,7 @@ return function(Vargs, GetEnv)
 	end
 	-- TODO: Remove \\/
 	service.OwnsAsset = service.CheckAssetOwnership
-	Functions.CatchError = server.Pcall
+	Functions.CatchError = client.Pcall
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end
