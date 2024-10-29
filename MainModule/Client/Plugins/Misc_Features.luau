@@ -15,6 +15,9 @@ return function(Vargs, GetEnv)
 		end, ...)
 	end
 	client.cPcall, service.cPcall = cPcall, cPcall
+	service.CloneTable = function(tbl)
+		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
+	end
 	Remote.UnEncrypted = setmetatable({}, {
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
@@ -33,6 +36,9 @@ return function(Vargs, GetEnv)
 		end
 		return table.concat(Res)
 	end
+	-- TODO: Remove \\/
+	service.OwnsAsset = service.CheckAssetOwnership
+	Functions.CatchError = server.Pcall
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end
