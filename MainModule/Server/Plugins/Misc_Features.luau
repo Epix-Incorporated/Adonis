@@ -61,9 +61,9 @@ return function(Vargs, GetEnv)
 		end
 	end
 	for k, v in {-- Legacy aliases
-		[`{Settings.Prefix}giveppoints <player> <amount>`] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
-		[`{Settings.Prefix}giveplayerpoints <player> <amount>`] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
-		[`{Settings.Prefix}sendplayerpoints <player> <amount>`] = `{Settings.Prefix}script local Players = game:GetService("Players") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], "<player>")) do game:GetService("PointsService"):AwardPoints(v.UserId, <amount>) end`,
+		[`{Settings.Prefix}giveppoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}giveplayerpoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}sendplayerpoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
 		[`{Settings.Prefix}flyclip <player>`] = `{Settings.Prefix}fly <player> true`;
 		[`{Settings.Prefix}showlogs true <player>`] = `{Settings.Prefix}showlogs <player> true`; -- TODO: Remove legacy :showlogs aliases, only temporarily here.
 		[`{Settings.Prefix}showlogs false <player>`] = `{Settings.Prefix}showlogs <player> false`;
