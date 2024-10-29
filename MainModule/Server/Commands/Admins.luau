@@ -575,7 +575,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"insert", "ins"};
 			Args = {"id"};
-			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
+			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or Roblox's inventory";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local id = string.lower(args[1])
