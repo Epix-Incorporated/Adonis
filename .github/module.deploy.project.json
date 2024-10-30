@@ -1,5 +1,6 @@
 {
 	"name": "MainModule",
+	"emitLegacyScripts": true,
 	"tree": {
 		"$path": "../MainModule"
 	}
