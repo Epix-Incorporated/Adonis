@@ -272,7 +272,6 @@ return function(data, env)
 			lastSoundIdEvent:Disconnect()
 		end
 
-		--TODO: Handle blank soundIds
 		lastSoundIdEvent = rawSound:GetPropertyChangedSignal("SoundId"):Connect(function()
 			local soundId = rawSound.SoundId
 			local newSelected = activeSoundIdCache[soundId]
