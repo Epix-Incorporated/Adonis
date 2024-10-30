@@ -34,6 +34,17 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 local InsertService = game:GetService("InsertService")
 
+-- Support yieldable xpcall
+local function yxpcall(f, callback, ...)
+	local args = table.pack(pcall(f, ...))
+
+	if not args[1] then
+		callback(args[2])
+	else
+		return table.unpack(args, 2)
+	end
+end
+
 local function loadModuleAsset(moduleId: number)
 	local asset = InsertService:LoadAsset(moduleId)
 
@@ -52,17 +63,6 @@ local function loadModuleAsset(moduleId: number)
 	end
 
 	error(`Failed to find any matching ModuleScripts for {moduleId}.`)
-end
-
--- Support yieldable xpcall
-local function yxpcall(f, callback, ...)
-	local args = table.pack(pcall(f, ...))
-
-	if not args[1] then
-		callback(args[2])
-	else
-		return table.unpack(args, 2)
-	end
 end
 
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
