@@ -1,5 +1,3 @@
-'⌛needs PoF':
-  - '^(?!.*What part of Adonis is this related to)(?i:(?!.*(p\-?o\-?f|proof[\-_\s]*of[\-_\s]*work)\:?[\r\n]*)).*$'
 '⚡ command':
   - '### What part of Adonis is this related to\?\s+Command'
 '📱 UI':
@@ -12,5 +10,10 @@
   - '### What part of Adonis is this related to\?\s+GitHub Repository'
 '🖇️ loader':
   - '### What part of Adonis is this related to\?\s+Loader/Settings'
+'❌ invalid':
+  - '### What part of Adonis is this related to\?\s+F3X/Building Tools'
 '🎏 miscellaneous':
   - '### What part of Adonis is this related to\?\s+Other'
+'⌛needs PoF':
+  - '^(?!.*What part of Adonis is this related to)(?i:(?!.*(p\-?o\-?f|proof[\-_\s]*of[\-_\s]*work)\:?[\r\n]*)).*$'
+  
