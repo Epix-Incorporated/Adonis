@@ -55,6 +55,9 @@ jobs:
       - name: Set DebugMode off
         run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.luau
         
+      - name: Set NightlyMode off
+        run: sed -i "s/NightlyMode = true/NightlyMode = false/g" Loader/Loader/Loader.server.luau
+        
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
      
