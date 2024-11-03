@@ -424,7 +424,7 @@ return function(Vargs, GetEnv)
 		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
 			local pData = data or Core.GetPlayer(p)
 			if pData.Client.HideChatCommands then
-				if Variables.BlankPrefix and
+				if Admin.BlankPrefix and
 					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
 					local isCMD = Admin.GetCommand(message)
 					if isCMD then
@@ -1193,7 +1193,7 @@ return function(Vargs, GetEnv)
 			for ind, data in Commands do
 				if type(data) == "table" then
 					for i,cmd in data.Commands do
-						if data.Prefix == "" then Variables.BlankPrefix = true end
+						if data.Prefix == "" then Admin.BlankPrefix = true end
 						tempPrefix[data.Prefix] = true
 						tempTable[string.lower(data.Prefix..cmd)] = ind
 					end
@@ -1263,7 +1263,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetCommand = function(Command)
-			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
+			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Admin.BlankPrefix then
 				local matched
 				matched = if string.find(Command, Settings.SplitKey) then
 					string.match(Command, `^(%S+){Settings.SplitKey}`)
