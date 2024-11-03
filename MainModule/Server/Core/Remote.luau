@@ -1347,56 +1347,51 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Encrypt = function(str: string?, key: string?, cache: {[string]: any}?)
+		Encrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
 			cache = cache or Remote.EncodeCache or {}
+			local keyCache = cache[key] or {}
 
 			if not key or not str then
 				return str
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
+			elseif keyCache[str] then
+				return keyCache[str]
 			else
-				local byte = string.byte
-				local sub = string.sub
-				local char = string.char
-
-				local keyCache = cache[key] or {}
-				local endStr = {}
+				local writeu8, readu8 = buffer.writeu8, buffer.readu8
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
 
 				for i = 1, #str do
-					local keyPos = (i % #key) + 1
-					endStr[i] = char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
+					local keyPos = (i % keyLen) + 1
+					writeu8(rawStr, (readu8(rawStr, i) + readu8(rawKey, keyPos)) % 126 + 1)
 				end
 
-				endStr = table.concat(endStr)
 				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
 			end
 		end;
 
-		Decrypt = function(str: string?, key: string?, cache: {[string]: any}?)
+		Decrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
 			cache = cache or Remote.DecodeCache or {}
+			local keyCache = cache[key] or {}
 
 			if not key or not str then
 				return str
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
+			elseif keyCache[str] then
+				return keyCache[str]
 			else
-				local keyCache = cache[key] or {}
-				local byte = string.byte
-				local sub = string.sub
-				local char = string.char
-				local endStr = {}
+				local writeu8, readu8 = buffer.writeu8, buffer.readu8
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
 
 				for i = 1, #str do
-					local keyPos = (i % #key)+1
-					endStr[i] = char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
+					local keyPos = (i % keyLen) + 1
+					writeu8(rawStr, (readu8(rawStr, i) - readu8(rawKey, keyPos)) % 126 - 1)
 				end
 
-				endStr = table.concat(endStr)
 				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
 			end
 		end;
 	};
