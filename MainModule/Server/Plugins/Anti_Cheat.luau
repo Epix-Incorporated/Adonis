@@ -1,4 +1,3 @@
-
 --// Anti-Exploit
 return function(Vargs, GetEnv)
 	local server = Vargs.Server;
@@ -27,7 +26,7 @@ return function(Vargs, GetEnv)
 				player.CharacterAdded:Wait()
 			end
 
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or server.Data.NightlyMode then
 				Anti.CharacterCheck(player)
 			end
 		end
