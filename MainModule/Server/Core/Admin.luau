@@ -780,7 +780,7 @@ return function(Vargs, GetEnv)
 			if type(p) == "userdata" and p:IsA("Player") then
 				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-				if Settings.CreatorPowers and table.find({1237666, 76328606, 698712377}, p.UserId) then
+				if Settings.CreatorPowers and table.find(Variables.DeveloperWhitelist, p.UserId) then
 					return true
 				end
 
