@@ -108,7 +108,6 @@ return function(Vargs, GetEnv)
 	server.Core = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		DataQueue = {};
 		DataCache = {};
 		PlayerData = {};
 		CrossServerCommands = {};
@@ -119,7 +118,6 @@ return function(Vargs, GetEnv)
 		ScriptCache = {};
 		Connections = {};
 		BytecodeCache = {};
-		LastEventValue = 1;
 		SavedPlayerData = {};
 
 		Variables = {
