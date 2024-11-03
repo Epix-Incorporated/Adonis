@@ -557,7 +557,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			})) or {}
 			for i,v in tab do
-				if typeof(v) == "table" then 
+				if type(v) == "table" then 
 					new[i] = service.DeepCopy(v)
 				else
 					new[i] = v
@@ -576,11 +576,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					event:Disconnect()
 				end
 			end)
-		end;
-
-		AltUnpack = function(args,shift)
-			if shift then shift = shift-1 end
-			return args[1+(shift or 0)],args[2+(shift or 0)],args[3+(shift or 0)],args[4+(shift or 0)],args[5+(shift or 0)],args[6+(shift or 0)],args[7+(shift or 0)],args[8+(shift or 0)],args[9+(shift or 0)],args[10+(shift or 0)]
 		end;
 
 		ExtractLines = function(str)
