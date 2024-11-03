@@ -332,11 +332,7 @@ return function(Vargs, GetEnv)
 					errorMessages["namecallInstance"] = {err, err2, err3}
 				end
 
-				if not compareTables(errorMessages["namecallInstance"], {err, err2, err3}) then
-					return not isStudio
-				else
-					return false
-				end
+				return not compareTables(errorMessages["namecallInstance"], {err, err2, err3}) and not isStudio
 			end},
 			indexEnum = table.freeze{"kick", function()
 				local callstackInvalid = false
