@@ -2326,7 +2326,7 @@ return function(Vargs, env)
 						end)
 					end
 					-- Remove Dex
-					for _, name in {"Dex_Explorer", "Dex_Client", "Dex_Intro", "Dex_MainMenu", "Dex_ExplorerSelections", "Dex_Context", "Dex_Window", "Dex_SidesGui", "Dex_BrickColor", "Dex_AboutWindow", "Dex_SettingsWindow"} do
+					for _, name in Variables.DexNames do
 						task.spawn(Remote.RemoveLocal, v, name, "PlayerGui")
 					end
 				end
