@@ -327,23 +327,13 @@ return function(Vargs, GetEnv)
 				pcall(metamethod, rawGame, proxyDetector)
 
 				if callstackInvalid or success or success2 or success3 then
-					if not isStudio then
-						return true
-					else
-						print("[Anti-Hook]: Please disable your debugger, scriptwatch and all other debugging tools as well as script tracking plugins, pentesting tools, exploit simulators and all other tools that use debugging APIs. Beware of any plugins or high security context scripts as they may be using debugging APIs. If this issue persist please issue a help ticket to Epix Incorporated")
-						return false
-					end
+					return not isStudio
 				elseif not errorMessages["namecallInstance"] then
 					errorMessages["namecallInstance"] = {err, err2, err3}
 				end
 
 				if not compareTables(errorMessages["namecallInstance"], {err, err2, err3}) then
-					if not isStudio then
-						return true
-					else
-						print("[Anti-Hook]: Please disable your debugger, scriptwatch and all other debugging tools as well as script tracking plugins, pentesting tools, exploit simulators and all other tools that use debugging APIs. Beware of any plugins or high security context scripts as they may be using debugging APIs. If this issue persist please issue a help ticket to Epix Incorporated")
-						return false
-					end
+					return not isStudio
 				else
 					return false
 				end
