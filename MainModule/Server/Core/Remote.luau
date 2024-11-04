@@ -1165,31 +1165,32 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		OldGet = function(p: Player, com: string, ...)
+		OldGet = function(p: Player, com: string, ...) -- TODO: Add oldget (both on client and server) to backwards compatibility plugin
 			local keys = Remote.Clients[tostring(p.UserId)]
+
 			if keys and keys.RemoteReady == true then
 				local returns, finished
 				local key = service.HttpService:GenerateGUID(false)
-				local Yield = service.Yield();
-				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Release() end)
+				local Yield = service.Yield()
+				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = table.pack(...) Yield:Release() end)
 
 				Remote.PendingReturns[key] = true
-				Remote.Send(p,"GetReturn",com,key,...)
+				Remote.Send(p, "GetReturn", com, key, ...)
 
-				print("GETTING RETURN");
+				print("GETTING RETURN")
 				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
 					task.delay(600, function() if not finished then event:Fire() end end)
-					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
-					Yield:Wait();
-					Yield:Destroy();
+					print(string.format("WAITING FOR RETURN %s", tostring(returns)))
+					Yield:Wait()
+					Yield:Destroy()
 
-					print(string.format("WE GOT IT! %s", tostring(returns)));
+					print(string.format("WE GOT IT! %s", tostring(returns)))
 					pEvent:Disconnect()
 					pEvent = nil
 				end
 
-				print("GOT RETURN");
+				print("GOT RETURN")
 				event:Disconnect()
 				event = nil
 
@@ -1197,7 +1198,7 @@ return function(Vargs, GetEnv)
 					if returns[1] == "__ADONIS_RETURN_ERROR" then
 						error(returns[2])
 					else
-						return unpack(returns)
+						return table.unpack(returns)
 					end
 				else
 					return
