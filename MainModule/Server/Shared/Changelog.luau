@@ -32,6 +32,8 @@ return {
 	"(Git/ccuser44) Move DisableRejoinAtMaxPlayers from Settings to Variables (#1634)";
 	"(Git/ccuser44) Fix erroneous plugins bricking Adonis (#1635)";
 	"(Git/ccuser44) Lock server on soft shutdown after 1 minute (#1638)";
+	"(Git/ccuser44) Convert encryption to use buffers (#1652)";
+	"(Git/ccuser44) Move !wait from parser logic to a command (#1631)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
