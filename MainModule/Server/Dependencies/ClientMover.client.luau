@@ -128,6 +128,7 @@ do
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
 end
 
+-- ccuser44 was here ^_^
 local players = game:GetService("Players")
 local player = players.LocalPlayer
 local folder = script.Parent
@@ -225,7 +226,6 @@ if module and module:IsA("ModuleScript") then
 	print("Changing child parent...")
 	folder.Name = ""
 	wait(0.01)
-	print("Destroying parent...")
 	folder.Parent = nil --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
 
 	print("Debug: Loading the client?")
@@ -245,7 +245,7 @@ if module and module:IsA("ModuleScript") then
 
 		print(`Got return: {ret}`)
 		if ret ~= "SUCCESS" then
-			realWarn(ret)
+			warn("Loading failed! Reason", ret)
 			Kill("ACLI: Loading Error [Bad Module Return]")
 		else
 			print("Debug: The client was found and loaded?")
