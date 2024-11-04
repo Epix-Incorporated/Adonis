@@ -122,7 +122,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local function taskFunc(...)
 				TrackedTasks[index] = data
 				data.Status = "Running"
-				data.Returns = {xpcall(func, errHandler, ...)}
+				data.Returns = table.pack(xpcall(func, errHandler, ...))
 
 				if not data.Returns[1] then
 					data.Status = "Errored"
@@ -131,7 +131,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 
 				TrackedTasks[index] = nil
-				return unpack(data.Returns)
+				return table.unpack(data.Returns)
 			end
 
 			if isThread then
@@ -695,12 +695,12 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 					end
 
-					local args = {pcall(func, ...)}
+					local args = table.pack(pcall(func, ...))
 					local success = args[1]
 					if not success then
 						warn(args[2])
 					else
-						return unpack(args, 2)
+						return table.unpack(args, 2)
 					end
 				end
 			})
