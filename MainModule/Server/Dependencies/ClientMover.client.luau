@@ -219,7 +219,7 @@ if module and module:IsA("ModuleScript") then
 	print(`FOUND?! {found}`)
 	print(`LOOKED FOR : {folder.Name}`)
 	if found then
-		print("REMOVED!")
+		warn("REMOVED!")
 		found.Parent = nil --found:Destroy()
 	end
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
