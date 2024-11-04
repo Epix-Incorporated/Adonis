@@ -947,7 +947,7 @@ return function(Vargs, env)
 				end;
 
 				newSession:ConnectEvent(function(p, cmd, ...)
-					local args = {...}
+					local args = table.pack(...)
 
 					if not p then -- System event(s)
 						if cmd == "LastUserRemoved" then
@@ -957,6 +957,7 @@ return function(Vargs, env)
 						if cmd == "SendMessage" then
 							local message = string.sub(tostring(args[1]), 1, 140)
 							local filtered = service.BroadcastFilter(message, p)
+
 							if filtered ~= message then
 								Remote.MakeGui(p, "Output", {
 									Title = "Filter error",
@@ -984,7 +985,6 @@ return function(Vargs, env)
 							end
 						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
 							newSession:RemoveUser(p)
-
 							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
 							newSession:SendToUsers("UpdatePeerList", getPeerList())
 
@@ -994,7 +994,6 @@ return function(Vargs, env)
 							end
 						elseif cmd == "EndSession" and p == plr then
 							systemMessage("<i>Session ended</i>")
-
 							newSession:End()
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
 							local player = args[1]
@@ -1002,7 +1001,6 @@ return function(Vargs, env)
 							if player then
 								newSession:AddUser(player)
 								newSession:SendToUser(player, "AddedToSession")
-
 								systemMessage(string.format("<i>%s added %s to the session</i>", p.Name, player.Name))
 								Remote.MakeGui(player, "PrivateChat", {
 									Owner = plr;
@@ -1011,11 +1009,10 @@ return function(Vargs, env)
 									History = history;
 									CanManageUsers = Admin.CheckAdmin(player);
 								})
-
-								newSession:SendToUsers("UpdatePeerList", getPeerList());
+								newSession:SendToUsers("UpdatePeerList", getPeerList())
 							end
 						elseif cmd == "RemovePlayerFromSession" and (p == plr or Admin.CheckAdmin(p)) then
-							local peer = args[1];
+							local peer = args[1]
 
 							if peer then
 								for pr in newSession.Users do
@@ -1037,22 +1034,21 @@ return function(Vargs, env)
 				systemMessage("<i>Chat session started</i>")
 
 				if args[2] then
-					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
-
+					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
 					local data = {
 						Name = plr.Name;
 						DisplayName = plr.DisplayName;
 						UserId = plr.UserId;
 						Icon = status and gotIcon or "rbxasset://textures/ui/GuiImagePlaceholder.png";
-					};
+					}
 
 					table.insert(history, {
 						Sender = data;
 						Message = args[2];
-					});
+					})
 				end
 
-				newSession:AddUser(plr);
+				newSession:AddUser(plr)
 				Remote.MakeGui(plr, "PrivateChat", {
 					Owner = plr;
 					SessionKey = newSession.SessionKey;
@@ -1064,7 +1060,6 @@ return function(Vargs, env)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v ~= plr then
 						newSession:AddUser(v)
-
 						Remote.MakeGui(v, "PrivateChat", {
 							Owner = plr;
 							SessionKey = newSession.SessionKey;
