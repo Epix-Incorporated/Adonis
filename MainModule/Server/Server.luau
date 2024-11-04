@@ -280,6 +280,7 @@ local function CleanUp()
 	print("Unloading complete")
 end;
 
+-- TODO: Re-add codename to server but remove it from Variables and directly bake it in to the client too without a remote
 server = {
 	Running = true;
 	Modules = {};
@@ -288,12 +289,10 @@ server = {
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
 	ServerStartTime = os.time();
-	CommandCache = {};
 };
 
 locals = {
 	server = server;
-	CodeName = "";
 	Settings = server.Settings;
 	HookedEvents = HookedEvents;
 	ErrorLogs = ErrorLogs;
@@ -524,7 +523,6 @@ return service.NewProxy({
 		server.Client = Folder.Parent.Client
 
 		locals.Settings = server.Settings
-		locals.CodeName = server.CodeName
 
 		--// THIS NEEDS TO BE DONE **BEFORE** ANY EVENTS ARE CONNECTED
 		if server.Settings.HideScript and data.Model then
