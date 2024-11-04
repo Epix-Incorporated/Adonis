@@ -580,9 +580,9 @@ return function(Vargs, GetEnv)
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
 						local oError = error
-						local newenv = GetEnv(getfenv(),{
-							print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
-							warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+						local newenv = GetEnv(getfenv(), {
+							print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
+							warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
 							error = function(reason, level)
 								if level ~= nil and type(level) ~= "number" then
 									oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
@@ -612,7 +612,7 @@ return function(Vargs, GetEnv)
 						if func then
 							func()
 						else
-							Remote.Terminal.LiveOutput(p,`ERROR: {string.match(err, ":(.*)") or err}`)
+							Remote.Terminal.LiveOutput(p, `ERROR: {string.match(err, ":(.*)") or err}`)
 						end
 					end
 				};
@@ -650,7 +650,7 @@ return function(Vargs, GetEnv)
 					Description = "Disconnects the specified player from the server";
 					Function = function(p, args, data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
+						if #plrs > 0 then
 							local ret = {}
 							for _,v in plrs do
 								v:Kick(args[2] or "Disconnected by server")
@@ -670,8 +670,8 @@ return function(Vargs, GetEnv)
 					Description = "Calls :BreakJoints() on the target player's character";
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
-							for _,v in plrs do
+						if #plrs > 0 then
+							for _, v in plrs do
 								local ret = {}
 								local char = v.Character
 								if char and char.ClassName == "Model" then
@@ -695,9 +695,9 @@ return function(Vargs, GetEnv)
 					Description = "Calls :LoadCharacter() on the target player";
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
+						if #plrs > 0 then
 							local ret = {}
-							for _,v in plrs do
+							for _, v in plrs do
 								v:LoadCharacter()
 								table.insert(ret, `Respawned {service.FormatPlayer(v)}`)
 							end
@@ -717,7 +717,7 @@ return function(Vargs, GetEnv)
 							p:Kick(args[1] or "No Given Reason")
 						end)
 
-						for _,v in service.Players:GetPlayers() do
+						for _, v in service.Players:GetPlayers() do
 							v:Kick(args[1] or "No Given Reason")
 						end
 					end
@@ -840,7 +840,7 @@ return function(Vargs, GetEnv)
 					local value = args[2]
 
 					if type(setting) == "string" then
-						if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+						if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 							local orig = Settings[setting]
 							for _, v in Commands do
 								if v.Prefix == orig then
@@ -1000,22 +1000,22 @@ return function(Vargs, GetEnv)
 					local Variable = se[Name]
 
 					local oError = error
-					local newenv = GetEnv(getfenv(),{
-						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
-						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+					local newenv = GetEnv(getfenv(), {
+						print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
+						warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
 						error = function(reason, level)
 							if level ~= nil and type(level) ~= "number" then
 								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 							end
 
-							Remote.MakeGui(p, "Output",{Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
+							Remote.MakeGui(p, "Output", {Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
 							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 						end;
 					})
 
 					-- TODO: Maybe make it not work with the server Env?
-					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`,function()
-						local func,err = Core.Loadstring(Variable["Script"], newenv)
+					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`, function()
+						local func, err = Core.Loadstring(Variable["Script"], newenv)
 						if func then
 							local Succ,Err = pcall(function()
 								func()
