@@ -235,15 +235,15 @@ return function(Vargs, GetEnv)
 				print("THE SERVER IS ASKING US FOR A RETURN");
 				local com = args[1]
 				local key = args[2]
-				local parms = {unpack(args, 3)}
+				local parms = table.pack(table.unpack(args, 3))
 				local retfunc = Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,parms)}) or {}
+				local retable = retfunc and table.pack(pcall(retfunc, parms)) or {}
 				if retable[1] ~= true then
 					logError(retable[2])
 					Remote.Send("GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
 					print("SENT RETURN");
-					Remote.Send("GiveReturn", key, unpack(retable,2))
+					Remote.Send("GiveReturn", key, table.unpack(retable, 2))
 				end
 			end;
 
@@ -252,7 +252,7 @@ return function(Vargs, GetEnv)
 				if Remote.PendingReturns[args[1]] then
 					print("VALID PENDING RETURN")
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:Fire(unpack(args, 2))
+					service.Events[args[1]]:Fire(table.unpack(args, 2))
 				end
 			end;
 
