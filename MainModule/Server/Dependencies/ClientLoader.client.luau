@@ -2,7 +2,7 @@
 --// ACLI - Adonis Client Loading Initializer
 if true then return end --// #DISABLED
 
-local DebugMode = script:FindFirstChild("ADONIS_DEBUGMODE_ENABLED", true) ~= nil
+local DebugMode = script.Parent:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") ~= nil
 local otime = os.time
 local time = time
 local game = game
