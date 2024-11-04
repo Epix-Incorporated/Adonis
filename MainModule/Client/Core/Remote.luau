@@ -452,7 +452,7 @@ return function(Vargs, GetEnv)
 			event:Disconnect()
 
 			if returns then
-				if assert(returns[1] == "__ADONIS_RETURN_ERROR" then
+				if returns[1] == "__ADONIS_RETURN_ERROR" then
 					error(returns[2])
 				else
 					return table.unpack(returns)
