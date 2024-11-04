@@ -115,7 +115,7 @@ local function lockCheck(obj)
 end
 
 local function loadingTime()
-	setfenv(1,{})
+	setfenv(1, {})
 	print("LoadingTime Called:", tostring(time() - start))
 end
 
@@ -143,7 +143,7 @@ local function checkChild(child)
 		callCheck(clientModule)
 
 		print("Getting origName")
-		origName = (nameVal and nameVal.Value) or child.Name
+		origName = nameVal and nameVal.Value or child.Name
 		prit(`Got name: {origName}`)
 
 		print("Changing child parent...")
@@ -242,11 +242,11 @@ else
 		warn("PlayerGui not found after 10 minutes")
 		Kick(player, "ACLI: PlayerGui Never Appeared (Waited 10 Minutes)")
 	else
-		playerGui.Changed:Connect(function()
-			if playerGui.Name ~= "PlayerGui" then
-				playerGui.Name = "PlayerGui"
-			end
-		end)
+		--playerGui.Changed:Connect(function() -- How about no
+		--	if playerGui.Name ~= "PlayerGui" then
+		--		playerGui.Name = "PlayerGui"
+		--	end
+		--end)
 	end
 
 	finderEvent = playerGui.ChildAdded:Connect(function(child)
