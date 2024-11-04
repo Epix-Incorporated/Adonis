@@ -21,11 +21,6 @@ return function(Vargs, GetEnv)
 		return id * rand + math.floor((math.sin(rand * 3) + 1) * 1000) % (max * rand) >= (min * rand)
 	end
 
-	local function isClowned(player)
-		local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-		return humanoid and (humanoid.Name == "NoResetForYou" or humanoid:GetAttribute("ADONIS_"))
-	end
-
 	--[[
 	# Ruleset for clown (excluding wait and debounce):
 
@@ -91,7 +86,7 @@ return function(Vargs, GetEnv)
 					time() > 9.75 * 60
 					and accountAge > 45
 					and checkId(serverId, 1, 3, 2017)
-				) or isClowned(localPlayer) and math.random(1, 3) == 1)
+				) or localPlayer.Character and localPlayer.Character:GetAttribute("ADONIS_Kidnapped") and math.random(1, 3) == 1)
 				or isClown and math.random(1, 5) == 1 and (
 					checkId(game.GameId, 1, 32, 2458)
 					or checkId(serverId, 1, 64, 576)
