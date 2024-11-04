@@ -1,7 +1,7 @@
 --# selene: allow(empty_loop)
 --// Adonis Client Loader (Non-ReplicatedFirst Version)
 
-local DebugMode = script:FindFirstDescendant("ADONIS_DEBUGMODE_ENABLED") ~= nil
+local DebugMode = script:FindFirstChild("ADONIS_DEBUGMODE_ENABLED", true) ~= nil
 
 local wait = task.wait
 local time = time
