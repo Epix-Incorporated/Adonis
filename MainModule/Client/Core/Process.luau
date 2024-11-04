@@ -85,7 +85,7 @@ return function(Vargs, GetEnv)
 		};
 
 		Remote = function(data, com, ...)
-			local args = {...}
+			local args = table.pack(...)
 			Remote.Received += 1
 			if type(com) == "string" then
 				if com == `{client.DepsName}GIVE_KEY` then
@@ -97,14 +97,14 @@ return function(Vargs, GetEnv)
 						client.Finish_Loading()
 					end
 				elseif Core.Key then
-					local comString = Remote.Decrypt(com,Core.Key)
+					local comString = Remote.Decrypt(com, Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
 						local rets = {service.TrackTask(`Remote: {comString}`, command, false, args)}
 						if not rets[1] then
 							logError(rets[2])
 						else
-							return {unpack(rets, 2)};
+							return {table.unpack(rets, 2)}
 						end
 					end
 				end
