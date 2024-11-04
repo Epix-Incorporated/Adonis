@@ -733,21 +733,21 @@ return function(Vargs, GetEnv)
 			GetReturn = function(p: Player, args: {[number]: any})
 				local com = args[1]
 				local key = args[2]
-				local parms = {unpack(args,3)}
+				local parms = table.pack(table.unpack(args, 3))
 				local retfunc = Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,p,parms)}) or {}
+				local retable = retfunc and table.pack(pcall(retfunc, p, parms)) or {}
 				if retable[1] ~= true then
-					logError(p,retable[2])
+					logError(p, retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
+					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2))
 				end
 			end;
 
 			GiveReturn = function(p: Player,args: {[number]: any})
 				if Remote.PendingReturns[args[1]] then
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:Fire(unpack(args,2))
+					service.Events[args[1]]:Fire(table.unpack(args, 2))
 				end
 			end;
 
