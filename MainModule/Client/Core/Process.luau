@@ -100,11 +100,11 @@ return function(Vargs, GetEnv)
 					local comString = Remote.Decrypt(com, Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
-						local rets = {service.TrackTask(`Remote: {comString}`, command, false, args)}
+						local rets = table.pack(service.TrackTask(`Remote: {comString}`, command, false, args))
 						if not rets[1] then
 							logError(rets[2])
 						else
-							return {table.unpack(rets, 2)}
+							return table.pack(table.unpack(rets, 2))
 						end
 					end
 				end
