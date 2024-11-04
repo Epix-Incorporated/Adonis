@@ -1391,34 +1391,34 @@ return function(Vargs, GetEnv)
 					if Settings.G_Access and key == Settings.G_Access_Key and targ and Settings.Allowed_API_Calls[ind] == true then
 						if type(targ) == "table" then
 							return service.NewProxy {
-								__index = function(tab,inde)
-									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
+								__index = function(_, k)
+									if targ[k] ~= nil and API_Special[k] == nil or API_Special[k] == true then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was granted`;
-											Desc = `A server script was granted access to {inde}`;
+											Text = `Access to {k} was granted`;
+											Desc = `A server script was granted access to {k}`;
 										})
 
-										if targ[inde]~=nil and type(targ[inde]) == "table" and Settings.G_Access_Perms == "Read" then
-											return service.ReadOnly(targ[inde])
+										if targ[k] ~= nil and type(targ[k]) == "table" and Settings.G_Access_Perms == "Read" then
+											return service.ReadOnly(targ[k])
 										else
-											return targ[inde]
+											return targ[k]
 										end
-									elseif API_Special[inde] == false then
+									elseif API_Special[k] == false then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was denied`;
-											Desc = `A server script attempted to access {inde} via _G.Adonis.Access`;
+											Text = `Access to {k} was denied`;
+											Desc = `A server script attempted to access {k} via _G.Adonis.Access`;
 										})
 
-										error(`Access Denied: {inde}`)
+										error(`Access Denied: {k}`)
 									else
-										error(`Could not find {inde}`)
+										error(`Could not find {k}`)
 									end
 								end;
-								__newindex = function(tabl, inde, valu)
+								__newindex = function(_, k, v)
 									if Settings.G_Access_Perms == "Read" then
 										error("Read-only")
 									elseif Settings.G_Access_Perms == "Write" then
-										tabl[inde] = valu
+										rawset(targ, k, v)
 									end
 								end;
 								__metatable = true;
