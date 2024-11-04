@@ -359,36 +359,36 @@ return function(Vargs, GetEnv)
 
 		Fire = function(...)
 			local limits = Process.RateLimits
-			local limit = (limits and limits.Remote) or 0.01;
-			local RemoteEvent = Core.RemoteEvent;
-			local extra = {...};
+			local limit = (limits and limits.Remote) or 0.01
+			local RemoteEvent = Core.RemoteEvent
+			local extra = table.pack(...)
 
 			if RemoteEvent and RemoteEvent.Object then
 				service.Queue("REMOTE_SEND", function()
-					Remote.Sent = Remote.Sent+1;
-					RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra));
-					task.wait(limit);
+					Remote.Sent = Remote.Sent + 1
+					RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, table.unpack(extra))
+					task.wait(limit)
 				end)
 			end
 		end;
 
 		Send = function(com,...)
 			Core.LastUpdate = os.time()
-			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
+			Remote.Fire(Remote.Encrypt(com,Core.Key), ...)
 		end;
 
 		GetFire = function(...)
-			local RemoteEvent = Core.RemoteEvent;
-			local limits = Process.RateLimits;
-			local limit = (limits and limits.Remote) or 0.02;
-			local extra = {...};
-			local returns;
+			local RemoteEvent = Core.RemoteEvent
+			local limits = Process.RateLimits
+			local limit = limits and limits.Remote or 0.02
+			local extra = table.unpack(...)
+			local returns
 
 			if RemoteEvent and RemoteEvent.Function then
-				local Yield = service.Yield();
+				local Yield = service.Yield()
 
 				service.Queue("REMOTE_SEND", function()
-					Remote.Sent = Remote.Sent+1;
+					Remote.Sent = Remote.Sent + 1
 					task.delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
 						returns = {
 							RemoteEvent.Function:InvokeServer({
@@ -397,20 +397,20 @@ return function(Vargs, GetEnv)
 								Loader = client.Loader,
 								Sent = Remote.Sent,
 								Received = Remote.Received
-							}, unpack(extra))
+							}, table.unpack(extra))
 						}
 
-						Yield:Release(returns);
+						Yield:Release(returns)
 					end)
 
 					task.wait(limit)
 				end)
 
 				if not returns then
-					Yield:Wait();
+					Yield:Wait()
 				end
 
-				Yield:Destroy();
+				Yield:Destroy()
 
 				if returns then
 					return unpack(returns)
@@ -419,43 +419,43 @@ return function(Vargs, GetEnv)
 		end;
 
 		RawGet = function(...)
-			local extra = {...};
-			local RemoteEvent = Core.RemoteEvent;
+			local extra = table.pack(...)
+			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Function then
-				Remote.Sent = Remote.Sent+1;
-				return RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra));
+				Remote.Sent = Remote.Sent + 1
+				return RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, table.unpack(extra))
 			end
 		end;
 
-		Get = function(com,...)
+		Get = function(com, ...)
 			Core.LastUpdate = os.time()
-			local ret = Remote.GetFire(Remote.Encrypt(com,Core.Key),...)
+			local ret = Remote.GetFire(Remote.Encrypt(com, Core.Key), ...)
 			if type(ret) == "table" then
-				return unpack(ret);
+				return table.unpack(ret)
 			else
-				return ret;
+				return ret
 			end
 		end;
 
 		OldGet = function(com,...)
 			local returns
 			local key = service.HttpService:GenerateGUID(false)
-			local waiter = service.New("BindableEvent");
-			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
+			local waiter = service.New("BindableEvent")
+			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = table.unpack(...) waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
 
 			Remote.PendingReturns[key] = true
-			Remote.Send("GetReturn",com,key,...)
+			Remote.Send("GetReturn", com, key, ...)
 			print(string.format("GETTING RETURNS? %s", tostring(returns)))
-			waiter.Event:Wait();
+			waiter.Event:Wait()
 			print(string.format("WE GOT IT! %s", tostring(returns)))
 
 			event:Disconnect()
 
 			if returns then
-				if returns[1] == "__ADONIS_RETURN_ERROR" then
+				if assert(returns[1] == "__ADONIS_RETURN_ERROR" then
 					error(returns[2])
 				else
-					return unpack(returns)
+					return table.unpack(returns)
 				end
 			else
 				return nil
