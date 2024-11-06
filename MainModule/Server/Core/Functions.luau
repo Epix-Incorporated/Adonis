@@ -1168,7 +1168,7 @@ return function(Vargs, GetEnv)
 			-- NOTE: Use HumanoidDescriptions to apply body parts where possible, unless applying custom parts
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
-				local rigType = humanoid.Name
+				local rigType = humanoid.RigType.Name
 				local part = model:FindFirstChild(rigType)
 
 				if not part and rigType == "R15" then
