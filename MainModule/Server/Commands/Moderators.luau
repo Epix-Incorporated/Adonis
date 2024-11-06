@@ -559,10 +559,7 @@ return function(Vargs, env)
 						if data.Options.Chat ~= true then
 							TextToUse = service.SanitizeXML(args[2] or "Hello world!")
 						end
-						Remote.Send(
-							v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{
-							service.Filter(TextToUse, plr, v)
-							}</font>`)
+						Remote.Send(v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{service.Filter(TextToUse, plr, v)}</font>`)
 					else
 						Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
 					end
@@ -5441,16 +5438,7 @@ return function(Vargs, env)
 				local AssetTypeNameDescriptionOverides = {
 					DynamicHead = "Head"
 				}
-
-				local typeId = productInfo.AssetTypeId
-				local typeEnum
-
-				for _, enum in pairs(Enum.AvatarAssetType:GetEnumItems()) do
-					if enum.Value == typeId then
-						typeEnum = enum
-						break
-					end
-				end
+				local typeEnum = Enum.AvatarAssetType:FromValue(productInfo.AssetTypeId)
 
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
