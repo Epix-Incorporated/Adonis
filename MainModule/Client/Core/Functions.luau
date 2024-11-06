@@ -1197,13 +1197,13 @@ return function(Vargs, GetEnv)
 		end;
 
 		KeyCodeToName = function(keyVal)
-			local keyVal = Enum.KeyCode:FromValue(tonumber(keyVal))
+			local keyCode = Enum.KeyCode:FromValue(tonumber(keyVal))
 
-			if keyVal then
-				local name = service.UserInputService:GetStringForKeyCode(e)
+			if keyCode then
+				local name = service.UserInputService:GetStringForKeyCode(keyCode)
 
-				if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
-					return e.Name
+				if service.Trim(name) == "" or Variables.KeycodeNames[keyCode] == name then
+					return keyCode.Name
 				else
 					return name
 				end
