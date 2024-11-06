@@ -1197,21 +1197,19 @@ return function(Vargs, GetEnv)
 		end;
 
 		KeyCodeToName = function(keyVal)
-			local keyVal = tonumber(keyVal);
-			if keyVal then
-				for _, e in Enum.KeyCode:GetEnumItems() do
-					if e.Value == keyVal then
-						local name = service.UserInputService:GetStringForKeyCode(e)
+			local keyVal = Enum.KeyCode:FromValue(tonumber(keyVal))
 
-						if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
-							return e.Name
-						else
-							return name
-						end
-					end
+			if keyVal then
+				local name = service.UserInputService:GetStringForKeyCode(e)
+
+				if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
+					return e.Name
+				else
+					return name
 				end
+			else
+				return "UNKNOWN"
 			end
-			return "UNKNOWN";
 		end;
 
 		KeyBindListener = function(keybinds)
@@ -1219,7 +1217,7 @@ return function(Vargs, GetEnv)
 			local timer = 0
 			local data = (not keybinds) and Remote.Get("PlayerData");
 
-			Variables.KeyBinds = keybinds or (data and data.Keybinds) or {}
+			Variables.KeyBinds = keybinds or data and data.Keybinds or {}
 
 			service.UserInputService.InputBegan:Connect(function(input)
 				local key = tostring(input.KeyCode.Value)
