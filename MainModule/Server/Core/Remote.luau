@@ -1019,10 +1019,9 @@ return function(Vargs, GetEnv)
 					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`, function()
 						local func, err = Core.Loadstring(Variable["Script"], newenv)
 						if func then
-							local Succ,Err = pcall(function()
-								func()
+							xpcall(func, function(reason)
+								Remote.MakeGui(p, "Output", {Title = "LUA_ERROR"; Message = reason})
 							end)
-							Remote.MakeGui(p, "Output", {Title = "LUA_ERROR"; Message = Err})
 						else
 							Remote.MakeGui(p, "Output", {Title = "SYNTAX_ERROR"; Message = err})
 						end
