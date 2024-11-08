@@ -305,7 +305,7 @@ locals = {
 	Pcall = Pcall;
 };
 
-service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
+service = require(Folder.Parent.Shared.Service)(function(eType, msg, desc, ...)
 	local extra = {...}
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
@@ -518,7 +518,7 @@ return service.NewProxy({
 		server.LoadPackage = LoadPackage
 		server.ServiceSpecific = ServiceSpecific
 
-		server.Shared = Folder.Shared
+		server.Shared = Folder.Parent.Shared
 		server.ServerPlugins = data.ServerPlugins
 		server.ClientPlugins = data.ClientPlugins
 		server.Client = Folder.Parent.Client
@@ -532,16 +532,8 @@ return service.NewProxy({
 			script:Destroy()
 		end
 
-		--// Copy client themes, plugins, and shared modules to the client folder
+		--// Copy client themes and plugins to the client folder
 		local packagesToRunWithPlugins = {}
-		local shared = service.New("Folder", {
-			Name = "Shared";
-			Parent = server.Client;
-		})
-
-		for _, module in ipairs(Folder.Shared:GetChildren()) do
-			module:Clone().Parent = shared
-		end
 
 		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) ~= "string" then
