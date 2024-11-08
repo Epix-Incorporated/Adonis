@@ -217,8 +217,6 @@ return function(Vargs, GetEnv)
 			}
 
 			local API = {
-				Access = ReadOnly({}, nil, nil, true);
-				--[[
 				Access = service.MetaFunc(function(...)
 					local args = {...}
 					local key = args[1]
@@ -233,7 +231,7 @@ return function(Vargs, GetEnv)
 						targ = client[ind]
 					end
 
-					if client.G_Access and key == client.G_Access_Key and targ and client.Allowed_API_Calls[ind] then
+					if client.G_Access and (key == Variables.G_Access_Key or type(key) == "string" and Functions.SHA256(key..game.GameId) == Variables.G_Access_Key) and targ and client.Allowed_API_Calls[ind] then
 						if type(targ) == "table" then
 							return service.NewProxy {
 								__index = function(tab,inde)
@@ -259,7 +257,6 @@ return function(Vargs, GetEnv)
 						error("Incorrect key or G_Access is disabled")
 					end
 				end);
-				--]]
 
 				Scripts = ReadOnly({
 					ExecutePermission = (function(srcScript, code)
