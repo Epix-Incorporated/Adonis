@@ -534,7 +534,7 @@ return service.NewProxy({
 
 		--// Copy client themes, plugins and shared modules to the client folder
 		local packagesToRunWithPlugins = {}
-		Folder.Parent.Shared:Clone() = server.Client
+		Folder.Parent.Shared:Clone().Parent = server.Client
 
 		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) ~= "string" then
