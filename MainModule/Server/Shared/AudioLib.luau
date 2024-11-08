@@ -1,8 +1,8 @@
 --[[
 	Name: AudioLib
 	Description: An simple and versatile audio library with getter&setter functions and an immutable data structure.
-	Authors: P3tray & Github@ccuser44/VortexColor
-	Contributors: P3tray, Github@ccuser44/VortexColor
+	Authors: Github@ccuser44/VortexColor & P3tray
+	Contributors: Github@ccuser44/VortexColor, P3tray
 	Date: 2022
 	License: MIT
 ]]
