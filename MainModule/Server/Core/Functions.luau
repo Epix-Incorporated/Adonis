@@ -1657,6 +1657,8 @@ return function(Vargs, GetEnv)
 			return color
 		end;
 
+		SHA256 = require(server.Shared.HashLib).SHA256;
+
 		ParseBrickColor = function(str: string, allowNil: boolean?)
 			if not str and allowNil then
 				return nil
