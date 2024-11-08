@@ -142,5 +142,5 @@ local function SHA256(Message: buffer | string, Salt: (buffer | string)?): strin
 end
 
 return {
-	sha256 = SHA256
+	SHA256 = SHA256
 }
