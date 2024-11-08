@@ -79,6 +79,10 @@ return function(Vargs, GetEnv)
 			PlayerPrefix = true;
 			SpecialPrefix = true;
 			ConsoleKeyCode = true;
+			G_API = true;
+			G_Access = true;
+			G_Access_Perms = true;
+			Allowed_API_Calls = true;
 		};
 
 		--// Settings that are never sent to the client
@@ -244,11 +248,11 @@ return function(Vargs, GetEnv)
 						Trello_AppKey = true;
 						Trello_Token = true;
 
-						G_API = true;
-						G_Access = true;
+						--G_API = true;
+						--G_Access = true;
 						G_Access_Key = true;
-						G_Access_Perms = true;
-						Allowed_API_Calls = true;
+						--G_Access_Perms = true;
+						--Allowed_API_Calls = true;
 
 						WebPanel_ApiKey = true;
 						WebPanel_Enabled = true;
