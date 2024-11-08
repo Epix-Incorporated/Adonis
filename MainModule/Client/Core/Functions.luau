@@ -1853,7 +1853,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SHA256 = require(server.Shared.HashLib).SHA256;
+		SHA256 = require(client.Shared.HashLib).SHA256;
 
 		GetUserInputServiceData = function(args)
 			local data = {}
