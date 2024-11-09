@@ -130,8 +130,10 @@ return function(Vargs, GetEnv)
 			if string.sub(data, 1, 1) ~= "[" and string.match(data, "^[%w%+/=]+$") then
 				data = Remote.Decrypt(Functions.Base64Decode(data), Settings.DataStoreKey)
 
-				if string.sub(data, 1, 2) == "\x1f\x8b" then -- Check for GZIP header and decode
-					data = Functions.GZIPDecode(data)
+				if string.sub(data, 1, 2) == "\x1f\x8b" then -- Check for Gzip header and decode
+					data = assert(Functions.GzipDecompress, "No support for Gzip encoding!")(data)
+				else string.match(data, "^\x78[\x01\x5e\x9c\xda\x20\x7d\xbb\xf9]") then -- Check for Zlib header and decode
+					data = assert(Functions.ZlibDecompress, "No support for Zlib encoding!")(data)
 				end
 			end
 
