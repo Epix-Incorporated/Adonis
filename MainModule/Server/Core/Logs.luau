@@ -116,7 +116,6 @@ return function(Vargs, GetEnv)
 
 		GetAuditLogs = function(playerId)
 			local auditLogs = {}
-			local logs = Logs.AuditLogs:GetAsTable() or {}
 			for _, log in pairs(Logs.AuditLogs:GetAsTable()) do
 				if log.ModeratorId == playerId then
 					table.insert(auditLogs, log)
