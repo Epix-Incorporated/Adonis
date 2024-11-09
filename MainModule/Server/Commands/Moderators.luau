@@ -6677,7 +6677,7 @@ return function(Vargs, env)
 								Time = v.Time,
 								Text = `{v.Text}: {v.Desc}`,
 								Desc = v.Desc
-							})
+							}
 						end
 					end
 					return tab
