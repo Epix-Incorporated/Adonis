@@ -125,6 +125,19 @@ return function(Vargs, GetEnv)
 			return auditLogs
 		end;
 
+		-- // Preliminary support for oldlog encryption
+		DeserializeOldlogs = function(data)
+			if string.sub(data, 1, 1) ~= "[" and string.match(data, "^[%w%+/=]+$") then
+				data = Remote.Decrypt(Functions.Base64Decode(data), Settings.DataStoreKey)
+
+				if string.sub(data, 1, 2) == "\x1f\x8b" then -- Check for GZIP header and decode
+					data = Functions.GZIPDecode(data)
+				end
+			end
+
+			return service.HttpService:JSONDecode(oldLogs)
+		end;
+
 		SaveCommandLogs = function()
 			--// Disable saving command logs in Studio; not required.
 			if service.RunService:IsStudio() or service.RunService:IsRunMode() then
@@ -143,7 +156,12 @@ return function(Vargs, GetEnv)
 
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				if type(oldLogs) == "string" then
-					oldLogs = service.HttpService:JSONDecode(oldLogs)
+					xpcall(function()
+						oldLogs = Logs.DeserializeOldlogs(oldLogs)
+					end, function(reason)
+						oldLogs = nil
+						warn(`Deserializing oldlogs failed due to {reason}`)
+					end)
 				end
 
 				local temp = {}
