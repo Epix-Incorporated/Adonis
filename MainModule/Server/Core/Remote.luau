@@ -26,7 +26,7 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		Defaults = server.Defaults;
+		Defaults = server.Defaults.Settings;
 		Commands = server.Commands;
 
 		logError = env.logError;
