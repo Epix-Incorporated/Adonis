@@ -34,6 +34,9 @@ return {
 	"(Git/ccuser44) Lock server on soft shutdown after 1 minute (#1638)";
 	"(Git/ccuser44) Convert encryption to use buffers (#1652)";
 	"(Git/ccuser44) Move !wait from parser logic to a command (#1631)";
+	"(Git/ccuser44) Fix default settings pooling (#1688)";
+	"(Git/ccuser44) Fix _G API Access write (#1675)";
+	"(Git/ccuser44) Allow local loading of gerald (#1668)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
