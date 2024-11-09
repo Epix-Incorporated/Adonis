@@ -227,6 +227,9 @@ if module and module:IsA("ModuleScript") then
 	folder.Name = "";
 	wait(0.01);
 	folder.Parent = nil; --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+	-- TODO: Ehh... ^^
+	print("Moving Shared folder...")
+	folder.Shared.Parent = container
 
 	warn("Destroying parent...")
 
