@@ -161,7 +161,7 @@ return function(Vargs, GetEnv)
 					xpcall(function()
 						oldLogs = Logs.DeserializeOldlogs(oldLogs)
 					end, function(reason)
-						oldLogs = nil
+						oldLogs = {}
 						warn(`Deserializing oldlogs failed due to {reason}`)
 					end)
 				end
