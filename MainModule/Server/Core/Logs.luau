@@ -137,7 +137,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			return service.HttpService:JSONDecode(oldLogs)
+			return service.HttpService:JSONDecode(data)
 		end;
 
 		SaveCommandLogs = function()
