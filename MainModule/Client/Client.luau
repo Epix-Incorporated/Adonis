@@ -121,7 +121,7 @@ print = function(...)
 end
 
 local oldWarn = warn
-local warn = function(...)
+warn = function(...)
 	oldWarn(":: Adonis ::", ...)
 end
 
