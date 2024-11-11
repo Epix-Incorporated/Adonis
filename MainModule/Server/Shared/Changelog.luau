@@ -1,12 +1,11 @@
 return {
-	"Version: 261 [Pre-release – Alpha]";
+	"Version: 261";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v261 Pre-release 2024-08-29 14:32 UTC] @Dimenpsyonal";
+	"[v261 2024-08-29 14:32 UTC] @Dimenpsyonal";
 	"(Git/Expertcoderz) Add :ckick command (#1614)";
-	"#Not for release until the following issues are resolved:";
-	"#Audit logs need be integrated into datastore";
+	"";
 	"(Git/24rr) New System: Audit Logs (#1568)";
 	"(Git/24rr) New Command: coordinates (#1568)";
 	"(Git/bsqi) Fix Join command (#1584)";
@@ -37,6 +36,7 @@ return {
 	"(Git/ccuser44) Fix default settings pooling (#1688)";
 	"(Git/ccuser44) Fix _G API Access write (#1675)";
 	"(Git/ccuser44) Allow local loading of gerald (#1668)";
+	"(Git/omwat) Remove audit logs (#1698)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
