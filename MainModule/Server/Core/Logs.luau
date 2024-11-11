@@ -47,7 +47,6 @@ return function(Vargs, GetEnv)
 		Exploit = if UseDLL then DLL.new() else {};
 		Errors = if UseDLL then DLL.new() else {};
 		DateTime = if UseDLL then DLL.new() else {};
-		AuditLogs = if UseDLL then DLL.new() else {};
 		TempUpdaters = {};
 		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
@@ -101,27 +100,6 @@ return function(Vargs, GetEnv)
 			end
 
 			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
-		end;
-
-		LogAudit = function(moderatorId, action, targetId, details)
-			local logEntry = {
-				ModeratorId = moderatorId;
-				Action = action;
-				TargetId = targetId;
-				Details = details;
-				Time = os.time();
-			}
-			Logs:AddLog(Logs.AuditLogs, logEntry);
-		end;
-
-		GetAuditLogs = function(playerId)
-			local auditLogs = {}
-			for _, log in pairs(Logs.AuditLogs:GetAsTable()) do
-				if log.ModeratorId == playerId then
-					table.insert(auditLogs, log)
-				end
-			end
-			return auditLogs
 		end;
 
 		SaveCommandLogs = function()
