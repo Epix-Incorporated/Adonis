@@ -26,10 +26,12 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		Defaults = server.Defaults;
+		Defaults = server.Defaults.Settings;
 		Commands = server.Commands;
-
 		logError = env.logError;
+		Remote.NewDecrypt = function(str, key, cache) -- Bxor works both ways. May want to make a seperate function tho
+			return Remote.NewEncrypt(str, key, cache or Remote.NewDecodeCache)
+		end;
 
 		Remote.Init = nil;
 		Logs:AddLog("Script", "Remote Module Initialized")
@@ -60,6 +62,8 @@ return function(Vargs, GetEnv)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
+		NewEncodeCache = {};
+		NewDecodeCache = {};
 		RemoteExecutionConfirmed = {};
 
 		TimeUntilKeyDestroyed = 60 * 5; --// How long until a player's key data should be completely removed?
@@ -1140,7 +1144,7 @@ return function(Vargs, GetEnv)
 			assert(p and p:IsA("Player"), `Remote.Send: {p.Name} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
+				Remote.Fire(p, Remote.NewEncrypt(com, keys.Key, keys.Cache), ...)
 			end
 		end;
 
@@ -1156,7 +1160,7 @@ return function(Vargs, GetEnv)
 		Get = function(p: Player, com: string, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
+				local ret = Remote.GetFire(p, Remote.NewEncrypt(com, keys.Key, keys.Cache), ...)
 				if type(ret) == "table" then
 					return unpack(ret)
 				else
@@ -1361,9 +1365,8 @@ return function(Vargs, GetEnv)
 				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
 				local keyLen = #key
 
-				for i = 1, #str do
-					local keyPos = (i % keyLen) + 1
-					writeu8(rawStr, (readu8(rawStr, i) + readu8(rawKey, keyPos)) % 126 + 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) + readu8(rawKey, (i + 1) % keyLen)) % 126 + 1)
 				end
 
 				cache[key] = keyCache
@@ -1385,9 +1388,31 @@ return function(Vargs, GetEnv)
 				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
 				local keyLen = #key
 
-				for i = 1, #str do
-					local keyPos = (i % keyLen) + 1
-					writeu8(rawStr, (readu8(rawStr, i) - readu8(rawKey, keyPos)) % 126 - 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) - readu8(rawKey, (i + 1) % keyLen)) % 126 - 1)
+				end
+
+				cache[key] = keyCache
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
+			end
+		end;
+
+		NewEncrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
+			cache = cache or Remote.NewEncodeCache or {}
+			local keyCache = cache[key] or {}
+
+			if not key or not str then
+				return str
+			elseif keyCache[str] then
+				return keyCache[str]
+			else
+				local writeu8, readu8, bxor = buffer.writeu8, buffer.readu8, bit32.bxor
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
+
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, bxor(readu8(rawStr, i), readu8(rawKey, i % keyLen)))
 				end
 
 				cache[key] = keyCache
