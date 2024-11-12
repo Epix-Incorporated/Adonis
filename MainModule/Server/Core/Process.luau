@@ -26,8 +26,8 @@ return function(Vargs, GetEnv)
 		logError = logError or env.logError;
 		Routine = Routine or env.Routine;
 		Commands = Remote.Commands
-		Decrypt = Remote.Decrypt
-		Encrypt = Remote.Encrypt
+		Decrypt = Remote.NewDecrypt
+		Encrypt = Remote.NewEncrypt
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
