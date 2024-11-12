@@ -7,9 +7,6 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local logError
-	local AuditLogsDataStore; pcall(function()
-		AuditLogsDataStore = service.DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
-	end)
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -23,6 +20,7 @@ return function(Vargs, GetEnv)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		logError = server.logError;
+		Functions.NuclearExplode = select(2, xpcall(require, warn, server.Dependencies.FastNuke));
 
 		Functions.Init = nil
 		Logs:AddLog("Script", "Functions Module Initialized")
@@ -1048,30 +1046,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		LogAdminAction = function(plr, action, targetPlayerName, additionalDetails)
-			local logEntry = {
-				Timestamp = os.time(),
-				ModeratorId = plr.UserId,
-				ModeratorName = plr.Name,
-				Action = action,
-				TargetPlayer = targetPlayerName,
-				AdditionalDetails = additionalDetails or "N/A",
-			}
-
-			-- Attempt to log the action under the moderator's UserId
-			local key = "AuditLogs_" .. tostring(plr.UserId)
-
-			local success, errMessage = pcall(function()
-				-- Get existing logs
-				local existingLogs = AuditLogsDataStore:GetAsync(key) or {}
-				table.insert(existingLogs, logEntry)
-				AuditLogsDataStore:SetAsync(key, existingLogs)
-			end)
-
-			if not success then
-				warn("Failed to log audit entry for UserId " .. tostring(plr.UserId) .. ": " .. errMessage)
-			else
-				print("Audit log entry saved for:", plr.Name)
-			end
+			-- kept function here for potential future reimplementation
 		end;
 
 		NewParticle = function(target, particleType, props)
@@ -1585,7 +1560,7 @@ return function(Vargs, GetEnv)
 			local Humanoid: Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
 
 			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
-			local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType, Enum.AssetTypeVerification.Always)
+			local newCharacterModel: any = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType, Enum.AssetTypeVerification.Always)
 			local Animate: BaseScript = newCharacterModel.Animate
 
 			newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
@@ -1632,7 +1607,7 @@ return function(Vargs, GetEnv)
 			})
 		end;
 
-		ParseColor3 = function(str: string?)
+		ParseColor3 = function(str: string)
 			if not str then return nil end
 			if str:lower() == "random" then
 				return Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
@@ -1644,17 +1619,15 @@ return function(Vargs, GetEnv)
 			end
 
 			if #color == 3 then
-				color = Color3.fromRGB(color[1], color[2], color[3])
+				return Color3.fromRGB(color[1], color[2], color[3])
 			else
-				local brickColor = BrickColor.new(str)
+				local brickColor = BrickColor.new(str::any);
 				if str == tostring(brickColor) then
-					color = brickColor.Color
+					return brickColor.Color
 				else
 					return
 				end
 			end
-
-			return color
 		end;
 
 		ParseBrickColor = function(str: string, allowNil: boolean?)
@@ -1665,7 +1638,7 @@ return function(Vargs, GetEnv)
 				return BrickColor.random()
 			end
 
-			local brickColor = BrickColor.new(str)
+			local brickColor = BrickColor.new(str::any)
 			if str == tostring(brickColor) then
 				return brickColor
 			else
@@ -1678,8 +1651,4 @@ return function(Vargs, GetEnv)
 			return if allowNil then nil else BrickColor.random()
 		end;
 	};
-
-	task.spawn(xpcall, function()
-		server.Functions.NuclearExplode = require(server.Dependencies.FastNuke);
-	end, warn)
 end

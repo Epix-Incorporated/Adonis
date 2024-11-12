@@ -115,13 +115,23 @@ local SERVICES_WE_USE = table.freeze({
 	"NetworkClient",
 })
 
+local oldPrint = print
+print = function(...)
+	oldPrint(":: Adonis ::", ...)
+end
+
+local oldWarn = warn
+warn = function(...)
+	oldWarn(":: Adonis ::", ...)
+end
+
 --// Logging
 local clientLog = {}
 local dumplog = function()
-	warn(":: Adonis :: Dumping client log...")
+	warn("Dumping client log...")
 
 	for _, v in clientLog do
-		warn(":: Adonis ::", v)
+		warn(v)
 	end
 end
 local log = function(...)
@@ -141,7 +151,6 @@ local unique = {}
 local origEnv = getfenv()
 local Folder = script.Parent
 setfenv(1, setmetatable({}, { __metatable = unique }))
---local origWarn = warn
 local startTime = time()
 local oldInstNew = Instance.new
 local oldReq = require
@@ -166,17 +175,6 @@ local function logError(...)
 		client.Remote.Send("LogError", table.concat({ ... }, " "))
 	end
 end
-
-local oldPrint = print
-print = function(...)
-	oldPrint(":: Adonis ::", ...)
-end
-
---[[
-local warn = function(...)
-	warn(...)
-end
-]]
 
 local Pcall = function(func, ...)
 	local ran, err = pcall(func, ...)
@@ -694,7 +692,7 @@ return service.NewProxy({
 				--// Finished loading
 				log("Finish loading")
 				client.Finish_Loading = function() end
-				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
+				client.LoadingTime() --warn(tostring(time()-(client.TrueStart or startTime)))
 				service.Events.FinishedLoading:Fire(os.time())
 
 				log("~! FINISHED LOADING!")

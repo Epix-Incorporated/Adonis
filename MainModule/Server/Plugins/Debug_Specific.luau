@@ -1,4 +1,3 @@
-
 --// This module is for stuff specific to debugging
 --// Most of this only runs when DebugMode is enabled
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
@@ -15,7 +14,6 @@ return function(Vargs, GetEnv)
 		return
 	end
 
-	
 	--[[
 	--// Unfortunately not viable
 	--// TODO: Make this viable perhaps? If done so, expose as a :terminal command
@@ -126,25 +124,18 @@ return function(Vargs, GetEnv)
 			local ScriptSrcTxt = ""
 			Remote.MakeGui(plr, "Notepad", {
 				Text = [[-- Made by your friendly moo1210, to make debugging the adonis env not a pain. :)
-
-local IsRunningInSameScriptIdentity = false -- If you're running as a normal user-space script (aka the script identity is 2 when you use printidentity), you may toggle this to true, to prevent needing to wrap instances. This may prevent any minor incompatiblies caused by the wrapping logic, if any. This will not work in the command bar, run script button, or plugins.
+local IS_RUNNING_IN_SAME_SCRIPT_IDENTITY = false -- If you're running as a normal user-space script (aka the script identity is 2 when you use printidentity), you may toggle this to true, to prevent needing to wrap instances. This may prevent any minor incompatiblies caused by the wrapping logic, if any. This will not work in the command bar, run script button, or plugins.
 
 ----
-local DebugApiBindable = IsRunningInSameScriptIdentity and nil or game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15)
-if not DebugApiBindable then
-	error("Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
-end
+local DebugApiBindable = assert(IS_RUNNING_IN_SAME_SCRIPT_IDENTITY and nil or game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15), "Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
 local DebugApi
-if IsRunningInSameScriptIdentity then
+if IS_RUNNING_IN_SAME_SCRIPT_IDENTITY then
 	pcall(function()
 	   DebugApi = _G.Adonis.Debug
 	end)
 	if not DebugApi then
-		warn("The IsRunningInSameScriptIdentity option is enabled, however _G.Adonis.Debug was unable to be accessed. Is DebugMode and the _G API enabled? Falling back to BindableEvent")
-		DebugApiBindable = game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15)
-		if not DebugApiBindable then
-			error("Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
-		end
+		warn("The IS_RUNNING_IN_SAME_SCRIPT_IDENTITY option is enabled, however _G.Adonis.Debug was unable to be accessed. Is DebugMode and the _G API enabled? Falling back to BindableEvent")
+		DebugApiBindable = assert(game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15), "Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
 		DebugApi = DebugApiBindable:Invoke("GetApi")
 	end
 else
@@ -295,7 +286,6 @@ local service = wrappedEnv.Service
 		Debug = true;
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
-
 			print(Remote.Get(plr,"Test"))
 
 			local tab = {
@@ -347,7 +337,6 @@ local service = wrappedEnv.Service
 			Remote.Send(plr, "TestEvent", "TestEvent", "hi mom I went thru the interwebs")
 			
 			print("RemoteEvent Fired successfully")
-
 		end;
 	};
 
