@@ -476,6 +476,7 @@ return function(Vargs, GetEnv)
 			Remote.Send("PlayerEvent",event,...)
 		end;
 
+
 		Encrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
 			cache = cache or Remote.EncodeCache or {}
 			local keyCache = cache[key] or {}
@@ -489,9 +490,8 @@ return function(Vargs, GetEnv)
 				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
 				local keyLen = #key
 
-				for i = 1, #str do
-					local keyPos = (i % keyLen) + 1
-					writeu8(rawStr, (readu8(rawStr, i) + readu8(rawKey, keyPos)) % 126 + 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) + readu8(rawKey, (i + 1) % keyLen)) % 126 + 1)
 				end
 
 				cache[key] = keyCache
@@ -513,9 +513,8 @@ return function(Vargs, GetEnv)
 				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
 				local keyLen = #key
 
-				for i = 1, #str do
-					local keyPos = (i % keyLen) + 1
-					writeu8(rawStr, (readu8(rawStr, i) - readu8(rawKey, keyPos)) % 126 - 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) - readu8(rawKey, (i + 1) % keyLen)) % 126 - 1)
 				end
 
 				cache[key] = keyCache
