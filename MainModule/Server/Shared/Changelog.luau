@@ -44,6 +44,9 @@ return {
 	"(Git/ccuser44) Make ClientMover respect debugmode (#1680)";
 	"(Git/ccuser44) Add multithreading to FiOne (#1545)";
 	"(Git/ccuser44) Convert test case to nightly mode (#1669)";
+	"(Git/ccuser44) Optimize linkedlists (#1695)";
+	"(Git/ccuser44) Show profile picture for private message notifications (#1691)";
+	"(Git/ccuser44) Small misc fixes and improvements (#1672)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
