@@ -45,6 +45,9 @@ return function(Vargs, GetEnv)
 		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
+		Remote.NewDecrypt = function(str, key, cache) -- Bxor works both ways. May want to make a seperate function tho
+			return Remote.NewEncrypt(str, key, cache or Remote.NewDecodeCache)
+		end;
 
 		Remote.Init = nil;
 	end
@@ -92,6 +95,8 @@ return function(Vargs, GetEnv)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
+		NewEncodeCache = {};
+		NewDecodeCache = {};
 		Received = 0;
 		Sent = 0;
 
@@ -374,7 +379,7 @@ return function(Vargs, GetEnv)
 
 		Send = function(com,...)
 			Core.LastUpdate = os.time()
-			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
+			Remote.Fire(Remote.NewEncrypt(com,Core.Key),...)
 		end;
 
 		GetFire = function(...)
@@ -429,7 +434,7 @@ return function(Vargs, GetEnv)
 
 		Get = function(com,...)
 			Core.LastUpdate = os.time()
-			local ret = Remote.GetFire(Remote.Encrypt(com,Core.Key),...)
+			local ret = Remote.GetFire(Remote.NewEncrypt(com,Core.Key),...)
 			if type(ret) == "table" then
 				return unpack(ret);
 			else
@@ -516,6 +521,29 @@ return function(Vargs, GetEnv)
 				for i = 1, #str do
 					local keyPos = (i % keyLen) + 1
 					writeu8(rawStr, (readu8(rawStr, i) - readu8(rawKey, keyPos)) % 126 - 1)
+				end
+
+				cache[key] = keyCache
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
+			end
+		end;
+
+		NewEncrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
+			cache = cache or Remote.NewEncodeCache or {}
+			local keyCache = cache[key] or {}
+
+			if not key or not str then
+				return str
+			elseif keyCache[str] then
+				return keyCache[str]
+			else
+				local writeu8, readu8, bxor = buffer.writeu8, buffer.readu8, bit32.bxor
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
+
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, bxor(readu8(rawStr, i), readu8(rawKey, i % keyLen)))
 				end
 
 				cache[key] = keyCache
