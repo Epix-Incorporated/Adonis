@@ -38,6 +38,12 @@ return {
 	"(Git/ccuser44) Allow local loading of gerald (#1668)";
 	"(Git/omwat) Remove audit logs (#1698)";
 	"(Git/ccuser44) Fix client side warn handling (#1683)";
+	"(Git/ccuser44) Add new encryption function (#1704)";
+	"(Git/ccuser44) Fix Adonis cleanup not being editable (#1703)";
+	"(Git/ccuser44) Fix error with encryption in nightly (#1702)";
+	"(Git/ccuser44) Make ClientMover respect debugmode (#1680)";
+	"(Git/ccuser44) Add multithreading to FiOne (#1545)";
+	"(Git/ccuser44) Convert test case to nightly mode (#1669)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
