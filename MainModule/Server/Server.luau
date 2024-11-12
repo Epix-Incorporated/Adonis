@@ -754,7 +754,7 @@ return service.NewProxy({
 		if server.Logs then
 			server.Logs.AddLog(server.Logs.Script, {
 				Text = `Finished loading version {data.NightlyMode and "Nightly" or server.Version}`;
-				Desc = `Adonis has finished loading version {data.NightlyMode and "Nightly" or server.Version} by {data.Loader and data.Loader:GetFullName() or ""}{data.LoaderVersion and (" version: "..data.LoaderVersion) or ""}`;
+				Desc = `Adonis has finished loading version {data.NightlyMode and "Nightly" or server.Version} by {data.Loader and data.Loader:GetFullName() or "UNKNOWN"}{data.LoaderVersion and (" version: "..data.LoaderVersion) or ""}`;
 			})
 		else
 			warn("CRITICAL ERROR! SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
