@@ -379,7 +379,7 @@ return function(Vargs, GetEnv)
 
 		Send = function(com,...)
 			Core.LastUpdate = os.time()
-			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
+			Remote.Fire(Remote.NewEncrypt(com,Core.Key),...)
 		end;
 
 		GetFire = function(...)
@@ -434,7 +434,7 @@ return function(Vargs, GetEnv)
 
 		Get = function(com,...)
 			Core.LastUpdate = os.time()
-			local ret = Remote.GetFire(Remote.Encrypt(com,Core.Key),...)
+			local ret = Remote.GetFire(Remote.NewEncrypt(com,Core.Key),...)
 			if type(ret) == "table" then
 				return unpack(ret);
 			else
