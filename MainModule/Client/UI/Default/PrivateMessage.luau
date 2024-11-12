@@ -79,7 +79,7 @@ return function(data, env)
 	UI.Make("Notification",{
 		Title = "New Message";
 		Message = string.format("Message from %s (@%s)", player.DisplayName, player.Name);
-		Icon = "rbxassetid://7501175708";
+		Icon = `rbxthumb://type=AvatarHeadShot&id={player.UserId}&w=48&h=48`;--"rbxassetid://7501175708";
 		Time = false;
 		OnClick = function() window:Ready() end;
 		OnClose = function() window:Destroy() end;
