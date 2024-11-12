@@ -37,6 +37,7 @@ return {
 	"(Git/ccuser44) Fix _G API Access write (#1675)";
 	"(Git/ccuser44) Allow local loading of gerald (#1668)";
 	"(Git/omwat) Remove audit logs (#1698)";
+	"(Git/ccuser44) Fix client side warn handling (#1683)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
