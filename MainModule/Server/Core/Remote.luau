@@ -1144,7 +1144,7 @@ return function(Vargs, GetEnv)
 			assert(p and p:IsA("Player"), `Remote.Send: {p.Name} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
+				Remote.Fire(p, Remote.NewEncrypt(com, keys.Key, keys.Cache), ...)
 			end
 		end;
 
@@ -1160,7 +1160,7 @@ return function(Vargs, GetEnv)
 		Get = function(p: Player, com: string, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
+				local ret = Remote.GetFire(p, Remote.NewEncrypt(com, keys.Key, keys.Cache), ...)
 				if type(ret) == "table" then
 					return unpack(ret)
 				else
