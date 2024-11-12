@@ -1,7 +1,6 @@
 return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	local AuditLogsDataStore = service.DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
@@ -170,7 +169,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary admin; does not save";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: any)
 				local senderLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
@@ -193,7 +192,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) an admin; saves";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: any)
 				local senderLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
@@ -454,7 +453,7 @@ return function(Vargs, env)
 						hide_character=hideCharacter
 					}
 					if hideCharacter then
-						v.CharacterAdded:Connect(function(character: Model) 
+						v.CharacterAdded:Connect(function(character: Model)
 							for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
 								if otherPlr == v then continue end
 								Remote.LoadCode(otherPlr, [[
@@ -561,66 +560,5 @@ return function(Vargs, env)
 			end
 		};
 
-		AuditLogs = {
-			Prefix = Settings.Prefix;
-			Commands = {"auditlogs", "moderationlogs", "modlogs"};
-			Args = {"player"};
-			Description = "Fetches the recent moderation activity logs of the specified moderator or admin.";
-			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {string})
-				local targetPlayers = service.GetPlayers(plr, args[1], {NoFakePlayer = true})
-
-				if #targetPlayers == 0 then
-					Functions.Hint("No player found with the specified name.", {plr})
-					return
-				end
-
-				for _, targetPlayer in ipairs(targetPlayers) do
-					local userId = targetPlayer.UserId
-					local key = "AuditLogs_" .. tostring(userId)
-
-					local success, auditLogs = pcall(function()
-						return AuditLogsDataStore:GetAsync(key) or {}
-					end)
-
-					if not success then
-						warn("Failed to retrieve audit logs for UserId " .. tostring(userId) .. ": " .. auditLogs)
-						Functions.Hint("Error retrieving logs.", {plr})
-						return
-					end
-
-					local filteredLogs = {}
-					print("Checking audit logs for:", targetPlayer.Name, "with UserId:", userId)
-					print(auditLogs)
-
-					for _, log in ipairs(auditLogs) do
-						local moderatorName = Functions.GetNameFromUserIdAsync(log.ModeratorId) or "Unknown"
-						local targetUserName = log.TargetPlayer
-
-						if type(targetUserName) == "table" then
-							targetUserName = targetUserName.Name or "Unknown" 
-						elseif targetUserName == nil then
-							targetUserName = "Unknown"
-						end
-
-						local timestamp = os.date("%Y-%m-%d %H:%M:%S", log.Time)
-
-						local logText = string.format("%s | %s | %s", moderatorName, log.Action, timestamp)
-						local logEntry = { Text = logText .. " | " .. targetUserName, Desc = log.Details }
-						table.insert(filteredLogs, logEntry)
-					end
-
-					if #filteredLogs == 0 then
-						Functions.Hint(`No audit logs found for {targetPlayer.Name}`, {plr})
-					else
-						Remote.MakeGui(plr, "List", {
-							Title = `Audit Logs for {targetPlayer.Name}`,
-							Table = filteredLogs,
-							Update = "filteredLogs"
-						})
-					end
-				end
-			end
-		};
 	}
 end

@@ -1,12 +1,11 @@
 return {
-	"Version: 261 [Pre-release – Alpha]";
+	"Version: 261";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v261 Pre-release 2024-08-29 14:32 UTC] @Dimenpsyonal";
+	"[v261 2024-08-29 14:32 UTC] @Dimenpsyonal";
 	"(Git/Expertcoderz) Add :ckick command (#1614)";
-	"#Not for release until the following issues are resolved:";
-	"#Audit logs need be integrated into datastore";
+	"";
 	"(Git/24rr) New System: Audit Logs (#1568)";
 	"(Git/24rr) New Command: coordinates (#1568)";
 	"(Git/bsqi) Fix Join command (#1584)";
@@ -32,6 +31,22 @@ return {
 	"(Git/ccuser44) Move DisableRejoinAtMaxPlayers from Settings to Variables (#1634)";
 	"(Git/ccuser44) Fix erroneous plugins bricking Adonis (#1635)";
 	"(Git/ccuser44) Lock server on soft shutdown after 1 minute (#1638)";
+	"(Git/ccuser44) Convert encryption to use buffers (#1652)";
+	"(Git/ccuser44) Move !wait from parser logic to a command (#1631)";
+	"(Git/ccuser44) Fix default settings pooling (#1688)";
+	"(Git/ccuser44) Fix _G API Access write (#1675)";
+	"(Git/ccuser44) Allow local loading of gerald (#1668)";
+	"(Git/omwat) Remove audit logs (#1698)";
+	"(Git/ccuser44) Fix client side warn handling (#1683)";
+	"(Git/ccuser44) Add new encryption function (#1704)";
+	"(Git/ccuser44) Fix Adonis cleanup not being editable (#1703)";
+	"(Git/ccuser44) Fix error with encryption in nightly (#1702)";
+	"(Git/ccuser44) Make ClientMover respect debugmode (#1680)";
+	"(Git/ccuser44) Add multithreading to FiOne (#1545)";
+	"(Git/ccuser44) Convert test case to nightly mode (#1669)";
+	"(Git/ccuser44) Optimize linkedlists (#1695)";
+	"(Git/ccuser44) Show profile picture for private message notifications (#1691)";
+	"(Git/ccuser44) Small misc fixes and improvements (#1672)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";

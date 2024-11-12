@@ -557,7 +557,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			})) or {}
 			for i,v in tab do
-				if typeof(v) == 'table' then 
+				if type(v) == "table" then 
 					new[i] = service.DeepCopy(v)
 				else
 					new[i] = v
@@ -569,34 +569,15 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Timer = function(t,func,check)
 			local start = time()
 			local event; event = service.RunService.RenderStepped:Connect(function()
-				if time()-start>t or (check and check()) then
+				if time() - start > t or check and check() then
 					func()
 					event:Disconnect()
 				end
 			end)
 		end;
 
-		AltUnpack = function(args,shift)
-			if shift then shift = shift-1 end
-			return args[1+(shift or 0)],args[2+(shift or 0)],args[3+(shift or 0)],args[4+(shift or 0)],args[5+(shift or 0)],args[6+(shift or 0)],args[7+(shift or 0)],args[8+(shift or 0)],args[9+(shift or 0)],args[10+(shift or 0)]
-		end;
-
 		ExtractLines = function(str)
-			local strs = table.create(#str+1)
-			local new = ""
-			for i=1,#str+1 do
-				if string.byte(string.sub(str, i,i)) == 10 or i == #str+1 then
-					table.insert(strs,new)
-					new = ""
-				else
-					local char = string.sub(str,i,i)
-					if string.byte(char) < 32 then
-						char = ""
-					end
-					new = new..char
-				end
-			end
-			return strs
+			return string.split(string.gsub(str, "[%z\1-\9\11-\31]", ""), "")
 		end;
 
 		Filter = function(str, from, to)
@@ -649,7 +630,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
 				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetNonChatStringForBroadcastAsync() end)
-				newl = (ran and newl) or lines[i] or ""
+				newl = ran and newl or lines[i] or ""
 				if i > 1 then
 					new = `{new}\n{newl}`
 				else
@@ -661,7 +642,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		RecursiveMtSearch = function(tab)
 			for index, val in tab do 
-				if typeof(val) == "table" or typeof(val) == "userdata" then
+				if type(val) == "table" or typeof(val) == "userdata" then
 					if getmetatable(val) ~= nil or service.RecursiveMtSearch(val) then
 						return true
 					end
@@ -721,10 +702,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		Debounce = function(key,func)
 			local env = getfenv(2)
-			local Debounces = (env and env._ADONIS_DEBOUNCES) or Debounces or {}
+			local Debounces = env and env._ADONIS_DEBOUNCES or Debounces or {}
 
 			if env then
-				env._ADONIS_DEBOUNCES = (env and env._ADONIS_DEBOUNCES) or {}
+				env._ADONIS_DEBOUNCES = env and env._ADONIS_DEBOUNCES or {}
 			end
 
 			if Debounces[key] then
@@ -962,7 +943,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			local formatString = options.FormatString
 			if not formatString then
-				formatString = options.WithWrittenDate and "LL HH:mm:ss" or (options.WithDate and "L HH:mm:ss" or "HH:mm:ss")
+				formatString = options.WithWrittenDate and "LL HH:mm:ss" or options.WithDate and "L HH:mm:ss" or "HH:mm:ss"
 			end
 
 			local timeObj = DateTime.fromUnixTimestamp(optTime or service.GetTime())
@@ -977,7 +958,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 			local str = if plr.DisplayName == plr.Name then `@{plr.Name}` else string.format("%s (@%s)", plr.DisplayName or "???", plr.Name or "???")
 			if withUserId then
-				str ..= string.format(" [%s]", if plr.UserId and plr.UserId ~= -1 then plr.UserId else "?")
+				str ..= `[{if plr.UserId and plr.UserId ~= -1 then plr.UserId else "?"}]`
 			end
 			return str
 		end;

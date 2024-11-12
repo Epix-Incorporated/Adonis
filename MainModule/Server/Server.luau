@@ -245,8 +245,8 @@ local function LoadPackage(package, folder, runNow)
 	unpackFolder(package, folder)
 end;
 
-local function CleanUp()
-	print("Beginning Adonis cleanup & shutdown process...")
+local function CleanUp(reason)
+	print(`Beginning Adonis cleanup & shutdown process due to {reason}...`)
 	local data = service.UnWrap(server.Data)
 	if type(data) == "table" and typeof(service.UnWrap(data.Config)) == "Instance" then
 		local Settings: ModuleScript = service.UnWrap(data.Config):FindFirstChild("Settings")
@@ -593,8 +593,10 @@ return service.NewProxy({
 		end
 
 		--// Bind cleanup
-		service.DataModel:BindToClose(CleanUp)
-		--server.CleanUp = CleanUp;
+		service.DataModel:BindToClose(function(...)
+			server.CleanUp(...)
+		end)
+		server.CleanUp = CleanUp
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
