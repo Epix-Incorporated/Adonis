@@ -13,14 +13,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.1
 
       - name: Check comment and image
         run: |
           comment_body=$(jq -r '.comment.body' "$GITHUB_EVENT_PATH")
           comment_body_lowercase=$(echo $comment_body | awk '{print tolower($0)}')
 
-          if [[ $comment_body_lowercase =~ "(p\-?o\-?f|proof[-_\s]*of[-_\s]*work)\:?.*\!\[.*\]\(.+\)" ]]; then
+          if [[ $comment_body_lowercase =~ "(p\-?o\-?f|proof[\-_\s]*of[\-_\s]*work)\:?[\r\n]*.*(\!?\[.*\]\(.+\)|\<?https?:\/\/.)" ]]; then
             echo "Found proper pof"
             echo "remove_label=true" >> $GITHUB_OUTPUT
           else

@@ -19,6 +19,8 @@ body:
         - Documentation
         - GitHub Repository
         - Anti-Exploit
+        - Trello
+        - F3X/Building Tools
         - Other
     validations:
       required: true

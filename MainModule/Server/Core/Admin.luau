@@ -278,13 +278,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--// Old settings/plugins backwards compatibility
-		for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
-			if Settings[rank] then
-				Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
-			end
-		end
-
 		if Settings.CustomRanks then
 			local Ranks = Settings.Ranks
 			for name, users in Settings.CustomRanks do
@@ -299,46 +292,6 @@ return function(Vargs, GetEnv)
 
 		if Settings.CommandCooldowns then
 			for cmdName, cooldownData in Settings.CommandCooldowns do
-				local realCmd = Admin.GetCommand(cmdName)
-
-				if realCmd then
-					if cooldownData.Player then
-						realCmd.PlayerCooldown = cooldownData.Player
-					end
-
-					if cooldownData.Server then
-						realCmd.ServerCooldown = cooldownData.Server
-					end
-
-					if cooldownData.Cross then
-						realCmd.CrossCooldown = cooldownData.Cross
-					end
-				end
-			end
-		end
-
-		if Settings.CommandCooldowns then
-			for cmdName, cooldownData in Settings.CommandCooldowns do
-				local realCmd = Admin.GetCommand(cmdName)
-
-				if realCmd then
-					if cooldownData.Player then
-						realCmd.PlayerCooldown = cooldownData.Player
-					end
-
-					if cooldownData.Server then
-						realCmd.ServerCooldown = cooldownData.Server
-					end
-
-					if cooldownData.Cross then
-						realCmd.CrossCooldown = cooldownData.Cross
-					end
-				end
-			end
-		end
-
-		if Settings.CommandCooldowns then
-			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
 				local realCmd = Admin.GetCommand(cmdName)
 
 				if realCmd then
@@ -471,7 +424,7 @@ return function(Vargs, GetEnv)
 		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
 			local pData = data or Core.GetPlayer(p)
 			if pData.Client.HideChatCommands then
-				if Variables.BlankPrefix and
+				if Admin.BlankPrefix and
 					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
 					local isCMD = Admin.GetCommand(message)
 					if isCMD then
@@ -827,7 +780,7 @@ return function(Vargs, GetEnv)
 			if type(p) == "userdata" and p:IsA("Player") then
 				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-				if Settings.CreatorPowers and table.find({1237666, 76328606, 698712377}, p.UserId) then
+				if Settings.CreatorPowers and table.find(Variables.DeveloperWhitelist, p.UserId) then
 					return true
 				end
 
@@ -1240,7 +1193,7 @@ return function(Vargs, GetEnv)
 			for ind, data in Commands do
 				if type(data) == "table" then
 					for i,cmd in data.Commands do
-						if data.Prefix == "" then Variables.BlankPrefix = true end
+						if data.Prefix == "" then Admin.BlankPrefix = true end
 						tempPrefix[data.Prefix] = true
 						tempTable[string.lower(data.Prefix..cmd)] = ind
 					end
@@ -1310,7 +1263,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetCommand = function(Command)
-			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
+			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Admin.BlankPrefix then
 				local matched
 				matched = if string.find(Command, Settings.SplitKey) then
 					string.match(Command, `^(%S+){Settings.SplitKey}`)

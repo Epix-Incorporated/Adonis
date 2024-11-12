@@ -30,6 +30,9 @@ return function(Vargs, GetEnv)
 		end, ...)
 	end
 	server.cPcall, service.cPcall = cPcall, cPcall
+	service.AltUnpack = function(args, shift) -- TODO: Remove. This is not used in Adonis at all and is easily replicatable so you can safely remove it withour fear
+		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
+	end;
 	service.CloneTable = function(tbl)
 		return getmetatable(tbl) and setmetatable(table.clone(tbl), {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
 	end
@@ -53,6 +56,12 @@ return function(Vargs, GetEnv)
 	end
 	if HTTP.Trello.API then
 		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
+	end
+	--// Old settings/plugins backwards compatibility
+	for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
+		if Settings[rank] and not Settings.CustomRanks[rank] then
+			Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
+		end
 	end
 	for k, v in {-- Legacy aliases
 		[":giveppoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",

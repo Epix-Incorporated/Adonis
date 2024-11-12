@@ -97,7 +97,7 @@ return function(Vargs, GetEnv)
 						client.Finish_Loading()
 					end
 				elseif Core.Key then
-					local comString = Remote.Decrypt(com,Core.Key)
+					local comString = Remote.NewDecrypt(com,Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
 						local rets = {service.TrackTask(`Remote: {comString}`, command, false, args)}

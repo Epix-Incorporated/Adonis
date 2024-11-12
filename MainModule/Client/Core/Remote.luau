@@ -45,6 +45,9 @@ return function(Vargs, GetEnv)
 		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
+		Remote.NewDecrypt = function(str, key, cache) -- Bxor works both ways. May want to make a seperate function tho
+			return Remote.NewEncrypt(str, key, cache or Remote.NewDecodeCache)
+		end;
 
 		Remote.Init = nil;
 	end
@@ -92,6 +95,8 @@ return function(Vargs, GetEnv)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
+		NewEncodeCache = {};
+		NewDecodeCache = {};
 		Received = 0;
 		Sent = 0;
 
@@ -374,7 +379,7 @@ return function(Vargs, GetEnv)
 
 		Send = function(com,...)
 			Core.LastUpdate = os.time()
-			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
+			Remote.Fire(Remote.NewEncrypt(com,Core.Key),...)
 		end;
 
 		GetFire = function(...)
@@ -429,7 +434,7 @@ return function(Vargs, GetEnv)
 
 		Get = function(com,...)
 			Core.LastUpdate = os.time()
-			local ret = Remote.GetFire(Remote.Encrypt(com,Core.Key),...)
+			local ret = Remote.GetFire(Remote.NewEncrypt(com,Core.Key),...)
 			if type(ret) == "table" then
 				return unpack(ret);
 			else
@@ -476,56 +481,73 @@ return function(Vargs, GetEnv)
 			Remote.Send("PlayerEvent",event,...)
 		end;
 
-		Encrypt = function(str, key, cache)
+
+		Encrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
 			cache = cache or Remote.EncodeCache or {}
+			local keyCache = cache[key] or {}
 
 			if not key or not str then
 				return str
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
+			elseif keyCache[str] then
+				return keyCache[str]
 			else
-				local byte = string.byte
-				local sub = string.sub
-				local char = string.char
+				local writeu8, readu8 = buffer.writeu8, buffer.readu8
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
 
-				local keyCache = cache[key] or {}
-				local endStr = {}
-
-				for i = 1, #str do
-					local keyPos = (i % #key) + 1
-					endStr[i] = char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) + readu8(rawKey, (i + 1) % keyLen)) % 126 + 1)
 				end
 
-				endStr = table.concat(endStr)
 				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
 			end
 		end;
 
-		Decrypt = function(str, key, cache)
+		Decrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
 			cache = cache or Remote.DecodeCache or {}
+			local keyCache = cache[key] or {}
 
 			if not key or not str then
 				return str
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
+			elseif keyCache[str] then
+				return keyCache[str]
 			else
-				local keyCache = cache[key] or {}
-				local byte = string.byte
-				local sub = string.sub
-				local char = string.char
-				local endStr = {}
+				local writeu8, readu8 = buffer.writeu8, buffer.readu8
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
 
-				for i = 1, #str do
-					local keyPos = (i % #key)+1
-					endStr[i] = char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) - readu8(rawKey, (i + 1) % keyLen)) % 126 - 1)
 				end
 
-				endStr = table.concat(endStr)
 				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
+			end
+		end;
+
+		NewEncrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
+			cache = cache or Remote.NewEncodeCache or {}
+			local keyCache = cache[key] or {}
+
+			if not key or not str then
+				return str
+			elseif keyCache[str] then
+				return keyCache[str]
+			else
+				local writeu8, readu8, bxor = buffer.writeu8, buffer.readu8, bit32.bxor
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
+
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, bxor(readu8(rawStr, i), readu8(rawKey, i % keyLen)))
+				end
+
+				cache[key] = keyCache
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
 			end
 		end;
 	}

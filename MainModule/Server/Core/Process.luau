@@ -26,8 +26,8 @@ return function(Vargs, GetEnv)
 		logError = logError or env.logError;
 		Routine = Routine or env.Routine;
 		Commands = Remote.Commands
-		Decrypt = Remote.Decrypt
-		Encrypt = Remote.Encrypt
+		Decrypt = Remote.NewDecrypt
+		Encrypt = Remote.NewEncrypt
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
@@ -412,29 +412,14 @@ return function(Vargs, GetEnv)
 
 				for cmd, overrideMap in string.gmatch(msg, `([^{Settings.BatchKey}]+)({Settings.BatchKey}?[%d,>]*)`) do
 					cmd, overrideMap = Functions.Trim(cmd), Process.GetOverrideMap(overrideMap)
+					local returnArgs = table.pack(Process.Command(p, cmd, opts, false))
+					table.clear(overrideArgs)
 
-					local waiter = `{Settings.PlayerPrefix}wait`
-					if string.sub(string.lower(cmd), 1, #waiter) == waiter then
-						local num = tonumber(overrideArgs[1] or string.sub(cmd, #waiter + 1))
-
-						if overrideMap[1] then
-							table.clear(overrideArgs)
-							overrideArgs[overrideMap[1]] = num
-						end
-
-						if num then
-							task.wait(tonumber(num))
-						end
-					else
-						local returnArgs = table.pack(Process.Command(p, cmd, opts, false))
-						table.clear(overrideArgs)
-
-						for i, i2 in overrideMap do
-							overrideArgs[i2] = returnArgs[i + 1]
-						end
-
-						opts.OverrideArgs = overrideArgs
+					for i, i2 in overrideMap do
+						overrideArgs[i2] = returnArgs[i + 1]
 					end
+
+					opts.OverrideArgs = overrideArgs
 				end
 			else
 				local pData = opts.PlayerData or (p and Core.GetPlayer(p))
@@ -977,7 +962,6 @@ return function(Vargs, GetEnv)
 					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-
 						task.wait(1)
 						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}cmds")`))
 
@@ -1005,9 +989,20 @@ return function(Vargs, GetEnv)
 							]]))
 						end
 
-						if level >= 300 and #Settings.Messages > 0 then
-							for _, Message in Settings.Messages do
-								task.delay(1, Functions.Notification, "Message", tostring(Message), {p}, math.round((#Message/19)+2.5))
+						if level >= 300 and #server.Messages > 0 then
+							for _, message in server.Messages do
+								local isString = type(message) == "string"
+
+								task.delay(
+									1,
+									Functions.Notification,
+									not isString and message.Title or "Message",
+									isString and message or not isString and message.Message or "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+									{p},
+									isString and math.round((#message/19)+2.5) or not isString and message.Time or 10,
+									not isString and message.Icon,
+									not isString and message.onClick
+								)
 							end
 						end
 					end

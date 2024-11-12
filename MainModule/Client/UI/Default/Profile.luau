@@ -87,7 +87,7 @@ return function(data, env)
 			{"Display Name", player.DisplayName, "The player's custom display name"},
 			{"Username", player.Name, "The player's unique Roblox username"},
 			{"User ID", player.UserId, "The player's unique Roblox user ID"},
-			{"Acc. Age", `{player.AccountAge} days ({string.format("%.2f", player.AccountAge/365.25)} years)`, "How long the player has been registered on Roblox"},
+			{"Acc. Age", `{player.AccountAge} days ({string.format("%.2f", player.AccountAge/365.2425)} years)`, "How long the player has been registered on Roblox"},
 			}) do
 			generaltab:Add("TextLabel", {
 				Text = `  {v[1]}: `;
