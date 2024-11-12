@@ -1413,7 +1413,7 @@ return function(Vargs, GetEnv)
 				local keyLen = #key
 
 				for i = 0, #str - 1 do
-					writeu8(rawStr, bxor(readu8(rawStr, i), readu8(rawKey, i % keyLen)))
+					writeu8(rawStr, i, bxor(readu8(rawStr, i), readu8(rawKey, i % keyLen)))
 				end
 
 				cache[key] = keyCache
