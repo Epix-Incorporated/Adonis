@@ -1084,14 +1084,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Cape = function(player,isdon,material,color,decal,reflect)
-			material = material or "Neon"
-			if not Functions.GetEnumValue(Enum.Material, material) then
-				error("Invalid material value")
-			end
-
+		Cape = function(player, isdon, material, color, decal, reflect)
+			material = assert(Enum.Material:FromName(material or "Neon"), "Invalid material value")
 			Functions.UnCape(player)
 			local torso = player.Character:FindFirstChild("HumanoidRootPart")
+
 			if torso then
 				if type(color) == "table" then
 					color = Color3.new(unpack(color))
@@ -1142,23 +1139,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetEnumValue = function(enum, item)
-			local valid = false
-			for _,v in enum:GetEnumItems() do
-				if v.Name == item then
-					valid = v.Value
-					break
-				end
-			end
-			return valid
-		end;
-
 		ApplyBodyPart = function(character, model)
 			-- NOTE: Use HumanoidDescriptions to apply body parts where possible, unless applying custom parts
-
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
-				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
+				local rigType = humanoid.RigType.Name
 				local part = model:FindFirstChild(rigType)
 
 				if not part and rigType == "R15" then
@@ -1178,7 +1163,7 @@ return function(Vargs, GetEnv)
 						end
 					elseif rigType == "R15" then
 						for _,v in part:GetChildren() do
-							local value = Functions.GetEnumValue(Enum.BodyPartR15, v.Name)
+							local value = Enum.BodyPartR15:FromName(v.Name)
 							if value then
 								humanoid:ReplaceBodyPartR15(value, v:Clone())
 							end
