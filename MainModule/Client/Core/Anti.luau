@@ -82,15 +82,13 @@ return function(Vargs, GetEnv)
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
-			if action == "k".."i".."c".."k" then
-				if not isStudio then
-					if nocrash then
-						Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
-					else
-						Disconnect(info)
-					end
+			if action == "k".."i".."c".."k" and not isStudio then
+				if nocrash then
+					Player:Kick(":"..":".." ".."A".."d".."o".."n".."i".."s".." ".."A".."n".."t".."i".." ".."C".."h".."e".."a".."t"..":"..":".."\n".. tostring(info)); -- service.Players.LocalPlayer
+				else
+					Disconnect(info)
 				end
-			elseif action == "c".."r".."a".."s".."h" then
+			elseif action == "c".."r".."a".."s".."h" and not isStudio then
 				Kill(info)
 			end
 		end
@@ -329,12 +327,12 @@ return function(Vargs, GetEnv)
 				pcall(metamethod, rawGame, proxyDetector)
 
 				if callstackInvalid or success or success2 or success3 then
-					return true
+					return not isStudio
 				elseif not errorMessages["namecallInstance"] then
 					errorMessages["namecallInstance"] = {err, err2, err3}
 				end
 
-				return not compareTables(errorMessages["namecallInstance"], {err, err2, err3})
+				return not compareTables(errorMessages["namecallInstance"], {err, err2, err3}) and not isStudio
 			end},
 			indexEnum = table.freeze{"kick", function()
 				local callstackInvalid = false

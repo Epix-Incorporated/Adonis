@@ -612,11 +612,13 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						local func,err = Core.Loadstring(args[1], newenv)
+						local func, err = Core.Loadstring(args[1], newenv)
 						if func then
-							func()
+							xpcall(func, function(reason)
+								Remote.Terminal.LiveOutput(p,`LUA_ERROR: {string.match(reason, ":(.*)") or reason}`)
+							end)
 						else
-							Remote.Terminal.LiveOutput(p, `ERROR: {string.match(err, ":(.*)") or err}`)
+							Remote.Terminal.LiveOutput(p,`SYNTAX_ERROR: {string.match(err, ":(.*)") or err}`)
 						end
 					end
 				};
@@ -1021,13 +1023,11 @@ return function(Vargs, GetEnv)
 					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`, function()
 						local func, err = Core.Loadstring(Variable["Script"], newenv)
 						if func then
-							local Succ,Err = pcall(function()
-								func()
+							xpcall(func, function(reason)
+								Remote.MakeGui(p, "Output", {Title = "LUA_ERROR"; Message = reason})
 							end)
-
-							Remote.MakeGui(p, "Output", {Title = "Error"; Message = Err})
 						else
-							Remote.MakeGui(p, "Output", {Title = "Error"; Message = err})
+							Remote.MakeGui(p, "Output", {Title = "SYNTAX_ERROR"; Message = err})
 						end
 					end)
 				end

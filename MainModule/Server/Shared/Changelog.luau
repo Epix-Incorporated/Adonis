@@ -3,6 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[Version – Date & Time released] @Maintainer";
 	"[v261 2024-08-29 14:32 UTC] @Dimenpsyonal";
 	"(Git/Expertcoderz) Add :ckick command (#1614)";
 	"";
@@ -47,6 +48,11 @@ return {
 	"(Git/ccuser44) Optimize linkedlists (#1695)";
 	"(Git/ccuser44) Show profile picture for private message notifications (#1691)";
 	"(Git/ccuser44) Small misc fixes and improvements (#1672)";
+	"(Git/ccuser44) Fix :fly being broken (#1692)";
+	"(Git/ccuser44) Fix terminal error hadling (#1685)";
+	"(Git/ccuser44) Optimise enum handling (#1684)";
+	"(Git/ccuser44) Fix kick for use of studio tools (#1617)";
+	"(Git/ccuser44) Fix trello api output functions (#1673)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
