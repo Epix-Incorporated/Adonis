@@ -105,7 +105,7 @@ return function(Vargs, GetEnv)
 		-- // Preliminary support for oldlog encryption
 		DeserializeOldlogs = function(data)
 			if string.sub(data, 1, 1) ~= "[" and string.match(data, "^[%w%+/=]+$") then
-				data = Remote.Decrypt(Functions.Base64Decode(data), Settings.DataStoreKey)
+				data = Remote.NewDecrypt(Functions.Base64Decode(data), Settings.DataStoreKey)
 
 				if string.sub(data, 1, 2) == "\x1f\x8b" then -- Check for Gzip header and decode
 					data = assert(Functions.GzipDecompress, "No support for Gzip encoding!")(data)
