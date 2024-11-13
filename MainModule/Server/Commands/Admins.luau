@@ -555,13 +555,12 @@ return function(Vargs, env)
 			Description = "Gives the target player(s) F3X building tools.";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local F3X = require(580330877)()
-				do
-					service.New("StringValue", {
-						Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
-						Parent = F3X
-					})
-				end
+				local F3X = Variables.F3XCached and Variables.F3XCached:Clone() or require(580330877)()
+				Variables.F3XCached = Variables.F3XCached or F3X:Clone()
+				service.New("StringValue", {
+					Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
+					Parent = F3X
+				})
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
@@ -570,6 +569,8 @@ return function(Vargs, env)
 						F3X:Clone().Parent = Backpack
 					end
 				end
+
+				F3X:Destroy()
 			end
 		};
 
