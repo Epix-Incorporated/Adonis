@@ -246,7 +246,10 @@ local function LoadPackage(package, folder, runNow)
 end;
 
 local function CleanUp(reason)
-	print(`Beginning Adonis cleanup & shutdown process due to {reason}...`)
+	if not server.Data or not server.Data.SilentStartup then
+		print(`Beginning Adonis cleanup & shutdown process due to {reason}...`)
+	end
+
 	local data = service.UnWrap(server.Data)
 	if type(data) == "table" and typeof(service.UnWrap(data.Config)) == "Instance" then
 		local Settings: ModuleScript = service.UnWrap(data.Config):FindFirstChild("Settings")
@@ -277,7 +280,9 @@ local function CleanUp(reason)
 		pcall(server.Core.DisconnectEvent)
 	end
 
-	print("Unloading complete")
+	if not server.Data or not server.Data.SilentStartup then
+		print("Unloading complete")
+	end
 end;
 
 server = {
