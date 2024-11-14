@@ -26,7 +26,6 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-
 		Logs.MaxLogs = Settings.MaxLogs;
 
 		Logs.Init = nil;
