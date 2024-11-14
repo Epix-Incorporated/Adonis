@@ -401,6 +401,7 @@ return function(Vargs, GetEnv)
 		GetFakePlayer = function(options)
 			local fakePlayer = service.Wrap(service.New("Folder", {
 				Name = options.Name or "Fake_Player";
+				Archivable = false;
 			}))
 
 			local data = {
@@ -410,12 +411,12 @@ return function(Vargs, GetEnv)
 				UserId = 0;
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
-				CharacterAppearanceId = if options.UserId then tostring(options.UserId) else "0";
+				CharacterAppearanceId = options.UserId or 0;
 				FollowUserId = 0;
 				GameplayPaused = false;
 				Parent = service.Players;
 				Character = service.New("Model", {Name = options.Name or "Fake_Player"});
-				Backpack = service.New("Folder", {Name = "FakeBackpack"});
+				Backpack = service.New("Backpack", {Name = "FakeBackpack"});
 				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"});
 				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"});
 				GetJoinData = function() return {} end;
@@ -423,15 +424,15 @@ return function(Vargs, GetEnv)
 				GetRankInGroup = function() return 0 end;
 				GetRoleInGroup = function() return "Guest" end;
 				IsFriendsWith = function() return false end;
-				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-				IsA = function(_, className) return className == "Player" end;
+				Kick = function() fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
+				IsA = function(_, className) return className == "Player" or className == "Instance" end;
 			}
 
-			for i, v in options do
-				data[i] = v
+			for k, v in options do
+				data[k] = v
 			end
 
-			if data.UserId ~= -1 then
+			if data.UserId > 0 then
 				local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, data.UserId)
 				if success then
 					data.Name = actualName
@@ -441,8 +442,8 @@ return function(Vargs, GetEnv)
 			data.userId = data.UserId
 			data.ToString = data.Name
 
-			for i, v in data do
-				fakePlayer:SetSpecial(i, v)
+			for k, v in data do
+				fakePlayer:SetSpecial(k, v)
 			end
 
 			return fakePlayer
