@@ -6689,24 +6689,6 @@ return function(Vargs, env)
 			end
 		};
 
-		ShowLogs = {
-			Prefix = Settings.Prefix;
-			Commands = {"showlogs", "showcommandlogs"};
-			Args = {"autoupdate? (default: false)", "player"};
-			Description = "Shows the target player(s) the command logs.";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local autoUpdate = false
-				if args[1] and table.find({"yes", "true", "1", "autoupdate", "on"}, args[1]:lower()) then
-					autoUpdate = true
-				end
-				local str = `{Settings.Prefix}logs {tostring(autoUpdate) or ""}`
-				for _, v in service.GetPlayers(plr, args[2]) do
-					Admin.RunCommandAsPlayer(str, v)
-				end
-			end
-		};
-
 		Mute = {
 			Prefix = Settings.Prefix;
 			Commands = {"mute", "silence"};
@@ -6931,7 +6913,6 @@ return function(Vargs, env)
 				local ReverbType = Enum.ReverbType
 				local reverbs = ReverbType:GetEnumItems()
 				if not rev or not ReverbType[rev] then
-
 					Functions.Hint("Reverb type was not specified or is invalid. Opening list of valid reverb types", {plr})
 
 					local tab = table.create(#reverbs)
@@ -6969,6 +6950,30 @@ return function(Vargs, env)
 				assert(args[2] == "true" or args[2] == "false", "Invalid argument #2 (boolean expected)")
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "SetCore", "ResetButtonCallback", if args[2] == "true" then true else false)
+				end
+			end
+		};
+
+		Sudo = {
+			Prefix = Settings.Prefix;
+			Commands = {"sudo"};
+			Args = {"player", "command"};
+			Description = "Runs a command as the target player(s)";
+			AdminLevel = "Players";
+			CrossServerDenied = true;
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing target player (argument #1)")
+				assert(args[2], "Missing command string (argument #2)")
+				local isCreator = Admin.IsPlaceOwner(plr) or Admin.GetLevel(plr) >= Settings.Ranks.Creators.Level
+				local options = {
+					IsDonor = not isCreator and Admin.CheckDonor(plr),
+					Level = not isCreator and Admin.GetLevel(plr),
+					Player = not isCreator and plr,
+					isSystem = isCreator
+				}
+
+				for _, v in service.GetPlayers(plr, args[1], {NoFakePlayer = true}) do
+					task.defer(Process.Command, v, args[2], options)
 				end
 			end
 		};
