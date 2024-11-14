@@ -113,11 +113,11 @@ return function(Vargs, env)
 		Notepad = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notepad", "stickynote"};
-			Args = {};
+			Args = {"text (optional)"};
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "Notepad", {})
+				Remote.MakeGui(plr, "Notepad", {Text = args[1]})
 			end
 		};
 
