@@ -48,24 +48,23 @@ return function(Vargs, GetEnv)
 		Errors = if UseDLL then DLL.new() else {};
 		DateTime = if UseDLL then DLL.new() else {};
 		TempUpdaters = {};
+		IndToName = {
+			Chats = "Chat";
+			Joins = "Join";
+			Leaves = "Leave";
+			Script = "Script";
+			RemoteFires = "RemoteFire";
+			Commands = "Command";
+			Exploit = "Exploit";
+			Errors = "Error";
+			DateTime = "DateTime";
+		};
 		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
 		TabToType = function(tab)
-			local indToName = {
-				Chats = "Chat";
-				Joins = "Join";
-				Leaves = "Leave";
-				Script = "Script";
-				RemoteFires = "RemoteFire";
-				Commands = "Command";
-				Exploit = "Exploit";
-				Errors = "Error";
-				DateTime = "DateTime";
-			}
-
 			for ind, t in server.Logs do
 				if t == tab then
-					return indToName[ind] or ind
+					return server.Logs.IndToName[ind] or ind
 				end
 			end
 		end;
