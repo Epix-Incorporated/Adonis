@@ -196,7 +196,7 @@ return function(Vargs, GetEnv)
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
-			if ob=='reset' then
+			if ob == "reset" then
 				CurrentCamera.CameraType = Enum.CameraType.Custom
 				CurrentCamera.CameraSubject = service.Player.Character:FindFirstChildOfClass("Humanoid")
 				CurrentCamera.FieldOfView = 70
@@ -415,6 +415,7 @@ return function(Vargs, GetEnv)
 				"Name";
 				"Parent";
 				"Archivable";
+				"DisplayOrder";
 				"SelectionImageObject";
 				"Active";
 				"BackgroundColor3";
@@ -623,13 +624,14 @@ return function(Vargs, GetEnv)
 			end
 
 			local function normaliseIndex(gui)
-				local remap = {}
+				local remap, order = {}, {}
 				local mapIndex; mapIndex = function(object)
 					local index = object.Properties.ZIndex
 
 					if type(index) == "number" then
 						if not remap[index] then
 							remap[index] = {object.Properties}
+							table.insert(order, index)
 						else
 							table.insert(remap[index], object.Properties)
 						end
@@ -641,11 +643,12 @@ return function(Vargs, GetEnv)
 				end
 
 				pcall(mapIndex, gui)
+				table.sort(order)
 
-				for _, objects in remap do
+				for _, index in order do
 					zIndex += 1
 
-					for _, v in objects do
+					for _, v in remap[index] do
 						v.ZIndex = zIndex
 					end
 				end
@@ -662,8 +665,9 @@ return function(Vargs, GetEnv)
 			})
 
 			table.sort(data.Children, function(t1, t2)
-				if t1.DisplayOrder and t2.DisplayOrder then
-					return t1.DisplayOrder >= t2.DisplayOrder
+				local o1, o2 = t1.Properties.DisplayOrder, t2.Properties.DisplayOrder
+				if o1 and o2 then
+					return o1 < o2
 				end
 
 				return false
