@@ -597,57 +597,90 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadGuiData = function(data)
-			local make; make = function(dat)
-				local props = dat.Properties
-				local children = dat.Children
-				local gui = service.New(props.ClassName)
+			local zIndex = -2^31 -- Signed 32 bit intiger
+			local make; make = function(data, parent)
+				local props = data.Properties
+				local gui = props.ClassName ~= "ScreenGui" and service.New(props.ClassName)
 
-				for i,v in props do
-					pcall(function()
-						gui[i] = v
-					end)
+				if gui then
+					for k, v in props do
+						pcall(function()
+							gui[k] = v
+						end)
+					end
 				end
 
-				for i,v in children do
+				for _, v in data.Children do
 					pcall(function()
-						local g = make(v)
+						local g = make(v, gui or parent)
 						if g then
-							g.Parent = gui
+							g.Parent = gui or parent
 						end
 					end)
 				end
+
 				return gui
 			end
 
-			local temp = Instance.new("Folder")
-			for _, v in service.PlayerGui:GetChildren() do
-				if not UI.Get(v) then
-					v.Parent = temp
-				end
-			end
-			Variables.GuiViewFolder = temp
-			local folder = service.New("Folder",{Parent = service.PlayerGui; Name = "LoadedGuis"})
-			for _, v in data.Children do
-				pcall(function()
-					local g = make(v)
-					if g then
-						g.Parent = folder
+			local function normaliseIndex(gui)
+				local remap = {}
+				local mapIndex; mapIndex = function(object)
+					local index = object.Properties.ZIndex
+
+					if type(index) == "number" then
+						if not remap[index] then
+							remap[index] = {object.Properties}
+						else
+							table.insert(remap[index], object.Properties)
+						end
 					end
-				end)
+
+					for _, v in object.Children do
+						pcall(mapIndex, v)
+					end
+				end
+
+				pcall(mapIndex, gui)
+
+				for _, objects in remap do
+					zIndex += 1
+
+					for _, v in objects do
+						v.ZIndex = zIndex
+					end
+				end
+
+				return gui
 			end
+
+			local GuiViewContainer = UI.Make("Window", {
+				Name = "Player GUI View";
+				Title = "Player GUI View";
+				Icon = client.MatIcons["Grid view"];
+				AllowMultiple = true;
+				SizeLocked = false
+			})
+
+			table.sort(data.Children, function(t1, t2)
+				if t1.DisplayOrder and t2.DisplayOrder then
+					return t1.DisplayOrder >= t2.DisplayOrder
+				end
+
+				return false
+			end)
+
+			Variables.GuiViewFolder = GuiViewContainer
+			zIndex = GuiViewContainer.ZIndex or zIndex
+
+			for _, v in data.Children do
+				pcall(make, normaliseIndex(v), GuiViewContainer)
+			end
+
+			GuiViewContainer:Ready()
 		end;
 
 		UnLoadGuiData = function()
-			for _, v in service.PlayerGui:GetChildren() do
-				if v.Name == "LoadedGuis" then
-					v:Destroy()
-				end
-			end
-
 			if Variables.GuiViewFolder then
-				for _, v in Variables.GuiViewFolder:GetChildren() do
-					v.Parent = service.PlayerGui
-				end
 				Variables.GuiViewFolder:Destroy()
 				Variables.GuiViewFolder = nil
 			end
