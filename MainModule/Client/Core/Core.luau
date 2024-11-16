@@ -231,30 +231,28 @@ return function(Vargs, GetEnv)
 						targ = client[ind]
 					end
 
-					if client.G_Access and (key == Variables.G_Access_Key or type(key) == "string" and Functions.SHA256(key..game.GameId) == Variables.G_Access_Key) and targ and client.Allowed_API_Calls[ind] then
-						if type(targ) == "table" then
-							return service.NewProxy {
-								__index = function(tab,inde)
-									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
-										if targ[inde]~=nil and type(targ[inde]) == "table" and client.G_Access_Perms == "Read" then
-											return service.ReadOnly(targ[inde])
-										else
-											return targ[inde]
-										end
-									elseif API_Special[inde] == false then
-										error(`Access Denied: {inde}`)
+					assert(client.G_Access and (key == Variables.G_Access_Key or type(key) == "string" and Functions.SHA256(key..game.GameId) == Variables.G_Access_Key) and targ and client.Allowed_API_Calls[ind], "Incorrect key or G_Access is disabled")
+
+					if type(targ) == "table" then
+						return service.NewProxy {
+							__index = function(tab, inde)
+								if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
+									if targ[inde] ~= nil and type(targ[inde]) == "table" and client.G_Access_Perms == "Read" then
+										return service.ReadOnly(targ[inde])
 									else
-										error(`Could not find {inde}`)
+										return targ[inde]
 									end
-								end;
-								__newindex = function(tabl,inde,valu)
-									error("Read-only")
-								end;
-								__metatable = true;
-							}
-						end
-					else
-						error("Incorrect key or G_Access is disabled")
+								elseif API_Special[inde] == false then
+									error(`Access Denied: {inde}`)
+								else
+									error(`Could not find {inde}`)
+								end
+							end;
+							__newindex = function(tabl, inde, valu)
+								error("Read-only")
+							end;
+							__metatable = true;
+						}
 					end
 				end);
 
