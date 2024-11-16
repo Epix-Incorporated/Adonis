@@ -767,7 +767,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					return "Processing"
 				else
 					local funcs = queue.Functions;
-					local Yield = service.Signal.New();
+					local Yield = service.Signal.new();
 					local function pop()
 						local n = funcs[1]
 						table.remove(funcs, 1)
