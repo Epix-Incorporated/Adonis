@@ -1183,8 +1183,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end,
 
 		MaxLen = function(message, length)
-			if string.len(message) > length then
-				return `{string.sub(message, 1, length)}...`
+			local rawLength = string.len(message)
+			local utf8Length = rawLength <= length * 6 and utf8.len(message)
+			if rawLength > length and not (utf8Length and utf8Length <= length) then
+				local clamped = string.sub(message, 1, utf8Length and utf8.offset(message, length + 1) - 1 or length)
+				return `{not utf8.len(clamped) and string.sub(clamped, 1, select(2, utf8.len(clamped)) - 1) or clamped}...`
 			else
 				return message
 			end
