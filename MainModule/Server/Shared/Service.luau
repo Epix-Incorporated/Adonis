@@ -1190,16 +1190,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		Yield = function()
-			local event = service.New("BindableEvent");
-			return {
-				Release = function(...) event:Fire(...) end;
-				Wait = function(...) return event.Event:Wait(...) end;
-				Destroy = function() event:Destroy() end;
-				Event = event;
-			}
-		end;
-
 		StartLoop = function(name,delay,func,noYield)
 			local tab = {
 				Name = name;
@@ -1496,7 +1486,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	service.HelperService = HelperService
 	service.ThreadService = ThreadService
 	service.EventService = EventService
-	service.GoodSignal = require(script.Parent.Shared.GoodSignal)
+	service.Signal = require(script.Parent.Shared.GoodSignal)
 
 	if client ~= nil then
 		for i,val in service do
