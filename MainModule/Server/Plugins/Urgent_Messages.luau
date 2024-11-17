@@ -25,7 +25,7 @@ return function(Vargs, GetEnv)
 				local alertTab = require(Variables.UrgentModuleId)
 		
 				if alertTab then
-					Alerts = AlertTab
+					Alerts = alertTab
 					Logs:AddLog("Script", "Alerts cloud module returned proper data")
 					Core.SetData("LastAlertVersion", version)
 					Core.SetData("CachedAlerts", service.HttpService:JSONEncode(alertTab))
