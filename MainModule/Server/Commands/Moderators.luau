@@ -4943,13 +4943,13 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
-						local absoluteMatch = leaderstats:FindFirstChild(statName)
-						if absoluteMatch and absoluteMatch:IsA("ValueBase") then
-							absoluteMatch.Value = args[3]
+						local absolute = leaderstats:FindFirstChild(statName)
+						if absolute and absolute:IsA("ValueBase") then
+							absolute.Value = (absolute:IsA("IntValue") or absolute:IsA("NumberValue")) and tonumber(args[3]) or args[3]
 						else
 							for _, st in leaderstats:GetChildren() do
-								if st:IsA("ValueBase") and string.match(st.Name:lower(), `^{statName:lower()}`) then
-									st.Value = args[3]
+								if st:IsA("ValueBase") and string.match(st.Name:lower(), `^{service.SanitizePattern(statName:lower())}`) then
+									st.Value = (st:IsA("IntValue") or st:IsA("NumberValue")) and tonumber(args[3]) or args[3]
 								end
 							end
 						end
@@ -4978,7 +4978,7 @@ return function(Vargs, env)
 							absoluteMatch:Destroy()
 						else
 							for _, st in leaderstats:GetChildren() do
-								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{statName:lower()}`) then
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{service.SanitizePattern(statName:lower())}`) then
 									st:Destroy()
 								end
 							end
@@ -5047,7 +5047,7 @@ return function(Vargs, env)
 							absoluteMatch.Value += valueToAdd
 						else
 							for _, st in leaderstats:GetChildren() do
-								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{statName:lower()}`) then
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{service.SanitizePattern(statName:lower())}`) then
 									st.Value += valueToAdd
 								end
 							end
@@ -5076,7 +5076,7 @@ return function(Vargs, env)
 							absoluteMatch.Value -= valueToSubtract
 						else
 							for _, st in leaderstats:GetChildren() do
-								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{statName:lower()}`) then
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), `^{service.SanitizePattern(statName:lower())}`) then
 									st.Value -= valueToSubtract
 								end
 							end
@@ -5547,12 +5547,11 @@ return function(Vargs, env)
 
 		TargetAudio = {
 			Prefix = Settings.Prefix;
-			Commands = {"taudio", "localsound", "localaudio", "lsound", "laudio"};
+			Commands = {"taudio", "localsound", "localaudio", "localsong", "localmusic", "lsound", "laudio", "lsong", "lmusic"};
 			Args = {"player", "audioId", "noLoop", "pitch", "volume"};
 			Description = "Plays an audio on the specified player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-
 				assert(args[1], "Missing player name")
 				assert(args[2] and tonumber(args[2]), "Missing or invalid AudioId")
 

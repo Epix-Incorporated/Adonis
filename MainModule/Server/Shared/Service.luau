@@ -747,7 +747,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				Timeout = timeout;
 
 				Finished = false;
-				Yield = doYield and service.Yield();
+				Yield = doYield and service.Signal.new();
 			}
 
 			table.insert(queue.Functions, tab);
@@ -767,7 +767,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					return "Processing"
 				else
 					local funcs = queue.Functions;
-					local Yield = service.Yield();
+					local Yield = service.Signal.new();
 					local function pop()
 						local n = funcs[1]
 						table.remove(funcs, 1)
@@ -783,11 +783,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						if func.Timeout then
 							delay(func.Timeout, function()
 								if not func.Finished then
-									Yield:Release();
+									Yield:Fire();
 									warn(`Queue Timeout Reached for {key or "Unknown"}`)
 
 									if func.Yield then
-										func.Yield:Release(false, "Timeout Reached");
+										func.Yield:Fire(false, "Timeout Reached");
 									end
 								end
 							end)
@@ -803,10 +803,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 							func.Finished = true
 
 							if func.Yield then
-								func.Yield:Release(r, e)
+								func.Yield:Fire(r, e)
 							end
 
-							Yield:Release();
+							Yield:Fire();
 						end,false)
 
 						if func.Running then
@@ -1183,21 +1183,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end,
 
 		MaxLen = function(message, length)
-			if string.len(message) > length then
-				return `{string.sub(message, 1, length)}...`
+			local rawLength = string.len(message)
+			local utf8Length = rawLength <= length * 6 and utf8.len(message)
+			if rawLength > length and not (utf8Length and utf8Length <= length) then
+				local clamped = string.sub(message, 1, utf8Length and utf8.offset(message, length + 1) - 1 or length)
+				return `{not utf8.len(clamped) and string.sub(clamped, 1, select(2, utf8.len(clamped)) - 1) or clamped}...`
 			else
 				return message
 			end
-		end;
-
-		Yield = function()
-			local event = service.New("BindableEvent");
-			return {
-				Release = function(...) event:Fire(...) end;
-				Wait = function(...) return event.Event:Wait(...) end;
-				Destroy = function() event:Destroy() end;
-				Event = event;
-			}
 		end;
 
 		StartLoop = function(name,delay,func,noYield)
@@ -1496,7 +1489,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	service.HelperService = HelperService
 	service.ThreadService = ThreadService
 	service.EventService = EventService
-	service.GoodSignal = require(script.Parent.Shared.GoodSignal)
+	service.Signal = require(script.Parent.Shared.GoodSignal)
 
 	if client ~= nil then
 		for i,val in service do

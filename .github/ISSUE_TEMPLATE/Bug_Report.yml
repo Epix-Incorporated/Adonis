@@ -23,7 +23,7 @@ body:
     id: loader-version
     attributes:
       label: Loader version
-      description: If your issue is related to loader/settings and you do not provide this we may not be able to solve your issue. Paste the value from `Adonis_Loader > Version > .Value` ![Version VALUE](https://media.discordapp.net/attachments/834826232565727282/1194191940640587836/image.png)
+      description: If your issue is related to loader/settings and you do not provide this we may not be able to solve your issue. Paste the value from `Adonis_Loader > Version > .Value` ![Version VALUE](loader_version.png)
       placeholder: Value of the version variable. "Latest" is invalid as unbeknownst you may not be using the latest loader for many reasons
   - type: dropdown
     id: segment

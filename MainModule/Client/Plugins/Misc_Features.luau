@@ -17,7 +17,17 @@ return function(Vargs, GetEnv)
 	client.cPcall, service.cPcall = cPcall, cPcall
 	service.AltUnpack = function(args, shift) -- TODO: Remove. This is not used in Adonis at all and is easily replicatable so you can safely remove it withour fear
 		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
-	end;
+	end
+	service.GoodSignal = service.Signal
+	service.Yield = function()
+		local event = service.Signal.new()
+		return {
+			Release = function(...) event:Fire(...) end;
+			Wait = function(...) return event:Wait(...) end;
+			Destroy = function() event:Destroy() end;
+			Event = event;
+		}
+	end
 	Remote.UnEncrypted = setmetatable({}, {
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
@@ -32,7 +42,7 @@ return function(Vargs, GetEnv)
 		local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
 		local Res = {}
 		for Idx = 1, Len do
-			Res[Idx] = format('%02x', random(255))
+			Res[Idx] = format("%02x", random(255))
 		end
 		return table.concat(Res)
 	end

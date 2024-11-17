@@ -1175,8 +1175,8 @@ return function(Vargs, GetEnv)
 			if keys and keys.RemoteReady == true then
 				local returns, finished
 				local key = service.HttpService:GenerateGUID(false)
-				local Yield = service.Yield()
-				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = table.pack(...) Yield:Release() end)
+				local Yield = service.Signal.new();
+				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Fire() end)
 
 				Remote.PendingReturns[key] = true
 				Remote.Send(p, "GetReturn", com, key, ...)
