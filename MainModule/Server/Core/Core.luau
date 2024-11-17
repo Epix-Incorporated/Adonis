@@ -179,6 +179,7 @@ return function(Vargs, GetEnv)
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
+			["Variables.UrgentModuleId"] = true;
 		};
 
 		--// Prevent certain keys from loading from the DataStore
