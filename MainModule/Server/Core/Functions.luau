@@ -391,6 +391,7 @@ return function(Vargs, GetEnv)
 		GetFakePlayer = function(options)
 			local fakePlayer = service.Wrap(service.New("Folder", {
 				Name = options.Name or "Fake_Player";
+				Archivable = false;
 			}))
 
 			local data = {
@@ -400,12 +401,12 @@ return function(Vargs, GetEnv)
 				UserId = 0;
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
-				CharacterAppearanceId = if options.UserId then tostring(options.UserId) else "0";
+				CharacterAppearanceId = options.UserId or 0;
 				FollowUserId = 0;
 				GameplayPaused = false;
 				Parent = service.Players;
 				Character = service.New("Model", {Name = options.Name or "Fake_Player"});
-				Backpack = service.New("Folder", {Name = "FakeBackpack"});
+				Backpack = service.New("Backpack", {Name = "FakeBackpack"});
 				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"});
 				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"});
 				GetJoinData = function() return {} end;
@@ -413,15 +414,15 @@ return function(Vargs, GetEnv)
 				GetRankInGroup = function() return 0 end;
 				GetRoleInGroup = function() return "Guest" end;
 				IsFriendsWith = function() return false end;
-				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-				IsA = function(_, className) return className == "Player" end;
+				Kick = function() fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
+				IsA = function(_, className) return className == "Player" or className == "Instance" end;
 			}
 
-			for i, v in options do
-				data[i] = v
+			for k, v in options do
+				data[k] = v
 			end
 
-			if data.UserId ~= -1 then
+			if data.UserId > 0 then
 				local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, data.UserId)
 				if success then
 					data.Name = actualName
@@ -431,8 +432,8 @@ return function(Vargs, GetEnv)
 			data.userId = data.UserId
 			data.ToString = data.Name
 
-			for i, v in data do
-				fakePlayer:SetSpecial(i, v)
+			for k, v in data do
+				fakePlayer:SetSpecial(k, v)
 			end
 
 			return fakePlayer
@@ -1082,14 +1083,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Cape = function(player,isdon,material,color,decal,reflect)
-			material = material or "Neon"
-			if not Functions.GetEnumValue(Enum.Material, material) then
-				error("Invalid material value")
-			end
-
+		Cape = function(player, isdon, material, color, decal, reflect)
+			material = assert(Enum.Material:FromName(material or "Neon"), "Invalid material value")
 			Functions.UnCape(player)
 			local torso = player.Character:FindFirstChild("HumanoidRootPart")
+
 			if torso then
 				if type(color) == "table" then
 					color = Color3.new(unpack(color))
@@ -1140,23 +1138,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetEnumValue = function(enum, item)
-			local valid = false
-			for _,v in enum:GetEnumItems() do
-				if v.Name == item then
-					valid = v.Value
-					break
-				end
-			end
-			return valid
-		end;
-
 		ApplyBodyPart = function(character, model)
 			-- NOTE: Use HumanoidDescriptions to apply body parts where possible, unless applying custom parts
-
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
-				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
+				local rigType = humanoid.RigType.Name
 				local part = model:FindFirstChild(rigType)
 
 				if not part and rigType == "R15" then
@@ -1176,7 +1162,7 @@ return function(Vargs, GetEnv)
 						end
 					elseif rigType == "R15" then
 						for _,v in part:GetChildren() do
-							local value = Functions.GetEnumValue(Enum.BodyPartR15, v.Name)
+							local value = Enum.BodyPartR15:FromName(v.Name)
 							if value then
 								humanoid:ReplaceBodyPartR15(value, v:Clone())
 							end

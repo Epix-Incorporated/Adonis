@@ -246,7 +246,10 @@ local function LoadPackage(package, folder, runNow)
 end;
 
 local function CleanUp(reason)
-	print(`Beginning Adonis cleanup & shutdown process due to {reason}...`)
+	if not server.Data or not server.Data.SilentStartup then
+		print(`Beginning Adonis cleanup & shutdown process due to {reason}...`)
+	end
+
 	local data = service.UnWrap(server.Data)
 	if type(data) == "table" and typeof(service.UnWrap(data.Config)) == "Instance" then
 		local Settings: ModuleScript = service.UnWrap(data.Config):FindFirstChild("Settings")
@@ -277,9 +280,12 @@ local function CleanUp(reason)
 		pcall(server.Core.DisconnectEvent)
 	end
 
-	print("Unloading complete")
+	if not server.Data or not server.Data.SilentStartup then
+		print("Unloading complete")
+	end
 end;
 
+-- TODO: Re-add codename to server but remove it from Variables and directly bake it in to the client too without a remote
 server = {
 	Running = true;
 	Version = 0;
@@ -289,12 +295,10 @@ server = {
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
 	ServerStartTime = os.time();
-	CommandCache = {};
 };
 
 locals = {
 	server = server;
-	CodeName = "";
 	Settings = server.Settings;
 	HookedEvents = HookedEvents;
 	ErrorLogs = ErrorLogs;
@@ -535,7 +539,6 @@ return service.NewProxy({
 		server.Client = Folder.Parent.Client
 
 		locals.Settings = server.Settings
-		locals.CodeName = server.CodeName
 
 		--// THIS NEEDS TO BE DONE **BEFORE** ANY EVENTS ARE CONNECTED
 		if server.Settings.HideScript and data.Model then

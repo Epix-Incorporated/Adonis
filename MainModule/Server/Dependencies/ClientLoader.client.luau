@@ -144,7 +144,7 @@ local function checkChild(child)
 
 		print("Getting origName")
 		origName = nameVal and nameVal.Value or child.Name
-		prit(`Got name: {origName}`)
+		print(`Got name: {origName}`)
 
 		print("Changing child parent...")
 		child.Parent = nil
@@ -241,7 +241,7 @@ else
 	if not playerGui then
 		warn("PlayerGui not found after 10 minutes")
 		Kick(player, "ACLI: PlayerGui Never Appeared (Waited 10 Minutes)")
-	else
+	--else
 		--playerGui.Changed:Connect(function() -- How about no
 		--	if playerGui.Name ~= "PlayerGui" then
 		--		playerGui.Name = "PlayerGui"

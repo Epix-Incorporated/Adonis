@@ -32,9 +32,19 @@ return function(Vargs, GetEnv)
 	server.cPcall, service.cPcall = cPcall, cPcall
 	service.AltUnpack = function(args, shift) -- TODO: Remove. This is not used in Adonis at all and is easily replicatable so you can safely remove it withour fear
 		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
-	end;
+	end
 	service.CloneTable = function(tbl)
 		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
+	end
+	service.GoodSignal = service.Signal
+	service.Yield = function()
+		local event = service.Signal.new()
+		return {
+			Release = function(...) event:Fire(...) end;
+			Wait = function(...) return event:Wait(...) end;
+			Destroy = function() event:Destroy() end;
+			Event = event;
+		}
 	end
 	Remote.UnEncrypted = setmetatable({}, { -- TODO: Start adding a server.Messages message and remove later
 		__newindex = function(_, ind, val)
@@ -57,7 +67,7 @@ return function(Vargs, GetEnv)
 	if HTTP.Trello.API then
 		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
 	end
-	--// Old settings/plugins backwards compatibility
+	--// Old settings/plugins backwards compatibility. Do not remove this because many games use old loader ranks!
 	for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
 		if Settings[rank] and not Settings.CustomRanks[rank] then
 			Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]

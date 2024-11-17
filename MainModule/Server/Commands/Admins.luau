@@ -1328,7 +1328,7 @@ return function(Vargs, env)
 						})
 
 						local nlogs = #logs
-						if nlogs > 1000 then
+						if nlogs > Logs.OldCommandLogsLimit then
 							table.remove(logs, nlogs)
 						end
 

@@ -14,7 +14,6 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service;
 	local DLL = server.DLL;
 
-	local MaxLogs = 1000
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -27,8 +26,7 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-
-		MaxLogs = Settings.MaxLogs;
+		Logs.MaxLogs = Settings.MaxLogs;
 
 		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");
@@ -47,25 +45,25 @@ return function(Vargs, GetEnv)
 		Exploit = if UseDLL then DLL.new() else {};
 		Errors = if UseDLL then DLL.new() else {};
 		DateTime = if UseDLL then DLL.new() else {};
+		MaxLogs = 1000;
 		TempUpdaters = {};
+		IndToName = {
+			Chats = "Chat";
+			Joins = "Join";
+			Leaves = "Leave";
+			Script = "Script";
+			RemoteFires = "RemoteFire";
+			Commands = "Command";
+			Exploit = "Exploit";
+			Errors = "Error";
+			DateTime = "DateTime";
+		};
 		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
 		TabToType = function(tab)
-			local indToName = {
-				Chats = "Chat";
-				Joins = "Join";
-				Leaves = "Leave";
-				Script = "Script";
-				RemoteFires = "RemoteFire";
-				Commands = "Command";
-				Exploit = "Exploit";
-				Errors = "Error";
-				DateTime = "DateTime";
-			}
-
 			for ind, t in server.Logs do
 				if t == tab then
-					return indToName[ind] or ind
+					return server.Logs.IndToName[ind] or ind
 				end
 			end
 		end;
@@ -91,10 +89,10 @@ return function(Vargs, GetEnv)
 			end
 
 			if tab.__meta == "DLL" then
-				tab:AddToStartAndRemoveEndIfEnd(log, MaxLogs)
+				tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
 			else
 				table.insert(tab, 1, log)
-				if #tab > tonumber(MaxLogs) then
+				if #tab > tonumber(Logs.MaxLogs) then
 					table.remove(tab, #tab)
 				end
 			end
@@ -106,12 +104,15 @@ return function(Vargs, GetEnv)
 			--// Disable saving command logs in Studio; not required.
 			if service.RunService:IsStudio() or service.RunService:IsRunMode() then
 				return
+			elseif not server.Data or not server.Data.SilentStartup then
+				print("Saving command logs...")
 			end
 
-			print("Saving command logs...")
-
 			if Settings.SaveCommandLogs ~= true or Settings.DataStoreEnabled ~= true then
-				print("Skipped saving command logs.")
+				if not server.Data or not server.Data.SilentStartup then
+					print("Skipped saving command logs.")
+				end
+
 				return
 			end
 
@@ -175,7 +176,9 @@ return function(Vargs, GetEnv)
 				return service.HttpService:JSONEncode(temp)
 			end)
 
-			print("Command logs saved!")
+			if not server.Data or not server.Data.SilentStartup then
+				print("Command logs saved!")
+			end
 		end;
 
 		ListUpdaters = {

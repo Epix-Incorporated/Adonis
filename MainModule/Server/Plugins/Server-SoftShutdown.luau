@@ -158,7 +158,7 @@ return function(Vargs, GetEnv)
 						})
 					end
 
-					if #logs > 1000 then
+					if #logs > Logs.OldCommandLogsLimit then
 						table.remove(logs, #logs)
 					end
 
