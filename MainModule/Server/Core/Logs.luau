@@ -14,7 +14,6 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service;
 	local DLL = server.DLL;
 
-	local MaxLogs = 1000
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -27,8 +26,7 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-
-		MaxLogs = Settings.MaxLogs;
+		Logs.MaxLogs = Settings.MaxLogs;
 
 		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");
@@ -47,6 +45,7 @@ return function(Vargs, GetEnv)
 		Exploit = if UseDLL then DLL.new() else {};
 		Errors = if UseDLL then DLL.new() else {};
 		DateTime = if UseDLL then DLL.new() else {};
+		MaxLogs = 1000;
 		TempUpdaters = {};
 		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
@@ -91,10 +90,10 @@ return function(Vargs, GetEnv)
 			end
 
 			if tab.__meta == "DLL" then
-				tab:AddToStartAndRemoveEndIfEnd(log, MaxLogs)
+				tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
 			else
 				table.insert(tab, 1, log)
-				if #tab > tonumber(MaxLogs) then
+				if #tab > tonumber(Logs.MaxLogs) then
 					table.remove(tab, #tab)
 				end
 			end
