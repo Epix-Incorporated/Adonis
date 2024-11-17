@@ -5552,12 +5552,11 @@ return function(Vargs, env)
 
 		TargetAudio = {
 			Prefix = Settings.Prefix;
-			Commands = {"taudio", "localsound", "localaudio", "lsound", "laudio"};
+			Commands = {"taudio", "localsound", "localaudio", "localsong", "localmusic", "lsound", "laudio", "lsong", "lmusic"};
 			Args = {"player", "audioId", "noLoop", "pitch", "volume"};
 			Description = "Plays an audio on the specified player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-
 				assert(args[1], "Missing player name")
 				assert(args[2] and tonumber(args[2]), "Missing or invalid AudioId")
 
