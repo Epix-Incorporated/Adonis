@@ -190,22 +190,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Sudo = {
-			Prefix = Settings.Prefix;
-			Commands = {"sudo"};
-			Args = {"player", "command"};
-			Description = "Runs a command as the target player(s)";
-			AdminLevel = "Creators";
-			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing target player (argument #1)")
-				assert(args[2], "Missing command string (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1], {NoFakePlayer = true}) do
-					task.defer(Process.Command, v, args[2], {isSystem = true})
-				end
-			end
-		};
-
 		ClearPlayerData = {
 			Prefix = Settings.Prefix;
 			Commands = {"clearplayerdata", "clrplrdata", "clearplrdata", "clrplayerdata"};
