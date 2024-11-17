@@ -32,7 +32,7 @@ return {
 		{Text = "@policetonyR",		Desc = "Open Source Contributor"};
 		{Text = "@enescglyn",		Desc = "Open Source Contributor"};
 		{Text = "@EpicFazbear",		Desc = "Open Source Contributor"};
-		{Text = "@p3tray",			Desc = "Open Source Contributor"};
+		{Text = "@P3tray",			Desc = "Open Source Contributor"};
 		{Text = "@okgabe",			Desc = "Open Source Contributor"};
 		{Text = "@fxeP1",			Desc = "Open Source Contributor"};
 		{Text = "@optimisticside",	Desc = "Open Source Contributor"};
