@@ -104,12 +104,15 @@ return function(Vargs, GetEnv)
 			--// Disable saving command logs in Studio; not required.
 			if service.RunService:IsStudio() or service.RunService:IsRunMode() then
 				return
+			elseif not server.Data or not server.Data.SilentStartup then
+				print("Saving command logs...")
 			end
 
-			print("Saving command logs...")
-
 			if Settings.SaveCommandLogs ~= true or Settings.DataStoreEnabled ~= true then
-				print("Skipped saving command logs.")
+				if not server.Data or not server.Data.SilentStartup then
+					print("Skipped saving command logs.")
+				end
+
 				return
 			end
 
@@ -173,7 +176,9 @@ return function(Vargs, GetEnv)
 				return service.HttpService:JSONEncode(temp)
 			end)
 
-			print("Command logs saved!")
+			if not server.Data or not server.Data.SilentStartup then
+				print("Command logs saved!")
+			end
 		end;
 
 		ListUpdaters = {
