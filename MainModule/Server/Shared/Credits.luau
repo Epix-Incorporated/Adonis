@@ -32,7 +32,7 @@ return {
 		{Text = "@policetonyR",		Desc = "Open Source Contributor"};
 		{Text = "@enescglyn",		Desc = "Open Source Contributor"};
 		{Text = "@EpicFazbear",		Desc = "Open Source Contributor"};
-		{Text = "@p3tray",			Desc = "Open Source Contributor"};
+		{Text = "@P3tray",			Desc = "Open Source Contributor"};
 		{Text = "@okgabe",			Desc = "Open Source Contributor"};
 		{Text = "@fxeP1",			Desc = "Open Source Contributor"};
 		{Text = "@optimisticside",	Desc = "Open Source Contributor"};
@@ -102,7 +102,7 @@ return {
 
 	Misc = {
 		{Text = "Kein-Hong Man",			Desc = "Creator of the Yueliang (Lua bytecode compiler in loadstring module). Also created LuLu VM, the first Lua bytecode interpreter used in Adonis (no longer used)"};
-		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used)"};
+		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used) and GoodSignal"};
 		{Text = "darkelementallord",		Desc = "Updated some guis"};
 		{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
 		{Text = "Moistality",				Desc = "Helped with finding and patching vulns"};
@@ -117,6 +117,9 @@ return {
 		{Text = "Osyris",					Desc = "Wrote 't', an open-source typechecking library"};
 		{Text = "buildthomas",				Desc = "Wrote 'MockDataStoreService', an open-source mock DataStoreService replacement library"};
 		{Text = "Tiffany352",				Desc = "Wrote an improved base64 implementation"};
+		{Text = "Merely",					Desc = "Wrote the original SoftShutdown"};
+		{Text = "Irreflexive",				Desc = "Edited SoftShutdown"};
+		{Text = "Krypt",					Desc = "Wrote Slider module used for AudioPlayer"};
 		{Text = "",};
 		{Text = "~ :) ~",};
 		{Text = "Donors",					Desc = "Donors keep the wheels turning ;)"};

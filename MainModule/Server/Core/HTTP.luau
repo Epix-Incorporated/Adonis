@@ -32,23 +32,24 @@ return function(Vargs, GetEnv)
 			HTTP.Trello.API = require(server.Deps.TrelloAPI)(Settings.Trello_AppKey, Settings.Trello_Token)
 		end
 
+		-- Check HTTP asynchronously
+		task.spawn(function()
+			if service.RunService:IsStudio() then
+				server.HTTP.HttpEnabled = service.HttpService.HttpEnabled
+			else
+				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
+				server.HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
+			end
+			Logs:AddLog("Script", "Successfully pooled HttpEnabled")
+		end)
+
 		HTTP.Init = nil;
 		Logs:AddLog("Script", "HTTP Module Initialized")
 	end;
 
 	server.HTTP = {
 		Init = Init;
-		HttpEnabled = (function()
-			if service.RunService:IsStudio() then
-				return service.HttpService.HttpEnabled
-			else
-				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
-				if not success and res:find("Http requests are not enabled.") then
-					return false
-				end
-				return true
-			end
-		end)();
+		HttpEnabled = service.HttpService.HttpEnabled;
 		LoadstringEnabled = pcall(loadstring, "");
 
 		WebPanel = {
@@ -81,7 +82,7 @@ return function(Vargs, GetEnv)
 						})
 					end
 				},
-				{ -- // Was this really a good idea? Since when should databases run code
+				{
 					Lists = {"Commands", "Command List"},
 					Process = function(card)
 						if not HTTP.Trello.PerformedCommands[tostring(card.id)] then

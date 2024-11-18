@@ -183,17 +183,6 @@ local function callCheck(child)
 	end
 end
 
-local function doPcall(func, ...)
-	local ran,ret = pcall(func, ...)
-	if ran then
-		return ran,ret
-	else
-		warn(tostring(ret))
-		Kill(`ACLI: Error\n{ret}`)
-		return ran,ret
-	end
-end
-
 if module and module:IsA("ModuleScript") then
 	print("Loading Folder...")
 	local nameVal

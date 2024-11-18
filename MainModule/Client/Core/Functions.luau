@@ -196,7 +196,7 @@ return function(Vargs, GetEnv)
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
-			if ob=='reset' then
+			if ob == "reset" then
 				CurrentCamera.CameraType = Enum.CameraType.Custom
 				CurrentCamera.CameraSubject = service.Player.Character:FindFirstChildOfClass("Humanoid")
 				CurrentCamera.FieldOfView = 70
@@ -415,6 +415,7 @@ return function(Vargs, GetEnv)
 				"Name";
 				"Parent";
 				"Archivable";
+				"DisplayOrder";
 				"SelectionImageObject";
 				"Active";
 				"BackgroundColor3";
@@ -597,57 +598,93 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadGuiData = function(data)
-			local make; make = function(dat)
-				local props = dat.Properties
-				local children = dat.Children
-				local gui = service.New(props.ClassName)
+			local zIndex = -2^31 -- Signed 32 bit intiger
+			local make; make = function(data, parent)
+				local props = data.Properties
+				local gui = props.ClassName ~= "ScreenGui" and service.New(props.ClassName)
 
-				for i,v in props do
-					pcall(function()
-						gui[i] = v
-					end)
+				if gui then
+					for k, v in props do
+						pcall(function()
+							gui[k] = v
+						end)
+					end
 				end
 
-				for i,v in children do
+				for _, v in data.Children do
 					pcall(function()
-						local g = make(v)
+						local g = make(v, gui or parent)
 						if g then
-							g.Parent = gui
+							g.Parent = gui or parent
 						end
 					end)
 				end
+
 				return gui
 			end
 
-			local temp = Instance.new("Folder")
-			for _, v in service.PlayerGui:GetChildren() do
-				if not UI.Get(v) then
-					v.Parent = temp
-				end
-			end
-			Variables.GuiViewFolder = temp
-			local folder = service.New("Folder",{Parent = service.PlayerGui; Name = "LoadedGuis"})
-			for _, v in data.Children do
-				pcall(function()
-					local g = make(v)
-					if g then
-						g.Parent = folder
+			local function normaliseIndex(gui)
+				local remap, order = {}, {}
+				local mapIndex; mapIndex = function(object)
+					local index = object.Properties.ZIndex
+
+					if type(index) == "number" then
+						if not remap[index] then
+							remap[index] = {object.Properties}
+							table.insert(order, index)
+						else
+							table.insert(remap[index], object.Properties)
+						end
 					end
-				end)
+
+					for _, v in object.Children do
+						pcall(mapIndex, v)
+					end
+				end
+
+				pcall(mapIndex, gui)
+				table.sort(order)
+
+				for _, index in order do
+					zIndex += 1
+
+					for _, v in remap[index] do
+						v.ZIndex = zIndex
+					end
+				end
+
+				return gui
 			end
+
+			local GuiViewContainer = UI.Make("Window", {
+				Name = "Player GUI View";
+				Title = "Player GUI View";
+				Icon = client.MatIcons["Grid view"];
+				AllowMultiple = true;
+				SizeLocked = false
+			})
+
+			table.sort(data.Children, function(t1, t2)
+				local o1, o2 = t1.Properties.DisplayOrder, t2.Properties.DisplayOrder
+				if o1 and o2 then
+					return o1 < o2
+				end
+
+				return false
+			end)
+
+			Variables.GuiViewFolder = GuiViewContainer
+			zIndex = GuiViewContainer.ZIndex or zIndex
+
+			for _, v in data.Children do
+				pcall(make, normaliseIndex(v), GuiViewContainer)
+			end
+
+			GuiViewContainer:Ready()
 		end;
 
 		UnLoadGuiData = function()
-			for _, v in service.PlayerGui:GetChildren() do
-				if v.Name == "LoadedGuis" then
-					v:Destroy()
-				end
-			end
-
 			if Variables.GuiViewFolder then
-				for _, v in Variables.GuiViewFolder:GetChildren() do
-					v.Parent = service.PlayerGui
-				end
 				Variables.GuiViewFolder:Destroy()
 				Variables.GuiViewFolder = nil
 			end
@@ -990,10 +1027,33 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SetLighting = function(prop,value)
-			if service.Lighting[prop]~=nil then
+		SetLighting = function(prop, value)
+			if service.Lighting[prop] ~= nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
+			end
+		end;
+
+		SetAtmosphere = function(prop, value)
+			local atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+
+			if atmosphere then
+				if value == nil and atmosphere[prop] and typeof(atmosphere[prop]) ~= "Instance" then
+					atmosphere:Destroy()
+					table.clear(Variables.AtmosphereSettings)
+				else
+					atmosphere[prop] = value
+					Variables.AtmosphereSettings[prop] = value
+				end
+			elseif value ~= nil then
+				atmosphere = Instance.new("Atmosphere")
+				Variables.AtmosphereSettings[prop] = value
+
+				for k, v in Variables.AtmosphereSettings do
+					atmosphere[k] = v
+				end
+
+				atmosphere.Parent = service.Lighting
 			end
 		end;
 
@@ -1188,7 +1248,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			task.wait(0.5)
+			task.wait(0.6)
 			Functions.HardCrash()
 		end;
 
@@ -1851,6 +1911,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		GetFriendsOnline = function(maxFriends)
+			return service.Players.LocalPlayer:GetFriendsOnline(maxFriends)
+		end;
+
 		GetUserInputServiceData = function(args)
 			local data = {}
 			local props = {
@@ -1867,7 +1931,7 @@ return function(Vargs, GetEnv)
 			for _, p in props do
 				data[p] = service.UserInputService[p]
 			end
-			data["Resolution"] = workspace.CurrentCamera.ViewportSize.X.." x "..workspace.CurrentCamera.ViewportSize.Y
+			data["Resolution"] = math.floor(workspace.CurrentCamera.ViewportSize.X).." x "..math.floor(workspace.CurrentCamera.ViewportSize.Y)
 			return data
 		end;
 	};

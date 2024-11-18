@@ -53,8 +53,6 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "Anti Plugin Module RunAfterPlugins Finished")
 	end
 
-	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
-
 	server.Anti.CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
 		local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
 
