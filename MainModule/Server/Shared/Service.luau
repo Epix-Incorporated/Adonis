@@ -257,7 +257,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		GetEvent = function(name)
 			if not HookedEvents[name] then
 				--// GoodSignal has been setup to be fully backwards-compatible with the existing Events system
-				local event = service.GoodSignal.new()
+				local event = service.Signal.new()
 
 				HookedEvents[name] = event
 				return event
