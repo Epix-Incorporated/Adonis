@@ -285,6 +285,37 @@ return function(Vargs, env)
 				end
 
 				Variables.BackingupMap = true
+				Variables.OriginalGravity = workspace.Gravity
+
+				local Lighting = service.Lighting
+				local atmosphere = Lighting:FindFirstChildWhichIsA("Atmosphere")
+
+				Variables.OriginalLightingSettings = {
+					Ambient = Lighting.Ambient,
+					OutdoorAmbient = Lighting.OutdoorAmbient,
+					Brightness = Lighting.Brightness,
+					TimeOfDay = Lighting.TimeOfDay,
+					FogColor = Lighting.FogColor,
+					FogEnd = Lighting.FogEnd,
+					FogStart = Lighting.FogStart,
+					GlobalShadows = Lighting.GlobalShadows,
+					Outlines = Lighting.Outlines,
+					ShadowColor = Lighting.ShadowColor,
+					ColorShift_Bottom = Lighting.ColorShift_Bottom,
+					ColorShift_Top = Lighting.ColorShift_Top,
+					GeographicLatitude = Lighting.GeographicLatitude,
+					Name = Lighting.Name,
+					Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
+				}
+				Variables.OriginalAtmosphereSettings = {
+					Name = atmosphere and atmosphere.Name,
+					Density = atmosphere and atmosphere.Density,
+					Offset = atmosphere and atmosphere.Offset,
+					Color = atmosphere and atmosphere.Color,
+					Decay = atmosphere and atmosphere.Decay,
+					Glare = atmosphere and atmosphere.Glare,
+					Haze = atmosphere and atmosphere.Haze,
+				}
 
 				local tempmodel = service.New("Model", {
 					Name = "BACKUP_MAP_MODEL"

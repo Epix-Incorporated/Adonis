@@ -887,6 +887,7 @@ return function(Vargs, env)
 				for _, v: Player in players do
 					task.defer(function()
 						local gameData
+						local elevated = plr == v or elevated
 
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
@@ -927,6 +928,7 @@ return function(Vargs, env)
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 							CmdPrefix = Settings.Prefix;
 							CmdSplitKey = Settings.SplitKey;
+							OnlineFriends = Remote.Get(v, "Function", "GetFriendsOnline");
 						})
 					end)
 				end
@@ -971,6 +973,7 @@ return function(Vargs, env)
 						NilPlayerCount = nilPlayers;
 						HttpEnabled = HTTP.HttpEnabled;
 						LoadstringEnabled = HTTP.LoadstringEnabled;
+						ServerSpeed = workspace:GetRealPhysicsFPS();
 					}
 				end
 
@@ -1000,6 +1003,7 @@ return function(Vargs, env)
 					PrivateServerId = game.PrivateServerId;
 					PrivateServerOwnerId = game.PrivateServerOwnerId;
 					ServerStartTime = server.ServerStartTime;
+					ServerSpeed = workspace:GetRealPhysicsFPS();
 					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
 					ServerInternetInfo = serverInfo;
 					Refreshables = Logs.ListUpdaters.ServerDetails(plr);

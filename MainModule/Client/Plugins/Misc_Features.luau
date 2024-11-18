@@ -15,6 +15,9 @@ return function(Vargs, GetEnv)
 		end, ...)
 	end
 	client.cPcall, service.cPcall = cPcall, cPcall
+	service.CloneTable = function(tbl)
+		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
+	end
 	service.AltUnpack = function(args, shift) -- TODO: Remove. This is not used in Adonis at all and is easily replicatable so you can safely remove it withour fear
 		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
 	end
@@ -46,6 +49,9 @@ return function(Vargs, GetEnv)
 		end
 		return table.concat(Res)
 	end
+	-- TODO: Remove \\/
+	service.OwnsAsset = service.CheckAssetOwnership
+	Functions.CatchError = client.Pcall
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end

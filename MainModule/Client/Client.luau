@@ -317,7 +317,6 @@ client = setmetatable({
 	Routine = Routine,
 	OldPrint = oldPrint,
 	LogError = logError,
-	TestEvent = Instance.new("RemoteEvent"),
 
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
@@ -648,7 +647,7 @@ return service.NewProxy({
 			if not (Variables.LocalContainer and Variables.LocalContainer.Parent) then
 				Variables.LocalContainer = service.New("Folder", {
 					Parent = workspace,
-          Archivable = false,
+					Archivable = false,
 					Name = `__ADONIS_LOCALCONTAINER_{service.HttpService:GenerateGUID(false)}`,
 				})
 			end
