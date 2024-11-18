@@ -3,7 +3,7 @@
 	Description: An simple and versatile audio library with getter&setter functions and an immutable data structure.
 	Authors: Github@ccuser44/VortexColor & P3tray
 	Contributors: Github@ccuser44/VortexColor, P3tray
-	Date: 2022
+	Date: 2024
 	License: MIT
 ]]
 
