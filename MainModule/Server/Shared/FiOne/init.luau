@@ -1,6 +1,7 @@
 --!native
+--!optimize 2
 --!nolint TableOperations
---# selene: allow(divide_by_zero, multiple_statements, mixed_table)
+--# selene: allow(multiple_statements, mixed_table)
 --[[
 FiOne
 Copyright (C) 2021  Rerumu
