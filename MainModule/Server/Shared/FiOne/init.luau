@@ -732,7 +732,7 @@ local function run_lua_func(state, env, upvals)
 				local limit = memory[A + 1]
 				local loops
 
-				if step == math.abs(step) then
+				if step >= 0 then
 					loops = index <= limit
 				else
 					loops = index >= limit
