@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBX8DBF87CFFA384C8A89E4A0ACBB530C34">
+	<Item class="ModuleScript" referent="RBXAC493B167BC74652961D2FE361C167DC">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -26,10 +26,10 @@
 	local HttpService = Service.HttpService
 	local Success, APIDump, Reflection = nil
 	local ServerNewDex = {}
-	
+
 	local newDex_main = script:WaitForChild("Dex_Client", 120)
 	local Event = ServerNewDex.Event;
-	
+
 	if not newDex_main then
 		warn("New Dex unable to be located?")
 	else
@@ -40,28 +40,32 @@
 			end
 		end
 	end
-	
-	if HttpService.HttpEnabled then
-		while true do
-			Success, APIDump = pcall(function() return HttpService:GetAsync("https://github.com/MaximumADHD/Roblox-Client-Tracker/raw/roblox/API-Dump.json") end)
-			if Success and APIDump then
-				break
-			end
-			task.wait(1)
-		end
 
-		while true do
-			Success,Reflection = pcall(function() return HttpService:GetAsync("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/ReflectionMetadata.xml") end)
-			if Success and Reflection then
-				break
+	task.delay(0.25, function() -- Load Dex instance data asynchronously
+		if Server.HTTP.HttpEnabled then
+			while true do
+				Success, APIDump = pcall(function() return HttpService:GetAsync("https://github.com/MaximumADHD/Roblox-Client-Tracker/raw/roblox/API-Dump.json") end)
+				if Success and APIDump then
+					break
+				end
+				task.wait(1)
 			end
-			task.wait(1)
+			Logs:AddLog("Script", "Successfully loaded instance API dump to Dex")
+			while true do
+				Success,Reflection = pcall(function() return HttpService:GetAsync("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/ReflectionMetadata.xml") end)
+				if Success and Reflection then
+					break
+				end
+				task.wait(1)
+			end
+			Logs:AddLog("Script", "Successfully loaded reflection metadata to Dex")
+		else
+			Logs:AddLog("Script", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
+			Logs:AddLog("Error", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
+			--logError("Access to HttpService is not enabled! Dex api dump could not be fetched!")
 		end
-		
-	else
-		warn('Access to HttpService is not enabled! Dex api dump could not be fetched!')
-	end
-	
+	end)
+
 	ServerNewDex.newDex_main = newDex_main
 	ServerNewDex.Event = nil;
 	ServerNewDex.Authorized = {}; --// Users who have been given Dex and are authorized to use the remote event
@@ -149,7 +153,7 @@
 			return Reflection or false
 		end, 
 	}
-	
+
 	function ServerNewDex.MakeEvent()
 		if not Event then
 			Event = Service.New("RemoteFunction", {
@@ -177,17 +181,16 @@
 	end
 
 	function ServerNewDex.MakeLocalDexForPlayer(ply, dexGui, destination)
-		if (ply) then
+		if ply then
 			if (dexGui and destination) then
 				dexGui.Parent = destination
 			end
 		end
 	end
 
-
 	-- Function used to give Dex to a player.
 	function ServerNewDex.GiveDexToPlayer(ply)
-		if (ply) then
+		if ply then
 			ServerNewDex.Authorized[ply] = {
 				Clipboard = {};
 			}; --// double as per-player explorer-related data
@@ -196,8 +199,7 @@
 			ServerNewDex.MakeLocalDexForPlayer(ply, ServerNewDex.newDex_main:Clone(), ply:FindFirstChild("PlayerGui"))
 		end
 	end
-	
-	
+
 	Commands.DexExplorerNew = {
 		Prefix = Settings.Prefix;
 		Commands = {"dexnew";"dexnewexplorer";"newdex";"dex";"dexexplorer"};
@@ -213,11 +215,12 @@
 			Remote.MakeLocal(plr, newDex_main:Clone(), "PlayerGui")
 		end
 	};
+	Logs:AddLog("Script", "NewDex Module Loaded")
 end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="ModuleScript" referent="RBXBCD64D027B8F44EE933D32E5FBC7820E">
+		<Item class="ModuleScript" referent="RBXC3ED37EFE03B42EE99BEA48B854420C8">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -269,7 +272,7 @@ return serviceUtils
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="ScreenGui" referent="RBXAB068A4A4C404CBAA89F9A1043AC2E8C">
+		<Item class="ScreenGui" referent="RBXA5263AB6EA7B4D1F925DACFAB75470AC">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -279,7 +282,7 @@ return serviceUtils
 				<int name="DisplayOrder">0</int>
 				<bool name="Enabled">false</bool>
 				<string name="Name">Dex_Client</string>
-				<bool name="ResetOnSpawn">true</bool>
+				<bool name="ResetOnSpawn">false</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
 				<token name="SafeAreaCompatibility">1</token>
 				<token name="ScreenInsets">1</token>
@@ -292,7 +295,7 @@ return serviceUtils
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">1</token>
 			</Properties>
-			<Item class="LocalScript" referent="RBX072DC973F0C1414D9E45C0DA91E52133">
+			<Item class="LocalScript" referent="RBX708EA7A45863439096C90312B3CEEE7C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -975,7 +978,7 @@ Main = (function()
 
 	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
 		local gui = create({
-			{1,"ScreenGui",{Name="Dex_Intro",}},
+			{1,"ScreenGui",{Name="Dex_Intro",ResetOnSpawn=false}},
 			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
 			{3,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
 			{4,"UIGradient",{Parent={3},Rotation=30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
@@ -1243,7 +1246,7 @@ Main = (function()
 
 	Main.CreateMainGui = function()
 		local gui = create({
-			{1,"ScreenGui",{IgnoreGuiInset=true,Name="Dex_MainMenu",}},
+			{1,"ScreenGui",{IgnoreGuiInset=true,Name="Dex_MainMenu",ResetOnSpawn=false}},
 			{2,"TextButton",{AnchorPoint=Vector2.new(0.5,0),AutoButtonColor=false,BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,Font=4,Name="OpenButton",Parent={1},Position=UDim2.new(0.5,0,0,2),Size=UDim2.new(0,32,0,32),Text="Dex",TextColor3=Color3.new(1,1,1),TextSize=16,TextTransparency=0.20000000298023,}},
 			{3,"UICorner",{CornerRadius=UDim.new(0,4),Parent={2},}},
 			{4,"Frame",{AnchorPoint=Vector2.new(0.5,0),BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),ClipsDescendants=true,Name="MainFrame",Parent={2},Position=UDim2.new(0.5,0,1,-4),Size=UDim2.new(0,224,0,200),}},
@@ -1438,7 +1441,7 @@ Main.Init()
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="Folder" referent="RBXA7E66B0A4D234CD09F0190D526BD01DC">
+				<Item class="Folder" referent="RBX7C8624A570214DEEBCBD8CC4DCB95346">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1447,7 +1450,7 @@ Main.Init()
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
-					<Item class="ModuleScript" referent="RBXFF5EA1A782464800BF4DA86F2ADFA536">
+					<Item class="ModuleScript" referent="RBX852DBC46A43F4717B6B0363A1A255901">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1921,6 +1924,7 @@ local function main()
 
 		local newGui = Instance.new("ScreenGui")
 		newGui.DisplayOrder = Main.DisplayOrders.Menu
+		newGui.ResetOnSpawn = false
 		dragTree.Parent = newGui
 		Lib.ShowGui(newGui)
 
@@ -3578,6 +3582,7 @@ return search]==]
 			holder = Instance.new("ScreenGui")
 			holder.Name = "Dex_ExplorerSelections"
 			holder.DisplayOrder = Main.DisplayOrders.Core
+			holder.ResetOnSpawn = false
 			Lib.ShowGui(holder)
 			Explorer.SelectionVisualsHolder = holder
 			Explorer.SelectionVisualCons = {}
@@ -3800,7 +3805,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="ModuleScript" referent="RBX3C011B26E19040169FB60892190D2C49">
+					<Item class="ModuleScript" referent="RBXF961AD6B4A9E4C76B7D2E2B7E8A8513F">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -5025,7 +5030,7 @@ local function main()
 
 		local createGui = function(self)
 			local gui = create({
-				{1,"ScreenGui",{Name="Dex_Window",}},
+				{1,"ScreenGui",{Name="Dex_Window",ResetOnSpawn=false}},
 				{2,"Frame",{Active=true,BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.40000000596046,0,0.40000000596046,0),Size=UDim2.new(0,300,0,300),}},
 				{3,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BackgroundTransparency=0.1,BorderSizePixel=0,Name="Content",Parent={2},Position=UDim2.new(0,0,0,20),Size=UDim2.new(1,0,1,-20),ClipsDescendants=true}},
 				{4,"Frame",{BackgroundColor3=Color3.fromRGB(33,33,33),BorderSizePixel=0,Name="Line",Parent={3},Size=UDim2.new(1,0,0,1),}},
@@ -5737,6 +5742,7 @@ local function main()
 
 			sidesGui = Instance.new("ScreenGui")
 			sidesGui.Name = "Dex_SidesGui"
+			sidesGui.ResetOnSpawn = false
 			local leftFrame = create({
 				{1,"Frame",{Active=true,Name="LeftSide",BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BackgroundTransparency=0.9,BorderSizePixel=0,}},
 				{2,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.new(0.2549019753933,0.2549019753933,0.2549019753933),BorderSizePixel=0,Font=3,Name="Resizer",Parent={1},Size=UDim2.new(0,5,1,0),Text="",TextColor3=Color3.new(0,0,0),TextSize=14,}},
@@ -5768,6 +5774,7 @@ local function main()
 
 			alignIndicator = Instance.new("ScreenGui")
 			alignIndicator.DisplayOrder = Main.DisplayOrders.Core
+			alignIndicator.ResetOnSpawn = false
 			local indicator = Instance.new("Frame",alignIndicator)
 			indicator.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 			indicator.BorderSizePixel = 0
@@ -5867,7 +5874,7 @@ local function main()
 
 		local function createGui(self)
 			local contextGui = create({
-				{1,"ScreenGui",{DisplayOrder=1000000,Name="Dex_Context",ZIndexBehavior=1,}},
+				{1,"ScreenGui",{DisplayOrder=1000000,Name="Dex_Context",ZIndexBehavior=1,ResetOnSpawn=false}},
 				{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.14117647707462,0.14117647707462,0.14117647707462),BorderColor3=Color3.new(0.14117647707462,0.14117647707462,0.14117647707462),Name="Main",Parent={1},Position=UDim2.new(0.5,-100,0.5,-150),Size=UDim2.new(0,200,0,100),}},
 				{3,"UICorner",{CornerRadius=UDim.new(0,4),Parent={2},}},
 				{4,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),Name="Container",Parent={2},Position=UDim2.new(0,1,0,1),Size=UDim2.new(1,-2,1,-2),}},
@@ -7796,7 +7803,7 @@ local function main()
 
 		local function createGui(self)
 			local gui = create({
-				{1,"ScreenGui",{Name="BrickColor",}},
+				{1,"ScreenGui",{Name="Dex_BrickColor",ResetOnSpawn=false}},
 				{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderColor3=Color3.new(0.1294117718935,0.1294117718935,0.1294117718935),Parent={1},Position=UDim2.new(0.40000000596046,0,0.40000000596046,0),Size=UDim2.new(0,337,0,380),}},
 				{3,"TextButton",{BackgroundColor3=Color3.new(0.2352941185236,0.2352941185236,0.2352941185236),BorderColor3=Color3.new(0.21568627655506,0.21568627655506,0.21568627655506),BorderSizePixel=0,Font=3,Name="MoreColors",Parent={2},Position=UDim2.new(0,5,1,-30),Size=UDim2.new(1,-10,0,25),Text="More Colors",TextColor3=Color3.new(1,1,1),TextSize=14,}},
 				{4,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderSizePixel=0,Image="rbxassetid://1281023007",ImageColor3=Color3.new(0.33333334326744,0.33333334326744,0.49803924560547),Name="Hex",Parent={2},Size=UDim2.new(0,35,0,35),Visible=false,}},
@@ -9581,7 +9588,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="ModuleScript" referent="RBX935B3FA760E94A35A9AB1B5F479800F6">
+					<Item class="ModuleScript" referent="RBX708F497BF00740BB99254243FCE36140">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -11519,7 +11526,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="ModuleScript" referent="RBX00EEA89A3439471C975C945B8980C3AC">
+					<Item class="ModuleScript" referent="RBX45C235FD54584E47B79FBBC7BCDE251A">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -12556,7 +12563,7 @@ end]]></ProtectedString>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
-						<Item class="ModuleScript" referent="RBX135CF1743D874902A80D3C4785C7C03C">
+						<Item class="ModuleScript" referent="RBX8876388B635A4215B4B5911742733E68">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -12879,7 +12886,7 @@ return settingsInfo]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="ModuleScript" referent="RBX832DBB8438AD4C75877491296172F3F6">
+					<Item class="ModuleScript" referent="RBXCBB7FD6FBF8E45ED863E3C9684146043">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -13075,7 +13082,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="ModuleScript" referent="RBX0ABAAD8AA2AB4C7FAF892E2E201A35CF">
+				<Item class="ModuleScript" referent="RBX2870DE7C0D9A4D1B8733CA35B8F0676B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -13088,7 +13095,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX94DB2DC15563449D9F1B8D855B4684D0">
+				<Item class="ModuleScript" referent="RBX2B009677E56E445F816AE2DCAD1F6EA8">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>

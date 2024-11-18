@@ -24,6 +24,7 @@ for i = 1, 100 do
 	ex.BlastPressure = strength
 	ex.ExplosionType = Enum.ExplosionType.Craters
 	ex.DestroyJointRadiusPercent = 0
+	ex.Archivable = false
 	ex.Parent = cam
 end
 script:Destroy()]]></ProtectedString>

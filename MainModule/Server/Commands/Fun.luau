@@ -460,41 +460,15 @@ return function(Vargs, env)
 				end
 
 				if not Variables.ZaWarudoDebounce then
-					Variables.ZaWarudoDebounce = true
-					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
-						local audio = service.New("Sound", service.SoundService)
-						audio.SoundId = "rbxassetid://676242549"
-						audio.Volume = 0.5
-						audio:Play()
-						task.wait(2)
-						for i, part in Variables.FrozenObjects do
-							part.Anchored = false
-						end
-
-						local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
-						if old then
-							for i = -2, 0, 0.1 do
-								old.Saturation = i
-								task.wait(0.01)
-							end
-							old:Destroy()
-						end
-
-						local audio = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
-						if audio then
-							audio:Stop()
-							audio:Destroy()
-						end
-
-						Variables.ZaWarudo:Disconnect()
-						Variables.FrozenObjects = {}
-						Variables.ZaWarudo = false
-						audio:Destroy()
+						Admin.RunCommandAsPlayer(`{Settings.Prefix}unzawarudo`, plr)
 					else
+						Variables.ZaWarudoDebounce = true
+						task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 						local audio = service.New("Sound", service.SoundService)
-						audio.SoundId = "rbxassetid://274698941"
+						audio.SoundId = "rbxassetid://8762717966" -- Old audio: "rbxassetid://274698941"
 						audio.Volume = 10
+						audio.Name = "ADONIS_ZAWARUDO_AUDIO"
 						audio:Play()
 						task.wait(2.25)
 						doPause(workspace)
@@ -512,14 +486,60 @@ return function(Vargs, env)
 							task.wait(0.01)
 						end
 
+						task.wait(2.5)
 						audio:Destroy()
 						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
-						clock.SoundId = "rbxassetid://160189066"
+						clock.SoundId = "rbxassetid://9133682204" -- Other new audio: "rbxassetid://850256806" Old audio "rbxassetid://160189066"
 						clock.Looped = true
 						clock.Volume = 1
 						clock:Play()
+						Variables.ZaWarudoDebounce = false
 					end
+				end
+			end
+		};
+
+		UnZaWarudo = {
+			Prefix = Settings.Prefix;
+			Commands = {"unzawarudo", "unstoptime"};
+			Args = {};
+			Fun = true;
+			Description = "Stops zawarudo";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				if not Variables.ZaWarudoDebounce and Variables.ZaWarudo then
+					Variables.ZaWarudoDebounce = true
+					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
+					local audio = service.New("Sound", service.SoundService)
+					audio.SoundId = "rbxassetid://676242549"
+					audio.Volume = 0.5
+					audio.Name = "ADONIS_ZAWARUDO_AUDIO"
+					audio:Play()
+					task.wait(2)
+					for i, part in Variables.FrozenObjects do
+						part.Anchored = false
+					end
+
+					local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
+					if old then
+						for i = -2, 0, 0.1 do
+							old.Saturation = i
+							task.wait(0.01)
+						end
+						old:Destroy()
+					end
+
+					local clock = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
+					if clock then
+						clock:Stop()
+						clock:Destroy()
+					end
+
+					audio:Destroy()
+					Variables.ZaWarudo:Disconnect()
+					Variables.FrozenObjects = {}
+					Variables.ZaWarudo = false
 					Variables.ZaWarudoDebounce = false
 				end
 			end
@@ -1197,6 +1217,9 @@ return function(Vargs, env)
 						humanoid.WalkSpeed = 0
 
 						ufo.Name = "ADONIS_UFO"
+						ufo.Archivable = false
+						ufo.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
+						ufo:AddPersistentPlayer(p)
 						ufo.PrimaryPart = primary
 						ufo:PivotTo(tPos*CFrame.new(0, 500, 0))
 
@@ -1512,6 +1535,9 @@ return function(Vargs, env)
 
 						van.PrimaryPart = van.Primary
 						van.Name = "ADONIS_VAN"
+						van.Archivable = false
+						van.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
+						van:AddPersistentPlayer(p)
 						van.Parent = workspace
 						humanoid.Name = "NoResetForYou"
 						humanoid.WalkSpeed = 0
@@ -1626,7 +1652,7 @@ return function(Vargs, env)
 				hat.ChickenSounds.Disabled = true
 				table.insert(hats, hat)
 				table.insert(Variables.Objects, hat)
-				hat.Parent = workspace
+				hat.Parent = workspace.Terrain
 				hat.CFrame = plr.Character.Head.CFrame
 				service.StopLoop("ChickenSpam")
 				service.StartLoop("ChickenSpam", 5, function()
@@ -1640,7 +1666,7 @@ return function(Vargs, env)
 						table.insert(tempHats, v)
 						table.insert(tempHats, nhat)
 						table.insert(Variables.Objects, nhat)
-						nhat.Parent = workspace
+						nhat.Parent = workspace.Terrain
 						nhat.Quacker.Disabled = false
 						nhat.CFrame = v.CFrame*CFrame.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100))*CFrame.Angles(math.random(-360, 360), math.random(-360, 360), math.random(-360, 360))
 					end
@@ -1674,6 +1700,7 @@ return function(Vargs, env)
 					p.Anchored = true
 					p.CanCollide = false
 					p.Archivable = false
+					p.Name = "ADONIS_Tornado"
 					--local tornado = deps.Tornado:Clone()
 					--tornado.Parent = p
 					--tornado.Disabled = false
@@ -2131,6 +2158,7 @@ return function(Vargs, env)
 								end
 
 								task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+								poisoned:Destroy()
 							end
 						end
 					end)
@@ -3353,9 +3381,6 @@ return function(Vargs, env)
 											p1.Anchored = true
 											v.Part0 = nil
 										end
-									elseif v:IsA("CharacterMesh") then
-										local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
-										local msh = service.New("SpecialMesh")
 									elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
 										v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
 									end
@@ -3638,13 +3663,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local sizeLimit = Settings.SizeLimit or 20
-				local num = math.clamp(tonumber(args[2]) or 1, 0.001, sizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
+				local num = math.clamp(tonumber(args[2]) or 1, 0.001, Variables.SizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
 
 				if not args[2] or not tonumber(args[2]) then
 					num = 1
 					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
-				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
+				elseif tonumber(args[2]) and tonumber(args[2]) > Variables.SizeLimit then
 					Functions.Hint(`Size changed to the maximum {num} [Argument #2 (size multiplier) went over the size limit]`, {plr})
 				end
 
@@ -3671,7 +3695,7 @@ return function(Vargs, env)
 					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
 					if not resizeAttributeValue then
 						char:SetAttribute("Adonis_Resize", num)
-					elseif resizeAttributeValue * num < sizeLimit then
+					elseif resizeAttributeValue * num < Variables.SizeLimit then
 						char:SetAttribute("Adonis_Resize", resizeAttributeValue * num)
 					else
 						Functions.Hint(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
@@ -4772,10 +4796,6 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				if not Variables.OriginalGravity then
-					Variables.OriginalGravity = workspace.Gravity
-				end
-
 				workspace.Gravity = args[1] == "fix" and Variables.OriginalGravity or assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
 			end
 		};
@@ -4955,6 +4975,7 @@ return function(Vargs, env)
 
 						local pipe = Deps.Assets.Pipe:Clone()
 						pipe.Name = "Pipe"
+						pipe.Archivable = false
 						pipe.Parent = workspace
 						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
 

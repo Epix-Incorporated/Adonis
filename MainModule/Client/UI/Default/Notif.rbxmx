@@ -53,8 +53,8 @@ return function(data, env)
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
 	local str = data.Message
-	local topbar = client.UI.Get("TopBar")
-	local topshift
+	gui.IgnoreGuiInset = not client.Variables.TopBarShift
+	gui.ClipToDeviceSafeArea = true
 	
 	client.UI.Remove("Notif",script.Parent.Parent)
 	
@@ -70,16 +70,8 @@ return function(data, env)
 	table.insert(client.Variables.CommunicationsHistory, log) 
 	service.Events.CommsPanel:Fire(log)
 	
-	if client.Variables.TopBarShift == true then
-		topshift = true
-	else
-		topshift = false
-	end
-
-	
 	if str and type(str)=="string" then
 		label.Text = str
-		label.Position = UDim2.new(0, 0, 0, ((topshift and 0) or -35))
 		gTable:Ready()
 	else
 		gui:Destroy()
@@ -151,7 +143,7 @@ end]]></ProtectedString>
 					<XS>0</XS>
 					<XO>0</XO>
 					<YS>0</YS>
-					<YO>-35</YO>
+					<YO>0</YO>
 				</UDim2>
 				<bool name="RichText">false</bool>
 				<Ref name="RootLocalizationTable">null</Ref>

@@ -347,7 +347,7 @@ return function(Vargs, GetEnv)
 			["#number"] = {
 				Match = "#";
 				Function = function(msg, plr, ...)
-					local matched = string.match(msg, "%#(.*)")
+					local matched = string.match(msg, "#(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
@@ -388,19 +388,10 @@ return function(Vargs, GetEnv)
 			};
 		};
 
-		CatchError = function(func, ...)
-			local ret = {pcall(func, ...)}
-
-			if not ret[1] then
-				logError(ret[2] or "Unknown error occurred")
-			else
-				return unpack(ret, 2)
-			end
-		end;
-
 		GetFakePlayer = function(options)
 			local fakePlayer = service.Wrap(service.New("Folder", {
 				Name = options.Name or "Fake_Player";
+				Archivable = false;
 			}))
 
 			local data = {
@@ -410,12 +401,12 @@ return function(Vargs, GetEnv)
 				UserId = 0;
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
-				CharacterAppearanceId = if options.UserId then tostring(options.UserId) else "0";
+				CharacterAppearanceId = options.UserId or 0;
 				FollowUserId = 0;
 				GameplayPaused = false;
 				Parent = service.Players;
 				Character = service.New("Model", {Name = options.Name or "Fake_Player"});
-				Backpack = service.New("Folder", {Name = "FakeBackpack"});
+				Backpack = service.New("Backpack", {Name = "FakeBackpack"});
 				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"});
 				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"});
 				GetJoinData = function() return {} end;
@@ -423,15 +414,15 @@ return function(Vargs, GetEnv)
 				GetRankInGroup = function() return 0 end;
 				GetRoleInGroup = function() return "Guest" end;
 				IsFriendsWith = function() return false end;
-				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-				IsA = function(_, className) return className == "Player" end;
+				Kick = function() fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
+				IsA = function(_, className) return className == "Player" or className == "Instance" end;
 			}
 
-			for i, v in options do
-				data[i] = v
+			for k, v in options do
+				data[k] = v
 			end
 
-			if data.UserId ~= -1 then
+			if data.UserId > 0 then
 				local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, data.UserId)
 				if success then
 					data.Name = actualName
@@ -441,8 +432,8 @@ return function(Vargs, GetEnv)
 			data.userId = data.UserId
 			data.ToString = data.Name
 
-			for i, v in data do
-				fakePlayer:SetSpecial(i, v)
+			for k, v in data do
+				fakePlayer:SetSpecial(k, v)
 			end
 
 			return fakePlayer
@@ -462,11 +453,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		ArgsToString = function(args)
-			local str = ""
+			local str = table.create(args.n or #args)
 			for i, arg in args do
-				str ..= `Arg{i}: {arg}; `
+				str[i] = `Arg{i}: {arg}; `
 			end
-			return string.sub(str, 1, -3)
+			return string.sub(table.concat(str), 1, -3)
 		end;
 
 		GetPlayers = function(plr, argument, options)
@@ -1022,9 +1013,17 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetAtmosphere = function(prop,value)
-			if service:FindFirstChildWhichIsA("Atmosphere")[prop] ~= nil then
-				service:FindFirstChildWhichIsA("Atmosphere")[prop] = value
-				Variables.AtmosphereSettings[prop] = value
+			local atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+
+			if atmosphere then
+				if value == nil and atmosphere[prop] and typeof(atmosphere[prop]) ~= "Instance" then
+					atmosphere:Destroy()
+					table.clear(Variables.AtmosphereSettings)
+				else
+					atmosphere[prop] = value
+					Variables.AtmosphereSettings[prop] = value
+				end
+
 				for _, p in service.GetPlayers() do
 					Remote.SetAtmosphere(p, prop, value)
 				end
@@ -1197,6 +1196,7 @@ return function(Vargs, GetEnv)
 
 				new.Name = player.Name
 				new.Archivable = false
+				new.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
 				new:PivotTo(pos * CFrame.Angles(0, math.rad((360/num)*i+90), 0) * CFrame.new((num*0.2)+5, 0, 0) * CFrame.Angles(0, math.pi / 2, 0))
 
 				hum.WalkSpeed = speed
@@ -1228,7 +1228,7 @@ return function(Vargs, GetEnv)
 					Damage = damage;
 					Health = health;
 					WalkSpeed = speed;
-					SpecialKey = math.random();
+					SpecialKey = service.HttpService:GenerateGUID(false);
 				})
 
 				if walk then
@@ -1237,6 +1237,8 @@ return function(Vargs, GetEnv)
 
 				table.insert(Variables.Objects, new)
 			end
+
+			clone:Destroy()
 		end,
 
 		GetJoints = function(character)

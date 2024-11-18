@@ -578,7 +578,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"insert", "ins"};
 			Args = {"id"};
-			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
+			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or Roblox's inventory";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local id = string.lower(args[1])
@@ -714,6 +714,7 @@ return function(Vargs, env)
 
 				Variables.RestoringMap = true
 				Functions.Hint("Restoring Map...", service.Players:GetPlayers())
+				workspace.Gravity = Variables.OriginalGravity
 
 				for _, obj in workspace:GetChildren() do
 					if obj.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(obj) then
@@ -739,6 +740,7 @@ return function(Vargs, env)
 
 				task.wait()
 
+				Admin.RunCommand(`{Settings.Prefix}fixlighting`)
 				Admin.RunCommand(`{Settings.Prefix}respawn`, "all")
 				Variables.RestoringMap = false
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
@@ -1021,7 +1023,7 @@ return function(Vargs, env)
 
 				for _,v : Instance in service.StarterGui:GetChildren() do
 					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
-						table.insert(result, v.Name:gsub("%[Adonis%] ", ""))
+						table.insert(result, (v.Name:gsub("%[Adonis%] ", "")))
 					end
 				end
 
@@ -1329,7 +1331,7 @@ return function(Vargs, env)
 						})
 
 						local nlogs = #logs
-						if nlogs > 1000 then
+						if nlogs > Logs.OldCommandLogsLimit then
 							table.remove(logs, nlogs)
 						end
 

@@ -284,7 +284,6 @@ settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictl
 settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true	-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
-settings.ChatCreateRobloxCommands = true	-- Whether "/" commands for Roblox should get created in new Chat
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
@@ -375,7 +374,6 @@ settings.AntiNoclip = false					-- (Default: false)	Attempts to detect noclippin
 settings.AntiRootJointDeletion = false		-- (Default: false)	Attempts to detect paranoid and kills the player if found.
 settings.AntiMultiTool = false 				-- (Default: false)	Prevents multitool and because of that many other exploits.
 settings.AntiGod = false 					-- (Default: false)	If a player does not respawn when they should have they get respawned.
--- settings.AntiHumanoidDeletion and settings.ProtectHats have been superseded by Workspace.RejectCharacterDeletions.
 
 settings.AntiSpeed = false 				-- (Default: false)	(Client-Sided) Attempts to detect speed exploits.
 settings.AntiBuildingTools = false		-- (Default: false)	(Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
@@ -458,7 +456,6 @@ descs.CrossServerCommands = [[ Are commands which affect more than one server en
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands ]]
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
-descs.ChatCreateRobloxCommands = [[ Whether "/" commands for Roblox should get created in new Chat ]]
 
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
@@ -577,7 +574,6 @@ order = {
 	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
-	"ChatCreateRobloxCommands";
 	" ";
 	"BanMessage";
 	"LockMessage";

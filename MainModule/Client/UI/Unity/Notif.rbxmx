@@ -58,7 +58,8 @@ return function(data, env)
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
 	local str = data.Message
-	local topbar = client.UI.Get("TopBar")
+	gui.IgnoreGuiInset = not client.Variables.TopBarShift
+	gui.ClipToDeviceSafeArea = true
 
 	client.UI.Remove("Notif",script.Parent.Parent)
 
@@ -77,7 +78,6 @@ return function(data, env)
 
 	if str and type(str)=="string" then
 		label.Text = str
-		label.Position = UDim2.new(0, 0, 0, ((topbar and 40) or 0) - 35)
 		gTable:Ready()
 	else
 		gui:Destroy()
