@@ -3,8 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[Version – Date & Time released] @Maintainer";
-	"[v261 2024-08-29 14:32 UTC] @Dimenpsyonal";
+	"[v261 2024-11-18 13:35 UTC] @Dimenpsyonal";
 	"(Git/Expertcoderz) Add :ckick command (#1614)";
 	"";
 	"(Git/24rr) New System: Audit Logs (#1568)";
@@ -66,6 +65,7 @@ return {
 	"(Git/ccuser44) Make cleanup and oldlogs saving respect silentstartup (#1714)";
 	"(Git/ccuser44) Fix bug report version help image (#1709)";
 	"(Git/ccuser44) Remove unnecessary cruft from server (#1682)";
+	"(Git/ccuser44) Fix many annoying bugs (#1647)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
