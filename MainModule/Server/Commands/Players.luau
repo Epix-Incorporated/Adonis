@@ -113,11 +113,11 @@ return function(Vargs, env)
 		Notepad = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notepad", "stickynote"};
-			Args = {};
+			Args = {"text (optional)"};
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "Notepad", {})
+				Remote.MakeGui(plr, "Notepad", {Text = args[1]})
 			end
 		};
 
@@ -254,13 +254,9 @@ return function(Vargs, env)
 			Description = "Shows you a list of Roblox materials for reference";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local mats = {
-					"Brick", "Cobblestone", "Concrete", "CorrodedMetal", "DiamondPlate", "Fabric", "Foil", "ForceField", "Glass", "Granite",
-					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks",
-					"Rock", "Glacier", "Snow", "Sandstone", "Mud", "Basalt", "Ground", "CrackedLava", "Asphalt", "LeafyGrass", "Salt", "Limestone", "Pavement"
-				}
+				local mats = Enum.Material:GetEnumItems()
 				for i, mat in mats do
-					mats[i] = {Text = mat; Desc = `Enum value: {(Enum.Material[mat]::Enum.Material).Value}`}
+					mats[i] = {Text = mat.Name; Desc = `Enum value: {mat.Value}`}
 				end
 				Remote.MakeGui(plr, "List", {Title = "Materials"; Tab = mats; TextSelectable = true;})
 			end
@@ -891,6 +887,7 @@ return function(Vargs, env)
 				for _, v: Player in players do
 					task.defer(function()
 						local gameData
+						local elevated = plr == v or elevated
 
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
@@ -931,6 +928,7 @@ return function(Vargs, env)
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 							CmdPrefix = Settings.Prefix;
 							CmdSplitKey = Settings.SplitKey;
+							OnlineFriends = Remote.Get(v, "Function", "GetFriendsOnline");
 						})
 					end)
 				end
@@ -975,6 +973,7 @@ return function(Vargs, env)
 						NilPlayerCount = nilPlayers;
 						HttpEnabled = HTTP.HttpEnabled;
 						LoadstringEnabled = HTTP.LoadstringEnabled;
+						ServerSpeed = workspace:GetRealPhysicsFPS();
 					}
 				end
 
@@ -1004,6 +1003,7 @@ return function(Vargs, env)
 					PrivateServerId = game.PrivateServerId;
 					PrivateServerOwnerId = game.PrivateServerOwnerId;
 					ServerStartTime = server.ServerStartTime;
+					ServerSpeed = workspace:GetRealPhysicsFPS();
 					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
 					ServerInternetInfo = serverInfo;
 					Refreshables = Logs.ListUpdaters.ServerDetails(plr);

@@ -87,6 +87,7 @@ return function(Vargs, GetEnv)
 			G_Access = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
+			MusicList = true;
 		};
 
 		--// Settings that are never sent to the client
@@ -517,21 +518,34 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			AudioLib = function(p,args)
+			AudioLib = function(p, args)
 				local AdminLevel = Admin.GetLevel(p)
 				if Commands.Music and Admin.CheckComLevel(AdminLevel, Commands.Music) then
-					if not server.Functions.AudioLib then
+					local audioLib = Functions.AudioLib
+
+					if not Functions.AudioLib then
 						local audioLibFolder = service.SoundService:FindFirstChild("ADONIS_AUDIOLIB")
 						if not audioLibFolder then
 							audioLibFolder = service.New("Folder")
 							audioLibFolder.Name = "ADONIS_AUDIOLIB"
 							audioLibFolder.Parent = service.SoundService
 						end
-						server.Functions.AudioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
+						audioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
+						Functions.AudioLib = audioLib
 					end
 
-					if type(args[1]) == "table" and type(Functions.AudioLib[args[1][1]]) == "function" then
-						return Functions.AudioLib[args[1][1]](Functions.AudioLib, args[1][2])
+					if type(args[1]) == "table" then
+						args = service.UnWrap(args[1])
+					else
+						return
+					end
+
+					if args[1] == "index" then
+						return audioLib[args[2]]
+					elseif args[1] == "newindex" then
+						audioLib[args[2]] = args[3]
+					elseif args[1] == "call" then
+						return audioLib[args[2]](audioLib, table.unpack(args, 3))
 					end
 				end
 			end;
@@ -539,10 +553,10 @@ return function(Vargs, GetEnv)
 
 		Terminal = {
 			Data = {};
-			Format = function(msg,data) (data or {}).Text = msg end;
-			Output = function(tab,msg,mata) table.insert(tab,Remote.Terminal.Format(msg,mata)) end;
-			GetCommand = function(cmd) for i,com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
-			LiveOutput = function(p,data,type) Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
+			Format = function(msg, data) (data or {}).Text = msg end;
+			Output = function(tab, msg, mata) table.insert(tab, Remote.Terminal.Format(msg, mata)) end;
+			GetCommand = function(cmd) for i, com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
+			LiveOutput = function(p, data, type) Remote.FireEvent(p, "TerminalLive", {Data = data; Type = type or "Terminal";}) end;
 			Commands = {
 				Help = {
 					Usage = "help";
@@ -616,11 +630,13 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						local func,err = Core.Loadstring(args[1], newenv)
+						local func, err = Core.Loadstring(args[1], newenv)
 						if func then
-							func()
+							xpcall(func, function(reason)
+								Remote.Terminal.LiveOutput(p,`LUA_ERROR: {string.match(reason, ":(.*)") or reason}`)
+							end)
 						else
-							Remote.Terminal.LiveOutput(p,`ERROR: {string.match(err, ":(.*)") or err}`)
+							Remote.Terminal.LiveOutput(p,`SYNTAX_ERROR: {string.match(err, ":(.*)") or err}`)
 						end
 					end
 				};
@@ -1022,16 +1038,14 @@ return function(Vargs, GetEnv)
 					})
 
 					-- TODO: Maybe make it not work with the server Env?
-					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`,function()
-						local func,err = Core.Loadstring(Variable["Script"], newenv)
+					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`, function()
+						local func, err = Core.Loadstring(Variable["Script"], newenv)
 						if func then
-							local Succ,Err = pcall(function()
-								func()
+							xpcall(func, function(reason)
+								Remote.MakeGui(p, "Output", {Title = "LUA_ERROR"; Message = reason})
 							end)
-
-							Remote.MakeGui(p, "Output", {Title = "Error"; Message = Err})
 						else
-							Remote.MakeGui(p, "Output", {Title = "Error"; Message = err})
+							Remote.MakeGui(p, "Output", {Title = "SYNTAX_ERROR"; Message = err})
 						end
 					end)
 				end
@@ -1178,8 +1192,8 @@ return function(Vargs, GetEnv)
 			if keys and keys.RemoteReady == true then
 				local returns, finished
 				local key = service.HttpService:GenerateGUID(false)
-				local Yield = service.Yield();
-				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Release() end)
+				local Yield = service.Signal.new();
+				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Fire() end)
 
 				Remote.PendingReturns[key] = true
 				Remote.Send(p,"GetReturn",com,key,...)

@@ -1203,7 +1203,7 @@ return function(Vargs, GetEnv)
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
 
-			if Settings.ChatCreateRobloxCommands then
+			if Variables.ChatCreateRobloxCommands then
 				-- // Support for commands to be ran via TextChat
 				task.spawn(function()
 					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
@@ -1242,11 +1242,13 @@ return function(Vargs, GetEnv)
 							end
 
 							if command1 then
-								local command = Instance.new("TextChatCommand")
+								local command = service.New("TextChatCommand")
 
 								command.Name = "Adonis_"..name
 								command.PrimaryAlias = command1
 								command.SecondaryAlias = command2 or ""
+								command.Archivable = false
+								command:SetAttribute("AdminLevel", tonumber(data.AdminLevel) or data.AdminLevel or nil)
 								command.Parent = container
 								command.Triggered:Connect(function(textSource, text)
 									local player = service.Players:GetPlayerByUserId(textSource.UserId)
@@ -1325,43 +1327,41 @@ return function(Vargs, GetEnv)
 		end;
 
 		FormatCommandArguments = function(command)
-			local text = ""
+			local text = table.create(#command.Args)
 			for i, arg in command.Args do
-				text ..= `<{arg}>`
-				if i < #command.Args then
-					text ..= Settings.SplitKey
-				end
+				text[i] = `<{arg}>`
 			end
-			return text
+			return table.concat(text, Settings.SplitKey)
 		end;
 
 		FormatCommand = function(command, cmdn)
-			local text = (command.Prefix or "")..tostring(command.Commands[cmdn or 1])
-			if #command.Args > 0 then
-				text ..= Settings.SplitKey .. Admin.FormatCommandArguments(command)
-			end
-			return text
+			return table.concat({
+				(command.Prefix or ""),
+				tostring(command.Commands[cmdn or 1]),
+				#command.Args > 0 and Settings.SplitKey or "",
+				#command.Args > 0 and Admin.FormatCommandArguments(command) or ""
+			})
 		end;
 
 		FormatCommandAdminLevel = function(command)
 			local levels = if type(command.AdminLevel) == "table"
 				then table.clone(command.AdminLevel)
 				else {command.AdminLevel}
-			local permissionDesc = ""
+			local permissionDesc = table.create(#levels)
+
 			for i, lvl in levels do
 				if type(lvl) == "number" then
 					local list, name, data = Admin.LevelToList(lvl)
-					permissionDesc ..= `{name or "No Rank"}; Level {lvl}`
+					permissionDesc[i] = `{name or "No Rank"}; Level {lvl}`
 				elseif type(lvl) == "string" then
 					local numLvl = Admin.StringToComLevel(lvl)
-					permissionDesc ..= `{lvl}; Level {numLvl or "Unknown"}`
-				end
-
-				if i < #levels then
-					permissionDesc ..= ", "
+					permissionDesc[i] = `{lvl}; Level {numLvl or "Unknown"}`
+				else
+					permissionDesc[i] = "N/A"
 				end
 			end
-			return permissionDesc
+
+			return table.concat(permissionDesc, ", ")
 		end;
 
 		CheckTable = function(p, tab)
@@ -1679,6 +1679,19 @@ return function(Vargs, GetEnv)
 
 			Functions.Hint(`You don't have permission to {actionName} {service.FormatPlayer(target)}`, {p})
 			return false
+		end;
+
+		GetAliases = function(player)
+			local aliases = table.clone(Variables.Aliases)
+			local pData = player and Core.GetPlayer(player)
+
+			if pData and pData.Aliases then
+				for alias, command in pData.Aliases do
+					aliases[alias] = command
+				end
+			end
+
+			return aliases
 		end;
 	}
 end

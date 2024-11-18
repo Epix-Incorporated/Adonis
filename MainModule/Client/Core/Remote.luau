@@ -390,7 +390,7 @@ return function(Vargs, GetEnv)
 			local returns;
 
 			if RemoteEvent and RemoteEvent.Function then
-				local Yield = service.Yield();
+				local Yield = service.Signal.new();
 
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
@@ -405,7 +405,7 @@ return function(Vargs, GetEnv)
 							}, unpack(extra))
 						}
 
-						Yield:Release(returns);
+						Yield:Fire(returns);
 					end)
 
 					task.wait(limit)
