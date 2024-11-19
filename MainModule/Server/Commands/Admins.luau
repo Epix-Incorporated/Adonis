@@ -554,8 +554,7 @@ return function(Vargs, env)
 			Description = "Gives the target player(s) F3X building tools.";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local F3X = Variables.F3XCached and Variables.F3XCached:Clone() or require(580330877)()
-				Variables.F3XCached = Deps.Assets:FindFirstChild("F3X Deps") and (function(deps)
+				local F3X = Deps.Assets:FindFirstChild("F3X Deps") and (function(deps)
 					local F3X = service.New("Tool", {
 						GripPos = Vector3.new(0, 0, 0.4),
 						CanBeDropped = false,
@@ -576,7 +575,8 @@ return function(Vargs, env)
 
 					clonedDeps:Destroy()
 					return F3X
-				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached or F3X:Clone()
+				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached and Variables.F3XCached:Clone() or require(580330877)()
+				Variables.F3XCached = Variables.F3XCached or F3X:Clone()
 				service.New("StringValue", {
 					Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
 					Parent = F3X
