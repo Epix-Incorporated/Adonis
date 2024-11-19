@@ -551,16 +551,16 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 	},{
 		DeepCopy = function(tab)
-			local new = (getmetatable(tab) ~= nil and setmetatable({},{
+			local new = (getmetatable(tab) ~= nil and setmetatable({}, {
 				__index = function(t, ind)
 					return tab[ind]
 				end
 			})) or {}
-			for i,v in tab do
+			for k, v in tab do
 				if type(v) == "table" then 
-					new[i] = service.DeepCopy(v)
+					new[k] = service.DeepCopy(v)
 				else
-					new[i] = v
+					new[k] = v
 				end
 			end
 			return new
@@ -577,7 +577,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		ExtractLines = function(str)
-			return string.split(string.gsub(str, "[%z\1-\9\11-\31]", ""), "")
+			return string.split(string.gsub(str, "[%z\1-\9\11-\31]", ""), "\n")
 		end;
 
 		Filter = function(str, from, to)
@@ -585,23 +585,18 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return "Filter Error"
 			end
 
-			local new = ""
 			local lines = service.ExtractLines(str)
-			for i = 1,#lines do
-				local ran,newl = pcall(function()
-					return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId)
+			local new = table.create(#lines)
+			for i = 1, #lines do
+				local ran, newl = pcall(function()
+					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetChatForUserAsync(to.UserId)
 				end)
-				newl = (ran and newl) or lines[i] or ""
-				if i > 1 then
-					new = `{new}\n{newl}`
-				else
-					new = newl
-				end
+				new[i] = ran and newl or lines[i] or ""
 			end
-			return new or "Filter Error"
+			return new and table.concat(new, "\n") or "Filter Error"
 		end;
 
-		LaxFilter = function(str,from,cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
+		LaxFilter = function(str, from, cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
 			if tonumber(str) then				-- to avoid major filter related problems (like commands becoming unusable due to numbers or names being filtered)
 				return str						-- Please consider dropping the filter rules down a notch or improving on the existing filtering methods
 			elseif type(str) == "string" then	-- Also always feel free to message me with any concerns you have :)!
@@ -611,7 +606,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 				if cmd and #service.GetPlayers(from, str, {
 					DontError = true;
-					}) > 0 then
+				}) > 0 then
 					return str
 				else
 					return service.Filter(str, from, from)
@@ -626,18 +621,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return "Filter Error"
 			end
 
-			local new = ""
 			local lines = service.ExtractLines(str)
-			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetNonChatStringForBroadcastAsync() end)
-				newl = ran and newl or lines[i] or ""
-				if i > 1 then
-					new = `{new}\n{newl}`
-				else
-					new = newl
-				end
+			local new = table.create(#lines)
+			for i = 1, #lines do
+				local ran, newl = pcall(function() return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForBroadcastAsync() end)
+				new[i] = ran and newl or lines[i] or ""
 			end
-			return new or "Filter Error"
+			return new and table.concat(new, "\n") or "Filter Error"
 		end;
 
 		RecursiveMtSearch = function(tab)
@@ -690,7 +680,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local metatable = getmetatable(newProxy)
 			metatable.__metatable = if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy"
 			metatable.__ADONIS_WRAPPED = true
-			for i,v in meta do metatable[i] = v end
+			for k, v in meta do metatable[k] = v end
 			return newProxy
 		end;
 
@@ -739,14 +729,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				Yield = doYield and service.Signal.new();
 			}
 
-			table.insert(queue.Functions, tab);
+			table.insert(queue.Functions, tab)
 
 			if not queue.Processing then
-				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, false, queue, key);
+				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, false, queue, key)
 			end
 
 			if doYield and not tab.Finished then
-				return select(2, tab.Yield:Wait());
+				return select(2, tab.Yield:Wait())
 			end
 		end;
 
@@ -755,24 +745,24 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				if queue.Processing then
 					return "Processing"
 				else
-					local funcs = queue.Functions;
-					local Yield = service.Signal.new();
+					local funcs = queue.Functions
+					local Yield = service.Signal.new()
 					local function pop()
 						local n = funcs[1]
 						table.remove(funcs, 1)
 						return n
-					end;
+					end
 
 					queue.Processing = true
 
 					while funcs[1] ~= nil do
-						local func = pop();
-						func.Running = true;
+						local func = pop()
+						func.Running = true
 
 						if func.Timeout then
 							delay(func.Timeout, function()
 								if not func.Finished then
-									Yield:Fire();
+									Yield:Fire()
 									warn(`Queue Timeout Reached for {key or "Unknown"}`)
 
 									if func.Yield then
@@ -783,10 +773,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 
 						service.TrackTask(`Thread: {key or "Unknown"}_QueuedFunction`, function()
-							local r,e = xpcall(func.Function,function(e)
+							local r, e = xpcall(func.Function, function(e)
 								func.Error = e;
 								warn(`Queue Error: {key}: {e} \n {debug.traceback()}`)
-							end);
+							end)
 
 							func.Running = false;
 							func.Finished = true
@@ -803,11 +793,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 					end
 
-					Yield:Destroy();
-					queue.Processing = false;
+					Yield:Destroy()
+					queue.Processing = false
 
 					if key then
-						Queues[key] = nil;
+						Queues[key] = nil
 					end
 				end
 			end
