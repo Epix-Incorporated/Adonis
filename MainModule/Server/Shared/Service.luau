@@ -100,7 +100,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local EventService = Instance.new("Folder")
 
 	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
-	local Events, Threads, Wrapper, Helpers = {
+	local Events = {
 		TrackTask = function(name, func, errHandler, ...)
 			if type(errHandler) ~= "function" or select("#", ...) == 0 and errHandler == nil then
 				errHandler = function(err)
@@ -286,7 +286,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				event:Destroy()
 			end
 		end;
-	},{
+	}
+
+	local Threads = {
 		Tasks = {};
 		Threads = {};
 		CheckTasks = function()
@@ -395,7 +397,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Resume = function(thread,...) if thread and coroutine.status(thread) == "suspended" then return coroutine.resume(thread,...) end end;
 		Remove = function(thread) service.Threads.Stop(thread) for ind,th in service.Threads.Threads do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
 		StopAll = function() for ind,th in service.Threads.Threads do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in service.Threads.Threads do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
-	},{
+	}
+
+	local Wrapper = {
 		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = if main.Core and main.Core.DebugMode then "Ignore" else nil}) end; -- Unused
 		CheckWrappers = function()
 			for obj,wrap in Wrappers do
@@ -549,7 +553,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return object
 			end
 		end;
-	},{
+	}
+
+	local Helpers = {
 		DeepCopy = function(tab)
 			local new = (getmetatable(tab) ~= nil and setmetatable({},{
 				__index = function(t, ind)
