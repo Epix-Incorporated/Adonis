@@ -1,6 +1,7 @@
 --!native
+--!optimize 2
 --!nolint TableOperations
---# selene: allow(divide_by_zero, multiple_statements, mixed_table)
+--# selene: allow(multiple_statements, mixed_table)
 --[[
 FiOne
 Copyright (C) 2021  Rerumu
@@ -731,7 +732,7 @@ local function run_lua_func(state, env, upvals)
 				local limit = memory[A + 1]
 				local loops
 
-				if step == math.abs(step) then
+				if step >= 0 then
 					loops = index <= limit
 				else
 					loops = index >= limit
@@ -992,14 +993,7 @@ local function run_lua_func(state, env, upvals)
 				-- // ccuser44 added support for generic iteration
 				-- (Please don't use general iteration in vanilla Lua code)
 				if not index and not state and type(func) == "table" then
-					-- Hacky check to see if __metatable is locked
-					local canGetMt = pcall(getmetatable, func)
-					local isMtLocked = canGetMt and not pcall(setmetatable, func, getmetatable(func)) or not canGetMt
-					local metatable = canGetMt and getmetatable(func)
-
-					if not (table.isfrozen and table.isfrozen(func)) and isMtLocked and not metatable then
-						warn("[FiOne]: The table has a metatable buts it's hidden, __iter and __call won't work in forloop.")
-					end
+					local metatable = pcall(getmetatable, func) and getmetatable(func)
 
 					if not (type(metatable) == "table" and rawget(metatable, "__call")) then
 						func, state, index = (type(metatable) == "table" and rawget(metatable, "__iter") or next), func, nil
