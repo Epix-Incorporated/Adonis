@@ -178,8 +178,8 @@ return function(Vargs, GetEnv)
 			local StartLoop = service.StartLoop
 			local ReadOnly = service.ReadOnly
 			local UnWrap = service.UnWrap
-			local service = nil
-			local client = nil
+			local service = service
+			local client = client
 			local _G = _G
 			local setmetatable = setmetatable
 			local type = type
