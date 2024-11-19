@@ -1027,10 +1027,33 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SetLighting = function(prop,value)
-			if service.Lighting[prop]~=nil then
+		SetLighting = function(prop, value)
+			if service.Lighting[prop] ~= nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
+			end
+		end;
+
+		SetAtmosphere = function(prop, value)
+			local atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+
+			if atmosphere then
+				if value == nil and atmosphere[prop] and typeof(atmosphere[prop]) ~= "Instance" then
+					atmosphere:Destroy()
+					table.clear(Variables.AtmosphereSettings)
+				else
+					atmosphere[prop] = value
+					Variables.AtmosphereSettings[prop] = value
+				end
+			elseif value ~= nil then
+				atmosphere = Instance.new("Atmosphere")
+				Variables.AtmosphereSettings[prop] = value
+
+				for k, v in Variables.AtmosphereSettings do
+					atmosphere[k] = v
+				end
+
+				atmosphere.Parent = service.Lighting
 			end
 		end;
 
@@ -1225,7 +1248,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			task.wait(0.5)
+			task.wait(0.6)
 			Functions.HardCrash()
 		end;
 
@@ -1888,6 +1911,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		GetFriendsOnline = function(maxFriends)
+			return service.Players.LocalPlayer:GetFriendsOnline(maxFriends)
+		end;
+
 		GetUserInputServiceData = function(args)
 			local data = {}
 			local props = {
@@ -1904,7 +1931,7 @@ return function(Vargs, GetEnv)
 			for _, p in props do
 				data[p] = service.UserInputService[p]
 			end
-			data["Resolution"] = workspace.CurrentCamera.ViewportSize.X.." x "..workspace.CurrentCamera.ViewportSize.Y
+			data["Resolution"] = math.floor(workspace.CurrentCamera.ViewportSize.X).." x "..math.floor(workspace.CurrentCamera.ViewportSize.Y)
 			return data
 		end;
 	};

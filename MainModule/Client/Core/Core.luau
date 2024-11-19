@@ -343,7 +343,7 @@ return function(Vargs, GetEnv)
 								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
 								local metaTableInEnv = getmetatable(realEnvResult)
 								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args, 3, args.n))
-								local resultPointer = tostring(math.random())
+								local resultPointer = service.HttpService:GenerateGUID(false)
 								pointers[resultPointer] = result
 
 								return UnWrap(result), resultPointer

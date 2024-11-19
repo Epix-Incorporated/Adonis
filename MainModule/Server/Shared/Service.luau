@@ -107,7 +107,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					logError(err.."\n"..debug.traceback())
 				end
 			end
-			local index = (main and main.Functions and game:GetService("HttpService"):GenerateGUID(false)) or math.random();
+			local index = game:GetService("HttpService"):GenerateGUID(false);
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
 			local data = {
@@ -566,8 +566,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return new
 		end,
 
-		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
-
 		Timer = function(t,func,check)
 			local start = time()
 			local event; event = service.RunService.RenderStepped:Connect(function()
@@ -694,15 +692,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			metatable.__ADONIS_WRAPPED = true
 			for i,v in meta do metatable[i] = v end
 			return newProxy
-		end;
-
-		GetUserType = function(obj)
-			local ran,err = pcall(function() local temp = obj[math.random()] end)
-			if ran then
-				return "Unknown"
-			else
-				return string.match(err, "%S+$")
-			end
 		end;
 
 		CountTable = function(tab)
@@ -996,22 +985,15 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 
 			int = int:reverse()
-			local newInt = ""
-			local counter = 1
+			local newInt = table.create(#int + math.floor((#int - 1) / 3))
 			for i = 1, #int do
-				if counter > 3 then
-					newInt ..= separator
-					counter = 1
+				if i % 3 == 1 and i ~= 1 then
+					table.insert(newInt, separator)
 				end
-				newInt ..= int:sub(i, i)
-				counter += 1
+				table.insert(newInt, int:sub(i, i))
 			end
 
-			return `{(if num < 0 then "-" else "")}{newInt:reverse()}{if dec then `.{dec}` else ""}`
-		end;
-
-		OwnsAsset = function(...)
-			return service.CheckAssetOwnership(...)
+			return `{(if num < 0 then "-" else "")}{table.concat(newInt):reverse()}{if dec then `.{dec}` else ""}`
 		end;
 
 		GetProductInfo = function(assetId, infoType)
@@ -1026,7 +1008,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						results = {
 							Created = false;
 						};
-						lastUpdated = os.clock();
+						lastUpdated = -math.huge;
 					}
 					assetInfoCache[`{assetId}-{infoType}`] = cache
 				end
@@ -1453,7 +1435,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;
 		DelRbxEvent = function(signal) for i,v in RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
 		SanitizeString = function(str) str = service.Trim(str) local new = "" for i = 1,#str do if string.sub(str,i,i) ~= "\n" and string.sub(str,i,i) ~= "\0" then new = new..string.sub(str,i,i) end end return new end;
-    Trim = function(str) return string.match(str,"^%s*(.-)%s*$") end;
+		Trim = function(str) return string.match(str,"^%s*(.-)%s*$") end;
 		Localize = function(obj, readOnly) local Localize = service.Localize local ReadOnly = service.ReadOnly if type(obj) == "table" then local newTab = {} for i in obj do newTab[i] = Localize(obj[i], readOnly) end return (readOnly and ReadOnly(newTab)) or newTab else return obj end end;
 		RawEqual = function(obj1, obj2) return service.UnWrap(obj1) == service.UnWrap(obj2) end;
 		CheckProperty = function(obj,prop) return pcall(function() return obj[prop] end) end;

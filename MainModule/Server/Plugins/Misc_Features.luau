@@ -34,7 +34,7 @@ return function(Vargs, GetEnv)
 		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
 	end
 	service.CloneTable = function(tbl)
-		return getmetatable(tbl) and setmetatable(table.clone(tbl), {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
+		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
 	end
 	service.GoodSignal = service.Signal
 	service.Yield = function()
@@ -46,7 +46,7 @@ return function(Vargs, GetEnv)
 			Event = event;
 		}
 	end
-	Remote.UnEncrypted = setmetatable({}, {
+	Remote.UnEncrypted = setmetatable({}, { -- TODO: Start adding a server.Messages message and remove later
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
 			Remote.Commands[ind] = val
@@ -74,10 +74,18 @@ return function(Vargs, GetEnv)
 		end
 	end
 	for k, v in {-- Legacy aliases
-		[":giveppoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
-		[":giveplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
-		[":sendplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
-		[":flyclip <player>"] = ":fly <player> true";
+		[`{Settings.Prefix}giveppoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}giveplayerpoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}sendplayerpoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}flyclip <player>`] = `{Settings.Prefix}fly <player> true`;
+		[`{Settings.Prefix}showlogs true <player>`] = `{Settings.Prefix}showlogs <player> true`; -- TODO: Remove legacy :showlogs aliases, only temporarily here.
+		[`{Settings.Prefix}showlogs false <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showlogs yes <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showlogs no <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showcommandlogs true <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showcommandlogs false <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showcommandlogs yes <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showcommandlogs no <player>`] = `{Settings.Prefix}showlogs <player> false`;
 	} do
 		if not Variables.Aliases[k] then
 			Variables.Aliases[k] = v
@@ -86,6 +94,9 @@ return function(Vargs, GetEnv)
 	HTTP.CheckHttp = function()
 		return HTTP.HttpEnabled
 	end
+	-- TODO: Remove \\/
+	service.OwnsAsset = service.CheckAssetOwnership
+	Functions.CatchError = server.Pcall
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end
