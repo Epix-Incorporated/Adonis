@@ -511,7 +511,7 @@ local function new_threaded_closure(proto, env, upval)
 			error(args[2], 2)
 		end
 
-		return table.unpack(args, 2)
+		return table.unpack(args, 2, args.n)
 	end
 end
 
