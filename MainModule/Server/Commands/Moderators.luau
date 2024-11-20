@@ -1399,7 +1399,6 @@ return function(Vargs, env)
 					local cam = service.New("Part", {
 						Parent = workspace;
 						Name = `Camera: {args[1]}`;
-						Archivable = false;
 						Position = head.Position;
 						Anchored = true;
 						BrickColor = BrickColor.new("Really black");
