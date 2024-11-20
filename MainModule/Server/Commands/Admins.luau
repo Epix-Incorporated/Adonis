@@ -12,7 +12,6 @@ return function(Vargs, env)
 	local Routine = env.Routine
 
 	return {
-
 		SetRank = {
 			Prefix = Settings.Prefix;
 			Commands = {"setrank", "permrank", "permsetrank"};
@@ -555,7 +554,29 @@ return function(Vargs, env)
 			Description = "Gives the target player(s) F3X building tools.";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local F3X = require(580330877)()
+				local F3X = Deps.Assets:FindFirstChild("F3X Deps") and (function(deps)
+					local F3X = service.New("Tool", {
+						GripPos = Vector3.new(0, 0, 0.4),
+						CanBeDropped = false,
+						ManualActivationOnly = false,
+						ToolTip = "Building Tools by F3X",
+						Name = "Building Tools"
+					}, true)
+					local clonedDeps = deps:Clone()
+
+					for _, obj in clonedDeps:GetDescendants() do
+						if obj:IsA("BaseScript") then
+							obj.Disabled = false
+						end
+					end
+					for _, obj in clonedDeps:GetChildren() do
+						obj.Parent = F3X
+					end
+
+					clonedDeps:Destroy()
+					return F3X
+				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached and Variables.F3XCached:Clone() or require(580330877)()
+				Variables.F3XCached = Variables.F3XCached or F3X:Clone()
 				service.New("StringValue", {
 					Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
 					Parent = F3X
@@ -568,6 +589,8 @@ return function(Vargs, env)
 						F3X:Clone().Parent = Backpack
 					end
 				end
+
+				F3X:Destroy()
 			end
 		};
 
