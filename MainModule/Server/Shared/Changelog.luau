@@ -66,6 +66,7 @@ return {
 	"(Git/ccuser44) Fix bug report version help image (#1709)";
 	"(Git/ccuser44) Remove unnecessary cruft from server (#1682)";
 	"(Git/ccuser44) Fix many annoying bugs (#1647)";
+	"(Git/ccuser44) Remove FiOne copy artifact and update FiOne (#1736)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
