@@ -1399,6 +1399,7 @@ return function(Vargs, env)
 					local cam = service.New("Part", {
 						Parent = workspace;
 						Name = `Camera: {args[1]}`;
+						Archivable = false;
 						Position = head.Position;
 						Anchored = true;
 						BrickColor = BrickColor.new("Really black");
@@ -1428,17 +1429,14 @@ return function(Vargs, env)
 			Description = "Deletes the camera if it exists";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i,v in Variables.Cameras do
-					if string.lower(args[1]) == v.Name then
-						local cam = workspace:FindFirstChild(v)
-
-						Variables.Cameras[i] = nil
-
-						if cam and cam:IsA("Part") then
-							cam:Destroy()
+				for i, v in Variables.Cameras do
+					if string.sub(string.lower(v.Name), 1, #args[1]) == string.lower(args[1]) then
+						if v.Brick then
+							v.Brick:Destroy()
 						end
 
 						Functions.Hint(`Deleted camera {v.Name}`, {plr})
+						table.remove(Variables.Cameras, i)
 					end
 				end
 			end
