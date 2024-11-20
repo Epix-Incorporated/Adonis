@@ -340,7 +340,7 @@ return function(Vargs, GetEnv)
 	end
 
 	service.MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, id, purchased)
-		if Variables and player.Parent and id == 1348327 and purchased then
+		if Variables and player.Parent and table.find(Variables.DonorPass, id) and purchased then
 			Variables.CachedDonors[tostring(player.UserId)] = os.time()
 		end
 	end)
