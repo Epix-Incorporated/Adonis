@@ -3702,7 +3702,9 @@ return function(Vargs, env)
 						continue
 					end
 
-					if human and human.RigType == Enum.HumanoidRigType.R15 then
+					if human and char:IsA("Model") then
+						char:ScaleTo(num)
+					elseif human and human.RigType == Enum.HumanoidRigType.R15 then
 						for _, val in human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
 								val.Value *= num
