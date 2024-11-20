@@ -100,6 +100,21 @@ return function(Vargs, GetEnv)
 			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 		end;
 
+		-- // Preliminary support for oldlog encryption
+		DeserializeOldlogs = function(data)
+			if string.sub(data, 1, 1) ~= "[" and string.match(data, "^[%w%+/=]+$") then
+				data = Remote.NewDecrypt(Functions.Base64Decode(data), Settings.DataStoreKey)
+
+				if string.sub(data, 1, 2) == "\x1f\x8b" then -- Check for Gzip header and decode
+					data = assert(Functions.GzipDecompress, "No support for Gzip encoding!")(data)
+				elseif string.match(data, "^\x78[\x01\x5e\x9c\xda\x20\x7d\xbb\xf9]") then -- Check for Zlib header and decode
+					data = assert(Functions.ZlibDecompress, "No support for Zlib encoding!")(data)
+				end
+			end
+
+			return service.HttpService:JSONDecode(data)
+		end;
+
 		SaveCommandLogs = function()
 			--// Disable saving command logs in Studio; not required.
 			if service.RunService:IsStudio() or service.RunService:IsRunMode() then
@@ -121,7 +136,12 @@ return function(Vargs, GetEnv)
 
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				if type(oldLogs) == "string" then
-					oldLogs = service.HttpService:JSONDecode(oldLogs)
+					xpcall(function()
+						oldLogs = Logs.DeserializeOldlogs(oldLogs)
+					end, function(reason)
+						oldLogs = {}
+						warn(`Deserializing oldlogs failed due to {reason}`)
+					end)
 				end
 
 				local temp = {}

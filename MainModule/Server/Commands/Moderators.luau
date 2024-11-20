@@ -6617,15 +6617,15 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
 				if Core.DataStore then
-					local tab = table.create(1000)
+					local tab = table.create(Logs.OldCommandLogsLimit)
 					local data = Core.GetData("OldCommandLogs")
 					if data then
-						for i, v in service.HttpService:JSONDecode(data) do
-							table.insert(tab, i, {
+						for i, v in Logs.DeserializeOldlogs(data) do
+							tab[i] = {
 								Time = v.Time,
 								Text = `{v.Text}: {v.Desc}`,
 								Desc = v.Desc
-							})
+							}
 						end
 					end
 					return tab
