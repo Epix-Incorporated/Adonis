@@ -5,7 +5,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-
 	-- Saving those microseconds from using the dot operator
 	local Variables = client.Variables
 	local Functions = client.Functions
@@ -31,6 +30,12 @@ return function(data, env)
 	local posTrackSound = nil
 	local progressupdatewait = 0.05
 	local canUseGlobal = data.GlobalPerms
+
+	if not script:FindFirstChild("Signal") then
+		local clone = (client.Shared:FindFirstChild("GoodSignal") or client.Shared:FindFirstChild("Signal")):Clone()
+		clone.Name = "Signal"
+		clone.Parent = script
+	end
 
 	-- The audio visulaiser at the top of the menu.
 	local visualiserModule = require(script:FindFirstChild("Visualizer"))
@@ -64,7 +69,7 @@ return function(data, env)
 		Autoplay = false
 	}
 	local fakePlaylist = {Position = 0}
-	local getRequestMade = service.GoodSignal.new()
+	local getRequestMade = service.Signal.new()
 
 	if canUseGlobal then
 		task.spawn(client.Remote.Get, "AudioLib", {"call", "GetSound"}) -- Create default container
