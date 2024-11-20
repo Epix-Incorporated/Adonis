@@ -598,9 +598,9 @@ return function(Vargs, GetEnv)
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
 						local oError = error
-						local newenv = GetEnv(getfenv(),{
-							print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
-							warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+						local newenv = GetEnv(getfenv(), {
+							print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
+							warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
 							error = function(reason, level)
 								if level ~= nil and type(level) ~= "number" then
 									oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
@@ -670,7 +670,7 @@ return function(Vargs, GetEnv)
 					Description = "Disconnects the specified player from the server";
 					Function = function(p, args, data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
+						if #plrs > 0 then
 							local ret = {}
 							for _,v in plrs do
 								v:Kick(args[2] or "Disconnected by server")
@@ -690,8 +690,8 @@ return function(Vargs, GetEnv)
 					Description = "Calls :BreakJoints() on the target player's character";
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
-							for _,v in plrs do
+						if #plrs > 0 then
+							for _, v in plrs do
 								local ret = {}
 								local char = v.Character
 								if char and char.ClassName == "Model" then
@@ -715,9 +715,9 @@ return function(Vargs, GetEnv)
 					Description = "Calls :LoadCharacter() on the target player";
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
+						if #plrs > 0 then
 							local ret = {}
-							for _,v in plrs do
+							for _, v in plrs do
 								v:LoadCharacter()
 								table.insert(ret, `Respawned {service.FormatPlayer(v)}`)
 							end
@@ -737,7 +737,7 @@ return function(Vargs, GetEnv)
 							p:Kick(args[1] or "No Given Reason")
 						end)
 
-						for _,v in service.Players:GetPlayers() do
+						for _, v in service.Players:GetPlayers() do
 							v:Kick(args[1] or "No Given Reason")
 						end
 					end
@@ -753,21 +753,21 @@ return function(Vargs, GetEnv)
 			GetReturn = function(p: Player, args: {[number]: any})
 				local com = args[1]
 				local key = args[2]
-				local parms = {unpack(args,3)}
+				local parms = table.pack(table.unpack(args, 3))
 				local retfunc = Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,p,parms)}) or {}
+				local retable = retfunc and table.pack(pcall(retfunc, p, parms)) or {}
 				if retable[1] ~= true then
-					logError(p,retable[2])
+					logError(p, retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
+					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2))
 				end
 			end;
 
 			GiveReturn = function(p: Player,args: {[number]: any})
 				if Remote.PendingReturns[args[1]] then
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:Fire(unpack(args,2))
+					service.Events[args[1]]:Fire(table.unpack(args, 2))
 				end
 			end;
 
@@ -860,7 +860,7 @@ return function(Vargs, GetEnv)
 					local value = args[2]
 
 					if type(setting) == "string" then
-						if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+						if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 							local orig = Settings[setting]
 							for _, v in Commands do
 								if v.Prefix == orig then
@@ -1020,15 +1020,15 @@ return function(Vargs, GetEnv)
 					local Variable = se[Name]
 
 					local oError = error
-					local newenv = GetEnv(getfenv(),{
-						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
-						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+					local newenv = GetEnv(getfenv(), {
+						print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
+						warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
 						error = function(reason, level)
 							if level ~= nil and type(level) ~= "number" then
 								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 							end
 
-							Remote.MakeGui(p, "Output",{Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
+							Remote.MakeGui(p, "Output", {Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
 							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 						end;
 					})
@@ -1183,8 +1183,9 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		OldGet = function(p: Player, com: string, ...)
+		OldGet = function(p: Player, com: string, ...) -- TODO: Add oldget (both on client and server) to backwards compatibility plugin
 			local keys = Remote.Clients[tostring(p.UserId)]
+
 			if keys and keys.RemoteReady == true then
 				local returns, finished
 				local key = service.HttpService:GenerateGUID(false)
@@ -1192,22 +1193,22 @@ return function(Vargs, GetEnv)
 				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Fire() end)
 
 				Remote.PendingReturns[key] = true
-				Remote.Send(p,"GetReturn",com,key,...)
+				Remote.Send(p, "GetReturn", com, key, ...)
 
-				print("GETTING RETURN");
+				print("GETTING RETURN")
 				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
 					task.delay(600, function() if not finished then event:Fire() end end)
-					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
-					Yield:Wait();
-					Yield:Destroy();
+					print(string.format("WAITING FOR RETURN %s", tostring(returns)))
+					Yield:Wait()
+					Yield:Destroy()
 
-					print(string.format("WE GOT IT! %s", tostring(returns)));
+					print(string.format("WE GOT IT! %s", tostring(returns)))
 					pEvent:Disconnect()
 					pEvent = nil
 				end
 
-				print("GOT RETURN");
+				print("GOT RETURN")
 				event:Disconnect()
 				event = nil
 
@@ -1215,7 +1216,7 @@ return function(Vargs, GetEnv)
 					if returns[1] == "__ADONIS_RETURN_ERROR" then
 						error(returns[2])
 					else
-						return unpack(returns)
+						return table.unpack(returns)
 					end
 				else
 					return

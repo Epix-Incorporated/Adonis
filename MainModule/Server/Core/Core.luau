@@ -1529,13 +1529,13 @@ return function(Vargs, GetEnv)
 					AdonisDebugAPIBindable.Name = "Adonis_Debug_API"
 					AdonisDebugAPIBindable.Parent = service.ReplicatedStorage
 					AdonisDebugAPIBindable.OnInvoke = function(DebugCommand,...)
-						local args = {...}
+						local args = table.pack(...)
 
 						if DebugCommand == "RunEnvFunc" then
 							local FunctionInEnvToRunPath = args[1]
 							if FunctionInEnvToRunPath and type(FunctionInEnvToRunPath) == "string" then
 								local realEnvResult, isResultPointer = getRealEnvResult(FunctionInEnvToRunPath)
-								return realEnvResult(table.unpack(args,2,#args))
+								return realEnvResult(table.unpack(args, 2, args.n))
 							end
 						elseif DebugCommand == "GetEnvTableMeta" then
 							local TableInEnvPath = args[1]
@@ -1549,7 +1549,7 @@ return function(Vargs, GetEnv)
 							if TableInEnvPath and type(TableInEnvPath) == "string" then
 								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
 								local metaTableInEnv = getmetatable(realEnvResult)
-								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args,3,#args))
+								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args, 3, args.n))
 								local resultPointer = service.HttpService:GenerateGUID(false)
 								pointers[resultPointer] = result
 

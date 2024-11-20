@@ -353,7 +353,7 @@ return function(Vargs, GetEnv)
 				else
 					local keys = Remote.Clients[tostring(p.UserId)]
 					if keys and select("#", ...) <= Process.RemoteMaxArgCount then
-						local args = {...}
+						local args = table.pack(...)
 						local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
 
 						keys.LastUpdate = os.time()
@@ -375,7 +375,7 @@ return function(Vargs, GetEnv)
 
 										return keys.Key
 										--else
-										--Anti.Detected(p, "kick","Communication Key Error (r10003)")
+										--Anti.Detected(p, "kick", "Communication Key Error (r10003)")
 									end
 								elseif cliData.Mode == "Fire" then
 									if keys.LoadingStatus == "WAITING_FOR_KEY" then
@@ -398,7 +398,7 @@ return function(Vargs, GetEnv)
 								end
 							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
-								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
+								local command = cliData.Mode == "Get" and Remote.Returnables[comString] or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
 									Text = string.format("%s fired %s; Arg1: %s", p.Name, comString, service.MaxLen(tostring(args[1]), 50));
@@ -417,8 +417,8 @@ return function(Vargs, GetEnv)
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
 							elseif rateLimitCheck and RateLimit(p, "RateLog") then
-								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate));
-								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate));
+								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate))
+								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate))
 							end
 						else
 							Anti.Detected(p, "Log", "Out of Sync (r10005)")

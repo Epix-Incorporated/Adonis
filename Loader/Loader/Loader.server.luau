@@ -41,7 +41,7 @@ local function yxpcall(f, callback, ...)
 	if not args[1] then
 		callback(args[2])
 	else
-		return table.unpack(args, 2)
+		return table.unpack(args, 2, args.n)
 	end
 end
 

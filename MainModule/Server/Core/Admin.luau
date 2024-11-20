@@ -1384,16 +1384,16 @@ return function(Vargs, GetEnv)
 				[`{playerPrefix}client`] = true;
 				[`{playerPrefix}userpanel`] = true;
 				[":adonissettings"] = true;
-
 			}
 			--return Admin.CommandCache[alias:lower()] --// Alternatively, we could make it so you can't overwrite ANY existing commands...
 			return blacklist[alias];
 		end;
 
 		GetArgs = function(msg, num, ...)
-			local args = Functions.Split((string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ''),Settings.SplitKey,num) or {}
-			for _, v in {...} do
-				table.insert(args, v)
+			local newArgs = table.pack(...)
+			local args = Functions.Split(string.match(msg, `^.-{Settings.SplitKey}(.+)`) or "", Settings.SplitKey, num) or table.create(newArgs.n)
+			for i = 1, newArgs.n do
+				table.insert(args, newArgs[i])
 			end
 			return args
 		end;

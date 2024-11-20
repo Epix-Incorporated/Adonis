@@ -191,17 +191,17 @@ function WrapAdonisEnv(toWrap, chain)
 				return toWrap
 			elseif type(toWrap[k]) == "function" then
 				return function(...)
-					local args = {...}
-					local unwrappedArgs = {}
-					
-					for i,arg in ipairs(args) do
-						if arg.GetObject then
+					local args = table.pack(...)
+					local unwrappedArgs = table.create(args.n)
+
+					for i, arg in args do
+						if (type(arg) == "table" or type(arg) == "userdata") and arg.GetObject then
 							unwrappedArgs[i] = arg.GetObject
 						else
 							unwrappedArgs[i] = arg
 						end
 					end
-					print(unwrappedArgs)
+					--print(unwrappedArgs)
 					DebugApiBindable:Invoke("RunEnvFunc", tonumber(chain) and chain or curChain:sub(1, #curChain - 3), table.unpack(unwrappedArgs))
 				end
 			else
