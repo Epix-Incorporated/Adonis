@@ -67,6 +67,18 @@ return {
 	"(Git/ccuser44) Remove unnecessary cruft from server (#1682)";
 	"(Git/ccuser44) Fix many annoying bugs (#1647)";
 	"(Git/ccuser44) Remove FiOne copy artifact and update FiOne (#1736)";
+	"(Git/ccuser44) Fix donor perks not updating live (#1741)";
+	"(Git/ccuser44) Add more animatedheads (#1740)";
+	"(Git/ccuser44) Fix incompatibility with legacy `service.Yield` (#1739)";
+	"(Git/ccuser44) Optimise SanitizeString and filter functions (#1738)";
+	"(Git/ccuser44) Improve service readability (#1737)";
+	"(Git/ccuser44) Make AudioPlayer used shared GoodSignal library (#1735)";
+	"(Git/ccuser44) Use a datastore cache for Adonis Alerts (#1729)";
+	"(Git/ccuser44) Cache F3X (#1710)";
+	"(Git/ccuser44) Add preliminary support for oldlogs encryption (#1696)";
+	"(Git/ccuser44) Delete Dependencies/Adonis (#1681)";
+	"(Git/ccuser44) Fix vararg packing (#1679)";
+	"(Git/sakari119) Change :resize to use Model :ScaleTo() method (#1633)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
