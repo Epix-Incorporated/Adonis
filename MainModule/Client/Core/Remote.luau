@@ -386,7 +386,7 @@ return function(Vargs, GetEnv)
 			local RemoteEvent = Core.RemoteEvent
 			local limits = Process.RateLimits
 			local limit = limits and limits.Remote or 0.02
-			local extra = table.unpack(...)
+			local extra = table.pack(...)
 			local returns
 
 			if RemoteEvent and RemoteEvent.Function then
@@ -446,7 +446,7 @@ return function(Vargs, GetEnv)
 			local returns
 			local key = service.HttpService:GenerateGUID(false)
 			local waiter = service.New("BindableEvent")
-			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = table.unpack(...) waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
+			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = table.pack(...) waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
 
 			Remote.PendingReturns[key] = true
 			Remote.Send("GetReturn", com, key, ...)
