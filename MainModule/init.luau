@@ -3,7 +3,7 @@
 -- Adonis MainModule --
 -----------------------
 
-Distributed under the MIT license.
+Distributed under the MIT license. (c) 2024
 
 Please do not redistribute without proper credits.
 
