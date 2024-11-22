@@ -1098,7 +1098,7 @@ return function(Vargs, env)
 
 		DeleteNote = {
 			Prefix = Settings.Prefix;
-			Commands = {"removenote", "remnote", "deletenote"};
+			Commands = {"removenote", "remnote", "deletenote", "clearnote"};
 			Args = {"player", "note (specify 'all' to delete all notes)"};
 			Description = "Removes a note on the target player(s)";
 			AdminLevel = "Admins";
