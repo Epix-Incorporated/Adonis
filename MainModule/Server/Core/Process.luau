@@ -81,6 +81,7 @@ return function(Vargs, GetEnv)
 			end
 		end)
 
+		Remote._globalAccessHash = Functions.SHA256(Settings.G_Access_Key..game.GameId)
 		Process.Init = nil
 		AddLog("Script", "Processing Module Initialized")
 	end;
@@ -946,7 +947,11 @@ return function(Vargs, GetEnv)
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
 
 			-- // Send server variables to client
-			Remote.Send(p, "SetVariables", { TopBarShift = Settings.TopBarShift, NightlyMode = server.Data.NightlyMode or server.Data.ModuleID == 8612978896 })
+			Remote.Send(p, "SetVariables", {
+				TopBarShift = Settings.TopBarShift,
+				NightlyMode = server.Data.NightlyMode or server.Data.ModuleID == 8612978896,
+				G_Access_Key = Remote._globalAccessHash
+			})
 
 			--// Load some playerdata stuff
 			if type(PlayerData.Client) == "table" then

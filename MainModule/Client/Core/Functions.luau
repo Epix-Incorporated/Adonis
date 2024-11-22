@@ -1911,6 +1911,8 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		SHA256 = require(client.Shared.HashLib).SHA256;
+
 		GetFriendsOnline = function(maxFriends)
 			return service.Players.LocalPlayer:GetFriendsOnline(maxFriends)
 		end;
