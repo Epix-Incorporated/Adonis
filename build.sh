@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Check for lint errors in Loader and MainModule
+printf "Checking for lint errors from ./Loader and ./MainModule"
 selene ./Loader ./MainModule
 
-# Build project file to binary model file
+printf "Running rojo build -o Adonis.rbxm"
 rojo build -o Adonis.rbxm
