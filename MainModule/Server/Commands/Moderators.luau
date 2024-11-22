@@ -5416,7 +5416,15 @@ return function(Vargs, env)
 				local AssetTypeNameDescriptionOverides = {
 					DynamicHead = "Head"
 				}
-				local typeEnum = Enum.AvatarAssetType:FromValue(productInfo.AssetTypeId)
+				--local typeEnum = Enum.AvatarAssetType:FromValue(productInfo.AssetTypeId)
+				local typeId = productInfo.AssetTypeId
+				local typeEnum
+				for _, enum in pairs(Enum.AvatarAssetType:GetEnumItems()) do
+					if enum.Value == typeId then
+						typeEnum = enum
+						break
+					end
+				end
 
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
