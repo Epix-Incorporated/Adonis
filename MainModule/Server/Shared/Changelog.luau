@@ -79,6 +79,7 @@ return {
 	"(Git/ccuser44) Delete Dependencies/Adonis (#1681)";
 	"(Git/ccuser44) Fix vararg packing (#1679)";
 	"(Git/sakari119) Change :resize to use Model :ScaleTo() method (#1633)";
+	"(Git/ccuser44) Allow client side _G API to be accessed (#1687)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
