@@ -1182,7 +1182,7 @@ return function(Vargs, env)
 						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
-					if char:FindFirstChild("ADONIS_UFO") then
+					if char:GetAttribute("ADONIS_Taken") then
 						continue
 					end
 
@@ -1213,8 +1213,9 @@ return function(Vargs, env)
 						local tPos = torso.CFrame
 						local info = TweenInfo.new(5, Enum.EasingStyle.Quart,  Enum.EasingDirection.Out, -1, true, 0)
 
-						humanoid.Name = "NoResetForYou"
 						humanoid.WalkSpeed = 0
+						char:SetAttribute("ADONIS_Taken", true)
+						Remote.Send(p, "Function", "SetCore", "ResetButtonCallback", false)
 
 						ufo.Name = "ADONIS_UFO"
 						ufo.Archivable = false
@@ -1498,7 +1499,7 @@ return function(Vargs, env)
 						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
-					if char:FindFirstChild("ADONIS_VAN") then
+					if char:GetAttribute("ADONIS_Taken") then
 						continue
 					end
 
@@ -1539,10 +1540,10 @@ return function(Vargs, env)
 						van.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
 						van:AddPersistentPlayer(p)
 						van.Parent = workspace
-						humanoid.Name = "NoResetForYou"
 						humanoid.WalkSpeed = 0
+						char:SetAttribute("ADONIS_Taken", true)
 						sound.Pitch = 1.3
-
+						Remote.Send(p, "Function", "SetCore", "ResetButtonCallback", false)
 						Remote.PlayAudio(p, 421358540, 0.2, 1, true)
 
 						for i = 1, 200 do
