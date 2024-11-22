@@ -2,7 +2,7 @@ name: Issue labeling
 
 permissions:
   issues: write
-  contents: read
+  contents: read    
 
 on:
   issues:
@@ -13,7 +13,10 @@ jobs:
   autotriage:
     runs-on: ubuntu-latest
     steps:
-    - uses: github/issue-labeler@v3.4
+    - uses: actions/checkout@v4 # Uploads repository content to the runner
+      with:
+        repository: "Epix-Incorporated/Adonis"
+    - uses: actions/labeler@v5
       with:
         configuration-path: .github/labeler.yml
         enable-versioned-regex: false
