@@ -780,42 +780,13 @@ return function(Vargs, env)
 
 		Material = {
 			Prefix = Settings.Prefix;
-			Commands = {"mat", "material"};
+			Commands = {"material", "mat"};
 			Args = {"player", "material"};
 			Description = "Make the target the material you choose";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local mats = {
-					Plastic = 256;
-					Wood = 512;
-					Slate = 800;
-					Concrete = 816;
-					CorrodedMetal = 1040;
-					DiamondPlate = 1056;
-					Foil = 1072;
-					Grass = 1280;
-					Ice = 1536;
-					Marble = 784;
-					Granite = 832;
-					Brick = 848;
-					Pebble = 864;
-					Sand = 1296;
-					Fabric = 1312;
-					SmoothPlastic = 272;
-					Metal = 1088;
-					WoodPlanks = 528;
-					Neon = 288;
-				}
-				local enumMats = Enum.Material:GetEnumItems()
-
-				local chosenMat = args[2] or "Plastic"
-
-				if not args[2] then
-					Functions.Hint("Material wasn't supplied; Plastic was chosen instead")
-				elseif tonumber(args[2]) then
-					chosenMat = table.find(mats, tonumber(args[2]))
-				end
+				local chosenMat = if tonumber(args[2]) then Enum.Material:FromValue(tonumber(args[2])) elseif not args[2] then "Plastic" else Enum.Material:FromName(args[2])
 
 				if not chosenMat then
 					Remote.MakeGui(plr, "Output", {Title = "Error"; Message = "Invalid material choice";})
@@ -825,7 +796,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
 						for _, p in v.Character:GetChildren() do
-							if p:IsA"BasePart" then
+							if p:IsA("BasePart") then
 								p.Material = chosenMat
 							end
 						end
