@@ -25,7 +25,7 @@ ignoreParams.CollisionGroup = humanoid.RootPart and humanoid.RootPart.CollisionG
 ignoreParams.RespectCanCollide = true
 
 local function isInsideTerrain(position)
-	return (tonumber(workspace.Terrain:ReadVoxelChannels(Region3.new(position, position):ExpandToGrid(4), 4, {"SolidOccupancy"}).SolidOccupancy[1][1][1]) or 0) > 0
+	return workspace.Terrain:ReadVoxelChannels(Region3.new(position, position + Vector3.one):ExpandToGrid(4), 4, {"SolidOccupancy"}).SolidOccupancy[1][1][1] > 0
 end
 
 RunService.PreSimulation:Connect(function()
