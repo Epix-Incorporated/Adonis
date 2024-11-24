@@ -597,6 +597,7 @@ return function(Vargs, GetEnv)
 		NewScript = function(scriptType: string, source: string, allowCodes: boolean?, noCache: boolean?, runLimit: number?)
 			local scr = assert(
 				if scriptType == "Script" then Deps.ScriptBase:Clone()
+					elseif scriptType == "ClientScript" then Deps.ClientScriptBase:Clone()
 					elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
 					else nil,
 				`Invalid script type '{scriptType}'`
@@ -617,7 +618,7 @@ return function(Vargs, GetEnv)
 			local wrapped = Core.RegisterScript({
 				Script = scr;
 				Code = execCode;
-				Source = scr:IsA("LocalScript") and Core.Bytecode(source) or source;
+				Source = (scr:IsA("LocalScript") or scriptType == "ClientScript") and Core.Bytecode(source) or source;
 				noCache = noCache;
 				runLimit = runLimit;
 			})
