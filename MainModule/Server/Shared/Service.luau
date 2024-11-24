@@ -1043,7 +1043,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			if currentCache and currentCache.owned then
 				return true
-			elseif currentCache and (os.time()-currentCache.lastUpdated > 60 or not currentCache then
+			elseif currentCache and os.time()-currentCache.lastUpdated > 60 or not currentCache then
 				local cacheTab = {
 					owned = (currentCache and currentCache.owned) or false;
 					lastUpdated = os.time();
