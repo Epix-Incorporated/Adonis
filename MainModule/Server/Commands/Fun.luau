@@ -683,7 +683,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local scr = Core.NewScript("Script",[[
+				local scr = Core.NewScript("ClientScript", [[
 					local restore = {}
 					local tween = game:GetService("TweenService")
 
