@@ -81,6 +81,7 @@ return {
 	"(Git/sakari119) Change :resize to use Model :ScaleTo() method (#1633)";
 	"(Git/ccuser44) Allow client side _G API to be accessed (#1687)";
 	"(Git/ccuser44) Fix respawn block handling (#1678)";
+	"(Git/ccuser44) Only show command errors during debugmode (#1763)";
 	"";
 	"[Patch v260.2 2024-08-11 21:50 UTC] @Dimenpsyonal";
 	"Fix alias arguments (#1581)";
