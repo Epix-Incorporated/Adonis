@@ -737,7 +737,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			}
 
 			if queue.Functions.__meta == "DLL" then
-				queue.Functions:AddStart(item)
+				queue.Functions:AddEnd(item)
 			else
 				table.insert(queue.Functions, item)
 			end
