@@ -283,11 +283,11 @@ return function(Vargs, GetEnv)
 			end
 
 			if rateExceeded and not ratePass then
-				rateExceeded:fire(rateKey, rateCache.Rate, maxRate)
+				rateExceeded:Fire(rateKey, rateCache.Rate, maxRate)
 			end
 
 			if ratePassed and ratePass then
-				ratePassed:fire(rateKey, rateCache.Rate, maxRate)
+				ratePassed:Fire(rateKey, rateCache.Rate, maxRate)
 			end
 
 			return ratePass, didThrottle, canThrottle, rateCache.Rate, maxRate, throttleResetOs
@@ -592,7 +592,9 @@ return function(Vargs, GetEnv)
 								Remote.MakeGui(p, "Output", {
 									Message = cmdError,
 								})
-								warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+								if Core.DebugMode == true then
+									warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+								end
 							end
 						elseif cmdError ~= nil and cmdError ~= true and not isSystem then
 							Remote.MakeGui(p, "Output", {
