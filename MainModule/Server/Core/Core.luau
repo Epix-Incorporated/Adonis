@@ -517,7 +517,7 @@ return function(Vargs, GetEnv)
 			local fixscr = service.UnWrap(scr)
 
 			for _, val in Core.ExecuteScripts do
-				if not isLocal or (isLocal and val.Type == "LocalScript") then
+				if not isLocal or isLocal and (val.Type == "LocalScript" or val.Type == "ClientScript") then
 					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
 						val.Executions += 1
 
@@ -552,7 +552,7 @@ return function(Vargs, GetEnv)
 		RegisterScript = function(data)
 			data.Executions = 0
 			data.Time = os.time()
-			data.Type = data.Script.ClassName
+			data.Type = data.Type or data.Script.ClassName
 			data.Wrapped = service.Wrap(data.Script)
 			data.Wrapped:SetSpecial("Clone",function()
 				return Core.RegisterScript({
@@ -618,6 +618,7 @@ return function(Vargs, GetEnv)
 			local wrapped = Core.RegisterScript({
 				Script = scr;
 				Code = execCode;
+				Type = scriptType;
 				Source = (scr:IsA("LocalScript") or scriptType == "ClientScript") and Core.Bytecode(source) or source;
 				noCache = noCache;
 				runLimit = runLimit;
