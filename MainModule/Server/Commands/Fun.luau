@@ -707,7 +707,7 @@ return function(Vargs, env)
 						end
 						script:Destroy()
 					end
-				]])
+				]], true)
 				scr.Name = "Rainbowify"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
