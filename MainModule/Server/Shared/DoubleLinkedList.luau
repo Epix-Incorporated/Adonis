@@ -77,7 +77,7 @@ function LinkedList:AddEnd(data)
 	if not old then 
 		self.snode = newNode
 	else 
-		old:setNext(newNode)
+		old:setnext(newNode)
 	end
 
 	newNode:setprev(old)
