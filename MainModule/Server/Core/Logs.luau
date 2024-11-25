@@ -144,29 +144,33 @@ return function(Vargs, GetEnv)
 					end)
 				end
 
-				local temp = {}
+				local temp = table.create(#oldLogs + #logsToSave + (Logs.Commands.__meta == "DLL" and Logs.Commands.count or 0))
+
+				local function insertLog(log)
+					local isTable = type(log) == "table"
+					local newTab = if isTable then table.clone(log) else log
+
+					if (isTable and not log.NoSave) or not isTable then
+						if isTable and log.Player then
+							local p = log.Player
+							log.Player = {
+								Name = p.Name;
+								UserId = p.UserId;
+							}
+						end
+						table.insert(temp, log)
+					end
+				end
 
 				for _, m in logsToSave do
 					if m.__meta == "DLL" then
 						local newTab = m:GetAsTable()
 
-						for i,v in pairs(newTab) do
-							table.insert(temp,v)
+						for _, v in ipairs(newTab) do
+							insertLog(v)
 						end
 					else
-						local isTable = type(m) == "table"
-						local newTab = if isTable then table.clone(m) else m
-
-						if (isTable and not newTab.NoSave) or not isTable then
-							if isTable and newTab.Player then
-								local p = newTab.Player
-								newTab.Player = {
-									Name = p.Name;
-									UserId = p.UserId;
-								}
-							end
-							table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
-						end
+						insertLog(m)
 					end
 				end
 
