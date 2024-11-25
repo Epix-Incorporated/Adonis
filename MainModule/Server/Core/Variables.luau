@@ -189,7 +189,7 @@ return function(Vargs, GetEnv)
 			{Name = "still", 					ID = 7023771708},
 			{Name = "sleep", 					ID = 7023407320},
 			{Name = "whatareyouwaitingfor", 	ID = 7028977687},
-			{Name = "balace", 					ID = 7024183256},
+			{Name = "balance", 					ID = 7024183256},
 			{Name = "brokenglass", 				ID = 7028799370},
 			{Name = "thelanguageofangels", 		ID = 7029031068},
 			{Name = "imprints", 				ID = 7023704173},
