@@ -3717,7 +3717,7 @@ return function(Vargs, env)
 
 		Seizure = {
 			Prefix = Settings.Prefix;
-			Commands = {"seizure"};
+			Commands = {"seizure", "seize"};
 			Args = {"player"};
 			Description = "Make the target player(s)'s character spazz out on the floor";
 			Fun = true;
