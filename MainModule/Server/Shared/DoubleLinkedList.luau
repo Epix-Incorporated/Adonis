@@ -1,3 +1,4 @@
+--!native
 --// File: LinkedList.lua
 --// Desc: Provides a more performance-friendly alternative to large tables that get shifted in indexes constantly
 --// Author: Coasterteam
