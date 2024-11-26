@@ -683,7 +683,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local scr = Core.NewScript("Script",[[
+				local scr = Core.NewScript("ClientScript", [[
 					local restore = {}
 					local tween = game:GetService("TweenService")
 
@@ -707,7 +707,7 @@ return function(Vargs, env)
 						end
 						script:Destroy()
 					end
-				]])
+				]], true)
 				scr.Name = "Rainbowify"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
@@ -780,12 +780,13 @@ return function(Vargs, env)
 
 		Material = {
 			Prefix = Settings.Prefix;
-			Commands = {"mat", "material"};
+			Commands = {"material", "mat"};
 			Args = {"player", "material"};
 			Description = "Make the target the material you choose";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				--local chosenMat = if tonumber(args[2]) then Enum.Material:FromValue(tonumber(args[2])) elseif not args[2] then "Plastic" else Enum.Material:FromName(args[2])
 				local mats = {
 					Plastic = 256;
 					Wood = 512;
@@ -825,7 +826,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
 						for _, p in v.Character:GetChildren() do
-							if p:IsA"BasePart" then
+							if p:IsA("BasePart") then
 								p.Material = chosenMat
 							end
 						end
@@ -3746,7 +3747,7 @@ return function(Vargs, env)
 
 		Seizure = {
 			Prefix = Settings.Prefix;
-			Commands = {"seizure"};
+			Commands = {"seizure", "seize"};
 			Args = {"player"};
 			Description = "Make the target player(s)'s character spazz out on the floor";
 			Fun = true;

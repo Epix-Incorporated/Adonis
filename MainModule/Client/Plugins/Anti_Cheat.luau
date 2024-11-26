@@ -293,29 +293,10 @@ return function(Vargs)
 				xpcall(function()
 					local function getCoreUrls()
 						local coreUrls = {"rbxassetid://0", "rbxassetid://10066921516", "rbxassetid://13262267483", "rbxassetid://13253401424"}	-- Whitelist for Roblox Camera SFX and Quest Controls Scheme
-						local backpack = Player:FindFirstChildOfClass("Backpack")
-						local character = Player.Character
-						local starterPack = service.StarterPack
 						local screenshotHud = service.GuiService:FindFirstChildOfClass("ScreenshotHud")
 
-						if character then
-							for _, v in ipairs(character:GetChildren()) do
-								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
-									table.insert(coreUrls, service.Trim(v.TextureId))
-								end
-							end
-						end
-
-						if backpack then
-							for _, v in ipairs(backpack:GetChildren()) do
-								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
-									table.insert(coreUrls, service.Trim(v.TextureId))
-								end
-							end
-						end
-
-						if starterPack then
-							for _, v in ipairs(starterPack:GetChildren()) do
+						for _, container in {Player.Character, service.StarterPack, Player:FindFirstChildOfClass("Backpack")} do
+							for _, v in ipairs(container:GetChildren()) do
 								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
 									table.insert(coreUrls, service.Trim(v.TextureId))
 								end

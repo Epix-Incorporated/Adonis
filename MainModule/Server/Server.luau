@@ -460,7 +460,7 @@ return service.NewProxy({
 			script:Destroy()
 			return "FAILED"
 		else
-			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Archivable = false, Value = "Running"})
+			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
 			local mutexBackup = mutex:Clone()
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
@@ -469,9 +469,10 @@ return service.NewProxy({
 						connection1:Disconnect()
 						connection2:Disconnect()
 						warn("Adonis module mutex removed; Regenerating...")
-						makePersistent(mutexBackup)
-						mutexBackup.Parent = service.RunService
-						mutexBackup = mutexBackup:Clone()
+						mutex = mutexBackup:Clone()
+						mutex.Archivable = false
+						mutex.Parent = service.RunService
+						makePersistent(mutex)
 					end
 				end)
 				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
@@ -482,6 +483,7 @@ return service.NewProxy({
 				end)
 			end
 			makePersistent(mutex)
+			mutex.Archivable = false
 			mutex.Parent = service.RunService
 		end
 

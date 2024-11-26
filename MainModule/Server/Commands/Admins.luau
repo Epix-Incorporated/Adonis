@@ -799,6 +799,8 @@ return function(Vargs, env)
 
 				if string.lower(class) == "script" or string.lower(class) == "s" then
 					class = "Script"
+				elseif string.lower(class) == "clientscript" or string.lower(class) == "cs" then
+					class = "ClientScript"
 					--elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
 					--	class = "LocalScript"
 				else
@@ -1098,7 +1100,7 @@ return function(Vargs, env)
 
 		DeleteNote = {
 			Prefix = Settings.Prefix;
-			Commands = {"removenote", "remnote", "deletenote"};
+			Commands = {"removenote", "remnote", "deletenote", "clearnote"};
 			Args = {"player", "note (specify 'all' to delete all notes)"};
 			Description = "Removes a note on the target player(s)";
 			AdminLevel = "Admins";
