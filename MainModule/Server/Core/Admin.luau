@@ -74,8 +74,8 @@ return function(Vargs, GetEnv)
 									return false
 								end
 
-								if Variables.DisguiseBindings[textSource.UserId] then -- // Disguise command handler
-									chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
+								if Variables.DisguiseBindings[SenderId] then -- // Disguise command handler
+									chatMessage.PrefixText = Variables.DisguiseBindings[SenderId].TargetUsername..":"
 								end
 
 								if Admin.SlowMode and IsOriginalSender then
