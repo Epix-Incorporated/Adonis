@@ -143,18 +143,6 @@ return function(Vargs, GetEnv)
 				end)
 			end
 
-			local animator = humanoid:WaitForChild("Animator")
-
-			animator.AnimationPlayed:Connect(function(animationTrack)
-				local animationId = animationTrack.Animation.AnimationId
-				if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
-					task.defer(function()
-						animationTrack:Stop(1/60)
-					end)
-					Detected(player, "log", "Player played an inappropriate character animation")
-				end
-			end)
-
 			local connections = {}
 			local function makeConnection(Conn)
 				local connection
