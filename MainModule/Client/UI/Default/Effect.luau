@@ -83,22 +83,18 @@ return function(data, env)
 			pcall(function() if v ~= gui then v:Destroy() end end)
 		end
 
-		local blur = service.New("BlurEffect", {
-			Name = "Adonis_FadeOut_Blur";
-			Parent = service.Lighting;
-			Size = 0;
-		})
-
-		local bg = service.New("Frame", {
+		service.TweenService:Create(service.New("Frame", {
 			Parent = gui;
 			BackgroundTransparency = 1;
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			Size = UDim2.new(2, 0, 2, 0);
 			Position = UDim2.new(-1, 0, -1, 0);
-		})
-
-		service.TweenService:Create(bg, TweenInfo.new((1 / 0.01) * 0.1), { BackgroundTransparency = 0 }):Play()
-		service.TweenService:Create(blur, TweenInfo.new((1 / 0.01) * 0.1), { Size = (1 / 0.01) * 5.6 }):Play()
+		}), TweenInfo.new((1 / 0.01) * 0.1), { BackgroundTransparency = 0 }):Play()
+		service.TweenService:Create(service.New("BlurEffect", {
+			Name = "Adonis_FadeOut_Blur";
+			Parent = service.Lighting;
+			Size = 0;
+		}), TweenInfo.new((1 / 0.01) * 0.1), { Size = (1 / 0.01) * 5.6 }):Play()
 	elseif mode == "Trippy" then
 		local v = service.Player
 		local bg = Instance.new("Frame")
