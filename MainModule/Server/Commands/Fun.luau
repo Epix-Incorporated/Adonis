@@ -4733,7 +4733,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-51310503")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "id-51310503")
 				end
 			end
 		};
