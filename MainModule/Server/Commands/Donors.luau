@@ -390,7 +390,7 @@ return function(Vargs, env)
 			end
 		};
 
-		Sit = {
+		DonorSit = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"sit"};
 			Args = {};
