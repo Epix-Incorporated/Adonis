@@ -1224,18 +1224,5 @@ return function(Vargs, env)
 				return args
 			end
 		};
-
-		Sit = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"sit"};
-			Args = {};
-			Description = "Makes your character sit";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				if plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") then
-					plr.Character.Humanoid.Sit = true
-				end
-			end
-		};
 	};
 end
