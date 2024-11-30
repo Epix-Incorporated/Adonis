@@ -1231,10 +1231,9 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Makes your character sit";
 			AdminLevel = "Players";
-			Function = function(plr, args: {string})
-				local character = plr.Character
-				if character and character:FindFirstChildOfClass("Humanoid") then
-					character.Humanoid.Sit = true
+			Function = function(plr: Player, args: {string})
+				if plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") then
+					plr.Character.Humanoid.Sit = true
 				end
 			end
 		};
