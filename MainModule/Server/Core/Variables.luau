@@ -32,6 +32,21 @@ return function(Vargs, GetEnv)
 		Variables.ChatCreateRobloxCommands = Settings.ChatCreateRobloxCommands == nil and Variables.ChatCreateRobloxCommands or Settings.ChatCreateRobloxCommands
 		Variables.DisableRejoinAtMaxPlayers = Settings.DisableRejoinAtMaxPlayers or Variables.DisableRejoinAtMaxPlayers
 
+		for _, v in Settings.Cameras or {} do
+			local cam = service.New("Part", {
+				Parent = workspace;
+				Name = `Camera: {v.Name}`;
+				Position = v.Position;
+				Anchored = true;
+				CanCollide = false;
+				Locked = true;
+				Size = Vector3.new(1, 1, 1);
+				Transparency = 1;
+			})
+
+			table.insert(Variables.Cameras, {Brick = cam, Name = v.Name})
+		end
+
 		for _, v in Settings.MusicList or {} do table.insert(Variables.MusicList, v) end
 		for _, v in Settings.InsertList or {} do table.insert(Variables.InsertList, v) end
 		for _, v in Settings.CapeList or {} do table.insert(Variables.Capes, v) end
