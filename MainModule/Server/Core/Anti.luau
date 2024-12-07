@@ -193,7 +193,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if not antiNotificationDebounce[debounceIndex] then
-					antiNotificationDebounce[debounceIndex] = 0
+					antiNotificationDebounce[debounceIndex] = 1
 				elseif
 					(string.lower(action) == "log" or string.lower(action) == "kill") and
 					antiNotificationDebounce[debounceIndex] > 3
