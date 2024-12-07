@@ -193,13 +193,15 @@ return function(Vargs, GetEnv)
 				end
 
 				if not antiNotificationDebounce[debounceIndex] then
-					antiNotificationDebounce[debounceIndex] = 1
+					antiNotificationDebounce[debounceIndex] = 0
 				elseif
 					(string.lower(action) == "log" or string.lower(action) == "kill") and
 					antiNotificationDebounce[debounceIndex] > 3
 				then
 					return
 				end
+
+				antiNotificationDebounce[debounceIndex] += 1
 
 				for _, plr in service.Players:GetPlayers() do
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
