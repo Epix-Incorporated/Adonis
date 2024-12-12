@@ -235,7 +235,7 @@ return function(Vargs, GetEnv)
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
 			if not Core.CrossServer("GlobalRestartRequest",
-				"[CRS_SRV]:abort",
+				"CRS_SRV:abort",
 				0,
 				false
 				)

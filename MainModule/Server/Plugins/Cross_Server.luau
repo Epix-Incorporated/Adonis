@@ -1,6 +1,7 @@
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
 return function(Vargs, GetEnv)
+	print(debug.traceback())
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -15,14 +16,24 @@ return function(Vargs, GetEnv)
 	local lastTick;
 
 	local oldCommands = Core.CrossServerCommands;
+	local secToCount = {
+		[1800] = "30 minutes",
+		[1200] = "20 minutes",
+		[600] = "10 minutes",
+		[300] = "5 minutes",
+		[120] = "2 minutes",
+		[60] = "1 minute",
+		[30] = "30 seconds",
+		[10] = "10 seconds"
+	}
 
 	--// Cross Server Commands
 	Core.CrossServerCommands = {
-		ServerChat = function(jobId, data)
+		ServerChat = function(jobId, data) -- Is this even used, why do we have it?
 			if data then
-				for _, v in service.GetPlayers() do
-					if Admin.GetLevel(v) > 0 then
-						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
+				for index, player in service.GetPlayers() do
+					if Admin.GetLevel(player) > 0 then
+						Remote.Send(player, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
 				end
 			end
@@ -39,7 +50,7 @@ return function(Vargs, GetEnv)
 			service.Events.ServerPingReplyReceived:Fire(jobId, data)
 		end;
 
-		NewRunCommand = function(jobId, plrData, comString)
+		NewRunCommand = function(jobId, plrData, comString) -- This is very broken with some commands, I'm not sure why. Should be redone.
 			Process.Command(Functions.GetFakePlayer(plrData), comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
@@ -59,11 +70,10 @@ return function(Vargs, GetEnv)
 			)
 		end;
 
-		RemovePlayer = function(jobId, name, BanMessage, reason)
-			--// probably should move this to userid
-			local player =	service.Players:FindFirstChild(name)
+		RemovePlayer = function(jobId, userId, banMessage, reason)
+			local player = service.Players:GetPlayerByUserId(userId)
 			if player then
-				player:Kick(string.format("%s | Reason: %s", BanMessage, reason))
+				player:Kick(string.format("%s | Reason: %s", banMessage, reason))
 			end
 		end;
 
@@ -88,93 +98,47 @@ return function(Vargs, GetEnv)
 		end;
 
 		GlobalRestartRequest = function(jobId, reason, countdown, abortable)
-			local taskobj
-			if reason == "[CRS_SRV]:abort" then
-				for i,t in service.Threads.Tasks do
-					if t.Name == "GLOBALRESTART_COUNTDOWN" then
-						pcall(task.cancel,t.Thread) -- forcefully close not caring about adonis's task system
-						coroutine.close(t.Thread)
-						t.Kill() -- mark it as killed so adonis sees it
-						Functions.Hint(`Server restart aborted. Server will no longer restart.`, service.GetPlayers())
-						return
-					end
-				end
+			local abortResult = Core.CrossServerCommands.GlobalRestartAbort()
+			if abortResult == "Global restart is not abortable." then
+				Logs.AddLog("Script", {"Global restart requested but a non abortable one is already underway."})
 				return
+			elseif abortResult == "Restart aborted." then
+				Logs.AddLog("Script", {"Already running global restart aborted to start a new one."})
 			end
-			if countdown then
-				Logs.AddLog("Script", {
-					`Global restart issued {countdown} seconds for "{reason}"`
-				});
-			else
-				Logs.AddLog("Script", {
-					`Global restart issued for "{reason}"`
-				});
-			end
-			if countdown then
-				do
-					local time
-					if countdown < 60 then time = `{countdown} seconds`
-					else time = `{math.floor(countdown/60)} minutes`
-					end
-					Functions.Hint(`Server restart in {time}.`, service:GetPlayers())
-				end
-				local forceful_exit = false
-				for i,t in service.Threads.Tasks do
-					if t.Name == "GLOBALRESTART_COUNTDOWN" then
-						pcall(task.cancel,t.Thread) -- forcefully close not caring about adonis's task system
-						coroutine.close(t.Thread)
-						t.Kill() -- mark it as killed so adonis sees it
-					end
-				end
-				taskobj = service.Threads.NewTask("THREAD: GLOBALRESTART_COUNTDOWN", function()
-					local brackets = {
-						[1800]="30 minutes",
-						[1200]="20 minutes",
-						[600]="10 minutes",
-						[300]="5 minutes",
-						[120]="2 minutes",
-						[60]="1 minute",
-						[30]="30 seconds",
-						[10]="10 seconds"
-					}
-					local currentbracket,lastbracket
-					local function updatebracket()
-						local i = 1
-						local lastt
-						for time,bracket in pairs(brackets) do
-							if time <= countdown then
-								currentbracket = brackets[lastt]
-							end
-							i+=1
-						end
-					end
-					updatebracket()
-					lastbracket = currentbracket
+			Logs.AddLog("Script", {`Global restart {typeof(countdown) == "number" and `in {countdown} seconds` or ``} requested for "{reason}"`})
+			if typeof(countdown) == "number" then
+				Functions.Hint(`Global restart happening in {countdown < 60 and countdown..` seconds` or math.floor(countdown / 60)..` minute{countdown > 119 and "s" or ""}`}`, service.GetPlayers())
+				local resumeTask, adonisTask
+				resumeTask, adonisTask= service.Threads.NewTask("Global Restart Countdown", function()
 					while countdown > 0 do
 						countdown -= task.wait(1)
-						if taskobj.R_Status == "Stopping" and abortable then
-							Functions.Hint(`Server restart aborted. Server will no longer restart.`, service.GetPlayers())
-							return
+						if adonisTask.R_Status ~= "Running" then return end
+						if secToCount[math.floor(countdown)] then
+							Functions.Hint(`Server restart in {secToCount[math.floor(countdown)]}`, service.GetPlayers())
 						end
-						updatebracket()
-						if lastbracket ~= currentbracket then
-							Functions.Hint(`Server restart in {currentbracket}.`, service.GetPlayers())
-						end
-						lastbracket = currentbracket
 					end
-					Logs.AddLog("Script", {
-						`Server is restarting NOW. (issued global restart)`
-					});
+					Logs.AddLog("Script", {`This server is now restarting due to the global restart. Reason: "{reason}"`})
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 				end)
-				taskobj.abortable = abortable
-				taskobj.Start()
-				return
+				adonisTask.abortable = abortable
+				resumeTask()
+			else
+				Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 			end
-			Logs.AddLog("Script", {
-				`Server is restarting NOW. (issued global restart)`
-			});
-			Admin.RunCommand(`{Settings.Prefix}restart`, reason)
+		end;
+		
+		GlobalRestartAbort = function()
+			for index, adonisTask in service.Threads.Tasks do
+				if adonisTask.Name == "Global Restart Countdown" then
+					if not adonisTask.abortable then return "Global restart is not abortable." end
+					-- Both task.Kill() & task.Stop() for some reason call coroutine.yield
+					coroutine.close(adonisTask.Thread)
+					adonisTask.Remove()
+					Functions.Hint("Global restart aborted. Servers will no longer restart.", service.GetPlayers())
+					return "Restart aborted."
+				end
+			end
+			return "There is no global restart at the moment."
 		end;
 
 		CrossServerVote = function(jobId, data)
@@ -447,7 +411,7 @@ return function(Vargs, GetEnv)
 			return Process.CrossServerMessage(...)
 		end)
 	end)
-
+	
 	--// Check for additions added by other modules in core before this one loaded
 	for i, v in oldCommands do
 		Core.CrossServerCommands[i] = v
