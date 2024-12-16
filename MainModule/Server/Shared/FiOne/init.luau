@@ -1,5 +1,7 @@
 --!native
---# selene: allow(divide_by_zero, multiple_statements, mixed_table)
+--!optimize 2
+--!nolint TableOperations
+--# selene: allow(multiple_statements, mixed_table)
 --[[
 FiOne
 Copyright (C) 2021  Rerumu
@@ -460,6 +462,59 @@ local function on_lua_error(failed, err)
 	error(string.format("%s:%i: %s", src, line, err), 0)
 end
 
+-- ccuser44 added multithreading support
+-- TODO: Create multiple threads for closure and use a module and/or round robin load balancer to distribute usage
+local isClient, actorContainer
+local function new_threaded_closure(proto, env, upval)
+	isClient = isClient or game:GetService("RunService"):IsClient()
+	actorContainer = actorContainer or script
+	local actor = Instance.new("Actor")
+	local clone = script:Clone()
+	local runner = script[isClient and "LocalRunner" or "Runner"]:Clone()
+	local event = Instance.new("BindableEvent")
+	local tag = 0
+
+	for _, v in clone:GetChildren() do
+		if v:IsA("Actor") then
+			v:Destroy()
+		end
+	end
+
+	event.Name = "ReturnPass"
+	event.Parent = runner
+	clone.Parent = runner
+	runner.Disabled = false
+	runner.Parent = actor
+	actor.Name = "MultithreadRunner_"..tostring(math.random())
+	actor.Parent = actorContainer
+
+	task.defer(actor.SendMessage, actor, "wrap_state", proto, env, upval)
+
+	task.wait()
+
+	return function(...)
+		tag = tag + 1
+		local currentTag = tag
+		local routine = coroutine.running()
+		local connection = event.Event:Connect(function(eventTag, ...)
+			if eventTag == currentTag then
+				coroutine.resume(routine, ...)
+			end
+		end)
+
+		task.defer(actor.SendMessage, actor, "run_callback", currentTag, ...)
+
+		local args = table.pack(coroutine.yield())
+		connection:Disconnect()
+
+		if not args[1] then
+			error(args[2], 2)
+		end
+
+		return table.unpack(args, 2, args.n)
+	end
+end
+
 local function run_lua_func(state, env, upvals)
 	local code = state.code
 	local subs = state.subs
@@ -677,7 +732,7 @@ local function run_lua_func(state, env, upvals)
 				local limit = memory[A + 1]
 				local loops
 
-				if step == math.abs(step) then
+				if step >= 0 then
 					loops = index <= limit
 				else
 					loops = index >= limit
@@ -854,7 +909,7 @@ local function run_lua_func(state, env, upvals)
 								pc = pc + nups
 							end
 
-							memory[inst.A] = lua_wrap_state(sub, env, uvlist)
+							memory[inst.A] = (sub.source and string.sub(sub.source, 1, 39) == "SUPER_SECRET_ADONIS_MULTITHREAD_PREFIX_") and new_threaded_closure(sub, env, uvlist) or lua_wrap_state(sub, env, uvlist)
 						else
 							--[[TESTSET]]
 							local A = inst.A
@@ -938,14 +993,7 @@ local function run_lua_func(state, env, upvals)
 				-- // ccuser44 added support for generic iteration
 				-- (Please don't use general iteration in vanilla Lua code)
 				if not index and not state and type(func) == "table" then
-					-- Hacky check to see if __metatable is locked
-					local canGetMt = pcall(getmetatable, func)
-					local isMtLocked = canGetMt and not pcall(setmetatable, func, getmetatable(func)) or not canGetMt
-					local metatable = canGetMt and getmetatable(func)
-
-					if not (table.isfrozen and table.isfrozen(func)) and isMtLocked and not metatable then
-						warn("[FiOne]: The table has a metatable buts it's hidden, __iter and __call won't work in forloop.")
-					end
+					local metatable = pcall(getmetatable, func) and getmetatable(func)
 
 					if not (type(metatable) == "table" and rawget(metatable, "__call")) then
 						func, state, index = (type(metatable) == "table" and rawget(metatable, "__iter") or next), func, nil

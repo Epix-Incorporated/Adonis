@@ -21,6 +21,9 @@ Hint.validateProps = t.strictInterface({
 	BodyText = t.optional(t.string),
 })
 
+local FONT_FACE = Font.fromId(12187364147)
+local FONT_SIZE = 18
+
 function Hint:render()
 	local props = self.props
 
@@ -71,11 +74,11 @@ function Hint:render()
 				AutomaticSize = Enum.AutomaticSize.XY,
 				BackgroundTransparency = 1,
 				LayoutOrder = 1,
-				FontFace = Font.fromEnum(Enum.Font.SourceSans),
+				FontFace = FONT_FACE,
 				RichText = true,
 				Text = props.BodyText,
 				TextColor3 = Color3.fromRGB(255, 255, 255),
-				TextSize = 18,
+				TextSize = FONT_SIZE,
 				TextWrapped = true,
 				TextXAlignment = Enum.TextXAlignment.Left,
 				TextYAlignment = Enum.TextYAlignment.Top,
@@ -85,11 +88,11 @@ function Hint:render()
 				AutomaticSize = Enum.AutomaticSize.XY,
 				BackgroundTransparency = 1,
 				LayoutOrder = 0,
-				FontFace = Font.fromEnum(Enum.Font.SourceSansBold),
+				FontFace = FONT_FACE,
 				RichText = true,
 				Text = props.TitleText,
 				TextColor3 = Color3.fromRGB(255, 255, 255),
-				TextSize = 18,
+				TextSize = FONT_SIZE,
 				TextXAlignment = Enum.TextXAlignment.Left,
 				TextYAlignment = Enum.TextYAlignment.Top,
 			}),

@@ -100,14 +100,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local EventService = Instance.new("Folder")
 
 	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
-	local Events, Threads, Wrapper, Helpers = {
+	local Events = {
 		TrackTask = function(name, func, errHandler, ...)
 			if type(errHandler) ~= "function" or select("#", ...) == 0 and errHandler == nil then
 				errHandler = function(err)
 					logError(err.."\n"..debug.traceback())
 				end
 			end
-			local index = (main and main.Functions and game:GetService("HttpService"):GenerateGUID(false)) or math.random();
+			local index = game:GetService("HttpService"):GenerateGUID(false);
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
 			local data = {
@@ -122,7 +122,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local function taskFunc(...)
 				TrackedTasks[index] = data
 				data.Status = "Running"
-				data.Returns = {xpcall(func, errHandler, ...)}
+				data.Returns = table.pack(xpcall(func, errHandler, ...))
 
 				if not data.Returns[1] then
 					data.Status = "Errored"
@@ -131,7 +131,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 
 				TrackedTasks[index] = nil
-				return unpack(data.Returns)
+				return table.unpack(data.Returns)
 			end
 
 			if isThread then
@@ -257,7 +257,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		GetEvent = function(name)
 			if not HookedEvents[name] then
 				--// GoodSignal has been setup to be fully backwards-compatible with the existing Events system
-				local event = service.GoodSignal.new()
+				local event = service.Signal.new()
 
 				HookedEvents[name] = event
 				return event
@@ -286,7 +286,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				event:Destroy()
 			end
 		end;
-	},{
+	}
+
+	local Threads = {
 		Tasks = {};
 		Threads = {};
 		CheckTasks = function()
@@ -395,7 +397,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Resume = function(thread,...) if thread and coroutine.status(thread) == "suspended" then return coroutine.resume(thread,...) end end;
 		Remove = function(thread) service.Threads.Stop(thread) for ind,th in service.Threads.Threads do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
 		StopAll = function() for ind,th in service.Threads.Threads do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in service.Threads.Threads do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
-	},{
+	}
+
+	local Wrapper = {
 		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = if main.Core and main.Core.DebugMode then "Ignore" else nil}) end; -- Unused
 		CheckWrappers = function()
 			for obj,wrap in Wrappers do
@@ -549,68 +553,37 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return object
 			end
 		end;
-	},{
-		CloneTable = function(tab)
-			local new = (getmetatable(tab) ~= nil and setmetatable({},{
-				__index = function(t, ind)
-					return tab[ind]
-				end
-			})) or {}
-			for i,v in tab do
-				new[i] = v
-			end
-			return new
-		end;
-				
+	}
+
+	local Helpers = {
 		DeepCopy = function(tab)
-			local new = (getmetatable(tab) ~= nil and setmetatable({},{
+			local new = (getmetatable(tab) ~= nil and setmetatable({}, {
 				__index = function(t, ind)
 					return tab[ind]
 				end
 			})) or {}
-			for i,v in tab do
-				if typeof(v) == 'table' then 
-					new[i] = service.DeepCopy(v)
+			for k, v in tab do
+				if type(v) == "table" then 
+					new[k] = service.DeepCopy(v)
 				else
-					new[i] = v
+					new[k] = v
 				end
 			end
 			return new
 		end,
 
-		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
-
 		Timer = function(t,func,check)
 			local start = time()
 			local event; event = service.RunService.RenderStepped:Connect(function()
-				if time()-start>t or (check and check()) then
+				if time() - start > t or check and check() then
 					func()
 					event:Disconnect()
 				end
 			end)
 		end;
 
-		AltUnpack = function(args,shift)
-			if shift then shift = shift-1 end
-			return args[1+(shift or 0)],args[2+(shift or 0)],args[3+(shift or 0)],args[4+(shift or 0)],args[5+(shift or 0)],args[6+(shift or 0)],args[7+(shift or 0)],args[8+(shift or 0)],args[9+(shift or 0)],args[10+(shift or 0)]
-		end;
-
 		ExtractLines = function(str)
-			local strs = table.create(#str+1)
-			local new = ""
-			for i=1,#str+1 do
-				if string.byte(string.sub(str, i,i)) == 10 or i == #str+1 then
-					table.insert(strs,new)
-					new = ""
-				else
-					local char = string.sub(str,i,i)
-					if string.byte(char) < 32 then
-						char = ""
-					end
-					new = new..char
-				end
-			end
-			return strs
+			return string.split(string.gsub(str, "[%z\1-\9\11-\31]", ""), "\n")
 		end;
 
 		Filter = function(str, from, to)
@@ -618,23 +591,18 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return "Filter Error"
 			end
 
-			local new = ""
 			local lines = service.ExtractLines(str)
-			for i = 1,#lines do
-				local ran,newl = pcall(function()
-					return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId)
+			local new = table.create(#lines)
+			for i = 1, #lines do
+				local ran, newl = pcall(function()
+					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetChatForUserAsync(to.UserId)
 				end)
-				newl = (ran and newl) or lines[i] or ""
-				if i > 1 then
-					new = `{new}\n{newl}`
-				else
-					new = newl
-				end
+				new[i] = ran and newl or lines[i] or ""
 			end
-			return new or "Filter Error"
+			return new and table.concat(new, "\n") or "Filter Error"
 		end;
 
-		LaxFilter = function(str,from,cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
+		LaxFilter = function(str, from, cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
 			if tonumber(str) then				-- to avoid major filter related problems (like commands becoming unusable due to numbers or names being filtered)
 				return str						-- Please consider dropping the filter rules down a notch or improving on the existing filtering methods
 			elseif type(str) == "string" then	-- Also always feel free to message me with any concerns you have :)!
@@ -644,7 +612,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 				if cmd and #service.GetPlayers(from, str, {
 					DontError = true;
-					}) > 0 then
+				}) > 0 then
 					return str
 				else
 					return service.Filter(str, from, from)
@@ -659,23 +627,18 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return "Filter Error"
 			end
 
-			local new = ""
 			local lines = service.ExtractLines(str)
-			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetNonChatStringForBroadcastAsync() end)
-				newl = (ran and newl) or lines[i] or ""
-				if i > 1 then
-					new = `{new}\n{newl}`
-				else
-					new = newl
-				end
+			local new = table.create(#lines)
+			for i = 1, #lines do
+				local ran, newl = pcall(function() return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForBroadcastAsync() end)
+				new[i] = ran and newl or lines[i] or ""
 			end
-			return new or "Filter Error"
+			return new and table.concat(new, "\n") or "Filter Error"
 		end;
 
 		RecursiveMtSearch = function(tab)
 			for index, val in tab do 
-				if typeof(val) == "table" or typeof(val) == "userdata" then
+				if type(val) == "table" or typeof(val) == "userdata" then
 					if getmetatable(val) ~= nil or service.RecursiveMtSearch(val) then
 						return true
 					end
@@ -707,12 +670,12 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 					end
 
-					local args = {pcall(func, ...)}
+					local args = table.pack(pcall(func, ...))
 					local success = args[1]
 					if not success then
 						warn(args[2])
 					else
-						return unpack(args, 2)
+						return table.unpack(args, 2)
 					end
 				end
 			})
@@ -723,17 +686,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local metatable = getmetatable(newProxy)
 			metatable.__metatable = if main.Core and main.Core.DebugMode then nil else "Adonis_Proxy"
 			metatable.__ADONIS_WRAPPED = true
-			for i,v in meta do metatable[i] = v end
+			for k, v in meta do metatable[k] = v end
 			return newProxy
-		end;
-
-		GetUserType = function(obj)
-			local ran,err = pcall(function() local temp = obj[math.random()] end)
-			if ran then
-				return "Unknown"
-			else
-				return string.match(err, "%S+$")
-			end
 		end;
 
 		CountTable = function(tab)
@@ -744,10 +698,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		Debounce = function(key,func)
 			local env = getfenv(2)
-			local Debounces = (env and env._ADONIS_DEBOUNCES) or Debounces or {}
+			local Debounces = env and env._ADONIS_DEBOUNCES or Debounces or {}
 
 			if env then
-				env._ADONIS_DEBOUNCES = (env and env._ADONIS_DEBOUNCES) or {}
+				env._ADONIS_DEBOUNCES = env and env._ADONIS_DEBOUNCES or {}
 			end
 
 			if Debounces[key] then
@@ -778,17 +732,17 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				Timeout = timeout;
 
 				Finished = false;
-				Yield = doYield and service.Yield();
+				Yield = doYield and service.Signal.new();
 			}
 
-			table.insert(queue.Functions, tab);
+			table.insert(queue.Functions, tab)
 
 			if not queue.Processing then
-				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, false, queue, key);
+				service.TrackTask(`Thread: QueueProcessor_{key}`, service.ProcessQueue, false, queue, key)
 			end
 
 			if doYield and not tab.Finished then
-				return select(2, tab.Yield:Wait());
+				return tab.Yield:Wait()
 			end
 		end;
 
@@ -797,47 +751,47 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				if queue.Processing then
 					return "Processing"
 				else
-					local funcs = queue.Functions;
-					local Yield = service.Yield();
+					local funcs = queue.Functions
+					local Yield = service.Signal.new()
 					local function pop()
 						local n = funcs[1]
 						table.remove(funcs, 1)
 						return n
-					end;
+					end
 
 					queue.Processing = true
 
 					while funcs[1] ~= nil do
-						local func = pop();
-						func.Running = true;
+						local func = pop()
+						func.Running = true
 
 						if func.Timeout then
 							delay(func.Timeout, function()
 								if not func.Finished then
-									Yield:Release();
+									Yield:Fire()
 									warn(`Queue Timeout Reached for {key or "Unknown"}`)
 
 									if func.Yield then
-										func.Yield:Release(false, "Timeout Reached");
+										func.Yield:Fire(false, "Timeout Reached");
 									end
 								end
 							end)
 						end
 
 						service.TrackTask(`Thread: {key or "Unknown"}_QueuedFunction`, function()
-							local r,e = xpcall(func.Function,function(e)
+							local r, e = xpcall(func.Function, function(e)
 								func.Error = e;
 								warn(`Queue Error: {key}: {e} \n {debug.traceback()}`)
-							end);
+							end)
 
 							func.Running = false;
 							func.Finished = true
 
 							if func.Yield then
-								func.Yield:Release(r, e)
+								func.Yield:Fire(r, e)
 							end
 
-							Yield:Release();
+							Yield:Fire();
 						end,false)
 
 						if func.Running then
@@ -845,11 +799,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						end
 					end
 
-					Yield:Destroy();
-					queue.Processing = false;
+					Yield:Destroy()
+					queue.Processing = false
 
 					if key then
-						Queues[key] = nil;
+						Queues[key] = nil
 					end
 				end
 			end
@@ -985,7 +939,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			local formatString = options.FormatString
 			if not formatString then
-				formatString = options.WithWrittenDate and "LL HH:mm:ss" or (options.WithDate and "L HH:mm:ss" or "HH:mm:ss")
+				formatString = options.WithWrittenDate and "LL HH:mm:ss" or options.WithDate and "L HH:mm:ss" or "HH:mm:ss"
 			end
 
 			local timeObj = DateTime.fromUnixTimestamp(optTime or service.GetTime())
@@ -1000,7 +954,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 			local str = if plr.DisplayName == plr.Name then `@{plr.Name}` else string.format("%s (@%s)", plr.DisplayName or "???", plr.Name or "???")
 			if withUserId then
-				str ..= string.format(" [%s]", if plr.UserId and plr.UserId ~= -1 then plr.UserId else "?")
+				str ..= `[{if plr.UserId and plr.UserId ~= -1 then plr.UserId else "?"}]`
 			end
 			return str
 		end;
@@ -1027,22 +981,15 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 
 			int = int:reverse()
-			local newInt = ""
-			local counter = 1
+			local newInt = table.create(#int + math.floor((#int - 1) / 3))
 			for i = 1, #int do
-				if counter > 3 then
-					newInt ..= separator
-					counter = 1
+				if i % 3 == 1 and i ~= 1 then
+					table.insert(newInt, separator)
 				end
-				newInt ..= int:sub(i, i)
-				counter += 1
+				table.insert(newInt, int:sub(i, i))
 			end
 
-			return `{(if num < 0 then "-" else "")}{newInt:reverse()}{if dec then `.{dec}` else ""}`
-		end;
-
-		OwnsAsset = function(...)
-			return service.CheckAssetOwnership(...)
+			return `{(if num < 0 then "-" else "")}{table.concat(newInt):reverse()}{if dec then `.{dec}` else ""}`
 		end;
 
 		GetProductInfo = function(assetId, infoType)
@@ -1057,7 +1004,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						results = {
 							Created = false;
 						};
-						lastUpdated = os.clock();
+						lastUpdated = -math.huge;
 					}
 					assetInfoCache[`{assetId}-{infoType}`] = cache
 				end
@@ -1075,7 +1022,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end
 
-				return service.CloneTable(cache.results)
+				return table.clone(cache.results)
 			end
 		end;
 
@@ -1195,7 +1142,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					end
 				end
 
-				return service.CloneTable(existingCache.results)
+				return table.clone(existingCache.results)
 			end
 		end;
 
@@ -1214,21 +1161,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end,
 
 		MaxLen = function(message, length)
-			if string.len(message) > length then
-				return `{string.sub(message, 1, length)}...`
+			local rawLength = string.len(message)
+			local utf8Length = rawLength <= length * 6 and utf8.len(message)
+			if rawLength > length and not (utf8Length and utf8Length <= length) then
+				local clamped = string.sub(message, 1, utf8Length and utf8.offset(message, length + 1) - 1 or length)
+				return `{not utf8.len(clamped) and string.sub(clamped, 1, select(2, utf8.len(clamped)) - 1) or clamped}...`
 			else
 				return message
 			end
-		end;
-
-		Yield = function()
-			local event = service.New("BindableEvent");
-			return {
-				Release = function(...) event:Fire(...) end;
-				Wait = function(...) return event.Event:Wait(...) end;
-				Destroy = function() event:Destroy() end;
-				Event = event;
-			}
 		end;
 
 		StartLoop = function(name,delay,func,noYield)
@@ -1281,25 +1221,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			tab.Kill = kill
 			RunningLoops[index] = tab
 
-
 			if noYield then
 				service.TrackTask(`Thread: Loop: {name}`, loop, false)
 			else
 				service.TrackTask(`Loop: {name}`, loop, false)
 			end
-
-			--[[local task = service.Threads.RunTask(`LOOP:{name}`, loop)
-
-			if not noYield then
-				task.Finished:wait()
-				kill()
-			end--]]
-
-			--[[if noYield then
-				Routine(loop)
-			else
-				loop()
-			end--]]
 
 			return tab
 		end;
@@ -1500,17 +1426,17 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		GamepassService = game:GetService("GamePassService");
 		ChatService = game:GetService("Chat");
 		Gamepasses = game:GetService("GamePassService");
-		Delete = function(obj,num) game:GetService("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
+		Delete = function(obj, num) game:GetService("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
 		RbxEvent = function(signal, func) local event = signal:Connect(func) table.insert(RbxEvents, event) return event end;
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;
 		DelRbxEvent = function(signal) for i,v in RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
-		SanitizeString = function(str) str = service.Trim(str) local new = "" for i = 1,#str do if string.sub(str,i,i) ~= "\n" and string.sub(str,i,i) ~= "\0" then new = new..string.sub(str,i,i) end end return new end;
-    Trim = function(str) return string.match(str,"^%s*(.-)%s*$") end;
+		SanitizeString = function(str) return string.gsub(service.Trim(str), "[%c%z\n]", "") end;
+		Trim = function(str) return string.match(str,"^%s*(.-)%s*$") end;
 		Localize = function(obj, readOnly) local Localize = service.Localize local ReadOnly = service.ReadOnly if type(obj) == "table" then local newTab = {} for i in obj do newTab[i] = Localize(obj[i], readOnly) end return (readOnly and ReadOnly(newTab)) or newTab else return obj end end;
 		RawEqual = function(obj1, obj2) return service.UnWrap(obj1) == service.UnWrap(obj2) end;
-		CheckProperty = function(obj,prop) return pcall(function() return obj[prop] end) end;
+		CheckProperty = function(obj, prop) return pcall(function() return obj[prop] end) end;
 		NewWaiter = function() local event = service.New("BindableEvent") return {Wait = event.wait; Finish = event.Fire} end;
-	},{
+	}, {
 		__index = function(tab, index)
 			local found = (fenceSpecific and fenceSpecific[index]) or Wrapper[index] or Events[index] or Helpers[index]
 
@@ -1541,7 +1467,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	service.HelperService = HelperService
 	service.ThreadService = ThreadService
 	service.EventService = EventService
-	service.GoodSignal = require(script.Parent.Shared.GoodSignal)
+	service.Signal = require(script.Parent.Shared.GoodSignal)
 
 	if client ~= nil then
 		for i,val in service do

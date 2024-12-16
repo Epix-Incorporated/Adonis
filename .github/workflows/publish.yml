@@ -12,7 +12,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1  # Using the latest version
+      - uses: actions/checkout@v4.1.7  # Using the latest version
         with:
           ref: refs/heads/release
           
@@ -55,10 +55,13 @@ jobs:
       - name: Set DebugMode off
         run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.luau
         
+      - name: Set NightlyMode off
+        run: sed -i "s/NightlyMode = true/NightlyMode = false/g" Loader/Loader/Loader.server.luau
+        
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
      
-      - uses: actions/upload-artifact@v4.3.1
+      - uses: actions/upload-artifact@v4.3.6
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
@@ -76,7 +79,7 @@ jobs:
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
       - name: Publish Loader
-        uses: fjogeleit/http-request-action@v1.15.4
+        uses: fjogeleit/http-request-action@v1.16.1
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
           method: "POST"
@@ -86,7 +89,7 @@ jobs:
           timeout: 10000
           
       - name: Publish Module
-        uses: fjogeleit/http-request-action@v1.15.4
+        uses: fjogeleit/http-request-action@v1.16.1
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
           method: "POST"

@@ -1,3 +1,4 @@
+--!native
 --[[ 
 
 	t: a runtime typechecker for Roblox

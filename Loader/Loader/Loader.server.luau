@@ -34,6 +34,37 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 local InsertService = game:GetService("InsertService")
 
+-- Support yieldable xpcall
+local function yxpcall(f, callback, ...)
+	local args = table.pack(pcall(f, ...))
+
+	if not args[1] then
+		callback(args[2])
+	else
+		return table.unpack(args, 2, args.n)
+	end
+end
+
+local function loadModuleAsset(moduleId: number)
+	local asset = InsertService:LoadAsset(moduleId)
+
+	if asset.Name == "MainModule" then
+		return assert(require(asset), ":LoadAsset() module returned invalid values!")
+	elseif asset:FindFirstChild("MainModule") then
+		return assert(require(asset.MainModule), ":LoadAsset() module returned invalid values!")
+	elseif asset:IsA("ModuleScript") then
+		return assert(require(asset), ":LoadAsset() module returned invalid values!")
+	end
+
+	for _, v in asset:GetChildren() do
+		if v:IsA("ModuleScript") then
+			return assert(require(v), ":LoadAsset() module returned invalid values!")
+		end
+	end
+
+	error(`Failed to find any matching ModuleScripts for {moduleId}.`)
+end
+
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
 if mutex then
 	if mutex:IsA("StringValue") then
@@ -77,44 +108,49 @@ else
 
 		Loader = loader;
 		Runner = runner;
+		LoaderVersion = (model and model:FindFirstChild("Version")) and tonumber(model.Version.Value);
 
 		ModuleID = 7510592873;  		--// https://www.roblox.com/library/7510592873/Adonis-MainModule
 		LoaderID = 7510622625;			--// https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
 		
 		--// Note: The nightly module is updated frequently with every commit merged to the master branch on the Adonis repo.
 		--// It is prone to breaking, unstable, untested, and should not be used for anything other than testing/feature preview.
-		NightlyMode = false;			--// If true, uses the nightly module instead of the current release module.
+		NightlyMode = true;			--// If true, uses the nightly module instead of the current release module.
 		NightlyModuleID = 8612978896; 	--// https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
 
 		--// Module used in case MainModule is unavailable, containing only essential commands
 		Backup = 17438792001; 	--// https://create.roblox.com/store/asset/17438792001/
 
 		DebugMode = true;
-		SilentStartup = false
+		SilentStartup = false;
 	}
-	
-	if not data.SilentStartup then print("Loading...") end
 
 	--// Init
 
+	if not data.SilentStartup then
+		print("Loading...")
+	end
+
 	-- selene: allow(incorrect_standard_library_use)
-	script.Parent = nil --script:Destroy()
+	script.Parent = nil
 
 	if not data.DebugMode then
 		model.Name = math.random()
 	end
 
 	local moduleId = if data.NightlyMode then data.NightlyModuleID else data.ModuleID
-	
+
 	if data.DebugMode then
+		local found = false
 		for _, v in model.Parent:GetChildren() do
 			if v.Name == "MainModule" and v:IsA("ModuleScript") then
-				moduleId = v
+				moduleId, found = v, true
 				break
 			end
 		end
-		if not moduleId and not data.NightlyMode then
-			error(`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent:GetFullName()}`)
+
+		if not found and not data.NightlyMode then
+			warn(`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent and model.Parent:GetFullName()}`)
 		end
 	end
 
@@ -125,7 +161,7 @@ else
 		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
 		table.insert(data.Messages, {
 			Title = "Warning!";
-			Icon = "rbxassetid://7495468117";
+			Icon = "maticon://Dangerous";
 			Message = "Settings module error detected; using default settings.";
 			Time = 15;
 		})
@@ -138,18 +174,15 @@ else
 
 	for _, module in pluginsFolder:GetChildren() do
 		local name = string.lower(module.Name)
-		
+
 		if module:IsA("Folder") then
 			table.insert(data.Packages, module)
-			
 		elseif string.match(name, "^client[%-:]") then
 			table.insert(data.ClientPlugins, module)
-			
 		elseif string.match(name, "^server[%-:]") then
 			table.insert(data.ServerPlugins, module)
-			
 		else
-			warn(`[DEVELOPER ERROR] Unknown Plugin Type for {module}; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'`)
+			warn(`[DEVELOPER ERROR] Unknown Plugin Type for {module:GetFullName()}; Plugin name should either start with 'Server:', 'Server-', 'Client:' or 'Client-'`)
 		end
 	end
 
@@ -161,28 +194,42 @@ else
 		print(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
-	local success, module = xpcall(require, warn, moduleId)
-	if not success and type(moduleId) == "number" then -- Backup method for loading 
-		warn(`Failed to require Adonis mainmodule {moduleId} due to {module}. If this does not work please purchase the Adonis mainmodule in your inventory. Using backup method...`)
-		local assets = InsertService:LoadAsset(moduleId)
+	local success, module = pcall(require, moduleId)
 
-		for _, v in assets do
-			if v:IsA("ModuleScript") then
-				module = require(v)
-				break
-			end
-		end
-
-		assert(type(module) ~= "string", module)
+	--// Backup method for loading Adonis
+	if not success and type(moduleId) == "number" then -- ccuser44 was here
+		warn(`Failed to load Adonis MainModule {moduleId} due to {module}! If this does not work please purchase the Adonis MainModule to your inventory. Using backup method...`)
+		yxpcall(function()
+			module = loadModuleAsset(moduleId)
+		end, function(reason)
+			warn(`Failed to load Adonis mainmodule {moduleId} via :LoadAsset() method due to {reason}! Loading the backup MainModule...`)
+			yxpcall(function()
+				module = assert(require(data.Backup), "Backup module returned invalid values!")
+			end, function(reason)
+				warn(`Failed to load Adonis backup MainModule {data.Backup} due to {reason}! If this does not work please purchase the Adonis backup MainModule to your inventory. Using backup method...`)
+				yxpcall(function()
+					module = loadModuleAsset(data.Backup)
+				end, function(reason)
+					module = nil
+					warn(`FATAL ERROR! Failed to load Adonis backup MainModule {moduleId} via :LoadAsset() method due to {reason}! Adonis can't be booted up! Please contact the Adonis helpers immediately and add both the regular MainModule and the backup MainModule to your user&group inventory!`)
+				end)
+			end)
+		end)
 	end
-	local response = module(data)
+
+	local response = assert(module, "FATAL ERROR! Adonis bootstrap function is missing!")(data)
 
 	if response == "SUCCESS" then
-		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not RunService:IsStudio() then
+		if data.Settings and data.Settings.HideScript and not data.DebugMode and not RunService:IsStudio() then
 			model.Parent = nil
 			game:BindToClose(function()
-				model.Parent = ServerScriptService
+				local oldArchivable = script.Archivable
+				script.Archivable = true
+				local clone = script:Clone()
+				clone.Archivable = oldArchivable
+				clone.Parent = loaderFolder
 				model.Name = "Adonis_Loader"
+				model.Parent = ServerScriptService
 			end)
 		end
 

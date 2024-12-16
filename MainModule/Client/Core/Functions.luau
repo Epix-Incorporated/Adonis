@@ -50,37 +50,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-		--[[client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
-
 		Functions.RunLast = nil;
 	end
 
@@ -227,7 +196,7 @@ return function(Vargs, GetEnv)
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
-			if ob=='reset' then
+			if ob == "reset" then
 				CurrentCamera.CameraType = Enum.CameraType.Custom
 				CurrentCamera.CameraSubject = service.Player.Character:FindFirstChildOfClass("Humanoid")
 				CurrentCamera.FieldOfView = 70
@@ -446,6 +415,7 @@ return function(Vargs, GetEnv)
 				"Name";
 				"Parent";
 				"Archivable";
+				"DisplayOrder";
 				"SelectionImageObject";
 				"Active";
 				"BackgroundColor3";
@@ -628,57 +598,93 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadGuiData = function(data)
-			local make; make = function(dat)
-				local props = dat.Properties
-				local children = dat.Children
-				local gui = service.New(props.ClassName)
+			local zIndex = -2^31 -- Signed 32 bit intiger
+			local make; make = function(data, parent)
+				local props = data.Properties
+				local gui = props.ClassName ~= "ScreenGui" and service.New(props.ClassName)
 
-				for i,v in props do
-					pcall(function()
-						gui[i] = v
-					end)
+				if gui then
+					for k, v in props do
+						pcall(function()
+							gui[k] = v
+						end)
+					end
 				end
 
-				for i,v in children do
+				for _, v in data.Children do
 					pcall(function()
-						local g = make(v)
+						local g = make(v, gui or parent)
 						if g then
-							g.Parent = gui
+							g.Parent = gui or parent
 						end
 					end)
 				end
+
 				return gui
 			end
 
-			local temp = Instance.new("Folder")
-			for _, v in service.PlayerGui:GetChildren() do
-				if not UI.Get(v) then
-					v.Parent = temp
-				end
-			end
-			Variables.GuiViewFolder = temp
-			local folder = service.New("Folder",{Parent = service.PlayerGui; Name = "LoadedGuis"})
-			for _, v in data.Children do
-				pcall(function()
-					local g = make(v)
-					if g then
-						g.Parent = folder
+			local function normaliseIndex(gui)
+				local remap, order = {}, {}
+				local mapIndex; mapIndex = function(object)
+					local index = object.Properties.ZIndex
+
+					if type(index) == "number" then
+						if not remap[index] then
+							remap[index] = {object.Properties}
+							table.insert(order, index)
+						else
+							table.insert(remap[index], object.Properties)
+						end
 					end
-				end)
+
+					for _, v in object.Children do
+						pcall(mapIndex, v)
+					end
+				end
+
+				pcall(mapIndex, gui)
+				table.sort(order)
+
+				for _, index in order do
+					zIndex += 1
+
+					for _, v in remap[index] do
+						v.ZIndex = zIndex
+					end
+				end
+
+				return gui
 			end
+
+			local GuiViewContainer = UI.Make("Window", {
+				Name = "Player GUI View";
+				Title = "Player GUI View";
+				Icon = client.MatIcons["Grid view"];
+				AllowMultiple = true;
+				SizeLocked = false
+			})
+
+			table.sort(data.Children, function(t1, t2)
+				local o1, o2 = t1.Properties.DisplayOrder, t2.Properties.DisplayOrder
+				if o1 and o2 then
+					return o1 < o2
+				end
+
+				return false
+			end)
+
+			Variables.GuiViewFolder = GuiViewContainer
+			zIndex = GuiViewContainer.ZIndex or zIndex
+
+			for _, v in data.Children do
+				pcall(make, normaliseIndex(v), GuiViewContainer)
+			end
+
+			GuiViewContainer:Ready()
 		end;
 
 		UnLoadGuiData = function()
-			for _, v in service.PlayerGui:GetChildren() do
-				if v.Name == "LoadedGuis" then
-					v:Destroy()
-				end
-			end
-
 			if Variables.GuiViewFolder then
-				for _, v in Variables.GuiViewFolder:GetChildren() do
-					v.Parent = service.PlayerGui
-				end
 				Variables.GuiViewFolder:Destroy()
 				Variables.GuiViewFolder = nil
 			end
@@ -1021,10 +1027,33 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SetLighting = function(prop,value)
-			if service.Lighting[prop]~=nil then
+		SetLighting = function(prop, value)
+			if service.Lighting[prop] ~= nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
+			end
+		end;
+
+		SetAtmosphere = function(prop, value)
+			local atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
+
+			if atmosphere then
+				if value == nil and atmosphere[prop] and typeof(atmosphere[prop]) ~= "Instance" then
+					atmosphere:Destroy()
+					table.clear(Variables.AtmosphereSettings)
+				else
+					atmosphere[prop] = value
+					Variables.AtmosphereSettings[prop] = value
+				end
+			elseif value ~= nil then
+				atmosphere = Instance.new("Atmosphere")
+				Variables.AtmosphereSettings[prop] = value
+
+				for k, v in Variables.AtmosphereSettings do
+					atmosphere[k] = v
+				end
+
+				atmosphere.Parent = service.Lighting
 			end
 		end;
 
@@ -1074,7 +1103,7 @@ return function(Vargs, GetEnv)
 				cam[prop] = value
 			end
 		end;
-		
+
 		SetFPS = function(fps)
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
@@ -1082,14 +1111,14 @@ return function(Vargs, GetEnv)
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
 					local osclock = os.clock()
-					repeat while osclock + 1/fps > os.clock() do end 
+					repeat while osclock + 1/fps > os.clock() do end
 						task.wait()
-						osclock = os.clock() 
+						osclock = os.clock()
 					until service.IsLooped("SetFPS") == false
 				end)
 			end
 		end;
-		
+
 		RestoreFPS = function()
 			service.StopLoop("SetFPS")
 		end;
@@ -1206,26 +1235,41 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		CustomKick = function()
+			service.TweenService:Create(service.New("BlurEffect", {
+				Parent = service.Lighting; Size = 10;
+			}), TweenInfo.new(0.5, Enum.EasingStyle.Sine), {Size = 30}):Play()
+
+			service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+
+			for _, v in service.PlayerGui:GetChildren() do
+				if v.Name ~= "RobloxPromptGui" then
+					pcall(v.Destroy, v)
+				end
+			end
+
+			task.wait(0.6)
+			Functions.HardCrash()
+		end;
+
 		KillClient = function()
 			client.Kill("KillClient called")
 		end;
 
 		KeyCodeToName = function(keyVal)
-			local keyVal = tonumber(keyVal);
-			if keyVal then
-				for _, e in Enum.KeyCode:GetEnumItems() do
-					if e.Value == keyVal then
-						local name = service.UserInputService:GetStringForKeyCode(e)
+			local keyCode = Enum.KeyCode:FromValue(tonumber(keyVal))
 
-						if service.Trim(name) == "" or Variables.KeycodeNames[e] == name then
-							return e.Name
-						else
-							return name
-						end
-					end
+			if keyCode then
+				local name = service.UserInputService:GetStringForKeyCode(keyCode)
+
+				if service.Trim(name) == "" or Variables.KeycodeNames[keyCode] == name then
+					return keyCode.Name
+				else
+					return name
 				end
+			else
+				return "UNKNOWN"
 			end
-			return "UNKNOWN";
 		end;
 
 		KeyBindListener = function(keybinds)
@@ -1233,7 +1277,7 @@ return function(Vargs, GetEnv)
 			local timer = 0
 			local data = (not keybinds) and Remote.Get("PlayerData");
 
-			Variables.KeyBinds = keybinds or (data and data.Keybinds) or {}
+			Variables.KeyBinds = keybinds or data and data.Keybinds or {}
 
 			service.UserInputService.InputBegan:Connect(function(input)
 				local key = tostring(input.KeyCode.Value)
@@ -1424,7 +1468,7 @@ return function(Vargs, GetEnv)
 					local ang = 0.1
 					local oldmag = torso.AssemblyLinearVelocity.Magnitude
 					local mv = .002
-					if wave then 
+					if wave then
 						ang += ((torso.AssemblyLinearVelocity.Magnitude/10)*.05)+.05
 						wave = false
 					else
@@ -1867,6 +1911,12 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		SHA256 = require(client.Shared.HashLib).SHA256;
+
+		GetFriendsOnline = function(maxFriends)
+			return service.Players.LocalPlayer:GetFriendsOnline(maxFriends)
+		end;
+
 		GetUserInputServiceData = function(args)
 			local data = {}
 			local props = {
@@ -1883,7 +1933,7 @@ return function(Vargs, GetEnv)
 			for _, p in props do
 				data[p] = service.UserInputService[p]
 			end
-			data["Resolution"] = workspace.CurrentCamera.ViewportSize.X.." x "..workspace.CurrentCamera.ViewportSize.Y
+			data["Resolution"] = math.floor(workspace.CurrentCamera.ViewportSize.X).." x "..math.floor(workspace.CurrentCamera.ViewportSize.Y)
 			return data
 		end;
 	};

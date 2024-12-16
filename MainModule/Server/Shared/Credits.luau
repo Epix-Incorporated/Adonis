@@ -4,9 +4,9 @@ return {
 		{Text = "Kohltastrophe (Scripth)",	Desc = "For his help with various things and some code"};
 		{Text = "einsteinK",				Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best programmer I know"};
 		{Text = "Rerumu (Shining_Diamando)",Desc = "Numerous contributions (Endless stairs, FiOne, Parser, Steampunk theme)"};
-		{Text = "Cald_fan", 				Desc = "Community Maintainer & WebPanel Creator & Maintainer"};
-		{Text = "joritochip",				Desc = "Community Maintainer & WebPanel Developer"};
-		{Text = "Coasterteam",				Desc = "Community Maintainer & Development contributions (Kronos developer)"};
+		{Text = "Cald_fan", 				Desc = "WebPanel Maintainer & Creator"};
+		{Text = "joritochip",				Desc = "Senior Maintainer & WebPanel Developer"};
+		{Text = "Coasterteam",				Desc = "Senior Maintainer & Development contributions (Kronos developer)"};
 		{Text = "Expertcoderz",				Desc = "Community Maintainer"};
 		{Text = "Dimenpsyonal",				Desc = "Community Maintainer"};
 	};
@@ -32,7 +32,7 @@ return {
 		{Text = "@policetonyR",		Desc = "Open Source Contributor"};
 		{Text = "@enescglyn",		Desc = "Open Source Contributor"};
 		{Text = "@EpicFazbear",		Desc = "Open Source Contributor"};
-		{Text = "@p3tray",			Desc = "Open Source Contributor"};
+		{Text = "@P3tray",			Desc = "Open Source Contributor"};
 		{Text = "@okgabe",			Desc = "Open Source Contributor"};
 		{Text = "@fxeP1",			Desc = "Open Source Contributor"};
 		{Text = "@optimisticside",	Desc = "Open Source Contributor"};
@@ -93,11 +93,16 @@ return {
 		{Text = "@NotKeira", 		Desc = "Open Source Contributor"};
 		{Text = "@Sqikerz", 		Desc = "Open Source Contributor"};
 		{Text = "@cl1ents", 		Desc = "Open Source Contributor"};
+		{Text = "@Hedreon", 		Desc = "Open Source Contributor"};
+		{Text = "@Mars7383", 		Desc = "Open Source Contributor"};
+		{Text = "@PurpleCreativity",Desc = "Open Source Contributor"};
+		{Text = "@ScriptedConnor",	Desc = "Open Source Contributor"};
+		{Text = "@omwot",			Desc = "Open Source Contributor"};
 	};
 
 	Misc = {
 		{Text = "Kein-Hong Man",			Desc = "Creator of the Yueliang (Lua bytecode compiler in loadstring module). Also created LuLu VM, the first Lua bytecode interpreter used in Adonis (no longer used)"};
-		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used)"};
+		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used) and GoodSignal"};
 		{Text = "darkelementallord",		Desc = "Updated some guis"};
 		{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
 		{Text = "Moistality",				Desc = "Helped with finding and patching vulns"};
@@ -112,8 +117,11 @@ return {
 		{Text = "Osyris",					Desc = "Wrote 't', an open-source typechecking library"};
 		{Text = "buildthomas",				Desc = "Wrote 'MockDataStoreService', an open-source mock DataStoreService replacement library"};
 		{Text = "Tiffany352",				Desc = "Wrote an improved base64 implementation"};
-		{Text = "",							Desc = ""};
-		{Text = "~ :) ~",					Desc = ""};
+		{Text = "Merely",					Desc = "Wrote the original SoftShutdown"};
+		{Text = "Irreflexive",				Desc = "Edited SoftShutdown"};
+		{Text = "Krypt",					Desc = "Wrote Slider module used for AudioPlayer"};
+		{Text = "",};
+		{Text = "~ :) ~",};
 		{Text = "Donors",					Desc = "Donors keep the wheels turning ;)"};
 		{Text = "The Users [You :)]",		Desc = "For using the script and keeping it alive :)"};
 		{Text = "Special thanks", 			Desc = "Special thanks to everyone who helped along the way and suggested new ideas!"};

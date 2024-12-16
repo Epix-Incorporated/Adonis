@@ -17,7 +17,7 @@ return function(data, env)
 	local window = UI.Make("Window",{
 		Name  = "PrivateMessage";
 		Title = tostring(player);
-		Size  = {300,150};
+		Size  = {300, 150};
 	})
 
 	local label = window:Add("TextLabel",{
@@ -54,7 +54,7 @@ return function(data, env)
 				end
 
 				window:Close()
-				Remote.Send('PrivateMessage', replyTicket, player, reply.Text)
+				Remote.Send("PrivateMessage", replyTicket, player, reply.Text)
 				UI.Make("Hint", {
 					Message = "Reply sent"
 				})
@@ -76,10 +76,10 @@ return function(data, env)
 	reply.FocusLost:Connect(sendIt)
 
 	gTable = window.gTable
-	UI.Make("Notification",{
+	UI.Make("Notification", {
 		Title = "New Message";
-		Message = string.format("Message from %s (@%s)", player.DisplayName, player.Name);
-		Icon = "rbxassetid://7501175708";
+		Message = `Message from {player.DisplayName} ({player.Name})`;
+		Icon = player.UserId > 0 and `rbxthumb://type=AvatarHeadShot&id={player.UserId}&w=48&h=48` or client.MatIcons.Mail;
 		Time = false;
 		OnClick = function() window:Ready() end;
 		OnClose = function() window:Destroy() end;

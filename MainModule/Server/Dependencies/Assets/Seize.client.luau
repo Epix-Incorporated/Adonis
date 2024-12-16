@@ -1,5 +1,5 @@
 local root = script.Parent
-local humanoid = script.Parent.Parent:FindFirstChildOfClass("Humanoid")
+local humanoid = root.Parent:FindFirstChildOfClass("Humanoid")
 local origvel = root.AssemblyLinearVelocity
 local origrot = root.AssemblyAngularVelocity
 

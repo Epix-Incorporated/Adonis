@@ -149,14 +149,15 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local gerald = Deps.Assets:FindFirstChild("Gerald")
+
 				--// Apparently Rojo doesn't handle mesh parts very well, so I'm loading this remotely (using require to bypass insertservice restrictions)
 				--// The model is free to take so feel free to that 👍
-				--// Here's the URL https://www.roblox.com/library/7679952474/AssetModule
-
-				warn("Requiring Assets Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/7679952474/Adonis-Assets-Module"})
-
-				local rAssets = require(7679952474) --// This apparently caches, so don't delete anything else future usage breaks
-				local gerald = rAssets.Gerald
+				--// Here's the URL https://www.roblox.com/library/7679952474/Adonis-Assets-Module
+				if not gerald then -- TODO: Add gerald to deps and remove require, I think the Rojo plugin (up to date) now supports loading 
+					warn("Requiring Assets Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/7679952474/Adonis-Assets-Module"})
+					gerald = require(7679952474).Gerald --// This apparently caches, so don't delete anything else future usage breaks
+				end
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
@@ -459,41 +460,15 @@ return function(Vargs, env)
 				end
 
 				if not Variables.ZaWarudoDebounce then
-					Variables.ZaWarudoDebounce = true
-					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
-						local audio = service.New("Sound", service.SoundService)
-						audio.SoundId = "rbxassetid://676242549"
-						audio.Volume = 0.5
-						audio:Play()
-						task.wait(2)
-						for i, part in Variables.FrozenObjects do
-							part.Anchored = false
-						end
-
-						local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
-						if old then
-							for i = -2, 0, 0.1 do
-								old.Saturation = i
-								task.wait(0.01)
-							end
-							old:Destroy()
-						end
-
-						local audio = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
-						if audio then
-							audio:Stop()
-							audio:Destroy()
-						end
-
-						Variables.ZaWarudo:Disconnect()
-						Variables.FrozenObjects = {}
-						Variables.ZaWarudo = false
-						audio:Destroy()
+						Admin.RunCommandAsPlayer(`{Settings.Prefix}unzawarudo`, plr)
 					else
+						Variables.ZaWarudoDebounce = true
+						task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 						local audio = service.New("Sound", service.SoundService)
-						audio.SoundId = "rbxassetid://274698941"
+						audio.SoundId = "rbxassetid://8762717966" -- Old audio: "rbxassetid://274698941"
 						audio.Volume = 10
+						audio.Name = "ADONIS_ZAWARUDO_AUDIO"
 						audio:Play()
 						task.wait(2.25)
 						doPause(workspace)
@@ -511,14 +486,60 @@ return function(Vargs, env)
 							task.wait(0.01)
 						end
 
+						task.wait(2.5)
 						audio:Destroy()
 						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
-						clock.SoundId = "rbxassetid://160189066"
+						clock.SoundId = "rbxassetid://9133682204" -- Other new audio: "rbxassetid://850256806" Old audio "rbxassetid://160189066"
 						clock.Looped = true
 						clock.Volume = 1
 						clock:Play()
+						Variables.ZaWarudoDebounce = false
 					end
+				end
+			end
+		};
+
+		UnZaWarudo = {
+			Prefix = Settings.Prefix;
+			Commands = {"unzawarudo", "unstoptime"};
+			Args = {};
+			Fun = true;
+			Description = "Stops zawarudo";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				if not Variables.ZaWarudoDebounce and Variables.ZaWarudo then
+					Variables.ZaWarudoDebounce = true
+					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
+					local audio = service.New("Sound", service.SoundService)
+					audio.SoundId = "rbxassetid://676242549"
+					audio.Volume = 0.5
+					audio.Name = "ADONIS_ZAWARUDO_AUDIO"
+					audio:Play()
+					task.wait(2)
+					for i, part in Variables.FrozenObjects do
+						part.Anchored = false
+					end
+
+					local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
+					if old then
+						for i = -2, 0, 0.1 do
+							old.Saturation = i
+							task.wait(0.01)
+						end
+						old:Destroy()
+					end
+
+					local clock = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
+					if clock then
+						clock:Stop()
+						clock:Destroy()
+					end
+
+					audio:Destroy()
+					Variables.ZaWarudo:Disconnect()
+					Variables.FrozenObjects = {}
+					Variables.ZaWarudo = false
 					Variables.ZaWarudoDebounce = false
 				end
 			end
@@ -662,7 +683,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local scr = Core.NewScript("Script",[[
+				local scr = Core.NewScript("ClientScript", [[
 					local restore = {}
 					local tween = game:GetService("TweenService")
 
@@ -686,7 +707,7 @@ return function(Vargs, env)
 						end
 						script:Destroy()
 					end
-				]])
+				]], true)
 				scr.Name = "Rainbowify"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
@@ -759,12 +780,13 @@ return function(Vargs, env)
 
 		Material = {
 			Prefix = Settings.Prefix;
-			Commands = {"mat", "material"};
+			Commands = {"material", "mat"};
 			Args = {"player", "material"};
 			Description = "Make the target the material you choose";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				--local chosenMat = if tonumber(args[2]) then Enum.Material:FromValue(tonumber(args[2])) elseif not args[2] then "Plastic" else Enum.Material:FromName(args[2])
 				local mats = {
 					Plastic = 256;
 					Wood = 512;
@@ -804,7 +826,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
 						for _, p in v.Character:GetChildren() do
-							if p:IsA"BasePart" then
+							if p:IsA("BasePart") then
 								p.Material = chosenMat
 							end
 						end
@@ -1161,7 +1183,7 @@ return function(Vargs, env)
 						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
-					if char:FindFirstChild("ADONIS_UFO") then
+					if char:GetAttribute("ADONIS_Taken") then
 						continue
 					end
 
@@ -1192,10 +1214,14 @@ return function(Vargs, env)
 						local tPos = torso.CFrame
 						local info = TweenInfo.new(5, Enum.EasingStyle.Quart,  Enum.EasingDirection.Out, -1, true, 0)
 
-						humanoid.Name = "NoResetForYou"
 						humanoid.WalkSpeed = 0
+						char:SetAttribute("ADONIS_Taken", true)
+						Remote.Send(p, "Function", "SetCore", "ResetButtonCallback", false)
 
 						ufo.Name = "ADONIS_UFO"
+						ufo.Archivable = false
+						ufo.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
+						ufo:AddPersistentPlayer(p)
 						ufo.PrimaryPart = primary
 						ufo:PivotTo(tPos*CFrame.new(0, 500, 0))
 
@@ -1474,7 +1500,7 @@ return function(Vargs, env)
 						Functions.Hint(`{service.FormatPlayer(p)} does not have a HumanoidRootPart/Humanoid`, {plr})
 						continue
 					end
-					if char:FindFirstChild("ADONIS_VAN") then
+					if char:GetAttribute("ADONIS_Taken") then
 						continue
 					end
 
@@ -1511,11 +1537,14 @@ return function(Vargs, env)
 
 						van.PrimaryPart = van.Primary
 						van.Name = "ADONIS_VAN"
+						van.Archivable = false
+						van.ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
+						van:AddPersistentPlayer(p)
 						van.Parent = workspace
-						humanoid.Name = "NoResetForYou"
 						humanoid.WalkSpeed = 0
+						char:SetAttribute("ADONIS_Taken", true)
 						sound.Pitch = 1.3
-
+						Remote.Send(p, "Function", "SetCore", "ResetButtonCallback", false)
 						Remote.PlayAudio(p, 421358540, 0.2, 1, true)
 
 						for i = 1, 200 do
@@ -1625,7 +1654,7 @@ return function(Vargs, env)
 				hat.ChickenSounds.Disabled = true
 				table.insert(hats, hat)
 				table.insert(Variables.Objects, hat)
-				hat.Parent = workspace
+				hat.Parent = workspace.Terrain
 				hat.CFrame = plr.Character.Head.CFrame
 				service.StopLoop("ChickenSpam")
 				service.StartLoop("ChickenSpam", 5, function()
@@ -1639,7 +1668,7 @@ return function(Vargs, env)
 						table.insert(tempHats, v)
 						table.insert(tempHats, nhat)
 						table.insert(Variables.Objects, nhat)
-						nhat.Parent = workspace
+						nhat.Parent = workspace.Terrain
 						nhat.Quacker.Disabled = false
 						nhat.CFrame = v.CFrame*CFrame.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100))*CFrame.Angles(math.random(-360, 360), math.random(-360, 360), math.random(-360, 360))
 					end
@@ -1673,6 +1702,7 @@ return function(Vargs, env)
 					p.Anchored = true
 					p.CanCollide = false
 					p.Archivable = false
+					p.Name = "ADONIS_Tornado"
 					--local tornado = deps.Tornado:Clone()
 					--tornado.Parent = p
 					--tornado.Disabled = false
@@ -2086,77 +2116,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Cut = {
-			Prefix = Settings.Prefix;
-			Commands = {"cut", "stab", "shank", "bleed"};
-			Args = {"player"};
-			Description = "Make the target player(s) bleed";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(Pcall, function()
-						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("ADONIS_BLEED") then return end
-						local run = true
-						local k = service.New("StringValue", v.Character)
-						k.Name = "ADONIS_BLEED"
-						Routine(function()
-							repeat
-								task.wait(0.15)
-								v.Character:FindFirstChildOfClass("Humanoid"):TakeDamage(1)
-								local p = service.New("Part", v.Character)
-								p.CanCollide = false
-								local color = math.random(1, 3)
-								local bcolor
-								if color == 1 or color == 3 then
-									bcolor = BrickColor.new(21)
-								elseif color == 2 then
-									bcolor = BrickColor.new(1004)
-								end
-								p.BrickColor = bcolor
-								local m=service.New("BlockMesh", p)
-								p.Size = Vector3.new(0.1, 0.1, 0.1)
-								m.Scale = Vector3.new(math.random()*0.9, math.random()*0.9, math.random()*0.9)
-								p.Locked = true
-								p.TopSurface = "Smooth"
-								p.BottomSurface = "Smooth"
-								p.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(Vector3.new(2, 0, 0))
-								p.AssemblyLinearVelocity = v.Character.Head.CFrame.lookVector * 1 + Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1))
-								p.Anchored = false
-								m.Name = "Blood Peice"
-								p.Name = "Blood Peice"
-								p.Touched:Connect(function(o)
-									if not o or not o.Parent then return end
-									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name ~= "Blood Peice" and o.Name ~= "Puke Peice" and o.Name ~= "Puke Plate" and o.Name ~= "Blood Plate" and (o.Parent:IsA("Workspace") or o.Parent:IsA("Model")) and (o.Parent ~= p.Parent) and o:IsA("Part") and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA("Accessory")) and (not o.Parent:IsA("Tool")) then
-										local cf = CFrame.new(p.CFrame.X, o.CFrame.Y+o.Size.Y/2, p.CFrame.Z)
-										p:Destroy()
-										local g = service.New("Part", workspace.Terrain)
-										g.Anchored = true
-										g.CanCollide = false
-										g.Size = Vector3.new(0.1, 0.1, 0.1)
-										g.Name = "Blood Plate"
-										g.CFrame = cf
-										g.BrickColor = BrickColor.new(21)
-										local c = service.New("CylinderMesh", g)
-										c.Scale = Vector3.new(1, 0.2, 1)
-										c.Name = "BloodMesh"
-										task.wait(10)
-										g:Destroy()
-									elseif o and o.Name == "Blood Plate" and p then
-										p:Destroy()
-										o.BloodMesh.Scale = o.BloodMesh.Scale+Vector3.new(0.5, 0, 0.5)
-									end
-								end)
-							until run == false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild("Head"))
-						end)
-						task.wait(10)
-						run = false
-						k:Destroy()
-					end)
-				end
-			end
-		};
-
 		Poison = {
 			Prefix = Settings.Prefix;
 			Commands = {"poison"};
@@ -2201,6 +2160,7 @@ return function(Vargs, env)
 								end
 
 								task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
+								poisoned:Destroy()
 							end
 						end
 					end)
@@ -3423,9 +3383,6 @@ return function(Vargs, env)
 											p1.Anchored = true
 											v.Part0 = nil
 										end
-									elseif v:IsA("CharacterMesh") then
-										local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
-										local msh = service.New("SpecialMesh")
 									elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
 										v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
 									end
@@ -3708,13 +3665,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local sizeLimit = Settings.SizeLimit or 20
-				local num = math.clamp(tonumber(args[2]) or 1, 0.001, sizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
+				local num = math.clamp(tonumber(args[2]) or 1, 0.001, Variables.SizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
 
 				if not args[2] or not tonumber(args[2]) then
 					num = 1
 					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
-				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
+				elseif tonumber(args[2]) and tonumber(args[2]) > Variables.SizeLimit then
 					Functions.Hint(`Size changed to the maximum {num} [Argument #2 (size multiplier) went over the size limit]`, {plr})
 				end
 
@@ -3741,14 +3697,16 @@ return function(Vargs, env)
 					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
 					if not resizeAttributeValue then
 						char:SetAttribute("Adonis_Resize", num)
-					elseif resizeAttributeValue * num < sizeLimit then
+					elseif resizeAttributeValue * num < Variables.SizeLimit then
 						char:SetAttribute("Adonis_Resize", resizeAttributeValue * num)
 					else
 						Functions.Hint(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
 						continue
 					end
 
-					if human and human.RigType == Enum.HumanoidRigType.R15 then
+					if human and char:IsA("Model") then
+						char:ScaleTo(num)
+					elseif human and human.RigType == Enum.HumanoidRigType.R15 then
 						for _, val in human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
 								val.Value *= num
@@ -3789,7 +3747,7 @@ return function(Vargs, env)
 
 		Seizure = {
 			Prefix = Settings.Prefix;
-			Commands = {"seizure"};
+			Commands = {"seizure", "seize"};
 			Args = {"player"};
 			Description = "Make the target player(s)'s character spazz out on the floor";
 			Fun = true;
@@ -4842,10 +4800,6 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				if not Variables.OriginalGravity then
-					Variables.OriginalGravity = workspace.Gravity
-				end
-
 				workspace.Gravity = args[1] == "fix" and Variables.OriginalGravity or assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
 			end
 		};
@@ -5025,6 +4979,7 @@ return function(Vargs, env)
 
 						local pipe = Deps.Assets.Pipe:Clone()
 						pipe.Name = "Pipe"
+						pipe.Archivable = false
 						pipe.Parent = workspace
 						pipe:PivotTo(Person:GetPivot() * CFrame.new(0, 50, 0))
 

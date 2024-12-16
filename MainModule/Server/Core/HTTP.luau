@@ -30,8 +30,18 @@ return function(Vargs, GetEnv)
 
 		if Settings.Trello_Enabled then
 			HTTP.Trello.API = require(server.Deps.TrelloAPI)(Settings.Trello_AppKey, Settings.Trello_Token)
-			service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, HTTP.Trello.Update, true)
 		end
+
+		-- Check HTTP asynchronously
+		task.spawn(function()
+			if service.RunService:IsStudio() then
+				server.HTTP.HttpEnabled = service.HttpService.HttpEnabled
+			else
+				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
+				server.HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
+			end
+			Logs:AddLog("Script", "Successfully pooled HttpEnabled")
+		end)
 
 		HTTP.Init = nil;
 		Logs:AddLog("Script", "HTTP Module Initialized")
@@ -39,22 +49,8 @@ return function(Vargs, GetEnv)
 
 	server.HTTP = {
 		Init = Init;
-		HttpEnabled = (function()
-			if service.RunService:IsStudio() then
-				return service.HttpService.HttpEnabled
-			else
-				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://www.google.com/humans.txt")
-				if not success and res:find("Http requests are not enabled.") then
-					return false
-				end
-				return true
-			end
-		end)();
+		HttpEnabled = service.HttpService.HttpEnabled;
 		LoadstringEnabled = pcall(loadstring, "");
-
-		CheckHttp = function()
-			return HTTP.HttpEnabled
-		end;
 
 		WebPanel = {
 			Moderators = {};
@@ -86,7 +82,7 @@ return function(Vargs, GetEnv)
 						})
 					end
 				},
-				{ -- // Was this really a good idea? Since when should databases run code
+				{
 					Lists = {"Commands", "Command List"},
 					Process = function(card)
 						if not HTTP.Trello.PerformedCommands[tostring(card.id)] then
@@ -196,126 +192,6 @@ return function(Vargs, GetEnv)
 					end,
 				}
 			};
-
-			Update = function()
-				if not HTTP.Trello.API or not Settings.Trello_Enabled then
-					return;
-				end
-
-				if not HTTP.CheckHttp() then
-					warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
-					return;
-				else
-					local data = {
-						Bans = {};
-						Mutes = {};
-						Music = {};
-						Whitelist = {};
-						Blacklist = {};
-						InsertList = {};
-						Agents = {};
-						Ranks = {
-							["Moderators"] = {},
-							["Admins"] = {},
-							["HeadAdmins"] = {},
-							["Creators"] = {}
-						};
-					}
-
-					local function grabData(board)
-						local lists: {List} = HTTP.Trello.API.getListsAndCards(board, true)
-						if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
-
-						for _, list in lists do
-							local foundOverride = false
-
-							for _, override in HTTP.Trello.Overrides do
-								if table.find(override.Lists, list.name) then
-									foundOverride = true
-									for _, card in list.cards do
-										override.Process(card, data)
-									end
-									break
-								end
-							end
-
-							-- Allow lists for custom ranks
-							if not foundOverride and not data.Ranks[list.name] then
-								local rank = Settings.Ranks[list.name]
-
-								if rank and not rank.IsExternal then
-									local users = {}
-									for _, card in list.cards do
-										table.insert(users, card.name)
-									end
-									data.Ranks[list.name] = users
-								end
-							end
-						end
-					end
-
-					local success = true
-					local boards = {
-						Settings.Trello_Primary,
-						unpack(Settings.Trello_Secondary)
-					}
-					for i,v in boards do
-						if not v or service.Trim(v) == "" then
-							continue
-						end
-						local ran, err = pcall(grabData, v)
-						if not ran then
-							warn("Unable to reach Trello. Ensure your board IDs, Trello key, and token are all correct. If issue persists, try increasing HttpWait in your Adonis settings.")
-							success = false
-							break
-						end
-					end
-
-					-- Only replace existing values if all data was fetched successfully
-					if success then
-						HTTP.Trello.Bans = data.Bans
-						HTTP.Trello.Music = data.Music
-						HTTP.Trello.InsertList = data.InsertList
-						HTTP.Trello.Mutes = data.Mutes
-						HTTP.Trello.Agents = data.Agents
-
-						Variables.Blacklist.Lists.Trello = data.Blacklist
-						Variables.Whitelist.Lists.Trello = data.Whitelist
-
-						--// Clear any custom ranks that were not fetched from Trello
-						for rank, info in Settings.Ranks do
-							if rank.IsExternal and not data.Ranks[rank] then
-								Settings.Ranks[rank] = nil
-							end
-						end
-
-						for rank, users in data.Ranks do
-							local name = string.format("[Trello] %s", server.Functions.Trim(rank))
-							Settings.Ranks[name] = {
-								Level = Settings.Ranks[rank].Level or 1;
-								Users = users,
-								IsExternal = true,
-								Hidden = Settings.Trello_HideRanks;
-							}
-						end
-
-						for i, v in service.GetPlayers() do
-							local isBanned, Reason = Admin.CheckBan(v)
-							if isBanned then
-								v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
-								continue
-							end
-
-							Admin.UpdateCachedLevel(v)
-						end
-
-						Logs.AddLog(Logs.Script,{
-							Text = "Updated Trello data";
-							Desc = "Data was retreived from Trello";
-						})
-					end
-				end
-			end;
 
 			GetOverrideLists = function()
 				local lists = {}

@@ -1,6 +1,4 @@
-
 return function(Vargs, GetEnv)
-
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -9,16 +7,46 @@ return function(Vargs, GetEnv)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	local LastDateTime, Messages = "Loading...", {"The messages haven't loaded. Please comeback later..."}
+	Variables.UrgentModuleId = Variables.UrgentModuleId or 8096250407
+
 	task.spawn(xpcall, function()
-		if not server.Core.SilentStartup then
-			print("Requiring Alerts Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/8096250407/Adonis-Alerts-Module"})
+		local Alerts = require(Deps.__URGENT_MESSAGES)
+		local assetInfo = type(Variables.UrgentModuleId) == "number" and service.GetProductInfo(Variables.UrgentModuleId, Enum.InfoType.Asset)
+		local version = (assetInfo and assetInfo.Created) and assetInfo.Updated
+		local lastVersion = Core.GetData("LastAlertVersion")
+
+		if not version or not lastVersion or version ~= lastVersion then
+			Logs:AddLog("Script", "Loading alerts from cloud module")
+			xpcall(function()
+				if not server.Core.SilentStartup then
+					print("Requiring Alerts Module by ID; Expand for module URL > ", {URL = `https://www.roblox.com/library/{Variables.UrgentModuleId}/Adonis-Alerts-Module`})
+				end
+		
+				local alertTab = require(Variables.UrgentModuleId)
+		
+				if alertTab then
+					Alerts = alertTab
+					Logs:AddLog("Script", "Alerts cloud module returned proper data")
+					Core.SetData("LastAlertVersion", version)
+					Core.SetData("CachedAlerts", service.HttpService:JSONEncode(alertTab))
+				end
+			end, function(reason)
+				warn(`Error occured while requiring the urgent messages module. Reason {reason}`)
+				Logs:AddLog("Errors", `Error occured while requiring the urgent messages module. Reason {reason}`)
+				table.insert(server.Messages, `Error occured while requiring the urgent messages module. Reason {reason}`)
+			end)
+		elseif version and lastVersion then
+			Logs:AddLog("Script", "Loading alerts from datastore")
+			xpcall(function()
+				Alerts = service.HttpService:JSONDecode(Core.GetData("CachedAlerts"))
+			end, function(reason)
+				warn(`Error occured while loading alerts from datastore. Reason {reason}`)
+				Logs:AddLog("Errors", `Error occured while loading alerts from datastore. Reason {reason}`)
+				table.insert(server.Messages, `Error occured while loading alerts from datastore. Reason {reason}`)
+				Core.RemoveData("LastAlertVersion")
+				Core.RemoveData("CachedAlerts")
+			end)
 		end
-
-		local r, AlertTab = xpcall(require, function()
-			warn("Something went wrong while requiring the urgent messages module");
-		end, 8096250407)
-
-		local Alerts = (r and AlertTab) or require(Deps.__URGENT_MESSAGES)
 
 		local MessageVersion = Alerts.MessageVersion;			--// Message version/number
 		local MessageAdminType = Alerts.MessageAdminType;  		--// Minimum admin level to be notified (Or Donors or Players or nil to not notify)
@@ -43,7 +71,7 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		Variables.UrgentMessageCounter = MessageVersion;
+		Variables.UrgentMessageCounter = MessageVersion
 		
 		local function onPlayerAdded(p: Player)
 			if MessageAdminType then
@@ -60,13 +88,12 @@ return function(Vargs, GetEnv)
 		end
 
 		service.Events.PlayerAdded:Connect(onPlayerAdded)
-
-		Logs:AddLog("Script", "Successfully loaded alerts module data");
+		Logs:AddLog("Script", "Successfully loaded alerts module data")
 	end, warn)
 
 	Commands.UrgentMessages = {
 		Prefix = ":";
-		Commands = { "adonisalerts", "urgentmessages", "urgentalerts", "adonismessages", "urgentadonismessages", "ulog"};
+		Commands = {"adonisalerts", "urgentmessages", "urgentalerts", "adonismessages", "urgentadonismessages", "ulog"};
 		Args = {};
 		Description = "URGENT ADONIS RELATED MESSAGES";
 		AdminLevel = "Players";
@@ -82,5 +109,5 @@ return function(Vargs, GetEnv)
 		end;
 	};
 
-	Logs:AddLog("Script", "Alerts Module Loaded");
+	Logs:AddLog("Script", "Alerts Module Loaded")
 end

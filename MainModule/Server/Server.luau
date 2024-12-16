@@ -134,20 +134,6 @@ local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
-local function CloneTable(tab, recursive)
-	local clone = table.clone(tab)
-
-	if recursive then
-		for i,v in pairs(clone) do
-			if type(v) == "table" then
-				clone[i] = CloneTable(v, recursive)
-			end
-		end
-	end
-
-	return clone
-end
-
 local function Pcall(func, ...)
 	local pSuccess, pError = pcall(func, ...)
 	if not pSuccess then
@@ -209,15 +195,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				GetEnv
 			)
 			return err
-
-		 --[[elseif yield then (all pcalls yield by default for a quite a while time now)
-			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask(`Plugin: {module}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),function(err)
-				warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
-			end, GetVargTable())
-			return err;]]
 		else
-			--service.Threads.RunTask(`PLUGIN: {module}`,setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask(
 				`Plugin: {module}`,
 				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
@@ -267,12 +245,11 @@ local function LoadPackage(package, folder, runNow)
 	unpackFolder(package, folder)
 end;
 
-local function CleanUp()
-	--local env = getfenv(2)
-	--local ran,ret = pcall(function() return env.script:GetFullName() end)
-	print("Beginning Adonis cleanup & shutdown process...")
-	--warn(`CleanUp called from {tostring((ran and ret) or "Unknown")}`)
-	--local loader = server.Core.ClientLoader
+local function CleanUp(reason)
+	if not server.Data or not server.Data.SilentStartup then
+		print(`Beginning Adonis cleanup & shutdown process due to {reason}...`)
+	end
+
 	local data = service.UnWrap(server.Data)
 	if type(data) == "table" and typeof(service.UnWrap(data.Config)) == "Instance" then
 		local Settings: ModuleScript = service.UnWrap(data.Config):FindFirstChild("Settings")
@@ -299,30 +276,29 @@ local function CleanUp()
 			table.remove(RbxEvents, i)
 		end
 	end)
-	--loader.Archivable = false
-	--loader.Disabled = true
-	--loader:Destroy()
 	if server.Core and server.Core.RemoteEvent then
 		pcall(server.Core.DisconnectEvent)
 	end
 
-	print("Unloading complete")
+	if not server.Data or not server.Data.SilentStartup then
+		print("Unloading complete")
+	end
 end;
 
+-- TODO: Re-add codename to server but remove it from Variables and directly bake it in to the client too without a remote
 server = {
 	Running = true;
+	Version = 0;
 	Modules = {};
 	Pcall = Pcall;
 	Routine = Routine;
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
 	ServerStartTime = os.time();
-	CommandCache = {};
 };
 
 locals = {
 	server = server;
-	CodeName = "";
 	Settings = server.Settings;
 	HookedEvents = HookedEvents;
 	ErrorLogs = ErrorLogs;
@@ -335,7 +311,7 @@ locals = {
 };
 
 service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
-	local extra = {...}
+	local extra = table.pack(...)
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog("Script", {
@@ -484,7 +460,7 @@ return service.NewProxy({
 			script:Destroy()
 			return "FAILED"
 		else
-			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Archivable = false, Value = "Running"})
+			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
 			local mutexBackup = mutex:Clone()
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
@@ -493,9 +469,10 @@ return service.NewProxy({
 						connection1:Disconnect()
 						connection2:Disconnect()
 						warn("Adonis module mutex removed; Regenerating...")
-						makePersistent(mutexBackup)
-						mutexBackup.Parent = service.RunService
-						mutexBackup = mutexBackup:Clone()
+						mutex = mutexBackup:Clone()
+						mutex.Archivable = false
+						mutex.Parent = service.RunService
+						makePersistent(mutex)
 					end
 				end)
 				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
@@ -506,22 +483,33 @@ return service.NewProxy({
 				end)
 			end
 			makePersistent(mutex)
+			mutex.Archivable = false
 			mutex.Parent = service.RunService
 		end
 
 		--// Begin Script Loading
-		data = service.Wrap(data or {})
+		data = service.Wrap(data or {}) or {}
+		local silentStartup = data.SilentStartup or false
 
-		if not (data and data.Loader) then
+		if not data.Loader and not silentStartup then
 			warn("WARNING: MainModule loaded without using the loader!")
+		elseif data.Loader and not data.LoaderVersion and server.Model then
+			data.LoaderVersion = server.Model:FindFirstChild("Version") and tonumber(server.Model.Version.Value)
 		end
 
-		if data and data.ModuleID == 8612978896 then
-			warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
+		if data.NightlyMode or data.ModuleID == 8612978896 then
+			data.NightlyMode = true
+
+			if not silentStartup then
+				warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
+			end
 		end
 
-		if data and data.DebugMode == true then
-			warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
+		if data.DebugMode == true then
+			if not silentStartup then
+				warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
+			end
+
 			local AdonisDebugEnabled = service.New("BoolValue")
 			AdonisDebugEnabled.Name = "ADONIS_DEBUGMODE_ENABLED"
 			AdonisDebugEnabled.Value = true
@@ -534,11 +522,11 @@ return service.NewProxy({
 		local setTab = require(server.Deps.DefaultSettings)
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
-		server.OriginalSettings = CloneTable(server.Settings, true)
+		server.OriginalSettings = service.DeepCopy(server.Settings, true)
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
 		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}
-		server.Data = data or {}
+		server.Data = data
 		server.Model = data.Model or service.New("Model")
 		server.ModelParent = data.ModelParent or service.ServerScriptService;
 		server.Loader = data.Loader or service.New("Script")
@@ -553,12 +541,11 @@ return service.NewProxy({
 		server.Client = Folder.Parent.Client
 
 		locals.Settings = server.Settings
-		locals.CodeName = server.CodeName
 
 		--// THIS NEEDS TO BE DONE **BEFORE** ANY EVENTS ARE CONNECTED
 		if server.Settings.HideScript and data.Model then
 			data.Model.Parent = nil
-			script:Destroy()
+			--script:Destroy() -- Unnecessary and potentially harmful?
 		end
 
 		--// Copy client themes, plugins, and shared modules to the client folder
@@ -611,12 +598,15 @@ return service.NewProxy({
 		end
 
 		--// Bind cleanup
-		service.DataModel:BindToClose(CleanUp)
-		--server.CleanUp = CleanUp;
+		service.DataModel:BindToClose(function(...)
+			server.CleanUp(...)
+		end)
+		server.CleanUp = CleanUp
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
 		server.Changelog = require(server.Shared.Changelog)
+		server.Version = server.Changelog and tonumber(string.match(server.Changelog[1], "^%[?%w*:? ?[Vv]?(%d+)")) or server.Version -- Set server version from changelog
 		server.Credits = require(server.Shared.Credits)
 		server.DLL = require(server.Shared.DoubleLinkedList)
 		server.FormattedChangelog = table.create(#server.Changelog)
@@ -658,7 +648,6 @@ return service.NewProxy({
 			})
 		end
 
-
 		--// Load services
 		for ind, serv in ipairs(SERVICES_WE_USE) do
 			local temp = service[serv]
@@ -674,8 +663,6 @@ return service.NewProxy({
 
 		--// Server Specific Service Functions
 		ServiceSpecific.GetPlayers = server.Functions.GetPlayers
-		--// Experimental, may have issues with Adonis tables that are protected metatables
-		--ServiceSpecific.CloneTable = CloneTable
 
 		--// Initialize Cores
 		local runLast = {}
@@ -725,7 +712,16 @@ return service.NewProxy({
 		end
 
 		for _, module in ipairs(data.ServerPlugins or {}) do
-			LoadModule(module, false, {script = module, cPcall = server.cPcall})
+			xpcall(LoadModule, function(reason)
+				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
+				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
+				table.insert(server.messages, {
+					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
+					Icon = "maticon://Dangerous",
+					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,
+					Time = 15
+				})
+			end, module, false, {script = module, cPcall = server.cPcall})
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
@@ -736,10 +732,10 @@ return service.NewProxy({
 		-- // Load sourcecode clientside plugins
 		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) == "string" then
-				local code = Instance.new("StringValue")
+				local code = service.New("StringValue")
 
 				code.Name = service.HttpService:GenerateGUID(false)
-				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua"  or server.Core.Bytecode(module))
+				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua" or server.Core.Bytecode(module))
 				code.Parent = server.Client.Plugins
 			end
 		end
@@ -749,28 +745,26 @@ return service.NewProxy({
 		service.Events.AllModulesLoaded:Fire(os.time())
 
 		--// Queue handler
-		--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
+		--service.StartLoop("QueueHandler", "Heartbeat", service.ProcessQueue)
 
 		--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
 		for _, f in ipairs(runLast) do
 			f(data)
 		end
 
-		if data.Loader then
-			if not data.SilentStartup then
-				print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; Required by {data.Loader:GetFullName()}{data.Model:FindFirstChild("Version") and (" version: "..data.Model.Version.Value) or ""}`)
-			end
-		else
-			print(`Loading {data.NightlyMode and "Version: Nightly" or server.Changelog and server.Changelog[1] or ""} Complete; No loader location provided`)
+		if data.Loader and not silentStartup then
+			print(`Loading version {data.NightlyMode and "Nightly" or server.Version} Complete; Required by {data.Loader:GetFullName()}{data.LoaderVersion and (" version: "..data.LoaderVersion) or ""}`)
+		elseif not silentStartup then
+			print(`Loading version {data.NightlyMode and "Nightly" or server.Version} Complete; No loader location provided`)
 		end
 
 		if server.Logs then
 			server.Logs.AddLog(server.Logs.Script, {
-				Text = "Finished Loading";
-				Desc = "Adonis has finished loading";
+				Text = `Finished loading version {data.NightlyMode and "Nightly" or server.Version}`;
+				Desc = `Adonis has finished loading version {data.NightlyMode and "Nightly" or server.Version} by {data.Loader and data.Loader:GetFullName() or "UNKNOWN"}{data.LoaderVersion and (" version: "..data.LoaderVersion) or ""}`;
 			})
 		else
-			warn("SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
+			warn("CRITICAL ERROR! SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
 		end
 		service.Events.ServerInitialized:Fire();
 

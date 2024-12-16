@@ -30,7 +30,23 @@ return function(Vargs, GetEnv)
 		end, ...)
 	end
 	server.cPcall, service.cPcall = cPcall, cPcall
-	Remote.UnEncrypted = setmetatable({}, {
+	service.AltUnpack = function(args, shift) -- TODO: Remove. This is not used in Adonis at all and is easily replicatable so you can safely remove it withour fear
+		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
+	end
+	service.CloneTable = function(tbl)
+		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
+	end
+	service.GoodSignal = service.Signal
+	service.Yield = function()
+		local event = service.Signal.new()
+		return {
+			Release = function(...) event:Fire(...) end;
+			Wait = function(...) return event:Wait(...) end;
+			Destroy = function() event:Destroy() end;
+			Event = event;
+		}
+	end
+	Remote.UnEncrypted = setmetatable({}, { -- TODO: Start adding a server.Messages message and remove later
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
 			Remote.Commands[ind] = val
@@ -44,23 +60,43 @@ return function(Vargs, GetEnv)
 		local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
 		local Res = {}
 		for Idx = 1, Len do
-			Res[Idx] = format('%02x', random(255))
+			Res[Idx] = format("%02x", random(255))
 		end
 		return table.concat(Res)
 	end
 	if HTTP.Trello.API then
 		HTTP.Trello.API.GenerateRequestID = Functions.GetRandom
 	end
+	--// Old settings/plugins backwards compatibility. Do not remove this because many games use old loader ranks!
+	for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
+		if Settings[rank] and not Settings.CustomRanks[rank] then
+			Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
+		end
+	end
 	for k, v in {-- Legacy aliases
-		[":giveppoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
-		[":giveplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
-		[":sendplayerpoints <player> <amount>"] = ":script local Players = game:GetService(\"Players\") for _, v in ipairs(_G.Adonis.GetPlayers(Players:GetPlayers()[math.random(1, #Players:GetPlayers())], \"<player>\")) do game:GetService(\"PointsService\"):AwardPoints(v.UserId, <amount>) end",
-		[":flyclip <player>"] = ":fly <player> true";
+		[`{Settings.Prefix}giveppoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}giveplayerpoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}sendplayerpoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
+		[`{Settings.Prefix}flyclip <player>`] = `{Settings.Prefix}fly <player> true`;
+		[`{Settings.Prefix}showlogs true <player>`] = `{Settings.Prefix}showlogs <player> true`; -- TODO: Remove legacy :showlogs aliases, only temporarily here.
+		[`{Settings.Prefix}showlogs false <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showlogs yes <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showlogs no <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showcommandlogs true <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showcommandlogs false <player>`] = `{Settings.Prefix}showlogs <player> false`;
+		[`{Settings.Prefix}showcommandlogs yes <player>`] = `{Settings.Prefix}showlogs <player> true`;
+		[`{Settings.Prefix}showcommandlogs no <player>`] = `{Settings.Prefix}showlogs <player> false`;
 	} do
 		if not Variables.Aliases[k] then
 			Variables.Aliases[k] = v
 		end
 	end
+	HTTP.CheckHttp = function()
+		return HTTP.HttpEnabled
+	end
+	-- TODO: Remove \\/
+	service.OwnsAsset = service.CheckAssetOwnership
+	Functions.CatchError = server.Pcall
 
 	Logs:AddLog("Script", "Misc Features Module Loaded")
 end

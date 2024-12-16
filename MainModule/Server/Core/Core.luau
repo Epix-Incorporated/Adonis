@@ -108,7 +108,6 @@ return function(Vargs, GetEnv)
 	server.Core = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		DataQueue = {};
 		DataCache = {};
 		PlayerData = {};
 		CrossServerCommands = {};
@@ -119,7 +118,6 @@ return function(Vargs, GetEnv)
 		ScriptCache = {};
 		Connections = {};
 		BytecodeCache = {};
-		LastEventValue = 1;
 		SavedPlayerData = {};
 
 		Variables = {
@@ -181,6 +179,7 @@ return function(Vargs, GetEnv)
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
+			["Variables.UrgentModuleId"] = true;
 		};
 
 		--// Prevent certain keys from loading from the DataStore
@@ -511,7 +510,6 @@ return function(Vargs, GetEnv)
 
 			TrackTask(`Thread: Setup Existing Player: {p}`, function()
 				Process.PlayerAdded(p)
-				--Core.MakeClient(p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 120))
 			end)
 		end;
 
@@ -519,7 +517,7 @@ return function(Vargs, GetEnv)
 			local fixscr = service.UnWrap(scr)
 
 			for _, val in Core.ExecuteScripts do
-				if not isLocal or (isLocal and val.Type == "LocalScript") then
+				if not isLocal or isLocal and (val.Type == "LocalScript" or val.Type == "ClientScript") then
 					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
 						val.Executions += 1
 
@@ -554,7 +552,7 @@ return function(Vargs, GetEnv)
 		RegisterScript = function(data)
 			data.Executions = 0
 			data.Time = os.time()
-			data.Type = data.Script.ClassName
+			data.Type = data.Type or data.Script.ClassName
 			data.Wrapped = service.Wrap(data.Script)
 			data.Wrapped:SetSpecial("Clone",function()
 				return Core.RegisterScript({
@@ -599,6 +597,7 @@ return function(Vargs, GetEnv)
 		NewScript = function(scriptType: string, source: string, allowCodes: boolean?, noCache: boolean?, runLimit: number?)
 			local scr = assert(
 				if scriptType == "Script" then Deps.ScriptBase:Clone()
+					elseif scriptType == "ClientScript" then Deps.ClientScriptBase:Clone()
 					elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
 					else nil,
 				`Invalid script type '{scriptType}'`
@@ -619,7 +618,8 @@ return function(Vargs, GetEnv)
 			local wrapped = Core.RegisterScript({
 				Script = scr;
 				Code = execCode;
-				Source = scr:IsA("LocalScript") and Core.Bytecode(source) or source;
+				Type = scriptType;
+				Source = (scr:IsA("LocalScript") or scriptType == "ClientScript") and Core.Bytecode(source) or source;
 				noCache = noCache;
 				runLimit = runLimit;
 			})
@@ -1392,34 +1392,34 @@ return function(Vargs, GetEnv)
 					if Settings.G_Access and key == Settings.G_Access_Key and targ and Settings.Allowed_API_Calls[ind] == true then
 						if type(targ) == "table" then
 							return service.NewProxy {
-								__index = function(tab,inde)
-									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
+								__index = function(_, k)
+									if targ[k] ~= nil and API_Special[k] == nil or API_Special[k] == true then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was granted`;
-											Desc = `A server script was granted access to {inde}`;
+											Text = `Access to {k} was granted`;
+											Desc = `A server script was granted access to {k}`;
 										})
 
-										if targ[inde]~=nil and type(targ[inde]) == "table" and Settings.G_Access_Perms == "Read" then
-											return service.ReadOnly(targ[inde])
+										if targ[k] ~= nil and type(targ[k]) == "table" and Settings.G_Access_Perms == "Read" then
+											return service.ReadOnly(targ[k])
 										else
-											return targ[inde]
+											return targ[k]
 										end
-									elseif API_Special[inde] == false then
+									elseif API_Special[k] == false then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was denied`;
-											Desc = `A server script attempted to access {inde} via _G.Adonis.Access`;
+											Text = `Access to {k} was denied`;
+											Desc = `A server script attempted to access {k} via _G.Adonis.Access`;
 										})
 
-										error(`Access Denied: {inde}`)
+										error(`Access Denied: {k}`)
 									else
-										error(`Could not find {inde}`)
+										error(`Could not find {k}`)
 									end
 								end;
-								__newindex = function(tabl, inde, valu)
+								__newindex = function(_, k, v)
 									if Settings.G_Access_Perms == "Read" then
 										error("Read-only")
 									elseif Settings.G_Access_Perms == "Write" then
-										tabl[inde] = valu
+										rawset(targ, k, v)
 									end
 								end;
 								__metatable = true;
@@ -1531,13 +1531,13 @@ return function(Vargs, GetEnv)
 					AdonisDebugAPIBindable.Name = "Adonis_Debug_API"
 					AdonisDebugAPIBindable.Parent = service.ReplicatedStorage
 					AdonisDebugAPIBindable.OnInvoke = function(DebugCommand,...)
-						local args = {...}
+						local args = table.pack(...)
 
 						if DebugCommand == "RunEnvFunc" then
 							local FunctionInEnvToRunPath = args[1]
 							if FunctionInEnvToRunPath and type(FunctionInEnvToRunPath) == "string" then
 								local realEnvResult, isResultPointer = getRealEnvResult(FunctionInEnvToRunPath)
-								return realEnvResult(table.unpack(args,2,#args))
+								return realEnvResult(table.unpack(args, 2, args.n))
 							end
 						elseif DebugCommand == "GetEnvTableMeta" then
 							local TableInEnvPath = args[1]
@@ -1551,8 +1551,8 @@ return function(Vargs, GetEnv)
 							if TableInEnvPath and type(TableInEnvPath) == "string" then
 								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
 								local metaTableInEnv = getmetatable(realEnvResult)
-								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args,3,#args))
-								local resultPointer = tostring(math.random())
+								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args, 3, args.n))
+								local resultPointer = service.HttpService:GenerateGUID(false)
 								pointers[resultPointer] = result
 
 								return service.UnWrap(result), resultPointer
@@ -1586,11 +1586,11 @@ return function(Vargs, GetEnv)
 			})
 
 			if not rawget(_G, "Adonis") then
-				if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+				if not table.isfrozen(_G) then
 					rawset(_G, "Adonis", AdonisGTable)
 					StartLoop("APICheck", 1, function()
 						if rawget(_G, "Adonis") ~= AdonisGTable then
-							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+							if not table.isfrozen(_G) then
 								rawset(_G, "Adonis", AdonisGTable)
 							else
 								warn("⚠️ ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")

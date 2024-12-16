@@ -115,13 +115,23 @@ local SERVICES_WE_USE = table.freeze({
 	"NetworkClient",
 })
 
+local oldPrint = print
+print = function(...)
+	oldPrint(":: Adonis ::", ...)
+end
+
+local oldWarn = warn
+warn = function(...)
+	oldWarn(":: Adonis ::", ...)
+end
+
 --// Logging
 local clientLog = {}
 local dumplog = function()
-	warn(":: Adonis :: Dumping client log...")
+	warn("Dumping client log...")
 
 	for _, v in clientLog do
-		warn(":: Adonis ::", v)
+		warn(v)
 	end
 end
 local log = function(...)
@@ -141,7 +151,6 @@ local unique = {}
 local origEnv = getfenv()
 local Folder = script.Parent
 setfenv(1, setmetatable({}, { __metatable = unique }))
---local origWarn = warn
 local startTime = time()
 local oldInstNew = Instance.new
 local oldReq = require
@@ -166,17 +175,6 @@ local function logError(...)
 		client.Remote.Send("LogError", table.concat({ ... }, " "))
 	end
 end
-
-local oldPrint = print
-print = function(...)
-	oldPrint(":: Adonis ::", ...)
-end
-
---[[
-local warn = function(...)
-	warn(...)
-end
-]]
 
 local Pcall = function(func, ...)
 	local ran, err = pcall(func, ...)
@@ -277,7 +275,6 @@ local LoadModule = function(module, yield, envVars, noEnv)
 	if plugran then
 		if type(plug) == "function" then
 			if yield then
-				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 				local ran, err = service.TrackTask(
 					`Plugin: {module}`,
 					((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
@@ -288,7 +285,6 @@ local LoadModule = function(module, yield, envVars, noEnv)
 					GetEnv
 				)
 			else
-				-- service.Threads.RunTask(`PLUGIN: {module,setfenv(plug,GetEnv(getfenv(plug), envVars))}`)
 				local ran, err = service.TrackTask(
 					`Thread: Plugin: {module}`,
 					((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
@@ -321,7 +317,6 @@ client = setmetatable({
 	Routine = Routine,
 	OldPrint = oldPrint,
 	LogError = logError,
-	TestEvent = Instance.new("RemoteEvent"),
 
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
@@ -652,7 +647,7 @@ return service.NewProxy({
 			if not (Variables.LocalContainer and Variables.LocalContainer.Parent) then
 				Variables.LocalContainer = service.New("Folder", {
 					Parent = workspace,
-          Archivable = false,
+					Archivable = false,
 					Name = `__ADONIS_LOCALCONTAINER_{service.HttpService:GenerateGUID(false)}`,
 				})
 			end
@@ -696,7 +691,7 @@ return service.NewProxy({
 				--// Finished loading
 				log("Finish loading")
 				client.Finish_Loading = function() end
-				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
+				client.LoadingTime() --warn(tostring(time()-(client.TrueStart or startTime)))
 				service.Events.FinishedLoading:Fire(os.time())
 
 				log("~! FINISHED LOADING!")
