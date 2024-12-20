@@ -334,7 +334,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local arg = args[1] and string.lower(args[1])
-				Functions.LogAdminAction(plr, "Server Lock", "Server is now " .. (arg == "on" or arg == "true" and "locked" or "unlocked"), "")
+				Functions.LogAdminAction(plr, "Server Lock", "Server is now " .. (if (arg == "on" or arg == "true") then "locked" else "unlocked"), "")
 				if (not arg and Variables.ServerLock ~= true) or arg == "on" or arg == "true" then
 					Variables.ServerLock = true
 					Functions.Hint("Server Locked", service.Players:GetPlayers())
