@@ -1319,7 +1319,7 @@ return function(Vargs, GetEnv)
 				if #tab>=num then
 					break
 				elseif #tab>=num-1 then
-					table.insert(tab,string.sub(msg,#str+#tab+(if str.." " == key or #(str.." ")==5 then 0 elseif #(str.." ")<5 then num-2 elseif #(str.." ") > num then -1 else 2),#msg))
+					table.insert(tab,string.sub(msg,#str+#tab+(if str.." " == key or #(str.." ")==5 then 0 elseif #(str.." ")<5 then num-2 elseif (#(str.." ") > num or #(str.."") == num) then -1 else 2),#msg))
 					continue
 				end
 
