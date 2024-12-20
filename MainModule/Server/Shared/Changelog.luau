@@ -5,6 +5,7 @@ return {
 	"";
 	"[Patch v261.1 2024-12-20 20:02 UTC] @Dimenpsyonal";
 	"(Git/WalkerOfBacon) Fix string parsing (#1789)";
+	"(Git/WalkerOfBacon) Fix argument handling AGAIN (#1791)";
 	"";
 	"[v261 2024-12-16 23:00 UTC] @Dimenpsyonal";
 	"(Git/Expertcoderz) Add :ckick command (#1614)";
