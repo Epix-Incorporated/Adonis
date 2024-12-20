@@ -36,7 +36,7 @@ local descs = {};			--// Contains settings descriptions
 
 		Numbers do not use quotes. setting = 56
 
-		This green block of text you are reading is called a comment. It's like a message
+		This block of text you are reading is called a comment. It's like a message
 		from the programmer to anyone who reads their stuff. Anything in a comment will
 		not be seen by Luau when the script is run.
 
