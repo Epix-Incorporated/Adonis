@@ -1319,7 +1319,7 @@ return function(Vargs, GetEnv)
 				if #tab>=num then
 					break
 				elseif #tab>=num-1 then
-					table.insert(tab,string.sub(msg,#str+3,#msg))
+					table.insert(tab,string.sub(msg,#str+1,#msg))
 					continue
 				end
 
