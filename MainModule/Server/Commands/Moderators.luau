@@ -5414,7 +5414,8 @@ return function(Vargs, env)
 				assert(success and productInfo, "Invalid item ID")
 
 				local AssetTypeNameDescriptionOverides = {
-					DynamicHead = "Head"
+					DynamicHead = "Head";
+					TShirt = "GraphicTShirt"
 				}
 				--local typeEnum = Enum.AvatarAssetType:FromValue(productInfo.AssetTypeId)
 				local typeId = productInfo.AssetTypeId
