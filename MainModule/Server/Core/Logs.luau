@@ -88,12 +88,14 @@ return function(Vargs, GetEnv)
 				log.Time = os.time()
 			end
 
-			if tab.__meta == "DLL" then
-				tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
-			else
-				table.insert(tab, 1, log)
-				if #tab > tonumber(Logs.MaxLogs) then
-					table.remove(tab, #tab)
+			if tab then
+				if tab.__meta == "DLL" then
+					tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
+				else
+					table.insert(tab, 1, log)
+					if #tab > tonumber(Logs.MaxLogs) then
+						table.remove(tab, #tab)
+					end
 				end
 			end
 
