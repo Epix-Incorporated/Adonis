@@ -28,7 +28,7 @@ function LinkNode:setprev(p)
 end
 
 function LinkNode:Destroy()
-	for i,_ in self do 
+	for i, _ in self do 
 		self[i] = nil
 	end
 	setmetatable(self, nil)
@@ -58,14 +58,15 @@ function LinkedList:AddStart(data)
 	local old = self.snode
 	local newNode = LinkNode.new(data)
 	newNode:setprev(nil)
+
 	if not old then 
 		self.enode = newNode
 	else 
 		old:setprev(newNode)
 	end
+
 	newNode:setnext(old)
 	self.snode = newNode
-
 	self.count += 1
 end
 
@@ -73,19 +74,21 @@ function LinkedList:AddEnd(data)
 	local old = self.enode
 	local newNode = LinkNode.new(data)
 	newNode:setnext(nil)
+
 	if not old then 
 		self.snode = newNode
 	else 
-		old:setNext(newNode)
+		old:setnext(newNode)
 	end
+
 	newNode:setprev(old)
 	self.enode = newNode
-
 	self.count += 1
 end
 
 function LinkedList:AddToStartAndRemoveEndIfEnd(data, limit)
 	self:AddStart(data)
+
 	if self.count > limit and self.enode then 
 		self:RemoveNode(self.enode)
 	end
@@ -97,23 +100,22 @@ function LinkedList:AddBetweenNodes(data, left, right)
 	end
 
 	local newNode = LinkNode.new(data)
+
 	newNode:setnext()
 	newNode:setprev()
-
 	left:setnext(newNode)
 	right:setprev(newNode)
-
 	self.count += 1
 end
 
 function LinkedList:RemoveNode(node)
+	local data = node.data
 	local prev = node.prev
 	local nextN = node.next
 
 	if self.snode == node then
 		self.snode = nextN
 	end
-
 	if self.enode == node then
 		self.enode = prev
 	end
@@ -127,10 +129,10 @@ function LinkedList:RemoveNode(node)
 
 	node:setnext(nil)
 	node:setprev(nil)
-
 	node:Destroy()
-
 	self.count -= 1
+
+	return data
 end
 
 function LinkedList:Get(val: any)
@@ -162,8 +164,10 @@ function LinkedList:Get(val: any)
 		else
 			table.insert(nodes, curr)
 		end
+
 		curr = curr.next
 	end
+
 	return nodes
 end
 
@@ -197,14 +201,16 @@ function LinkedList:GetAsTable(val: any)
 		else 
 			table.insert(nodes, curr.data)
 		end
+
 		curr = curr.next
 	end
+
 	return nodes
 end
 
 function LinkedList:Destroy()
-	for i, _ in self do
-		self[i] = nil
+	for k, _ in self do
+		self[k] = nil
 	end
 	setmetatable(self, nil)
 end
