@@ -71,6 +71,9 @@ jobs:
         
       - name: Build MainModule
         run: rojo build -o module.rbxm .github/module.deploy.project.json
+        
+      - name: Build Alerts Module
+        run: rojo build -o alertsmodule.rbxm .github/alerts.deploy.project.json
 
       - name: Send Standalone Release to Discord channel
         uses: tsickert/discord-webhook@v6.0.0
@@ -95,5 +98,15 @@ jobs:
           method: "POST"
           contentType: "multipart/form-data"
           files: '{ "file": "module.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
+          
+      - name: Publish Alerts Module
+        uses: fjogeleit/http-request-action@v1.16.1
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.ALERTS_MODULE_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "alertsmodule.rbxm" }'
           customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
           timeout: 10000
