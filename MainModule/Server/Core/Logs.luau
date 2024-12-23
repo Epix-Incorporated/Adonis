@@ -97,9 +97,9 @@ return function(Vargs, GetEnv)
 						table.remove(tab, #tab)
 					end
 				end
+				
+				service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 			end
-
-			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 		end;
 
 		-- // Preliminary support for oldlog encryption
