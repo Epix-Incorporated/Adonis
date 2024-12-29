@@ -285,6 +285,7 @@ settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictl
 settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
+settings.ChatCreateRobloxCommands = true	-- Whether "/" commands for Roblox should get created in new Chat
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
@@ -296,11 +297,12 @@ settings.Notification = true	           -- Whether or not to show the "You're an
 settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
 settings.HiddenThemes = {}				   -- Hide themes from the theme selector tab inside the userpanel. Each theme name must be the specific name such as "Mobilius"
-settings.Messages = {}			           -- A list of notifications shown on join. Messages can either be strings or tables. Messages are shown to HeadAdmins+ by default but tables can define a different minimum level via .Level
+settings.Messages = {}			           -- A list of notification messages to show HeadAdmins and above on join
 settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	           -- Time between auto cleans
 settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
 settings.ReJail = false			           -- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
+settings.DisableRejoinAtMaxPlayers = false -- If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount.
 
 settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
@@ -374,6 +376,7 @@ settings.AntiNoclip = false					-- (Default: false)	Attempts to detect noclippin
 settings.AntiRootJointDeletion = false		-- (Default: false)	Attempts to detect paranoid and kills the player if found.
 settings.AntiMultiTool = false 				-- (Default: false)	Prevents multitool and because of that many other exploits.
 settings.AntiGod = false 					-- (Default: false)	If a player does not respawn when they should have they get respawned.
+-- settings.AntiHumanoidDeletion and settings.ProtectHats have been superseded by Workspace.RejectCharacterDeletions.
 
 settings.AntiSpeed = false 				-- (Default: false)	(Client-Sided) Attempts to detect speed exploits.
 settings.AntiBuildingTools = false		-- (Default: false)	(Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
@@ -457,6 +460,7 @@ descs.CrossServerCommands = [[ Are commands which affect more than one server en
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands ]]
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
+descs.ChatCreateRobloxCommands = [[ Whether "/" commands for Roblox should get created in new Chat ]]
 
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
@@ -470,8 +474,9 @@ descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting 
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
+descs.DisableRejoinAtMaxPlayers = [[ If true, disables rejoin when max players is reached to avoid an exploit that allows more players than the max amount. ]]
 
-descs.Messages = [[ A list of notifications shown on join. Messages can either be strings or tables. Messages are shown to HeadAdmins+ by default but tables can define a different minimum level via .Level ]]
+descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 
 descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
@@ -575,6 +580,7 @@ order = {
 	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
+	"ChatCreateRobloxCommands";
 	" ";
 	"BanMessage";
 	"LockMessage";
@@ -586,6 +592,7 @@ order = {
 	"SongHint";
 	"TopBarShift";
 	"ReJail";
+	"DisableRejoinAtMaxPlayers";
 	"";
 	"AutoClean";
 	"AutoCleanDelay";

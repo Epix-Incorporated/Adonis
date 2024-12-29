@@ -1,8 +1,10 @@
+
 --// This module is for stuff specific to debugging
 --// Most of this only runs when DebugMode is enabled
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
 
 return function(Vargs, GetEnv)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -14,6 +16,7 @@ return function(Vargs, GetEnv)
 		return
 	end
 
+	
 	--[[
 	--// Unfortunately not viable
 	--// TODO: Make this viable perhaps? If done so, expose as a :terminal command
@@ -111,32 +114,6 @@ return function(Vargs, GetEnv)
 		end
 	}
 
-	Commands.TestFilter = {
-		Prefix = Settings.Prefix;
-		Commands = {"testfilter", "filtertest", "tfilter"};
-		Args = {"player", "text"};
-		NoFilter = true;
-		Debug = true;
-		Description = "Test out Roblox's text filtering on a player";
-		AdminLevel = "Moderators";
-		Function = function(plr: Player, args: {string})
-			assert(args[1], "Missing player name")
-			assert(args[2], "Missing text to filter")
-			local temp = {{Text=`Original: {args[2]}`, Desc = args[2]}}
-			if service.RunService:IsStudio() then
-				table.insert(temp, {Text="!! The string has not been filtered !!", Desc="Text filtering does not work in studio"})
-			end
-			for _, v in service.GetPlayers(plr, args[1]) do
-				table.insert(temp, {Text = `-- {v.DisplayName} --`, Desc = `{v.UserId} ({v.Name})`})
-				table.insert(temp, {Text = `ChatForUser: {service.TextService:FilterStringAsync(args[2], v.UserId):GetChatForUserAsync(v.UserId)}`})
-				table.insert(temp, {Text = `NonChatForBroadcast: {service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForBroadcastAsync()}`})
-				table.insert(temp, {Text = `NonChatForUser: {service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForUserAsync(v.UserId)}`})
-
-			end
-			Remote.MakeGui(plr, "List", {Title = "Filtering Results", Tab = temp})
-		end
-	};
-
 	Commands.GetDebugAdonisEnvScript = {
 		Prefix = Settings.Prefix;
 		Commands = {"debugadonisenvscript"};
@@ -150,18 +127,25 @@ return function(Vargs, GetEnv)
 			local ScriptSrcTxt = ""
 			Remote.MakeGui(plr, "Notepad", {
 				Text = [[-- Made by your friendly moo1210, to make debugging the adonis env not a pain. :)
-local IS_RUNNING_IN_SAME_SCRIPT_IDENTITY = false -- If you're running as a normal user-space script (aka the script identity is 2 when you use printidentity), you may toggle this to true, to prevent needing to wrap instances. This may prevent any minor incompatiblies caused by the wrapping logic, if any. This will not work in the command bar, run script button, or plugins.
+
+local IsRunningInSameScriptIdentity = false -- If you're running as a normal user-space script (aka the script identity is 2 when you use printidentity), you may toggle this to true, to prevent needing to wrap instances. This may prevent any minor incompatiblies caused by the wrapping logic, if any. This will not work in the command bar, run script button, or plugins.
 
 ----
-local DebugApiBindable = assert(IS_RUNNING_IN_SAME_SCRIPT_IDENTITY and nil or game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15), "Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
+local DebugApiBindable = IsRunningInSameScriptIdentity and nil or game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15)
+if not DebugApiBindable then
+	error("Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
+end
 local DebugApi
-if IS_RUNNING_IN_SAME_SCRIPT_IDENTITY then
+if IsRunningInSameScriptIdentity then
 	pcall(function()
 	   DebugApi = _G.Adonis.Debug
 	end)
 	if not DebugApi then
-		warn("The IS_RUNNING_IN_SAME_SCRIPT_IDENTITY option is enabled, however _G.Adonis.Debug was unable to be accessed. Is DebugMode and the _G API enabled? Falling back to BindableEvent")
-		DebugApiBindable = assert(game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15), "Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
+		warn("The IsRunningInSameScriptIdentity option is enabled, however _G.Adonis.Debug was unable to be accessed. Is DebugMode and the _G API enabled? Falling back to BindableEvent")
+		DebugApiBindable = game:GetService("ReplicatedStorage"):WaitForChild("Adonis_Debug_API", 15)
+		if not DebugApiBindable then
+			error("Adonis Debug API not found within 15 seconds! Is DebugMode enabled?")
+		end
 		DebugApi = DebugApiBindable:Invoke("GetApi")
 	end
 else
@@ -191,17 +175,17 @@ function WrapAdonisEnv(toWrap, chain)
 				return toWrap
 			elseif type(toWrap[k]) == "function" then
 				return function(...)
-					local args = table.pack(...)
-					local unwrappedArgs = table.create(args.n)
-
-					for i, arg in args do
-						if (type(arg) == "table" or type(arg) == "userdata") and arg.GetObject then
+					local args = {...}
+					local unwrappedArgs = {}
+					
+					for i,arg in ipairs(args) do
+						if arg.GetObject then
 							unwrappedArgs[i] = arg.GetObject
 						else
 							unwrappedArgs[i] = arg
 						end
 					end
-					--print(unwrappedArgs)
+					print(unwrappedArgs)
 					DebugApiBindable:Invoke("RunEnvFunc", tonumber(chain) and chain or curChain:sub(1, #curChain - 3), table.unpack(unwrappedArgs))
 				end
 			else
@@ -247,7 +231,7 @@ local service = wrappedEnv.Service
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
-		AdminLevel = "Players";
+		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
 			--assert(args[1] and args[2],"Argument missing or nil")
 			Remote.Send(plr, "TestError")
@@ -269,7 +253,7 @@ local service = wrappedEnv.Service
 		Description = "Test Big List";
 		Hidden = true;
 		Debug = true;
-		AdminLevel = "Admins";
+		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
 			local list = {}
 
@@ -312,6 +296,7 @@ local service = wrappedEnv.Service
 		Debug = true;
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
+
 			print(Remote.Get(plr,"Test"))
 
 			local tab = {
@@ -363,6 +348,7 @@ local service = wrappedEnv.Service
 			Remote.Send(plr, "TestEvent", "TestEvent", "hi mom I went thru the interwebs")
 			
 			print("RemoteEvent Fired successfully")
+
 		end;
 	};
 
@@ -401,9 +387,7 @@ local service = wrappedEnv.Service
 		Args = {"player", "action", "info"};
 		Description = "Allows you to make a mock anti cheat detection";
 		Hidden = true;
-		Debug = true;
-		NoFilter = true;
-		AdminLevel = "HeadAdmins";
+		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
 			for _, v in service.GetPlayers(plr, args[1]) do
 				Anti.Detected(v, table.unpack(args, 2))

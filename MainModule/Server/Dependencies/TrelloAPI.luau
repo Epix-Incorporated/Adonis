@@ -1,17 +1,17 @@
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Trello API Documentation:																																	 --
---																																								 --
--- App Key Link:				/app-key																														 --
---																																								 --
--- Token Link:					/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE						 --
--- Replace "YOUR_APP_KEY_HERE" with the App Key from /app-key																									 --
--- Trello API Remade by imskyyc for Kronos and Adonis - original by Sceleratis / Davey_Bones for Adonis.														 --
+-- Trello API Documentation: 																							     --
+--																																							     --
+-- App Key Link: 			 	/app-key																						    			 --
+--																																				  				 --
+-- Token Link:   			 	/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE     --
+-- Replace "YOUR_APP_KEY_HERE" with the App Key from /app-key																					 --
+-- Trello API Remade by imskyyc for Kronos and Adonis - original by Sceleratis / Davey_Bones for Adonis.																	 --
 -- It is requested that existing credits remain here.																											 --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local print = function(...) warn("[Adonis TrelloAPI]: INFO:", ...) end
-local warn = function(...) warn("[Adonis TrelloAPI]: WARN:", ...) end
-local error = function(message, level) warn("[Adonis TrelloAPI]: ERROR:", message) return error("[Adonis TrelloAPI]: ERROR:"..message, level == 0 and 0 or 1 + (level or 1)) end
+local print = function(...) for i,v in {...} do warn(`[Adonis TrelloAPI]: INFO: {v}`) end end
+local error = function(...) for i,v in {...} do warn(`[Adonis TrelloAPI]: ERROR: {v}`) end end
+local warn = function(...) for i,v in {...} do warn(`[Adonis TrelloAPI]: WARN: {v}`) end end
 
 local HttpService = game:GetService("HttpService")
 local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}

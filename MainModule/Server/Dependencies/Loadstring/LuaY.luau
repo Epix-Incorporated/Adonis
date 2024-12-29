@@ -298,10 +298,10 @@ end
 -- * used only in checklimit()
 ------------------------------------------------------------------------
 function luaY:errorlimit(fs, limit, what)
-  local msg = (fs.f.lineDefined == 0) and
+  local msg = (fs.f.linedefined == 0) and
     string.format("main function has more than %d %s", limit, what) or
     string.format("function at line %d has more than %d %s",
-                  fs.f.lineDefined, limit, what)
+                  fs.f.linedefined, limit, what)
   luaX:lexerror(fs.ls, msg, 0)
 end
 

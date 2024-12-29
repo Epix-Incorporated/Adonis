@@ -59,8 +59,6 @@ return function(data, env)
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
 	local str = data.Message
-	gui.IgnoreGuiInset = not client.Variables.TopBarShift
-	gui.ClipToDeviceSafeArea = true
 
 	client.UI.Remove("Notif",script.Parent.Parent)
 	local log  = {

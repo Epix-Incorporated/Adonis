@@ -8,6 +8,8 @@ return function(data, env)
 	local gfps = true
 	local gTable
 
+	--warn(math.floor(1/game:GetService("RunService").RenderStepped:Wait()))
+
 	local window = client.UI.Make("Window", {
 		Name = "Performance stats",
 		Title = "Stats",
@@ -44,7 +46,7 @@ return function(data, env)
 				workspace:GetRealPhysicsFPS(),
 				service.Players.LocalPlayer:GetNetworkPing() * 1000
 			)
-			task.wait(0.5)
+			task.wait(1)
 		until not gfps or not gTable.Active
 	end
 end

@@ -25,11 +25,15 @@ local canEditTables = {
 
 local function tabToString(tab)
 	if type(tab) == "table" then
-		local str = table.create(#tab)
+		local str = ""
 		for i, v in tab do
-			table.insert(str, `{i}: {v}`)
+			if #str > 0 then
+				str ..= "; "
+			end
+
+			str ..= `{i}: {v}`
 		end
-		return table.concat(str, "; ")
+		return str
 	else
 		return tostring(tab)
 	end
@@ -149,7 +153,7 @@ return function(data, env)
 				TextColor3 = Color3.new(1, 1, 1);
 				Text = "";
 				PlaceholderText = "Search";
-				TextStrokeTransparency = 1;
+				TextStrokeTransparency = 0.8;
 			})
 
 			local items = tabWindow:Add("ScrollingFrame", {
@@ -878,7 +882,7 @@ return function(data, env)
 				TextColor3 = Color3.new(1, 1, 1);
 				Text = "";
 				PlaceholderText = "Search";
-				TextStrokeTransparency = 1;
+				TextStrokeTransparency = 0.8;
 			})
 
 			local function getBinds()
@@ -1140,7 +1144,7 @@ return function(data, env)
 				TextColor3 = Color3.new(1, 1, 1);
 				Text = "";
 				PlaceholderText = "Search";
-				TextStrokeTransparency = 1;
+				TextStrokeTransparency = 0.8;
 			})
 
 			local aliases = aliasTab:Add("ScrollingFrame", {

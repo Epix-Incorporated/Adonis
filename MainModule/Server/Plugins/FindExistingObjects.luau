@@ -5,6 +5,7 @@
 --]]
 
 return function(Vargs, GetEnv)
+	
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -30,6 +31,4 @@ return function(Vargs, GetEnv)
 			})
 		end
 	end
-
-	Logs:AddLog("Script", "Current Adonis objects successfully loaded in to instance lists");
 end

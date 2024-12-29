@@ -2,9 +2,9 @@ while true do
 	task.wait(math.random(5, 20))
 
 	if script.Parent ~= nil then
-		script.Parent:FindFirstChild(`Quack{math.random(1, 4)}`):Play()
+		local name = `Quack{math.random(1, 4)}`
+		script.Parent:FindFirstChild(name):Play()
 	else
-		script:Destroy()
 		break
 	end
 end

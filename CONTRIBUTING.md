@@ -63,7 +63,7 @@ After installing Rojo, you can serve it by running `rojo serve` or by using the 
 
 ## Q: What can I contribute to the Wiki?
 
-**A:** Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when developing plugins for Adonis. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.) To add wiki contributions, message a maintainer with information regarding your requested fix and it will be reviewed.
+**A:** Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when developing plugins for Adonis. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.)
 
 ## Q: My contribution was accepted. Now what?
 
@@ -85,6 +85,6 @@ Discord server: <https://discord.com/invite/H5RvTP3>
 
 Feel free to make enquiries on our Discord server.
   
-<sub>Adonis Contribution Guide 2024</sub>
+<sub>Adonis Contribution Guide 2022</sub>
 
 </div>

@@ -36,10 +36,10 @@ local Debris = game:GetService("Debris")
 
 -- // Constants
 
-local CLOUD_RING_MESH_ID = "rbxassetid://3270017"
-local CLOUD_SPHERE_MESH_ID = "rbxassetid://1185246"
-local CLOUD_MESH_ID = "rbxassetid://1095708"
-local CLOUD_COLOR_TEXTURE = "rbxassetid://1361097"
+local CLOUD_RING_MESH_ID = "http://www.roblox.com/asset/?id=3270017"
+local CLOUD_SPHERE_MESH_ID = "http://www.roblox.com/asset/?id=1185246"
+local CLOUD_MESH_ID = "http://www.roblox.com/asset/?id=1095708"
+local CLOUD_COLOR_TEXTURE = "http://www.roblox.com/asset/?ID=1361097"
 
 -- // Variables
 
@@ -65,9 +65,9 @@ cloudMesh.MeshId, cloudMesh.TextureId = CLOUD_MESH_ID, CLOUD_COLOR_TEXTURE
 cloudMesh.VertexColor = Vector3.new(0.9, 0.6, 0)
 
 local skybox = Instance.new("Sky")
-skybox.SkyboxFt, skybox.SkyboxBk = "rbxassetid://1012887", "rbxassetid://1012890"
-skybox.SkyboxLf, skybox.SkyboxRt = "rbxassetid://1012889", "rbxassetid://1012888"
-skybox.SkyboxDn, skybox.SkyboxUp = "rbxassetid://1012891", "rbxassetid://1014449"
+skybox.SkyboxFt, skybox.SkyboxBk = "http://www.roblox.com/asset/?version=1&id=1012887", "http://www.roblox.com/asset/?version=1&id=1012890"
+skybox.SkyboxLf, skybox.SkyboxRt = "http://www.roblox.com/asset/?version=1&id=1012889", "http://www.roblox.com/asset/?version=1&id=1012888"
+skybox.SkyboxDn, skybox.SkyboxUp = "http://www.roblox.com/asset/?version=1&id=1012891", "http://www.roblox.com/asset/?version=1&id=1014449"
 
 local nukeSkyboxes, realSkyboxes = setmetatable({}, {__mode = "v"}), setmetatable({}, {__mode = "v"})
 local nukeIgnore = setmetatable({}, {__mode = "v"})
@@ -292,7 +292,6 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 	local container = Instance.new("Model")
 	container.Name = "ADONIS_NUCLEAREXPLOSION"
 	container.Archivable = false
-	container.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
 	container.Parent = workspace
 	table.insert(nukeIgnore, container)
 

@@ -1,6 +1,7 @@
 return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
+
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
@@ -36,7 +37,6 @@ return function(Vargs, env)
 				do
 					if Admin.CheckAuthority(plr, v, "time-ban", false) then
 						Admin.AddTimeBan(v, duration, reason, plr)
-						Functions.LogAdminAction(plr, "Time Ban", v.Name, `Duration: {args[2]}, Reason: {reason}`)
 						Functions.Hint(`Time-banned {service.FormatPlayer(v, true)} for {args[2]}`, {plr})
 					end
 				end
@@ -75,7 +75,7 @@ return function(Vargs, env)
 						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 
 						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
-						Functions.LogAdminAction(plr, "Direct Time Ban", actualName or i, `Duration: {args[2]}, Reason: {reason}`)
+
 						Functions.Hint(
 							`Time-banned {if getNameSuccess then `@{actualName}` else `'{i}'`} for {args[2]}`,
 							{plr}
@@ -100,7 +100,6 @@ return function(Vargs, env)
 					AllowUnknownUsers = true;
 					})
 				do
-					Functions.LogAdminAction(plr, "Un-Time Ban", v.Name, "Removed from timeban list")
 					Functions.Hint(
 						if Admin.RemoveTimeBan(v.Name)
 							then `{service.FormatPlayer(v, true)} has been un-time-banned`
@@ -129,7 +128,6 @@ return function(Vargs, env)
 				do
 					if Admin.CheckAuthority(plr, v, "game-ban", false) then
 						Admin.AddBan(v, reason, true, plr, "Global")
-						Functions.LogAdminAction(plr, "Permanent Ban", v.Name, reason)
 						Functions.Hint(`Game-banned {service.FormatPlayer(v, true)}`, {plr})
 					else
 						Functions.Hint(`Unable to game-ban {service.FormatPlayer(v, true)} (insufficient permission level)`, {plr})
@@ -151,7 +149,6 @@ return function(Vargs, env)
 					AllowUnknownUsers = true;
 					})
 				do
-					Functions.LogAdminAction(plr, "Unbanned", v.Name, "N/A")
 					Functions.Hint(
 						if Admin.RemoveBan(v.Name, true)
 							then `{service.FormatPlayer(v, true)} has been unbanned from the game`
@@ -169,13 +166,12 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary admin; does not save";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
-			Function = function(plr: Player, args: {string}, data: any)
+			Function = function(plr: Player, args: {string}, data: {})
 				local senderLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins", true)
-						Functions.LogAdminAction(plr, "Temporary Admin", v.Name, "Temporary admin granted.")
 						Functions.Notification("Notification", "You are a temp administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temporary admin`, {plr})
 					else
@@ -192,7 +188,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) an admin; saves";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
-			Function = function(plr: Player, args: {string}, data: any)
+			Function = function(plr: Player, args: {string}, data: {})
 				local senderLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
@@ -201,7 +197,6 @@ return function(Vargs, env)
 				do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins")
-						Functions.LogAdminAction(plr, "Permanent Admin", v.Name, "Granted permanent admin rights.")
 						Functions.Notification("Notification", "You are an administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a permanent admin`, {plr})
 					else
@@ -241,6 +236,57 @@ return function(Vargs, env)
 					error("CrossServer handler not ready; please try again later")
 				end
 			end;
+		};
+
+		MakeList = {
+			Prefix = Settings.Prefix;
+			Commands = {"makelist", "newlist", "newtrellolist", "maketrellolist"};
+			Args = {"name"};
+			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
+			TrelloRequired = true;
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "You need to supply a list name.")
+
+				local trello = HTTP.Trello.API
+				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
+
+				local list = trello.Boards.MakeList(Settings.Trello_Primary, args[1])
+				Functions.Hint(`Made list {list.name}`, {plr})
+			end
+		};
+
+		ViewList = {
+			Prefix = Settings.Prefix;
+			Commands = {"viewlist", "viewtrellolist"};
+			Args = {"name"};
+			Description = "Views the specified Trello list from the primary board set in Settings.";
+			TrelloRequired = true;
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string})
+				local trello = HTTP.Trello.API
+				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
+				local list = assert(trello.Boards.GetList(Settings.Trello_Primary, assert(args[1], "Enter a valid list name")), "List not found.")
+
+				local cards = trello.Lists.GetCards(list.id)
+				local temp = table.create(#cards)
+				for _, v in cards do
+					table.insert(temp, {Text = v.name, Desc = v.desc})
+				end
+				Remote.MakeGui(plr, "List", {Title = list.name; Tab = temp})
+			end
+		};
+
+		MakeCard = {
+			Prefix = Settings.Prefix;
+			Commands = {"makecard", "maketrellocard", "createcard"};
+			Args = {};
+			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
+			TrelloRequired = true;
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "CreateCard")
+			end
 		};
 
 		FullClear = {
@@ -285,37 +331,6 @@ return function(Vargs, env)
 				end
 
 				Variables.BackingupMap = true
-				Variables.OriginalGravity = workspace.Gravity
-
-				local Lighting = service.Lighting
-				local atmosphere = Lighting:FindFirstChildWhichIsA("Atmosphere")
-
-				Variables.OriginalLightingSettings = {
-					Ambient = Lighting.Ambient,
-					OutdoorAmbient = Lighting.OutdoorAmbient,
-					Brightness = Lighting.Brightness,
-					TimeOfDay = Lighting.TimeOfDay,
-					FogColor = Lighting.FogColor,
-					FogEnd = Lighting.FogEnd,
-					FogStart = Lighting.FogStart,
-					GlobalShadows = Lighting.GlobalShadows,
-					Outlines = Lighting.Outlines,
-					ShadowColor = Lighting.ShadowColor,
-					ColorShift_Bottom = Lighting.ColorShift_Bottom,
-					ColorShift_Top = Lighting.ColorShift_Top,
-					GeographicLatitude = Lighting.GeographicLatitude,
-					Name = Lighting.Name,
-					Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
-				}
-				Variables.OriginalAtmosphereSettings = {
-					Name = atmosphere and atmosphere.Name,
-					Density = atmosphere and atmosphere.Density,
-					Offset = atmosphere and atmosphere.Offset,
-					Color = atmosphere and atmosphere.Color,
-					Decay = atmosphere and atmosphere.Decay,
-					Glare = atmosphere and atmosphere.Glare,
-					Haze = atmosphere and atmosphere.Haze,
-				}
 
 				local tempmodel = service.New("Model", {
 					Name = "BACKUP_MAP_MODEL"
@@ -453,7 +468,7 @@ return function(Vargs, env)
 						hide_character=hideCharacter
 					}
 					if hideCharacter then
-						v.CharacterAdded:Connect(function(character: Model)
+						v.CharacterAdded:Connect(function(character: Model) 
 							for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
 								if otherPlr == v then continue end
 								Remote.LoadCode(otherPlr, [[
@@ -559,6 +574,5 @@ return function(Vargs, env)
 				end
 			end
 		};
-
 	}
 end

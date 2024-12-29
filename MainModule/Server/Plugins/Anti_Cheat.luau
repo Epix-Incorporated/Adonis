@@ -1,6 +1,7 @@
 
 --// Anti-Exploit
 return function(Vargs, GetEnv)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -22,6 +23,8 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunAfterPlugins(data)
+		Logs:AddLog("Script", "Anti Plugin Module RunAfterPlugins Finished");
+
 		local function onPlayerAdded(player)
 			if not player.Character then
 				player.CharacterAdded:Wait()
@@ -30,6 +33,7 @@ return function(Vargs, GetEnv)
 			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode then
 				Anti.CharacterCheck(player)
 			end
+			
 		end
 
 		if not Settings.Detection then
@@ -50,8 +54,9 @@ return function(Vargs, GetEnv)
 		end
 		
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
-		Logs:AddLog("Script", "Anti Plugin Module RunAfterPlugins Finished")
 	end
+
+	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
 
 	server.Anti.CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
 		local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
@@ -142,6 +147,18 @@ return function(Vargs, GetEnv)
 					end
 				end)
 			end
+
+			local animator = humanoid:WaitForChild("Animator")
+
+			animator.AnimationPlayed:Connect(function(animationTrack)
+				local animationId = animationTrack.Animation.AnimationId
+				if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
+					task.defer(function()
+						animationTrack:Stop(1/60)
+					end)
+					Detected(player, "log", "Player played an inappropriate character animation")
+				end
+			end)
 
 			local connections = {}
 			local function makeConnection(Conn)

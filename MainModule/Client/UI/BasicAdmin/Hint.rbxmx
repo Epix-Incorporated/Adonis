@@ -68,8 +68,6 @@ return function(data, env)
 	local hintBody = hintClone:WaitForChild('Body')
 	local hintTitleText = hintTop:WaitForChild('Title')
 	local hintBodyText = hintBody:WaitForChild('To Name Later')
-	baseClip.Parent.IgnoreGuiInset = not client.Variables.TopBarShift
-	baseClip.Parent.ClipToDeviceSafeArea = true
 
 	gTable.BindEvent(hintButton.MouseButton1Click, function()
 		hintClone:TweenPosition(UDim2.new(0,0,0,-hintClone.AbsoluteSize.Y),'Out','Quint',0.3,true,function(Stat)
