@@ -1289,9 +1289,10 @@ return function(Vargs, GetEnv)
 								local data = GetData(tData.TableKey)
 								if data then
 									--// TODO: Possibly find a better way to "batch" TableUpdates to prevent script exhaustion
+									local isStudio = service.RunService:IsStudio() -- Studio lag workaround for loading larger data such as BannedList
 									for i = 1, #data do
 										LoadData("TableUpdate", data[i])
-										if i % 250 == 0 then
+										if (isStudio and #data > 500 and i % 25 == 0) or i % 250 == 0 then
 											task.wait()
 										end
 									end
