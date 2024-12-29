@@ -1,10 +1,7 @@
 return {
-	"Version: 261.2";
+	"Version: 261.1";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
-	"";
-	"[Patch v261.2 2024-12-21 20:23 UTC] @Dimenpsyonal";
-	"ACTUALLY fix argument handling";
 	"";
 	"[Patch v261.1 2024-12-20 20:02 UTC] @Dimenpsyonal";
 	"Revert argument handling change";
