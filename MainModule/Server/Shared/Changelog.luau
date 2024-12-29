@@ -1,10 +1,7 @@
 return {
-	"Version: 261.1";
+	"Version: 261";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
-	"";
-	"[Patch v261.1 2024-12-20 20:02 UTC] @Dimenpsyonal";
-	"(Git/WalkerOfBacon) Fix string parsing (#1789)";
 	"";
 	"[v261 2024-12-16 23:00 UTC] @Dimenpsyonal";
 	"(Git/Expertcoderz) Add :ckick command (#1614)";
