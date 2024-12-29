@@ -4,7 +4,6 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[Patch v261.1 2024-12-20 20:02 UTC] @Dimenpsyonal";
-	"Revert argument handling change";
 	"(Git/WalkerOfBacon) Fix string parsing (#1789)";
 	"(Git/WalkerOfBacon) Fix argument handling AGAIN (#1791)";
 	"";
