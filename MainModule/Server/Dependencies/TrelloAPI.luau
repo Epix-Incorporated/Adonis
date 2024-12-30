@@ -9,9 +9,9 @@
 -- It is requested that existing credits remain here.																											 --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local print = function(...) for i,v in {...} do warn(`[Adonis TrelloAPI]: INFO: {v}`) end end
-local error = function(...) for i,v in {...} do warn(`[Adonis TrelloAPI]: ERROR: {v}`) end end
-local warn = function(...) for i,v in {...} do warn(`[Adonis TrelloAPI]: WARN: {v}`) end end
+local print = function(...) warn("[Adonis TrelloAPI]: INFO:", ...) end
+local error = function(...) warn("[Adonis TrelloAPI]: ERROR:", ...) end
+local warn = function(...) warn("[Adonis TrelloAPI]: WARN:", ...) end
 
 local HttpService = game:GetService("HttpService")
 local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}

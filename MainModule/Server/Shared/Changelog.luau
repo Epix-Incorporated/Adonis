@@ -404,7 +404,7 @@ return {
 	"(Git/DaRealGandhi20) [Add Text Selectable + New Text Format] :selectplayers/:count (#1132)";
 	"Git/Dimenpsyonal) Add atmosphere support (#1139)";
 	"(Git/Deniernal354) Add myself to credits (#1144)";
-	"Git/wilsontultus) Update Moderators.lua - :invisible and :visible command... (#1146)";
+	"(Git/wilsontultus) Update Moderators.lua - :invisible and :visible command... (#1146)";
 	"(Git/wilsontulus) Update !playerinfo command - Mail & Phone/ID Verified Status (#1147)";
 	"(Git/Dimenpsyonal) Add age restriction settings (#1149)";
 	"(Git/Dimenpsyonal) Remove GitHub link (#1150)";
