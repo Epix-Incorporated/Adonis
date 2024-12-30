@@ -1,7 +1,10 @@
 return {
-	"Version: 261.2";
+	"Version: 261.3";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[Patch v261.3 2024-12-30 16:46 UTC] @Dimenpsyonal";
+	"Fix trello erroring instead of warning (#1805)";
 	"";
 	"[Patch v261.2 2024-12-21 20:23 UTC] @Dimenpsyonal";
 	"ACTUALLY fix argument handling";
@@ -497,7 +500,7 @@ return {
 	"(Git/DaRealGandhi20) [Add Text Selectable + New Text Format] :selectplayers/:count (#1132)";
 	"Git/Dimenpsyonal) Add atmosphere support (#1139)";
 	"(Git/Deniernal354) Add myself to credits (#1144)";
-	"Git/wilsontultus) Update Moderators.lua - :invisible and :visible command... (#1146)";
+	"(Git/wilsontultus) Update Moderators.lua - :invisible and :visible command... (#1146)";
 	"(Git/wilsontulus) Update !playerinfo command - Mail & Phone/ID Verified Status (#1147)";
 	"(Git/Dimenpsyonal) Add age restriction settings (#1149)";
 	"(Git/Dimenpsyonal) Remove GitHub link (#1150)";
