@@ -348,7 +348,7 @@ return function(Vargs, env)
 		Whitelist = {
 			Prefix = Settings.Prefix;
 			Commands = {"wl", "enablewhitelist", "whitelist"};
-			Args = {"on/off/add/remove/list/wipe", "optional player"};
+			Args = {"on/off/add/remove/list/clear", "optional player"};
 			Description = "Enables/disables the server whitelist; :wl username to add them to the whitelist";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -399,11 +399,11 @@ return function(Vargs, env)
 						end
 					end
 					Remote.MakeGui(plr, "List", {Title = "Whitelist List"; Tab = Tab;})
-				elseif sub == "wipe" then
+				elseif sub == "clear" then
 					Variables.Whitelist.Lists.Settings = {}
 					Functions.Hint("Cleared server whitelist", service.Players:GetPlayers())
 				else
-					error("Invalid subcommand (on/off/add/remove/list/wipe)")
+					error("Invalid subcommand (on/off/add/remove/list/clear)")
 				end
 			end
 		};
