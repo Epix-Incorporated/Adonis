@@ -10,8 +10,8 @@
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local print = function(...) warn("[Adonis TrelloAPI]: INFO:", ...) end
+local error = function(...) warn("[Adonis TrelloAPI]: ERROR:", ...) end
 local warn = function(...) warn("[Adonis TrelloAPI]: WARN:", ...) end
-local error = function(message, level) warn("[Adonis TrelloAPI]: ERROR:", message) return error("[Adonis TrelloAPI]: ERROR:"..message, level == 0 and 0 or 1 + (level or 1)) end
 
 local HttpService = game:GetService("HttpService")
 local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
