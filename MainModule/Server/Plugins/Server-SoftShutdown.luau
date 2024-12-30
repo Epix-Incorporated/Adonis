@@ -3,6 +3,7 @@
 --// GitHub@Expertcoderz was here to make things look better
 
 return function(Vargs, GetEnv)
+	
 	local server = Vargs.Server
 	local service = Vargs.Service
 
@@ -84,7 +85,6 @@ return function(Vargs, GetEnv)
 					TeleportService:TeleportToPlaceInstance(game.PlaceId, jobid, player, "", {[PARAMETER_2_NAME] = true})
 				end
 			end)
-
 			for _, player in service.Players:GetPlayers() do
 				teleport(player)
 			end
@@ -119,9 +119,6 @@ return function(Vargs, GetEnv)
 				Logs:AddLog("Script", `Teleporting {player.Name} to a temporary softshutdown server`)
 				teleportedPlayers[player] = 1
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[PARAMETER_NAME] = true})
-			end)
-			task.delay(60, function()
-				Variables.ServerLock = true
 			end)
 
 			while #Players:GetPlayers() > 0 do
@@ -158,13 +155,14 @@ return function(Vargs, GetEnv)
 						})
 					end
 
-					if #logs > Logs.OldCommandLogsLimit then
+					if #logs > 1000 then
 						table.remove(logs, #logs)
 					end
 
 					return logs
 				end)
 			end
+
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
@@ -181,9 +179,6 @@ return function(Vargs, GetEnv)
 				Logs:AddLog("Script", `Teleporting {player.Name} to a temporary softshutdown server`)
 				teleportedPlayers[player] = 1
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[PARAMETER_NAME] = true})
-			end)
-			task.delay(60, function()
-				Variables.ServerLock = true
 			end)
 
 			while #Players:GetPlayers() > 0 do
@@ -262,6 +257,4 @@ return function(Vargs, GetEnv)
 			end
 		end
 	}
-
-	Logs:AddLog("Script", "Soft Shutdown Module Loaded");
 end

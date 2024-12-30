@@ -274,8 +274,6 @@ return function(data, env)
 	local container = client.UI.Get("HintHolder",nil,true)
 	if not container then
 		local holder = service.New("ScreenGui")
-		holder.IgnoreGuiInset = not client.Variables.TopBarShift
-		holder.ClipToDeviceSafeArea = true
 		local hTable = client.UI.Register(holder)
 		local frame = service.New("ScrollingFrame", holder)
 		client.UI.Prepare(holder)
@@ -307,8 +305,9 @@ return function(data, env)
 
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
+	local topbar = client.UI.Get("TopBar")
 
-	container.Position = UDim2.new(0, 0, 0, (notif and 30 or 0))
+	container.Position = UDim2.new(0,0,0,((notif and 30) or 0) + ((topbar and 40) or 0) - 35)
 
 	local children = container:GetChildren()
 

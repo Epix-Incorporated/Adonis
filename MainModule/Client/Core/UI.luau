@@ -42,7 +42,7 @@ return function(Vargs, GetEnv)
 	local GetEnv = env.GetEnv
 
 	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
-	local TrackTask
+	local CloneTable, TrackTask
 	local function Init()
 		UI = client.UI;
 		Anti = client.Anti;
@@ -53,12 +53,43 @@ return function(Vargs, GetEnv)
 		Remote = client.Remote;
 		Deps = client.Deps;
 
+		CloneTable = service.CloneTable;
 		TrackTask = service.TrackTask;
 
 		UI.Init = nil;
 	end
 
 	local function RunLast()
+		--[[client = service.ReadOnly(client, {
+				[client.Variables] = true;
+				[client.Handlers] = true;
+				G_API = true;
+				G_Access = true;
+				G_Access_Key = true;
+				G_Access_Perms = true;
+				Allowed_API_Calls = true;
+				HelpButtonImage = true;
+				Finish_Loading = true;
+				RemoteEvent = true;
+				ScriptCache = true;
+				Returns = true;
+				PendingReturns = true;
+				EncodeCache = true;
+				DecodeCache = true;
+				Received = true;
+				Sent = true;
+				Service = true;
+				Holder = true;
+				GUIs = true;
+				LastUpdate = true;
+				RateLimits = true;
+
+				Init = true;
+				RunLast = true;
+				RunAfterInit = true;
+				RunAfterLoaded = true;
+				RunAfterPlugins = true;
+			}, true)--]]
 		UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
 		UI.RunLast = nil;
 	end
@@ -114,35 +145,21 @@ return function(Vargs, GetEnv)
 
 		LoadModule = function(module, data, env)
 			data = data or {}
-			local function safeTableClone(t) -- TODO: Make RFC on Luau repo to allow table.clone to work with closed metatables
-				local success, result = pcall(table.clone, t)
 
-				if success then
-					return result
-				else
-					local newT = setmetatable({}, {__index = function(_, k) return t[k] end})
-
-					for k, v in t do
-						newT[k] = v
-					end
-
-					return newT
-				end
-			end
 			local ran, func = pcall(require, module)
 			local newEnv = GetEnv(env, {
 				script = module,
-				client = safeTableClone(client),
-				service = safeTableClone(service)
+				client = CloneTable(client),
+				service = CloneTable(service)
 			})
 
 			if newEnv.service.Threads then
-				newEnv.service.Threads = table.clone(service.Threads)
+				newEnv.service.Threads = CloneTable(service.Threads)
 			end
 
 			for i,v in newEnv.client do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
-					newEnv.client[i] = safeTableClone(v)
+					newEnv.client[i] = CloneTable(v)
 				end
 			end
 
@@ -178,6 +195,7 @@ return function(Vargs, GetEnv)
 		GetNew = function(theme, name)
 			local foundConfigs = {}
 			local endConfig = {}
+			local endConfValues = {}
 
 			local confFolder = Instance.new("Folder")
 			local debounce = false
@@ -189,7 +207,7 @@ return function(Vargs, GetEnv)
 				if folder then
 					local baseValue = folder:FindFirstChild("Base_Theme")
 					local baseTheme = baseValue and baseValue.Value
-					local foundGUI = folder:FindFirstChild(name)
+					local foundGUI = folder:FindFirstChild(name) --local foundGUI = (baseValue and folder:FindFirstChild(name)) or UIFolder.Default:FindFirstChild(name)
 
 					if foundGUI then
 						local config = foundGUI:FindFirstChild("Config")
@@ -253,16 +271,8 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Get rid of an old Config folder and throw the new combination Config folder in
-				local found = foundConfigs[1].Found
-				local new = found:Clone()
+				local new = foundConfigs[1].Found:Clone()
 				local oldFolder = new:FindFirstChild'Config'
-
-				-- Keep a reference to the original element in case the script relies on a dependancy
-				-- found in the UI theme's directory
-				local originalReferenceValue = Instance.new("ObjectValue")
-				originalReferenceValue.Value = found
-				originalReferenceValue.Name = "OriginalReference"
-				originalReferenceValue.Parent = new
 
 				if oldFolder then oldFolder:Destroy() end
 
@@ -309,6 +319,7 @@ return function(Vargs, GetEnv)
 					end
 
 					local mult = foundConf.AllowMultiple
+					--local keep = foundConf.CanKeepAlive
 
 					local allowMult = mult and mult.Value or true
 					local found, num = UI.Get(name)
@@ -331,7 +342,7 @@ return function(Vargs, GetEnv)
 
 							local ran, ret = rets[1], rets[2]
 							if ret ~= nil then
-								if type(ret) == "userdata" and ret:IsA("ScreenGui") then
+								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
 									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
 
 									if not data.NoEnv and code then

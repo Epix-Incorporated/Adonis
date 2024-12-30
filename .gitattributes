@@ -13,9 +13,3 @@
 *.toml eol=lf
 *.yml text=auto
 *.yml eol=lf
-*.txt text=auto
-*.txt eol=lf
-*.bat text=auto
-*.bat eol=lf
-*.sh text=auto
-*.sh eol=lf

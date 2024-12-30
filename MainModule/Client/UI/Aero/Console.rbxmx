@@ -287,7 +287,7 @@
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
 						<X>0</X>
-						<Y>1</Y>
+						<Y>0</Y>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<bool name="AutoLocalize">false</bool>
@@ -320,7 +320,7 @@
 						<XS>0</XS>
 						<XO>0</XO>
 						<YS>0</YS>
-						<YO>0</YO>
+						<YO>-40</YO>
 					</UDim2>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
@@ -712,7 +712,6 @@ return function(data, env)
 		Position = UDim2.new(0, 0, 0, -200);
 	})
 
-	frame.TopBar.Size = UDim2.new(1, 0, 0, service.GuiService:GetGuiInset().Y)
 	frame.Position = UDim2.new(0,0,0,-200)
 	frame.Visible = false
 	frame.Size = UDim2.new(1,0,0,40)

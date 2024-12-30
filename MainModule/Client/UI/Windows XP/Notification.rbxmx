@@ -113,7 +113,6 @@ return function(data, env)
 	local name = data.Title
 	local text = data.Message or data.Text or ""
 	local time = data.Time
-	local icon = data.Icon
 
 	local returner = nil
 

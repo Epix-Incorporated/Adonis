@@ -1,6 +1,8 @@
+
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
 return function(Vargs, GetEnv)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -43,7 +45,9 @@ return function(Vargs, GetEnv)
 			Process.Command(Functions.GetFakePlayer(plrData), comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
-		--[[Loadstring = function(jobId, source)
+		-- // Unused, unnecessary, at the very least it should use GetEnv, and yes even if GetEnv has an empty table you can still do GetEnv({}).GetEnv().server
+		-- If this ever were to be re-enabled it should use Core.Loadstring at all
+		--[[Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
 			Core.Loadstring(source, GetEnv{})()
 		end;]]
 
@@ -239,7 +243,7 @@ return function(Vargs, GetEnv)
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
 			local disced = false
-			local updateKey = `SERVERPING_{service.HttpService:GenerateGUID(false)}`
+			local updateKey = `SERVERPING_{math.random()}`
 			local replyList = {}
 			local listener = service.Events.ServerPingReplyReceived:Connect(function(jobId, data)
 				if jobId then

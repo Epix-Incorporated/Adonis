@@ -49,15 +49,8 @@ return function(Vargs, GetEnv)
 
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
-			
-			if service.RunService:IsStudio() then
-				warn(`:: Adonis Anti Cheat :: Anticheat triggered for {p.Name}, not kicking because in studio; {info}`)
-				return;
-			end
-			
-			pcall(function()
-				service.UnWrap(p):Kick(`:: Adonis Anti Cheat :: {info}`)
-			end)
+
+			pcall(function() service.UnWrap(p):Kick(`:: Adonis Anti Cheat :: {info}`) end)
 
 			task.wait(1)
 

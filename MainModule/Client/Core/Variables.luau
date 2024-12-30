@@ -62,8 +62,6 @@ return function(Vargs, GetEnv)
 	getfenv().service = nil
 	getfenv().script = nil
 
-	local atmosphere = service.Lighting:FindFirstChildWhichIsA("Atmosphere")
-
 	client.GUIs = {}
 	client.GUIHolder = service.New("Folder")
 	client.Variables = {
@@ -76,7 +74,6 @@ return function(Vargs, GetEnv)
 		ParticlesEnabled = true;
 		CapesEnabled = true;
 		HideChatCommands = false;
-		CanUseEditableImages = false; -- TODO: Pool from FFlag
 		Particles = {};
 		KeyBinds = {};
 		Aliases = {};
@@ -100,15 +97,6 @@ return function(Vargs, GetEnv)
 			FogColor = service.Lighting.FogColor;
 			FogEnd = service.Lighting.FogEnd;
 			FogStart = service.Lighting.FogStart;
-		};
-		AtmosphereSettings = {
-			Name = atmosphere and atmosphere.Name,
-			Density = atmosphere and atmosphere.Density,
-			Offset = atmosphere and atmosphere.Offset,
-			Color = atmosphere and atmosphere.Color,
-			Decay = atmosphere and atmosphere.Decay,
-			Glare = atmosphere and atmosphere.Glare,
-			Haze = atmosphere and atmosphere.Haze,
 		};
 		KeycodeNames = require(client.Shared.KeycodeNames);
 	};

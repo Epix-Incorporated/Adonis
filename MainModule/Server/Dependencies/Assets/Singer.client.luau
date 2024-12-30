@@ -46,7 +46,7 @@ local WIDTH_SUPRESS = 20000
 local HEIGHT_SUPRESS = 1000
 local ANGLE_MULTIPLY = 100
 
-game:GetService("RunService").Heartbeat:Connect(function()
+game:GetService("RunService").Heartbeat:connect(function()
 	local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
 	local loudness = script.Parent.PlaybackLoudness
 	mouthMesh.Scale = mouthMesh.Scale:Lerp(Vector3.new(originalSize.X + loudness/WIDTH_SUPRESS * relativeSize.X, loudness/HEIGHT_SUPRESS * relativeSize.Y, originalSize.Z), SIZE_SMOOTHNESS)
