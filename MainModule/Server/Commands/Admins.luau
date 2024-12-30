@@ -348,8 +348,8 @@ return function(Vargs, env)
 		Whitelist = {
 			Prefix = Settings.Prefix;
 			Commands = {"wl", "enablewhitelist", "whitelist"};
-			Args = {"on/off/add/remove/list", "optional player"};
-			Description = "Enables/disables the whitelist; :wl username to add them to the whitelist";
+			Args = {"on/off/add/remove/list/wipe", "optional player"};
+			Description = "Enables/disables the server whitelist; :wl username to add them to the whitelist";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local sub = string.lower(args[1])
@@ -380,7 +380,7 @@ return function(Vargs, env)
 						error("Missing user argument")
 					end
 				elseif sub == "remove" then
-					if args[2] then
+				if args[2] then
 						for i, v in Variables.Whitelist.Lists.Settings do
 							if string.sub(string.lower(v), 1,#args[2]) == string.lower(args[2])then
 								table.remove(Variables.Whitelist.Lists.Settings,i)
@@ -399,8 +399,11 @@ return function(Vargs, env)
 						end
 					end
 					Remote.MakeGui(plr, "List", {Title = "Whitelist List"; Tab = Tab;})
+				elseif sub == "wipe" then
+					Variables.Whitelist.Lists.Settings = {}
+					Functions.Hint("Cleared server whitelist", service.Players:GetPlayers())
 				else
-					error("Invalid subcommand (on/off/add/remove/list)")
+					error("Invalid subcommand (on/off/add/remove/list/wipe)")
 				end
 			end
 		};
