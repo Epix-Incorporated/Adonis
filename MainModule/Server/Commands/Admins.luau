@@ -380,7 +380,7 @@ return function(Vargs, env)
 						error("Missing user argument")
 					end
 				elseif sub == "remove" then
-				if args[2] then
+					if args[2] then
 						for i, v in Variables.Whitelist.Lists.Settings do
 							if string.sub(string.lower(v), 1,#args[2]) == string.lower(args[2])then
 								table.remove(Variables.Whitelist.Lists.Settings,i)
