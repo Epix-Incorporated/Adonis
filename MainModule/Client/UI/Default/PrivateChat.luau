@@ -321,7 +321,7 @@ return function(data, env)
 		Parent = chatlog;
 		FillDirection = "Vertical";
 		HorizontalAlignment = "Left";
-		VerticalAlignment = "Bottom";
+		VerticalAlignment = "Top";
 		SortOrder = "LayoutOrder";
 	})
 
@@ -358,7 +358,6 @@ return function(data, env)
 				local p = vargs[1]
 				local message = vargs[2]
 				if newMessage then
-					print('sdf')
 					newMessage({
 						PlayerName = p.Name;
 						PlayerDisplayName = p.DisplayName;
