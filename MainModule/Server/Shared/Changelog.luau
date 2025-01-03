@@ -1,7 +1,14 @@
 return {
-	"Version: 261.3";
+	"Version: 262";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v262 2025-01-03 12:35 UTC] @Dimenpsyonal";
+	"*First update of 2025 (!!!)";
+	"(Git/kaiserandaxl) Add override for TShirt Asset Type (#1799)";
+	"(Git/kaiserandaxl) Fix indexing nil tab (#1800)";
+	"(Git/fxeP1) Fix BrickColor typo inside sing command (#1811)";
+	"(Git/fxeP1) Fixed TextBox capability warning (#1812)";
 	"";
 	"[Patch v261.3 2024-12-30 16:46 UTC] @Dimenpsyonal";
 	"Fix trello erroring instead of warning (#1805)";
