@@ -9,6 +9,7 @@ return {
 	"(Git/kaiserandaxl) Fix indexing nil tab (#1800)";
 	"(Git/fxeP1) Fix BrickColor typo inside sing command (#1811)";
 	"(Git/fxeP1) Fixed TextBox capability warning (#1812)";
+	"(Git/NoobBucket) Fix ServerNewDex not logging correctly (#1814)";
 	"";
 	"[Patch v261.3 2024-12-30 16:46 UTC] @Dimenpsyonal";
 	"Fix trello erroring instead of warning (#1805)";
