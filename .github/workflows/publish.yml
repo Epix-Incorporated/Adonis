@@ -52,31 +52,31 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         
-      - name: Set DebugMode off
-        run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.luau
-        
       - name: Set NightlyMode off
         run: sed -i "s/NightlyMode = true/NightlyMode = false/g" Loader/Loader/Loader.server.luau
         
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
-     
+       
       - uses: actions/upload-artifact@v4.3.6
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
         
-      - name: Build Loader
-        run: rojo build -o loader.rbxm .github/loader.deploy.project.json
-        
-      - name: Build MainModule
-        run: rojo build -o module.rbxm .github/module.deploy.project.json
-
       - name: Send Standalone Release to Discord channel
         uses: tsickert/discord-webhook@v6.0.0
         with:
           webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
+        
+      - name: Set DebugMode off
+        run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.luau
+        
+      - name: Build Loader
+        run: rojo build -o Adonis_Loader.rbxm .github/loader.deploy.project.json
+        
+      - name: Build MainModule
+        run: rojo build -o Adonis_MainModule.rbxm .github/module.deploy.project.json
           
       - name: Publish Loader
         uses: fjogeleit/http-request-action@v1.16.1
@@ -84,7 +84,7 @@ jobs:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
           method: "POST"
           contentType: "multipart/form-data"
-          files: '{ "file": "loader.rbxm" }'
+          files: '{ "file": "Adonis_Loader.rbxm" }'
           customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
           timeout: 10000
           
@@ -94,6 +94,6 @@ jobs:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
           method: "POST"
           contentType: "multipart/form-data"
-          files: '{ "file": "module.rbxm" }'
+          files: '{ "file": "Adonis_MainModule.rbxm" }'
           customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
           timeout: 10000
