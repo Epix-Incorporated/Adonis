@@ -5,6 +5,17 @@ return {
 	"";
 	"[v262 2025-01-03 12:35 UTC] @Dimenpsyonal";
 	"*First update of 2025 (!!!)";
+	"(Git/TheSkout001) Add donor !sit command (#1776)";
+	"(Git/WalkerOfBacon) Add a way to define cameras in settings (#1777)";
+	"(Git/WalkerOfBacon) Allow team names with spaced to be created via :teams (#1778)";
+	"(Git/WalkerOfBacon) Add R15 support for :dog (#1781)";
+	"(Git/ccuser44) Convert test case to nightly mode (#1669)";
+	"(Git/ccuser44) Update urgent messages module on publish (#1697)";
+	"(Git/ccuser44) Update Roblox StandardLib before lint (#1764)";
+	"(Git/ccuser44) Use JIT for Visualizer and Slider (#1774)";
+	"(Git/wilsontulus) Fix for loading large data in Studio (#1803)";
+	"(Git/GalacticInspired) New "clear" sub-command on "whitelist" for easy whitelist clearing (#1805)";
+	"(Git/WalkerOfBacon) Fix :oddliest (#1775)";
 	"(Git/kaiserandaxl) Add override for TShirt Asset Type (#1799)";
 	"(Git/kaiserandaxl) Fix indexing nil tab (#1800)";
 	"(Git/fxeP1) Fix BrickColor typo inside sing command (#1811)";
