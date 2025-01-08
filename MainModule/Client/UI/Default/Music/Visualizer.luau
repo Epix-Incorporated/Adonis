@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 local RunService = game:GetService("RunService")
 
 local module = {}

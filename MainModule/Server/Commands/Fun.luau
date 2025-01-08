@@ -2707,7 +2707,56 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
-							Remote.MakeGui(plr, "Output", {Title = "Nonfunctional"; Message = `This command does not yet support R15.`; Color = Color3.new(1,1,1)})
+							if plr.Character:FindFirstChild("Shirt") then
+								plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
+							end
+							if plr.Character:FindFirstChild("Pants") then
+								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
+							end
+							local char, uppertorso, lowertorso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild("UpperTorso"), plr.Character:FindFirstChild("LowerTorso"), CFrame.Angles(0, 0, 0), CFrame.Angles(0, 0, 0)
+							local head = char:FindFirstChild("Head")
+
+							uppertorso.Transparency = 1
+							lowertorso.Transparency = 1
+
+							for _, v in uppertorso:GetChildren() do
+								if v:IsA("Motor6D") then
+									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
+								end
+							end
+							
+							for _, v in lowertorso:GetChildren() do
+								if v:IsA("Motor6D") then
+									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
+								end
+							end
+
+							head.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(0, 0, 0)
+
+							char.RightUpperArm["RightShoulder"].C0 = CFrame.new(.5, -1, -1.5) * ca1
+							char.LeftUpperArm["LeftShoulder"].C0 = CFrame.new(-.5, -1, -1.5) * ca2
+							char.RightUpperLeg["RightHip"].C0 = CFrame.new(1, -0.3, 1.5) * ca1
+							char.LeftUpperLeg["LeftHip"].C0 = CFrame.new(-1, -0.3, 1.5) * ca2
+							local st = service.New("Seat", {
+								Name = "Adonis_Torso",
+								TopSurface = 0,
+								BottomSurface = 0,
+								Size = Vector3.new(3, 1, 4),
+							})
+
+							local attachment = service.New("Attachment", {Parent = st})
+							local bf = service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
+
+							st.CFrame = uppertorso.CFrame
+							st.Parent = char
+
+							Functions.MakeWeld(uppertorso, st, CFrame.new(), CFrame.new(0, .5, 0))
+
+							for _, v in char:GetDescendants() do
+								if v:IsA("BasePart") then
+									v.BrickColor = BrickColor.new("Brown")
+								end
+							end
 						end
 					end
 				end
@@ -4733,7 +4782,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "userid-51310503")
+					Admin.RunCommand(`{Settings.Prefix}char`, v.Name, "id-51310503")
 				end
 			end
 		};
