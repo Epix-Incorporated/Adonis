@@ -14,7 +14,7 @@ return {
 	"(Git/ccuser44) Update Roblox StandardLib before lint (#1764)";
 	"(Git/ccuser44) Use JIT for Visualizer and Slider (#1774)";
 	"(Git/wilsontulus) Fix for loading large data in Studio (#1803)";
-	"(Git/GalacticInspired) New "clear" sub-command on "whitelist" for easy whitelist clearing (#1805)";
+	"(Git/GalacticInspired) New 'clear' sub-command on :whitelist (#1805)";
 	"(Git/WalkerOfBacon) Fix :oddliest (#1775)";
 	"(Git/kaiserandaxl) Add override for TShirt Asset Type (#1799)";
 	"(Git/kaiserandaxl) Fix indexing nil tab (#1800)";
