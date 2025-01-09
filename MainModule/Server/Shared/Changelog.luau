@@ -5,7 +5,7 @@ return {
 	"";
 	"[v262 2025-01-03 12:35 UTC] @Dimenpsyonal";
 	"*First update of 2025 (!!!)";
-	"(Git/TheSkout001) Add donor !sit command (#1776)";
+	"(Git/fxeP1) Attempt to fix unbanning on changed player names (#1819)";
 	"(Git/WalkerOfBacon) Add a way to define cameras in settings (#1777)";
 	"(Git/WalkerOfBacon) Allow team names with spaced to be created via :teams (#1778)";
 	"(Git/WalkerOfBacon) Add R15 support for :dog (#1781)";
