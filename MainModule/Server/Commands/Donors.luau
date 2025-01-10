@@ -390,5 +390,19 @@ return function(Vargs, env)
 			end
 		};
 
+		DonorSit = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"sit"};
+			Args = {};
+			Description = "Makes your character sit";
+			Donors = true;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+				if humanoid then
+					humanoid.Sit = true
+				end
+			end
+		};
 	}
 end

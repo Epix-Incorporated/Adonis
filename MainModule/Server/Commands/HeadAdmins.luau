@@ -102,7 +102,7 @@ return function(Vargs, env)
 				do
 					Functions.LogAdminAction(plr, "Un-Time Ban", v.Name, "Removed from timeban list")
 					Functions.Hint(
-						if Admin.RemoveTimeBan(v.Name)
+						if Admin.RemoveTimeBan(v)
 							then `{service.FormatPlayer(v, true)} has been un-time-banned`
 							else `{service.FormatPlayer(v, true)} is not currently time-banned`,
 						{plr}
@@ -153,7 +153,7 @@ return function(Vargs, env)
 				do
 					Functions.LogAdminAction(plr, "Unbanned", v.Name, "N/A")
 					Functions.Hint(
-						if Admin.RemoveBan(v.Name, true)
+						if Admin.RemoveBan(v, true)
 							then `{service.FormatPlayer(v, true)} has been unbanned from the game`
 							else `{service.FormatPlayer(v, true)} is not currently banned`,
 						{plr}

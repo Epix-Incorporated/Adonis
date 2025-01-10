@@ -169,7 +169,7 @@ return function(Vargs, GetEnv)
 			end
 
 			local textbox = service.UserInputService:GetFocusedTextBox()
-			if textbox then
+			if textbox and service.CheckProperty(textbox, "ReleaseFocus") then
 				textbox:ReleaseFocus()
 			end
 
@@ -179,7 +179,7 @@ return function(Vargs, GetEnv)
 		HandleTextChatCommands = function()
 			local data = Remote.Get("PlayerData")
 			local adminLevel, isDonor = data.AdminLevel, data.isDonor
-	
+
 			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 				local function onCommandAdded(command)
 					if not command:IsA("TextChatCommand") then
