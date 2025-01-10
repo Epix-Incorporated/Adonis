@@ -162,29 +162,40 @@ return function(data, env)
 	window:Ready()
 
 	do --// Friends Tab
+		local function pagesToTable(pages)
+			local items = {}
+			while true do
+				table.insert(items, pages:GetCurrentPage())
+				if pages.IsFinished then
+					break
+				end
+				pages:AdvanceToNextPageAsync()
+			end
+			return items
+		end
 		local function iterPageItems(pages)
+			local contents = pagesToTable(pages)
+			local pagenum = 1
+			local lastpagenum = #contents
 			return coroutine.wrap(function()
 				local pagenum = 1
-				while true do
-					for _, item in ipairs(pages:GetCurrentPage()) do
+				while pagenum <= lastpagenum do
+					for _, item in ipairs(contents[pagenum]) do
 						coroutine.yield(item, pagenum)
 					end
-					if pages.IsFinished then
-						break
-					end
-					pages:AdvanceToNextPageAsync()
+
 					pagenum += 1
 				end
 			end)
 		end
 
-		local LOCATION_TYPE = {"Mobile Website", "Mobile InGame", "Webpage", "Studio", "InGame", "Xbox", "Team Create"}
+		local LOCATION_TYPE = {"Mobile Website", "Mobile In-Game", "Webpage", "Studio", "In-Game", "Xbox", "Team Create"}
 		local ACTIVITY_COLOR_CODES = {
 			["Mobile Website"] = Color3.fromRGB(50, 140, 231);
-			["Mobile InGame"] = Color3.fromRGB(55, 200, 55);
+			["Mobile In-Game"] = Color3.fromRGB(55, 200, 55);
 			["Webpage"] = Color3.fromRGB(50, 140, 231);
 			["Studio"] = Color3.fromRGB(231, 112, 0);
-			["InGame"] = Color3.fromRGB(55, 200, 55);
+			["In-Game"] = Color3.fromRGB(55, 200, 55);
 			["Xbox"] = Color3.fromRGB(127, 0, 127);
 			["Team Create"] = Color3.fromRGB(231, 112, 0);
 		}
@@ -210,7 +221,7 @@ return function(data, env)
 		Routine(function()
 			for item, pageNo in iterPageItems(friendPages) do
 				table.insert(sortedFriends, item.Username)
-				local userId = item.id
+				local userId = item.Id
 				local activity = onlineFriends[userId]
 				friendInfoRef[item.Username] = {
 					id = userId;
