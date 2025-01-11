@@ -210,6 +210,16 @@ settings.Aliases = {
 	[":examplealias <player> <fireColor>"] = ":ff <player> | :fling <player> | :fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
 };
 
+settings.Cameras = {
+--[[
+	"Camera Name" would be the name of your camera
+	{
+		Name = "Camera Name";
+		Position = Vector3.new(0, 0, 0)
+	}
+]]
+}
+
 settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 settings.Muted = {}			-- List of people muted (cannot send chat messages)				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 settings.Blacklist = {}		-- List of people banned from running commands 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -406,6 +416,7 @@ descs.Creators = [[ Anyone to be identified as a place owner; Format: {"Username
 
 descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
 descs.Aliases = [[ Command aliases; Format: {[":alias <arg1> <arg2> ..."] = ":command <arg1> <arg2> ..."} ]]
+descs.Cameras = [[ Cameras; Format: {Name = "CamName", Position = Vector3.new(X, Y, Z)} ]]
 
 descs.Commands = [[ Custom commands ]]
 descs.Banned = [[ List of people banned from the game; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -523,6 +534,7 @@ order = {
 	" ";
 	"Permissions";
 	"Aliases";
+	"Cameras";
 	" ";
 	"Commands";
 	"Banned";
