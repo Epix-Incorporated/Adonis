@@ -5,7 +5,7 @@ return {
 	"";
 	"[v262 2025-01-03 12:35 UTC] @Dimenpsyonal";
 	"*First update of 2025 (!!!)";
-	"(Git/TheSkout001) Add donor !sit command (#1776)";
+	"(Git/fxeP1) Attempt to fix unbanning on changed player names (#1819)";
 	"(Git/WalkerOfBacon) Add a way to define cameras in settings (#1777)";
 	"(Git/WalkerOfBacon) Allow team names with spaced to be created via :teams (#1778)";
 	"(Git/WalkerOfBacon) Add R15 support for :dog (#1781)";
@@ -21,6 +21,7 @@ return {
 	"(Git/fxeP1) Fix BrickColor typo inside sing command (#1811)";
 	"(Git/fxeP1) Fixed TextBox capability warning (#1812)";
 	"(Git/NoobBucket) Fix ServerNewDex not logging correctly (#1814)";
+	"(Git/ScriptedConnor) Fixed friends tab on the !profile command (#1821)";
 	"";
 	"[Patch v261.3 2024-12-30 16:46 UTC] @Dimenpsyonal";
 	"Fix trello erroring instead of warning (#1805)";

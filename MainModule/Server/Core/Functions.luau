@@ -1337,7 +1337,7 @@ return function(Vargs, GetEnv)
 					table.insert(tab,result)
 				end
 			end
-			
+
 			return tab
 		end;
 
@@ -1405,7 +1405,11 @@ return function(Vargs, GetEnv)
 			return AllGrabbedPlayers
 		end;
 
-		GetUserIdFromNameAsync = function(name)
+		GetUserIdFromNameAsync = function(name: string | Player)
+			if type(name) == "userdata" and name:IsA("Player") then
+				return name.UserId
+			end
+
 			local cache = Admin.UserIdCache[name]
 			if not cache then
 				local success, UserId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, name)
@@ -1419,7 +1423,11 @@ return function(Vargs, GetEnv)
 			return cache
 		end;
 
-		GetNameFromUserIdAsync = function(id)
+		GetNameFromUserIdAsync = function(id: number | Player)
+			if type(id) == "userdata" and id:IsA("Player") then
+				return id.Name
+			end
+
 			local cache = Admin.UsernameCache[id]
 			if not cache then
 				local success, Username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, id)

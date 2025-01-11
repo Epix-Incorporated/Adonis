@@ -1402,7 +1402,7 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
-					if Admin.RemoveBan(v.Name) then
+					if Admin.RemoveBan(v) then
 						Functions.LogAdminAction(plr, "Unban", v.Name, "User has been unbanned.")
 						Functions.Hint(`{service.FormatPlayer(v, true)} has been unbanned`, {plr})
 					else
