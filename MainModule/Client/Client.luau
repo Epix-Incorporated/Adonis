@@ -218,7 +218,7 @@ do
 			task.wait(1)
 			service.Player:Kick(info)
 		end)
-		
+
 		if not isStudio then
 			spawn(pcall, function()
 				task.wait(5)
@@ -575,7 +575,7 @@ return service.NewProxy({
 		for i, line in ipairs(client.Changelog) do
         	client.FormattedChangelog[i] = applyColour(line)
   	 	end
-		
+
 		--// Setup MatIcons
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
@@ -752,7 +752,9 @@ return service.NewProxy({
 				continue
 			end
 
-			LoadModule(module, false, { script = module, cPcall = client.cPcall }) --noenv
+			task.defer(LoadModule, module, false, { --noenv
+				script = module, cPcall = client.cPcall
+			})
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
