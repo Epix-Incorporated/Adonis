@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v262 2025-01-03 12:35 UTC] @Dimenpsyonal";
+	"[v262 2025-01-12 11:16 UTC] @Dimenpsyonal";
 	"*First update of 2025 (!!!)";
 	"Set argument range limits on :lowres";
 	"(Git/fxeP1) Attempt to fix unbanning on changed player names (#1819)";
