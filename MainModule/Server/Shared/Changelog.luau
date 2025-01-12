@@ -1252,7 +1252,7 @@ return {
 	"*Dex updated and moved to its own module; Also added server-side action support";
 	"*Fixed :countdown";
 	"*Fixed :slowmode";
-	"(Git/happyman090) Fix for sp00ky and k1tty on MeshPart head places";
+	"(Git/btt-t) Fix for sp00ky and k1tty on MeshPart head places";
 	"(Git/Expertcoderz) Mistake fixing + Aero theme";
 	"(Git/Expertcoderz) Add :transparency command";
 	"(Git/Expertcoderz) Command-related additions #379";
@@ -1315,7 +1315,7 @@ return {
 	"(Git/ccuser44) Made print and warn work properly. Also fixed some indentation.";
 	"(Git/ccuser44) Removed unnecessary references to filtering enabled.";
 	"(Git/ccuser44) Fixed incorrect string literals";
-	"(Git/happyman090) Refresh command update";
+	"(Git/btt-t) Refresh command update";
 	"";
 	"[v217 5.9.2021 19:15 EST]";
 	"* Random bug fixes & changes";
@@ -1327,8 +1327,8 @@ return {
 	"(Git/imskyyc) Updated TrelloAPI";
 	"(Git/ccuser44) Added unprotected metatable detection with tamper protection";
 	"(Git/LolloDev5123) :admins now correctly shows \"Head Admin\" instead of \"Supervisor\"";
-	"(Git/happyman090) Character animations for clones";
-	"(Git/happyman090) Modified behaviour of kill command";
+	"(Git/btt-t) Character animations for clones";
+	"(Git/btt-t) Modified behaviour of kill command";
 	"(Git/p3tray & pbstFusion) Added :pban and :unpban as aliases for :gameban and :ungameban";
 	"(Git/p3tray) Added _G.Adonis.RunCommandAsNonAdmin(command, playerToRunCommandAs)";
 	"(Git/Expertcoderz) Revamped server details UI";
@@ -1351,7 +1351,7 @@ return {
 	"*Removed some debug prints and debug/old code";
 	"*Fixed some typos";
 	"*Minor bug/security changes";
-	"(Git/happyman090) Fixed donor neon command";
+	"(Git/btt-t) Fixed donor neon command";
 	"(Git/Expertcoderz) Removed 'besties' from !usage";
 	"(Git/fxeP1) Updated ServerInfo command, HTTP.CheckHttp, and RunCommandAsPlayer";
 	"(Git/Expercoderz) Added :promptpremiumpurchase <player>";
