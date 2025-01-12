@@ -22,7 +22,7 @@ return {
 	"(Git/fxeP1) Fix BrickColor typo inside sing command (#1811)";
 	"(Git/fxeP1) Fixed TextBox capability warning (#1812)";
 	"(Git/NoobBucket) Fix ServerNewDex not logging correctly (#1814)";
-	"(Git/ScriptedConnor) Fixed friends tab on the !profile command (#1821)";
+	"(Git/convxors) Fixed friends tab on the !profile command (#1821)";
 	"(Git/WalkerOfBacon) Fix :pchat glitching (#1809)";
 	"(Git/ImFirstPlace) Update TextField PlaceholderColor3 (#1806)";
 	"(Git/Speeder323) Fix debounce for antiexploit notifications (#1783)";
@@ -47,9 +47,9 @@ return {
 	"(Git/Mars7383) Fix typo in Loadstring dependency affecting :ss (#1587)";
 	"(Git/PurpleCreativity) Remove ;cut command (#1590)";
 	"(Git/EasternBloxxer) Make dex fetch api dump on server start (#1591)";
-	"(Git/ScriptedConnor) Fix TopBarShift for :setmessage (#1593)";
+	"(Git/convxors) Fix TopBarShift for :setmessage (#1593)";
 	"(Git/jun022222222) Replace Coords.luau (#1595)";
-	"(Git/ScriptedConnor) Add Text Selections to the :players Command (#1597)";
+	"(Git/convxors) Add Text Selections to the :players Command (#1597)";
 	"(Git/omwot) Improve Modern theme (#1598)";
 	"(Git/jun022222222) Make mats & colors list selectable (#1599)";
 	"(Git/24rr) Add a search player bar for :privatechat (#1594)";
