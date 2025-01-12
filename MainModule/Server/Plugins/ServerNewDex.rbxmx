@@ -61,7 +61,7 @@
 			Logs:AddLog("Script", "Successfully loaded reflection metadata to Dex")
 		else
 			Logs:AddLog("Script", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
-			Logs:AddLog("Error", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
+			Logs:AddLog("Errors", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
 			--logError("Access to HttpService is not enabled! Dex api dump could not be fetched!")
 		end
 	end)
