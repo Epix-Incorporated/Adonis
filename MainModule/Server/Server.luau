@@ -632,7 +632,7 @@ return service.NewProxy({
           	server.FormattedChangelog[i] = applyColour(line)
   	  	end
 
-		--// Setup MaterialIcons 
+		--// Setup MaterialIcons
 		do
 			local MaterialIcons = require(server.Shared.MatIcons)
 			server.MatIcons = setmetatable({}, {
@@ -712,7 +712,7 @@ return service.NewProxy({
 		end
 
 		for _, module in ipairs(data.ServerPlugins or {}) do
-			xpcall(LoadModule, function(reason)
+			task.defer(xpcall, LoadModule, function(reason)
 				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				table.insert(server.messages, {
