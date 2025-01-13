@@ -355,7 +355,7 @@ return function(Vargs, GetEnv)
 							return;
 						end
 
-						for i = 1,num do
+						for i = 1, math.min(num, #service.Players:GetPlayers()) do
 							Functions.PlayerFinders.random.Function(msg, plr, ...)
 						end
 					end

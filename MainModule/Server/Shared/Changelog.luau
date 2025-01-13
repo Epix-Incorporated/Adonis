@@ -3,8 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v262 2025-01-03 12:35 UTC] @Dimenpsyonal";
+	"[v262 2025-01-12 11:16 UTC] @Dimenpsyonal";
 	"*First update of 2025 (!!!)";
+	"Set argument range limits on :lowres";
 	"(Git/fxeP1) Attempt to fix unbanning on changed player names (#1819)";
 	"(Git/WalkerOfBacon) Add a way to define cameras in settings (#1777)";
 	"(Git/WalkerOfBacon) Allow team names with spaced to be created via :teams (#1778)";
@@ -21,7 +22,10 @@ return {
 	"(Git/fxeP1) Fix BrickColor typo inside sing command (#1811)";
 	"(Git/fxeP1) Fixed TextBox capability warning (#1812)";
 	"(Git/NoobBucket) Fix ServerNewDex not logging correctly (#1814)";
-	"(Git/ScriptedConnor) Fixed friends tab on the !profile command (#1821)";
+	"(Git/convxors) Fixed friends tab on the !profile command (#1821)";
+	"(Git/WalkerOfBacon) Fix :pchat glitching (#1809)";
+	"(Git/ImFirstPlace) Update TextField PlaceholderColor3 (#1806)";
+	"(Git/Speeder323) Fix debounce for antiexploit notifications (#1783)";
 	"";
 	"[Patch v261.3 2024-12-30 16:46 UTC] @Dimenpsyonal";
 	"Fix trello erroring instead of warning (#1805)";
@@ -43,9 +47,9 @@ return {
 	"(Git/Mars7383) Fix typo in Loadstring dependency affecting :ss (#1587)";
 	"(Git/PurpleCreativity) Remove ;cut command (#1590)";
 	"(Git/EasternBloxxer) Make dex fetch api dump on server start (#1591)";
-	"(Git/ScriptedConnor) Fix TopBarShift for :setmessage (#1593)";
+	"(Git/convxors) Fix TopBarShift for :setmessage (#1593)";
 	"(Git/jun022222222) Replace Coords.luau (#1595)";
-	"(Git/ScriptedConnor) Add Text Selections to the :players Command (#1597)";
+	"(Git/convxors) Add Text Selections to the :players Command (#1597)";
 	"(Git/omwot) Improve Modern theme (#1598)";
 	"(Git/jun022222222) Make mats & colors list selectable (#1599)";
 	"(Git/24rr) Add a search player bar for :privatechat (#1594)";
@@ -1248,7 +1252,7 @@ return {
 	"*Dex updated and moved to its own module; Also added server-side action support";
 	"*Fixed :countdown";
 	"*Fixed :slowmode";
-	"(Git/happyman090) Fix for sp00ky and k1tty on MeshPart head places";
+	"(Git/btt-t) Fix for sp00ky and k1tty on MeshPart head places";
 	"(Git/Expertcoderz) Mistake fixing + Aero theme";
 	"(Git/Expertcoderz) Add :transparency command";
 	"(Git/Expertcoderz) Command-related additions #379";
@@ -1311,7 +1315,7 @@ return {
 	"(Git/ccuser44) Made print and warn work properly. Also fixed some indentation.";
 	"(Git/ccuser44) Removed unnecessary references to filtering enabled.";
 	"(Git/ccuser44) Fixed incorrect string literals";
-	"(Git/happyman090) Refresh command update";
+	"(Git/btt-t) Refresh command update";
 	"";
 	"[v217 5.9.2021 19:15 EST]";
 	"* Random bug fixes & changes";
@@ -1323,8 +1327,8 @@ return {
 	"(Git/imskyyc) Updated TrelloAPI";
 	"(Git/ccuser44) Added unprotected metatable detection with tamper protection";
 	"(Git/LolloDev5123) :admins now correctly shows \"Head Admin\" instead of \"Supervisor\"";
-	"(Git/happyman090) Character animations for clones";
-	"(Git/happyman090) Modified behaviour of kill command";
+	"(Git/btt-t) Character animations for clones";
+	"(Git/btt-t) Modified behaviour of kill command";
 	"(Git/p3tray & pbstFusion) Added :pban and :unpban as aliases for :gameban and :ungameban";
 	"(Git/p3tray) Added _G.Adonis.RunCommandAsNonAdmin(command, playerToRunCommandAs)";
 	"(Git/Expertcoderz) Revamped server details UI";
@@ -1347,7 +1351,7 @@ return {
 	"*Removed some debug prints and debug/old code";
 	"*Fixed some typos";
 	"*Minor bug/security changes";
-	"(Git/happyman090) Fixed donor neon command";
+	"(Git/btt-t) Fixed donor neon command";
 	"(Git/Expertcoderz) Removed 'besties' from !usage";
 	"(Git/fxeP1) Updated ServerInfo command, HTTP.CheckHttp, and RunCommandAsPlayer";
 	"(Git/Expercoderz) Added :promptpremiumpurchase <player>";

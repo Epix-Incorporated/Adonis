@@ -39,7 +39,7 @@ return {
 		{Text = "@NeoInversion",	Desc = "Open Source Contributor"};
 		{Text = "@imskyyc",			Desc = "Open Source Contributor"};
 		{Text = "@LolloDev5123",	Desc = "Open Source Contributor"};
-		{Text = "@happyman090",		Desc = "Open Source Contributor"};
+		{Text = "@btt-t",			Desc = "Open Source Contributor"};
 		{Text = "@GalacticInspired",Desc = "Open Source Contributor"};
 		{Text = "@flgx16",			Desc = "Open Source Contributor"};
 		{Text = "@DrewBokman",		Desc = "Open Source Contributor"};
@@ -96,7 +96,7 @@ return {
 		{Text = "@Hedreon", 		Desc = "Open Source Contributor"};
 		{Text = "@Mars7383", 		Desc = "Open Source Contributor"};
 		{Text = "@PurpleCreativity",Desc = "Open Source Contributor"};
-		{Text = "@ScriptedConnor",	Desc = "Open Source Contributor"};
+		{Text = "@convxors", 		Desc = "Open Source Contributor"};
 		{Text = "@omwot",			Desc = "Open Source Contributor"};
 	};
 
