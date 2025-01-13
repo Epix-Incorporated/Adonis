@@ -1,7 +1,11 @@
 return {
-	"Version: 262";
+	"Version: 263";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v263 2025-01-13 16:17 UTC] @Dimenpsyonal";
+	"Load plugins asynchronously";
+	"Clamp #num selector to max players";
 	"";
 	"[v262 2025-01-12 11:16 UTC] @Dimenpsyonal";
 	"*First update of 2025 (!!!)";
