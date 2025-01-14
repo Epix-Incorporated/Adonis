@@ -147,8 +147,6 @@ settings.RecursiveTools = false					 -- Whether tools that are included in sub-c
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
-
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
 		Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
