@@ -1,3 +1,4 @@
+--# selene: allow(incorrect_standard_library_use)
 if script.Parent then
 	local dTargetVal = script:WaitForChild("Runner")
 	local parentVal = script:WaitForChild("mParent")
