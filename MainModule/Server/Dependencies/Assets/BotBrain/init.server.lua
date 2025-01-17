@@ -62,9 +62,10 @@ end
 
 local function jumpCheck()
 	local cframe = getCFrame()
-	local targ = (props.Target and props.Target.Parent and (props.Target:FindFirstChild("HumanoidRootPart") or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")))
-	if targ and (targ.Position-cframe.Position).Magnitude < 1 then
-		--// Do something?
+	local targ = props.Target and props.Target.Parent and (props.Target:FindFirstChild("HumanoidRootPart") or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso"))
+
+	if targ and (targ.Position - cframe.Position).Magnitude < 1 then
+		return --// Do something?
 	else
 		local checkVector = (cframe*CFrame.new(0,0,-3.5)).Position
 		local result = workspace:Raycast(cframe.Position, (checkVector - cframe.Position).Unit)
@@ -228,9 +229,10 @@ local function updateBot()
 end
 
 local function init()
-	local str = Instance.new("StringValue",char)
+	local str = Instance.new("StringValue")
 	str.Name = "isBot"
 	str.Value = props.SpecialKey
+	str.Parent = char
 
 	hum.Died:Connect(function()
 		Debris:AddItem(char, 1)
