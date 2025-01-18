@@ -34,7 +34,7 @@ return function(Vargs, env)
 							table.insert(cmdAliases, `and {#cmd.Commands - i} more...`)	
 							break
 						end
-						table.insert(cmdAliases, `{cmd.Prefix}{alias}`)
+						table.insert(cmdAliases, `{alias}`)
 					end
 					
 					table.remove(cmdAliases, 1)
