@@ -23,6 +23,8 @@ return function(Vargs, env)
 				local cmdCount = 0
 
 				for _, cmd in Admin.SearchCommands(plr, "all") do
+					local cmdAliases = table.create(#cmd.Commands)
+
 					if cmd.Hidden or cmd.Disabled then
 						continue
 					end
