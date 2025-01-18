@@ -27,10 +27,20 @@ return function(Vargs, env)
 						continue
 					end
 
+					for i,alias in cmd.Commands do
+						if i == 5 then
+							table.insert(cmdAliases, `and {#cmd.Commands - i} more...`)	
+							break
+						end
+						table.insert(cmdAliases, `{cmd.Prefix}{alias}`)
+					end
+					
+					table.remove(cmdAliases, 1)
+
 					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
 						Text = Admin.FormatCommand(cmd),
-						Desc = `[{permissionDesc}] {cmd.Description or "(No description provided)"}`,
+						Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
 						Filter = permissionDesc
 					})
 					cmdCount += 1
