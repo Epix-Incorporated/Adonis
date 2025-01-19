@@ -222,10 +222,7 @@ local function prepareDataStoresForExport(origin)
 	for name, scopes in pairs(origin) do
 		local exportScopes = {}
 		for scope, data in pairs(scopes) do
-			local exportData = {}
-			for key, value in pairs(data) do
-				exportData[key] = value
-			end
+			local exportData = table.clone(data)
 			if next(exportData) ~= nil then -- Only export datastore when non-empty
 				exportScopes[scope] = exportData
 			end
