@@ -1,3 +1,4 @@
+--# selene: allow(incorrect_standard_library_use)
 --[[
 	MockDataStoreManager.lua
 	This module does bookkeeping of data, interfaces and request limits used by MockDataStoreService and its sub-classes.
