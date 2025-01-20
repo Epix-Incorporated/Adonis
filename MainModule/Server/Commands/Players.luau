@@ -29,12 +29,11 @@ return function(Vargs, env)
 						continue
 					end
 
-					for i,alias in cmd.Commands do
-						if i == 5 then
-							table.insert(cmdAliases, `and {#cmd.Commands - i} more...`)	
+					for _,alias in cmd.Commands do
+						if #cmdAliases >= 4 and (#cmd.Commands - #cmdAliases) ~= 0 then
+							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)	
 							break
 						end
-						table.insert(cmdAliases, `{alias}`)
 					end
 					
 					table.remove(cmdAliases, 1)
