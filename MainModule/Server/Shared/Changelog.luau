@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v263 2025-01-13 16:17 UTC] @Dimenpsyonal";
+	"[v263 2025-01-22 11:29 UTC] @Dimenpsyonal";
 	"Load plugins asynchronously";
 	"Clamp #num selector to max players";
 	"(Git/ccuser44) Disable visualiser when window is minimised (#1832)";
