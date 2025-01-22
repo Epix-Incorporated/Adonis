@@ -6,6 +6,10 @@ return {
 	"[v263 2025-01-13 16:17 UTC] @Dimenpsyonal";
 	"Load plugins asynchronously";
 	"Clamp #num selector to max players";
+	"(Git/ccuser44) Disable visualiser when window is minimised (#1832)";
+	"(Git/WalkerOfBacon) Show command aliases in :commands (#1833)";
+	"(Git/Z3phrz) Update :watchcam description (#1835)";
+	"(Git/WalkerOfBacon) Prevent creating a team with the same name (#1836)";
 	"";
 	"[v262 2025-01-12 11:16 UTC] @Dimenpsyonal";
 	"*First update of 2025 (!!!)";
