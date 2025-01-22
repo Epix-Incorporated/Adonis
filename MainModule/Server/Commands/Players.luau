@@ -23,14 +23,25 @@ return function(Vargs, env)
 				local cmdCount = 0
 
 				for _, cmd in Admin.SearchCommands(plr, "all") do
+					local cmdAliases = table.create(#cmd.Commands)
+
 					if cmd.Hidden or cmd.Disabled then
 						continue
 					end
 
+					for _,alias in cmd.Commands do
+						if #cmdAliases >= 4 and (#cmd.Commands - #cmdAliases) ~= 0 then
+							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)	
+							break
+						end
+					end
+					
+					table.remove(cmdAliases, 1)
+
 					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
 						Text = Admin.FormatCommand(cmd),
-						Desc = `[{permissionDesc}] {cmd.Description or "(No description provided)"}`,
+						Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
 						Filter = permissionDesc
 					})
 					cmdCount += 1

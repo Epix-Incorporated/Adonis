@@ -1445,7 +1445,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"viewcam", "viewc", "camview", "watchcam", "cam"};
 			Args = {"camera"};
-			Description = "Makes you view the target player";
+			Description = "Makes you view the target camera";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in Variables.Cameras do
