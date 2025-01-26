@@ -597,6 +597,17 @@ return service.NewProxy({
 			end
 		end
 
+		--// Attempts to patch Settings.Prefix to fix issues
+		if type(server.Settings.Prefix == "table") then
+			setmetatable(server.Settings.Prefix, {
+				__concat = function(self, value)
+					return self[1]
+				end,
+			})
+		end
+
+
+
 		--// Bind cleanup
 		service.DataModel:BindToClose(function(...)
 			server.CleanUp(...)
