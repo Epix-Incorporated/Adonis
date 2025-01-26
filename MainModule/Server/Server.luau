@@ -601,7 +601,7 @@ return service.NewProxy({
 		if type(server.Settings.Prefix) == "table" then
 			setmetatable(server.Settings.Prefix, {
 				__concat = function(self, value)
-					return self[1]
+					return `{self[1]}{value}`
 				end,
 				__tostring = function(self)
 					return self[1]
@@ -609,6 +609,7 @@ return service.NewProxy({
 
 			})
 		end
+
 
 
 
