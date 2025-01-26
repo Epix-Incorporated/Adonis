@@ -2116,7 +2116,7 @@ return function(Vargs, env)
 				local data = {
 					Tools = {};
 					SavedTools = {};
-					Prefix = Settings.Prefix;
+					Prefix = Functions.GetMainPrefix();
 					SplitKey = Settings.SplitKey;
 					SpecialPrefix = Settings.SpecialPrefix;
 				}
@@ -4468,7 +4468,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				Remote.MakeGui(plr, "Teams", {
-					CmdPrefix = Settings.Prefix; CmdPlayerPrefix = Settings.PlayerPrefix; CmdSpecialPrefix = Settings.SpecialPrefix; CmdSplitKey = Settings.SplitKey;
+					CmdPrefix = Functions.GetMainPrefix(); CmdPlayerPrefix = Settings.PlayerPrefix; CmdSpecialPrefix = Settings.SpecialPrefix; CmdSplitKey = Settings.SplitKey;
 				})
 			end
 		};
