@@ -292,7 +292,7 @@ return function(Vargs, env)
 			Commands = {"cn", "customsmallmessage", "cnmessage"};
 			Args = {"title", "message"};
 			Filter = true;
-			Description = `Same as {Settings.Prefix}n but says whatever you want the title to be instead of your name.`;
+			Description = `Same as {Functions.GetMainPrefix()}n but says whatever you want the title to be instead of your name.`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				Functions.Notify(service.BroadcastFilter(assert(args[1], "Missing title"), plr), service.BroadcastFilter(assert(args[2], "Missing message")	, plr), service.GetPlayers())
@@ -377,7 +377,7 @@ return function(Vargs, env)
 
 						Remote.RemoveGui(v, "Notify")
 						Functions.Notify(`Warning from {service.FormatPlayer(plr)}`, reason, {v})
-						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
+						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
 					end
 				end
 			end
@@ -416,7 +416,7 @@ return function(Vargs, env)
 							Core.CrossServer("RemovePlayer", v.Name, `Warning from {service.FormatPlayer(plr)}`, reason)
 						end
 
-						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
+						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
 					end
 				end
 			end
@@ -725,7 +725,7 @@ return function(Vargs, env)
 						for k, t in v.Backpack:GetChildren() do
 							t.Parent = tools
 						end
-						Admin.RunCommand(`{Settings.Prefix}name`, v.Name, `-AFK-_{service.FormatPlayer(v)}_-AFK-`)
+						Admin.RunCommand(`{Functions.GetMainPrefix()}name`, v.Name, `-AFK-_{service.FormatPlayer(v)}_-AFK-`)
 						local torso = v.Character.HumanoidRootPart
 						local pos = torso.CFrame
 						local running=true
@@ -738,7 +738,7 @@ return function(Vargs, env)
 							for k, t in tools:GetChildren() do
 								t.Parent = v.Backpack
 							end
-							Admin.RunCommand(`{Settings.Prefix}unname`, v.Name)
+							Admin.RunCommand(`{Functions.GetMainPrefix()}unname`, v.Name)
 							event:Disconnect()
 						end)
 						repeat torso.CFrame = pos wait() until not v or not v.Character or not torso or not running or not torso.Parent
@@ -811,7 +811,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"fullgod", "totalgod"};
 			Args = {"player"};
-			Description = `Same as {server.Settings.Prefix}god, but also provides blast protection`;
+			Description = `Same as {Functions.GetMainPrefix()}god, but also provides blast protection`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -1243,7 +1243,7 @@ return function(Vargs, env)
 							TitleButtons = {
 								{
 									Text = "";
-									OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}tools')`);
+									OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}tools')`);
 									Children = {
 										{
 											Class = "ImageLabel";
@@ -1594,7 +1594,7 @@ return function(Vargs, env)
 				local command = args[3]
 				local name = string.lower(plr.Name)
 				assert(command, "Missing command name to repeat")
-				if string.lower(string.sub(command, 1, #Settings.Prefix+string.len("repeat"))) == string.lower(`{Settings.Prefix}repeat`) or string.sub(command, 1, #Settings.Prefix+string.len("loop")) == string.lower(`{Settings.Prefix}loop`) or string.find(command, `^{Settings.Prefix}loop`) or string.find(command, `^{Settings.Prefix}repeat`) then
+				if string.lower(string.sub(command, 1, #Functions.GetMainPrefix()+string.len("repeat"))) == string.lower(`{Settings.Prefix}repeat`) or string.sub(command, 1, #Functions.GetMainPrefix()+string.len("loop")) == string.lower(`{Settings.Prefix}loop`) or string.find(command, `^{Settings.Prefix}loop`) or string.find(command, `^{Settings.Prefix}repeat`) then
 					error("Cannot repeat the loop command in a loop command")
 					return
 				end
