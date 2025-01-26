@@ -603,8 +603,13 @@ return service.NewProxy({
 				__concat = function(self, value)
 					return self[1]
 				end,
+				__tostring = function(self)
+					return self[1]
+				end,
+
 			})
 		end
+
 
 
 
