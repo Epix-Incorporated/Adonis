@@ -584,7 +584,7 @@ return function(Vargs, env)
 					`<b>{Settings.SpecialPrefix}nonadmins</b> - Non-admins (normal players) in the server`;
 					`<b>{Settings.SpecialPrefix}others</b> - Everyone except yourself`;
 					`<b>{Settings.SpecialPrefix}random</b> - A random person in the server excluding those removed with -SELECTION`;
-					`<b>@USERNAME</b> - Targets a specific player with that exact username Ex: <b>{Settings.Prefix}god @Sceleratis </b> would give a player with the username 'Sceleratis' god powers`;
+					`<b>@USERNAME</b> - Targets a specific player with that exact username Ex: <b>{Prefix}god @Sceleratis </b> would give a player with the username 'Sceleratis' god powers`;
 					`<b>#NUM</b> - NUM random players in the server <b>{Prefix}ff #5</b> will ff 5 random players excluding those removed with -SELECTION.`;
 					`<b>{Settings.SpecialPrefix}friends</b> - Your friends who are in the server`;
 					`<b>%TEAMNAME</b> - Members of the team TEAMNAME Ex: {Prefix}kill %raiders`;
@@ -595,9 +595,9 @@ return function(Vargs, env)
 					"";
 					`<b>――――― Repetition ―――――</b>`;
 					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
-					`Multiple Commands at a time - <b>{Prefix}ff me {Settings.BatchKey} {Settings.Prefix}sparkles me {Settings.BatchKey} {Prefix}rocket jim</b>`;
+					`Multiple Commands at a time - <b>{Prefix}ff me {Settings.BatchKey} {Prefix}sparkles me {Settings.BatchKey} {Prefix}rocket jim</b>`;
 					`You can add a delay if you want; <b>{Prefix}ff me {Settings.BatchKey} !wait 10 {Settings.BatchKey} {Prefix}m hi we waited 10 seconds</b>`;
-					`<b>{Settings.Prefix}repeat 10(how many times to run the cmd) 1(how long in between runs) {Settings.Prefix}respawn jim</b>`;
+					`<b>{Prefix}repeat 10(how many times to run the cmd) 1(how long in between runs) {Prefix}respawn jim</b>`;
 					"";
 					`<b>――――― Reference Info ―――――</b>`;
 					`<b>{Prefix}cmds</b> for a list of available commands`;
@@ -938,7 +938,7 @@ return function(Vargs, env)
 							IsDonor = Admin.CheckDonor(v);
 							GameData = gameData;
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
-							CmdPrefix = Settings.Prefix[1];
+							CmdPrefix = Functions.GetMainPrefix();
 							CmdSplitKey = Settings.SplitKey;
 							OnlineFriends = Remote.Get(v, "Function", "GetFriendsOnline");
 						})
@@ -1019,7 +1019,7 @@ return function(Vargs, env)
 					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
 					ServerInternetInfo = serverInfo;
 					Refreshables = Logs.ListUpdaters.ServerDetails(plr);
-					CmdPrefix = Settings.Prefix;
+					CmdPrefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix,
 					CmdPlayerPrefix = Settings.PlayerPrefix;
 					SplitKey = Settings.SplitKey;
 				})
