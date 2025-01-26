@@ -150,7 +150,7 @@ return function(Vargs, env)
 			Description = "Shows you the command prefix using the :cmds command";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint(`{Settings.Prefix}cmds`, {plr})
+				Functions.Hint(`{if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix}cmds`, {plr})
 			end
 		};
 
@@ -567,16 +567,17 @@ return function(Vargs, env)
 			Description = "Shows you how to use some syntax related things";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
+				local Prefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix
 				local usage = {
 					"";
 					"Mouse over things in lists to expand them";
 					"You can also resize windows by dragging the edges";
 					"";
-					`Put <b>/e</b> in front to silence commands in chat (<b>/e {Settings.Prefix}kill scel</b>) or enable chat command hiding in client settings`;
+					`Put <b>/e</b> in front to silence commands in chat (<b>/e {Prefix}kill scel</b>) or enable chat command hiding in client settings`;
 					`Player commands can be used by anyone, these commands have <b>{Settings.PlayerPrefix}</b> infront, such as <b>{Settings.PlayerPrefix}info</b> and <b>{Settings.PlayerPrefix}rejoin</b>`;
 					"";
 					`<b>――――― Player Selectors ―――――</b>`;
-					`Usage example: <b>{Settings.Prefix}kill {Settings.SpecialPrefix}all</b> (where <b>{Settings.SpecialPrefix}all</b> is the selector)`;
+					`Usage example: <b>{Prefix}kill {Settings.SpecialPrefix}all</b> (where <b>{Settings.SpecialPrefix}all</b> is the selector)`;
 					`<b>{Settings.SpecialPrefix}me</b> - Yourself`;
 					`<b>{Settings.SpecialPrefix}all</b> - Everyone in the server`;
 					`<b>{Settings.SpecialPrefix}admins</b> - All admins in the server`;
@@ -584,29 +585,29 @@ return function(Vargs, env)
 					`<b>{Settings.SpecialPrefix}others</b> - Everyone except yourself`;
 					`<b>{Settings.SpecialPrefix}random</b> - A random person in the server excluding those removed with -SELECTION`;
 					`<b>@USERNAME</b> - Targets a specific player with that exact username Ex: <b>{Settings.Prefix}god @Sceleratis </b> would give a player with the username 'Sceleratis' god powers`;
-					`<b>#NUM</b> - NUM random players in the server <b>{Settings.Prefix}ff #5</b> will ff 5 random players excluding those removed with -SELECTION.`;
+					`<b>#NUM</b> - NUM random players in the server <b>{Prefix}ff #5</b> will ff 5 random players excluding those removed with -SELECTION.`;
 					`<b>{Settings.SpecialPrefix}friends</b> - Your friends who are in the server`;
-					`<b>%TEAMNAME</b> - Members of the team TEAMNAME Ex: {Settings.Prefix}kill %raiders`;
+					`<b>%TEAMNAME</b> - Members of the team TEAMNAME Ex: {Prefix}kill %raiders`;
 					`<b>$GROUPID</b> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)`;
-					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Settings.Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
-					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Settings.Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
-					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Settings.Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
+					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
+					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
+					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
 					"";
 					`<b>――――― Repetition ―――――</b>`;
-					`Multiple player selections - <b>{Settings.Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
-					`Multiple Commands at a time - <b>{Settings.Prefix}ff me {Settings.BatchKey} {Settings.Prefix}sparkles me {Settings.BatchKey} {Settings.Prefix}rocket jim</b>`;
-					`You can add a delay if you want; <b>{Settings.Prefix}ff me {Settings.BatchKey} !wait 10 {Settings.BatchKey} {Settings.Prefix}m hi we waited 10 seconds</b>`;
+					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
+					`Multiple Commands at a time - <b>{Prefix}ff me {Settings.BatchKey} {Settings.Prefix}sparkles me {Settings.BatchKey} {Prefix}rocket jim</b>`;
+					`You can add a delay if you want; <b>{Prefix}ff me {Settings.BatchKey} !wait 10 {Settings.BatchKey} {Prefix}m hi we waited 10 seconds</b>`;
 					`<b>{Settings.Prefix}repeat 10(how many times to run the cmd) 1(how long in between runs) {Settings.Prefix}respawn jim</b>`;
 					"";
 					`<b>――――― Reference Info ―――――</b>`;
-					`<b>{Settings.Prefix}cmds</b> for a list of available commands`;
-					`<b>{Settings.Prefix}cmdinfo &lt;command&gt;</b> for detailed info about a specific command`;
+					`<b>{Prefix}cmds</b> for a list of available commands`;
+					`<b>{Prefix}cmdinfo &lt;command&gt;</b> for detailed info about a specific command`;
 					`<b>{Settings.PlayerPrefix}brickcolors</b> for a list of BrickColors`;
 					`<b>{Settings.PlayerPrefix}materials</b> for a list of materials`;
 					"";
-					`<b>{Settings.Prefix}capes</b> for a list of preset admin capes`;
-					`<b>{Settings.Prefix}musiclist</b> for a list of preset audios`;
-					`<b>{Settings.Prefix}insertlist</b> for a list of insertable assets using {Settings.Prefix}insert`;
+					`<b>{Prefix}capes</b> for a list of preset admin capes`;
+					`<b>{Prefix}musiclist</b> for a list of preset audios`;
+					`<b>{Prefix}insertlist</b> for a list of insertable assets using {Prefix}insert`;
 				}
 				Remote.MakeGui(plr, "List", {
 					Title = "Usage";
@@ -937,7 +938,7 @@ return function(Vargs, env)
 							IsDonor = Admin.CheckDonor(v);
 							GameData = gameData;
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
-							CmdPrefix = Settings.Prefix;
+							CmdPrefix = Settings.Prefix[1];
 							CmdSplitKey = Settings.SplitKey;
 							OnlineFriends = Remote.Get(v, "Function", "GetFriendsOnline");
 						})
