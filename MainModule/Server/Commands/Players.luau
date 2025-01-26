@@ -31,11 +31,11 @@ return function(Vargs, env)
 
 					for _,alias in cmd.Commands do
 						if #cmdAliases >= 4 and (#cmd.Commands - #cmdAliases) ~= 0 then
-							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)	
+							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)
 							break
 						end
 					end
-					
+
 					table.remove(cmdAliases, 1)
 
 					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
@@ -83,7 +83,7 @@ return function(Vargs, env)
 				local cmd, ind
 				for i, v in Admin.SearchCommands(plr, "all") do
 					for _, p in v.Commands do
-						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
+						if (if type(v.Prefix) == "table" then v.Prefix[1] else v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
 							cmd, ind = v, i
 							break
 						end
@@ -107,7 +107,7 @@ return function(Vargs, env)
 					Title = "Command Info";
 					Icon = server.MatIcons.Info;
 					Table = {
-						{Text = `<b>Prefix:</b> {cmd.Prefix}`, Desc = "Prefix used to run the command"},
+						{Text = `<b>Prefix:</b> {if type(cmd.Prefix) =="table" then table.concat(cmd.Prefix, ", ") else cmd.Prefix}`, Desc = "Prefix used to run the command"},
 						{Text = `<b>Commands:</b> {SanitizeXML(table.concat(cmd.Commands, ", "))}`, Desc = "Valid default aliases for the command"},
 						{Text = `<b>Arguments:</b> {if cmdArgs == "" then "-" else SanitizeXML(cmdArgs)}`, Desc = "Parameters taken by the command"},
 						{Text = `<b>Admin Level:</b> {Admin.FormatCommandAdminLevel(cmd)}`, Desc = "Rank required to run the command"},
