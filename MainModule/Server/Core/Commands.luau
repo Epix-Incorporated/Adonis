@@ -34,7 +34,7 @@ return function(Vargs, GetEnv)
 		t = server.Typechecker;
 
 		local ValidateCommandDefinition = t.interface({
-			Prefix = t.string,
+			Prefix = t.union(t.string, t.array(t.string)),
 			Commands = t.array(t.string),
 			Description = t.string,
 			AdminLevel = t.union(t.string, t.number, t.nan, t.array(t.union(t.string, t.number, t.nan))),
@@ -99,7 +99,13 @@ return function(Vargs, GetEnv)
 			Admin.PrefixCache[cmd.Prefix] = true
 
 			for _, v in cmd.Commands do
-				Admin.CommandCache[string.lower(cmd.Prefix..v)] = ind
+				if type(cmd.Prefix) == "table" then
+					for _,p in cmd.Prefix do
+						Admin.CommandCache[string.lower(p..v)] = ind
+					end
+				else
+					Admin.CommandCache[string.lower(cmd.Prefix..v)] = ind
+				end
 			end
 
 			cmd.Args = cmd.Args or cmd.Arguments or {}
