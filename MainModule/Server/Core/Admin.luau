@@ -1193,9 +1193,16 @@ return function(Vargs, GetEnv)
 			for ind, data in Commands do
 				if type(data) == "table" then
 					for i,cmd in data.Commands do
-						if data.Prefix == "" then Admin.BlankPrefix = true end
-						tempPrefix[data.Prefix] = true
-						tempTable[string.lower(data.Prefix..cmd)] = ind
+						if type(data.Prefix) ~= "table" and data.Prefix == "" then Admin.BlankPrefix = true end
+						if type(data.Prefix) == "table" then
+							for _,p in data.Prefix do
+								tempPrefix[p] = true
+								tempTable[string.lower(p..cmd)] = ind
+							end
+						else
+							tempPrefix[data.Prefix] = true
+							tempTable[string.lower(data.Prefix..cmd)] = ind
+						end
 					end
 				end
 			end
@@ -1232,13 +1239,27 @@ return function(Vargs, GetEnv)
 							end
 
 							for _, v in data.Commands do
-								if not blacklistedCommands["/"..data.Prefix..v] then
-									if not command1 then
-										command1 = "/"..data.Prefix..v
-									else
-										command2 = "/"..data.Prefix..v
+								if type(data.Prefix) == "table" then
+									for _, p in data.Prefix do
+										if not blacklistedCommands["/"..p..v] then
+											if not command1 then
+												command1 = "/"..p..v
+											else
+												command2 = "/"..p..v
+											end
+										end
 									end
+								else
+									if not blacklistedCommands["/"..data.Prefix..v] then
+										if not command1 then
+											command1 = "/"..data.Prefix..v
+										else
+											command2 = "/"..data.Prefix..v
+										end
+									end
+
 								end
+
 							end
 
 							if command1 then
@@ -1336,7 +1357,7 @@ return function(Vargs, GetEnv)
 
 		FormatCommand = function(command, cmdn)
 			return table.concat({
-				(command.Prefix or ""),
+				(if type(command.Prefix) == "table" then command.Prefix[1] else command.Prefix or ""),
 				tostring(command.Commands[cmdn or 1]),
 				#command.Args > 0 and Settings.SplitKey or "",
 				#command.Args > 0 and Admin.FormatCommandArguments(command) or ""
