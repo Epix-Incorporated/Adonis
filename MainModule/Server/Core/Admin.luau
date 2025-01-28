@@ -425,14 +425,15 @@ return function(Vargs, GetEnv)
 			local pData = data or Core.GetPlayer(p)
 			if pData.Client.HideChatCommands then
 				if Admin.BlankPrefix and
-					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
+
+					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix or (type(Settings.Prefix) == "table" and not table.find(Settings.Prefix, string.sub(message,1,1)))) then
 					local isCMD = Admin.GetCommand(message)
 					if isCMD then
 						return true
 					else
 						return false
 					end
-				elseif (string.sub(message,1,1) == Settings.Prefix or string.sub(message,1,1) == Settings.PlayerPrefix)
+				elseif (string.sub(message,1,1) == Settings.Prefix or string.sub(message,1,1) == Settings.PlayerPrefix or (type(Settings.Prefix) == "table" and table.find(Settings.Prefix, string.sub(message,1,1))))
 					and string.sub(message,2,2) ~= string.sub(message,1,1) then
 					return true;
 				end
@@ -1397,7 +1398,7 @@ return function(Vargs, GetEnv)
 		--// Make it so you can't accidentally overwrite certain existing commands... resulting in being unable to add/edit/remove aliases (and other stuff)
 		CheckAliasBlacklist = function(alias)
 			local playerPrefix = Settings.PlayerPrefix;
-			local prefix = Settings.Prefix;
+			local prefix = Settings.Prefix
 			local blacklist = {
 				[`{playerPrefix}alias`] = true;
 				[`{playerPrefix}newalias`] = true;
