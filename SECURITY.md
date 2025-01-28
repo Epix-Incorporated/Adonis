@@ -11,7 +11,7 @@ Only the *live* (release) version of Adonis is officially supported and given se
 
 ## Reporting a Vulnerability in Adonis
 
-👉 **If the vulnerability is *severe* or highly damaging**, join the [Epix Incorporated Discord server](https://discord.gg/H5RvTP3) and DM an *Moderator*, *Developer, or *Maintainer*.
+👉 **If the vulnerability is *severe* or highly damaging**, join the [Epix Incorporated Discord server](https://discord.gg/H5RvTP3) and DM a *Moderator*, *Developer, or *Maintainer*.
 
 👉 **If the vulnerability is relatively minor and can be safely discussed in public**, create a bug report [on GitHub](https://github.com/Epix-Incorporated/Adonis/issues/new/choose) or in our Discord server.
 
