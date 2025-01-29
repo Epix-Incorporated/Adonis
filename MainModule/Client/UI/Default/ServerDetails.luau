@@ -174,7 +174,7 @@ return function(data, env)
 					{"Country", serii.country or "[Error]"},
 					{"Region", serii.region or "[Error]"},
 					{"City", serii.city or "[Error]"},
-					{if serii.country and string.match(serii.country, "United States") then "Zipcode" else "Postcode", serii.zipcode or "[Error]"},
+					{if serii.country and (string.match(serii.country, "United States") or string.match(serii.country, "Philippines")) then "Zipcode" else "Postcode", serii.zipcode or "[Error]"},
 					{"IP Address", serii.ip or "[Error]"},
 					{"Coordinates", serii.coords or "[Error]"},
 					}) do table.insert(entries, v) end
