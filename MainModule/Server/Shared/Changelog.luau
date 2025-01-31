@@ -3,8 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v264 2025-01-28 10:00 UTC] @Dimenpsyonal";
+	"[v264 2025-01-31 11:55 UTC] @Dimenpsyonal";
 	"*New default prefix is ; (existing loaders unaffected)";
+	"Adjust error handling for API fetching";
 	"(Git/SuperCater) Add multiple prefix support, add ; as a prefix (#1841)";
 	"(Git/Mars7383) Prevent used globals from being counted multiple times in :ss (#1830)";
 	"(Git/ccuser44) Use linkedlists for queue (#1767)";
