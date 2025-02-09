@@ -684,7 +684,7 @@ return function(Vargs, env)
 					Functions.Hint(string.format("Team '%s' already exists!", teamName), {plr})
 					return;
 				end
-				
+
 				service.New("Team", {
 					Parent = service.Teams;
 					Name = teamName;
@@ -1430,7 +1430,7 @@ return function(Vargs, env)
 					CanBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.ServerBan.AdminLevel);
 					CanTimeBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.TimeBan.AdminLevel);
 					CanPermBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.PermanentBan.AdminLevel);
-					Prefix = Settings.Prefix;
+					Prefix = Functions.GetMainPrefix()
 				})
 			end,
 		};

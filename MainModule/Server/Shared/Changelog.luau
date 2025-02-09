@@ -1,7 +1,15 @@
 return {
-	"Version: 263";
+	"Version: 264";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v264 2025-02-09 10:54 UTC] @Dimenpsyonal";
+	"*New default prefix is ; (existing loaders unaffected)";
+	"Adjust error handling for API fetching";
+	"(Git/SuperCater) Add multiple prefix support, add ; as a prefix (#1841)";
+	"(Git/Mars7383) Prevent used globals from being counted multiple times in :ss (#1830)";
+	"(Git/ccuser44) Use linkedlists for queue (#1767)";
+	"(Git/ccuser44) Fix postcode handling (#1845)";
 	"";
 	"[v263 2025-01-22 11:29 UTC] @Dimenpsyonal";
 	"Load plugins asynchronously";
