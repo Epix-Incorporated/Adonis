@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v264 2025-01-31 11:55 UTC] @Dimenpsyonal";
+	"[v264 2025-02-09 10:54 UTC] @Dimenpsyonal";
 	"*New default prefix is ; (existing loaders unaffected)";
 	"Adjust error handling for API fetching";
 	"(Git/SuperCater) Add multiple prefix support, add ; as a prefix (#1841)";
