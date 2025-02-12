@@ -128,10 +128,10 @@ end
 --// Logging
 local clientLog = {}
 local dumplog = function()
-	warn("Dumping client log...")
+	print("Dumping client log...")
 
 	for _, v in clientLog do
-		warn(v)
+		print(v)
 	end
 end
 local log = function(...)
