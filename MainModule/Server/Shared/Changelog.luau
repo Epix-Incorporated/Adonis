@@ -1,7 +1,10 @@
 return {
-	"Version: 264";
+	"Version: 265";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v265 2025-xx-xx xx:xx UTC] @Maintainer";
+	"Change client dump to use print";
 	"";
 	"[v264 2025-02-09 10:54 UTC] @Dimenpsyonal";
 	"*New default prefix is ; (existing loaders unaffected)";
