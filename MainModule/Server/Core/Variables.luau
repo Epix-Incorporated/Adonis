@@ -64,7 +64,7 @@ return function(Vargs, GetEnv)
 
 	local Lighting = service.Lighting
 	local atmosphere = Lighting:FindFirstChildWhichIsA("Atmosphere")
-	
+
 	server.Variables = {
 		Init = Init,
 		RunAfterInit = AfterInit,
@@ -142,7 +142,7 @@ return function(Vargs, GetEnv)
 			Name = Lighting.Name,
 			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
 		},
-		
+
 		AtmosphereSettings = {
 			Name = atmosphere and atmosphere.Name,
 			Density = atmosphere and atmosphere.Density,
@@ -261,5 +261,10 @@ return function(Vargs, GetEnv)
 				Settings = server.Settings.Whitelist
 			},
 		};
+
+		Starter = {
+			Health = {};
+			Speed = {};
+		}
 	}
 end

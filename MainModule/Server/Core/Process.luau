@@ -1158,6 +1158,18 @@ return function(Vargs, GetEnv)
 						end
 					end
 				end
+
+				local Hum = char:FindFirstChildOfClass("Humanoid")
+				if not Hum then return end
+				local Health = Variables.Starter.Health[p.UserId]
+				if Health then
+					Hum.MaxHealth = Health
+					Hum.Health = Hum.MaxHealth
+				end
+				local Speed = Variables.Starter.Speed[p.UserId]
+				if Speed then
+					Hum.WalkSpeed = Speed
+				end
 			end
 		end;
 
