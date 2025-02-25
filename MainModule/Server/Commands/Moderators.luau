@@ -7185,7 +7185,7 @@ return function(Vargs, env)
 			Commands = {"starterspeed", "startspeed"};
 			Args = {"player", "speed"};
 			Description = "Sets the target player(s)'s starting speed";
-			AdminLevel = "Admins";
+			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2])
 				assert(speed, "Invalid speed value")
@@ -7206,7 +7206,7 @@ return function(Vargs, env)
 			Commands = {"unstarterspeed", "unstartspeed", "resetstarterspeed"};
 			Args = {"player"};
 			Description = "Removes the target player(s)'s custom starting speed";
-			AdminLevel = "Admins";
+			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local plrs = service.GetPlayers(plr, args[1])
 				for _, v in plrs do
