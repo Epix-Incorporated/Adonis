@@ -7143,7 +7143,7 @@ return function(Vargs, env)
 
 		StarterHealth = {
 			Prefix = Settings.Prefix;
-			Commands = {"starterhealth", "starthealth"};
+			Commands = {"starterhealth", "starthealth", "persisthealth"};
 			Args = {"player", "health"};
 			Description = "Sets the target player(s)'s starting health";
 			AdminLevel = "Moderators";
@@ -7152,7 +7152,7 @@ return function(Vargs, env)
 				assert(health, "Invalid health value")
 				local plrs = service.GetPlayers(plr, args[1])
 				for _, v in plrs do
-					server.Variables.Starter.Health[v.UserId] = health
+					server.Variables.Starter.Health[tostring(v.UserId)] = health
 				end
 				Functions.Hint(`Your starter health was set to {health}`, plrs)
 				if Settings.CommandFeedback then
@@ -7164,14 +7164,14 @@ return function(Vargs, env)
 
 		UnStarterHealth = {
 			Prefix = Settings.Prefix;
-			Commands = {"unstarterhealth", "unstarthealth", "resetstarterhealth"};
+			Commands = {"unstarterhealth", "unstarthealth", "resetstarterhealth", "unpersisthealth"};
 			Args = {"player"};
 			Description = "Removes the target player(s)'s custom starting health";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local plrs = service.GetPlayers(plr, args[1])
 				for _, v in plrs do
-					server.Variables.Starter.Health[v.UserId] = nil
+					server.Variables.Starter.Health[tostring(v.UserId)] = nil
 				end
 				Functions.Hint(`Your starter health was reset`, plrs)
 				if Settings.CommandFeedback then
@@ -7182,7 +7182,7 @@ return function(Vargs, env)
 
 		StarterSpeed = {
 			Prefix = Settings.Prefix;
-			Commands = {"starterspeed", "startspeed"};
+			Commands = {"starterspeed", "startspeed", "persistspeed"};
 			Args = {"player", "speed"};
 			Description = "Sets the target player(s)'s starting speed";
 			AdminLevel = "Moderators";
@@ -7191,7 +7191,7 @@ return function(Vargs, env)
 				assert(speed, "Invalid speed value")
 				local plrs = service.GetPlayers(plr, args[1])
 				for _, v in plrs do
-					server.Variables.Starter.Speed[v.UserId] = speed
+					server.Variables.Starter.Speed[tostring(v.UserId)] = speed
 				end
 
 				Functions.Hint(`Your starter speed was set to {speed}`, plrs)
@@ -7203,14 +7203,14 @@ return function(Vargs, env)
 
 		UnStarterSpeed = {
 			Prefix = Settings.Prefix;
-			Commands = {"unstarterspeed", "unstartspeed", "resetstarterspeed"};
+			Commands = {"unstarterspeed", "unstartspeed", "resetstarterspeed", "unpersistspeed"};
 			Args = {"player"};
 			Description = "Removes the target player(s)'s custom starting speed";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local plrs = service.GetPlayers(plr, args[1])
 				for _, v in plrs do
-					server.Variables.Starter.Speed[v.UserId] = nil
+					server.Variables.Starter.Speed[tostring(v.UserId)] = nil
 				end
 				Functions.Hint(`Your starter speed was reset`, plrs)
 				if Settings.CommandFeedback then
