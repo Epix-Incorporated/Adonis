@@ -1064,7 +1064,7 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			elseif type(check) == "string" then
-				local cName, cId = string.match(check, "(.*):(.*)")
+				local cName, cId = string.match(check, "^(.-):(%d+)$")
 				if not cName and cId then cName = check end
 
 				if cName then
