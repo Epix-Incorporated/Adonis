@@ -2,28 +2,41 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX89F12C35C60C4141867B2ABEAE1EC940">
+	<Item class="ScreenGui" referent="RBXA573F50C765241E7A15C7D0414A4E6CF">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">true</bool>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="ClipToDeviceSafeArea">true</bool>
+			<bool name="DefinesCapabilities">false</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">true</bool>
-			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">Freecam</string>
 			<bool name="ResetOnSpawn">false</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
+			<token name="SafeAreaCompatibility">1</token>
+			<token name="ScreenInsets">2</token>
+			<token name="SelectionBehaviorDown">0</token>
+			<token name="SelectionBehaviorLeft">0</token>
+			<token name="SelectionBehaviorRight">0</token>
+			<token name="SelectionBehaviorUp">0</token>
+			<bool name="SelectionGroup">false</bool>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<token name="ZIndexBehavior">1</token>
+			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="LocalScript" referent="RBX5B1D1BE328964DACA5664E307DFF2B17">
+		<Item class="LocalScript" referent="RBX20A08AC470B941F1B25FC86269513D8E">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="Disabled">true</bool>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<bool name="Disabled">false</bool>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Freecam</string>
-				<string name="ScriptGuid">{767B5CA6-BE25-4C4F-943A-28FA91C505BF}</string>
-				<ProtectedString name="Source"><![CDATA[------------------------------------------------------------------------
+				<token name="RunContext">0</token>
+				<string name="ScriptGuid">{F638D2B2-9C0D-488E-B3B4-AD8D95E2E64E}</string>
+				<ProtectedString name="Source"><![CDATA[--!nonstrict
+------------------------------------------------------------------------
 -- Freecam
 -- Cinematic free camera for spectating and video production.
 ------------------------------------------------------------------------
@@ -44,6 +57,8 @@ local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local Debris = game:GetService("Debris")
+local Settings = UserSettings()
+local GameSettings = Settings.GameSettings
 
 local LocalPlayer = Players.LocalPlayer
 if not LocalPlayer then
@@ -59,10 +74,27 @@ Workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 	end
 end)
 
+local FFlagUserExitFreecamBreaksWithShiftlock
+do
+    local success, result = pcall(function()
+        return UserSettings():IsUserFeatureEnabled("UserExitFreecamBreaksWithShiftlock")
+    end)
+    FFlagUserExitFreecamBreaksWithShiftlock = success and result
+end
+
+local FFlagUserShowGuiHideToggles
+do
+    local success, result = pcall(function()
+        return UserSettings():IsUserFeatureEnabled("UserShowGuiHideToggles")
+    end)
+    FFlagUserShowGuiHideToggles = success and result
+end
+
 local RF = script.Parent:FindFirstChildOfClass("RemoteFunction")
 
 ------------------------------------------------------------------------
 
+local FREECAM_ENABLED_ATTRIBUTE_NAME = "FreecamEnabled"
 local TOGGLE_INPUT_PRIORITY = Enum.ContextActionPriority.Low.Value
 local INPUT_PRIORITY = Enum.ContextActionPriority.High.Value
 local FREECAM_MACRO_KB = {Enum.KeyCode.LeftShift, Enum.KeyCode.P}
@@ -297,36 +329,6 @@ local Input = {} do
 	end
 end
 
-local function GetFocusDistance(cameraFrame)
-	local znear = 0.1
-	local viewport = Camera.ViewportSize
-	local projy = 2*tan(cameraFov/2)
-	local projx = viewport.x/viewport.y*projy
-	local fx = cameraFrame.rightVector
-	local fy = cameraFrame.upVector
-	local fz = cameraFrame.lookVector
-
-	local minVect = Vector3.new()
-	local minDist = 512
-
-	for x = 0, 1, 0.5 do
-		for y = 0, 1, 0.5 do
-			local cx = (x - 0.5)*projx
-			local cy = (y - 0.5)*projy
-			local offset = fx*cx - fy*cy + fz
-			local origin = cameraFrame.p + offset*znear
-			local _, hit = Workspace:FindPartOnRay(Ray.new(origin, offset.unit*minDist))
-			local dist = (hit - origin).Magnitude
-			if minDist > dist then
-				minDist = dist
-				minVect = offset.unit
-			end
-		end
-	end
-
-	return fz:Dot(minVect)*minDist
-end
-
 ------------------------------------------------------------------------
 
 local function StepFreecam(dt)
@@ -344,8 +346,18 @@ local function StepFreecam(dt)
 	cameraPos = cameraCFrame.p
 
 	Camera.CFrame = cameraCFrame
-	Camera.Focus = cameraCFrame*CFrame.new(0, 0, -GetFocusDistance(cameraCFrame))
+	Camera.Focus = cameraCFrame 
 	Camera.FieldOfView = cameraFov
+end
+
+local function CheckMouseLockAvailability()
+	local devAllowsMouseLock = Players.LocalPlayer.DevEnableMouseLock
+	local devMovementModeIsScriptable = Players.LocalPlayer.DevComputerMovementMode == Enum.DevComputerMovementMode.Scriptable
+	local userHasMouseLockModeEnabled = GameSettings.ControlMode == Enum.ControlMode.MouseLockSwitch
+	local userHasClickToMoveEnabled =  GameSettings.ComputerMovementMode == Enum.ComputerMovementMode.ClickToMove
+	local MouseLockAvailable = devAllowsMouseLock and userHasMouseLockModeEnabled and not userHasClickToMoveEnabled and not devMovementModeIsScriptable
+
+	return MouseLockAvailable
 end
 
 ------------------------------------------------------------------------
@@ -401,13 +413,16 @@ local PlayerState = {} do
 		mouseIconEnabled = UserInputService.MouseIconEnabled
 		UserInputService.MouseIconEnabled = false
 
-		mouseBehavior = UserInputService.MouseBehavior
+		if FFlagUserExitFreecamBreaksWithShiftlock and CheckMouseLockAvailability() then
+			mouseBehavior = Enum.MouseBehavior.Default
+		else
+			mouseBehavior = UserInputService.MouseBehavior
+		end
 		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 	end
 
 	-- Restore state
 	function PlayerState.Pop()
-		if cameraFieldOfView == nil then return end
 		for name, isEnabled in pairs(coreGuis) do
 			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType[name], isEnabled)
 		end
@@ -441,6 +456,10 @@ local PlayerState = {} do
 end
 
 local function StartFreecam()
+	if FFlagUserShowGuiHideToggles then
+		script:SetAttribute(FREECAM_ENABLED_ATTRIBUTE_NAME, true)
+	end
+
 	local cameraCFrame = Camera.CFrame
 	cameraRot = Vector2.new(cameraCFrame:toEulerAnglesYXZ())
 	cameraPos = cameraCFrame.p
@@ -453,14 +472,16 @@ local function StartFreecam()
 	PlayerState.Push()
 	RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
 	Input.StartCapture()
-	UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 end
 
 local function StopFreecam()
+	if FFlagUserShowGuiHideToggles then
+		script:SetAttribute(FREECAM_ENABLED_ATTRIBUTE_NAME, false)
+	end
+
 	Input.StopCapture()
 	RunService:UnbindFromRenderStep("Freecam")
 	PlayerState.Pop()
-	UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 end
 
 ------------------------------------------------------------------------
@@ -491,33 +512,53 @@ do
 			if input.KeyCode == FREECAM_MACRO_KB[#FREECAM_MACRO_KB] then
 				CheckMacro(FREECAM_MACRO_KB)
 			end
-			
-			if input.KeyCode == Enum.KeyCode.F or input.KeyCode == Enum.KeyCode.DPadLeft then
-				ToggleFreecam()
-			end
 		end
 		return Enum.ContextActionResult.Pass
 	end
 
 	ContextActionService:BindActionAtPriority("FreecamToggle", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, FREECAM_MACRO_KB[#FREECAM_MACRO_KB])
-	ContextActionService:BindActionAtPriority("FreecamToggle2", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.F)
-	ContextActionService:BindActionAtPriority("FreecamToggleDPAD", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.DPadLeft)
+	ContextActionService:BindActionAtPriority("FreecamToggle2", ToggleFreecam, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.F)
+	ContextActionService:BindActionAtPriority("FreecamToggleDPAD", ToggleFreecam, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.DPadLeft)
+
+	if FFlagUserShowGuiHideToggles then
+		script:SetAttribute(FREECAM_ENABLED_ATTRIBUTE_NAME, enabled)
+		script:GetAttributeChangedSignal(FREECAM_ENABLED_ATTRIBUTE_NAME):Connect(function()
+			local attributeValue = script:GetAttribute(FREECAM_ENABLED_ATTRIBUTE_NAME)
+
+			if typeof(attributeValue) ~= "boolean" then
+				script:SetAttribute(FREECAM_ENABLED_ATTRIBUTE_NAME, enabled)
+				return
+			end
+
+			-- If the attribute's value and `enabled` var don't match, pick attribute value as 
+			-- source of truth
+			if attributeValue ~= enabled then
+				if attributeValue then
+					StartFreecam()
+					enabled = true
+				else
+					StopFreecam()
+					enabled = false
+				end
+			end
+		end)
+	end
 	
 	RF.OnClientInvoke = function(a, b, c)
 		if a == "Disable" and enabled then
 			enabled = false
 			StopFreecam()
 		end
-		
+
 		if a == "Enable" and not enabled then
 			enabled = true
 			StartFreecam()
 		end
-		
+
 		if a == "Toggle" then
 			ToggleFreecam()
 		end
-		
+
 		if a == "End" or a == "Stop" then
 			RF.OnClientInvoke = nil
 			Debris:AddItem(RF, 0.5)
@@ -532,9 +573,11 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="RemoteFunction" referent="RBX64F1CAD292114565B18E1A25499FA296">
+		<Item class="RemoteFunction" referent="RBXC21A87E767D34B448538C65D36670A58">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
 				<string name="Name">Remote</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
