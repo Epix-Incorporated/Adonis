@@ -907,6 +907,10 @@ return function(Vargs, GetEnv)
 			end
 
 			Variables.TrackingTable[p.Name] = nil
+			if Variables.ReturnPoints[p] then
+				Variables.ReturnPoints[p] = nil
+			end
+
 			for otherPlrName, trackTargets in Variables.TrackingTable do
 				if trackTargets[p] then
 					trackTargets[p] = nil
