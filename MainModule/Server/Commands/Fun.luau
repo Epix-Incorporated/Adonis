@@ -1104,7 +1104,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				local sword = service.Insert(125013769)
+				local sword = server.Deps.Assets.LinkedSword
 				local config = sword:FindFirstChild("Configurations")
 				if config then
 					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
