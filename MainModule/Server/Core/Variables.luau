@@ -77,6 +77,7 @@ return function(Vargs, GetEnv)
 		ScriptEditor = {},
 		CachedDonors = {},
 		Aliases = {},
+		ReturnPoints = {},
 		BanMessage = "Banned",
 		PlayerJoinFilters = {};
 		LockMessage = "Not Whitelisted",

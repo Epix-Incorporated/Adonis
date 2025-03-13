@@ -91,7 +91,9 @@ return function(Vargs, env)
 						plr.Character.Humanoid.Sit = false
 						plr.Character.Humanoid.Jump = true
 					end
-					wait()
+					Variables.ReturnPoints[plr] = plr.Character.HumanoidRootPart.CFrame
+					
+					task.wait()
 					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, -5))
 				end
 			end
@@ -4638,10 +4640,12 @@ return function(Vargs, env)
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
-
+							
+							Variables.ReturnPoints[v] = root.CFrame
+							
 							task.wait()
 
-							if root then
+							if root then		
 								root.CFrame = CFrame.new(point)
 								if FlightPos and FlightGyro then
 									FlightPos.Position = root.Position
@@ -4685,7 +4689,9 @@ return function(Vargs, env)
 							FlightPos.Position = root.Position
 							FlightGyro.CFrame = root.CFrame
 						end
-
+						
+						Variables.ReturnPoints[v] = root.CFrame
+						
 						task.wait()
 
 						root.CFrame = CFrame.new(Vector3.new(tonumber(x), tonumber(y), tonumber(z)))
@@ -4728,7 +4734,9 @@ return function(Vargs, env)
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
-
+							
+							Variables.ReturnPoints[v] = root.CFrame
+							
 							task.wait()
 
 							root.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
@@ -4773,7 +4781,9 @@ return function(Vargs, env)
 										FlightPos.Position = root.Position
 										FlightGyro.CFrame = root.CFrame
 									end
-
+									
+									Variables.ReturnPoints[v] = root.CFrame
+									
 									task.wait()
 
 									if root and targ_root then
@@ -4826,6 +4836,22 @@ return function(Vargs, env)
 				Commands.Teleport.Function(plr, {`@{plr.Name}`, if args[1] then args[1] else "me"})
 			end
 		};
+		
+		Return = {
+			Prefix = Settings.Prefix;
+			Commands = {"return"};
+			Args = {"player"};
+			Description = "Returns the player to their original position";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, player in service.GetPlayers(plr, args[1]) do
+					if Variables.ReturnPoints[player] then
+						player.Character.HumanoidRootPart.CFrame = Variables.ReturnPoints[player]
+						Variables.ReturnPoints[player] = nil;
+					end
+				end
+			end
+		};
 
 		MassBring = {
 			Prefix = Settings.Prefix;
@@ -4868,6 +4894,8 @@ return function(Vargs, env)
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
+						Variables.ReturnPoints[players[i]] = rootPart.CFrame
+						
 						if rootPart then
 							rootPart.CFrame = (
 								plrRootPart.CFrame
@@ -4902,6 +4930,8 @@ return function(Vargs, env)
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
+						Variables.ReturnPoints[players[i]] = rootPart.CFrame
+						
 						if rootPart then
 							rootPart.CFrame = (
 								plrRootPart.CFrame
