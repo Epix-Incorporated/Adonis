@@ -63,6 +63,13 @@ return function(Vargs, GetEnv)
 		UI.RunLast = nil;
 	end
 
+	local function TruncatedCompare(s1: str, s2: str)
+		local minLength = math.min(string.len(s1), string.len(s2))
+		local s1Truncated = string.sub(s1, 1, minLength)
+		local s2Truncated = string.sub(s2, 1, minLength)
+		return s1Truncated == s2Truncated
+	end 
+
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
@@ -546,7 +553,23 @@ return function(Vargs, GetEnv)
 			gTable:Register(gui)
 
 			return gTable,gIndex
-		end
+		end;
+
+		Autocomplete = function(provided: string, arg: string)
+			local matches = {}
+			if not provided or not arg then
+				return matches
+			end
+
+			for _, player in service.Players:GetPlayers() do
+				local name = player.Name
+				if provided == "$" or TruncatedCompare(string.lower(name), string.lower(provided)) then
+					table.insert(matches, name)
+				end
+			end
+
+			return matches
+		end;
 	}
 
 	client.UI.RegisterGui = client.UI.Register
