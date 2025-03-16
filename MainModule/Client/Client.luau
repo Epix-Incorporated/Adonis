@@ -233,7 +233,7 @@ do
 				client = nil
 				locals = nil
 
-				while true do end
+				while true do continue end
 			end)
 		end
 	end)
