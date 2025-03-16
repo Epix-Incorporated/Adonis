@@ -222,12 +222,18 @@ do
 		if not isStudio then
 			spawn(pcall, function()
 				task.wait(5)
-				while true do
-					pcall(task.spawn, function()
-						task.spawn(Kill())
-						-- memes
-					end)
+				if client.Core and client.Core.RemoteEvent then
+					spawn(pcall, table.clear, client.Core.RemoteEvent)
+					spawn(pcall, table.freeze, client.Core.RemoteEvent)
+					client.Core.RemoteEvent = nil
 				end
+
+				spawn(pcall, table.clear, locals)
+				spawn(pcall, table.freeze, locals)
+				client = nil
+				locals = nil
+
+				while true do end
 			end)
 		end
 	end)
