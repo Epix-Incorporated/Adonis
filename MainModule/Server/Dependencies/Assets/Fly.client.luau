@@ -1,7 +1,7 @@
-local players = game:GetService("Players")
-local inputService = game:GetService("UserInputService")
-local runService = game:GetService("RunService")
-local contextService = game:GetService("ContextActionService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local ContextService = game:GetService("ContextActionService")
 
 local part = script.Parent
 
@@ -9,44 +9,28 @@ if not part then
 	script:Destroy()
 end
 
-local player = players.LocalPlayer
+local player = Players.LocalPlayer
 local char = player.Character
-
-local MoveVector = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
 
 local human = char:FindFirstChildOfClass("Humanoid")
 local bPos: AlignPosition = part:WaitForChild("ADONIS_FLIGHT_POSITION")
 local bGyro: AlignOrientation = part:WaitForChild("ADONIS_FLIGHT_GYRO")
 
-local speedVal = script:WaitForChild("Speed")
-local noclip = script:WaitForChild("Noclip")
-local Create = Instance.new
+local speedVal: NumberValue = script:WaitForChild("Speed")
+local noclip: BoolValue = script:WaitForChild("Noclip")
 local flying = true
 
-local keyTab = {}
 local dir = {}
 
 local antiLoop, conn
-local Check, getCF, dirToCom, Start, Stop, Toggle, HandleInput, listenConnection
+local Check, Start, Stop, Toggle, HandleInput, DPadifyInput
 
-local RBXConnections = {}
-function listenConnection(Connection, callback)
-	local RBXConnection = Connection:Connect(callback)
-	table.insert(RBXConnections, RBXConnection)
-	return RBXConnection
-end
+local connections: {RBXScriptConnection} = {}
 
 function Check()
 	if script.Parent == part then
 		return true
 	end
-end
-
-function getCF(part, isFor)
-	local cframe = part.CFrame
-	local noRot = CFrame.new(cframe.p)
-	local x, y, z = workspace.CurrentCamera.CFrame.Rotation:toEulerAnglesXYZ()
-	return noRot * CFrame.Angles(isFor and z or x, y, z)
 end
 
 function Start()
@@ -55,12 +39,11 @@ function Start()
 	local speedInc = topSpeed/25
 	local camera = workspace.CurrentCamera
 	local antiReLoop = {}
-	local realPos = part.CFrame
 
-	listenConnection(speedVal.Changed, function()
-		topSpeed = speedVal.Value
+	table.insert(connections, speedVal.Changed:Connect(function(speed)
+		topSpeed = speed
 		speedInc = topSpeed/25
-	end)
+	end))
 
 	bPos.Position = part.Position
 	bPos.MaxForce = math.huge
@@ -71,9 +54,9 @@ function Start()
 	antiLoop = antiReLoop
 
 	if noclip.Value then
-		conn = runService.Stepped:Connect(function()
-			for _,v in pairs(char:GetDescendants()) do
-				if v:IsA("BasePart") then
+		conn = RunService.PreSimulation:Connect(function()
+			for _, v in ipairs(char:GetDescendants()) do
+				if v:IsA("BasePart") and v.CanCollide then
 					v.CanCollide = false
 				end
 			end
@@ -125,7 +108,7 @@ function Start()
 		end
 
 		human.PlatformStand = true
-		bPos.Position = new.p
+		bPos.Position = new.Position
 
 		if dir.Forward then
 			bGyro.CFrame = camera.CFrame*CFrame.Angles(-math.rad(curSpeed*7.5), 0, 0)
@@ -135,7 +118,7 @@ function Start()
 			bGyro.CFrame = camera.CFrame
 		end
 
-		runService.RenderStepped:Wait()
+		RunService.PreRender:Wait()
 	end
 
 	Stop()
@@ -153,7 +136,7 @@ function Stop()
 		bGyro.MaxTorque = 0
 	end
 
-	if conn then
+	if conn and conn.Connected then
 		conn:Disconnect()
 	end
 end
@@ -177,27 +160,20 @@ end
 function HandleInput(input, isGame, bool)
 	if input.UserInputType and (input.UserInputType == Enum.UserInputType.Keyboard or input.UserInputType == Enum.UserInputType.Gamepad1) then
 		if input.KeyCode == Enum.KeyCode.ButtonA then
-			keyTab.Up = bool
 			dir.Up = bool
 		end
 		if not isGame then
 			if input.KeyCode == Enum.KeyCode.W then
-				keyTab.Forward = bool
 				dir.Forward = bool
 			elseif input.KeyCode == Enum.KeyCode.A then
-				keyTab.Left = bool
 				dir.Left = bool
 			elseif input.KeyCode == Enum.KeyCode.S then
-				keyTab.Backward = bool
 				dir.Backward = bool
 			elseif input.KeyCode == Enum.KeyCode.D then
-				keyTab.Right = bool
 				dir.Right = bool
 			elseif input.KeyCode == Enum.KeyCode.Q or input.KeyCode == Enum.KeyCode.DPadDown or input.KeyCode == Enum.KeyCode.ButtonB then
-				keyTab.Down = bool
 				dir.Down = bool
 			elseif input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.DPadUp then
-				keyTab.Up = bool
 				dir.Up = bool
 			elseif input.KeyCode == Enum.KeyCode.E or input.KeyCode == Enum.KeyCode.ButtonL3 then
 				Toggle()
@@ -205,16 +181,12 @@ function HandleInput(input, isGame, bool)
 		end
 	else
 		if input == "Forward" then
-			keyTab.Forward = bool
 			dir.Forward = bool
 		elseif input == "Backward" then
-			keyTab.Backward = bool
 			dir.Backward = bool
 		elseif input == "Left" then
-			keyTab.Left = bool
 			dir.Left = bool
 		elseif input == "Right" then
-			keyTab.Right = bool
 			dir.Right = bool
 		end
 	end
@@ -239,69 +211,75 @@ function DPadifyInput(direction, isGame)
 end
 
 task.spawn(function()
-	local Inst = part.DescendantRemoving:Wait()
+	while true do
+		local Inst = part.DescendantRemoving:Wait()
 
-	if Inst == bPos or Inst == bGyro or Inst == speedVal or Inst == noclip then
-		if conn then
-			conn:Disconnect()
+		if Inst == bPos or Inst == bGyro or Inst == speedVal or Inst == noclip then
+			for _, Signal in ipairs(connections) do
+				if Signal.Connected then
+					Signal:Disconnect()
+				end
+			end
+			table.clear(connections)
+
+			ContextService:UnbindAction("Toggle Flight")
+			Stop()
 		end
+	end
+end)
 
-		for _, Signal in pairs(RBXConnections) do
+task.spawn(function()
+	script.Destroying:Wait()
+
+	for _, Signal in ipairs(connections) do
+		if Signal.Connected then
 			Signal:Disconnect()
 		end
-
-		contextService:UnbindAction("Toggle Flight")
-
-		Stop()
 	end
+	table.clear(connections)
+
+	ContextService:UnbindAction("Toggle Flight")
+	Stop()
 end)
 
-listenConnection(inputService.InputBegan, function(input, isGame)
+table.insert(connections, UserInputService.InputBegan:Connect(function(input, isGame)
 	HandleInput(input, isGame, true)
-end)
+end))
 
-listenConnection(inputService.InputEnded, function(input, isGame)
+table.insert(connections, UserInputService.InputEnded:Connect(function(input, isGame)
 	HandleInput(input, isGame, false)
-end)
+end))
 
-listenConnection(inputService.InputChanged, function(input, isGame)
+table.insert(connections, UserInputService.InputChanged:Connect(function(input, isGame)
 	if input.KeyCode == Enum.KeyCode.Thumbstick1 then
-		if input.Position.Magnitude < .2 then DPadifyInput(Vector3.new(0,0,0)) return end
+		if input.Position.Magnitude < .2 then DPadifyInput(Vector3.zero) return end
 		DPadifyInput(input.Position, isGame)
 	end
-end)
+end))
 
 task.defer(Start)
 
-if inputService.TouchEnabled then
-	listenConnection(inputService.TouchMoved, function(input, isGame)
+if UserInputService.TouchEnabled then
+	local MoveVector = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
+
+	table.insert(connections, UserInputService.TouchMoved:Connect(function(input, isGame)
 		local dir = MoveVector:GetMoveVector()
-		if dir.Magnitude < .2 then DPadifyInput(Vector3.new(0,0,0)) return end
+		if dir.Magnitude < .2 then DPadifyInput(Vector3.zero) return end
 
 		local newDirOrder = Vector3.new(dir.X, -dir.Z, 0)
 		DPadifyInput(newDirOrder, isGame)
-	end)
+	end))
 
-	listenConnection(inputService.TouchEnded, function(input, isGame)
-		DPadifyInput(Vector3.new(0,0,0))
-	end)
-	
-	if not inputService.KeyboardEnabled then
-		contextService:BindAction("Toggle Flight", Toggle, true)
-		contextService:SetTitle("Toggle Flight", "Toggle Flight")
-		
-		listenConnection(human.Died, function()
-			contextService:UnbindAction("Toggle Flight")
-		end)
+	table.insert(connections, UserInputService.TouchEnded:Connect(function(input, isGame)
+		DPadifyInput(Vector3.zero)
+	end))
 
-		while true do
-			if not Check() then
-				break
-			end
+	if not UserInputService.KeyboardEnabled then
+		ContextService:BindAction("Toggle Flight", Toggle, true)
+		ContextService:SetTitle("Toggle Flight", "Toggle Flight")
 
-			runService.Stepped:Wait()
-		end
-
-		contextService:UnbindAction("Toggle Flight")
+		table.insert(connections, human.Died:Once(function()
+			ContextService:UnbindAction("Toggle Flight")
+		end))
 	end
 end

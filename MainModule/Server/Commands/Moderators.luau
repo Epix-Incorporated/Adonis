@@ -6007,7 +6007,7 @@ return function(Vargs, env)
 				scr.Name = "ADONIS_FLIGHT"
 
 				for i, v in service.GetPlayers(plr, args[1]) do
-					local part = v.Character:FindFirstChild("HumanoidRootPart")
+					local part = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
@@ -6018,33 +6018,33 @@ return function(Vargs, env)
 						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
 						if oldga then oldga:Destroy() end
-						if olds then olds:Destroy() end
+						if olds then Remote.Send(v, "Function", "Unfly") olds:Destroy() end
 
 						local new = scr:Clone()
-						local flightPositionAttachment: Attachment = service.New("Attachment")
-						local flightGyroAttachment: Attachment = service.New("Attachment")
-						local flightPosition: AlignPosition = service.New("AlignPosition")
-						local flightGyro: AlignOrientation = service.New("AlignOrientation")
-
-						flightPositionAttachment.Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT"
-						flightPositionAttachment.Parent = part
-
-						flightGyroAttachment.Name = "ADONIS_FLIGHT_GYRO_ATTACHMENT"
-						flightGyroAttachment.Parent = part
-
-						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
-						flightPosition.MaxForce = 0
-						flightPosition.Position = part.Position
-						flightPosition.Attachment0 = flightPositionAttachment
-						flightPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
-						flightPosition.Parent = part
-
-						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
-						flightGyro.MaxTorque = 0
-						flightGyro.CFrame = part.CFrame
-						flightGyro.Attachment0 = flightGyroAttachment
-						flightGyro.Mode = Enum.OrientationAlignmentMode.OneAttachment
-						flightGyro.Parent = part
+						local flightPositionAttachment: Attachment = service.New("Attachment", {
+							Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT",
+							Parent = part
+						})
+						local flightGyroAttachment: Attachment = service.New("Attachment", {
+							Name = "ADONIS_FLIGHT_GYRO_ATTACHMENT",
+							Parent = part
+						})
+						local flightPosition: AlignPosition = service.New("AlignPosition", {
+							Name = "ADONIS_FLIGHT_POSITION",
+							MaxForce = 0,
+							Position = part.Position,
+							Attachment0 = flightPositionAttachment,
+							Mode = Enum.PositionAlignmentMode.OneAttachment,
+							Parent = part
+						})
+						local flightGyro: AlignOrientation = service.New("AlignOrientation", {
+							Name = "ADONIS_FLIGHT_GYRO",
+							MaxTorque = 0,
+							CFrame = part.CFrame,
+							Attachment0 = flightGyroAttachment,
+							Mode = Enum.OrientationAlignmentMode.OneAttachment,
+							Parent = part
+						})
 
 						new.Parent = part
 						new.Disabled = false
@@ -6090,7 +6090,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local part = v.Character:FindFirstChild("HumanoidRootPart")
+					local part = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
@@ -6101,7 +6101,7 @@ return function(Vargs, env)
 						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
 						if oldga then oldga:Destroy() end
-						if olds then olds:Destroy() end
+						if olds then Remote.Send(v, "Function", "Unfly") olds:Destroy() end
 					end
 				end
 			end
