@@ -3,8 +3,15 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v265 2025-xx-xx xx:xx UTC] @Maintainer";
+	"[v265 2025-03-22 19:42 UTC] @Dimenpsyonal";
 	"Change client dump to use print";
+    "(Git/Raineko826) Fixed :sword team kill argument not working (#1860)";
+	"(Git/kaiserandaxl) Added :return command (#1856)";
+	"(Git/Raineko826) Fix Commands.ScreenVideo not working due to typo (#1859)";
+	"(Git/SuperCater) Add ;starterhealth, ;unstarterhealth, ;starterspeed and ;unstarterspeed (#1850)";
+	"(Git/fxeP1) Change warn to print in dumplog (#1863)";
+	"(Git/fxeP1) Deferred signal unflying fix (#1862)";
+	"(Git/fxeP1) Replacement for Kill recursive loop (#1861)";
 	"";
 	"[v264 2025-02-09 10:54 UTC] @Dimenpsyonal";
 	"*New default prefix is ; (existing loaders unaffected)";
