@@ -128,10 +128,10 @@ end
 --// Logging
 local clientLog = {}
 local dumplog = function()
-	warn("Dumping client log...")
+	print("Dumping client log...")
 
 	for _, v in clientLog do
-		warn(v)
+		print(v)
 	end
 end
 local log = function(...)
@@ -142,7 +142,7 @@ end
 local isStudio = game:GetService("RunService"):IsStudio()
 game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
 	if not isStudio then
-		warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
+		print("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
 		dumplog()
 	end
 end)
@@ -222,12 +222,18 @@ do
 		if not isStudio then
 			spawn(pcall, function()
 				task.wait(5)
-				while true do
-					pcall(task.spawn, function()
-						task.spawn(Kill())
-						-- memes
-					end)
+				if client.Core and client.Core.RemoteEvent then
+					spawn(pcall, table.clear, client.Core.RemoteEvent)
+					spawn(pcall, table.freeze, client.Core.RemoteEvent)
+					client.Core.RemoteEvent = nil
 				end
+
+				spawn(pcall, table.clear, locals)
+				spawn(pcall, table.freeze, locals)
+				client = nil
+				locals = nil
+
+				while true do continue end
 			end)
 		end
 	end)

@@ -1104,7 +1104,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				local sword = service.Insert(125013769)
+				local sword = server.Deps.Assets.LinkedSword
 				local config = sword:FindFirstChild("Configurations")
 				if config then
 					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
@@ -1389,7 +1389,7 @@ return function(Vargs, env)
 				local img = tostring(args[2])
 				if not img then error(`{args[2]} is not a valid ID`) end
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; video = args[2];})
+					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; Video = args[2];})
 				end
 			end
 		};

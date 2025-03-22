@@ -49,7 +49,7 @@ return function(Vargs, GetEnv)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
-		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
+		service.DataStoreService = require(Deps.DataStoreService)(Settings.LocalDatastore)
 
 		local function disableAllGuis(folder: Folder)
 			for _, v in folder:GetChildren() do
