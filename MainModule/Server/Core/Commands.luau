@@ -34,7 +34,7 @@ return function(Vargs, GetEnv)
 		t = server.Typechecker;
 
 		local ValidateCommandDefinition = t.interface({
-			Prefix = t.string,
+			Prefix = t.union(t.string, t.array(t.string)),
 			Commands = t.array(t.string),
 			Description = t.string,
 			AdminLevel = t.union(t.string, t.number, t.nan, t.array(t.union(t.string, t.number, t.nan))),
@@ -99,14 +99,26 @@ return function(Vargs, GetEnv)
 			Admin.PrefixCache[cmd.Prefix] = true
 
 			for _, v in cmd.Commands do
-				Admin.CommandCache[string.lower(cmd.Prefix..v)] = ind
+				if type(cmd.Prefix) == "table" then
+					for _,p in cmd.Prefix do
+						Admin.CommandCache[string.lower(p..v)] = ind
+					end
+				else
+					Admin.CommandCache[string.lower(cmd.Prefix..v)] = ind
+				end
 			end
 
 			cmd.Args = cmd.Args or cmd.Arguments or {}
 
 			local lvl = cmd.AdminLevel
 			if type(lvl) == "string" and lvl ~= "Donors" then
-				cmd.AdminLevel = Admin.StringToComLevel(lvl)
+				local resp = Admin.StringToComLevel(lvl)
+				if resp == nil or resp == -1 then
+					warn(`'AdminLevel' for command {ind} is provided as '{lvl}' but is invalid. Defaulting to 0.`)
+					resp = 0
+				end
+
+				cmd.AdminLevel = resp
 			elseif type(lvl) == "table" then
 				for b, v in lvl do
 					lvl[b] = Admin.StringToComLevel(v)

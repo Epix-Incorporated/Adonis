@@ -429,7 +429,9 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local size = tonumber(args[2]) or 19
+				assert(size >= 10, "Pixel size too small (< 10)")
 				local dist = tonumber(args[3]) or 100
+				assert(dist <= 10_000, "Render distance too large (> 10,000)")
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "Pixelize";
@@ -1102,7 +1104,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				local sword = service.Insert(125013769)
+				local sword = server.Deps.Assets.LinkedSword
 				local config = sword:FindFirstChild("Configurations")
 				if config then
 					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
@@ -1387,7 +1389,7 @@ return function(Vargs, env)
 				local img = tostring(args[2])
 				if not img then error(`{args[2]} is not a valid ID`) end
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; video = args[2];})
+					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; Video = args[2];})
 				end
 			end
 		};
@@ -2724,7 +2726,7 @@ return function(Vargs, env)
 									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
 								end
 							end
-							
+
 							for _, v in lowertorso:GetChildren() do
 								if v:IsA("Motor6D") then
 									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})

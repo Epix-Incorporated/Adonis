@@ -42,7 +42,7 @@ There is a very clear/obvious difference between unavoidably complex code and in
 
 ## Q: Is there a style guide for writing code?
 
-**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing, as well as the [Roblox Lua Style Guide](https://roblox.github.io/lua-style-guide/) where applicable. Also, be sure to use US English spellings for both code variable names and user-facing text.
+**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing, as well as the [Roblox Luau Style Guide](https://roblox.github.io/lua-style-guide/) where applicable. Also, be sure to use US English spellings for both code variable names and user-facing text.
 
 ## Q: What are some things I should watch out for when submitting my changes?
 

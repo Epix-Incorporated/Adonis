@@ -355,7 +355,7 @@ return function(Vargs, GetEnv)
 							return;
 						end
 
-						for i = 1,num do
+						for i = 1, math.min(num, #service.Players:GetPlayers()) do
 							Functions.PlayerFinders.random.Function(msg, plr, ...)
 						end
 					end
@@ -1664,5 +1664,11 @@ return function(Vargs, GetEnv)
 			end
 			return if allowNil then nil else BrickColor.random()
 		end;
-	};
+
+		GetMainPrefix = function()
+			if type(Settings.Prefix) == "table" then return Settings.Prefix[1] else return Settings.Prefix end
+		end;
+	}
+
+
 end
