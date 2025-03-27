@@ -907,6 +907,10 @@ return function(Vargs, GetEnv)
 			end
 
 			Variables.TrackingTable[p.Name] = nil
+			if Variables.ReturnPoints[p] then
+				Variables.ReturnPoints[p] = nil
+			end
+
 			for otherPlrName, trackTargets in Variables.TrackingTable do
 				if trackTargets[p] then
 					trackTargets[p] = nil
@@ -1157,6 +1161,18 @@ return function(Vargs, GetEnv)
 							Admin.RunCommandAsPlayer(`{Settings.Prefix}track`, service.Players[otherPlrName], `@{p.Name}`, "true")
 						end
 					end
+				end
+
+				local Hum = char:FindFirstChildOfClass("Humanoid")
+				if not Hum then return end
+				local Health = Variables.Starter.Health[tostring(p.UserId)]
+				if Health then
+					Hum.MaxHealth = Health
+					Hum.Health = Hum.MaxHealth
+				end
+				local Speed = Variables.Starter.Speed[tostring(p.UserId)]
+				if Speed then
+					Hum.WalkSpeed = Speed
 				end
 			end
 		end;

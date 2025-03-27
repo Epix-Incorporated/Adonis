@@ -679,6 +679,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local teamName = assert(args[1], "Missing team name (argument #1)")
 				local teamColor = Functions.ParseBrickColor(args[2])
+
+				if service.Teams:FindFirstChild(teamName) then
+					Functions.Hint(string.format("Team '%s' already exists!", teamName), {plr})
+					return;
+				end
+
 				service.New("Team", {
 					Parent = service.Teams;
 					Name = teamName;
@@ -1424,7 +1430,7 @@ return function(Vargs, env)
 					CanBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.ServerBan.AdminLevel);
 					CanTimeBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.TimeBan.AdminLevel);
 					CanPermBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.PermanentBan.AdminLevel);
-					Prefix = Settings.Prefix;
+					Prefix = Functions.GetMainPrefix()
 				})
 			end,
 		};

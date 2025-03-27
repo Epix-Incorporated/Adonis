@@ -597,6 +597,23 @@ return service.NewProxy({
 			end
 		end
 
+		--// Attempts to patch Settings.Prefix to fix issues
+		if type(server.Settings.Prefix) == "table" then
+			setmetatable(server.Settings.Prefix, {
+				__concat = function(self, value)
+					return `{self[1]}{value}`
+				end,
+				__tostring = function(self)
+					return self[1]
+				end,
+
+			})
+		end
+
+
+
+
+
 		--// Bind cleanup
 		service.DataModel:BindToClose(function(...)
 			server.CleanUp(...)
@@ -632,7 +649,7 @@ return service.NewProxy({
           	server.FormattedChangelog[i] = applyColour(line)
   	  	end
 
-		--// Setup MaterialIcons 
+		--// Setup MaterialIcons
 		do
 			local MaterialIcons = require(server.Shared.MatIcons)
 			server.MatIcons = setmetatable({}, {
@@ -712,7 +729,7 @@ return service.NewProxy({
 		end
 
 		for _, module in ipairs(data.ServerPlugins or {}) do
-			xpcall(LoadModule, function(reason)
+			task.defer(xpcall, LoadModule, function(reason)
 				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				table.insert(server.messages, {

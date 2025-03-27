@@ -205,7 +205,14 @@ return function(data, env)
 		Position = UDim2.new(0, 10, 1, -410);
 		OnClose = function()
 			doOnClose()
-		end
+		end,
+		OnMinimized = function(opened)
+			if opened and not visualiser.Sound then
+				visualiser:LinkToSound(audioLib:GetSound())
+			elseif not opened and visualiser.Sound then
+				visualiser:UnlinkFromSound()
+			end
+		end,
 	})
 
 	-- The controls frame at the bottom of the window
