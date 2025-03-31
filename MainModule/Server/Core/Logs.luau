@@ -146,7 +146,7 @@ return function(Vargs, GetEnv)
 					end)
 				end
 
-				local temp = table.create(#oldLogs + #logsToSave + (Logs.Commands.__meta == "DLL" and Logs.Commands.count or 0))
+				local temp = table.create((oldLogs and #oldLogs or 0) + #logsToSave + (Logs.Commands.__meta == "DLL" and Logs.Commands.count or 0))
 
 				local function insertLog(log)
 					local isTable = type(log) == "table"

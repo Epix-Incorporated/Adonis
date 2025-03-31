@@ -124,7 +124,7 @@
 					<token name="HorizontalScrollBarInset">0</token>
 					<int name="LayoutOrder">0</int>
 					<Content name="MidImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-					<string name="Name">PlayerList</string>
+					<string name="Name">AutocompleteList</string>
 					<Ref name="NextSelectionDown">null</Ref>
 					<Ref name="NextSelectionLeft">null</Ref>
 					<Ref name="NextSelectionRight">null</Ref>
@@ -560,7 +560,7 @@ return function(data, env)
 	local frame = gui.Frame
 	local text = frame.TextBox
 	local scroll = frame.ScrollingFrame
-	local players = frame.PlayerList
+	local autoList = frame.AutocompleteList
 	local entry = gui.Entry
 
 	local Settings = Remote.Get("Setting", {"SplitKey", "ConsoleKeyCode", "BatchKey", "Prefix"})
@@ -654,7 +654,7 @@ return function(data, env)
 			scroll.ScrollingEnabled = false
 			frame.Size = UDim2.new(1,0,0,40)
 			scroll.Visible = false
-			players.Visible = false
+			autoList.Visible = false
 			scrollOpen = false
 
 			if Variables.ChatEnabled then
@@ -687,7 +687,7 @@ return function(data, env)
 		service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
 
 		scroll.ScrollingEnabled = true
-		players.ScrollingEnabled = true
+		autoList.ScrollingEnabled = true
 
 		hideGuis()
 
@@ -695,7 +695,7 @@ return function(data, env)
 
 		frame.Size = UDim2.new(1, 0, 0, 40)
 		scroll.Visible = false
-		players.Visible = false
+		autoList.Visible = false
 		scrollOpen = false
 		text.Text = ""
 		frame.Visible = true
@@ -728,58 +728,40 @@ return function(data, env)
 
 	text:GetPropertyChangedSignal("Text"):Connect(function()
 		if text.Text ~= "" and openConsole then
-			if string.sub(text.Text, string.len(text.Text)) == "	" then
-				if players:FindFirstChild("Entry 0") then
-					local args = string.split(tostring(text.Text), " ") -- Get command args
+			local tabWhiteSpace = "	"
+			if string.sub(text.Text, string.len(text.Text)) == tabWhiteSpace then
+				if autoList:FindFirstChild("Entry 0") then
+					local args = string.split(text.Text, splitKey) -- Get command args
 					local textWithoutLastArg = string.sub(text.Text, 1, string.len(text.Text) - string.len(args[#args])) -- Remove the last arg
 					
-					text.Text = `{textWithoutLastArg}{players["Entry 0"].Text} ` -- Combine the text witout the last arg and the player name
+					text.Text = `{textWithoutLastArg}{autoList["Entry 0"].Text} ` -- Combine the text witout the last arg and the player name
 				elseif scroll:FindFirstChild("Entry 0") then
 					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
-				else
-					text.Text = text.Text..prefix
 				end
+				
 				text.CursorPosition = string.len(text.Text) + 1
-				text.Text = string.gsub(text.Text, "	", "")
+				text.Text = string.gsub(text.Text, tabWhiteSpace, "")
 			end
 			scroll:ClearAllChildren()
-			players:ClearAllChildren()
+			autoList:ClearAllChildren()
 
 			local nText = text.Text
-			if string.match(nText, `.*{batchKey}([^']+)`) then
-				nText = string.match(nText, `.*{batchKey}([^']+)`)
-				nText = string.match(nText, "^%s*(.-)%s*$")
+			local fullCmdStr = string.match(nText, `.*{batchKey}([^']+)`)
+			if fullCmdStr then
+				nText = string.match(fullCmdStr, "^%s*(.-)%s*$")
 			end
-
-			local pNum = 0
-			local pMatch = string.match(nText, `.+{splitKey}(.*)$`)
-			for _, v in service.Players:GetPlayers() do
-				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,`{splitKey}$`) then
-					local new = entry:Clone()
-					new.Text = tostring(v)
-					new.Name = `Entry {pNum}`
-					new.TextXAlignment = "Right"
-					new.Visible = true
-					new.Parent = players
-					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:Connect(function()
-						text.Text = text.Text..tostring(v)
-						text:CaptureFocus()
-					end)
-					pNum += 1
-				end
-			end
-
-			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
 
 			local num = 0
+			local selectedCmd = ""
 			for _, v in commands do
-				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText), `^(.-){splitKey}`) or string.lower(nText), 1, true) then
+				local cmdName = string.match(string.lower(nText), `^(.-){splitKey}`) or string.lower(nText)
+				if string.sub(string.lower(v), 1, #nText) == string.lower(nText) or string.find(string.lower(v), cmdName, 1, true) then
+					selectedCmd = v 
 					if not scrollOpen then
 						scrollOpenTween:Play()
 						--frame.Size = UDim2.new(1,0,0,140)
 						scroll.Visible = true
-						players.Visible = true
+						autoList.Visible = true
 						scrollOpen = true
 					end
 					local b = entry:Clone()
@@ -795,13 +777,38 @@ return function(data, env)
 					num += 1
 				end
 			end
-			frame.Size = UDim2.new(1, 0, 0, math.clamp((num*20)+40, 40, 140))
-			scroll.CanvasSize = UDim2.fromOffset(0, num*20)
+			
+			local aNum = 0
+			local fullSplit = string.split(nText, splitKey)
+			if num > 0 and #fullSplit > 1 then
+				local provided = string.match(nText, `.+{splitKey}(.*)$`)
+				local selectedSplit = string.split(selectedCmd, splitKey)
+				
+				local arg = selectedSplit[#fullSplit]
+				for _, v in UI.Autocomplete(provided, arg) do
+					local new = entry:Clone()
+					new.Text = v
+					new.Name = `Entry {aNum}`
+					new.TextXAlignment = "Right"
+					new.Visible = true
+					new.Parent = autoList
+					new.Position = UDim2.new(0, 0, 0, 20 * aNum)
+					new.MouseButton1Down:Connect(function()
+						text.Text = text.Text..tostring(v)
+						text:CaptureFocus()
+					end)
+					
+					aNum += 1
+				end
+			end
+			
+			frame.Size = UDim2.new(1, 0, 0, math.clamp((math.max(num, aNum) * 20) + 40, 40, 140))
+			scroll.CanvasSize = UDim2.fromOffset(0, num * 20)
 		elseif text.Text == "" and opened then
 			scrollCloseTween:Play()
 			--service.SafeTweenSize(frame,UDim2.new(1,0,0,40), nil, nil,0.3, nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
 			scroll.Visible = false
-			players.Visible = false
+			autoList.Visible = false
 			scrollOpen = false
 			scroll:ClearAllChildren()
 			scroll.CanvasSize = UDim2.new()
