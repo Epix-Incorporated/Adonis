@@ -595,7 +595,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local new = table.create(#lines)
 			for i = 1, #lines do
 				local ran, newl = pcall(function()
-					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetChatForUserAsync(to.UserId)
+					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForUserAsync(to.UserId)
 				end)
 				new[i] = ran and newl or lines[i] or ""
 			end
