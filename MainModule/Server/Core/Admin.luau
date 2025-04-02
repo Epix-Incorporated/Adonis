@@ -1461,22 +1461,15 @@ return function(Vargs, GetEnv)
 
 		StringToComLevel = function(str)
 			local strType = type(str)
+			if strType == "string" and string.lower(str) == "players" then
+				return 0
+			end
 			if strType == "number" then
 				return str
-			elseif strType == "string" then
-				if string.lower(str) == "players" then
-					return 0
-				end
-
-				local lvl = Settings.Ranks[str]
-				if not lvl then
-					return -1
-				end
-
-				return lvl.Level
 			end
 
-			return tonumber(str)
+			local lvl = Settings.Ranks[str]
+			return (lvl and lvl.Level) or tonumber(str)
 		end;
 
 		CheckComLevel = function(plrAdminLevel, comLevel)

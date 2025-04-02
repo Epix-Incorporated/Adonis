@@ -112,13 +112,7 @@ return function(Vargs, GetEnv)
 
 			local lvl = cmd.AdminLevel
 			if type(lvl) == "string" and lvl ~= "Donors" then
-				local resp = Admin.StringToComLevel(lvl)
-				if resp == nil or resp == -1 then
-					warn(`'AdminLevel' for command {ind} is provided as '{lvl}' but is invalid. Defaulting to 0.`)
-					resp = 0
-				end
-
-				cmd.AdminLevel = resp
+				cmd.AdminLevel = Admin.StringToComLevel(lvl)
 			elseif type(lvl) == "table" then
 				for b, v in lvl do
 					lvl[b] = Admin.StringToComLevel(v)
