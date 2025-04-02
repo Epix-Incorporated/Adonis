@@ -1,7 +1,13 @@
 return {
-	"Version: 265";
+	"Version: 266";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v266 2025-03-31 18:28 UTC] @Dimenpsyonal";
+	"(Git/StayBlue) Refactor Autocomplete suggestions in Default theme (#1853)";
+	"(Git/convxors) Fix :oldlogs command (#1867)";
+	"(Git/StayBlue) Fix invalid admin level giving no warning (#1852)";
+	"(Git/EasternBloxxer) Blank message fix (#1868)";
 	"";
 	"[v265 2025-03-22 19:42 UTC] @Dimenpsyonal";
 	"Change client dump to use print";
