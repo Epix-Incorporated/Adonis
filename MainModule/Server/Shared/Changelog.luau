@@ -3,7 +3,10 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v266 2025-xx-xx xx:xx UTC] @Dimenpsyonal";
+	"[Patch v266.1 2025-04-02 13:24 UTC] @Dimenpsyonal";
+	"Reverts change to invalid admin levels";
+	"";
+	"[v266 2025-03-31 17:28 UTC] @Dimenpsyonal";
 	"(Git/StayBlue) Refactor Autocomplete suggestions in Default theme (#1853)";
 	"(Git/convxors) Fix :oldlogs command (#1867)";
 	"(Git/StayBlue) Fix invalid admin level giving no warning (#1852)";
