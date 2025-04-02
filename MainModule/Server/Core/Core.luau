@@ -776,7 +776,7 @@ return function(Vargs, GetEnv)
 				key = Core.DS_RESET_SALTS[key] .. key
 			end
 
-			return Functions.Base64Encode(Remote.Encrypt(tostring(key), Settings.DataStoreKey))
+			return Functions.Base64Encode(Remote.Encrypt(tostring(key), ("SALT_" .. Settings.DataStoreKey):sub(1,50)))
 		end;
 
 		SaveData = function(...)
