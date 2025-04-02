@@ -49,7 +49,7 @@ return function(Vargs, GetEnv)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
-		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
+		service.DataStoreService = require(Deps.DataStoreService)(Settings.LocalDatastore)
 
 		local function disableAllGuis(folder: Folder)
 			for _, v in folder:GetChildren() do
@@ -776,7 +776,7 @@ return function(Vargs, GetEnv)
 				key = Core.DS_RESET_SALTS[key] .. key
 			end
 
-			return Functions.Base64Encode(Remote.Encrypt(tostring(key), Settings.DataStoreKey))
+			return Functions.Base64Encode(Remote.Encrypt(tostring(key), ("SALT_" .. Settings.DataStoreKey):sub(1,50)))
 		end;
 
 		SaveData = function(...)
@@ -1289,9 +1289,11 @@ return function(Vargs, GetEnv)
 								local data = GetData(tData.TableKey)
 								if data then
 									--// TODO: Possibly find a better way to "batch" TableUpdates to prevent script exhaustion
+									local isStudio = service.RunService:IsStudio() -- Studio lag workaround for loading larger data such as BannedList
+									local isHugeTable = #data > 1000
 									for i = 1, #data do
 										LoadData("TableUpdate", data[i])
-										if i % 250 == 0 then
+										if (isStudio and isHugeTable and i % 25 == 0) or i % 250 == 0 then
 											task.wait()
 										end
 									end

@@ -23,14 +23,27 @@ return function(Vargs, env)
 				local cmdCount = 0
 
 				for _, cmd in Admin.SearchCommands(plr, "all") do
+					local cmdAliases = table.create(#cmd.Commands)
+
 					if cmd.Hidden or cmd.Disabled then
 						continue
 					end
 
+					for _,alias in cmd.Commands do
+						if #cmdAliases >= 4 and (#cmd.Commands - #cmdAliases) ~= 0 then
+							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)
+							break
+						end
+
+						table.insert(cmdAliases, alias)
+					end
+
+					table.remove(cmdAliases, 1)
+
 					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
 						Text = Admin.FormatCommand(cmd),
-						Desc = `[{permissionDesc}] {cmd.Description or "(No description provided)"}`,
+						Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
 						Filter = permissionDesc
 					})
 					cmdCount += 1
@@ -72,7 +85,7 @@ return function(Vargs, env)
 				local cmd, ind
 				for i, v in Admin.SearchCommands(plr, "all") do
 					for _, p in v.Commands do
-						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
+						if (if type(v.Prefix) == "table" then v.Prefix[1] else v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
 							cmd, ind = v, i
 							break
 						end
@@ -96,7 +109,7 @@ return function(Vargs, env)
 					Title = "Command Info";
 					Icon = server.MatIcons.Info;
 					Table = {
-						{Text = `<b>Prefix:</b> {cmd.Prefix}`, Desc = "Prefix used to run the command"},
+						{Text = `<b>Prefix:</b> {if type(cmd.Prefix) =="table" then table.concat(cmd.Prefix, ", ") else cmd.Prefix}`, Desc = "Prefix used to run the command"},
 						{Text = `<b>Commands:</b> {SanitizeXML(table.concat(cmd.Commands, ", "))}`, Desc = "Valid default aliases for the command"},
 						{Text = `<b>Arguments:</b> {if cmdArgs == "" then "-" else SanitizeXML(cmdArgs)}`, Desc = "Parameters taken by the command"},
 						{Text = `<b>Admin Level:</b> {Admin.FormatCommandAdminLevel(cmd)}`, Desc = "Rank required to run the command"},
@@ -139,7 +152,7 @@ return function(Vargs, env)
 			Description = "Shows you the command prefix using the :cmds command";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint(`{Settings.Prefix}cmds`, {plr})
+				Functions.Hint(`{if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix}cmds`, {plr})
 			end
 		};
 
@@ -556,46 +569,47 @@ return function(Vargs, env)
 			Description = "Shows you how to use some syntax related things";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
+				local Prefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix
 				local usage = {
 					"";
 					"Mouse over things in lists to expand them";
 					"You can also resize windows by dragging the edges";
 					"";
-					`Put <b>/e</b> in front to silence commands in chat (<b>/e {Settings.Prefix}kill scel</b>) or enable chat command hiding in client settings`;
+					`Put <b>/e</b> in front to silence commands in chat (<b>/e {Prefix}kill scel</b>) or enable chat command hiding in client settings`;
 					`Player commands can be used by anyone, these commands have <b>{Settings.PlayerPrefix}</b> infront, such as <b>{Settings.PlayerPrefix}info</b> and <b>{Settings.PlayerPrefix}rejoin</b>`;
 					"";
 					`<b>――――― Player Selectors ―――――</b>`;
-					`Usage example: <b>{Settings.Prefix}kill {Settings.SpecialPrefix}all</b> (where <b>{Settings.SpecialPrefix}all</b> is the selector)`;
+					`Usage example: <b>{Prefix}kill {Settings.SpecialPrefix}all</b> (where <b>{Settings.SpecialPrefix}all</b> is the selector)`;
 					`<b>{Settings.SpecialPrefix}me</b> - Yourself`;
 					`<b>{Settings.SpecialPrefix}all</b> - Everyone in the server`;
 					`<b>{Settings.SpecialPrefix}admins</b> - All admins in the server`;
 					`<b>{Settings.SpecialPrefix}nonadmins</b> - Non-admins (normal players) in the server`;
 					`<b>{Settings.SpecialPrefix}others</b> - Everyone except yourself`;
 					`<b>{Settings.SpecialPrefix}random</b> - A random person in the server excluding those removed with -SELECTION`;
-					`<b>@USERNAME</b> - Targets a specific player with that exact username Ex: <b>{Settings.Prefix}god @Sceleratis </b> would give a player with the username 'Sceleratis' god powers`;
-					`<b>#NUM</b> - NUM random players in the server <b>{Settings.Prefix}ff #5</b> will ff 5 random players excluding those removed with -SELECTION.`;
+					`<b>@USERNAME</b> - Targets a specific player with that exact username Ex: <b>{Prefix}god @Sceleratis </b> would give a player with the username 'Sceleratis' god powers`;
+					`<b>#NUM</b> - NUM random players in the server <b>{Prefix}ff #5</b> will ff 5 random players excluding those removed with -SELECTION.`;
 					`<b>{Settings.SpecialPrefix}friends</b> - Your friends who are in the server`;
-					`<b>%TEAMNAME</b> - Members of the team TEAMNAME Ex: {Settings.Prefix}kill %raiders`;
+					`<b>%TEAMNAME</b> - Members of the team TEAMNAME Ex: {Prefix}kill %raiders`;
 					`<b>$GROUPID</b> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)`;
-					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Settings.Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
-					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Settings.Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
-					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Settings.Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
+					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
+					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
+					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
 					"";
 					`<b>――――― Repetition ―――――</b>`;
-					`Multiple player selections - <b>{Settings.Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
-					`Multiple Commands at a time - <b>{Settings.Prefix}ff me {Settings.BatchKey} {Settings.Prefix}sparkles me {Settings.BatchKey} {Settings.Prefix}rocket jim</b>`;
-					`You can add a delay if you want; <b>{Settings.Prefix}ff me {Settings.BatchKey} !wait 10 {Settings.BatchKey} {Settings.Prefix}m hi we waited 10 seconds</b>`;
-					`<b>{Settings.Prefix}repeat 10(how many times to run the cmd) 1(how long in between runs) {Settings.Prefix}respawn jim</b>`;
+					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
+					`Multiple Commands at a time - <b>{Prefix}ff me {Settings.BatchKey} {Prefix}sparkles me {Settings.BatchKey} {Prefix}rocket jim</b>`;
+					`You can add a delay if you want; <b>{Prefix}ff me {Settings.BatchKey} !wait 10 {Settings.BatchKey} {Prefix}m hi we waited 10 seconds</b>`;
+					`<b>{Prefix}repeat 10(how many times to run the cmd) 1(how long in between runs) {Prefix}respawn jim</b>`;
 					"";
 					`<b>――――― Reference Info ―――――</b>`;
-					`<b>{Settings.Prefix}cmds</b> for a list of available commands`;
-					`<b>{Settings.Prefix}cmdinfo &lt;command&gt;</b> for detailed info about a specific command`;
+					`<b>{Prefix}cmds</b> for a list of available commands`;
+					`<b>{Prefix}cmdinfo &lt;command&gt;</b> for detailed info about a specific command`;
 					`<b>{Settings.PlayerPrefix}brickcolors</b> for a list of BrickColors`;
 					`<b>{Settings.PlayerPrefix}materials</b> for a list of materials`;
 					"";
-					`<b>{Settings.Prefix}capes</b> for a list of preset admin capes`;
-					`<b>{Settings.Prefix}musiclist</b> for a list of preset audios`;
-					`<b>{Settings.Prefix}insertlist</b> for a list of insertable assets using {Settings.Prefix}insert`;
+					`<b>{Prefix}capes</b> for a list of preset admin capes`;
+					`<b>{Prefix}musiclist</b> for a list of preset audios`;
+					`<b>{Prefix}insertlist</b> for a list of insertable assets using {Prefix}insert`;
 				}
 				Remote.MakeGui(plr, "List", {
 					Title = "Usage";
@@ -926,7 +940,7 @@ return function(Vargs, env)
 							IsDonor = Admin.CheckDonor(v);
 							GameData = gameData;
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
-							CmdPrefix = Settings.Prefix;
+							CmdPrefix = Functions.GetMainPrefix();
 							CmdSplitKey = Settings.SplitKey;
 							OnlineFriends = Remote.Get(v, "Function", "GetFriendsOnline");
 						})
@@ -1007,7 +1021,7 @@ return function(Vargs, env)
 					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
 					ServerInternetInfo = serverInfo;
 					Refreshables = Logs.ListUpdaters.ServerDetails(plr);
-					CmdPrefix = Settings.Prefix;
+					CmdPrefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix,
 					CmdPlayerPrefix = Settings.PlayerPrefix;
 					SplitKey = Settings.SplitKey;
 				})

@@ -1,15 +1,4 @@
-<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
-	<Meta name="ExplicitAutoJoints">true</Meta>
-	<External>null</External>
-	<External>nil</External>
-	<Item class="LocalScript" referent="RBXAAF4C51880154B279D5B17D331D3B51D">
-		<Properties>
-			<BinaryString name="AttributesSerialize"></BinaryString>
-			<bool name="Disabled">true</bool>
-			<Content name="LinkedSource"><null></null></Content>
-			<string name="Name">ClickTeleport</string>
-			<string name="ScriptGuid">{BDAA343E-7C81-459C-A2DB-06B5F4C8C90A}</string>
-			<ProtectedString name="Source"><![CDATA[task.wait()
+task.wait()
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local mode = script.Mode.Value--"Teleport"
@@ -89,27 +78,4 @@ end)
 tool.Activated:Connect(function() if use then onButton1Down(mouse) end end)
 tool.Equipped:Connect(onEquipped)
 tool.Unequipped:Connect(function() use, holding = false, false end)
-humanoid.Died:Connect(function() tool:Destroy() end)]]></ProtectedString>
-			<int64 name="SourceAssetId">-1</int64>
-			<BinaryString name="Tags"></BinaryString>
-		</Properties>
-		<Item class="StringValue" referent="RBXAA3C530DC98D4B77911122AEA92AD4F8">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">Mode</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<string name="Value"></string>
-			</Properties>
-		</Item>
-		<Item class="StringValue" referent="RBXEE5A1345AE3941D3B3D5301F030D5D77">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">Target</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<string name="Value"></string>
-			</Properties>
-		</Item>
-	</Item>
-</roblox>
+humanoid.Died:Connect(function() tool:Destroy() end)

@@ -61,7 +61,7 @@
 			Logs:AddLog("Script", "Successfully loaded reflection metadata to Dex")
 		else
 			Logs:AddLog("Script", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
-			Logs:AddLog("Error", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
+			Logs:AddLog("Errors", "Access to HttpService is not enabled! Dex api dump could not be fetched!")
 			--logError("Access to HttpService is not enabled! Dex api dump could not be fetched!")
 		end
 	end)
@@ -335,7 +335,7 @@ DefaultSettings = (function()
 		--[[Main = {
 			ResetOnSpawn = true,
 		},]]
-		
+
 		Explorer = {
 			_Recurse = true,
 			Sorting = true,
@@ -463,7 +463,7 @@ Main = (function()
 		Menu = 100000,
 		Core = 101000
 	}
-	
+
 	-- Dex_Client for Adonis
 	Main.LocalScript_Gui = script.Parent
 
@@ -720,7 +720,7 @@ Main = (function()
 		local api,rawAPI
 		local didwedoit = Dex_RemoteEvent:InvokeServer("fetchapi")
 
-		if didwedoit then
+		if didwedoit and type(didwedoit) == "table" then
 			rawAPI = didwedoit
 		else
 			if script:FindFirstChild("API") then
@@ -731,7 +731,17 @@ Main = (function()
 		end
 
 		Main.RawAPI = rawAPI
-		api = service.HttpService:JSONDecode(rawAPI)
+
+		local success, result = pcall(service.HttpService.JSONDecode, service.HttpService, rawAPI)
+		if not success or type(result) ~= "table" then
+			if type(result) ~= "table" then
+				error(`Error while decoding; Decoded data {result} is not type "table"`)
+			else
+				error(`Error while decoding; {result}`)
+			end
+		else
+			api = result
+		end
 
 		local classes,enums = {},{}
 		local categoryOrder,seenCategories = {},{}
@@ -872,7 +882,7 @@ Main = (function()
 				error("NO RMD EXISTS")
 			end
 		end
-		
+
 		Main.RawRMD = rawXML
 		local parsed = Lib.ParseXML(rawXML)
 		local classList = parsed.children[1].children[1].children
@@ -1009,7 +1019,7 @@ Main = (function()
 		local statusText = gui.Main.Holder.StatusText
 		local progressBar = gui.Main.Holder.ProgressBar
 		local tweenS = service.TweenService
-		
+
 		-- Change versionText
 		versionText.Text = Main.Version
 
@@ -1296,13 +1306,13 @@ Main = (function()
 				service.TweenService:Create(Main.MainGui.OpenButton,TweenInfo.new(0,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = Main.MainGuiOpen and 0 or 0.2}):Play()
 			end
 		end)
-		
+
 		-- Settings Button
 		local settingsButton = Main.SettingsGuiButton
 		settingsButton.MouseButton1Click:Connect(function()
 			SettingsEditor.Window:Show()
 		end)
-		
+
 		-- About Menu
 		local infoButton = Main.InformationGuiButton
 		infoButton.MouseButton1Click:Connect(function()
@@ -1397,8 +1407,8 @@ Main = (function()
 		intro.SetProgress("Loading Modules",0.75)
 		SettingsEditor = Main.LoadModule("SettingsEditor")
 		AboutMenu = Main.LoadModule("AboutMenu")
-		
-		
+
+
 		Main.AppControls.Lib.InitDeps(Main.GetInitDeps()) -- Missing deps now available
 		Main.LoadModules()
 		Lib.FastWait()
@@ -1408,7 +1418,7 @@ Main = (function()
 		Explorer.Init()
 		Properties.Init()
 		--ScriptViewer.Init()
-		
+
 		SettingsEditor.Init() -- init this last
 		AboutMenu.Init()
 		Lib.FastWait()
@@ -1426,7 +1436,7 @@ Main = (function()
 		Explorer.Window:Show({Align = "right", Pos = 1, Size = 0.5, Silent = true})
 		Properties.Window:Show({Align = "right", Pos = 2, Size = 0.5, Silent = true})
 		Lib.DeferFunc(function() Lib.Window.ToggleSide("right") end)
-		
+
 		-- SettingsEditor GUI
 		--SettingsEditor.Window:Show()
 	end

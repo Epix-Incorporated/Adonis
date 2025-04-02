@@ -917,7 +917,7 @@ function luaX:llex(ls, Token)
 		-- Global optimisation helper
 		if self.DEOP[ts] then
 		  ls.safeenv = false
-		elseif self.globalvars[ts] then
+		elseif self.globalvars[ts] and not table.find(ls.usedglobals, ts) then
 		  table.insert(ls.usedglobals, ts)
 		end
 

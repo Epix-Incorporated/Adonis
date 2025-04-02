@@ -128,10 +128,10 @@ end
 --// Logging
 local clientLog = {}
 local dumplog = function()
-	warn("Dumping client log...")
+	print("Dumping client log...")
 
 	for _, v in clientLog do
-		warn(v)
+		print(v)
 	end
 end
 local log = function(...)
@@ -142,7 +142,7 @@ end
 local isStudio = game:GetService("RunService"):IsStudio()
 game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
 	if not isStudio then
-		warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
+		print("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
 		dumplog()
 	end
 end)
@@ -218,16 +218,22 @@ do
 			task.wait(1)
 			service.Player:Kick(info)
 		end)
-		
+
 		if not isStudio then
 			spawn(pcall, function()
 				task.wait(5)
-				while true do
-					pcall(task.spawn, function()
-						task.spawn(Kill())
-						-- memes
-					end)
+				if client.Core and client.Core.RemoteEvent then
+					spawn(pcall, table.clear, client.Core.RemoteEvent)
+					spawn(pcall, table.freeze, client.Core.RemoteEvent)
+					client.Core.RemoteEvent = nil
 				end
+
+				spawn(pcall, table.clear, locals)
+				spawn(pcall, table.freeze, locals)
+				client = nil
+				locals = nil
+
+				while true do continue end
 			end)
 		end
 	end)
@@ -575,7 +581,7 @@ return service.NewProxy({
 		for i, line in ipairs(client.Changelog) do
         	client.FormattedChangelog[i] = applyColour(line)
   	 	end
-		
+
 		--// Setup MatIcons
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
@@ -752,7 +758,9 @@ return service.NewProxy({
 				continue
 			end
 
-			LoadModule(module, false, { script = module, cPcall = client.cPcall }) --noenv
+			task.defer(LoadModule, module, false, { --noenv
+				script = module, cPcall = client.cPcall
+			})
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)

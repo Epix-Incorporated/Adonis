@@ -196,7 +196,7 @@ return function(Vargs, GetEnv)
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
-			if ob == "reset" then
+			if ob == "reset" and service.Player.Character then
 				CurrentCamera.CameraType = Enum.CameraType.Custom
 				CurrentCamera.CameraSubject = service.Player.Character:FindFirstChildOfClass("Humanoid")
 				CurrentCamera.FieldOfView = 70
@@ -1415,6 +1415,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		Unfly = function()
+			local Humanoid: Humanoid = service.Player.Character and service.Player.Character:FindFirstChildOfClass("Humanoid")
+			if Humanoid then
+				Humanoid.PlatformStand = false
+			end
+		end;
+
 		SetCoreGuiEnabled = function(element,enabled)
 			service.StarterGui:SetCoreGuiEnabled(element,enabled)
 		end;
@@ -1429,7 +1436,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Cape = function(material,color,decal,reflect)
-			local torso = service.Player.Character:FindFirstChild("HumanoidRootPart")
+			local torso = service.Player.Character and service.Player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
 				local p = service.New("Part",service.LocalContainer())
 				p.Name = "::Adonis::Cape"

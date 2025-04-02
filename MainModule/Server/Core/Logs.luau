@@ -88,16 +88,18 @@ return function(Vargs, GetEnv)
 				log.Time = os.time()
 			end
 
-			if tab.__meta == "DLL" then
-				tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
-			else
-				table.insert(tab, 1, log)
-				if #tab > tonumber(Logs.MaxLogs) then
-					table.remove(tab, #tab)
+			if tab then
+				if tab.__meta == "DLL" then
+					tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
+				else
+					table.insert(tab, 1, log)
+					if #tab > tonumber(Logs.MaxLogs) then
+						table.remove(tab, #tab)
+					end
 				end
+				
+				service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 			end
-
-			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 		end;
 
 		-- // Preliminary support for oldlog encryption
@@ -144,7 +146,7 @@ return function(Vargs, GetEnv)
 					end)
 				end
 
-				local temp = table.create(#oldLogs + #logsToSave + (Logs.Commands.__meta == "DLL" and Logs.Commands.count or 0))
+				local temp = table.create((oldLogs and #oldLogs or 0) + #logsToSave + (Logs.Commands.__meta == "DLL" and Logs.Commands.count or 0))
 
 				local function insertLog(log)
 					local isTable = type(log) == "table"

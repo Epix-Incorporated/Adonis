@@ -497,7 +497,8 @@ return function(data, env)
 		chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		settingsData = Remote.Get("AllSettings")
 		Variables.Aliases = playerData.Aliases or {}
-		commandPrefix = chatMod.Prefix
+		commandPrefix = if type(chatMod.Prefix) == "table" then chatMod.Prefix[1] else chatMod.Prefix
+
 
 		for _, v in loadingIcons do
 			v:Destroy()

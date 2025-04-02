@@ -334,7 +334,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local arg = args[1] and string.lower(args[1])
-				Functions.LogAdminAction(plr, "Server Lock", "Server is now " .. (arg == "on" or arg == "true" and "locked" or "unlocked"), "")
+				Functions.LogAdminAction(plr, "Server Lock", "Server is now " .. (if (arg == "on" or arg == "true") then "locked" else "unlocked"), "")
 				if (not arg and Variables.ServerLock ~= true) or arg == "on" or arg == "true" then
 					Variables.ServerLock = true
 					Functions.Hint("Server Locked", service.Players:GetPlayers())
@@ -348,8 +348,8 @@ return function(Vargs, env)
 		Whitelist = {
 			Prefix = Settings.Prefix;
 			Commands = {"wl", "enablewhitelist", "whitelist"};
-			Args = {"on/off/add/remove/list", "optional player"};
-			Description = "Enables/disables the whitelist; :wl username to add them to the whitelist";
+			Args = {"on/off/add/remove/list/clear", "optional player"};
+			Description = "Enables/disables the server whitelist; :wl username to add them to the whitelist";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local sub = string.lower(args[1])
@@ -399,8 +399,11 @@ return function(Vargs, env)
 						end
 					end
 					Remote.MakeGui(plr, "List", {Title = "Whitelist List"; Tab = Tab;})
+				elseif sub == "clear" then
+					Variables.Whitelist.Lists.Settings = {}
+					Functions.Hint("Cleared server whitelist", service.Players:GetPlayers())
 				else
-					error("Invalid subcommand (on/off/add/remove/list)")
+					error("Invalid subcommand (on/off/add/remove/list/clear)")
 				end
 			end
 		};
@@ -676,6 +679,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local teamName = assert(args[1], "Missing team name (argument #1)")
 				local teamColor = Functions.ParseBrickColor(args[2])
+
+				if service.Teams:FindFirstChild(teamName) then
+					Functions.Hint(string.format("Team '%s' already exists!", teamName), {plr})
+					return;
+				end
+
 				service.New("Team", {
 					Parent = service.Teams;
 					Name = teamName;
@@ -1399,7 +1408,7 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
-					if Admin.RemoveBan(v.Name) then
+					if Admin.RemoveBan(v) then
 						Functions.LogAdminAction(plr, "Unban", v.Name, "User has been unbanned.")
 						Functions.Hint(`{service.FormatPlayer(v, true)} has been unbanned`, {plr})
 					else
@@ -1421,7 +1430,7 @@ return function(Vargs, env)
 					CanBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.ServerBan.AdminLevel);
 					CanTimeBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.TimeBan.AdminLevel);
 					CanPermBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.PermanentBan.AdminLevel);
-					Prefix = Settings.Prefix;
+					Prefix = Functions.GetMainPrefix()
 				})
 			end,
 		};
