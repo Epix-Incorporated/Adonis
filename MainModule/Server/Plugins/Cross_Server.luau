@@ -1,7 +1,6 @@
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
 return function(Vargs, GetEnv)
-	print(debug.traceback())
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
