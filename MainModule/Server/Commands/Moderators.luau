@@ -2339,7 +2339,7 @@ return function(Vargs, env)
 
 		ResetLighting = {
 			Prefix = Settings.Prefix;
-			Commands = {"fix", "resetlighting", "undisco", "unflash", "fixlighting", "resetatmosphere", "fixatmosphere"};
+			Commands = {"resetlighting", "undisco", "unflash", "fixlighting", "resetatmosphere", "fixatmosphere"};
 			Args = {};
 			Description = "Reset lighting back to the setting it had on server start";
 			AdminLevel = "Moderators";
