@@ -177,12 +177,7 @@ return function(AppKey, Token)
 		return enabled
 	end;
 	
-	local HttpEnabled = pcall(HttpService.GetAsync, HttpService, "http://www.google.com/robots.txt");
-	
-	if not HttpEnabled then
-		error("Unable to connect to trello, Http requests are not enabled. Enable them via game settings.")
-		return
-	end
+	local HttpEnabled = HttpService.HttpEnabled -- https://devforum.roblox.com/t/allow-scripts-to-access-httpenabled/73975/ 🎉
 	
 	if not CheckHttp() then
 		error("Could not connect to Trello! Please check if your app-key/token are valid.")
