@@ -211,10 +211,10 @@ return function(Vargs, GetEnv)
 					time = tonumber(string.sub(time, 1, -2)) * 60
 				elseif time == ("#"):rep(string.len(time)) then -- This arg can sometimes be filtered.
 					error("Specified time was filtered by roblox. Try again.");
-				else
-					error("Invalid time specified. Example usage: 60s or 5m");
+				elseif time ~= "instant" then
+					time = nil -- This will force the error below if they do not use correct usage.
 				end
-				assert(time, "Time specified is not a number.");
+				assert(time, "Invalid time specified. Example usage: 60s, 5m or \"instant\"");
 			end
 			if not Core.CrossServer("GlobalRestartRequest",
 				args[1] or "No reason specified.",
