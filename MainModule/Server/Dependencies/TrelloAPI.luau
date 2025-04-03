@@ -177,8 +177,11 @@ return function(AppKey, Token)
 		return enabled
 	end;
 	
-	local HttpEnabled = HttpService.HttpEnabled -- https://devforum.roblox.com/t/allow-scripts-to-access-httpenabled/73975/ 🎉
-	
+	if not HttpService.HttpEnabled then -- https://devforum.roblox.com/t/allow-scripts-to-access-httpenabled/73975/ 🎉
+		error("Please enable http requests under your place's security to use trello.")
+		return
+	end;
+
 	if not CheckHttp() then
 		error("Could not connect to Trello! Please check if your app-key/token are valid.")
 		return
