@@ -105,7 +105,7 @@ return function(Vargs, GetEnv)
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
 
 			task.wait(2)
 
@@ -167,7 +167,7 @@ return function(Vargs, GetEnv)
 			end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
 
 			task.wait(1)
 
@@ -250,11 +250,14 @@ return function(Vargs, GetEnv)
 		AdminLevel = "Players";
 		Disabled = game.PrivateServerOwnerId == 0; -- enabled only on VIP servers.
 		Function = function(plr: Player, args: {string})
-			assert(plr.UserId==game.PrivateServerOwnerId, "You don't have permission to run this command.")
-			for i,t in service.Threads.Tasks do
-				if t.Name == "GLOBALRESTART_COUNTDOWN" then
-					assert(t.abortable, "Failed to abort shutdown (access denied)")
-					t.Stop()
+			assert(plr.UserId == game.PrivateServerOwnerId, "You don't have permission to run this command.")
+			for index, adonisTask in service.Threads.Tasks do
+				if adonisTask.Name == "Global Restart Countdown" then
+					assert(adonisTask.abortable, "Global restart is not abortable.")
+					coroutine.close(adonisTask.Thread) -- Would use task.Kill() however that appears to call coroutine.yield instead of coroutine.close?
+					adonisTask.Remove()
+					Functions.Hint("Global restart aborted. This server will no longer restart.", service.GetPlayers())
+					break
 				end
 			end
 		end
