@@ -415,7 +415,7 @@ return function(Vargs, env)
 						if typeof(v) == "Instance" then
 							v:Kick(string.format("\n[Warning from %s]\nReason: %s", service.FormatPlayer(plr), reason))
 						else
-							Core.CrossServer("RemovePlayer", v.Name, `Warning from {service.FormatPlayer(plr)}`, reason)
+							Core.CrossServer("RemovePlayer", v.UserId, `Warning from {service.FormatPlayer(plr)}`, reason)
 						end
 
 						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))

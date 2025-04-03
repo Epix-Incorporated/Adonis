@@ -61,7 +61,7 @@ return function(Vargs, GetEnv)
 
 					task.wait(waitTime + 5)
 					waitTime /= 2
-					
+
 					Logs:AddLog("Script", `Teleporting {player.Name} back to the main game`)
 					teleportedPlayers[player] = 1
 					table.insert(playersToTeleport, player)
@@ -106,7 +106,7 @@ return function(Vargs, GetEnv)
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
-			
+
 			task.wait(2)
 
 			for _, v in Players:GetPlayers() do
@@ -168,7 +168,7 @@ return function(Vargs, GetEnv)
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
-			
+
 			task.wait(1)
 
 			for _, v in Players:GetPlayers() do
@@ -209,15 +209,17 @@ return function(Vargs, GetEnv)
 					time = tonumber(string.sub(time, 1, -2))
 				elseif string.sub(time, -1, -1) == "m" then
 					time = tonumber(string.sub(time, 1, -2)) * 60
+				elseif time == ("#"):rep(string.len(time)) then -- This arg can sometimes be filtered.
+					error("Specified time was filtered by roblox. Try again.");
 				else
-					error("Invalid time specified.");
+					error("Invalid time specified. Example usage: 60s or 5m");
 				end
-				assert(time, "Invalid time specified.")
+				assert(time, "Time specified is not a number.");
 			end
 			if not Core.CrossServer("GlobalRestartRequest",
 				args[1] or "No reason specified.",
-				if args[2] then tonumber(args[2]) else args[2],
-				not (string.lower(args[3]) == "no" or string.lower(args[3]) == "false")
+				tonumber(time),
+				if args[3] then (string.lower(args[3]) == "no" or string.lower(args[3]) == "false") else true
 				)
 			then
 				error("CrossServer handler not ready (try again later)")
@@ -234,12 +236,7 @@ return function(Vargs, GetEnv)
 		CrossServerDenied = true;
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
-			if not Core.CrossServer("GlobalRestartRequest",
-				"CRS_SRV:abort",
-				0,
-				false
-				)
-			then
+			if not Core.CrossServer("GlobalRestartAbort") then
 				error("CrossServer handler not ready (try again later)")
 			end
 		end

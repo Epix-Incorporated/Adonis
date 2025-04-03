@@ -8,27 +8,32 @@ return function(Vargs, GetEnv)
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
-	local ServerId = game.JobId;
-	local MsgService = service.MessagingService;
-	local subKey = Core.DataStoreEncode("Adonis_CrossServerMessaging");
-	local counter = 0;
-	local lastTick;
+	local thisJobId = game.JobId;
+	local messagingService = service.MessagingService;
+	local encryptedSubKey = Core.DataStoreEncode("Adonis_CrossServerMessaging");
+	
+	local messagesSent = 0;
+	local lastMessageSent = os.clock();
 
 	local oldCommands = Core.CrossServerCommands;
-	local secToCount = {
+	local secondsFormatted = {
 		[1800] = "30 minutes",
 		[1200] = "20 minutes",
 		[600] = "10 minutes",
 		[300] = "5 minutes",
 		[120] = "2 minutes",
 		[60] = "1 minute",
-		[30] = "30 seconds",
-		[10] = "10 seconds"
-	}
+		[45] = "45 seconds"
+		-- The server will begin counting down from 30 seconds to 1 second until the restart command is ran.
+	};
 
 	--// Cross Server Commands
 	Core.CrossServerCommands = {
-		ServerChat = function(jobId, data) -- Is this even used, why do we have it?
+		ServerChat = function(jobId, data) 
+			-- This function does not appear to be used in the Adonis codebase.
+
+			-- There is also a duplicate function of this named "CrossServerChat"
+			-- in MainModule/Server/Core/Process.luau which is not used.
 			if data then
 				for index, player in service.GetPlayers() do
 					if Admin.GetLevel(player) > 0 then
@@ -49,8 +54,11 @@ return function(Vargs, GetEnv)
 			service.Events.ServerPingReplyReceived:Fire(jobId, data)
 		end;
 
-		NewRunCommand = function(jobId, plrData, comString) -- This is very broken with some commands, I'm not sure why. Should be redone.
-			Process.Command(Functions.GetFakePlayer(plrData), comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
+		NewRunCommand = function(jobId, plrData, comString)
+			Process.Command(Functions.GetFakePlayer(plrData), comString, {
+				AdminLevel = plrData.AdminLevel, 
+				CrossServer = true
+			})
 		end;
 
 		--[[Loadstring = function(jobId, source)
@@ -99,24 +107,30 @@ return function(Vargs, GetEnv)
 		GlobalRestartRequest = function(jobId, reason, countdown, abortable)
 			local abortResult = Core.CrossServerCommands.GlobalRestartAbort()
 			if abortResult == "Global restart is not abortable." then
-				Logs.AddLog("Script", {"Global restart requested but a non abortable one is already underway."})
+				Logs.AddLog("Script", {"A global restart has been requested, but a non-abortable restart is already in progress."})
 				return
 			elseif abortResult == "Restart aborted." then
-				Logs.AddLog("Script", {"Already running global restart aborted to start a new one."})
+				Logs.AddLog("Script", {"In progress global restart was aborted to start a new one."})
 			end
-			Logs.AddLog("Script", {`Global restart {typeof(countdown) == "number" and `in {countdown} seconds` or ``} requested for "{reason}"`})
+			Logs.AddLog("Script", {`Global restart {if typeof(countdown) == "number" then `in {countdown} seconds` else ``} requested for "{reason}"`})
 			if typeof(countdown) == "number" then
-				Functions.Hint(`Global restart happening in {countdown < 60 and countdown..` seconds` or math.floor(countdown / 60)..` minute{countdown > 119 and "s" or ""}`}`, service.GetPlayers())
+				Functions.Hint(`Global restart happening in {if countdown < 60 then countdown..` seconds` else math.floor(countdown / 60)..` minute{if countdown > 119 then "s" else ""}`}`, service.GetPlayers())
 				local resumeTask, adonisTask
-				resumeTask, adonisTask= service.Threads.NewTask("Global Restart Countdown", function()
+				resumeTask, adonisTask = service.Threads.NewTask("Global Restart Countdown", function()
 					while countdown > 0 do
 						countdown -= task.wait(1)
-						if adonisTask.R_Status ~= "Running" then return end
-						if secToCount[math.floor(countdown)] then
-							Functions.Hint(`Server restart in {secToCount[math.floor(countdown)]}`, service.GetPlayers())
+						if adonisTask.R_Status ~= "Running" then 
+							-- The thread was killed. Do not continue.
+							return 
+						end
+						if secondsFormatted[math.floor(countdown)] then
+							Functions.Hint(`Server restart in {secondsFormatted[math.floor(countdown)]}`, service.GetPlayers())
+						elseif math.floor(countdown) > 0 and math.floor(countdown) <= 30 then
+							Functions.Hint(`Server restart in {math.floor(countdown)} second{if math.floor(countdown) ~= 1 then `s` else ``}`, service.GetPlayers(), 1)
 						end
 					end
 					Logs.AddLog("Script", {`This server is now restarting due to the global restart. Reason: "{reason}"`})
+					Functions.Hint("This server is now restarting. Please wait...", service.GetPlayers())
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 				end)
 				adonisTask.abortable = abortable
@@ -126,14 +140,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 		
-		GlobalRestartAbort = function()
+		GlobalRestartAbort = function(jobId)
 			for index, adonisTask in service.Threads.Tasks do
 				if adonisTask.Name == "Global Restart Countdown" then
 					if not adonisTask.abortable then return "Global restart is not abortable." end
-					-- Both task.Kill() & task.Stop() for some reason call coroutine.yield
-					coroutine.close(adonisTask.Thread)
+					coroutine.close(adonisTask.Thread) -- Would use task.Kill() however that appears to call coroutine.yield instead of coroutine.close?
 					adonisTask.Remove()
-					Functions.Hint("Global restart aborted. Servers will no longer restart.", service.GetPlayers())
+					Functions.Hint("Global restart aborted. This server will no longer restart.", service.GetPlayers())
 					return "Restart aborted."
 				end
 			end
@@ -155,17 +168,13 @@ return function(Vargs, GetEnv)
 			for _, v in service.GetPlayers() do
 				task.defer(function()
 					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
-					if response and os.clock() - start <= 120 then
-						MsgService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
+					if response and (os.clock() - start) <= 120 then
+						messagingService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
 					end
 				end)
 			end
 		end;
 	}
-
-	local function CrossEvent(eventId)
-		return service.Events[`CRSSRV{eventId}`]
-	end
 
 	--// User Commands
 	Commands.CrossServer = {
@@ -178,13 +187,13 @@ return function(Vargs, GetEnv)
 		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
 		Function = function(plr: Player, args: {string})
 			if not Core.CrossServer("NewRunCommand", {
-				UserId = plr.UserId;
-				Name = plr.Name;
-				DisplayName = plr.DisplayName;
-				AccountAge = plr.AccountAge;
-				--MembershipType = plr.MembershipType; -- MessagingService doesn't accept Enums
-				FollowUserId = plr.FollowUserId;
-				AdminLevel = Admin.GetLevel(plr);
+					UserId = plr.UserId;
+					Name = plr.Name;
+					DisplayName = plr.DisplayName;
+					AccountAge = plr.AccountAge;
+					--MembershipType = plr.MembershipType; -- MessagingService doesn't accept Enums
+					FollowUserId = plr.FollowUserId;
+					AdminLevel = Admin.GetLevel(plr);
 				}, args[1])
 			then
 				error("CrossServer handler not ready (try again later)")
@@ -283,7 +292,7 @@ return function(Vargs, GetEnv)
 			local voteKey = `ADONISVOTE{math.random()}`
 			local startTime = os.clock()
 
-			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
+			local msgSub = messagingService:SubscribeAsync(voteKey, function(data)
 				table.insert(responses, data.Data.Response)
 			end)
 
@@ -294,7 +303,6 @@ return function(Vargs, GetEnv)
 					`Question: {question}`;
 					`Total Responses: {total}`;
 					`Time Left: {math.ceil(math.max(0, 120 - (os.clock()-startTime)))}`;
-					--`Didn't Vote: {#players-total}`;
 				}
 
 				for _, v in responses do
@@ -363,22 +371,21 @@ return function(Vargs, GetEnv)
 			return false
 		end
 
-		local data = {ServerId, ...};
+		local data = {thisJobId, ...};
 		service.Queue("CrossServerMessageQueue", function()
-			--// rate limiting
-			counter += 1
-			if not lastTick then lastTick = os.clock() end
-			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat task.wait() until os.clock()-lastTick > 60
+			-- Limit the amount of messages we are publishing to the topic.
+			messagesSent += 1
+			if messagesSent >= 150 + (60 * #service.Players:GetPlayers()) then
+				repeat task.wait() until (os.clock() - lastMessageSent) > 60
 			end
 
-			if os.clock()-lastTick > 60 then
-				lastTick = os.clock()
-				counter = 1
+			if (os.clock() - lastMessageSent) > 60 then
+				lastMessageSent = os.clock()
+				messagesSent = 1
 			end
 
-			--// publish
-			MsgService:PublishAsync(subKey, data)
+			-- Publish the message.
+			messagingService:PublishAsync(encryptedSubKey, data)
 		end, 300, true)
 
 		return true
@@ -395,7 +402,9 @@ return function(Vargs, GetEnv)
 			Desc = `Origin JobId: {serverId or "[MISSING]"}`
 		})
 
-		if not (serverId and command) then return end
+		if not (serverId and command) then 
+			return 
+		end
 
 		table.remove(data, 2)
 
@@ -405,8 +414,11 @@ return function(Vargs, GetEnv)
 	end
 
 	task.defer(function()
-		Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and MsgService:SubscribeAsync(subKey, function(...)
-			if not Settings.CrossServerCommands then return end -- Ignore when disabled
+		Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and messagingService:SubscribeAsync(encryptedSubKey, function(...)
+			if not Settings.CrossServerCommands then
+				-- Ignore all incoming events from MessagingService if CrossServerCommands is disabled.
+				return 
+			end 
 			return Process.CrossServerMessage(...)
 		end)
 	end)
