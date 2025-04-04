@@ -105,11 +105,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		GlobalRestartRequest = function(jobId, reason, countdown, abortable)
-			local abortResult = Core.CrossServerCommands.GlobalRestartAbort()
-			if abortResult == "Global restart is not abortable." then
+			local abortSuccess, abortMessage = Core.CrossServerCommands.GlobalRestartAbort()
+			if abortMessage == "This global restart is not abortable." then
 				Logs.AddLog("Script", {"A global restart has been requested, but a non-abortable restart is already in progress."})
 				return
-			elseif abortResult == "Restart aborted." then
+			elseif abortMessage == "Restart aborted for this server." then
 				Logs.AddLog("Script", {"In progress global restart was aborted to start a new one."})
 			end
 			Logs.AddLog("Script", {`Global restart {if typeof(countdown) == "number" then `in {countdown} seconds` else ``} requested for "{reason}"`})
@@ -143,14 +143,14 @@ return function(Vargs, GetEnv)
 		GlobalRestartAbort = function(jobId)
 			for index, adonisTask in service.Threads.Tasks do
 				if adonisTask.Name == "Global Restart Countdown" then
-					if not adonisTask.abortable then return "Global restart is not abortable." end
+					if not adonisTask.abortable then return false, "This global restart is not abortable." end
 					coroutine.close(adonisTask.Thread) -- Would use task.Kill() however that appears to call coroutine.yield instead of coroutine.close?
 					adonisTask.Remove()
 					Functions.Hint("Global restart aborted. This server will no longer restart.", service.GetPlayers())
-					return "Restart aborted."
+					return true, "Restart aborted for this server."
 				end
 			end
-			return "There is no global restart at the moment."
+			return false, "There is no global restart at the moment."
 		end;
 
 		CrossServerVote = function(jobId, data)

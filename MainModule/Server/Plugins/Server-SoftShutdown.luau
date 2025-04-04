@@ -251,15 +251,7 @@ return function(Vargs, GetEnv)
 		Disabled = game.PrivateServerOwnerId == 0; -- enabled only on VIP servers.
 		Function = function(plr: Player, args: {string})
 			assert(plr.UserId == game.PrivateServerOwnerId, "You don't have permission to run this command.")
-			for index, adonisTask in service.Threads.Tasks do
-				if adonisTask.Name == "Global Restart Countdown" then
-					assert(adonisTask.abortable, "Global restart is not abortable.")
-					coroutine.close(adonisTask.Thread) -- Would use task.Kill() however that appears to call coroutine.yield instead of coroutine.close?
-					adonisTask.Remove()
-					Functions.Hint("Global restart aborted. This server will no longer restart.", service.GetPlayers())
-					break
-				end
-			end
+			assert(Core.CrossServerCommands.GlobalRestartAbort())
 		end
 	}
 
