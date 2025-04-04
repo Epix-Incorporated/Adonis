@@ -44,18 +44,22 @@ return function(Vargs, GetEnv)
 			local jobid
 			local startTask, TeleportTask = service.Threads.NewTask("Teleport Players", function()
 				jobid = TeleportService:TeleportPartyAsync(game.PlaceId, playersToTeleport, {[PARAMETER_2_NAME] = true})
+				Logs:AddLog("Script", `Teleported {#playersToTeleport} players back to the main game`)
 			end)
+
+			local function sendMessage(player)
+				task.defer(function()
+					repeat task.wait(0.25) until not player or not player.Parent or teleportedPlayers[player] or Remote.Clients[tostring(player.UserId)] and Remote.Clients[tostring(player.UserId)].FinishedLoading
+					Functions.Message("Adonis", "Server Restart", "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
+				end)
+			end
 
 			local function teleport(player)
 				local joindata = player:GetJoinData()
 				local data = type(joindata) == "table" and joindata.TeleportData
 
 				if type(data) == "table" and data[PARAMETER_NAME] then
-					task.spawn(function()
-						repeat task.wait(0.25) until not player or not player.Parent or teleportedPlayers[player] or Remote.Clients[tostring(player.UserId)].FinishedLoading
-						Functions.Message("Adonis", "Server Restart", "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
-					end)
-
+					sendMessage(player)
 					task.wait(waitTime + 5)
 					waitTime /= 2
 
@@ -74,8 +78,17 @@ return function(Vargs, GetEnv)
 				local data = type(joindata) == "table" and joindata.TeleportData
 
 				if type(data) == "table" and data[PARAMETER_NAME] then
+					sendMessage(player)
 					if TeleportTask.Running then
 						TeleportTask.Finished:wait()
+					end
+
+					if not jobid then
+						repeat task.wait(1) until jobid ~= nil
+					end
+
+					if not player or not player.Parent then
+						return
 					end
 
 					TeleportService:TeleportToPlaceInstance(game.PlaceId, jobid, player, "", {[PARAMETER_2_NAME] = true})
@@ -87,6 +100,8 @@ return function(Vargs, GetEnv)
 			end
 
 			if #playersToTeleport > 0 then
+				Logs:AddLog("Script", `Teleporting {#playersToTeleport} players back to the main game`)
+				task.wait(1)
 				startTask()
 			end
 		end)
