@@ -78,7 +78,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		RemovePlayer = function(jobId, userId, banMessage, reason)
-			local player = service.Players:GetPlayerByUserId(userId) or service.Players:FindFirstChild(userId)
+			local player = if typeof(userId) == "number" then service.Players:GetPlayerByUserId(userId) else service.Players:FindFirstChild(userId)
 			if player then
 				player:Kick(string.format("%s | Reason: %s", banMessage, reason))
 			end
