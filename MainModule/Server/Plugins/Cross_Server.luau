@@ -114,7 +114,7 @@ return function(Vargs, GetEnv)
 			end
 			Logs.AddLog("Script", {`Global restart {if typeof(countdown) == "number" then `in {countdown} seconds` else ``} requested for "{reason}"`})
 			if typeof(countdown) == "number" then
-				Functions.Hint(`Global restart happening in {if countdown < 60 then countdown..` seconds` else math.floor(countdown / 60)..` minute{if countdown > 119 then "s" else ""}`}`, service.GetPlayers())
+				Functions.Hint(`Global restart happening in {if countdown < 60 then countdown..` seconds` else math.floor(countdown / 60)..` minute{if countdown > 119 then "s" else ""}`}. Reason: {reason}`, service.GetPlayers())
 				local resumeTask, adonisTask
 				resumeTask, adonisTask = service.Threads.NewTask("Global Restart Countdown", function()
 					while countdown > 0 do
@@ -130,12 +130,13 @@ return function(Vargs, GetEnv)
 						end
 					end
 					Logs.AddLog("Script", {`This server is now restarting due to the global restart. Reason: "{reason}"`})
-					Functions.Hint("This server is now restarting. Please wait...", service.GetPlayers())
+					Functions.Hint("This server is now restarting. Reason: {reason}", service.GetPlayers())
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 				end)
 				adonisTask.abortable = abortable
 				resumeTask()
 			else
+				Functions.Hint("This server is now restarting. Reason: {reason}", service.GetPlayers())
 				Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 			end
 		end;
