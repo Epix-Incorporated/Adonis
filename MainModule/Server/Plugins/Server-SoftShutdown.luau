@@ -140,6 +140,9 @@ return function(Vargs, GetEnv)
 		Function = function(plr: Player, args: {string})
 			if #Players:GetPlayers() == 0 then return end
 
+			local newserver = TeleportService:ReserveServer(game.PlaceId)
+			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
+
 			if Core.DataStore then
 				Core.UpdateData("ShutdownLogs", function(logs)
 					if plr then
@@ -166,9 +169,6 @@ return function(Vargs, GetEnv)
 				end)
 			end
 
-			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
-
 			task.wait(1)
 
 			for _, v in Players:GetPlayers() do
@@ -185,11 +185,9 @@ return function(Vargs, GetEnv)
 			task.delay(60, function()
 				Variables.ServerLock = true
 			end)
-
 			while #Players:GetPlayers() > 0 do
 				Players.PlayerRemoving:Wait()
 			end
-			-- done
 		end
 	}
 	Commands.GlobalSoftShutdown = {

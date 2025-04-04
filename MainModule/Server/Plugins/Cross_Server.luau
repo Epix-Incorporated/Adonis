@@ -107,12 +107,12 @@ return function(Vargs, GetEnv)
 		GlobalRestartRequest = function(jobId, reason, countdown, abortable)
 			local abortSuccess, abortMessage = Core.CrossServerCommands.GlobalRestartAbort()
 			if abortMessage == "This global restart is not abortable." then
-				Logs.AddLog("Script", {"A global restart has been requested, but a non-abortable restart is already in progress."})
+				Logs:AddLog("Script", "A global restart has been requested, but a non-abortable restart is already in progress.")
 				return
 			elseif abortMessage == "Restart aborted for this server." then
-				Logs.AddLog("Script", {"In progress global restart was aborted to start a new one."})
+				Logs:AddLog("Script", "In progress global restart was aborted to start a new one.")
 			end
-			Logs.AddLog("Script", {`Global restart {if typeof(countdown) == "number" then `in {countdown} seconds` else ``} requested for "{reason}"`})
+			Logs:AddLog("Script", `Global restart {if typeof(countdown) == "number" then `in {countdown} seconds` else ``} requested for "{reason}"`)
 			if typeof(countdown) == "number" then
 				Functions.Hint(`Global restart happening in {if countdown < 60 then countdown..` seconds` else math.floor(countdown / 60)..` minute{if countdown > 119 then "s" else ""}`}. Reason: {reason}`, service.GetPlayers())
 				local resumeTask, adonisTask
@@ -129,14 +129,14 @@ return function(Vargs, GetEnv)
 							Functions.Hint(`Server restart in {countdown} second{if countdown ~= 1 then `s` else ``}. Reason: {reason}`, service.GetPlayers(), 1)
 						end
 					end
-					Logs.AddLog("Script", {`This server is now restarting due to the global restart. Reason: "{reason}"`})
-					Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 120) -- If it takes longer than 2 minutes for the server to restart, I don't know man.
+					Logs:AddLog("Script", `This server is now restarting due to the global restart. Reason: "{reason}"`)
+					Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), false)
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 				end)
 				adonisTask.abortable = abortable
 				resumeTask()
 			else
-				Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 120)
+				Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), false)
 				Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 			end
 		end;
@@ -161,7 +161,7 @@ return function(Vargs, GetEnv)
 
 			local start = os.clock()
 
-			Logs.AddLog("Commands", {
+			Logs:AddLog("Commands", {
 				Text = `[CRS_SERVER] Vote initiated by {data.Initiator}`,
 				Desc = question
 			})
