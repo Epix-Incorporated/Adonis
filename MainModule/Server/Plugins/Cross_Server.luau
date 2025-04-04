@@ -144,7 +144,7 @@ return function(Vargs, GetEnv)
 			for index, adonisTask in service.Threads.Tasks do
 				if adonisTask.Name == "Global Restart Countdown" then
 					if not adonisTask.abortable then return false, "This global restart is not abortable." end
-					coroutine.close(adonisTask.Thread) -- Would use task.Kill() however that appears to call coroutine.yield instead of coroutine.close?
+					pcall(coroutine.close, adonisTask.Thread) -- Would use task.Kill() however that appears to call coroutine.yield instead of coroutine.close?
 					adonisTask.Remove()
 					Functions.Hint("Global restart aborted. This server will no longer restart.", service.GetPlayers())
 					return true, "Restart aborted for this server."
