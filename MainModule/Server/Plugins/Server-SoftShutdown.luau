@@ -51,7 +51,7 @@ return function(Vargs, GetEnv)
 				local data = type(joindata) == "table" and joindata.TeleportData
 
 				if type(data) == "table" and data[PARAMETER_NAME] then
-					Functions.Message("Adonis", "Server Restart", "TTeleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
+					Functions.Message("Adonis", "Server Restart", "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
 
 					task.wait(waitTime + 5)
 					waitTime /= 2
