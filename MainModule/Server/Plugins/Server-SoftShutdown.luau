@@ -51,13 +51,7 @@ return function(Vargs, GetEnv)
 				local data = type(joindata) == "table" and joindata.TeleportData
 
 				if type(data) == "table" and data[PARAMETER_NAME] then
-					Remote.RemoveGui(player, "Message")
-					Remote.MakeGui(player, "Message", {
-						Title = "Server Restart";
-						Message = "Teleporting back to main server..";
-						Scroll = false;
-						Time = 1000
-					})
+					Functions.Message("Adonis", "Server Restart", "TTeleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
 
 					task.wait(waitTime + 5)
 					waitTime /= 2

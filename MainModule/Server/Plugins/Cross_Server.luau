@@ -130,13 +130,13 @@ return function(Vargs, GetEnv)
 						end
 					end
 					Logs:AddLog("Script", `This server is now restarting due to the global restart. Reason: "{reason}"`)
-					Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), false)
+					Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 1000)
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 				end)
 				adonisTask.abortable = abortable
 				resumeTask()
 			else
-				Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), false)
+				Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 1000)
 				Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 			end
 		end;
