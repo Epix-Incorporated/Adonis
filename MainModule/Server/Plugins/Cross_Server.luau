@@ -118,25 +118,25 @@ return function(Vargs, GetEnv)
 				local resumeTask, adonisTask
 				resumeTask, adonisTask = service.Threads.NewTask("Global Restart Countdown", function()
 					while countdown > 0 do
-						countdown -= task.wait(1)
+						countdown = math.floor(countdown - task.wait(1))
 						if adonisTask.R_Status ~= "Running" then 
 							-- The thread was killed. Do not continue.
 							return 
 						end
-						if secondsFormatted[math.floor(countdown)] then
-							Functions.Hint(`Server restart in {secondsFormatted[math.floor(countdown)]}`, service.GetPlayers())
-						elseif math.floor(countdown) > 0 and math.floor(countdown) <= 30 then
-							Functions.Hint(`Server restart in {math.floor(countdown)} second{if math.floor(countdown) ~= 1 then `s` else ``}`, service.GetPlayers(), 1)
+						if secondsFormatted[countdown] then
+							Functions.Hint(`Server restart in {secondsFormatted[countdown]}`, service.GetPlayers())
+						elseif countdown <= 30 then
+							Functions.Hint(`Server restart in {countdown} second{if countdown ~= 1 then `s` else ``}. Reason: {reason}`, service.GetPlayers(), 1)
 						end
 					end
 					Logs.AddLog("Script", {`This server is now restarting due to the global restart. Reason: "{reason}"`})
-					Functions.Hint("This server is now restarting. Reason: {reason}", service.GetPlayers())
+					Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 120) -- If it takes longer than 2 minutes for the server to restart, I don't know man.
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 				end)
 				adonisTask.abortable = abortable
 				resumeTask()
 			else
-				Functions.Hint("This server is now restarting. Reason: {reason}", service.GetPlayers())
+				Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 120)
 				Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 			end
 		end;
