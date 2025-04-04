@@ -24,7 +24,6 @@ return function(Vargs, GetEnv)
 		[120] = "2 minutes",
 		[60] = "1 minute",
 		[45] = "45 seconds"
-		-- testing oncr again
 		-- The server will begin counting down from 30 seconds to 1 second until the restart command is ran.
 	};
 
