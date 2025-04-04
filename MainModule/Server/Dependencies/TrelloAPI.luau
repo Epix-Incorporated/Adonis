@@ -187,7 +187,7 @@ return function(AppKey, Token)
 	end;
 
 	if not CheckHttp() then
-		warn("Could not connect to Trello! Please check if your app-key/token are valid.")
+		warn("Unable to connect to trello. Please check if your app key and token are valid.")
 		return
 	end;
 
