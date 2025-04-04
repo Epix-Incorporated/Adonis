@@ -124,7 +124,7 @@ return function(Vargs, GetEnv)
 							return 
 						end
 						if secondsFormatted[countdown] then
-							Functions.Hint(`Server restart in {secondsFormatted[countdown]}`, service.GetPlayers())
+							Functions.Hint(`Server restart in {secondsFormatted[countdown]}. Reason: {reason}`, service.GetPlayers())
 						elseif countdown > 0 and countdown <= 30 then
 							Functions.Hint(`Server restart in {countdown} second{if countdown ~= 1 then `s` else ``}. Reason: {reason}`, service.GetPlayers(), 1)
 						end
