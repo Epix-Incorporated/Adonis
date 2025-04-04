@@ -51,7 +51,10 @@ return function(Vargs, GetEnv)
 				local data = type(joindata) == "table" and joindata.TeleportData
 
 				if type(data) == "table" and data[PARAMETER_NAME] then
-					Functions.Message("Adonis", "Server Restart", "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
+					task.spawn(function()
+						repeat task.wait(0.25) until not player or not player.Parent or teleportedPlayers[player] or Remote.Clients[tostring(player.UserId)].FinishedLoading
+						Functions.Message("Adonis", "Server Restart", "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
+					end)
 
 					task.wait(waitTime + 5)
 					waitTime /= 2
