@@ -16,7 +16,7 @@ Maintainers may manage PR labels or edit PR titles and descriptions where benefi
 
 ## Q: How should PRs be titled and formatted?
 
-**A:** **Title:** The title of a PR should be in the present tense, and equivalent to a concise statement describing what was added, changed or removed by the PR: "Add XXX setting"; "Add :somenewcommand"; "Fix for :somecommand not doing XXX"; "Fix for :somecommand to account for XXX"; ":somecommand now does XXX"; "Add confirmation prompt for :somecommand"9
+**A:** **Title:** The title of a PR should be in the present tense, and equivalent to a concise statement describing what was added, changed or removed by the PR: "Add XXX setting"; "Add :somenewcommand"; "Fix for :somecommand not doing XXX"; "Fix for :somecommand to account for XXX"; ":somecommand now does XXX"; "Add confirmation prompt for :somecommand"
 
 A short explanation/clarification may be appended to the title, and should be included if the PR involves making a change with a rationale that users may not understand: "Add confirmation prompt for :somecommand to prevent XXX"
 
