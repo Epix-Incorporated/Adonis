@@ -118,7 +118,7 @@ return function(Vargs, GetEnv)
 				local resumeTask, adonisTask
 				resumeTask, adonisTask = service.Threads.NewTask("Global Restart Countdown", function()
 					while countdown > 0 do
-						countdown = math.floor(countdown - task.wait(1))
+						countdown = math.ceil(countdown - task.wait(1))
 						if adonisTask.R_Status ~= "Running" then 
 							-- The thread was killed. Do not continue.
 							return 
