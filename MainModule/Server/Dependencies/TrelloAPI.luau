@@ -94,7 +94,7 @@ local HttpFunctions; HttpFunctions = {
 		if ran then
 			return response
 		else
-			warn(`RequestAsync failed: {response}`)
+			warn(`Trello RequestAsync failed: {response}`)
 			return false
 		end
 	end;
@@ -112,7 +112,7 @@ local HttpFunctions; HttpFunctions = {
 		if ran then
 			return response
 		else
-			warn(`GetAsync failed: {response}`)
+			warn(`Trello GetAsync failed: {response}`)
 			return false
 		end
 	end;
@@ -130,7 +130,7 @@ local HttpFunctions; HttpFunctions = {
 		if ran then
 			return response
 		else
-			warn(`PostAsync failed: {response}`)
+			warn(`Trello PostAsync failed: {response}`)
 			return false
 		end
 	end;
@@ -140,7 +140,7 @@ local HttpFunctions; HttpFunctions = {
 	end;
 	
 	GetListObject = function(Lists, Name)
-		if not Name then warn("Missing search term for GetListObject()") end
+		if not Name then warn("No search term for GetListObject() (Trello)") end
 		for _, List in Lists do
 			if type(Name)=="table" then
 				for _, Name in Name do
