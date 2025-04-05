@@ -136,7 +136,7 @@ return function(Vargs, GetEnv)
 			SavedTables = 	"32K5j4";
 		};
 
-		DS_BLACKLIST = {
+		DS_BLACKLIST = table.freeze({
 			Trello_Enabled = true;
 			Trello_Primary = true;
 			Trello_Secondary = true;
@@ -175,12 +175,23 @@ return function(Vargs, GetEnv)
 			Ranks = true;
 			Commands = true;
 
+			CreatorPowers = true;
 			CodeExecution = true;
+			PlayerDataKeyBlacklist = true;
+
+			["Commands.MakeScript"] = true;
+			["Commands.ScriptBuilder"] = true;
+			["Commands.ScriptEditor"] = true;
+
+			["Variables.ScriptBuilder"] = true;
+			["Variables.ScriptEditor"] = true;
+			["Variables.DeveloperWhitelist"] = true;
+			["Variables.UrgentModuleId"] = true;
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
 			["Variables.UrgentModuleId"] = true;
-		};
+		});
 
 		--// Prevent certain keys from loading from the DataStore
 		PlayerDataKeyBlacklist = {
