@@ -190,16 +190,15 @@ return function(Vargs, GetEnv)
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
-			["Variables.UrgentModuleId"] = true;
 		});
 
 		--// Prevent certain keys from loading from the DataStore
-		PlayerDataKeyBlacklist = {
+		PlayerDataKeyBlacklist = table.freeze({
 			AdminRank = true;
 			AdminLevel = true;
 			LastLevelUpdate = true;
 			Groups = true;
-		};
+		});
 		
 		UpdatePlayerConnection = function(p)
 			for i, cli in next,service.NetworkServer:GetChildren() do
