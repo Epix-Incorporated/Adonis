@@ -782,11 +782,20 @@ return function(Vargs, GetEnv)
 		end;
 
 		DataStoreEncode = function(key)
-			if Core.DS_RESET_SALTS[key] then
-				key = Core.DS_RESET_SALTS[key] .. key
-			end
+            if Core.DS_RESET_SALTS[key] then
+                key = Core.DS_RESET_SALTS[key] .. key
+            end
+            
+            -- Only consider salting if the key isn't a number (like a player ID) and if the setting isn't true
+            local IsPlayer = tonumber(key) ~= nil
+            local SettingIsTrue = server.Settings.DontSaltDataStoreKey == true
+            local ShouldSaltKey = not IsPlayer and not SettingIsTrue
+            local EncryptionKey = Settings.DataStoreKey
+            if ShouldSaltKey then
+                EncryptionKey = ("SALT_" .. Settings.DataStoreKey):sub(1,50)
+            end
 
-			return Functions.Base64Encode(Remote.Encrypt(tostring(key), ("SALT_" .. Settings.DataStoreKey):sub(1,50)))
+            return Functions.Base64Encode(Remote.Encrypt(tostring(key), EncryptionKey))
 		end;
 
 		SaveData = function(...)
