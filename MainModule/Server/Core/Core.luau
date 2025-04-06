@@ -138,7 +138,7 @@ return function(Vargs, GetEnv)
 
 		DS_WHITELIST = table.freeze({
 		--ideas here pls
-		)};
+		});
 
 		DS_BLACKLIST = table.freeze({
 			Trello_Enabled = true;
