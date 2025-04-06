@@ -136,6 +136,10 @@ return function(Vargs, GetEnv)
 			SavedTables = 	"32K5j4";
 		};
 
+		DS_WHITELIST = table.freeze({
+		--ideas here pls
+		)};
+
 		DS_BLACKLIST = table.freeze({
 			Trello_Enabled = true;
 			Trello_Primary = true;
@@ -962,8 +966,9 @@ return function(Vargs, GetEnv)
 
 		IndexPathToTable = function(tableAncestry)
 			local ds_blacklist = Core.DS_BLACKLIST
+			local ds_whitelist = Core.DS_WHITELIST
 
-			if type(tableAncestry) == "string" and not ds_blacklist[tableAncestry] then
+			if type(tableAncestry) == "string" and (not ds_blacklist[tableAncestry] or ds_whitelist[tableAncestry]) then
 				return Settings[tableAncestry], tableAncestry
 			elseif type(tableAncestry) == "table" then
 				local curTable = server
@@ -997,7 +1002,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if type(curName) == "string" and ds_blacklist[curName] then
+				if type(curName) == "string" and (ds_blacklist[curName] or not ds_whitelist[curName]) then
 					return nil
 				end
 
@@ -1180,6 +1185,7 @@ return function(Vargs, GetEnv)
 
 			local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 			local ds_blacklist = Core.DS_BLACKLIST
+			local ds_whitelist = Core.DS_WHITELIST
 
 			if key == "TableUpdate" then
 				local indList = data.Table
@@ -1199,7 +1205,7 @@ return function(Vargs, GetEnv)
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
 				if type(displayName) == "string" then
-					if ds_blacklist[displayName] then
+					if ds_blacklist[displayName] or not ds_whitelist[displayName] then
 						return
 					end
 
@@ -1286,7 +1292,7 @@ return function(Vargs, GetEnv)
 
 					if SavedSettings then
 						for setting, value in SavedSettings do
-							if not ds_blacklist[setting] then
+							if not ds_blacklist[setting] or ds_whitelist[setting] then
 
 								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
@@ -1304,7 +1310,7 @@ return function(Vargs, GetEnv)
 
 					if SavedTables then
 						for index, tData in SavedTables do
-							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] then
+							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] or ds_whitelist[tData.TableName] then
 								local data = GetData(tData.TableKey)
 								if data then
 									--// TODO: Possibly find a better way to "batch" TableUpdates to prevent script exhaustion
