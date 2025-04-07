@@ -63,7 +63,7 @@ return function(Vargs, GetEnv)
 		UI.RunLast = nil;
 	end
 
-	local function TruncatedCompare(s1: str, s2: str)
+	local function TruncatedCompare(s1: string, s2: string)
 		local minLength = math.min(string.len(s1), string.len(s2))
 		local s1Truncated = string.sub(s1, 1, minLength)
 		local s2Truncated = string.sub(s2, 1, minLength)
@@ -555,16 +555,107 @@ return function(Vargs, GetEnv)
 			return gTable,gIndex
 		end;
 
-		Autocomplete = function(provided: string, arg: string)
+		ParseArg = function(arg: string)
+			local result = {}
+
+			local rawName = string.match(arg, "^([%w_?]+)")
+			if string.sub(rawName, -1) == "?" then
+				result.name = string.sub(rawName, 1, -2)
+				result.optional = true
+			else
+				result.name = rawName
+				result.optional = false
+			end
+
+			local parenthesesContent = string.match(arg, "%(%s*(.-)%s*%)")
+			if parenthesesContent then
+				if not string.find(parenthesesContent, ":") then
+					result.mode = string.match(string.lower(parenthesesContent), "^%s*(.-)%s*$")
+				else
+					local mode, params = string.match(parenthesesContent, "^%s*([%w_]+)%s*:%s*(.-)%s*$")
+					if mode and params then
+						result.mode = string.lower(mode)
+						if string.find(params, ",") then
+							result.params = {}
+							for param in string.gmatch(params, "([^,]+)") do
+								table.insert(result.params, string.match(param, "^%s*(.-)%s*$"))
+							end
+						else
+							result.param = string.match(params,"^%s*(.-)%s*$")
+						end
+					end
+				end
+			end
+
+			return result
+		end;
+
+		Match = function(matches: {string}, value: any, provided: string)
+			if type(value) ~= "string" then
+				value = tostring(value)
+			end
+				
+			if provided == "$" or TruncatedCompare(string.lower(value), string.lower(provided)) then
+				table.insert(matches, value)
+			end
+		end;
+
+		Autocomplete = function(provided: string, command: string, arg: string)
 			local matches = {}
 			if not provided or not arg then
 				return matches
 			end
 
-			for _, player in service.Players:GetPlayers() do
-				local name = player.Name
-				if provided == "$" or TruncatedCompare(string.lower(name), string.lower(provided)) then
-					table.insert(matches, name)
+			local argInfo = UI.ParseArg(arg)
+			if argInfo.mode == "refers" then
+				local variable = argInfo.param
+				if variable then
+					local split = string.split(variable, ".")
+					table.remove(split, 1)
+
+					local value = Variables
+					for _, index in split do
+						local temp = value[index]
+						if not temp then
+							break
+						end
+
+						value = temp
+					end
+
+					if type(value) == "function" then
+						value = value()
+					end
+
+					if type(value) == "table" then
+						for _, option in value do
+							UI.Match(matches, option, provided)
+						end
+					elseif type(value) == "string" then
+						UI.Match(matches, value, provided)
+					end
+				end
+			elseif argInfo.mode == "options" then
+				local options = argInfo.params
+				for _, option in options do
+					UI.Match(matches, option, provided)
+				end
+			elseif argInfo.name == "brickcolor" or argInfo.name == "brickcolour" then
+				if #Variables.Colors == 0 then
+					local MAX_BRICK_COLORS = 127
+					for index = 1, MAX_BRICK_COLORS do
+						local name = BrickColor.palette(index).Name
+
+						table.insert(Variables.Colors, name)
+					end
+				end
+
+				for _, color in Variables.Colors do
+					UI.Match(matches, color, provided)
+				end
+			elseif argInfo.name == "player" then
+				for _, player in service.Players:GetPlayers() do
+					UI.Match(matches, player.name, provided)
 				end
 			end
 

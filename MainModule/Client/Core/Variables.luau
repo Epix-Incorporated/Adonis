@@ -81,6 +81,7 @@ return function(Vargs, GetEnv)
 		KeyBinds = {};
 		Aliases = {};
 		Capes = {};
+		Colors = {};
 		savedUI = {};
 		localSounds = {};
 		ESPObjects = {};
