@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXAC493B167BC74652961D2FE361C167DC">
+	<Item class="ModuleScript" referent="RBX979CD145CBA445B28C006B5F71C33DB6">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -18,6 +18,7 @@
 	local Commands = Server.Commands;
 
 	local Settings = Server.Settings;
+	local Admin = Server.Admin;
 	local Anti = Server.Anti;
 	local Functions = Server.Functions;
 	local Logs = Server.Logs;
@@ -233,15 +234,19 @@
 		Description = "Revokes the target player(s) access to Dex and removes the Dex GUI from the target player(s)";
 		AdminLevel = 300;
 		Function = function(plr, args)
+			local sourcePlayerLevel = Admin.GetLevel(plr)
+			
 			for _, v in Service.GetPlayers(plr, args[1]) do
-				ServerNewDex.Authorized[v] = nil;
+				if Admin.GetLevel(v) <= sourcePlayerLevel then
+					ServerNewDex.Authorized[v] = nil;
 
-				for _, dexName in Variables.DexNames do
-					Remote.RemoveLocal(v, dexName, "PlayerGui", true)
-				end
+					for _, dexName in Variables.DexNames do
+						Remote.RemoveLocal(v, dexName, "PlayerGui", true)
+					end
 
-				if v.PlayerGui:FindFirstChild("Dex_Client") then
-					v.PlayerGui.Dex_Client:Destroy()
+					if v.PlayerGui:FindFirstChild("Dex_Client") then
+						v.PlayerGui.Dex_Client:Destroy()
+					end
 				end
 			end
 		end
@@ -251,7 +256,7 @@ end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="ModuleScript" referent="RBXC3ED37EFE03B42EE99BEA48B854420C8">
+		<Item class="ModuleScript" referent="RBX44E39B03C24644D685EA9B4CA64D9189">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -303,7 +308,7 @@ return serviceUtils
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="ScreenGui" referent="RBXA5263AB6EA7B4D1F925DACFAB75470AC">
+		<Item class="ScreenGui" referent="RBX8C0E02230A434DCA9F974A0D383F0FF8">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -326,7 +331,7 @@ return serviceUtils
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">1</token>
 			</Properties>
-			<Item class="LocalScript" referent="RBX708EA7A45863439096C90312B3CEEE7C">
+			<Item class="LocalScript" referent="RBX44499F6C883F458494098BA9C04DE5F8">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1482,7 +1487,7 @@ Main.Init()
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="Folder" referent="RBX7C8624A570214DEEBCBD8CC4DCB95346">
+				<Item class="Folder" referent="RBXECC2D26AC88B442486A36CB3F8BA544B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1491,7 +1496,7 @@ Main.Init()
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
-					<Item class="ModuleScript" referent="RBX852DBC46A43F4717B6B0363A1A255901">
+					<Item class="ModuleScript" referent="RBX89ECFE4CE875409697B12FE900BED901">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -3846,7 +3851,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="ModuleScript" referent="RBXF961AD6B4A9E4C76B7D2E2B7E8A8513F">
+					<Item class="ModuleScript" referent="RBXF68B36CAEB56408F9FC07F00078EAC70">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -9629,7 +9634,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="ModuleScript" referent="RBX708F497BF00740BB99254243FCE36140">
+					<Item class="ModuleScript" referent="RBX0CCCB71E079B47CB85D284B45D55DAE2">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -11567,7 +11572,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="ModuleScript" referent="RBX45C235FD54584E47B79FBBC7BCDE251A">
+					<Item class="ModuleScript" referent="RBX62F3910967C543E3A3B53B5C54D64432">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -12604,7 +12609,7 @@ end]]></ProtectedString>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
-						<Item class="ModuleScript" referent="RBX8876388B635A4215B4B5911742733E68">
+						<Item class="ModuleScript" referent="RBX9FE31F41F95748C180D4DAB1A7220C89">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -12927,7 +12932,7 @@ return settingsInfo]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="ModuleScript" referent="RBXCBB7FD6FBF8E45ED863E3C9684146043">
+					<Item class="ModuleScript" referent="RBXB533EBB339FD4524A2F449761C06B3DC">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -13123,7 +13128,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="ModuleScript" referent="RBX2870DE7C0D9A4D1B8733CA35B8F0676B">
+				<Item class="ModuleScript" referent="RBX8C11AF1953C74CCF85E4E99220EAE86F">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -13136,7 +13141,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX2B009677E56E445F816AE2DCAD1F6EA8">
+				<Item class="ModuleScript" referent="RBX35FD295DC4A64E48B2253B19B2F4D089">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
