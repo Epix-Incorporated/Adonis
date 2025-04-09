@@ -237,7 +237,7 @@
 				ServerNewDex.Authorized[v] = nil;
 
 				for _, dexName in Variables.DexNames do
-					Remote.RemoveLocal(plr, dexName, "PlayerGui", true)
+					Remote.RemoveLocal(v, dexName, "PlayerGui", true)
 				end
 
 				if v.PlayerGui:FindFirstChild("Dex_Client") then
