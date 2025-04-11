@@ -364,7 +364,7 @@ locals = {
 
 log("Create service metatable")
 
-service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
+service = require(Folder.Parent.Shared.Service)(function(eType, msg, desc, ...)
 	--warn(eType, msg, desc, ...)
 	local extra = { ... }
 	if eType == "MethodError" then
@@ -547,7 +547,7 @@ return service.NewProxy({
 
 		client.Folder = Folder
 		client.UIFolder = Folder:WaitForChild("UI", 9e9)
-		client.Shared = Folder:WaitForChild("Shared", 9e9)
+		client.Shared = Folder.Parent:WaitForChild("Shared", 9e9)
 
 		client.Loader = data.Loader
 		client.Module = data.Module
