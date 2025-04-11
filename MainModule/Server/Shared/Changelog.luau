@@ -6,7 +6,7 @@ return {
 	"[v267 2025-xx-xx xx:xx UTC] @Dimenpsyonal";
 	"Disable code execution on new loaders by default";
 	"Expand datastore blacklist";
-	"(Git/WalkerOfBacon) Change name from ";fix" to ;resetlighting (#1873)";
+	"(Git/WalkerOfBacon) Change fix lighting command from ;fix to ;resetlighting (#1873)";
 	"";
 	"[Patch v266.1 2025-04-02 13:24 UTC] @Dimenpsyonal";
 	"Reverts change to invalid admin levels";
