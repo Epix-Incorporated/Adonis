@@ -1,16 +1,14 @@
-name: Issue labeling
+name: "Issue Labeler"
+on:
+  issues:
+    types: [opened, edited]
 
 permissions:
   issues: write
   contents: read
 
-on:
-  issues:
-    types: [opened]
-  pull_request:
-    types: [opened]
 jobs:
-  autotriage:
+  triage:
     runs-on: ubuntu-latest
     steps:
     - uses: github/issue-labeler@v3.4

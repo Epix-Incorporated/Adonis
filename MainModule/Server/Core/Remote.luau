@@ -26,10 +26,12 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		Defaults = server.Defaults;
+		Defaults = server.Defaults.Settings;
 		Commands = server.Commands;
-
 		logError = env.logError;
+		Remote.NewDecrypt = function(str, key, cache) -- Bxor works both ways. May want to make a seperate function tho
+			return Remote.NewEncrypt(str, key, cache or Remote.NewDecodeCache)
+		end;
 
 		Remote.Init = nil;
 		Logs:AddLog("Script", "Remote Module Initialized")
@@ -60,6 +62,8 @@ return function(Vargs, GetEnv)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
+		NewEncodeCache = {};
+		NewDecodeCache = {};
 		RemoteExecutionConfirmed = {};
 
 		TimeUntilKeyDestroyed = 60 * 5; --// How long until a player's key data should be completely removed?
@@ -79,6 +83,11 @@ return function(Vargs, GetEnv)
 			PlayerPrefix = true;
 			SpecialPrefix = true;
 			ConsoleKeyCode = true;
+			G_API = true;
+			G_Access = true;
+			G_Access_Perms = true;
+			Allowed_API_Calls = true;
+			MusicList = true;
 		};
 
 		--// Settings that are never sent to the client
@@ -244,11 +253,11 @@ return function(Vargs, GetEnv)
 						Trello_AppKey = true;
 						Trello_Token = true;
 
-						G_API = true;
-						G_Access = true;
+						--G_API = true;
+						--G_Access = true;
 						G_Access_Key = true;
-						G_Access_Perms = true;
-						Allowed_API_Calls = true;
+						--G_Access_Perms = true;
+						--Allowed_API_Calls = true;
 
 						WebPanel_ApiKey = true;
 						WebPanel_Enabled = true;
@@ -509,21 +518,34 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			AudioLib = function(p,args)
+			AudioLib = function(p, args)
 				local AdminLevel = Admin.GetLevel(p)
 				if Commands.Music and Admin.CheckComLevel(AdminLevel, Commands.Music) then
-					if not server.Functions.AudioLib then
+					local audioLib = Functions.AudioLib
+
+					if not Functions.AudioLib then
 						local audioLibFolder = service.SoundService:FindFirstChild("ADONIS_AUDIOLIB")
 						if not audioLibFolder then
 							audioLibFolder = service.New("Folder")
 							audioLibFolder.Name = "ADONIS_AUDIOLIB"
 							audioLibFolder.Parent = service.SoundService
 						end
-						server.Functions.AudioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
+						audioLib = require(server.Shared.AudioLib).new(service.UnWrap(audioLibFolder))
+						Functions.AudioLib = audioLib
 					end
 
-					if type(args[1]) == "table" and type(Functions.AudioLib[args[1][1]]) == "function" then
-						return Functions.AudioLib[args[1][1]](Functions.AudioLib, args[1][2])
+					if type(args[1]) == "table" then
+						args = service.UnWrap(args[1])
+					else
+						return
+					end
+
+					if args[1] == "index" then
+						return audioLib[args[2]]
+					elseif args[1] == "newindex" then
+						audioLib[args[2]] = args[3]
+					elseif args[1] == "call" then
+						return audioLib[args[2]](audioLib, table.unpack(args, 3))
 					end
 				end
 			end;
@@ -531,10 +553,10 @@ return function(Vargs, GetEnv)
 
 		Terminal = {
 			Data = {};
-			Format = function(msg,data) (data or {}).Text = msg end;
-			Output = function(tab,msg,mata) table.insert(tab,Remote.Terminal.Format(msg,mata)) end;
-			GetCommand = function(cmd) for i,com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
-			LiveOutput = function(p,data,type) Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
+			Format = function(msg, data) (data or {}).Text = msg end;
+			Output = function(tab, msg, mata) table.insert(tab, Remote.Terminal.Format(msg, mata)) end;
+			GetCommand = function(cmd) for i, com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
+			LiveOutput = function(p, data, type) Remote.FireEvent(p, "TerminalLive", {Data = data; Type = type or "Terminal";}) end;
 			Commands = {
 				Help = {
 					Usage = "help";
@@ -580,9 +602,9 @@ return function(Vargs, GetEnv)
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
 						local oError = error
-						local newenv = GetEnv(getfenv(),{
-							print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
-							warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+						local newenv = GetEnv(getfenv(), {
+							print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
+							warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
 							error = function(reason, level)
 								if level ~= nil and type(level) ~= "number" then
 									oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
@@ -608,11 +630,13 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						local func,err = Core.Loadstring(args[1], newenv)
+						local func, err = Core.Loadstring(args[1], newenv)
 						if func then
-							func()
+							xpcall(func, function(reason)
+								Remote.Terminal.LiveOutput(p,`LUA_ERROR: {string.match(reason, ":(.*)") or reason}`)
+							end)
 						else
-							Remote.Terminal.LiveOutput(p,`ERROR: {string.match(err, ":(.*)") or err}`)
+							Remote.Terminal.LiveOutput(p,`SYNTAX_ERROR: {string.match(err, ":(.*)") or err}`)
 						end
 					end
 				};
@@ -650,7 +674,7 @@ return function(Vargs, GetEnv)
 					Description = "Disconnects the specified player from the server";
 					Function = function(p, args, data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
+						if #plrs > 0 then
 							local ret = {}
 							for _,v in plrs do
 								v:Kick(args[2] or "Disconnected by server")
@@ -670,8 +694,8 @@ return function(Vargs, GetEnv)
 					Description = "Calls :BreakJoints() on the target player's character";
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
-							for _,v in plrs do
+						if #plrs > 0 then
+							for _, v in plrs do
 								local ret = {}
 								local char = v.Character
 								if char and char.ClassName == "Model" then
@@ -695,9 +719,9 @@ return function(Vargs, GetEnv)
 					Description = "Calls :LoadCharacter() on the target player";
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
+						if #plrs > 0 then
 							local ret = {}
-							for _,v in plrs do
+							for _, v in plrs do
 								v:LoadCharacter()
 								table.insert(ret, `Respawned {service.FormatPlayer(v)}`)
 							end
@@ -717,7 +741,7 @@ return function(Vargs, GetEnv)
 							p:Kick(args[1] or "No Given Reason")
 						end)
 
-						for _,v in service.Players:GetPlayers() do
+						for _, v in service.Players:GetPlayers() do
 							v:Kick(args[1] or "No Given Reason")
 						end
 					end
@@ -733,21 +757,21 @@ return function(Vargs, GetEnv)
 			GetReturn = function(p: Player, args: {[number]: any})
 				local com = args[1]
 				local key = args[2]
-				local parms = {unpack(args,3)}
+				local parms = table.pack(table.unpack(args, 3))
 				local retfunc = Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,p,parms)}) or {}
+				local retable = retfunc and table.pack(pcall(retfunc, p, parms)) or {}
 				if retable[1] ~= true then
-					logError(p,retable[2])
+					logError(p, retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
+					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2))
 				end
 			end;
 
 			GiveReturn = function(p: Player,args: {[number]: any})
 				if Remote.PendingReturns[args[1]] then
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:Fire(unpack(args,2))
+					service.Events[args[1]]:Fire(table.unpack(args, 2))
 				end
 			end;
 
@@ -840,7 +864,7 @@ return function(Vargs, GetEnv)
 					local value = args[2]
 
 					if type(setting) == "string" then
-						if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+						if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 							local orig = Settings[setting]
 							for _, v in Commands do
 								if v.Prefix == orig then
@@ -1000,30 +1024,28 @@ return function(Vargs, GetEnv)
 					local Variable = se[Name]
 
 					local oError = error
-					local newenv = GetEnv(getfenv(),{
-						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `PRINT: {str}`) end;
-						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.Terminal.LiveOutput(p, `WARN: {str}`) end;
+					local newenv = GetEnv(getfenv(), {
+						print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
+						warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
 						error = function(reason, level)
 							if level ~= nil and type(level) ~= "number" then
 								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 							end
 
-							Remote.MakeGui(p, "Output",{Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
+							Remote.MakeGui(p, "Output", {Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
 							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 						end;
 					})
 
 					-- TODO: Maybe make it not work with the server Env?
-					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`,function()
-						local func,err = Core.Loadstring(Variable["Script"], newenv)
+					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`, function()
+						local func, err = Core.Loadstring(Variable["Script"], newenv)
 						if func then
-							local Succ,Err = pcall(function()
-								func()
+							xpcall(func, function(reason)
+								Remote.MakeGui(p, "Output", {Title = "LUA_ERROR"; Message = reason})
 							end)
-
-							Remote.MakeGui(p, "Output", {Title = "Error"; Message = Err})
 						else
-							Remote.MakeGui(p, "Output", {Title = "Error"; Message = err})
+							Remote.MakeGui(p, "Output", {Title = "SYNTAX_ERROR"; Message = err})
 						end
 					end)
 				end
@@ -1140,7 +1162,7 @@ return function(Vargs, GetEnv)
 			assert(p and p:IsA("Player"), `Remote.Send: {p.Name} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
+				Remote.Fire(p, Remote.NewEncrypt(com, keys.Key, keys.Cache), ...)
 			end
 		end;
 
@@ -1156,7 +1178,7 @@ return function(Vargs, GetEnv)
 		Get = function(p: Player, com: string, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
+				local ret = Remote.GetFire(p, Remote.NewEncrypt(com, keys.Key, keys.Cache), ...)
 				if type(ret) == "table" then
 					return unpack(ret)
 				else
@@ -1165,31 +1187,32 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		OldGet = function(p: Player, com: string, ...)
+		OldGet = function(p: Player, com: string, ...) -- TODO: Add oldget (both on client and server) to backwards compatibility plugin
 			local keys = Remote.Clients[tostring(p.UserId)]
+
 			if keys and keys.RemoteReady == true then
 				local returns, finished
 				local key = service.HttpService:GenerateGUID(false)
-				local Yield = service.Yield();
-				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Release() end)
+				local Yield = service.Signal.new();
+				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Fire() end)
 
 				Remote.PendingReturns[key] = true
-				Remote.Send(p,"GetReturn",com,key,...)
+				Remote.Send(p, "GetReturn", com, key, ...)
 
-				print("GETTING RETURN");
+				print("GETTING RETURN")
 				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
 					task.delay(600, function() if not finished then event:Fire() end end)
-					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
-					Yield:Wait();
-					Yield:Destroy();
+					print(string.format("WAITING FOR RETURN %s", tostring(returns)))
+					Yield:Wait()
+					Yield:Destroy()
 
-					print(string.format("WE GOT IT! %s", tostring(returns)));
+					print(string.format("WE GOT IT! %s", tostring(returns)))
 					pEvent:Disconnect()
 					pEvent = nil
 				end
 
-				print("GOT RETURN");
+				print("GOT RETURN")
 				event:Disconnect()
 				event = nil
 
@@ -1197,7 +1220,7 @@ return function(Vargs, GetEnv)
 					if returns[1] == "__ADONIS_RETURN_ERROR" then
 						error(returns[2])
 					else
-						return unpack(returns)
+						return table.unpack(returns)
 					end
 				else
 					return
@@ -1360,9 +1383,8 @@ return function(Vargs, GetEnv)
 				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
 				local keyLen = #key
 
-				for i = 1, #str do
-					local keyPos = (i % keyLen) + 1
-					writeu8(rawStr, (readu8(rawStr, i) + readu8(rawKey, keyPos)) % 126 + 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) + readu8(rawKey, (i + 1) % keyLen)) % 126 + 1)
 				end
 
 				cache[key] = keyCache
@@ -1384,9 +1406,31 @@ return function(Vargs, GetEnv)
 				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
 				local keyLen = #key
 
-				for i = 1, #str do
-					local keyPos = (i % keyLen) + 1
-					writeu8(rawStr, (readu8(rawStr, i) - readu8(rawKey, keyPos)) % 126 - 1)
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, (readu8(rawStr, i) - readu8(rawKey, (i + 1) % keyLen)) % 126 - 1)
+				end
+
+				cache[key] = keyCache
+				keyCache[str], keyCache[1] = buffer.tostring(rawStr), rawKey
+				return keyCache[str]
+			end
+		end;
+
+		NewEncrypt = function(str: string, key: string, cache: {[string]: (buffer|{[string]: string})}?)
+			cache = cache or Remote.NewEncodeCache or {}
+			local keyCache = cache[key] or {}
+
+			if not key or not str then
+				return str
+			elseif keyCache[str] then
+				return keyCache[str]
+			else
+				local writeu8, readu8, bxor = buffer.writeu8, buffer.readu8, bit32.bxor
+				local rawStr, rawKey = buffer.fromstring(str), keyCache[1] or buffer.fromstring(key)
+				local keyLen = #key
+
+				for i = 0, #str - 1 do
+					writeu8(rawStr, i, bxor(readu8(rawStr, i), readu8(rawKey, i % keyLen)))
 				end
 
 				cache[key] = keyCache

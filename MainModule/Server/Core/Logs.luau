@@ -14,7 +14,6 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service;
 	local DLL = server.DLL;
 
-	local MaxLogs = 1000
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -27,8 +26,7 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-
-		MaxLogs = Settings.MaxLogs;
+		Logs.MaxLogs = Settings.MaxLogs;
 
 		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");
@@ -47,26 +45,25 @@ return function(Vargs, GetEnv)
 		Exploit = if UseDLL then DLL.new() else {};
 		Errors = if UseDLL then DLL.new() else {};
 		DateTime = if UseDLL then DLL.new() else {};
-		AuditLogs = if UseDLL then DLL.new() else {};
+		MaxLogs = 1000;
 		TempUpdaters = {};
+		IndToName = {
+			Chats = "Chat";
+			Joins = "Join";
+			Leaves = "Leave";
+			Script = "Script";
+			RemoteFires = "RemoteFire";
+			Commands = "Command";
+			Exploit = "Exploit";
+			Errors = "Error";
+			DateTime = "DateTime";
+		};
 		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
 		TabToType = function(tab)
-			local indToName = {
-				Chats = "Chat";
-				Joins = "Join";
-				Leaves = "Leave";
-				Script = "Script";
-				RemoteFires = "RemoteFire";
-				Commands = "Command";
-				Exploit = "Exploit";
-				Errors = "Error";
-				DateTime = "DateTime";
-			}
-
 			for ind, t in server.Logs do
 				if t == tab then
-					return indToName[ind] or ind
+					return server.Logs.IndToName[ind] or ind
 				end
 			end
 		end;
@@ -91,50 +88,48 @@ return function(Vargs, GetEnv)
 				log.Time = os.time()
 			end
 
-			if tab.__meta == "DLL" then
-				tab:AddToStartAndRemoveEndIfEnd(log, MaxLogs)
-			else
-				table.insert(tab, 1, log)
-				if #tab > tonumber(MaxLogs) then
-					table.remove(tab, #tab)
+			if tab then
+				if tab.__meta == "DLL" then
+					tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
+				else
+					table.insert(tab, 1, log)
+					if #tab > tonumber(Logs.MaxLogs) then
+						table.remove(tab, #tab)
+					end
+				end
+				
+				service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
+			end
+		end;
+
+		-- // Preliminary support for oldlog encryption
+		DeserializeOldlogs = function(data)
+			if string.sub(data, 1, 1) ~= "[" and string.match(data, "^[%w%+/=]+$") then
+				data = Remote.NewDecrypt(Functions.Base64Decode(data), Settings.DataStoreKey)
+
+				if string.sub(data, 1, 2) == "\x1f\x8b" then -- Check for Gzip header and decode
+					data = assert(Functions.GzipDecompress, "No support for Gzip encoding!")(data)
+				elseif string.match(data, "^\x78[\x01\x5e\x9c\xda\x20\x7d\xbb\xf9]") then -- Check for Zlib header and decode
+					data = assert(Functions.ZlibDecompress, "No support for Zlib encoding!")(data)
 				end
 			end
 
-			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
-		end;
-
-		LogAudit = function(moderatorId, action, targetId, details)
-			local logEntry = {
-				ModeratorId = moderatorId;
-				Action = action;
-				TargetId = targetId;
-				Details = details;
-				Time = os.time();
-			}
-			Logs:AddLog(Logs.AuditLogs, logEntry);
-		end;
-
-		GetAuditLogs = function(playerId)
-			local auditLogs = {}
-			local logs = Logs.AuditLogs:GetAsTable() or {}
-			for _, log in pairs(Logs.AuditLogs:GetAsTable()) do
-				if log.ModeratorId == playerId then
-					table.insert(auditLogs, log)
-				end
-			end
-			return auditLogs
+			return service.HttpService:JSONDecode(data)
 		end;
 
 		SaveCommandLogs = function()
 			--// Disable saving command logs in Studio; not required.
 			if service.RunService:IsStudio() or service.RunService:IsRunMode() then
 				return
+			elseif not server.Data or not server.Data.SilentStartup then
+				print("Saving command logs...")
 			end
 
-			print("Saving command logs...")
-
 			if Settings.SaveCommandLogs ~= true or Settings.DataStoreEnabled ~= true then
-				print("Skipped saving command logs.")
+				if not server.Data or not server.Data.SilentStartup then
+					print("Skipped saving command logs.")
+				end
+
 				return
 			end
 
@@ -143,32 +138,41 @@ return function(Vargs, GetEnv)
 
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				if type(oldLogs) == "string" then
-					oldLogs = service.HttpService:JSONDecode(oldLogs)
+					xpcall(function()
+						oldLogs = Logs.DeserializeOldlogs(oldLogs)
+					end, function(reason)
+						oldLogs = {}
+						warn(`Deserializing oldlogs failed due to {reason}`)
+					end)
 				end
 
-				local temp = {}
+				local temp = table.create((oldLogs and #oldLogs or 0) + #logsToSave + (Logs.Commands.__meta == "DLL" and Logs.Commands.count or 0))
+
+				local function insertLog(log)
+					local isTable = type(log) == "table"
+					local newTab = if isTable then table.clone(log) else log
+
+					if (isTable and not log.NoSave) or not isTable then
+						if isTable and log.Player then
+							local p = log.Player
+							log.Player = {
+								Name = p.Name;
+								UserId = p.UserId;
+							}
+						end
+						table.insert(temp, log)
+					end
+				end
 
 				for _, m in logsToSave do
 					if m.__meta == "DLL" then
 						local newTab = m:GetAsTable()
 
-						for i,v in pairs(newTab) do
-							table.insert(temp,v)
+						for _, v in ipairs(newTab) do
+							insertLog(v)
 						end
 					else
-						local isTable = type(m) == "table"
-						local newTab = if isTable then table.clone(m) else m
-
-						if (isTable and not newTab.NoSave) or not isTable then
-							if isTable and newTab.Player then
-								local p = newTab.Player
-								newTab.Player = {
-									Name = p.Name;
-									UserId = p.UserId;
-								}
-							end
-							table.insert(temp, newTab)--{Time = m.Time; Text = `{m.Text}: {m.Desc}`; Desc = m.Desc})
-						end
+						insertLog(m)
 					end
 				end
 
@@ -198,7 +202,9 @@ return function(Vargs, GetEnv)
 				return service.HttpService:JSONEncode(temp)
 			end)
 
-			print("Command logs saved!")
+			if not server.Data or not server.Data.SilentStartup then
+				print("Command logs saved!")
+			end
 		end;
 
 		ListUpdaters = {

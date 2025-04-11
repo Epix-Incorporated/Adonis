@@ -25,15 +25,11 @@ local canEditTables = {
 
 local function tabToString(tab)
 	if type(tab) == "table" then
-		local str = ""
+		local str = table.create(#tab)
 		for i, v in tab do
-			if #str > 0 then
-				str ..= "; "
-			end
-
-			str ..= `{i}: {v}`
+			table.insert(str, `{i}: {v}`)
 		end
-		return str
+		return table.concat(str, "; ")
 	else
 		return tostring(tab)
 	end
@@ -501,7 +497,8 @@ return function(data, env)
 		chatMod = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		settingsData = Remote.Get("AllSettings")
 		Variables.Aliases = playerData.Aliases or {}
-		commandPrefix = chatMod.Prefix
+		commandPrefix = if type(chatMod.Prefix) == "table" then chatMod.Prefix[1] else chatMod.Prefix
+
 
 		for _, v in loadingIcons do
 			v:Destroy()

@@ -101,11 +101,11 @@ return function(data, env)
 
 		local entries = {
 			{"Game ID", game.GameId},
-			{"Game Creator", `{service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name} (#{data.CreatorId})`},
+			{"Game Creator", `{((service.GetProductInfo(game.PlaceId) or {Creator = {Name = "[Error]"}}).Creator or {Name = "[Error]"}).Name} (#{data.CreatorId})`},
 			-- selene: allow(incorrect_standard_library_use)
 			{"Creator Type", game.CreatorType.Name},
 			{"Place ID", game.PlaceId},
-			{"Place Name", service.MarketPlace:GetProductInfo(game.PlaceId).Name or "[Error]"},
+			{"Place Name", (service.GetProductInfo(game.PlaceId) or {Name = "[Error"}).Name or "[Error]"},
 			{"Place Version", game.PlaceVersion},
 			"",
 			{"Server Job ID", game.JobId or "[Error]"},
@@ -157,16 +157,11 @@ return function(data, env)
 			while wait(0.5) do
 				local timeNow = os.time()
 				if not displays["Server Speed"] or not displays["Server Age"] then break end
-				displays["Server Speed"].Text = math.round(service.Workspace:GetRealPhysicsFPS())
+				displays["Server Speed"].Text = math.round(data.ServerSpeed or 0)
 				displays["Server Age"].Text = string.format("%ds (%d min)", string.format(timeNow - data.ServerStartTime, "%.1f"), math.round((timeNow - data.ServerStartTime)/60))
 			end
 		end)
-
 	end
-	
-	local success, isAmerica = xpcall(function()
-		return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
-	end, function() return false end)
 
 	do
 
@@ -179,7 +174,7 @@ return function(data, env)
 					{"Country", serii.country or "[Error]"},
 					{"Region", serii.region or "[Error]"},
 					{"City", serii.city or "[Error]"},
-					{if isAmerica then "Zipcode" else "Postcode", serii.zipcode or "[Error]"},
+					{if serii.country and (string.match(serii.country, "United States") or string.match(serii.country, "Philippines")) then "Zipcode" else "Postcode", serii.zipcode or "[Error]"},
 					{"IP Address", serii.ip or "[Error]"},
 					{"Coordinates", serii.coords or "[Error]"},
 					}) do table.insert(entries, v) end
@@ -374,6 +369,7 @@ return function(data, env)
 		local workspaceInfo = data.Refreshables.WorkspaceInfo
 		if workspaceInfo then
 			local i, currentPos = 0, 0
+			data.ServerSpeed = workspaceInfo.ServerSpeed or data.ServerSpeed
 			for _, v in ipairs({
 				{"Streaming Enabled", boolToStr(service.Workspace.StreamingEnabled)},
 				{"Interpolation Throttling", service.Workspace.InterpolationThrottling.Name},

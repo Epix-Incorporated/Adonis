@@ -12,7 +12,6 @@ return function(Vargs, env)
 	local Routine = env.Routine
 
 	return {
-
 		SetRank = {
 			Prefix = Settings.Prefix;
 			Commands = {"setrank", "permrank", "permsetrank"};
@@ -335,7 +334,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local arg = args[1] and string.lower(args[1])
-				Functions.LogAdminAction(plr, "Server Lock", "Server is now " .. (arg == "on" or arg == "true" and "locked" or "unlocked"), "")
+				Functions.LogAdminAction(plr, "Server Lock", "Server is now " .. (if (arg == "on" or arg == "true") then "locked" else "unlocked"), "")
 				if (not arg and Variables.ServerLock ~= true) or arg == "on" or arg == "true" then
 					Variables.ServerLock = true
 					Functions.Hint("Server Locked", service.Players:GetPlayers())
@@ -349,8 +348,8 @@ return function(Vargs, env)
 		Whitelist = {
 			Prefix = Settings.Prefix;
 			Commands = {"wl", "enablewhitelist", "whitelist"};
-			Args = {"on/off/add/remove/list", "optional player"};
-			Description = "Enables/disables the whitelist; :wl username to add them to the whitelist";
+			Args = {"on/off/add/remove/list/clear", "optional player"};
+			Description = "Enables/disables the server whitelist; :wl username to add them to the whitelist";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local sub = string.lower(args[1])
@@ -400,8 +399,11 @@ return function(Vargs, env)
 						end
 					end
 					Remote.MakeGui(plr, "List", {Title = "Whitelist List"; Tab = Tab;})
+				elseif sub == "clear" then
+					Variables.Whitelist.Lists.Settings = {}
+					Functions.Hint("Cleared server whitelist", service.Players:GetPlayers())
 				else
-					error("Invalid subcommand (on/off/add/remove/list)")
+					error("Invalid subcommand (on/off/add/remove/list/clear)")
 				end
 			end
 		};
@@ -555,13 +557,33 @@ return function(Vargs, env)
 			Description = "Gives the target player(s) F3X building tools.";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local F3X = require(580330877)()
-				do
-					service.New("StringValue", {
-						Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
-						Parent = F3X
-					})
-				end
+				local F3X = Deps.Assets:FindFirstChild("F3X Deps") and (function(deps)
+					local F3X = service.New("Tool", {
+						GripPos = Vector3.new(0, 0, 0.4),
+						CanBeDropped = false,
+						ManualActivationOnly = false,
+						ToolTip = "Building Tools by F3X",
+						Name = "Building Tools"
+					}, true)
+					local clonedDeps = deps:Clone()
+
+					for _, obj in clonedDeps:GetDescendants() do
+						if obj:IsA("BaseScript") then
+							obj.Disabled = false
+						end
+					end
+					for _, obj in clonedDeps:GetChildren() do
+						obj.Parent = F3X
+					end
+
+					clonedDeps:Destroy()
+					return F3X
+				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached and Variables.F3XCached:Clone() or require(580330877)()
+				Variables.F3XCached = Variables.F3XCached or F3X:Clone()
+				service.New("StringValue", {
+					Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
+					Parent = F3X
+				})
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
@@ -570,6 +592,8 @@ return function(Vargs, env)
 						F3X:Clone().Parent = Backpack
 					end
 				end
+
+				F3X:Destroy()
 			end
 		};
 
@@ -577,7 +601,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"insert", "ins"};
 			Args = {"id"};
-			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
+			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or Roblox's inventory";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local id = string.lower(args[1])
@@ -655,6 +679,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local teamName = assert(args[1], "Missing team name (argument #1)")
 				local teamColor = Functions.ParseBrickColor(args[2])
+
+				if service.Teams:FindFirstChild(teamName) then
+					Functions.Hint(string.format("Team '%s' already exists!", teamName), {plr})
+					return;
+				end
+
 				service.New("Team", {
 					Parent = service.Teams;
 					Name = teamName;
@@ -713,6 +743,7 @@ return function(Vargs, env)
 
 				Variables.RestoringMap = true
 				Functions.Hint("Restoring Map...", service.Players:GetPlayers())
+				workspace.Gravity = Variables.OriginalGravity
 
 				for _, obj in workspace:GetChildren() do
 					if obj.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(obj) then
@@ -738,6 +769,7 @@ return function(Vargs, env)
 
 				task.wait()
 
+				Admin.RunCommand(`{Settings.Prefix}fixlighting`)
 				Admin.RunCommand(`{Settings.Prefix}respawn`, "all")
 				Variables.RestoringMap = false
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
@@ -776,6 +808,8 @@ return function(Vargs, env)
 
 				if string.lower(class) == "script" or string.lower(class) == "s" then
 					class = "Script"
+				elseif string.lower(class) == "clientscript" or string.lower(class) == "cs" then
+					class = "ClientScript"
 					--elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
 					--	class = "LocalScript"
 				else
@@ -1020,7 +1054,7 @@ return function(Vargs, env)
 
 				for _,v : Instance in service.StarterGui:GetChildren() do
 					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
-						table.insert(result, v.Name:gsub("%[Adonis%] ", ""))
+						table.insert(result, (v.Name:gsub("%[Adonis%] ", "")))
 					end
 				end
 
@@ -1075,7 +1109,7 @@ return function(Vargs, env)
 
 		DeleteNote = {
 			Prefix = Settings.Prefix;
-			Commands = {"removenote", "remnote", "deletenote"};
+			Commands = {"removenote", "remnote", "deletenote", "clearnote"};
 			Args = {"player", "note (specify 'all' to delete all notes)"};
 			Description = "Removes a note on the target player(s)";
 			AdminLevel = "Admins";
@@ -1328,7 +1362,7 @@ return function(Vargs, env)
 						})
 
 						local nlogs = #logs
-						if nlogs > 1000 then
+						if nlogs > Logs.OldCommandLogsLimit then
 							table.remove(logs, nlogs)
 						end
 
@@ -1374,7 +1408,7 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
-					if Admin.RemoveBan(v.Name) then
+					if Admin.RemoveBan(v) then
 						Functions.LogAdminAction(plr, "Unban", v.Name, "User has been unbanned.")
 						Functions.Hint(`{service.FormatPlayer(v, true)} has been unbanned`, {plr})
 					else
@@ -1396,7 +1430,7 @@ return function(Vargs, env)
 					CanBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.ServerBan.AdminLevel);
 					CanTimeBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.TimeBan.AdminLevel);
 					CanPermBan = Admin.CheckComLevel(Admin.GetLevel(plr),Commands.PermanentBan.AdminLevel);
-					Prefix = Settings.Prefix;
+					Prefix = Functions.GetMainPrefix()
 				})
 			end,
 		};

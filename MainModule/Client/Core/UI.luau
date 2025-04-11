@@ -63,6 +63,13 @@ return function(Vargs, GetEnv)
 		UI.RunLast = nil;
 	end
 
+	local function TruncatedCompare(s1: str, s2: str)
+		local minLength = math.min(string.len(s1), string.len(s2))
+		local s1Truncated = string.sub(s1, 1, minLength)
+		local s2Truncated = string.sub(s2, 1, minLength)
+		return s1Truncated == s2Truncated
+	end 
+
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
@@ -114,21 +121,35 @@ return function(Vargs, GetEnv)
 
 		LoadModule = function(module, data, env)
 			data = data or {}
+			local function safeTableClone(t) -- TODO: Make RFC on Luau repo to allow table.clone to work with closed metatables
+				local success, result = pcall(table.clone, t)
 
+				if success then
+					return result
+				else
+					local newT = setmetatable({}, {__index = function(_, k) return t[k] end})
+
+					for k, v in t do
+						newT[k] = v
+					end
+
+					return newT
+				end
+			end
 			local ran, func = pcall(require, module)
-			local newEnv = GetEnv(env, { -- // Is this really necessary?
+			local newEnv = GetEnv(env, {
 				script = module,
-				client = setmetatable(table.clone(client), {__index = function(_, k) return client[k] end}),
-				service = setmetatable(table.clone(service), {__index = function(_, k) return service[k] end})
+				client = safeTableClone(client),
+				service = safeTableClone(service)
 			})
 
 			if newEnv.service.Threads then
 				newEnv.service.Threads = table.clone(service.Threads)
 			end
 
-			for i,v in newEnv.client do -- // Is this really necessary?
+			for i,v in newEnv.client do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
-					newEnv.client[i] = setmetatable(table.clone(v), {__index = function(_, k) return v[k] end})
+					newEnv.client[i] = safeTableClone(v)
 				end
 			end
 
@@ -317,7 +338,7 @@ return function(Vargs, GetEnv)
 
 							local ran, ret = rets[1], rets[2]
 							if ret ~= nil then
-								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
+								if type(ret) == "userdata" and ret:IsA("ScreenGui") then
 									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
 
 									if not data.NoEnv and code then
@@ -532,7 +553,23 @@ return function(Vargs, GetEnv)
 			gTable:Register(gui)
 
 			return gTable,gIndex
-		end
+		end;
+
+		Autocomplete = function(provided: string, arg: string)
+			local matches = {}
+			if not provided or not arg then
+				return matches
+			end
+
+			for _, player in service.Players:GetPlayers() do
+				local name = player.Name
+				if provided == "$" or TruncatedCompare(string.lower(name), string.lower(provided)) then
+					table.insert(matches, name)
+				end
+			end
+
+			return matches
+		end;
 	}
 
 	client.UI.RegisterGui = client.UI.Register

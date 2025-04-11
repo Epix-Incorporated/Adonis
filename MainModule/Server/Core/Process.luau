@@ -26,8 +26,8 @@ return function(Vargs, GetEnv)
 		logError = logError or env.logError;
 		Routine = Routine or env.Routine;
 		Commands = Remote.Commands
-		Decrypt = Remote.Decrypt
-		Encrypt = Remote.Encrypt
+		Decrypt = Remote.NewDecrypt
+		Encrypt = Remote.NewEncrypt
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
@@ -81,6 +81,7 @@ return function(Vargs, GetEnv)
 			end
 		end)
 
+		Remote._globalAccessHash = Functions.SHA256(Settings.G_Access_Key..game.GameId)
 		Process.Init = nil
 		AddLog("Script", "Processing Module Initialized")
 	end;
@@ -91,6 +92,55 @@ return function(Vargs, GetEnv)
 		--// Events
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
+
+		task.spawn(function()
+			local oldVer = tonumber(Core.GetData("VersionNumber"))
+
+			if oldVer and server.Version and server.Version > oldVer then
+				Process.SaveDatastoreVersionDebounce = true
+				table.insert(server.Messages, {
+					Level = 1;
+					Title = "Updated!";
+					Message = "Click to view the changelog.";
+					Time = 10;
+					Icon = "MatIcon://System upgrade";
+					onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`);
+				})
+			end
+		end)
+
+		if Core.DebugMode == true then
+			table.insert(server.Messages, {
+				Level = 301;
+				Title = "Debug Mode Enabled";
+				Message = "Adonis is currently running in Debug Mode.";
+				Time = 10;
+				Icon = "MatIcon://Bug report";
+				onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`);
+			})
+		end
+
+		if Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
+			table.insert(server.Messages, {
+				Level = 301;
+				Title = "Warning!";
+				Message = "Using default datastore key!";
+				Time = 15;
+				Icon = "MatIcon://Description";
+				onClick = Core.Bytecode([[
+					local window = client.UI.Make("Window", {
+						Title = "How to change the DataStore key";
+						Size = {700,300};
+						Icon = "rbxassetid://7510994359";
+					})
+
+					window:Add("ImageLabel", {
+						Image = "rbxassetid://1059543904";
+					})
+
+					window:Ready()
+			]])})
+		end
 
 		--// Load client onto existing players
 		if existingPlayers then
@@ -233,11 +283,11 @@ return function(Vargs, GetEnv)
 			end
 
 			if rateExceeded and not ratePass then
-				rateExceeded:fire(rateKey, rateCache.Rate, maxRate)
+				rateExceeded:Fire(rateKey, rateCache.Rate, maxRate)
 			end
 
 			if ratePassed and ratePass then
-				ratePassed:fire(rateKey, rateCache.Rate, maxRate)
+				ratePassed:Fire(rateKey, rateCache.Rate, maxRate)
 			end
 
 			return ratePass, didThrottle, canThrottle, rateCache.Rate, maxRate, throttleResetOs
@@ -304,7 +354,7 @@ return function(Vargs, GetEnv)
 				else
 					local keys = Remote.Clients[tostring(p.UserId)]
 					if keys and select("#", ...) <= Process.RemoteMaxArgCount then
-						local args = {...}
+						local args = table.pack(...)
 						local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
 
 						keys.LastUpdate = os.time()
@@ -326,7 +376,7 @@ return function(Vargs, GetEnv)
 
 										return keys.Key
 										--else
-										--Anti.Detected(p, "kick","Communication Key Error (r10003)")
+										--Anti.Detected(p, "kick", "Communication Key Error (r10003)")
 									end
 								elseif cliData.Mode == "Fire" then
 									if keys.LoadingStatus == "WAITING_FOR_KEY" then
@@ -349,7 +399,7 @@ return function(Vargs, GetEnv)
 								end
 							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
-								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
+								local command = cliData.Mode == "Get" and Remote.Returnables[comString] or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
 									Text = string.format("%s fired %s; Arg1: %s", p.Name, comString, service.MaxLen(tostring(args[1]), 50));
@@ -368,8 +418,8 @@ return function(Vargs, GetEnv)
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
 							elseif rateLimitCheck and RateLimit(p, "RateLog") then
-								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate));
-								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate));
+								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate))
+								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate))
 							end
 						else
 							Anti.Detected(p, "Log", "Out of Sync (r10005)")
@@ -422,8 +472,7 @@ return function(Vargs, GetEnv)
 					opts.OverrideArgs = overrideArgs
 				end
 			else
-				local pData = opts.PlayerData or (p and Core.GetPlayer(p))
-				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg
+				msg = Admin.AliasFormat(Admin.GetAliases(p), msg) or msg
 
 				if string.match(msg, Settings.BatchKey) then
 					return Process.Command(p, msg, opts, false)
@@ -543,7 +592,9 @@ return function(Vargs, GetEnv)
 								Remote.MakeGui(p, "Output", {
 									Message = cmdError,
 								})
-								warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+								if Core.DebugMode == true then
+									warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+								end
 							end
 						elseif cmdError ~= nil and cmdError ~= true and not isSystem then
 							Remote.MakeGui(p, "Output", {
@@ -856,6 +907,10 @@ return function(Vargs, GetEnv)
 			end
 
 			Variables.TrackingTable[p.Name] = nil
+			if Variables.ReturnPoints[p] then
+				Variables.ReturnPoints[p] = nil
+			end
+
 			for otherPlrName, trackTargets in Variables.TrackingTable do
 				if trackTargets[p] then
 					trackTargets[p] = nil
@@ -898,7 +953,11 @@ return function(Vargs, GetEnv)
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
 
 			-- // Send server variables to client
-			Remote.Send(p, "SetVariables", { TopBarShift = Settings.TopBarShift, NightlyMode = server.Data.NightlyMode or server.Data.ModuleID == 8612978896 })
+			Remote.Send(p, "SetVariables", {
+				TopBarShift = Settings.TopBarShift,
+				NightlyMode = server.Data.NightlyMode or server.Data.ModuleID == 8612978896,
+				G_Access_Key = Remote._globalAccessHash
+			})
 
 			--// Load some playerdata stuff
 			if type(PlayerData.Client) == "table" then
@@ -958,57 +1017,33 @@ return function(Vargs, GetEnv)
 				end
 
 				if level > 0 then
-					local oldVer = (level > 300) and Core.GetData("VersionNumber")
-					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
-
 					if Settings.Notification then
 						task.wait(1)
 						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}cmds")`))
 
-						if oldVer and newVer and newVer > oldVer then
-							task.delay(1, Functions.Notification, "Updated!", "Click to view the changelog.", {p}, 10, "MatIcon://System upgrade", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`))
-						end
-
-						if level > 300 and Core.DebugMode == true then
-							task.delay(1, Functions.Notification, "Debug Mode Enabled", "Adonis is currently running in Debug Mode.", {p}, 10, "MatIcon://Bug report", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`))
-						end
-
-						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
-							task.delay(1, Functions.Notification, "Warning!", "Using default datastore key!", {p}, 15, "MatIcon://Description", Core.Bytecode([[
-									local window = client.UI.Make("Window", {
-										Title = "How to change the DataStore key";
-										Size = {700,300};
-										Icon = "rbxassetid://7510994359";
-									})
-
-									window:Add("ImageLabel", {
-										Image = "rbxassetid://1059543904";
-									})
-
-									window:Ready()
-							]]))
-						end
-
-						if level >= 300 and #server.Messages > 0 then
+						if #server.Messages > 0 then
 							for _, message in server.Messages do
 								local isString = type(message) == "string"
 
-								task.delay(
-									1,
-									Functions.Notification,
-									not isString and message.Title or "Message",
-									isString and message or not isString and message.Message or "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-									{p},
-									isString and math.round((#message/19)+2.5) or not isString and message.Time or 10,
-									not isString and message.Icon,
-									not isString and message.onClick
-								)
+								if level >= (not isString and message.Level or 300) then
+									task.delay(
+										1,
+										Functions.Notification,
+										not isString and message.Title or "Message",
+										isString and message or not isString and message.Message or "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+										{p},
+										isString and math.round((#message/19)+2.5) or not isString and message.Time or 10,
+										not isString and message.Icon,
+										not isString and message.onClick
+									)
+								end
 							end
 						end
 					end
 
-					if newVer then
-						Core.SetData("VersionNumber", newVer)
+					if Process.SaveDatastoreVersionDebounce then
+						Process.SaveDatastoreVersionDebounce = false
+						Core.SetData("VersionNumber", server.Version)
 					end
 				end
 
@@ -1127,6 +1162,18 @@ return function(Vargs, GetEnv)
 						end
 					end
 				end
+
+				local Hum = char:FindFirstChildOfClass("Humanoid")
+				if not Hum then return end
+				local Health = Variables.Starter.Health[tostring(p.UserId)]
+				if Health then
+					Hum.MaxHealth = Health
+					Hum.Health = Hum.MaxHealth
+				end
+				local Speed = Variables.Starter.Speed[tostring(p.UserId)]
+				if Speed then
+					Hum.WalkSpeed = Speed
+				end
 			end
 		end;
 
@@ -1140,13 +1187,13 @@ return function(Vargs, GetEnv)
 
 				AddLog("Script", {
 					Text = `{p.Name} connected`;
-					Desc = `{p.Name} successfully established a connection with the server`;
+					Desc = `{p.Name} successfully established a RakPeer network connection with the server (RakNet)`;
 					Player = p;
 				})
 			else
 				AddLog("Script", {
 					Text = "<UNKNOWN> connected";
-					Desc = "An unknown user successfully established a connection with the server";
+					Desc = "An unknown user without a player instance successfully established a RakPeer network connection with the server (RakNet)";
 				})
 			end
 
@@ -1162,13 +1209,13 @@ return function(Vargs, GetEnv)
 				Anti.KickedPlayers[p] = nil
 				AddLog("Script", {
 					Text = `{p.Name} disconnected`;
-					Desc = `{p.Name} disconnected from the server`;
+					Desc = `{p.Name} disconnected from the server (RakNet)`;
 					Player = p;
 				})
 			else
 				AddLog("Script", {
 					Text = "<UNKNOWN> disconnected";
-					Desc = "An unknown user disconnected from the server";
+					Desc = "An unknown user without a player instance disconnected from the server (RakNet)";
 				})
 			end
 

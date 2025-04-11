@@ -1,14 +1,14 @@
 --# selene: allow(empty_loop)
 --// Adonis Client Loader (Non-ReplicatedFirst Version)
 
-local DebugMode = false;
+local DebugMode = script.Parent:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") ~= nil
 
-local wait = wait;
-local time = time;
-local pcall = pcall;
-local xpcall = xpcall;
-local setfenv = setfenv;
-local tostring = tostring;
+local wait = task.wait
+local time = time
+local pcall = pcall
+local xpcall = xpcall
+local setfenv = setfenv
+local tostring = tostring
 
 -- This stops all of the public Adonis bypasses. Though they would still be detected in time but it may be better to kick them before load??
 do
@@ -128,25 +128,26 @@ do
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
 end
 
-local players = game:GetService("Players");
-local player = players.LocalPlayer;
-local folder = script.Parent;
-local container = folder.Parent;
-local Kick = player.Kick;
-local module = folder:WaitForChild("Client");
-local target = player;
-local realPrint = print;
-local realWarn = warn;
-local start = time();
+-- ccuser44 was here ^_^
+local players = game:GetService("Players")
+local player = players.LocalPlayer
+local folder = script.Parent
+local container = folder.Parent
+local Kick = player.Kick
+local module = folder:WaitForChild("Client")
+local target = player
+local realPrint = print
+local realWarn = warn
+local start = time()
 
 local function print(...)
-	--realPrint(...)
+	if DebugMode or player.UserId == 1237666 then
+		realPrint("ACLI:", ...)
+	end
 end
 
-local function warn(str)
-	if DebugMode or player.UserId == 1237666 then
-		realWarn(`ACLI: {str}`)
-	end
+local function warn(...)
+	realWarn("ACLI:", ...)
 end
 
 local function Kill(info)
@@ -157,22 +158,21 @@ local function Kill(info)
 end
 
 local function Locked(obj)
-	return (not obj and true) or not pcall(function() return obj.GetFullName(obj) end)
+	return not obj and true or not pcall(function() return obj.GetFullName(obj) end)
 end
 
 local function loadingTime()
-	warn("LoadingTime Called")
-	setfenv(1,{})
-	warn(tostring(time() - start))
+	setfenv(1, {})
+	print("LoadingTime Called:", tostring(time() - start))
 end
 
 local function callCheck(child)
-	warn(`CallCheck: {child}`)
+	print(`CallCheck: {child}`)
 	if Locked(child) then
 		warn("Child locked?")
 		Kill("ACLI: Locked")
 	else
-		warn("Child not locked")
+		print("Child not locked")
 		xpcall(function()
 			return child[{}]
 		end, function()
@@ -183,61 +183,50 @@ local function callCheck(child)
 	end
 end
 
-local function doPcall(func, ...)
-	local ran,ret = pcall(func, ...)
-	if ran then
-		return ran,ret
-	else
-		warn(tostring(ret))
-		Kill(`ACLI: Error\n{ret}`)
-		return ran,ret
-	end
-end
-
 if module and module:IsA("ModuleScript") then
-	warn("Loading Folder...")
+	print("Loading Folder...")
 	local nameVal
 	local origName
 	local depsFolder
 	local clientModule
 
-	warn("Waiting for Client & Special")
+	print("Waiting for Client & Special")
 	nameVal = folder:WaitForChild("Special", 30)
 
-	warn("Checking Client & Special")
+	print("Checking Client & Special")
 	--callCheck(nameVal)
 	--callCheck(clientModule)
 
-	warn("Getting origName")
-	origName = (nameVal and nameVal.Value) or folder.Name
-	warn(`Got name: {origName}`)
+	print("Getting origName")
+	origName = nameVal and nameVal.Value or folder.Name
+	print(`Got name: {origName}`)
 
-	warn("Removing old client folder...")
-	local starterPlayer = game:GetService("StarterPlayer");
-	local playerScripts = starterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
-	local found = playerScripts:FindFirstChild(folder.Name);
-	warn(`FOUND?! {found}`);
-	warn(`LOOKED FOR : {folder.Name}`)
+	print("Removing old client folder...")
+	local starterPlayer = game:GetService("StarterPlayer")
+	local playerScripts = starterPlayer:FindFirstChildOfClass("StarterPlayerScripts")
+	local found = playerScripts:FindFirstChild(folder.Name)
+	print(`FOUND?! {found}`)
+	print(`LOOKED FOR : {folder.Name}`)
 	if found then
-		print("REMOVED!")
-		found.Parent = nil --found:Destroy();
+		warn("REMOVED!")
+		found.Parent = nil --found:Destroy()
 	end
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
-	warn("Changing child parent...")
-	folder.Name = "";
-	wait(0.01);
-	folder.Parent = nil; --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
-	-- TODO: Ehh... ^^
-	print("Moving Shared folder...")
+	print("Changing child parent...")
+	folder.Name = ""
+	wait(0.01)
+	folder.Parent = nil --// We cannot do this asynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+  
+  print("Moving Shared folder...")
 	folder.Shared.Parent = container
 
-	warn("Destroying parent...")
+	print("Destroying parent...")
 
 	print("Debug: Loading the client?")
 	local meta = require(module)
-	warn(`Got metatable: {meta}`)
+	print(`Got metatable: {meta}`)
 	if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
-		local ran,ret = pcall(meta,{
+		local ran,ret = pcall(meta, {
 			Module = module,
 			Start = start,
 			Loader = script,
@@ -248,17 +237,17 @@ if module and module:IsA("ModuleScript") then
 			Kill = Kill
 		})
 
-		warn(`Got return: {ret}`)
+		print(`Got return: {ret}`)
 		if ret ~= "SUCCESS" then
-			realWarn(ret)
+			warn("Loading failed! Reason", ret)
 			Kill("ACLI: Loading Error [Bad Module Return]")
 		else
 			print("Debug: The client was found and loaded?")
-			warn("Client Loaded")
-
 			if container and container:IsA("ScreenGui") then
-				container.Parent = nil --container:Destroy();
+				container.Parent = nil --container:Destroy()
 			end
 		end
+	else
+		warn(`Invalid metatable: {meta}!`)
 	end
 end

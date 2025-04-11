@@ -74,8 +74,8 @@ return function(Vargs, GetEnv)
 									return false
 								end
 
-								if Variables.DisguiseBindings[textSource.UserId] then -- // Disguise command handler
-									chatMessage.PrefixText = Variables.DisguiseBindings[textSource.UserId].TargetUsername..":"
+								if Variables.DisguiseBindings[SenderId] then -- // Disguise command handler
+									chatMessage.PrefixText = Variables.DisguiseBindings[SenderId].TargetUsername..":"
 								end
 
 								if Admin.SlowMode and IsOriginalSender then
@@ -340,7 +340,7 @@ return function(Vargs, GetEnv)
 	end
 
 	service.MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, id, purchased)
-		if Variables and player.Parent and id == 1348327 and purchased then
+		if Variables and player.Parent and table.find(Variables.DonorPass, id) and purchased then
 			Variables.CachedDonors[tostring(player.UserId)] = os.time()
 		end
 	end)
@@ -424,15 +424,16 @@ return function(Vargs, GetEnv)
 		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
 			local pData = data or Core.GetPlayer(p)
 			if pData.Client.HideChatCommands then
-				if Variables.BlankPrefix and
-					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
+				if Admin.BlankPrefix and
+
+					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix or (type(Settings.Prefix) == "table" and not table.find(Settings.Prefix, string.sub(message,1,1)))) then
 					local isCMD = Admin.GetCommand(message)
 					if isCMD then
 						return true
 					else
 						return false
 					end
-				elseif (string.sub(message,1,1) == Settings.Prefix or string.sub(message,1,1) == Settings.PlayerPrefix)
+				elseif (string.sub(message,1,1) == Settings.Prefix or string.sub(message,1,1) == Settings.PlayerPrefix or (type(Settings.Prefix) == "table" and table.find(Settings.Prefix, string.sub(message,1,1))))
 					and string.sub(message,2,2) ~= string.sub(message,1,1) then
 					return true;
 				end
@@ -780,7 +781,7 @@ return function(Vargs, GetEnv)
 			if type(p) == "userdata" and p:IsA("Player") then
 				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-				if Settings.CreatorPowers and table.find({1237666, 76328606, 698712377}, p.UserId) then
+				if Settings.CreatorPowers and table.find(Variables.DeveloperWhitelist, p.UserId) then
 					return true
 				end
 
@@ -1193,9 +1194,16 @@ return function(Vargs, GetEnv)
 			for ind, data in Commands do
 				if type(data) == "table" then
 					for i,cmd in data.Commands do
-						if data.Prefix == "" then Variables.BlankPrefix = true end
-						tempPrefix[data.Prefix] = true
-						tempTable[string.lower(data.Prefix..cmd)] = ind
+						if type(data.Prefix) ~= "table" and data.Prefix == "" then Admin.BlankPrefix = true end
+						if type(data.Prefix) == "table" then
+							for _,p in data.Prefix do
+								tempPrefix[p] = true
+								tempTable[string.lower(p..cmd)] = ind
+							end
+						else
+							tempPrefix[data.Prefix] = true
+							tempTable[string.lower(data.Prefix..cmd)] = ind
+						end
 					end
 				end
 			end
@@ -1203,7 +1211,7 @@ return function(Vargs, GetEnv)
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
 
-			if Settings.ChatCreateRobloxCommands then
+			if Variables.ChatCreateRobloxCommands then
 				-- // Support for commands to be ran via TextChat
 				task.spawn(function()
 					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
@@ -1232,21 +1240,37 @@ return function(Vargs, GetEnv)
 							end
 
 							for _, v in data.Commands do
-								if not blacklistedCommands["/"..data.Prefix..v] then
-									if not command1 then
-										command1 = "/"..data.Prefix..v
-									else
-										command2 = "/"..data.Prefix..v
+								if type(data.Prefix) == "table" then
+									for _, p in data.Prefix do
+										if not blacklistedCommands["/"..p..v] then
+											if not command1 then
+												command1 = "/"..p..v
+											else
+												command2 = "/"..p..v
+											end
+										end
 									end
+								else
+									if not blacklistedCommands["/"..data.Prefix..v] then
+										if not command1 then
+											command1 = "/"..data.Prefix..v
+										else
+											command2 = "/"..data.Prefix..v
+										end
+									end
+
 								end
+
 							end
 
 							if command1 then
-								local command = Instance.new("TextChatCommand")
+								local command = service.New("TextChatCommand")
 
 								command.Name = "Adonis_"..name
 								command.PrimaryAlias = command1
 								command.SecondaryAlias = command2 or ""
+								command.Archivable = false
+								command:SetAttribute("AdminLevel", tonumber(data.AdminLevel) or data.AdminLevel or nil)
 								command.Parent = container
 								command.Triggered:Connect(function(textSource, text)
 									local player = service.Players:GetPlayerByUserId(textSource.UserId)
@@ -1263,7 +1287,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetCommand = function(Command)
-			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
+			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Admin.BlankPrefix then
 				local matched
 				matched = if string.find(Command, Settings.SplitKey) then
 					string.match(Command, `^(%S+){Settings.SplitKey}`)
@@ -1325,43 +1349,41 @@ return function(Vargs, GetEnv)
 		end;
 
 		FormatCommandArguments = function(command)
-			local text = ""
+			local text = table.create(#command.Args)
 			for i, arg in command.Args do
-				text ..= `<{arg}>`
-				if i < #command.Args then
-					text ..= Settings.SplitKey
-				end
+				text[i] = `<{arg}>`
 			end
-			return text
+			return table.concat(text, Settings.SplitKey)
 		end;
 
 		FormatCommand = function(command, cmdn)
-			local text = (command.Prefix or "")..tostring(command.Commands[cmdn or 1])
-			if #command.Args > 0 then
-				text ..= Settings.SplitKey .. Admin.FormatCommandArguments(command)
-			end
-			return text
+			return table.concat({
+				(if type(command.Prefix) == "table" then command.Prefix[1] else command.Prefix or ""),
+				tostring(command.Commands[cmdn or 1]),
+				#command.Args > 0 and Settings.SplitKey or "",
+				#command.Args > 0 and Admin.FormatCommandArguments(command) or ""
+			})
 		end;
 
 		FormatCommandAdminLevel = function(command)
 			local levels = if type(command.AdminLevel) == "table"
 				then table.clone(command.AdminLevel)
 				else {command.AdminLevel}
-			local permissionDesc = ""
+			local permissionDesc = table.create(#levels)
+
 			for i, lvl in levels do
 				if type(lvl) == "number" then
 					local list, name, data = Admin.LevelToList(lvl)
-					permissionDesc ..= `{name or "No Rank"}; Level {lvl}`
+					permissionDesc[i] = `{name or "No Rank"}; Level {lvl}`
 				elseif type(lvl) == "string" then
 					local numLvl = Admin.StringToComLevel(lvl)
-					permissionDesc ..= `{lvl}; Level {numLvl or "Unknown"}`
-				end
-
-				if i < #levels then
-					permissionDesc ..= ", "
+					permissionDesc[i] = `{lvl}; Level {numLvl or "Unknown"}`
+				else
+					permissionDesc[i] = "N/A"
 				end
 			end
-			return permissionDesc
+
+			return table.concat(permissionDesc, ", ")
 		end;
 
 		CheckTable = function(p, tab)
@@ -1376,7 +1398,7 @@ return function(Vargs, GetEnv)
 		--// Make it so you can't accidentally overwrite certain existing commands... resulting in being unable to add/edit/remove aliases (and other stuff)
 		CheckAliasBlacklist = function(alias)
 			local playerPrefix = Settings.PlayerPrefix;
-			local prefix = Settings.Prefix;
+			local prefix = Settings.Prefix
 			local blacklist = {
 				[`{playerPrefix}alias`] = true;
 				[`{playerPrefix}newalias`] = true;
@@ -1384,16 +1406,16 @@ return function(Vargs, GetEnv)
 				[`{playerPrefix}client`] = true;
 				[`{playerPrefix}userpanel`] = true;
 				[":adonissettings"] = true;
-
 			}
 			--return Admin.CommandCache[alias:lower()] --// Alternatively, we could make it so you can't overwrite ANY existing commands...
 			return blacklist[alias];
 		end;
 
 		GetArgs = function(msg, num, ...)
-			local args = Functions.Split((string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ''),Settings.SplitKey,num) or {}
-			for _, v in {...} do
-				table.insert(args, v)
+			local newArgs = table.pack(...)
+			local args = Functions.Split(string.match(msg, `^.-{Settings.SplitKey}(.+)`) or "", Settings.SplitKey, num) or table.create(newArgs.n)
+			for i = 1, newArgs.n do
+				table.insert(args, newArgs[i])
 			end
 			return args
 		end;
@@ -1679,6 +1701,19 @@ return function(Vargs, GetEnv)
 
 			Functions.Hint(`You don't have permission to {actionName} {service.FormatPlayer(target)}`, {p})
 			return false
+		end;
+
+		GetAliases = function(player)
+			local aliases = table.clone(Variables.Aliases)
+			local pData = player and Core.GetPlayer(player)
+
+			if pData and pData.Aliases then
+				for alias, command in pData.Aliases do
+					aliases[alias] = command
+				end
+			end
+
+			return aliases
 		end;
 	}
 end

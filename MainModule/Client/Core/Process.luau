@@ -50,7 +50,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-			Process.RunLast = nil;
+		Process.RunLast = nil;
 	end
 
 	local function RunAfterLoaded(data)
@@ -66,6 +66,9 @@ return function(Vargs, GetEnv)
 		--// Get RateLimits
 		Process.RateLimits = Remote.Get("RateLimits") or Process.RateLimits;
 
+		--// Hide TextChatComands
+		Process.HandleTextChatCommands()
+
 		Process.RunAfterLoaded = nil;
 	end
 
@@ -77,6 +80,7 @@ return function(Vargs, GetEnv)
 		Init = Init;
 		RunLast = RunLast;
 		RunAfterLoaded = RunAfterLoaded;
+		TextChatCommands = {};
 		RateLimits = { --// Defaults; Will be updated with server data at client run
 			Remote = 0.02;
 			Command = 0.1;
@@ -85,7 +89,7 @@ return function(Vargs, GetEnv)
 		};
 
 		Remote = function(data, com, ...)
-			local args = {...}
+			local args = table.pack(...)
 			Remote.Received += 1
 			if type(com) == "string" then
 				if com == `{client.DepsName}GIVE_KEY` then
@@ -97,14 +101,14 @@ return function(Vargs, GetEnv)
 						client.Finish_Loading()
 					end
 				elseif Core.Key then
-					local comString = Remote.Decrypt(com,Core.Key)
+					local comString = Remote.NewDecrypt(com,Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then
-						local rets = {service.TrackTask(`Remote: {comString}`, command, false, args)}
+						local rets = table.pack(service.TrackTask(`Remote: {comString}`, command, false, args))
 						if not rets[1] then
 							logError(rets[2])
 						else
-							return {unpack(rets, 2)};
+							return table.pack(table.unpack(rets, 2))
 						end
 					end
 				end
@@ -165,11 +169,43 @@ return function(Vargs, GetEnv)
 			end
 
 			local textbox = service.UserInputService:GetFocusedTextBox()
-			if textbox then
+			if textbox and service.CheckProperty(textbox, "ReleaseFocus") then
 				textbox:ReleaseFocus()
 			end
 
 			service.Events.CharacterRemoving:Fire()
-		end
+		end;
+
+		HandleTextChatCommands = function()
+			local data = Remote.Get("PlayerData")
+			local adminLevel, isDonor = data.AdminLevel, data.isDonor
+
+			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+				local function onCommandAdded(command)
+					if not command:IsA("TextChatCommand") then
+						return
+					elseif string.sub(command.Name, 1, 7) ~= "Adonis_" then
+						return
+					elseif not Process.TextChatCommands[command.Name] then
+						Process.TextChatCommands[command.Name] = command
+					elseif Process.TextChatCommands[command.Name] ~= command then
+						Process.TextChatCommands[command.Name]:Destroy()
+						Process.TextChatCommands[command.Name] = command
+					end
+
+					local commandLevel = command:GetAttribute("AdminLevel")
+
+					if type(commandLevel) == "number" and commandLevel > adminLevel or commandLevel == "Donors" and not isDonor then
+						command.Parent = nil
+					end
+				end
+
+				for _, v in service.TextChatService:GetDescendants() do
+					onCommandAdded(v)
+				end
+
+				service.TextChatService.DescendantAdded:Connect(onCommandAdded)
+			end
+		end;
 	}
 end

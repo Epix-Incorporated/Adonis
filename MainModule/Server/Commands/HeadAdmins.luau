@@ -1,7 +1,6 @@
 return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	local AuditLogsDataStore = service.DataStoreService:GetDataStore("AdonisAuditLogsDataStore")
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
@@ -103,7 +102,7 @@ return function(Vargs, env)
 				do
 					Functions.LogAdminAction(plr, "Un-Time Ban", v.Name, "Removed from timeban list")
 					Functions.Hint(
-						if Admin.RemoveTimeBan(v.Name)
+						if Admin.RemoveTimeBan(v)
 							then `{service.FormatPlayer(v, true)} has been un-time-banned`
 							else `{service.FormatPlayer(v, true)} is not currently time-banned`,
 						{plr}
@@ -154,7 +153,7 @@ return function(Vargs, env)
 				do
 					Functions.LogAdminAction(plr, "Unbanned", v.Name, "N/A")
 					Functions.Hint(
-						if Admin.RemoveBan(v.Name, true)
+						if Admin.RemoveBan(v, true)
 							then `{service.FormatPlayer(v, true)} has been unbanned from the game`
 							else `{service.FormatPlayer(v, true)} is not currently banned`,
 						{plr}
@@ -170,7 +169,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary admin; does not save";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: any)
 				local senderLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
@@ -193,7 +192,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) an admin; saves";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: any)
 				local senderLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
@@ -286,6 +285,37 @@ return function(Vargs, env)
 				end
 
 				Variables.BackingupMap = true
+				Variables.OriginalGravity = workspace.Gravity
+
+				local Lighting = service.Lighting
+				local atmosphere = Lighting:FindFirstChildWhichIsA("Atmosphere")
+
+				Variables.OriginalLightingSettings = {
+					Ambient = Lighting.Ambient,
+					OutdoorAmbient = Lighting.OutdoorAmbient,
+					Brightness = Lighting.Brightness,
+					TimeOfDay = Lighting.TimeOfDay,
+					FogColor = Lighting.FogColor,
+					FogEnd = Lighting.FogEnd,
+					FogStart = Lighting.FogStart,
+					GlobalShadows = Lighting.GlobalShadows,
+					Outlines = Lighting.Outlines,
+					ShadowColor = Lighting.ShadowColor,
+					ColorShift_Bottom = Lighting.ColorShift_Bottom,
+					ColorShift_Top = Lighting.ColorShift_Top,
+					GeographicLatitude = Lighting.GeographicLatitude,
+					Name = Lighting.Name,
+					Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone(),
+				}
+				Variables.OriginalAtmosphereSettings = {
+					Name = atmosphere and atmosphere.Name,
+					Density = atmosphere and atmosphere.Density,
+					Offset = atmosphere and atmosphere.Offset,
+					Color = atmosphere and atmosphere.Color,
+					Decay = atmosphere and atmosphere.Decay,
+					Glare = atmosphere and atmosphere.Glare,
+					Haze = atmosphere and atmosphere.Haze,
+				}
 
 				local tempmodel = service.New("Model", {
 					Name = "BACKUP_MAP_MODEL"
@@ -423,7 +453,7 @@ return function(Vargs, env)
 						hide_character=hideCharacter
 					}
 					if hideCharacter then
-						v.CharacterAdded:Connect(function(character: Model) 
+						v.CharacterAdded:Connect(function(character: Model)
 							for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
 								if otherPlr == v then continue end
 								Remote.LoadCode(otherPlr, [[
@@ -530,66 +560,5 @@ return function(Vargs, env)
 			end
 		};
 
-		AuditLogs = {
-			Prefix = Settings.Prefix;
-			Commands = {"auditlogs", "moderationlogs", "modlogs"};
-			Args = {"player"};
-			Description = "Fetches the recent moderation activity logs of the specified moderator or admin.";
-			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {string})
-				local targetPlayers = service.GetPlayers(plr, args[1], {NoFakePlayer = true})
-
-				if #targetPlayers == 0 then
-					Functions.Hint("No player found with the specified name.", {plr})
-					return
-				end
-
-				for _, targetPlayer in ipairs(targetPlayers) do
-					local userId = targetPlayer.UserId
-					local key = "AuditLogs_" .. tostring(userId)
-
-					local success, auditLogs = pcall(function()
-						return AuditLogsDataStore:GetAsync(key) or {}
-					end)
-
-					if not success then
-						warn("Failed to retrieve audit logs for UserId " .. tostring(userId) .. ": " .. auditLogs)
-						Functions.Hint("Error retrieving logs.", {plr})
-						return
-					end
-
-					local filteredLogs = {}
-					print("Checking audit logs for:", targetPlayer.Name, "with UserId:", userId)
-					print(auditLogs)
-
-					for _, log in ipairs(auditLogs) do
-						local moderatorName = Functions.GetNameFromUserIdAsync(log.ModeratorId) or "Unknown"
-						local targetUserName = log.TargetPlayer
-
-						if type(targetUserName) == "table" then
-							targetUserName = targetUserName.Name or "Unknown" 
-						elseif targetUserName == nil then
-							targetUserName = "Unknown"
-						end
-
-						local timestamp = os.date("%Y-%m-%d %H:%M:%S", log.Time)
-
-						local logText = string.format("%s | %s | %s", moderatorName, log.Action, timestamp)
-						local logEntry = { Text = logText .. " | " .. targetUserName, Desc = log.Details }
-						table.insert(filteredLogs, logEntry)
-					end
-
-					if #filteredLogs == 0 then
-						Functions.Hint(`No audit logs found for {targetPlayer.Name}`, {plr})
-					else
-						Remote.MakeGui(plr, "List", {
-							Title = `Audit Logs for {targetPlayer.Name}`,
-							Table = filteredLogs,
-							Update = "filteredLogs"
-						})
-					end
-				end
-			end
-		};
 	}
 end

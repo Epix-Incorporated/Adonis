@@ -1,3 +1,4 @@
+local DateTime = DateTime
 client, service, Routine = nil, nil, nil
 
 local function boolToStr(bool)
@@ -87,7 +88,7 @@ return function(data, env)
 			{"Display Name", player.DisplayName, "The player's custom display name"},
 			{"Username", player.Name, "The player's unique Roblox username"},
 			{"User ID", player.UserId, "The player's unique Roblox user ID"},
-			{"Acc. Age", `{player.AccountAge} days ({string.format("%.2f", player.AccountAge/365.25)} years)`, "How long the player has been registered on Roblox"},
+			{"Acc. Age", `{player.AccountAge} days ({string.format("%.2f", player.AccountAge/365.2425)} years)`, "How long the player has been registered on Roblox"},
 			}) do
 			generaltab:Add("TextLabel", {
 				Text = `  {v[1]}: `;
@@ -161,38 +162,79 @@ return function(data, env)
 	window:Ready()
 
 	do --// Friends Tab
+		local function pagesToTable(pages)
+			local items = {}
+			while true do
+				table.insert(items, pages:GetCurrentPage())
+				if pages.IsFinished then
+					break
+				end
+				pages:AdvanceToNextPageAsync()
+			end
+			return items
+		end
 		local function iterPageItems(pages)
+			local contents = pagesToTable(pages)
+			local pagenum = 1
+			local lastpagenum = #contents
 			return coroutine.wrap(function()
 				local pagenum = 1
-				while true do
-					for _, item in ipairs(pages:GetCurrentPage()) do
+				while pagenum <= lastpagenum do
+					for _, item in ipairs(contents[pagenum]) do
 						coroutine.yield(item, pagenum)
 					end
-					if pages.IsFinished then
-						break
-					end
-					pages:AdvanceToNextPageAsync()
+
 					pagenum += 1
 				end
 			end)
 		end
 
+		local LOCATION_TYPE = {"Mobile Website", "Mobile In-Game", "Webpage", "Studio", "In-Game", "Xbox", "Team Create"}
+		local ACTIVITY_COLOR_CODES = {
+			["Mobile Website"] = Color3.fromRGB(50, 140, 231);
+			["Mobile In-Game"] = Color3.fromRGB(55, 200, 55);
+			["Webpage"] = Color3.fromRGB(50, 140, 231);
+			["Studio"] = Color3.fromRGB(231, 112, 0);
+			["In-Game"] = Color3.fromRGB(55, 200, 55);
+			["Xbox"] = Color3.fromRGB(127, 0, 127);
+			["Team Create"] = Color3.fromRGB(231, 112, 0);
+		}
 		local friendPages = service.Players:GetFriendsAsync(player.UserId)
+		local onlineFriends = {}
 		local sortedFriends = {}
 		local friendInfoRef = {}
 
 		local friendCount = 0
 		local onlineCount = 0
 
+		for _, user in data.OnlineFriends do
+			onlineFriends[user.VisitorId] = {
+				lastOnline = DateTime.fromIsoDate(user.LastOnline),
+				isOnline = user.IsOnline,
+				lastLocation = user.LastLocation,
+				placeId = user.PlaceId,
+				jobId = user.GameId,
+				locationType = LOCATION_TYPE[user.LocationType and user.LocationType + 1]
+			}
+		end
+
 		Routine(function()
 			for item, pageNo in iterPageItems(friendPages) do
 				table.insert(sortedFriends, item.Username)
+				local userId = item.Id
+				local activity = onlineFriends[userId]
 				friendInfoRef[item.Username] = {
-					id = item.Id;
+					id = userId;
 					displayName = item.DisplayName;
-					isOnline = item.IsOnline;
+					-- // Activity data
+					isOnline = activity and activity.isOnline;
+					lastOnline = activity and activity.lastOnline or DateTime.fromUnixTimestamp(0);
+					lastLocation = activity and activity.lastLocation;
+					placeId = activity and activity.placeId;
+					jobId = activity and activity.jobId;
+					locationType = activity and activity.locationType;
 				}
-				if item.IsOnline then
+				if activity and activity.isOnline then
 					onlineCount += 1
 				end
 				friendCount += 1
@@ -242,15 +284,15 @@ return function(data, env)
 							Position = UDim2.new(0, 0, 0, (30*(i-1)));
 							TextXAlignment = "Left";
 						})
-						if friendInfo.isOnline then
-							entry:Add("TextLabel", {
-								Text = "Online";
-								BackgroundTransparency = 1;
-								Size = UDim2.new(0, 120, 1, 0);
-								Position = UDim2.new(1, -130, 0, 0);
-								TextXAlignment = "Right";
-							})
-						end
+						entry:Add("TextLabel", { -- TODO: Add support for joining
+							Text = friendInfo.locationType or "Offline";
+							ToolTip = friendInfo.placeId and `Playing {friendInfo.placeId} - (friendInfo.lastLocation)` or `Last online {friendInfo.lastOnline:FormatLocalTime("LLLL", service.GetCurrentLocale())}`;
+							BackgroundTransparency = 1;
+							TextColor3 = ACTIVITY_COLOR_CODES[friendInfo.locationType] or Color3.fromRGB(127, 127, 127);
+							Size = UDim2.new(0, 120, 1, 0);
+							Position = UDim2.new(1, -130, 0, 0);
+							TextXAlignment = "Right";
+						})
 						Routine(function()
 							entry:Add("ImageLabel", {
 								Image = service.Players:GetUserThumbnailAsync(friendInfo.id, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);

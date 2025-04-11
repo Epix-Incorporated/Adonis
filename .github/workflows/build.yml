@@ -16,7 +16,7 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       
       - name: Layout file name
         id: naming
@@ -56,7 +56,7 @@ jobs:
       - name: Build
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
 
-      - uses: actions/upload-artifact@v4.3.6
+      - uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
@@ -68,14 +68,14 @@ jobs:
         run: rojo build -o module.rbxm .github/module.deploy.project.json
 
       - name: Send file nightly build to Discord channel
-        uses: tsickert/discord-webhook@v6.0.0
+        uses: tsickert/discord-webhook@v7.0.0
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           
       - name: Publish Nightly MainModule
-        uses: fjogeleit/http-request-action@v1.16.1
+        uses: fjogeleit/http-request-action@v1.16.4
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         with:
           url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.NIGHTLY_MODULE_ID }}"

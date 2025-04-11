@@ -49,7 +49,7 @@ return function(Vargs, GetEnv)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
-		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
+		service.DataStoreService = require(Deps.DataStoreService)(Settings.LocalDatastore)
 
 		local function disableAllGuis(folder: Folder)
 			for _, v in folder:GetChildren() do
@@ -108,7 +108,6 @@ return function(Vargs, GetEnv)
 	server.Core = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		DataQueue = {};
 		DataCache = {};
 		PlayerData = {};
 		CrossServerCommands = {};
@@ -119,7 +118,6 @@ return function(Vargs, GetEnv)
 		ScriptCache = {};
 		Connections = {};
 		BytecodeCache = {};
-		LastEventValue = 1;
 		SavedPlayerData = {};
 
 		Variables = {
@@ -138,7 +136,11 @@ return function(Vargs, GetEnv)
 			SavedTables = 	"32K5j4";
 		};
 
-		DS_BLACKLIST = {
+		DS_WHITELIST = table.freeze({
+		--ideas here pls
+		});
+
+		DS_BLACKLIST = table.freeze({
 			Trello_Enabled = true;
 			Trello_Primary = true;
 			Trello_Secondary = true;
@@ -177,19 +179,30 @@ return function(Vargs, GetEnv)
 			Ranks = true;
 			Commands = true;
 
+			CreatorPowers = true;
 			CodeExecution = true;
+			PlayerDataKeyBlacklist = true;
+
+			["Commands.MakeScript"] = true;
+			["Commands.ScriptBuilder"] = true;
+			["Commands.ScriptEditor"] = true;
+
+			["Variables.ScriptBuilder"] = true;
+			["Variables.ScriptEditor"] = true;
+			["Variables.DeveloperWhitelist"] = true;
+			["Variables.UrgentModuleId"] = true;
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
-		};
+		});
 
 		--// Prevent certain keys from loading from the DataStore
-		PlayerDataKeyBlacklist = {
+		PlayerDataKeyBlacklist = table.freeze({
 			AdminRank = true;
 			AdminLevel = true;
 			LastLevelUpdate = true;
 			Groups = true;
-		};
+		});
 		
 		UpdatePlayerConnection = function(p)
 			for i, cli in next,service.NetworkServer:GetChildren() do
@@ -518,7 +531,7 @@ return function(Vargs, GetEnv)
 			local fixscr = service.UnWrap(scr)
 
 			for _, val in Core.ExecuteScripts do
-				if not isLocal or (isLocal and val.Type == "LocalScript") then
+				if not isLocal or isLocal and (val.Type == "LocalScript" or val.Type == "ClientScript") then
 					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
 						val.Executions += 1
 
@@ -553,7 +566,7 @@ return function(Vargs, GetEnv)
 		RegisterScript = function(data)
 			data.Executions = 0
 			data.Time = os.time()
-			data.Type = data.Script.ClassName
+			data.Type = data.Type or data.Script.ClassName
 			data.Wrapped = service.Wrap(data.Script)
 			data.Wrapped:SetSpecial("Clone",function()
 				return Core.RegisterScript({
@@ -598,6 +611,7 @@ return function(Vargs, GetEnv)
 		NewScript = function(scriptType: string, source: string, allowCodes: boolean?, noCache: boolean?, runLimit: number?)
 			local scr = assert(
 				if scriptType == "Script" then Deps.ScriptBase:Clone()
+					elseif scriptType == "ClientScript" then Deps.ClientScriptBase:Clone()
 					elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
 					else nil,
 				`Invalid script type '{scriptType}'`
@@ -618,7 +632,8 @@ return function(Vargs, GetEnv)
 			local wrapped = Core.RegisterScript({
 				Script = scr;
 				Code = execCode;
-				Source = scr:IsA("LocalScript") and Core.Bytecode(source) or source;
+				Type = scriptType;
+				Source = (scr:IsA("LocalScript") or scriptType == "ClientScript") and Core.Bytecode(source) or source;
 				noCache = noCache;
 				runLimit = runLimit;
 			})
@@ -771,11 +786,20 @@ return function(Vargs, GetEnv)
 		end;
 
 		DataStoreEncode = function(key)
-			if Core.DS_RESET_SALTS[key] then
-				key = Core.DS_RESET_SALTS[key] .. key
-			end
+            if Core.DS_RESET_SALTS[key] then
+                key = Core.DS_RESET_SALTS[key] .. key
+            end
+            
+            -- Only consider salting if the key isn't a number (like a player ID) and if the setting isn't true
+            local IsPlayer = tonumber(key) ~= nil
+            local SettingIsTrue = server.Settings.DontSaltDataStoreKey == true
+            local ShouldSaltKey = not IsPlayer and not SettingIsTrue
+            local EncryptionKey = Settings.DataStoreKey
+            if ShouldSaltKey then
+                EncryptionKey = ("SALT_" .. Settings.DataStoreKey):sub(1,50)
+            end
 
-			return Functions.Base64Encode(Remote.Encrypt(tostring(key), Settings.DataStoreKey))
+            return Functions.Base64Encode(Remote.Encrypt(tostring(key), EncryptionKey))
 		end;
 
 		SaveData = function(...)
@@ -942,8 +966,9 @@ return function(Vargs, GetEnv)
 
 		IndexPathToTable = function(tableAncestry)
 			local ds_blacklist = Core.DS_BLACKLIST
+			local ds_whitelist = Core.DS_WHITELIST
 
-			if type(tableAncestry) == "string" and not ds_blacklist[tableAncestry] then
+			if type(tableAncestry) == "string" and (not ds_blacklist[tableAncestry] or ds_whitelist[tableAncestry]) then
 				return Settings[tableAncestry], tableAncestry
 			elseif type(tableAncestry) == "table" then
 				local curTable = server
@@ -977,7 +1002,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if type(curName) == "string" and ds_blacklist[curName] then
+				if type(curName) == "string" and (ds_blacklist[curName] or not ds_whitelist[curName]) then
 					return nil
 				end
 
@@ -1160,6 +1185,7 @@ return function(Vargs, GetEnv)
 
 			local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 			local ds_blacklist = Core.DS_BLACKLIST
+			local ds_whitelist = Core.DS_WHITELIST
 
 			if key == "TableUpdate" then
 				local indList = data.Table
@@ -1179,7 +1205,7 @@ return function(Vargs, GetEnv)
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
 				if type(displayName) == "string" then
-					if ds_blacklist[displayName] then
+					if ds_blacklist[displayName] or not ds_whitelist[displayName] then
 						return
 					end
 
@@ -1266,7 +1292,7 @@ return function(Vargs, GetEnv)
 
 					if SavedSettings then
 						for setting, value in SavedSettings do
-							if not ds_blacklist[setting] then
+							if not ds_blacklist[setting] or ds_whitelist[setting] then
 
 								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
@@ -1284,13 +1310,15 @@ return function(Vargs, GetEnv)
 
 					if SavedTables then
 						for index, tData in SavedTables do
-							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] then
+							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] or ds_whitelist[tData.TableName] then
 								local data = GetData(tData.TableKey)
 								if data then
 									--// TODO: Possibly find a better way to "batch" TableUpdates to prevent script exhaustion
+									local isStudio = service.RunService:IsStudio() -- Studio lag workaround for loading larger data such as BannedList
+									local isHugeTable = #data > 1000
 									for i = 1, #data do
 										LoadData("TableUpdate", data[i])
-										if i % 250 == 0 then
+										if (isStudio and isHugeTable and i % 25 == 0) or i % 250 == 0 then
 											task.wait()
 										end
 									end
@@ -1391,34 +1419,34 @@ return function(Vargs, GetEnv)
 					if Settings.G_Access and key == Settings.G_Access_Key and targ and Settings.Allowed_API_Calls[ind] == true then
 						if type(targ) == "table" then
 							return service.NewProxy {
-								__index = function(tab,inde)
-									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
+								__index = function(_, k)
+									if targ[k] ~= nil and API_Special[k] == nil or API_Special[k] == true then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was granted`;
-											Desc = `A server script was granted access to {inde}`;
+											Text = `Access to {k} was granted`;
+											Desc = `A server script was granted access to {k}`;
 										})
 
-										if targ[inde]~=nil and type(targ[inde]) == "table" and Settings.G_Access_Perms == "Read" then
-											return service.ReadOnly(targ[inde])
+										if targ[k] ~= nil and type(targ[k]) == "table" and Settings.G_Access_Perms == "Read" then
+											return service.ReadOnly(targ[k])
 										else
-											return targ[inde]
+											return targ[k]
 										end
-									elseif API_Special[inde] == false then
+									elseif API_Special[k] == false then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was denied`;
-											Desc = `A server script attempted to access {inde} via _G.Adonis.Access`;
+											Text = `Access to {k} was denied`;
+											Desc = `A server script attempted to access {k} via _G.Adonis.Access`;
 										})
 
-										error(`Access Denied: {inde}`)
+										error(`Access Denied: {k}`)
 									else
-										error(`Could not find {inde}`)
+										error(`Could not find {k}`)
 									end
 								end;
-								__newindex = function(tabl, inde, valu)
+								__newindex = function(_, k, v)
 									if Settings.G_Access_Perms == "Read" then
 										error("Read-only")
 									elseif Settings.G_Access_Perms == "Write" then
-										tabl[inde] = valu
+										rawset(targ, k, v)
 									end
 								end;
 								__metatable = true;
@@ -1530,13 +1558,13 @@ return function(Vargs, GetEnv)
 					AdonisDebugAPIBindable.Name = "Adonis_Debug_API"
 					AdonisDebugAPIBindable.Parent = service.ReplicatedStorage
 					AdonisDebugAPIBindable.OnInvoke = function(DebugCommand,...)
-						local args = {...}
+						local args = table.pack(...)
 
 						if DebugCommand == "RunEnvFunc" then
 							local FunctionInEnvToRunPath = args[1]
 							if FunctionInEnvToRunPath and type(FunctionInEnvToRunPath) == "string" then
 								local realEnvResult, isResultPointer = getRealEnvResult(FunctionInEnvToRunPath)
-								return realEnvResult(table.unpack(args,2,#args))
+								return realEnvResult(table.unpack(args, 2, args.n))
 							end
 						elseif DebugCommand == "GetEnvTableMeta" then
 							local TableInEnvPath = args[1]
@@ -1550,8 +1578,8 @@ return function(Vargs, GetEnv)
 							if TableInEnvPath and type(TableInEnvPath) == "string" then
 								local realEnvResult, isResultPointer = getRealEnvResult(TableInEnvPath)
 								local metaTableInEnv = getmetatable(realEnvResult)
-								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args,3,#args))
-								local resultPointer = tostring(math.random())
+								local result = metaTableInEnv[FuncToRun](realEnvResult,table.unpack(args, 3, args.n))
+								local resultPointer = service.HttpService:GenerateGUID(false)
 								pointers[resultPointer] = result
 
 								return service.UnWrap(result), resultPointer
