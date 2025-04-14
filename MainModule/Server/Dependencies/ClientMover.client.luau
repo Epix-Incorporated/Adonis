@@ -215,7 +215,12 @@ if module and module:IsA("ModuleScript") then
 	print("Changing child parent...")
 	folder.Name = ""
 	wait(0.01)
-	folder.Parent = nil --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+	folder.Parent = nil --// We cannot do this asynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+  
+  print("Moving Shared folder...")
+	folder.Shared.Parent = container
+
+	print("Destroying parent...")
 
 	print("Debug: Loading the client?")
 	local meta = require(module)
