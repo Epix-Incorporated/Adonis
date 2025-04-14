@@ -229,9 +229,9 @@
 
 	Commands.RevokeDexExplorerNew = {
 		Prefix = Settings.Prefix;
-		Commands = {"revokedexnew";"revokedex";"revokedexexplorer";"undexnew";"undexnewexplorer";"unnewdex";"undex";"undexexplorer"};
-		Args = {"player"};	--// kept for backwards compatibility
-		Description = "Revokes the target player(s) access to Dex and removes the Dex GUI from the target player(s)";
+		Commands = {"undex";"undexexplorer";"undexnew"};
+		Args = {"player"};
+		Description = "Removes the Dex GUI from each of the target player(s)";
 		AdminLevel = 300;
 		Function = function(plr, args)
 			local sourcePlayerLevel = Admin.GetLevel(plr)
@@ -247,6 +247,8 @@
 					if v.PlayerGui:FindFirstChild("Dex_Client") then
 						v.PlayerGui.Dex_Client:Destroy()
 					end
+				else
+					Functions.Hint(`You do not have permission to remove the Dex GUI from {Service.FormatPlayer(v, true)}`, {plr})
 				end
 			end
 		end
