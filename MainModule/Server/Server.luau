@@ -549,9 +549,8 @@ return service.NewProxy({
 			--script:Destroy() -- Unnecessary and potentially harmful?
 		end
 
-		--// Copy client themes, plugins and shared modules to the client folder
+		--// Copy client themes and plugins modules to the client folder
 		local packagesToRunWithPlugins = {}
-		server.Shared:Clone().Parent = server.Client
 
 		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) ~= "string" then
