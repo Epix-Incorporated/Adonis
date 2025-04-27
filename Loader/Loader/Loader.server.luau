@@ -1,6 +1,5 @@
 --!nonstrict
 --[[
-
 	CURRENT LOADER:
 	https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated
 
@@ -9,7 +8,6 @@
 
 	NIGHTLY MODULE:
 	https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
-
 --]]
 
 ----------------------------------------------------------------------------------
