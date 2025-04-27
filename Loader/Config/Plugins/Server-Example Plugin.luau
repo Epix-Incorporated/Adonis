@@ -4,18 +4,18 @@
 
 	Plugins have full access to the server/client tables and most variables.
 
-	You can use the MakePluginEvent to use the script instead of setting up an event.
-	PlayerJoined will fire after the player finishes initial loading
+	You can use service.GetPlayers(plr, args[1]) to get a list of players for your command(s).
+	Change the number in ^^^^^^^ from 1 to the position of the argument you want to get the player list from.
+	PlayerJoined will fire after the player finishes initial loading.
 	CharacterAdded will also fire after the player is loaded, it does not use the CharacterAdded event.
 
-	service.Events.PlayerAdded:Connect(function(p)
-		print(`{p.Name} Joined! Example Plugin`)
+	service.Events.PlayerAdded:Connect(function(plr)
+		print(`{plr.Name} Joined! Example Plugin`)
 	end)
 
-	service.Events.CharacterAdded:Connect(function(p)
-		server.RunCommand('name', plr.Name, 'BobTest Example Plugin')
+	service.Events.CharacterAdded:Connect(function(plr)
+		server.RunCommand("name", plr.Name, "BobTest Example Plugin")
 	end)
-
 --]]
 
 return function(Vargs)
@@ -29,7 +29,7 @@ return function(Vargs)
 		Hidden = true; -- Is it hidden from the command list?
 		Fun = false;	-- Is it fun?
 		AdminLevel = "Players";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
-		Function = function(plr,args)    -- Function to run for command
+		Function = function(plr, args)    -- Function to run for command
 			print("HELLO WORLD FROM AN EXAMPLE COMMAND :)")
 			print(`Player supplied args[1] {args[1]}`)
 		end
