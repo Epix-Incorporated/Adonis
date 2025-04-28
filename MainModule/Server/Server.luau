@@ -592,7 +592,7 @@ return service.NewProxy({
 		end
 
 		--// Attempts to patch Settings.Prefix to fix issues
-		if type(server.Settings.Prefix) == "table" then
+		if type(server.Settings.Prefix) == "table" then -- TODO: Move to backwards compatibility module?
 			setmetatable(server.Settings.Prefix, {
 				__concat = function(self, value)
 					return `{self[1]}{value}`
@@ -600,13 +600,9 @@ return service.NewProxy({
 				__tostring = function(self)
 					return self[1]
 				end,
-
+				__index = string, -- Fix backwards compatibility for namecall usage of prefix
 			})
 		end
-
-
-
-
 
 		--// Bind cleanup
 		service.DataModel:BindToClose(function(...)
