@@ -23,10 +23,10 @@ return function(Vargs, GetEnv)
 	end
 
 	-- // Add legacy donors
-	Variables.OldDonorList = select(2, xpcall(require, warn, server.Deps.LegacyDonors))
+	Variables.OldDonorList = select(2, xpcall(require, warn, server.Deps.LegacyDonors)) or {}
 	for _, v in Variables.OldDonorList do
 		if v.Id then
-			Variables.CacherDonors[tostring(id)] = os.time()
+			Variables.CacherDonors[tostring(v.Id)] = os.time()
 		end
 	end
 
