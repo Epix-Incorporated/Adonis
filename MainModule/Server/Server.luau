@@ -601,6 +601,9 @@ return service.NewProxy({
 					return self[1]
 				end,
 				__index = string, -- Fix backwards compatibility for namecall usage of prefix
+				__eq = function(self, v)
+					return rawequal(self, v) or table.find(self, v) or service.CompareTables(self, v) or false
+				end,
 			})
 		end
 
