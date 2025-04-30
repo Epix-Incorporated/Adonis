@@ -2,7 +2,7 @@
 --// ACLI - Adonis Client Loading Initializer
 if true then return end --// #DISABLED
 
-local DebugMode = script.Parent:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") ~= nil
+local DebugMode = script.Parent:FindFirstChild("ADONIS_DEBUGMODE_ENABLED", true) ~= nil
 local otime = os.time
 local time = time
 local game = game
@@ -82,14 +82,14 @@ local function callCheck(child)
 	print(`CallCheck: {child}`)
 	if Locked(child) then
 		warn("Child locked?")
-		Kill("ACLI: Locked")
+		Kill("[ACLI-0x1A58C635]: Locked")
 	else
 		print("Child not locked")
 		xpcall(function()
 			return child[{}]
 		end, function()
 			if getfenv(1) ~= getfenv(2) then
-				Kill("ACLI: Error")
+				Kill("[ACLI-0x8142C75A]: Check calller error")
 			end
 		end)
 	end
@@ -101,7 +101,7 @@ local function doPcall(func, ...)
 		return ran, ret
 	else
 		warn(tostring(ret))
-		Kill(`ACLI: Error\n{ret}`)
+		Kill(`[ACLI-0x30FED06E]: Unknown error \n{ret}`)
 		return ran, ret
 	end
 end
@@ -175,7 +175,7 @@ local function checkChild(child)
 				print(`Got return: {ret}`)
 				if ret ~= "SUCCESS" then
 					warn("Loading failed! Reason", ret)
-					Kill("ACLI: Loading Error [Bad Module Return]")
+					Kill("[ACLI-0x4D1B3283]: Loading Error [Bad Module Return]")
 				else
 					print("Debug: The client was found and loaded?")
 					warn("Client Loaded")
@@ -205,7 +205,7 @@ local function scan(folder)
 				end
 			end
 		end
-	end) then warn("Scan failed?") Kick(player, "ACLI: Loading Error [Scan failed]") end
+	end) then warn("Scan failed?") Kick(player, "[ACLI-0xB57B3835]: Loading Error [Scan failed]") end
 end
 
 --// Load client
@@ -225,7 +225,7 @@ else
 	print("Checking CoreGui")
 	if not Locked(game:GetService("CoreGui")) then
 		warn("CoreGui not locked?")
-		Kill("ACLI: Error")
+		Kill("[ACLI-0x1698C5FC9]: Error")
 	else
 		print(`CoreGui Locked: {Locked(game:GetService("CoreGui"))}`)
 	end
@@ -240,13 +240,7 @@ else
 
 	if not playerGui then
 		warn("PlayerGui not found after 10 minutes")
-		Kick(player, "ACLI: PlayerGui Never Appeared (Waited 10 Minutes)")
-	--else
-		--playerGui.Changed:Connect(function() -- How about no
-		--	if playerGui.Name ~= "PlayerGui" then
-		--		playerGui.Name = "PlayerGui"
-		--	end
-		--end)
+		Kick(player, "[ACLI-0x1A077DCA0]: Loading Error - PlayerGui Missing (Waited 10 Minutes)")
 	end
 
 	finderEvent = playerGui.ChildAdded:Connect(function(child)
@@ -275,7 +269,7 @@ else
 	print("Checking if client found...")
 	if not foundClient then
 		warn("Loading took too long")
-		Kick(player, "\nACLI: [CLI-1162246] \nLoading Error [Took Too Long (>10 Minutes)]")
+		Kick(player, "[ACLI-0x1162246]: Loading Error [Took Too Long (>10 Minutes)]")
 	else
 		print("Debug: Adonis loaded? Took:", time())
 	end
