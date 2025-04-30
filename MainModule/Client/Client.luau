@@ -141,7 +141,7 @@ end
 --// Dump log on disconnect
 local Folder = script.Parent
 local isStudio = game:GetService("RunService"):IsStudio()
-game:GetService("NetworkClient").ChildRemoved:Connect(function(p) -- TODO: Check if the event actually fires properly both on studio and live games
+game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
 	if not isStudio or Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
 		print("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
 		dumplog()
