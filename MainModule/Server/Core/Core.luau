@@ -140,7 +140,7 @@ return function(Vargs, GetEnv)
 		--ideas here pls
 		});
 
-		DS_BLACKLIST = table.freeze({
+		DS_BLACKLIST = {
 			Trello_Enabled = true;
 			Trello_Primary = true;
 			Trello_Secondary = true;
@@ -194,15 +194,15 @@ return function(Vargs, GetEnv)
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
-		});
+		};
 
 		--// Prevent certain keys from loading from the DataStore
-		PlayerDataKeyBlacklist = table.freeze({
+		PlayerDataKeyBlacklist = {
 			AdminRank = true;
 			AdminLevel = true;
 			LastLevelUpdate = true;
 			Groups = true;
-		});
+		};
 		
 		UpdatePlayerConnection = function(p)
 			for i, cli in next,service.NetworkServer:GetChildren() do
