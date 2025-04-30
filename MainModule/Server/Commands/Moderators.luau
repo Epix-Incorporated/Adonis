@@ -4837,9 +4837,9 @@ return function(Vargs, env)
 			end
 		};
 		
-		Return = {
+		Back = {
 			Prefix = Settings.Prefix;
-			Commands = {"return"};
+			Commands = {"back"};
 			Args = {"player"};
 			Description = "Returns the player to their original position";
 			AdminLevel = "Moderators";
