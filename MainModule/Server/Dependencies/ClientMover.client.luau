@@ -1,7 +1,7 @@
 --# selene: allow(empty_loop)
 --// Adonis Client Loader (Non-ReplicatedFirst Version)
 
-local DebugMode = script.Parent:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") ~= nil
+local DebugMode = script.Parent:FindFirstChild("ADONIS_DEBUGMODE_ENABLED", true) ~= nil
 
 local wait = task.wait
 local time = time
@@ -10,17 +10,16 @@ local xpcall = xpcall
 local setfenv = setfenv
 local tostring = tostring
 
--- This stops all of the public Adonis bypasses. Though they would still be detected in time but it may be better to kick them before load??
 do
 	local game = game
 	local task_spawn, xpcall, require, task_wait
 		= task.spawn, xpcall, require, task.wait
-	local Players =  game:FindFirstChildWhichIsA("Players") or game:FindService("Players")
+	local Players = game:FindFirstChildWhichIsA("Players") or game:FindService("Players")
 	local localPlayer = Players.LocalPlayer
 	local triggered = false
 
 	local function loadingDetected(reason)
-		(localPlayer or Players.LocalPlayer):Kick(`:: Adonis Loader - Security :: {reason}`)
+		(localPlayer or Players.LocalPlayer):Kick(`[ACLI-0x6E2FA164] Loading Error [Environment integrity violation error: {reason}]`)
 		while true do end
 	end
 
@@ -131,8 +130,9 @@ end
 -- ccuser44 was here ^_^
 local players = game:GetService("Players")
 local player = players.LocalPlayer
-local folder = script.Parent
-local container = folder.Parent
+local mainFolder = script.Parent
+local folder = mainFolder:WaitForChild("Client")
+local container = mainFolder.Parent
 local Kick = player.Kick
 local module = folder:WaitForChild("Client")
 local target = player
@@ -170,14 +170,14 @@ local function callCheck(child)
 	print(`CallCheck: {child}`)
 	if Locked(child) then
 		warn("Child locked?")
-		Kill("ACLI: Locked")
+		Kill("[ACLI-0x213A7768D]: Locked")
 	else
 		print("Child not locked")
 		xpcall(function()
 			return child[{}]
 		end, function()
 			if getfenv(1) ~= getfenv(2) then
-				Kill("ACLI: Error")
+				Kill("[ACLI-0xBC34ADD8]: Check caller error")
 			end
 		end)
 	end
@@ -213,20 +213,17 @@ if module and module:IsA("ModuleScript") then
 	end
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
 	print("Changing child parent...")
-	folder.Name = ""
+	mainFolder.Name = ""
 	wait(0.01)
-	folder.Parent = nil --// We cannot do this asynchronously or it will disconnect events that manage to connect before it changes parent to nil...
-  
-  print("Moving Shared folder...")
-	folder.Shared.Parent = container
-
-	print("Destroying parent...")
+	mainFolder.Parent = nil --// We cannot do this asynchronously or it will disconnect events that manage to connect before it changes parent to nil...
 
 	print("Debug: Loading the client?")
-	local meta = require(module)
+	local success, meta = pcall(require, module)
 	print(`Got metatable: {meta}`)
-	if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
-		local ran,ret = pcall(meta, {
+	if not success then
+		Kill(`[ACLI-0x20D21CEE7]: Loading Error [Module failed to load due to {meta}]`)
+	elseif meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
+		local ran, ret = pcall(meta, {
 			Module = module,
 			Start = start,
 			Loader = script,
@@ -240,7 +237,7 @@ if module and module:IsA("ModuleScript") then
 		print(`Got return: {ret}`)
 		if ret ~= "SUCCESS" then
 			warn("Loading failed! Reason", ret)
-			Kill("ACLI: Loading Error [Bad Module Return]")
+			Kill("[ACLI-0x102134B1E]: Loading Error [Bad Module Return]")
 		else
 			print("Debug: The client was found and loaded?")
 			if container and container:IsA("ScreenGui") then
@@ -249,5 +246,6 @@ if module and module:IsA("ModuleScript") then
 		end
 	else
 		warn(`Invalid metatable: {meta}!`)
+		Kill("[ACLI-0xCE8CEF67]: Loading Error [Bad Module Return]")
 	end
 end

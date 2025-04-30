@@ -217,7 +217,7 @@ else
 		end)
 	end
 
-	local response = assert(module, "FATAL ERROR! Adonis bootstrap function is missing!")(data)
+	local response = assert(success and module, "FATAL ERROR! Adonis bootstrap function is missing!")(data)
 
 	if response == "SUCCESS" then
 		if data.Settings and data.Settings.HideScript and not data.DebugMode and not RunService:IsStudio() then
