@@ -1099,7 +1099,7 @@ return function(Vargs, env)
 		Sword = {
 			Prefix = Settings.Prefix;
 			Commands = {"sword", "givesword"};
-			Args = {"player", "allow teamkill (default: true)"};
+			Args = {"player", "allow teamkill (default: true)", "base dmg (default: 5)", "slash dmg (default: 10)", "lunge dmg (default: 30)"};
 			Description = "Gives the target player(s) a sword";
 			AdminLevel = "Moderators";
 			Fun = true;
@@ -1108,6 +1108,10 @@ return function(Vargs, env)
 				local config = sword:FindFirstChild("Configurations")
 				if config then
 					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
+					
+					config.BaseDamage.Value = if args[3] then assert(tonumber(args[3]), "Base Damage is not a number!") else 5
+					config.SlashDamage.Value = if args[4] then assert(tonumber(args[4]), "Slash Damage is not a number!") else 10
+					config.LungeDamage.Value = if args[5] then assert(tonumber(args[5]), "Lunge Damage is not a number!") else 30
 				end
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
