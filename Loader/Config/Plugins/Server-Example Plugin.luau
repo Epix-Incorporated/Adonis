@@ -8,11 +8,11 @@
 	PlayerJoined will fire after the player finishes initial loading
 	CharacterAdded will also fire after the player is loaded, it does not use the CharacterAdded event.
 
-	service.Events.PlayerAdded(function(p)
+	service.Events.PlayerAdded:Connect(function(p)
 		print(`{p.Name} Joined! Example Plugin`)
 	end)
 
-	service.Events.CharacterAdded(function(p)
+	service.Events.CharacterAdded:Connect(function(p)
 		server.RunCommand('name', plr.Name, 'BobTest Example Plugin')
 	end)
 

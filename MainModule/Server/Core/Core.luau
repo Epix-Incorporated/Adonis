@@ -136,6 +136,10 @@ return function(Vargs, GetEnv)
 			SavedTables = 	"32K5j4";
 		};
 
+		DS_WHITELIST = table.freeze({
+		--ideas here pls
+		});
+
 		DS_BLACKLIST = table.freeze({
 			Trello_Enabled = true;
 			Trello_Primary = true;
@@ -330,34 +334,34 @@ return function(Vargs, GetEnv)
 				end
 
 				loader.Object:Destroy()
-			end;
+			end
 
 			local depsName = service.HttpService:GenerateGUID(false)
 			local folder = server.Client:Clone()
-			local acli = Deps.ClientMover:Clone();
+			local acli = Deps.ClientMover:Clone()
 			local client = folder.Client
-			local parentObj = parent or service.StarterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
+			local parentObj = parent or service.StarterPlayer:FindFirstChildOfClass("StarterPlayerScripts")
 			local clientLoader = {
 				Removing = false;
-			};
+			}
 
 			Core.MockClientKeys = Core.MockClientKeys or {
 				Special = depsName;
 				Module = client;
 			}
 
-			local depsName = Core.MockClientKeys.Special;
+			local depsName = Core.MockClientKeys.Special
 			local specialVal = service.New("StringValue")
 			specialVal.Value = `{Core.Name}\\{depsName}`
 			specialVal.Name = "Special"
 			specialVal.Parent = folder
 
-			acli.Parent = folder;
-			acli.Disabled = false;
+			acli.Parent = folder
+			acli.Disabled = false
 
-			folder.Archivable = false;
-			folder.Name = depsName; --"Adonis_Client"
-			folder.Parent = parentObj;
+			folder.Archivable = false
+			folder.Name = depsName --"Adonis_Client"
+			folder.Parent = parentObj
 
 			if not parent then
 				local oName = folder.Name
@@ -421,7 +425,7 @@ return function(Vargs, GetEnv)
 				folder.Parent = parentObj
 			end)
 
-			clientLoader.Removing = false;
+			clientLoader.Removing = false
 
 			AddLog("Script", "Created client")
 		end;
@@ -429,41 +433,44 @@ return function(Vargs, GetEnv)
 		HookClient = function(p)
 			local key = tostring(p.UserId)
 			local keys = Remote.Clients[key]
+
 			if keys then
 				local depsName = service.HttpService:GenerateGUID(false)
 				local eventName = service.HttpService:GenerateGUID(false)
-				local folder = server.Client:Clone()
-				local acli = Deps.ClientMover:Clone();
-				local client = folder.Client
+				local acli = Deps.ClientMover:Clone()
 				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
-				local parentObj = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
+				local folder = service.New("Folder") --// ^^^^ NO, the sun is a deadly lazer. - Roblox CEO, CEO of CEOs
+				local parentObj = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600)
 
 				if not p.Parent then
 					return false
 				elseif not parentObj then
-					p:Kick("[CLI-102495] Loading Error - PlayerGui Missing (Waited 10 Minutes)")
+					p:Kick("[ACLI-0x102495]: Loading Error - PlayerGui Missing (Waited 10 Minutes)")
 					return false
 				end
 
-				local container = service.New("ScreenGui");
-				container.ResetOnSpawn = false;
-				container.Enabled = false;
-				container.Name = "\0";
+				local container = service.New("ScreenGui")
+				container.ResetOnSpawn = false
+				container.Enabled = false
+				container.Name = "\0"
+
+				server.Client:Clone().Parent = folder
+				server.Shared:Clone().Parent = folder
 
 				local specialVal = service.New("StringValue")
 				specialVal.Value = `{Core.Name}\\{depsName}`
 				specialVal.Name = "Special"
-				specialVal.Parent = folder
+				specialVal.Parent = folder.Client
 
 				keys.Special = depsName
 				keys.EventName = eventName
-				keys.Module = client
+				keys.Module = folder.Client
 
-				acli.Parent = folder;
-				acli.Disabled = false;
+				acli.Parent = folder
+				acli.Disabled = false
 
-				folder.Name = "Adonis_Client"
-				folder.Parent = container;
+				folder.Name = depsName--"Adonis_Client"
+				folder.Parent = container
 
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
@@ -483,7 +490,7 @@ return function(Vargs, GetEnv)
 
 						leaveEvent:Disconnect()
 						leaveEvent = nil
-						event:Disconnect();
+						event:Disconnect()
 						event = nil
 					end
 				end)
@@ -493,14 +500,14 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not ok then
-					p:Kick(`[CLI-192385] Loading Error [HookClient Error: {err}]`)
+					p:Kick(`[ACLI-0x192385]: Loading Error [HookClient Error: {err}]`)
 					return false
 				else
 					return true
 				end
 			else
 				if p and p.Parent then
-					p:Kick("[CLI-5691283] Loading Error [HookClient: Keys Missing]")
+					p:Kick("[ACLI-0x5691283]: Loading Error [HookClient: Keys Missing]")
 				end
 			end
 		end;
@@ -962,8 +969,9 @@ return function(Vargs, GetEnv)
 
 		IndexPathToTable = function(tableAncestry)
 			local ds_blacklist = Core.DS_BLACKLIST
+			local ds_whitelist = Core.DS_WHITELIST
 
-			if type(tableAncestry) == "string" and not ds_blacklist[tableAncestry] then
+			if type(tableAncestry) == "string" and (not ds_blacklist[tableAncestry] or ds_whitelist[tableAncestry]) then
 				return Settings[tableAncestry], tableAncestry
 			elseif type(tableAncestry) == "table" then
 				local curTable = server
@@ -997,7 +1005,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if type(curName) == "string" and ds_blacklist[curName] then
+				if type(curName) == "string" and (ds_blacklist[curName] or not ds_whitelist[curName]) then
 					return nil
 				end
 
@@ -1180,6 +1188,7 @@ return function(Vargs, GetEnv)
 
 			local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 			local ds_blacklist = Core.DS_BLACKLIST
+			local ds_whitelist = Core.DS_WHITELIST
 
 			if key == "TableUpdate" then
 				local indList = data.Table
@@ -1199,7 +1208,7 @@ return function(Vargs, GetEnv)
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
 				if type(displayName) == "string" then
-					if ds_blacklist[displayName] then
+					if ds_blacklist[displayName] or not ds_whitelist[displayName] then
 						return
 					end
 
@@ -1286,7 +1295,7 @@ return function(Vargs, GetEnv)
 
 					if SavedSettings then
 						for setting, value in SavedSettings do
-							if not ds_blacklist[setting] then
+							if not ds_blacklist[setting] or ds_whitelist[setting] then
 
 								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
@@ -1304,7 +1313,7 @@ return function(Vargs, GetEnv)
 
 					if SavedTables then
 						for index, tData in SavedTables do
-							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] then
+							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] or ds_whitelist[tData.TableName] then
 								local data = GetData(tData.TableKey)
 								if data then
 									--// TODO: Possibly find a better way to "batch" TableUpdates to prevent script exhaustion

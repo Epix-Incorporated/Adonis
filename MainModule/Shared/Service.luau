@@ -3,6 +3,7 @@ client = nil
 Pcall = nil
 Routine = nil
 logError = nil
+Folder = nil
 
 local main
 local ErrorHandler
@@ -1474,7 +1475,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	service.HelperService = HelperService
 	service.ThreadService = ThreadService
 	service.EventService = EventService
-	service.Signal = require(script.Parent.Shared.GoodSignal)
+	service.Signal = require((main.Shared or (main.Folder or Folder).Parent.Shared).GoodSignal)
 
 	if client ~= nil then
 		for i, val in service do
