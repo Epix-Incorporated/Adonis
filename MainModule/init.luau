@@ -19,7 +19,7 @@
 	Distributed under the MIT license.
 	Please do not redistribute without proper credits.
 
-	If you want to modify Adonis it is heavily adviced you use plugins;
+	If you want to modify Adonis, it is heavily advised you use plugins
 	instead of modifying the Adonis MainModule. For more information see:
 	`Loader > Config > API` for help.
 --]]
