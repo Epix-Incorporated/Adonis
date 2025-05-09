@@ -278,18 +278,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		if Settings.CustomRanks then
-			local Ranks = Settings.Ranks
-			for name, users in Settings.CustomRanks do
-				if not Ranks[name] then
-					Ranks[name] = {
-						Level = 1;
-						Users = users;
-					};
-				end
-			end
-		end
-
 		if Settings.CommandCooldowns then
 			for cmdName, cooldownData in Settings.CommandCooldowns do
 				local realCmd = Admin.GetCommand(cmdName)

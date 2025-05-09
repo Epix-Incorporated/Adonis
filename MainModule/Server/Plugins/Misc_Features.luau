@@ -74,6 +74,17 @@ return function(Vargs, GetEnv)
 			Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
 		end
 	end
+	if Settings.CustomRanks then
+		local Ranks = Settings.Ranks
+		for name, users in Settings.CustomRanks do
+			if not Ranks[name] then
+				Ranks[name] = {
+					Level = 1;
+					Users = users;
+				}
+			end
+		end
+	end
 	for k, v in {-- Legacy aliases
 		[`{Settings.Prefix}giveppoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
 		[`{Settings.Prefix}giveplayerpoints <player> <amount>`] = `{Settings.Prefix}clientscript <player> game:GetService("StarterGui"):SetCore("SendNotification", \{Title = "Points Awarded", Text = "You received <amount> points!", Icon = "rbxassetid://155221172"\})`,
