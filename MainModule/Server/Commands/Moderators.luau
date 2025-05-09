@@ -4839,7 +4839,7 @@ return function(Vargs, env)
 		
 		Return = {
 			Prefix = Settings.Prefix;
-			Commands = {"return"};
+			Commands = {"return", "back"};
 			Args = {"player"};
 			Description = "Returns the player to their original position";
 			AdminLevel = "Moderators";
