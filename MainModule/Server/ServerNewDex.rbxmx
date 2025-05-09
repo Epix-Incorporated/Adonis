@@ -227,7 +227,7 @@
 		end
 	};
 
-	Commands.RevokeDexExplorerNew = {
+	Commands.UnDexExplorerNew = {
 		Prefix = Settings.Prefix;
 		Commands = {"undex";"undexexplorer";"undexnew"};
 		Args = {"player"};
