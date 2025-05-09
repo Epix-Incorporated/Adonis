@@ -698,6 +698,20 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return num
 		end;
 
+		CompareTables = function(t1, t2)
+			if service.CountTable(t1) ~= service.CountTable(t2) then
+				return false
+			end
+
+			for k, _ in t1 do
+				if not rawequal(t1[k], t2[k]) then
+					return false
+				end
+			end
+
+			return true
+		end;
+
 		Debounce = function(key, func)
 			local env = getfenv(2) -- TODO: Remove env thing
 			local Debounces = env and env._ADONIS_DEBOUNCES or Debounces or {}
