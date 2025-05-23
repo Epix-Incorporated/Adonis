@@ -555,10 +555,21 @@ return function(Vargs, GetEnv)
 			return gTable,gIndex
 		end;
 
+		--[[
+		The goal of this function is to parse the string provided by the argument of a command into a table for the Autocomplete function to use.
+		and return a table with the following indices:
+		name (string): The name of the argument
+		optional (boolean?): Whether the argument has been specified as optional by putting a question mark at the end of the name (e.x. "players?")
+		mode (string?): The mode of the argument (e.x. "foo (refers: variables.foo)", "options")
+		params (table?): If a mode is present, this would be a table of comma-separated values for it (e.x. "foo (options: bar, baz)")
+		param (string?): If a mode is present and there is no comma-separated list of values, this will be the value after the colon (e.x. "foo (refers: variables.foo)")
+		]]
 		ParseArg = function(arg: string)
 			local result = {}
 
+			-- Get the name of the argument
 			local rawName = string.match(arg, "^([%w_?]+)")
+			-- Check if the argument is optional
 			if string.sub(rawName, -1) == "?" then
 				result.name = string.sub(rawName, 1, -2)
 				result.optional = true
@@ -567,20 +578,26 @@ return function(Vargs, GetEnv)
 				result.optional = false
 			end
 
+			-- Get the content of the parentheses
 			local parenthesesContent = string.match(arg, "%(%s*(.-)%s*%)")
 			if parenthesesContent then
+				-- Check if there is a colon in the parentheses
 				if not string.find(parenthesesContent, ":") then
+					-- If there is no colon, then the mode is the content of the parentheses
 					result.mode = string.match(string.lower(parenthesesContent), "^%s*(.-)%s*$")
 				else
+					-- If there is a colon, then the mode is the content before the colon and the param(s) are the content after the colon
 					local mode, params = string.match(parenthesesContent, "^%s*([%w_]+)%s*:%s*(.-)%s*$")
 					if mode and params then
 						result.mode = string.lower(mode)
+						-- If there is a comma, then the params are the content after the colon
 						if string.find(params, ",") then
 							result.params = {}
 							for param in string.gmatch(params, "([^,]+)") do
 								table.insert(result.params, string.match(param, "^%s*(.-)%s*$"))
 							end
 						else
+							-- If there is no comma, then the param is the content after the colon
 							result.param = string.match(params,"^%s*(.-)%s*$")
 						end
 					end
