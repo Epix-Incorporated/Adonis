@@ -670,7 +670,11 @@ return function(Vargs, GetEnv)
 				for _, color in Variables.Colors do
 					UI.Match(matches, color, provided)
 				end
-			elseif argInfo.name == "player" then
+			elseif argInfo.name == "team" or argInfo.name == "teams" or argInfo.name == "team(s)" then
+				for _, team in service.Teams:GetTeams() do
+					UI.Match(matches, team.Name, provided)
+				end
+			elseif argInfo.name == "player" or argInfo.name == "players" or argInfo.name == "player(s)" then
 				for _, player in service.Players:GetPlayers() do
 					UI.Match(matches, player.name, provided)
 				end
