@@ -124,7 +124,7 @@
 					<token name="HorizontalScrollBarInset">0</token>
 					<int name="LayoutOrder">0</int>
 					<Content name="MidImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-					<string name="Name">AutocompleteList</string>
+					<string name="Name">PlayerList</string>
 					<Ref name="NextSelectionDown">null</Ref>
 					<Ref name="NextSelectionLeft">null</Ref>
 					<Ref name="NextSelectionRight">null</Ref>
@@ -560,7 +560,7 @@ return function(data, env)
 	local frame = gui.Frame
 	local text = frame.TextBox
 	local scroll = frame.ScrollingFrame
-	local autoList = frame.AutocompleteList
+	local autoList = frame.PlayerList
 	local entry = gui.Entry
 
 	local Settings = Remote.Get("Setting", {"SplitKey", "ConsoleKeyCode", "BatchKey", "Prefix"})
