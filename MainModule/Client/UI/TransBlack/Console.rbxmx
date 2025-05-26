@@ -505,7 +505,7 @@
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
 					<Content name="MidImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-					<string name="Name">AutocompleteList</string>
+					<string name="Name">PlayerList</string>
 					<Ref name="NextSelectionDown">null</Ref>
 					<Ref name="NextSelectionLeft">null</Ref>
 					<Ref name="NextSelectionRight">null</Ref>
