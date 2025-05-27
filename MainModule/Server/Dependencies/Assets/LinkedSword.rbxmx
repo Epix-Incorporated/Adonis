@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Tool" referent="RBX50B2A764761144CABBC24F9AC9629B1C">
+	<Item class="Tool" referent="RBXDE4912F96AF244AFA55FFE06F0B2827F">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="CanBeDropped">true</bool>
@@ -57,9 +57,9 @@
 			<string name="ToolTip"></string>
 			<OptionalCoordinateFrame name="WorldPivotData">
 				<CFrame>
-					<X>-144.377625</X>
-					<Y>2.00007772</Y>
-					<Z>-105.503006</Z>
+					<X>-396.708801</X>
+					<Y>11.0000353</Y>
+					<Z>-60.0715027</Z>
 					<R00>-0.132099196</R00>
 					<R01>0.914433837</R01>
 					<R02>0.382571191</R02>
@@ -72,7 +72,7 @@
 				</CFrame>
 			</OptionalCoordinateFrame>
 		</Properties>
-		<Item class="Part" referent="RBX68F5DB51C451484AA35ADBD7FBF79916">
+		<Item class="Part" referent="RBXE6454AA15ED74BF9BD897F9498FAF188">
 			<Properties>
 				<bool name="Anchored">false</bool>
 				<BinaryString name="AttributesSerialize"></BinaryString>
@@ -86,9 +86,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>-135.688812</X>
-					<Y>2.00003767</Y>
-					<Z>-52.751503</Z>
+					<X>-266.198792</X>
+					<Y>6.50003481</Y>
+					<Z>-56.4115028</Z>
 					<R00>-0.132099196</R00>
 					<R01>0.914433837</R01>
 					<R02>0.382571191</R02>
@@ -170,7 +170,7 @@
 					<Z>4</Z>
 				</Vector3>
 			</Properties>
-			<Item class="Sound" referent="RBXBB2B5D86B3E04CECBB01424315AB9979">
+			<Item class="Sound" referent="RBX9EA19D581BB34FB29B5E73912FF3007D">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -194,7 +194,7 @@
 					<float name="Volume">0.600000024</float>
 				</Properties>
 			</Item>
-			<Item class="Sound" referent="RBXA2384FA81CAF414FB8B84ED020A635CB">
+			<Item class="Sound" referent="RBX5E9E38A589B44FF8BBEC963394523745">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -218,7 +218,7 @@
 					<float name="Volume">0.699999988</float>
 				</Properties>
 			</Item>
-			<Item class="Sound" referent="RBXF3D18A93DF534B15A82345DB097AEAE7">
+			<Item class="Sound" referent="RBXA22DA500871C45DC847C9933086C5627">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -242,7 +242,7 @@
 					<float name="Volume">1</float>
 				</Properties>
 			</Item>
-			<Item class="SpecialMesh" referent="RBX1553FAF51A744DB2928227620CA3B1EC">
+			<Item class="SpecialMesh" referent="RBXF20A316FD59E4B5BA529E8316BDBF6B7">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -271,7 +271,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Script" referent="RBX40E8F60F8F364C53AB750AA1F7DEAC61">
+		<Item class="Script" referent="RBX4951DCA451B64C1698155A40AAD4AECA">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -299,9 +299,9 @@ Grips = {
 }
 
 DamageValues = {
-	BaseDamage = 5,
-	SlashDamage = 10,
-	LungeDamage = 30,
+	BaseDamage = Tool.Configurations.BaseDamage.Value,
+	SlashDamage = Tool.Configurations.SlashDamage.Value,
+	LungeDamage = Tool.Configurations.LungeDamage.Value,
 }
 
 Damage = DamageValues.BaseDamage
@@ -450,7 +450,7 @@ Tool.Unequipped:connect(Unequipped)]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="LocalScript" referent="RBXE90A390291624EF98F8964845EDAB109">
+		<Item class="LocalScript" referent="RBX416233F1F1284CA09B095A325FD1CEBC">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -493,52 +493,7 @@ Tool.Changed:connect(OnChanged)
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="Camera" referent="RBX2B5B82814C7844D9B3BB2C380A8CE197">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<CoordinateFrame name="CFrame">
-					<X>-5.87045527</X>
-					<Y>4.01329851</Y>
-					<Z>-0.208732232</Z>
-					<R00>-0.0371841602</R00>
-					<R01>0.322614908</R01>
-					<R02>-0.945799708</R02>
-					<R10>-0</R10>
-					<R11>0.946454227</R11>
-					<R12>0.322838187</R12>
-					<R20>0.999308407</R20>
-					<R21>0.0120044667</R21>
-					<R22>-0.035193108</R22>
-				</CoordinateFrame>
-				<Ref name="CameraSubject">null</Ref>
-				<token name="CameraType">0</token>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<float name="FieldOfView">30</float>
-				<token name="FieldOfViewMode">0</token>
-				<CoordinateFrame name="Focus">
-					<X>-3.69511557</X>
-					<Y>3.27077055</Y>
-					<Z>-0.127788067</Z>
-					<R00>1</R00>
-					<R01>0</R01>
-					<R02>0</R02>
-					<R10>0</R10>
-					<R11>1</R11>
-					<R12>0</R12>
-					<R20>0</R20>
-					<R21>0</R21>
-					<R22>1</R22>
-				</CoordinateFrame>
-				<bool name="HeadLocked">true</bool>
-				<float name="HeadScale">1</float>
-				<string name="Name">ThumbnailCamera</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<bool name="VRTiltAndRollEnabled">false</bool>
-			</Properties>
-		</Item>
-		<Item class="Configuration" referent="RBXB03D1E81F6C644429B293EDD87B70114">
+		<Item class="Configuration" referent="RBXFBD7FDCA4F7247E5A266D3849FABF149">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -547,7 +502,7 @@ Tool.Changed:connect(OnChanged)
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBX31E5E9D9AAC94A3991FB3CB282ED326B">
+			<Item class="BoolValue" referent="RBX5F562B2BFAB44EF09A0328242875A7DA">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -556,6 +511,39 @@ Tool.Changed:connect(OnChanged)
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 					<bool name="Value">true</bool>
+				</Properties>
+			</Item>
+			<Item class="NumberValue" referent="RBXF7FAF56136F24CA6B95E635506AF47D4">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">BaseDamage</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<double name="Value">5</double>
+				</Properties>
+			</Item>
+			<Item class="NumberValue" referent="RBX64DD1BC0C7954EF3AFEC2A5615D7BDAA">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">SlashDamage</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<double name="Value">10</double>
+				</Properties>
+			</Item>
+			<Item class="NumberValue" referent="RBX48CD0B5FA6704D8492500A2A8C30AFED">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">LungeDamage</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<double name="Value">30</double>
 				</Properties>
 			</Item>
 		</Item>

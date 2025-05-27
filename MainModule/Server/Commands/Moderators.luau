@@ -1484,11 +1484,17 @@ return function(Vargs, env)
 		View = {
 			Prefix = Settings.Prefix;
 			Commands = {"view", "watch", "nsa", "viewplayer"};
-			Args = {"player"};
+			Args = {"player", "persist (default: true)"};
 			Description = "Makes you view the target player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
+					local function viewPlayer(plr: Player, rootPart: BasePart, humanoid: Humanoid)
+						Functions.ResetReplicationFocus(plr)
+						plr.ReplicationFocus = rootPart
+						Remote.Send(plr, "Function", "SetView", humanoid)
+					end
+					
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if not hum then
 						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a character humanoid`, {plr})
@@ -1499,9 +1505,47 @@ return function(Vargs, env)
 						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a HumanoidRootPart`, {plr})
 						continue
 					end
-					Functions.ResetReplicationFocus(plr)
-					plr.ReplicationFocus = rootPart
-					Remote.Send(plr, "Function", "SetView", hum)
+					
+					viewPlayer(plr, rootPart, hum)
+					
+					if v.UserId ~= plr.UserId then
+						local persist = args[2]
+						local event
+
+						event = v.CharacterAdded:Connect(function(char)	
+							task.wait(0.5)
+							
+							local newhum = char:FindFirstChildOfClass("Humanoid")
+							local newRootPart = char.PrimaryPart
+							
+							if Variables.PersistView[plr.UserId] and Variables.PersistView[plr.UserId].Viewing then
+								if Variables.PersistView[plr.UserId].Viewing.UserId == v.UserId then
+									viewPlayer(plr, newRootPart, newhum)
+								else
+									event:Disconnect()
+								end
+								return;
+							elseif Variables.PersistView[plr.UserId] and not Variables.PersistView[plr.UserId].Viewing then
+								Variables.PersistView[plr.UserId] = nil
+								Remote.Send(plr, "Function", "SetView", "reset")
+								event:Disconnect()
+								
+								return;
+							else
+								if persist and persist:lower() == "false" then
+									Remote.Send(plr, "Function", "SetView", "reset")
+									event:Disconnect()
+									return;
+								else
+									Variables.PersistView[plr.UserId] = {
+										Viewing = v
+									}
+
+									viewPlayer(plr, newRootPart, newhum)
+								end
+							end
+						end)
+					end
 				end
 			end
 		};
@@ -4839,7 +4883,7 @@ return function(Vargs, env)
 		
 		Return = {
 			Prefix = Settings.Prefix;
-			Commands = {"return"};
+			Commands = {"return", "back"};
 			Args = {"player"};
 			Description = "Returns the player to their original position";
 			AdminLevel = "Moderators";

@@ -164,6 +164,8 @@ return function(Vargs, GetEnv)
 			Haze = atmosphere and atmosphere.Haze,
 		},
 
+		PersistView = {};
+
 		PMtickets = {};
 
 		HelpRequests = {};

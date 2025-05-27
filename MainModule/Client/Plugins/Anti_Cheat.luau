@@ -296,13 +296,16 @@ return function(Vargs)
 						local screenshotHud = service.GuiService:FindFirstChildOfClass("ScreenshotHud")
 
 						for _, container in {Player.Character, service.StarterPack, Player:FindFirstChildOfClass("Backpack")} do
-							for _, v in ipairs(container:GetChildren()) do
+							for _, v: Instance in ipairs(container:GetChildren()) do
 								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
 									table.insert(coreUrls, service.Trim(v.TextureId))
+								elseif v:IsA("MeshPart") then
+									table.insert(coreUrls, service.Trim(v.MeshId))
+									table.insert(coreUrls, service.Trim(v.TextureID)) -- For some reason, on MeshParts it's TextureID instead of TextureId
 								end
 							end
 						end
-								
+
 						if screenshotHud and service.Trim(screenshotHud.CameraButtonIcon) ~= "" then
 							table.insert(coreUrls, service.Trim(screenshotHud.CameraButtonIcon))
 						end
@@ -315,7 +318,7 @@ return function(Vargs)
 					local rawContentProvider = service.UnWrap(service.ContentProvider)
 					local workspace = service.UnWrap(workspace)
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
-					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
+					tempDecal.Texture = "rbxasset://textures/face.png" -- It's a local asset and it's likely to never get removed, so it will never fail to load, unless the user's PC is corrupted
 					local coreUrls = getCoreUrls()
 
 					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() * 1000 >= 750) then
@@ -337,14 +340,14 @@ return function(Vargs)
 								end
 
 								hasDetected = true
-								Detected("Kick", "Disallowed content URL detected in CoreGui")
+								Detected("Kick", "Disallowed content URL detected in CoreGui: " ..url)
 							end
 						end)
 
 						tempDecal:Destroy()
 						task.wait(6)
-						if not activated then -- // Checks for anti-coregui detetection bypasses
-							Detected("kick", "Coregui detection bypass found")
+						if not activated then -- // Checks for Anti-CoreGui detection bypasses
+							Detected("kick", "CoreGui detection bypass found")
 						end
 					end
 
@@ -365,7 +368,7 @@ return function(Vargs)
 					then
 						Detected("kick", "Content provider spoofing detected")
 					end
-					
+
 					-- // GetFocusedTextBox detection
 					local textbox = service.UserInputService:GetFocusedTextBox()
 					local success, value = pcall(service.StarterGui.GetCore, service.StarterGui, "DeveloperConsoleVisible")
@@ -712,7 +715,7 @@ return function(Vargs)
 				if ran then
 					Detected("crash", "RobloxLocked usable")
 				end
-	
+
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
@@ -789,7 +792,7 @@ return function(Vargs)
 				end, function()
 					Detected("kick", "Tamper Protection 0x16C1D")
 				end)
-	
+
 				if gcinfo() ~= collectgarbage("count") then
 					Detected("kick", "GC spoofing detected")
 				end

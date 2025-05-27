@@ -7,6 +7,15 @@ return {
 	"Disable code execution on new loaders by default";
 	"Expand datastore blacklist";
 	"(Git/WalkerOfBacon) Change fix lighting command from ;fix to ;resetlighting (#1873)";
+	"(Git/ccuser44) Add ;back alias to ;return (#1894)";
+	"(Git/EasternBloxxer) Made all asset ids work on capes and particles (#1895)";
+	"(Git/WalkerOfBacon) Make ;clientscript only work when CodeExecution is on (#1896)";
+	"(Git/kaiserandaxl) Fix Unity Output Not Displaying (#1897)";
+	"(Git/WalkerOfBacon) ;view persists when the target user respawns (#1880)";
+	"(Git/WalkerOfBacon) ;sword using custom damage (#1881)";
+	"(Git/ccuser44) Fix backwards compatibility for command prefix (#1888)";
+	"(Git/ccuser44) Move CustomRanks conversion to misc features module (#1891)";
+	"(Git/xs4u) Fix self-view causing disallowed content URL in CoreGui detection to trigger (#1898)";
 	"";
 	"[Patch v266.1 2025-04-02 13:24 UTC] @Dimenpsyonal";
 	"Reverts change to invalid admin levels";
