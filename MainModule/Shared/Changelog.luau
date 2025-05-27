@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v267 2025-xx-xx xx:xx UTC] @Dimenpsyonal";
+	"[v267 2025-05-27 22:16 UTC] @Dimenpsyonal";
 	"Disable code execution on new loaders by default";
 	"Expand datastore blacklist";
 	"(Git/WalkerOfBacon) Change fix lighting command from ;fix to ;resetlighting (#1873)";
@@ -16,6 +16,7 @@ return {
 	"(Git/ccuser44) Fix backwards compatibility for command prefix (#1888)";
 	"(Git/ccuser44) Move CustomRanks conversion to misc features module (#1891)";
 	"(Git/xs4u) Fix self-view causing disallowed content URL in CoreGui detection to trigger (#1898)";
+	"(Git/ccuser44) Dump Adonis client logs on studio if debug mode is on (#1882)";
 	"";
 	"[Patch v266.1 2025-04-02 13:24 UTC] @Dimenpsyonal";
 	"Reverts change to invalid admin levels";
