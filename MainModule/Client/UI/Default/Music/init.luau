@@ -384,14 +384,14 @@ return function(data, env)
 		selected = nil
 		availableSongLists[tab.Name] = {}
 		tab:ClearAllChildren()
-
+	
 		local frame = tab:Add("ScrollingFrame", {
 			Size = UDim2.new(1, 0, 1, 1);
 			Position = UDim2.new(0, 0, 0, 0);
 			BackgroundColor3 = Color3.new(0.235294, 0.235294, 0.235294);
 			BackgroundTransparency = 1;
 		})
-
+	
 		local loading = frame:Add("TextLabel", {
 			Text = "Loading nothing yet!";
 			ToolTip = "Never gonna give you up, Never gonna let you down...";
@@ -401,16 +401,21 @@ return function(data, env)
 			ZIndex = 69420
 			--TextXAlignment = "Left";
 		})
-
+	
 		local function loop(i, v)
 			if type(v) == "table" then
 				local productInfo = service.GetProductInfo(v.ID, Enum.InfoType.Asset)
-				loading.Text = `Loading tracks ({i}/{#list})`;
-
-				if productInfo.AssetTypeId == 3 then
+	
+				if num + 1 >= #list then
+					loading:Destroy()
+				elseif loading then
+					loading.Text = `Loading tracks ({num + 1}/{#list})`
+				end
+	
+				if productInfo.AssetTypeId == 3 or productInfo.Created == false then
 					local trackPos = num + 1
 					table.insert(availableSongLists[tab.Name], v)
-
+	
 					v.Button = frame:Add("TextButton", {
 						Text = `  {num + 1}) {productInfo.Name or `[ERROR] {v.Name}`}`;
 						ToolTip = `Name: {v.Name} | ID: {v.ID}`;
@@ -424,7 +429,7 @@ return function(data, env)
 								activeSoundIdCache.listName = tab.Name
 								fillSoundIdCache(availableSongLists[tab.Name])
 							end
-
+	
 							heading.Text = productInfo.Name or v.Name
 							audioLib.AutoPlay = true
 							audioLib:SetPlaylist(getRawPlaylist(availableSongLists[tab.Name]))
@@ -437,12 +442,12 @@ return function(data, env)
 				end
 			end
 		end
-
+	
 		for i, v in ipairs(list or {}) do
 			task.spawn(xpcall, loop, warn, i, v)
 		end
-
-		loading:Destroy()
+	
+		service.Delete(loading, 10)
 	end
 
 	-- Tabs for different playlists
