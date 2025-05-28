@@ -507,7 +507,7 @@ return service.NewProxy({
 
 		if data.NightlyMode then -- Wrap things that should be wrapped?
 			for _, v in {"Folder", "Deps", "CommandModules", "Client", "Dependancies", "PluginsFolder"} do
-				server[v] = service.Wrap(v)
+				server[v] = service.Wrap(server[v])
 			end
 			locals.Folder = service.Wrap(locals.Folder)
 		end
