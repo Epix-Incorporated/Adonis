@@ -2858,7 +2858,8 @@ return function(Vargs, env)
 				local decal2 = decal1:Clone()
 				decal2.Face = "Front"
 				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://138081566"
+				sound.SoundId = "rbxassetid://95156028272944" -- Alternative "rbxassetid://99986264226275" The old one that was used since audio purge: "rbxassetid://138081566"
+				sound.PlaybackSpeed = 0.22
 				sound.Looped = true
 				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
@@ -2995,7 +2996,7 @@ return function(Vargs, env)
 				decal2.Name = "Nyan2"
 
 				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://9067256917" -- Old audio 265125691 which is gone...
+				sound.SoundId = "rbxassetid://5008970630" -- Old audio 265125691 which is gone...
 				sound.Looped = true
 				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
@@ -3038,6 +3039,11 @@ return function(Vargs, env)
 					avatarAnimator.Disabled = false
 
 					sound:Play()
+					task.delay(3.35*2, function() -- Simulate nyan cat song better
+						sound:Stop()
+						sound.SoundId = "rbxassetid://9067256917"
+						sound:Play()
+					end)
 				end
 			end
 		};
