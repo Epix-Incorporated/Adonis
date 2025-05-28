@@ -153,11 +153,12 @@ getPath = function()
 		if target then
 			targetPos = target.CFrame
 		else
-			targetPos = CFrame.new(props.PatrolZone+Vector3.new(math.random(-props.PatrolDist,props.PatrolDist),0,math.random(-props.PatrolDist,props.PatrolDist)))
-			task.wait(0.1)
+			targetPos = CFrame.new(props.PatrolZone + Vector3.new(math.random(-props.PatrolDist, props.PatrolDist),0,math.random(-props.PatrolDist, props.PatrolDist)))
+			task.wait(math.random())
 		end
 	else
-		targetPos = CFrame.new(props.PatrolZone+Vector3.new(math.random(-props.PatrolDist,props.PatrolDist),0,math.random(-props.PatrolDist,props.PatrolDist)))
+		targetPos = CFrame.new(props.PatrolZone+Vector3.new(math.random(-props.PatrolDist, props.PatrolDist),0,math.random(-props.PatrolDist, props.PatrolDist)))
+		task.wait(math.random())
 	end
 
 	if not props.isDead and not props.Computing then
@@ -205,7 +206,7 @@ local function walkPath()
 				hum:MoveTo(current+Vector3.new(2,0,2))
 			end
 
-			if #path>2 then
+			if #path > 2 then
 				repeat task.wait(0.1) until path[currentInd] ~= coord or (getCFrame().Position - coord).Magnitude < 2.5
 			end
 		end
@@ -238,7 +239,6 @@ local function init()
 		Debris:AddItem(char, 1)
 		props.isDead = true
 	end)
-
 
 	while task.wait(1/30) and not props.isDead do
 		if char and hum and not props.isDead then
