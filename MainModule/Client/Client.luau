@@ -543,8 +543,17 @@ return service.NewProxy({
 			data.DebugMode = false
 		end
 
+		log("Adding ACLI logs to the client logs")
+		if data.acliLogs then
+			for _, v in data.acliLogs do
+				log(v)
+			end
+		end
+
+		log("Clearing environment")
 		setfenv(1, setmetatable({}, { __metatable = unique }))
 
+		log("Loading necessary client values")
 		client.Folder = Folder
 		client.UIFolder = Folder:WaitForChild("UI", 9e9)
 		client.Shared = Folder.Parent:WaitForChild("Shared", 9e9)
@@ -578,11 +587,13 @@ return service.NewProxy({
   	  	  	end
 	  	end
 
+		log("Fomratting chatlogs")
 		for i, line in ipairs(client.Changelog) do
         	client.FormattedChangelog[i] = applyColour(line)
   	 	end
 
 		--// Setup MatIcons
+		log("Setting up material icons")
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
 			client.MatIcons = setmetatable({}, {
