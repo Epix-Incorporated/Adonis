@@ -3823,7 +3823,7 @@ return function(Vargs, env)
 
 		UnSeizure = {
 			Prefix = Settings.Prefix;
-			Commands = {"unseizure"};
+			Commands = {"unseizure", "unseize"};
 			Args = {"player"};
 			Description = "Removes the effects of the seizure command";
 			Fun = true;
