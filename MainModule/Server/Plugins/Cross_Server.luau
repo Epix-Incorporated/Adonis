@@ -43,9 +43,9 @@ return function(Vargs, GetEnv)
 			Process.Command(Functions.GetFakePlayer(plrData), comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
-		--[[Loadstring = function(jobId, source)
+		Loadstring = server.Data and server.Data.NightlyMode and function(jobId, source)
 			Core.Loadstring(source, GetEnv{})()
-		end;]]
+		end;
 
 		Message = function(jobId, fromPlayer, message, duration)
 			server.Functions.Message(
