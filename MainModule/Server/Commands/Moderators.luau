@@ -1550,7 +1550,7 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[Viewport = {
+		Viewport = server.Data and server.Data.NightlyMode and {
 			Prefix = Settings.Prefix;
 			Commands = {"viewport", "cctv"};
 			Args = {"player"};
@@ -1563,7 +1563,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};--]]
+		};
 
 		ResetView = {
 			Prefix = Settings.Prefix;
