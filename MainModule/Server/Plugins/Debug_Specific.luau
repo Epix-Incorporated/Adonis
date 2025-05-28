@@ -14,10 +14,9 @@ return function(Vargs, GetEnv)
 		return
 	end
 
-	--[[
 	--// Unfortunately not viable
 	--// TODO: Make this viable perhaps? If done so, expose as a :terminal command
-	Reboot = {
+	Reboot = server.Data and server.Data.NightlyMode and {
 		Prefix = Settings.Prefix;
 		Commands = {"rebootadonis", "reloadadonis"};
 		Args = {};
@@ -40,7 +39,7 @@ return function(Vargs, GetEnv)
 				error("Unable to reload: Runner missing");
 			end
 		end;
-	};--]]
+	};
 
 	Commands.DebugUsage = {
 		Prefix = Settings.PlayerPrefix;
