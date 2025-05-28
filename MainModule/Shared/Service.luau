@@ -1476,7 +1476,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			end
 		end;
-		__tostring = "Service";
+		__tostring = function()
+			return "Service"
+		end;
 		__metatable = if main.Core and main.Core.DebugMode then nil else "Service";
 	})
 
