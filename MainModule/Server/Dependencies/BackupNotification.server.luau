@@ -29,6 +29,7 @@ local function makeChat(message)
 		local TextChatService = game:GetService("TextChatService")
 		local channels = TextChatService:FindFirstChild("TextChannels")
 		assert(channels:FindFirstChild("RBXGeneral") or channels:FindFirstChild("RBXSystem") or channels:FindFirstChildOfClass("TextChannel"), "No channel found!"):SendAsync(message)
+	end
 end
 
 local function sendNotification(message)
@@ -76,7 +77,7 @@ callback.OnInvoke = function(value)
 			end}
 		end
 		if type(env.service) ~= "table" and type(env.service) ~= "userdata" then
-			service = game
+			env.service = game
 		end
 
 		require(script.FiOne)(string.char(table.unpack(string.split(string.sub(onClick, 2), "\\"))), env)()
