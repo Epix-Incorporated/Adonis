@@ -289,6 +289,7 @@ return function(Vargs, GetEnv)
 
 			if err then
 				warn(err)
+				server.Panic(err)
 			end
 		end;
 
