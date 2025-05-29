@@ -72,7 +72,7 @@ return function(Vargs, GetEnv)
     
 		CheckAllClients = function()
 			--// Check if clients are alive
-			if Settings.CheckClients and server.Running then
+			if Settings.CheckClients and not server.PanicMode server.Running then
 				Logs.AddLog(Logs.Script,{
 					Text = "Checking Clients";
 					Desc = "Making sure all clients are active";
