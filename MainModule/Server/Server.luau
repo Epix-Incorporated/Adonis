@@ -329,6 +329,10 @@ server = {
 		}), 30)
 		print(string.rep(string.reverse("!RAEN ERA SNWOLC EHT\n"), math.random(1, 25)))
 
+		pcall(function()
+			server.Core.PanicMode = true
+		end)
+
 		if server.Logs and server.Logs.AddLog then
 			pcall(server.Logs.AddLog, server.Logs.Script, {
 				Text = "ENABLED PANIC MODE";
