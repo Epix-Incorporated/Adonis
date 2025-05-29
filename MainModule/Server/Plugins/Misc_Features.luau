@@ -16,6 +16,28 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "Removed legacy trello board")
 	end
 
+	--// Create formatted changelog from standard changelog
+	local function applyColour(line)
+		local prefix = line:sub(1, 2)
+
+		if prefix == "[v" or prefix == "[1" or prefix == "[0" or prefix == "1." or line:sub(1, 1) == "v" then
+			return `<font color='#8FAEFF'>{line}</font>`
+		elseif line:sub(1, 6) == "[Patch" then
+			return `<font color='#F0B654'>{line}</font>`
+		elseif line:sub(1, 9) == "Version: " then
+			return `<b>{line}</b>`
+		elseif line:sub(1,2) == "# " then
+			return `<b>{string.sub(line, 3)}</b>`
+		else
+			return line
+		end
+	end
+
+	server.FormattedChangelog = table.create(#server.Changelog)
+	for i, line in ipairs(server.Changelog) do
+		server.FormattedChangelog[i] = applyColour(line)
+	end
+
 	--// AutoClean
 	if Settings.AutoClean then
 		service.StartLoop("AUTO_CLEAN", Settings.AutoCleanDelay, Functions.CleanWorkspace, true)
