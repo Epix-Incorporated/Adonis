@@ -3,9 +3,8 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v267 2025-05-27 22:16 UTC] @Dimenpsyonal";
+	"[v267 2025-05-29 10:48 UTC] @Dimenpsyonal";
 	"Disable code execution on new loaders by default";
-	"Expand datastore blacklist";
 	"(Git/WalkerOfBacon) Change fix lighting command from ;fix to ;resetlighting (#1873)";
 	"(Git/ccuser44) Add ;back alias to ;return (#1894)";
 	"(Git/EasternBloxxer) Made all asset ids work on capes and particles (#1895)";
@@ -17,6 +16,8 @@ return {
 	"(Git/ccuser44) Move CustomRanks conversion to misc features module (#1891)";
 	"(Git/xs4u) Fix self-view causing disallowed content URL in CoreGui detection to trigger (#1898)";
 	"(Git/ccuser44) Dump Adonis client logs on studio if debug mode is on (#1882)";
+	"(Git/ccuser44) Misc Fixes and improvements (#1903)";
+	"(Git/ccuser44) Fix bots sometimes not working (#1904)";
 	"";
 	"[Patch v266.1 2025-04-02 13:24 UTC] @Dimenpsyonal";
 	"Reverts change to invalid admin levels";
