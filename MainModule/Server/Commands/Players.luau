@@ -543,7 +543,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "List", {
 					Title = "Change Log";
 					Icon = server.MatIcons["Text snippet"];
-					Table = server.FormattedChangelog;
+					Table = server.FormattedChangelog or server.Changelog;
 					RichText = true;
 					Size = {500, 400};
 				})
