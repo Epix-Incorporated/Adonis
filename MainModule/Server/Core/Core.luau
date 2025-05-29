@@ -208,6 +208,8 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		Panic = server.Panic;
+
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
 				Core.FixingEvent = true
