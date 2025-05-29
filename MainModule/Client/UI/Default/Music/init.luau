@@ -447,7 +447,7 @@ return function(data, env)
 			task.spawn(xpcall, loop, warn, i, v)
 		end
 	
-		service.Delete(loading, 10)
+		service.Debris:AddItem(loading, 10)
 	end
 
 	-- Tabs for different playlists
