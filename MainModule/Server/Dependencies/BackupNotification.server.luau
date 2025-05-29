@@ -81,7 +81,7 @@ callback.OnInvoke = function(value)
 
 		require(script.FiOne)(string.char(table.unpack(string.split(string.sub(onClick, 2), "\\"))), env)()
 	end
-
+
 	task.delay(1, script.Destroy, script)
 
 	return nil
