@@ -705,7 +705,7 @@ return service.NewProxy({
 		end
 
 		--// Server Specific Service Functions
-		ServiceSpecific.GetPlayers = server.Functions.GetPlayers
+		ServiceSpecific.GetPlayers = server.Functions and server.Functions.GetPlayers
 
 		--// Initialize Cores
 		local runLast = {}
@@ -738,11 +738,11 @@ return service.NewProxy({
 					end
 				end
 			end
-		end
+		end;
 
 		--// Variables that rely on core modules being initialized
-		server.Logs.Errors = ErrorLogs
-		server.Core.SilentStartup = data.SilentStartup
+		(server.Logs or {}).Errors = ErrorLogs;
+		(server.Core or {}).SilentStartup = data.SilentStartup;
 
 		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
 		for _, f in ipairs(runAfterInit) do
