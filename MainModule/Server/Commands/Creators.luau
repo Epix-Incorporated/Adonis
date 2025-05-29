@@ -328,7 +328,7 @@ return function(Vargs, env)
 					Functions.Hint("Operation cancelled", {plr})
 				end
 			end,
-		}
+		};
 
 		TaskManager = server.Data and server.Data.NightlyMode and { --// Unfinished
 			Prefix = Settings.Prefix;
