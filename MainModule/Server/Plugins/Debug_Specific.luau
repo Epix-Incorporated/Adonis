@@ -410,5 +410,19 @@ local service = wrappedEnv.Service
 		end
 	};
 
+	Commands.DebugPanic = {
+		Prefix = Settings.Prefix;
+		Commands = {"panic", "enablepanic", "activatepanic", "adonispanic", "epixpanic", "testpanic", "debugpanic"};
+		Args = {"reason"};
+		Description = "Allows you to enable Adonis panic mode";
+		Hidden = true;
+		Debug = true;
+		NoFilter = true;
+		AdminLevel = "Creators";
+		Function = function(plr: Player, args: {string})
+			server.Panic(args[1])
+		end
+	};
+
 	Logs:AddLog("Script", "Debug Built-in Plugin Module Loaded as DebugMode was on");
 end;
