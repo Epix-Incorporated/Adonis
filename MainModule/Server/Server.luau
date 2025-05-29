@@ -189,7 +189,8 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				`CoreModule: {module}`,
 				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
-					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					warn(`Core module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
+					server.Panic(`Core module encountered an error while loading: {module}\n{err}`)
 				end,
 				GetVargTable(),
 				GetEnv
@@ -210,7 +211,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 		server[module.Name] = plug
 	end
 
-	if server.Logs then
+	if server.Logs and server.Logs.AddLog then
 		server.Logs.AddLog(server.Logs.Script,{
 			Text = `Loaded Module: {module}`;
 			Desc = "Adonis loaded a core module or plugin";
@@ -571,7 +572,7 @@ return service.NewProxy({
 		setfenv(1, setmetatable({}, {__metatable = unique}))
 
 		--// Server Variables
-		local setTab = require(server.Deps.DefaultSettings)
+		local setTab = select(2, xpcall(require, server.Panic, server.Deps:FindFirstChild("DefaultSettings"))) or {}
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
 		server.OriginalSettings = service.DeepCopy(server.Settings, true)
@@ -664,11 +665,11 @@ return service.NewProxy({
 		server.CleanUp = CleanUp
 
 		--// Require some dependencies
-		server.Typechecker = require(server.Shared.Typechecker)
-		server.Changelog = require(server.Shared.Changelog)
+		server.Typechecker = select(2, xpcall(require, server.Panic, server.Shared:FindFirstChild("Typechecker")))
+		server.Changelog = select(2, xpcall(require, server.Panic, server.Shared:FindFirstChild("Changelog")))
 		server.Version = server.Changelog and tonumber(string.match(server.Changelog[1], "^%[?%w*:? ?[Vv]?(%d+)")) or server.Version -- Set server version from changelog
-		server.Credits = require(server.Shared.Credits)
-		server.DLL = require(server.Shared.DoubleLinkedList)
+		server.Credits = select(2, xpcall(require, server.Panic, server.Shared:FindFirstChild("Credits")))
+		server.DLL = select(2, xpcall(require, server.Panic, server.Shared:FindFirstChild("DoubleLinkedList")))
 		server.FormattedChangelog = table.create(#server.Changelog)
 
 		--// Create formatted changelog from standard changelog
@@ -694,7 +695,7 @@ return service.NewProxy({
 
 		--// Setup MaterialIcons
 		do
-			local MaterialIcons = require(server.Shared.MatIcons)
+			local MaterialIcons = select(2, xpcall(require, server.Panic, server.Shared:FindFirstChild("MatIcons")))
 			server.MatIcons = setmetatable({}, {
 				__index = function(self, ind)
 					local materialIcon = MaterialIcons[ind]
@@ -710,14 +711,18 @@ return service.NewProxy({
 
 		--// Load services
 		for ind, serv in ipairs(SERVICES_WE_USE) do
-			local temp = service[serv]
+			if not service[serv] then
+				server.Panic(`CRITICAL SERVICE {serv} IS MISSING!!!`)
+			end
 		end
 
 		--// Load core modules
 		for _, load in ipairs(CORE_LOADING_ORDER) do
 			local CoreModule = Folder.Core:FindFirstChild(load)
 			if CoreModule then
-				LoadModule(CoreModule, true, nil, nil, true) --noenv, CoreModule
+				xpcall(LoadModule, server.Panic, CoreModule, true, nil, nil, true) --noenv, CoreModule
+			else
+				server.Panic(`CORE MODULE {load} IS MISSING!!!`)
 			end
 		end
 
@@ -750,7 +755,7 @@ return service.NewProxy({
 					end
 
 					if core.Init then
-						core.Init(data)
+						xpcall(core.Init, server.Panic, data)
 						core.Init = nil
 					end
 				end
@@ -763,12 +768,12 @@ return service.NewProxy({
 
 		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
 		for _, f in ipairs(runAfterInit) do
-			f(data)
+			xpcall(f, server.Panic, data)
 		end
 
 		--// Load Plugins; enforced NoEnv policy, make sure your plugins has the 2nd argument defined!
 		for _, module in ipairs(server.PluginsFolder:GetChildren()) do
-			LoadModule(module, false, {script = module}, true, true) --noenv
+			xpcall(LoadModule, server.Panic, module, false, {script = module}, true, true) --noenv
 		end
 
 		for _, module in ipairs(data.ServerPlugins or {}) do
@@ -786,7 +791,7 @@ return service.NewProxy({
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
 		for _, f in ipairs(runAfterPlugins) do
-			f(data)
+			xpcall(f, server.Panic, data)
 		end
 
 		-- // Load sourcecode clientside plugins
@@ -809,7 +814,7 @@ return service.NewProxy({
 
 		--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
 		for _, f in ipairs(runLast) do
-			f(data)
+			xpcall(f, server.Panic, data)
 		end
 
 		if data.Loader and not silentStartup then
@@ -818,17 +823,17 @@ return service.NewProxy({
 			print(`Loading version {data.NightlyMode and "Nightly" or server.Version} Complete; No loader location provided`)
 		end
 
-		if server.Logs then
+		if server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog(server.Logs.Script, {
 				Text = `Finished loading version {data.NightlyMode and "Nightly" or server.Version}`;
 				Desc = `Adonis has finished loading version {data.NightlyMode and "Nightly" or server.Version} by {data.Loader and data.Loader:GetFullName() or "UNKNOWN"}{data.LoaderVersion and (" version: "..data.LoaderVersion) or ""}`;
 			})
 		else
-			warn("CRITICAL ERROR! SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
+			server.Panic("CRITICAL ERROR! SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
 		end
 		service.Events.ServerInitialized:Fire();
 
-		return "SUCCESS"
+		return server.PanicMode ~= true and "SUCCESS" or "FAILED"
 	end;
 	__tostring = function()
 		return "Adonis"
