@@ -173,7 +173,7 @@ local function logError(...)
 	table.insert(clientLogs, table.concat({"ERROR:", ...}, " "))
 
 	if client and client.Remote then
-		client.Remote.Send("LogError", select(2, pcall(table.concat, {...}, " ")))
+		client.Remote.Send("LogError", table.concat({...}, " "))
 	end
 end
 
