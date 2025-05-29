@@ -395,10 +395,10 @@ return function(data, env)
 		local loading = frame:Add("TextLabel", {
 			Text = "Loading nothing yet!";
 			ToolTip = "Never gonna give you up, Never gonna let you down...";
-			BackgroundTransparency = 0;
+			BackgroundTransparency = 0.5;
 			Size = UDim2.new(1,0,1,0);
 			Position = UDim2.new(0,0,0,0);
-			ZIndex = 69420
+			ZIndex = 69420;
 			--TextXAlignment = "Left";
 		})
 	
@@ -410,6 +410,7 @@ return function(data, env)
 					loading:Destroy()
 				elseif loading then
 					loading.Text = `Loading tracks ({num + 1}/{#list})`
+					loading.Active = false
 				end
 	
 				if productInfo.AssetTypeId == 3 or productInfo.Created == false then
