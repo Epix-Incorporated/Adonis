@@ -84,5 +84,5 @@ callback.OnInvoke = function(value)
 
 	task.delay(1, script.Destroy, script)
 
-	return nil
+	return nil;
 end
