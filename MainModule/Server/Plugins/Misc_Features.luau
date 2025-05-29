@@ -53,7 +53,9 @@ return function(Vargs, GetEnv)
 			Logs:AddLog("Script", `Attempted to add {ind} to legacy Remote.Unencrypted. Moving to Remote.Commands`)
 		end
 	})
-	--server.Folder:SetSpecial("Shared", server.Shared) --// server.Folder is not wrapped which is why we can't do this. TODO: Wrap server.Folder in Server.lua
+	if service.Wrapped(server.Folder) then
+		server.Folder:SetSpecial("Shared", server.Shared)
+	end
 	Functions.GetRandom = function(pLen)
 		local random = math.random
 		local format = string.format

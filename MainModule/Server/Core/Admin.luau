@@ -1494,7 +1494,7 @@ return function(Vargs, GetEnv)
 				return false, "This command has been disabled."
 			end
 
-			if Variables.IsStudio and cmd.NoStudio then
+			if Variables.IsStudio and cmd.NoStudio and not Core.DebugMode then
 				return false, "This command cannot be used in Roblox Studio."
 			end
 

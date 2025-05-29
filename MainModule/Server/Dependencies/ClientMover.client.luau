@@ -139,16 +139,20 @@ local target = player
 local realPrint = print
 local realWarn = warn
 local start = time()
+local acliLogs = {}
 
 local function print(...)
 	if DebugMode or player.UserId == 1237666 then
 		realPrint("ACLI:", ...)
 	end
+	table.insert(acliLogs, select(2, pcall(table.concat, {"ACLI:", ...}, " ")))
 end
 
 local function warn(...)
 	realWarn("ACLI:", ...)
+	table.insert(acliLogs, select(2, pcall(table.concat, {"ACLI WARNING:", ...}, " ")))
 end
+
 
 local function Kill(info)
 	if DebugMode then warn(info) return end
@@ -231,7 +235,8 @@ if module and module:IsA("ModuleScript") then
 			Folder = folder;
 			LoadingTime = loadingTime,
 			CallCheck = callCheck,
-			Kill = Kill
+			Kill = Kill,
+			acliLogs = acliLogs
 		})
 
 		print(`Got return: {ret}`)

@@ -390,7 +390,7 @@ function Blow(Hit)
 		return
 	end
 	local character = Hit.Parent
-	local humanoid = character:FindFirstChild("Humanoid")
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if not humanoid then
 		return
 	end
@@ -426,7 +426,7 @@ end
 function Equipped()
 	Character = Tool.Parent
 	Player = Players:GetPlayerFromCharacter(Character)
-	Humanoid = Character:FindFirstChild("Humanoid")
+	Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	RootPart = Character:FindFirstChild("HumanoidRootPart")
 	if not CheckIfAlive() then
 		return

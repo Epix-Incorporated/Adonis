@@ -499,7 +499,6 @@ return function(data, env)
 		Variables.Aliases = playerData.Aliases or {}
 		commandPrefix = if type(chatMod.Prefix) == "table" then chatMod.Prefix[1] else chatMod.Prefix
 
-
 		for _, v in loadingIcons do
 			v:Destroy()
 		end
@@ -533,6 +532,23 @@ return function(data, env)
 
 			local function updateStatus()
 				dStatus.Text = "Updating..."
+
+				if settingsData.DonorCapes and playerData.isDonor then
+					if type(donorData) == "table" and donorData.Cape and type(donorData.Cape) == "table" then
+						if donorData.Enabled and service.Players.LocalPlayer.Character then
+							Functions.NewCape({
+								Color = type(currentColor) == "table" and Color3.new(unpack(currentColor)) or currentColor or "White";
+								Parent = service.Players.LocalPlayer.Character;
+								Material = donorData.Cape.Image or "Neon";
+								--Reflectance = reflect;
+								Decal = donorData.Cape.Image;
+							})
+						elseif service.Players.LocalPlayer.Character then
+							Functions.RemoveCape(service.Players.LocalPlayer.Character)
+						end
+					end
+				end
+
 				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
 				task.wait(0.5)
 				dStatus.Text = "Donated"

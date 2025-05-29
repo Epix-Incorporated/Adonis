@@ -1550,7 +1550,7 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[Viewport = {
+		Viewport = server.Data and server.Data.NightlyMode and {
 			Prefix = Settings.Prefix;
 			Commands = {"viewport", "cctv"};
 			Args = {"player"};
@@ -1563,7 +1563,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};--]]
+		};
 
 		ResetView = {
 			Prefix = Settings.Prefix;
@@ -4883,7 +4883,7 @@ return function(Vargs, env)
 		
 		Return = {
 			Prefix = Settings.Prefix;
-			Commands = {"return", "back"};
+			Commands = {"back", "return"};
 			Args = {"player"};
 			Description = "Returns the player to their original position";
 			AdminLevel = "Moderators";
@@ -6284,17 +6284,13 @@ return function(Vargs, env)
 			Description = "Gives the target player(s) the desired package (ID MUST BE A NUMBER)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1] and args[2] and tonumber(args[2]), "Missing player name")
-				assert(args[1] and args[2] and tonumber(args[2]), "Missing or invalid package ID")
-
-				local id = tonumber(args[2])
-
+				local id = assert(assert(args[1], "Missing player name") and tonumber(args[2]), "Missing or invalid package ID")
 				local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
 
 				if suc then
 					for _, item in ers.Items do
 						if item.Type == "Asset" then
-							Commands.AvatarItem.Function(plr, {`@{plr.Name}`, item.Id})
+							Commands.AvatarItem.Function(plr, {args[1], item.Id})
 							break
 						end
 					end

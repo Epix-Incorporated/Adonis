@@ -8,7 +8,7 @@
 			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">false</bool>
-			<bool name="IgnoreGuiInset">false</bool>
+			<bool name="IgnoreGuiInset">true</bool>
 			<string name="Name">Message</string>
 			<bool name="ResetOnSpawn">false</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
@@ -51,7 +51,7 @@
 					<XS>0</XS>
 					<XO>0</XO>
 					<YS>0</YS>
-					<YO>-50</YO>
+					<YO>0</YO>
 				</UDim2>
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
@@ -61,7 +61,7 @@
 					<XS>1</XS>
 					<XO>0</XO>
 					<YS>1</YS>
-					<YO>50</YO>
+					<YO>0</YO>
 				</UDim2>
 				<token name="SizeConstraint">0</token>
 				<int64 name="SourceAssetId">-1</int64>

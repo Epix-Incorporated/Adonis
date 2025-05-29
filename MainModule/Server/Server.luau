@@ -310,7 +310,6 @@ locals = {
 	Pcall = Pcall;
 };
 
-
 service = require(Folder.Parent.Shared.Service)(function(eType, msg, desc, ...)
 	local extra = table.pack(...)
 	if eType == "MethodError" then
@@ -504,6 +503,13 @@ return service.NewProxy({
 			if not silentStartup then
 				warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
 			end
+		end
+
+		if data.NightlyMode then -- Wrap things that should be wrapped?
+			for _, v in {"Folder", "Deps", "CommandModules", "Client", "Dependancies", "PluginsFolder"} do
+				server[v] = service.Wrap(server[v])
+			end
+			locals.Folder = service.Wrap(locals.Folder)
 		end
 
 		if data.DebugMode == true then
