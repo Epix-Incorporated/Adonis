@@ -537,7 +537,7 @@ return function(data, env)
 					if type(donorData) == "table" and donorData.Cape and type(donorData.Cape) == "table" then
 						if donorData.Enabled and service.Players.LocalPlayer.Character then
 							Functions.NewCape({
-								Color = type(color) == "table" and Color3.new(unpack(color)) or color or "White";
+								Color = type(currentColor) == "table" and Color3.new(unpack(currentColor)) or currentColor or "White";
 								Parent = service.Players.LocalPlayer.Character;
 								Material = donorData.Cape.Image or "Neon";
 								--Reflectance = reflect;
