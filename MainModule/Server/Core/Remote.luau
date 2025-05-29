@@ -736,7 +736,7 @@ return function(Vargs, GetEnv)
 					Command = "shutdown";
 					Arguments = 1;
 					Description = "Disconnects all players from the server and prevents rejoining";
-					Function = function(p,args,data)
+					Function = function(p,args,data) -- TODO: Make this use Functions.Shutdown
 						service.PlayerAdded:Connect(function(p)
 							p:Kick(args[1] or "No Given Reason")
 						end)
@@ -744,6 +744,16 @@ return function(Vargs, GetEnv)
 						for _, v in service.Players:GetPlayers() do
 							v:Kick(args[1] or "No Given Reason")
 						end
+					end
+				};
+
+				Panic = {
+					Usage = "panic <reason>";
+					Command = "panic";
+					Arguments = 1;
+					Description = "Enables Adonis panic mode";
+					Function = function(p, args, data)
+						server.Panic(args[1])
 					end
 				};
 			};
