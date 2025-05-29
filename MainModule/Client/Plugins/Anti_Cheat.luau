@@ -509,6 +509,7 @@ return function(Vargs)
 				"run_secure_function";  -- synapse specific (?)
 				"Kill by Avexus#1234 initialized";
 				--"FilteringEnabled Kill"; -- // Disabled due to potential of having false flags
+				"Depricated & Drop Support on"; -- VegaX detection
 				"Couldn't find target with input:";
 				"Found target with input:";
 				"Couldn't find the target's root part%. :[";
