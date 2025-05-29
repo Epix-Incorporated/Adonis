@@ -540,7 +540,7 @@ return function(Vargs)
 					not service.UserInputService.TouchEnabled
 				then
 					if not pcall(function()
-						if not isStudio and (findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
+						if not isStudio and (findService(game, "VirtualUser") or findService(game, "VirtualInputManager") or findService(game, "UGCValidationService")) then
 							Detected("crash", "Disallowed Services Detected")
 						end
 					end) then
