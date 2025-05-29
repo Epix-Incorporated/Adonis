@@ -295,6 +295,47 @@ server = {
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
 	ServerStartTime = os.time();
+	PanicMode = false;
+	Panic = function(reason)
+		server.PanicMode = true -- Immediatly flip the flag before anything else to ensure it works! Don't change!
+
+		warn("SOMETHING SEVERE HAPPENED; ENABLING PANIC MODE; REASON BELOW;") -- TODO: Put all the messages to logerror and scriptlogs
+		warn(tostring(reason))
+		warn("ENABLING CHAT MODE AND DISABLING CLIENT CHECKS;")
+		warn("MODS NOW HAVE ACCESS TO PANIC COMMANDS SUCH AS :SHUTDOWN")
+
+		server._tempBackupHint = server._tempBackupHint or service.New("Hint", {
+			Text = `~= Adonis PanicMode Enabled - {reason} =~`,
+			Name = `ADONIS_TEMPHINT_{server.CodeName}`,
+			Archivable = false,
+			Parent = workspace,
+		})
+
+		--[[
+		for _, v in ipairs(service.Players:GetPlayers()) do
+			cPcall(function()
+				v.Chatted:Connect(function(msg)
+					Process.Chat(v, msg)
+				end)
+			end)
+		end
+		--]]
+
+		service.Debris:AddItem(service.New("Message", {
+			Text = `{select(2, pcall(function() return server.Settings and server.Settings.SystemTitle end)) or "System Message"}:\n\nA CRITICAL ERROR OCCURED IN ADONIS AND PANIC MODE HAS BEEN ENABLED DUE TO:\n{reason}`,
+			Name = `ADONIS_TEMPMESSAGE_{server.CodeName}_{math.random()}`,
+			Archivable = false,
+			Parent = workspace,
+		}), 30)
+		print(string.rep(string.reverse("!RAEN ERA SNWOLC EHT\n"), math.random(1, 25)))
+
+		if server.Logs and server.Logs.AddLog then
+			pcall(server.Logs.AddLog, server.Logs.Script, {
+				Text = "ENABLED PANIC MODE";
+				Desc = tostring(reason);
+			})
+		end
+	end;
 };
 
 locals = {
