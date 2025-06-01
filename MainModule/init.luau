@@ -4,7 +4,6 @@
 	   / _ \ / _` |/ _ \| '_ \| / __|   / _ \ / _` | '_ ` _ \| | '_ \ 
 	  / ___ \ (_| | (_) | | | | \__ \  / ___ \ (_| | | | | | | | | | |
 	 /_/   \_\__,_|\___/|_| |_|_|___/ /_/   \_\__,_|_| |_| |_|_|_| |_|
-                                                                  
 
 	    ______      _         ____                                             __           __
 	   / ____/___  (_)  __   /  _/___  _________  _________  ____  _________ _/ /____  ____/ /
@@ -18,8 +17,11 @@
 	-----------------------
 
 	Distributed under the MIT license.
-
 	Please do not redistribute without proper credits.
+
+	If you want to modify Adonis, it is heavily advised you use plugins
+	instead of modifying the Adonis MainModule. For more information see:
+	`Loader > Config > API` for help.
 --]]
 
 return require(script.Server.Server)
