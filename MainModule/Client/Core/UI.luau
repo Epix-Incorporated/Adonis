@@ -448,6 +448,16 @@ return function(Vargs, GetEnv)
 
 							obj.Enabled = true
 							obj.Parent = service.PlayerGui
+							
+							-- Set up UIDragDetector handling for windows
+							if (obj.Name == "Window" or obj:FindFirstChild("Drag", true)) and not gTable.NoDrag then
+								task.spawn(function()
+									task.wait() -- Wait a frame for the UI to be fully loaded
+									if client.Functions and client.Functions.SetupWindowDragging then
+										client.Functions.SetupWindowDragging(service.UnWrap(obj))
+									end
+								end)
+							end
 						else
 							obj.Parent = UI.GetHolder()
 						end

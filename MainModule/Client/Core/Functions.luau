@@ -1943,5 +1943,57 @@ return function(Vargs, GetEnv)
 			data["Resolution"] = math.floor(workspace.CurrentCamera.ViewportSize.X).." x "..math.floor(workspace.CurrentCamera.ViewportSize.Y)
 			return data
 		end;
+
+		SetupWindowDragging = function(gui)
+			-- Find the Drag frame and its UIDragDetector
+			local dragFrame = gui:FindFirstChild("Drag", true)
+			if not dragFrame then
+				return
+			end
+			
+			local dragDetector = dragFrame:FindFirstChild("DragDetector")
+			if not dragDetector or not dragDetector:IsA("UIDragDetector") then
+				return
+			end
+			
+			-- Find the window element to move (usually the ScreenGui or main Frame)
+			local windowToMove = gui
+			if gui:IsA("ScreenGui") then
+				-- For ScreenGui, we need to find the main window frame inside it
+				-- Look for the first Frame that's not the Drag frame
+				for _, child in gui:GetChildren() do
+					if child:IsA("Frame") and child ~= dragFrame and child.Name ~= "Drag" then
+						windowToMove = child
+						break
+					end
+				end
+			end
+			
+			local startPosition = nil
+			
+			-- Handle drag start
+			dragDetector.DragStart:Connect(function(inputObject, startPosition2D)
+				startPosition = windowToMove.Position
+			end)
+			
+			-- Handle drag continue
+			dragDetector.DragContinue:Connect(function(inputObject, currentPosition2D, dragDelta)
+				if startPosition then
+					-- Calculate the new position based on the drag delta from start
+					local newPosition = UDim2.new(
+						startPosition.X.Scale,
+						startPosition.X.Offset + dragDelta.X,
+						startPosition.Y.Scale,
+						startPosition.Y.Offset + dragDelta.Y
+					)
+					windowToMove.Position = newPosition
+				end
+			end)
+			
+			-- Handle drag end
+			dragDetector.DragEnd:Connect(function(inputObject, endPosition2D)
+				startPosition = nil
+			end)
+		end;
 	};
 end
