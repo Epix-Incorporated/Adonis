@@ -276,38 +276,68 @@ return function(Vargs, GetEnv)
 				CameraType = cam.CameraType,
 				CameraSubject = cam.CameraSubject,
 				FieldOfView = cam.FieldOfView,
-				ViewportSize = cam.ViewportSize
+				ViewportSize = cam.ViewportSize,
+				LastUpdate = os.clock()
 			}
 			local isResizing = false
 			local stabilizationEnabled = true
 			local resizeDebounce = false
+			local lastUserCameraChange = 0
 
-			-- Function to save current camera state
+			-- Function to check if camera change was likely user-initiated
+			local function isUserCameraChange()
+				local now = os.clock()
+				-- If camera changed recently (within 2 seconds), it might be user input
+				return (now - lastUserCameraChange) < 2
+			end
+
+			-- Function to save current camera state (only if not user-initiated)
 			local function saveCameraState()
-				if cam and cam.Parent and not isResizing then
-					lastCameraState.CFrame = cam.CFrame
-					lastCameraState.CameraType = cam.CameraType
-					lastCameraState.CameraSubject = cam.CameraSubject
-					lastCameraState.FieldOfView = cam.FieldOfView
+				if cam and cam.Parent and not isResizing and stabilizationEnabled then
+					local now = os.clock()
+					-- Only save if camera type is Custom (normal gameplay) and enough time has passed
+					if cam.CameraType == Enum.CameraType.Custom and not isUserCameraChange() then
+						lastCameraState.CFrame = cam.CFrame
+						lastCameraState.CameraType = cam.CameraType
+						lastCameraState.CameraSubject = cam.CameraSubject
+						lastCameraState.FieldOfView = cam.FieldOfView
+						lastCameraState.LastUpdate = now
+					end
 				end
 			end
 
-			-- Function to restore camera state
+			-- Function to restore camera state (with additional safety checks)
 			local function restoreCameraState()
 				if cam and cam.Parent and stabilizationEnabled and isResizing then
-					-- Only restore if the camera hasn't been intentionally changed
-					cam.CFrame = lastCameraState.CFrame
-					if lastCameraState.CameraType then
-						cam.CameraType = lastCameraState.CameraType
-					end
-					if lastCameraState.CameraSubject then
-						cam.CameraSubject = lastCameraState.CameraSubject
-					end
-					if lastCameraState.FieldOfView then
-						cam.FieldOfView = lastCameraState.FieldOfView
+					local now = os.clock()
+					-- Only restore if the saved state is recent (within 5 seconds) and camera is in Custom mode
+					if lastCameraState.LastUpdate and (now - lastCameraState.LastUpdate) < 5 
+					   and cam.CameraType == Enum.CameraType.Custom then
+						cam.CFrame = lastCameraState.CFrame
+						if lastCameraState.CameraType then
+							cam.CameraType = lastCameraState.CameraType
+						end
+						if lastCameraState.CameraSubject then
+							cam.CameraSubject = lastCameraState.CameraSubject
+						end
+						if lastCameraState.FieldOfView then
+							cam.FieldOfView = lastCameraState.FieldOfView
+						end
 					end
 				end
 			end
+
+			-- Track user input that might affect camera
+			service.UserInputService.InputBegan:Connect(function(input, gameProcessed)
+				if not gameProcessed then
+					-- Track mouse and touch input that could move camera
+					if input.UserInputType == Enum.UserInputType.MouseMovement or
+					   input.UserInputType == Enum.UserInputType.Touch or
+					   input.UserInputType == Enum.UserInputType.MouseButton2 then
+						lastUserCameraChange = os.clock()
+					end
+				end
+			end)
 
 			-- Monitor viewport size changes (window resizing)
 			cam:GetPropertyChangedSignal("ViewportSize"):Connect(function()
@@ -315,17 +345,23 @@ return function(Vargs, GetEnv)
 					local newViewportSize = cam.ViewportSize
 					local oldViewportSize = lastCameraState.ViewportSize
 					
-					-- Check if this is actually a resize (size changed)
-					if oldViewportSize and (newViewportSize.X ~= oldViewportSize.X or newViewportSize.Y ~= oldViewportSize.Y) then
+					-- Check if this is actually a resize (size changed significantly)
+					if oldViewportSize and 
+					   (math.abs(newViewportSize.X - oldViewportSize.X) > 10 or 
+					    math.abs(newViewportSize.Y - oldViewportSize.Y) > 10) then
 						resizeDebounce = true
 						isResizing = true
 						lastCameraState.ViewportSize = newViewportSize
 						
 						-- Use task.defer to avoid blocking the event handler
 						task.defer(function()
-							task.wait(0.1)
-							restoreCameraState()
-							task.wait(0.1)
+							-- Wait for resize to settle
+							task.wait(0.15)
+							-- Only restore if no recent user camera input
+							if not isUserCameraChange() then
+								restoreCameraState()
+							end
+							task.wait(0.15)
 							isResizing = false
 							resizeDebounce = false
 						end)
@@ -335,21 +371,50 @@ return function(Vargs, GetEnv)
 				end
 			end)
 
-			-- Periodically save camera state when not resizing
-			service.StartLoop("CameraStabilization", 0.5, function()
+			-- Periodically save camera state when stable (less frequent)
+			service.StartLoop("CameraStabilization", 1.0, function()
 				saveCameraState()
 			end)
 
 			-- Return functions to control stabilization
 			Variables.CameraStabilization = {
-				Enable = function() stabilizationEnabled = true end,
-				Disable = function() stabilizationEnabled = false end,
-				IsEnabled = function() return stabilizationEnabled end,
+				Enable = function() 
+					stabilizationEnabled = true
+				end,
+				Disable = function() 
+					stabilizationEnabled = false
+				end,
+				IsEnabled = function() 
+					return stabilizationEnabled
+				end,
 				Cleanup = function()
 					service.StopLoop("CameraStabilization")
 					stabilizationEnabled = false
+				end,
+				-- Debug function to check current state
+				GetState = function()
+					return {
+						enabled = stabilizationEnabled,
+						isResizing = isResizing,
+						lastUpdate = lastCameraState.LastUpdate,
+						viewportSize = lastCameraState.ViewportSize
+					}
 				end
 			}
+		end;
+
+		CameraStabilization = function(action)
+			if Variables.CameraStabilization then
+				if action == "Enable" then
+					Variables.CameraStabilization.Enable()
+				elseif action == "Disable" then
+					Variables.CameraStabilization.Disable()
+				elseif action == "IsEnabled" then
+					return Variables.CameraStabilization.IsEnabled()
+				elseif action == "GetState" then
+					return Variables.CameraStabilization.GetState()
+				end
+			end
 		end;
 
 		-- Thanks to Tiffany352 for this base64 implementation!

@@ -1238,5 +1238,42 @@ return function(Vargs, env)
 				return args
 			end
 		};
+
+		CameraStabilization = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"camerastab", "camerastabilization", "fixcamera", "stabilizecamera"};
+			Args = {"on/off/status"};
+			Description = "Toggle camera stabilization to prevent unwanted movement during window resizing";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local action = string.lower(args[1] or "status")
+				
+				if action == "on" or action == "enable" or action == "true" then
+					Remote.Send(plr, "Function", "CameraStabilization", "Enable")
+					Remote.MakeGui(plr, "Output", {
+						Color = Color3.new(0, 1, 0);
+						Message = "Camera stabilization enabled";
+						Title = "Camera Stabilization";
+					})
+				elseif action == "off" or action == "disable" or action == "false" then
+					Remote.Send(plr, "Function", "CameraStabilization", "Disable")
+					Remote.MakeGui(plr, "Output", {
+						Color = Color3.new(1, 0.5, 0);
+						Message = "Camera stabilization disabled";
+						Title = "Camera Stabilization";
+					})
+				else
+					-- Show status
+					Remote.LoadCode(plr, [[
+						local status = Variables.CameraStabilization and Variables.CameraStabilization.IsEnabled and Variables.CameraStabilization.IsEnabled() or false
+						Remote.MakeGui(service.Player, "Output", {
+							Color = status and Color3.new(0, 1, 0) or Color3.new(1, 0.5, 0);
+							Message = "Camera stabilization is currently " .. (status and "enabled" or "disabled");
+							Title = "Camera Stabilization Status";
+						})
+					]])
+				end
+			end
+		};
 	};
 end
