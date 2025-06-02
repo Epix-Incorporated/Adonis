@@ -330,7 +330,7 @@
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="DefinesCapabilities">false</bool>
-					<bool name="Draggable">true</bool>
+					<bool name="Draggable">false</bool>
 					<bool name="Interactable">true</bool>
 					<int name="LayoutOrder">0</int>
 					<string name="Name">Drag</string>
@@ -367,6 +367,19 @@
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
+				<Item class="UIDragDetector" referent="RBX_DRAG_DETECTOR_STEAMPUNK">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="ActivatedCursorIcon"></string>
+						<string name="CursorIcon"></string>
+						<token name="DragStyle">0</token>
+						<bool name="Enabled">true</bool>
+						<string name="Name">DragDetector</string>
+						<token name="ResponseType">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
 			</Item>
 			<Item class="ImageLabel" referent="RBX571401C8395C470C96451DD5A840938F">
 				<Properties>

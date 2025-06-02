@@ -286,7 +286,7 @@
 					<token name="BorderMode">0</token>
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
-					<bool name="Draggable">true</bool>
+					<bool name="Draggable">false</bool>
 					<int name="LayoutOrder">0</int>
 					<string name="Name">Drag</string>
 					<Ref name="NextSelectionDown">null</Ref>
@@ -316,6 +316,19 @@
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
+				<Item class="UIDragDetector" referent="RBX_DRAG_DETECTOR_1">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="ActivatedCursorIcon"></string>
+						<string name="CursorIcon"></string>
+						<token name="DragStyle">0</token>
+						<bool name="Enabled">true</bool>
+						<string name="Name">DragDetector</string>
+						<token name="ResponseType">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
 			</Item>
 			<Item class="ImageLabel" referent="RBX2F7E29E864EA4A39A496A56E0A2F44C1">
 				<Properties>
