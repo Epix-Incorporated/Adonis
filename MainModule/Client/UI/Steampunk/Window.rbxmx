@@ -2053,7 +2053,22 @@ return function(data, env)
 			Main.Visible = false
 			Drag.BackgroundTransparency = Main.BackgroundTransparency
 			Drag.BackgroundColor3 = Main.BackgroundColor3
-			Drag.Size = UDim2.new(0, 200, Drag.Size.Y.Scale, Drag.Size.Y.Offset)
+			
+			-- Check the WindowMinimizeKeepWidth setting
+			local keepWidth = false
+			pcall(function()
+				if client and client.Remote then
+					keepWidth = client.Remote.Get("Setting", "WindowMinimizeKeepWidth")
+				end
+			end)
+			
+			if keepWidth then
+				-- Keep the current width but use default minimize height
+				Drag.Size = UDim2.new(Drag.Size.X.Scale, Drag.Size.X.Offset, Drag.Size.Y.Scale, Drag.Size.Y.Offset)
+			else
+				-- Default behavior: use fixed 200px width
+				Drag.Size = UDim2.new(0, 200, Drag.Size.Y.Scale, Drag.Size.Y.Offset)
+			end
 
 			if hideLabel then
 				hideLabel.Text = "+"

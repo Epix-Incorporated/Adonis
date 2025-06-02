@@ -306,6 +306,7 @@ settings.SongHint = true		           -- Display a hint with the current song nam
 settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
 settings.DefaultTheme = "Default"		   -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 settings.HiddenThemes = {}				   -- Hide themes from the theme selector tab inside the userpanel. Each theme name must be the specific name such as "Mobilius"
+settings.WindowMinimizeKeepWidth = false     -- If true, minimizing windows will preserve their current width instead of resizing to the default minimize width
 settings.Messages = {}			           -- A list of notifications shown on join. Messages can either be strings or tables. Messages are shown to HeadAdmins+ by default but tables can define a different minimum level via .Level
 settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	           -- Time between auto cleans
@@ -480,6 +481,7 @@ descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting 
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via ;music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
+descs.WindowMinimizeKeepWidth = [[ If true, minimizing windows will preserve their current width instead of resizing to the default minimize width ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
 
 descs.Messages = [[ A list of notifications shown on join. Messages can either be strings or tables. Messages are shown to HeadAdmins+ by default but tables can define a different minimum level via .Level ]]
@@ -597,6 +599,7 @@ order = {
 	"SongHint";
 	"TopBarShift";
 	"DefaultTheme";
+	"WindowMinimizeKeepWidth";
 	"ReJail";
 	"";
 	"AutoClean";
