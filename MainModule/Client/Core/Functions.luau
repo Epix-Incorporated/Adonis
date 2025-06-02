@@ -50,6 +50,10 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
+		-- Initialize camera stabilization to prevent unwanted movement during window resizing
+		if Functions.InitCameraStabilization then
+			Functions.InitCameraStabilization()
+		end
 		Functions.RunLast = nil;
 	end
 
@@ -262,6 +266,90 @@ return function(Vargs, GetEnv)
 					last = time()
 				end)
 			end
+		end;
+
+		-- Camera stabilization to prevent unwanted camera movement during window resizing
+		InitCameraStabilization = function()
+			local cam = workspace.CurrentCamera
+			local lastCameraState = {
+				CFrame = cam.CFrame,
+				CameraType = cam.CameraType,
+				CameraSubject = cam.CameraSubject,
+				FieldOfView = cam.FieldOfView,
+				ViewportSize = cam.ViewportSize
+			}
+			local isResizing = false
+			local stabilizationEnabled = true
+			local resizeDebounce = false
+
+			-- Function to save current camera state
+			local function saveCameraState()
+				if cam and cam.Parent and not isResizing then
+					lastCameraState.CFrame = cam.CFrame
+					lastCameraState.CameraType = cam.CameraType
+					lastCameraState.CameraSubject = cam.CameraSubject
+					lastCameraState.FieldOfView = cam.FieldOfView
+				end
+			end
+
+			-- Function to restore camera state
+			local function restoreCameraState()
+				if cam and cam.Parent and stabilizationEnabled and isResizing then
+					-- Only restore if the camera hasn't been intentionally changed
+					cam.CFrame = lastCameraState.CFrame
+					if lastCameraState.CameraType then
+						cam.CameraType = lastCameraState.CameraType
+					end
+					if lastCameraState.CameraSubject then
+						cam.CameraSubject = lastCameraState.CameraSubject
+					end
+					if lastCameraState.FieldOfView then
+						cam.FieldOfView = lastCameraState.FieldOfView
+					end
+				end
+			end
+
+			-- Monitor viewport size changes (window resizing)
+			cam:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+				if stabilizationEnabled and not resizeDebounce then
+					local newViewportSize = cam.ViewportSize
+					local oldViewportSize = lastCameraState.ViewportSize
+					
+					-- Check if this is actually a resize (size changed)
+					if oldViewportSize and (newViewportSize.X ~= oldViewportSize.X or newViewportSize.Y ~= oldViewportSize.Y) then
+						resizeDebounce = true
+						isResizing = true
+						lastCameraState.ViewportSize = newViewportSize
+						
+						-- Use task.defer to avoid blocking the event handler
+						task.defer(function()
+							task.wait(0.1)
+							restoreCameraState()
+							task.wait(0.1)
+							isResizing = false
+							resizeDebounce = false
+						end)
+					else
+						lastCameraState.ViewportSize = newViewportSize
+					end
+				end
+			end)
+
+			-- Periodically save camera state when not resizing
+			service.StartLoop("CameraStabilization", 0.5, function()
+				saveCameraState()
+			end)
+
+			-- Return functions to control stabilization
+			Variables.CameraStabilization = {
+				Enable = function() stabilizationEnabled = true end,
+				Disable = function() stabilizationEnabled = false end,
+				IsEnabled = function() return stabilizationEnabled end,
+				Cleanup = function()
+					service.StopLoop("CameraStabilization")
+					stabilizationEnabled = false
+				end
+			}
 		end;
 
 		-- Thanks to Tiffany352 for this base64 implementation!
