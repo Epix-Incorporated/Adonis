@@ -205,7 +205,6 @@ return function(Vargs, GetEnv)
 			local originalCameraType = nil
 			local isUIInteracting = false
 			local activeConnections = {}
-			local restoreDebounce = false
 			
 			-- Function to disable camera movement
 			local function disableCameraMovement()
@@ -219,14 +218,10 @@ return function(Vargs, GetEnv)
 			
 			-- Function to restore camera movement
 			local function restoreCameraMovement()
-				if isUIInteracting and originalCameraType and not restoreDebounce then
-					restoreDebounce = true
+				if isUIInteracting and originalCameraType then
 					CurrentCamera.CameraType = originalCameraType
 					originalCameraType = nil
 					isUIInteracting = false
-					-- Brief delay to prevent rapid toggling
-					task.wait(0.1)
-					restoreDebounce = false
 				end
 			end
 			
