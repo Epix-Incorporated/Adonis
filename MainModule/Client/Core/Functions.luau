@@ -50,9 +50,9 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-		-- Initialize camera stabilization to prevent unwanted movement during window resizing
-		if Functions.InitCameraStabilization then
-			Functions.InitCameraStabilization()
+		-- Initialize camera protection system for window interactions
+		if Functions.InitCameraProtection then
+			Functions.InitCameraProtection()
 		end
 		Functions.RunLast = nil;
 	end
@@ -197,6 +197,100 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		-- Camera protection system to prevent unwanted movement during UI interactions
+		InitCameraProtection = function()
+			local CurrentCamera = workspace.CurrentCamera
+			local UserInputService = service.UserInputService
+			local RunService = service.RunService
+			local originalCameraType = nil
+			local isUIInteracting = false
+			local activeConnections = {}
+			local restoreDebounce = false
+			
+			-- Function to disable camera movement
+			local function disableCameraMovement()
+				if not isUIInteracting and CurrentCamera.CameraType == Enum.CameraType.Custom then
+					originalCameraType = CurrentCamera.CameraType
+					isUIInteracting = true
+					-- Set camera to scriptable to prevent user input
+					CurrentCamera.CameraType = Enum.CameraType.Scriptable
+				end
+			end
+			
+			-- Function to restore camera movement
+			local function restoreCameraMovement()
+				if isUIInteracting and originalCameraType and not restoreDebounce then
+					restoreDebounce = true
+					CurrentCamera.CameraType = originalCameraType
+					originalCameraType = nil
+					isUIInteracting = false
+					-- Brief delay to prevent rapid toggling
+					task.wait(0.1)
+					restoreDebounce = false
+				end
+			end
+			
+			-- Monitor for UI dragging/resizing operations
+			local function onInputBegan(input, gameProcessedEvent)
+				if gameProcessedEvent and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) then
+					-- UI processed this input, likely window dragging/resizing
+					disableCameraMovement()
+					
+					-- Clean up previous connection if any
+					if activeConnections.inputEnded then
+						activeConnections.inputEnded:Disconnect()
+					end
+					
+					-- Clean up timeout if any
+					if activeConnections.timeoutThread then
+						task.cancel(activeConnections.timeoutThread)
+					end
+					
+					-- Wait for input to end to restore camera
+					activeConnections.inputEnded = input.Changed:Connect(function()
+						if input.UserInputState == Enum.UserInputState.End then
+							restoreCameraMovement()
+							if activeConnections.inputEnded then
+								activeConnections.inputEnded:Disconnect()
+								activeConnections.inputEnded = nil
+							end
+							if activeConnections.timeoutThread then
+								task.cancel(activeConnections.timeoutThread)
+								activeConnections.timeoutThread = nil
+							end
+						end
+					end)
+					
+					-- Timeout to ensure camera gets restored even if events fail
+					activeConnections.timeoutThread = task.delay(2, function()
+						restoreCameraMovement()
+						if activeConnections.inputEnded then
+							activeConnections.inputEnded:Disconnect()
+							activeConnections.inputEnded = nil
+						end
+					end)
+				end
+			end
+			
+			-- Connect to UserInputService
+			activeConnections.inputBegan = UserInputService.InputBegan:Connect(onInputBegan)
+			
+			-- Store cleanup function
+			Variables.CameraProtectionCleanup = function()
+				restoreCameraMovement()
+				for _, connection in activeConnections do
+					if connection then
+						if type(connection) == "thread" then
+							task.cancel(connection)
+						else
+							connection:Disconnect()
+						end
+					end
+				end
+				activeConnections = {}
+			end
+		end;
+
 		SetView = function(ob)
 			local CurrentCamera = workspace.CurrentCamera
 
@@ -265,155 +359,6 @@ return function(Vargs, GetEnv)
 					cam.CFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
 				end)
-			end
-		end;
-
-		-- Camera stabilization to prevent unwanted camera movement during window resizing
-		InitCameraStabilization = function()
-			local cam = workspace.CurrentCamera
-			local lastCameraState = {
-				CFrame = cam.CFrame,
-				CameraType = cam.CameraType,
-				CameraSubject = cam.CameraSubject,
-				FieldOfView = cam.FieldOfView,
-				ViewportSize = cam.ViewportSize,
-				LastUpdate = os.clock()
-			}
-			local isResizing = false
-			local stabilizationEnabled = true
-			local resizeDebounce = false
-			local lastUserCameraChange = 0
-
-			-- Function to check if camera change was likely user-initiated
-			local function isUserCameraChange()
-				local now = os.clock()
-				-- If camera changed recently (within 2 seconds), it might be user input
-				return (now - lastUserCameraChange) < 2
-			end
-
-			-- Function to save current camera state (only if not user-initiated)
-			local function saveCameraState()
-				if cam and cam.Parent and not isResizing and stabilizationEnabled then
-					local now = os.clock()
-					-- Only save if camera type is Custom (normal gameplay) and enough time has passed
-					if cam.CameraType == Enum.CameraType.Custom and not isUserCameraChange() then
-						lastCameraState.CFrame = cam.CFrame
-						lastCameraState.CameraType = cam.CameraType
-						lastCameraState.CameraSubject = cam.CameraSubject
-						lastCameraState.FieldOfView = cam.FieldOfView
-						lastCameraState.LastUpdate = now
-					end
-				end
-			end
-
-			-- Function to restore camera state (with additional safety checks)
-			local function restoreCameraState()
-				if cam and cam.Parent and stabilizationEnabled and isResizing then
-					local now = os.clock()
-					-- Only restore if the saved state is recent (within 5 seconds) and camera is in Custom mode
-					if lastCameraState.LastUpdate and (now - lastCameraState.LastUpdate) < 5 
-					   and cam.CameraType == Enum.CameraType.Custom then
-						cam.CFrame = lastCameraState.CFrame
-						if lastCameraState.CameraType then
-							cam.CameraType = lastCameraState.CameraType
-						end
-						if lastCameraState.CameraSubject then
-							cam.CameraSubject = lastCameraState.CameraSubject
-						end
-						if lastCameraState.FieldOfView then
-							cam.FieldOfView = lastCameraState.FieldOfView
-						end
-					end
-				end
-			end
-
-			-- Track user input that might affect camera
-			service.UserInputService.InputBegan:Connect(function(input, gameProcessed)
-				if not gameProcessed then
-					-- Track mouse and touch input that could move camera
-					if input.UserInputType == Enum.UserInputType.MouseMovement or
-					   input.UserInputType == Enum.UserInputType.Touch or
-					   input.UserInputType == Enum.UserInputType.MouseButton2 then
-						lastUserCameraChange = os.clock()
-					end
-				end
-			end)
-
-			-- Monitor viewport size changes (window resizing)
-			cam:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-				if stabilizationEnabled and not resizeDebounce then
-					local newViewportSize = cam.ViewportSize
-					local oldViewportSize = lastCameraState.ViewportSize
-					
-					-- Check if this is actually a resize (size changed significantly)
-					if oldViewportSize and 
-					   (math.abs(newViewportSize.X - oldViewportSize.X) > 10 or 
-					    math.abs(newViewportSize.Y - oldViewportSize.Y) > 10) then
-						resizeDebounce = true
-						isResizing = true
-						lastCameraState.ViewportSize = newViewportSize
-						
-						-- Use task.defer to avoid blocking the event handler
-						task.defer(function()
-							-- Wait for resize to settle
-							task.wait(0.15)
-							-- Only restore if no recent user camera input
-							if not isUserCameraChange() then
-								restoreCameraState()
-							end
-							task.wait(0.15)
-							isResizing = false
-							resizeDebounce = false
-						end)
-					else
-						lastCameraState.ViewportSize = newViewportSize
-					end
-				end
-			end)
-
-			-- Periodically save camera state when stable (less frequent)
-			service.StartLoop("CameraStabilization", 1.0, function()
-				saveCameraState()
-			end)
-
-			-- Return functions to control stabilization
-			Variables.CameraStabilization = {
-				Enable = function() 
-					stabilizationEnabled = true
-				end,
-				Disable = function() 
-					stabilizationEnabled = false
-				end,
-				IsEnabled = function() 
-					return stabilizationEnabled
-				end,
-				Cleanup = function()
-					service.StopLoop("CameraStabilization")
-					stabilizationEnabled = false
-				end,
-				-- Debug function to check current state
-				GetState = function()
-					return {
-						enabled = stabilizationEnabled,
-						isResizing = isResizing,
-						lastUpdate = lastCameraState.LastUpdate,
-						viewportSize = lastCameraState.ViewportSize
-					}
-				end
-			}
-		end;
-
-		CameraStabilization = function(action)
-			if Variables.CameraStabilization then
-				if action == "Enable" then
-					Variables.CameraStabilization.Enable()
-				elseif action == "Disable" then
-					Variables.CameraStabilization.Disable()
-				elseif action == "IsEnabled" then
-					return Variables.CameraStabilization.IsEnabled()
-				elseif action == "GetState" then
-					return Variables.CameraStabilization.GetState()
-				end
 			end
 		end;
 
