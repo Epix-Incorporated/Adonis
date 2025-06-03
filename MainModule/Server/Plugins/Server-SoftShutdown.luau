@@ -50,7 +50,7 @@ return function(Vargs, GetEnv)
 			local function sendMessage(player)
 				task.defer(function()
 					repeat task.wait(0.25) until not player or not player.Parent or teleportedPlayers[player] or Remote.Clients[tostring(player.UserId)] and Remote.Clients[tostring(player.UserId)].FinishedLoading
-					Functions.Message("Adonis", "Server Restart", "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
+					Functions.Message("Adonis", Settings.SystemTitle, "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
 				end)
 			end
 
@@ -117,7 +117,7 @@ return function(Vargs, GetEnv)
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
 
 			task.wait(2)
 
@@ -153,7 +153,7 @@ return function(Vargs, GetEnv)
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", "Server Restart", "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
 
 			if Core.DataStore then
 				Core.UpdateData("ShutdownLogs", function(logs)
