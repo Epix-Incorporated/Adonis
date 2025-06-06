@@ -1488,6 +1488,19 @@ return function(data, env)
 					end
 				};--]]
 				{
+					Text = "Keep Window Width on Minimize: ";
+					Desc = "- Preserves window width when minimizing instead of resizing to fixed width";
+					Entry = "Boolean";
+					Value = Variables.KeepWindowWidthOnMinimize or false;
+					Function = function(enabled, toggle)
+						Variables.KeepWindowWidthOnMinimize = enabled
+						local text = toggle.Text
+						toggle.Text = "Saving.."
+						Remote.Get("UpdateClient","KeepWindowWidthOnMinimize",enabled)
+						toggle.Text = text
+					end
+				};
+				{
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
 					Entry = "Keybind";
