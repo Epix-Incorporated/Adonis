@@ -1099,7 +1099,7 @@ return function(Vargs, env)
 		Sword = {
 			Prefix = Settings.Prefix;
 			Commands = {"sword", "givesword"};
-			Args = {"player", "allow teamkill (default: true)"};
+			Args = {"player", "allow teamkill (default: true)", "base dmg (default: 5)", "slash dmg (default: 10)", "lunge dmg (default: 30)"};
 			Description = "Gives the target player(s) a sword";
 			AdminLevel = "Moderators";
 			Fun = true;
@@ -1108,6 +1108,10 @@ return function(Vargs, env)
 				local config = sword:FindFirstChild("Configurations")
 				if config then
 					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
+					
+					config.BaseDamage.Value = if args[3] then assert(tonumber(args[3]), "Base Damage is not a number!") else 5
+					config.SlashDamage.Value = if args[4] then assert(tonumber(args[4]), "Slash Damage is not a number!") else 10
+					config.LungeDamage.Value = if args[5] then assert(tonumber(args[5]), "Lunge Damage is not a number!") else 30
 				end
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
@@ -2854,7 +2858,8 @@ return function(Vargs, env)
 				local decal2 = decal1:Clone()
 				decal2.Face = "Front"
 				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://138081566"
+				sound.SoundId = "rbxassetid://95156028272944" -- Alternative "rbxassetid://99986264226275" The old one that was used since audio purge: "rbxassetid://138081566"
+				sound.PlaybackSpeed = 0.22
 				sound.Looped = true
 				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
@@ -2991,7 +2996,7 @@ return function(Vargs, env)
 				decal2.Name = "Nyan2"
 
 				local sound = service.New("Sound")
-				sound.SoundId = "rbxassetid://9067256917" -- Old audio 265125691 which is gone...
+				sound.SoundId = "rbxassetid://5008970630" -- Old audio 265125691 which is gone...
 				sound.Looped = true
 				sound.Name = "ADONIS_ANIMATEAVATAR_SOUND"
 
@@ -3034,6 +3039,11 @@ return function(Vargs, env)
 					avatarAnimator.Disabled = false
 
 					sound:Play()
+					task.delay(3.35*2, function() -- Simulate nyan cat song better
+						sound:Stop()
+						sound.SoundId = "rbxassetid://9067256917"
+						sound:Play()
+					end)
 				end
 			end
 		};
@@ -3819,7 +3829,7 @@ return function(Vargs, env)
 
 		UnSeizure = {
 			Prefix = Settings.Prefix;
-			Commands = {"unseizure"};
+			Commands = {"unseizure", "unseize"};
 			Args = {"player"};
 			Description = "Removes the effects of the seizure command";
 			Fun = true;

@@ -860,7 +860,7 @@ return function(Vargs, GetEnv)
 				Parent = p;
 				Name = "Decal";
 				Face = 2;
-				Texture = `rbxassetid://{decalId}`;
+				Texture = `rbxthumb://type=Asset&id={decalId}&w=420&h=420`;
 				Transparency = 0;
 			}) else nil
 
@@ -1456,7 +1456,7 @@ return function(Vargs, GetEnv)
 				if decal and decal~=0 then
 					local dec = service.New("Decal", p)
 					dec.Face = 2
-					dec.Texture = `http://www.roblox.com/asset/?id={decal}`
+					dec.Texture = `rbxthumb://type=Asset&id={decal}&w=420&h=420`
 					dec.Transparency=0
 				end
 				p.Size = Vector3.new(.2,.2,.2)

@@ -328,10 +328,9 @@ return function(Vargs, env)
 					Functions.Hint("Operation cancelled", {plr})
 				end
 			end,
-		}
+		};
 
-		--[[
-		TaskManager = { --// Unfinished
+		TaskManager = server.Data and server.Data.NightlyMode and { --// Unfinished
 			Prefix = Settings.Prefix;
 			Commands = {"taskmgr", "taskmanager"};
 			Args = {};
@@ -342,6 +341,5 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "TaskManager", {})
 			end
 		};
-		--]]
 	}
 end

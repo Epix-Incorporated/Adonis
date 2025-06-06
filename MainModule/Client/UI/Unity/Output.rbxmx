@@ -433,7 +433,7 @@ return function(data, env)
 	main.BackgroundColor3 = color
 
 	t2.Text = msg
-	t2.FontFace = Font.new("rbxasset://fonts/families/Montserrat.json")
+	t2.Font = Enum.Font.Roboto
 	consoleOpenTween:Play()
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
 	gTable.Ready()

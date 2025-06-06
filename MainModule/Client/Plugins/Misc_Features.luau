@@ -38,6 +38,7 @@ return function(Vargs, GetEnv)
 			Logs:AddLog("Script", `Attempted to add {ind} to legacy Remote.Unencrypted. Moving to Remote.Commands`)
 		end
 	})
+	client.Folder:SetSpecial("Shared", client.Shared)
 	Functions.GetRandom = function(pLen)
 		local random = math.random
 		local format = string.format

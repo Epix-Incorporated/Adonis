@@ -3,6 +3,7 @@ client = nil
 Pcall = nil
 Routine = nil
 logError = nil
+Folder = nil
 
 local main
 local ErrorHandler
@@ -695,6 +696,20 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local num = 0
 			for _ in tab do num += 1 end
 			return num
+		end;
+
+		CompareTables = function(t1, t2)
+			if service.CountTable(t1) ~= service.CountTable(t2) then
+				return false
+			end
+
+			for k, _ in t1 do
+				if not rawequal(t1[k], t2[k]) then
+					return false
+				end
+			end
+
+			return true
 		end;
 
 		Debounce = function(key, func)
@@ -1461,7 +1476,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			end
 		end;
-		__tostring = "Service";
+		__tostring = function()
+			return "Service"
+		end;
 		__metatable = if main.Core and main.Core.DebugMode then nil else "Service";
 	})
 
@@ -1474,7 +1491,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	service.HelperService = HelperService
 	service.ThreadService = ThreadService
 	service.EventService = EventService
-	service.Signal = require(script.Parent.Shared.GoodSignal)
+	service.Signal = require((main.Shared or (main.Folder or Folder).Parent.Shared).GoodSignal)
 
 	if client ~= nil then
 		for i, val in service do

@@ -278,18 +278,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		if Settings.CustomRanks then
-			local Ranks = Settings.Ranks
-			for name, users in Settings.CustomRanks do
-				if not Ranks[name] then
-					Ranks[name] = {
-						Level = 1;
-						Users = users;
-					};
-				end
-			end
-		end
-
 		if Settings.CommandCooldowns then
 			for cmdName, cooldownData in Settings.CommandCooldowns do
 				local realCmd = Admin.GetCommand(cmdName)
@@ -1461,22 +1449,15 @@ return function(Vargs, GetEnv)
 
 		StringToComLevel = function(str)
 			local strType = type(str)
+			if strType == "string" and string.lower(str) == "players" then
+				return 0
+			end
 			if strType == "number" then
 				return str
-			elseif strType == "string" then
-				if string.lower(str) == "players" then
-					return 0
-				end
-
-				local lvl = Settings.Ranks[str]
-				if not lvl then
-					return -1
-				end
-
-				return lvl.Level
 			end
 
-			return tonumber(str)
+			local lvl = Settings.Ranks[str]
+			return (lvl and lvl.Level) or tonumber(str)
 		end;
 
 		CheckComLevel = function(plrAdminLevel, comLevel)
@@ -1513,7 +1494,7 @@ return function(Vargs, GetEnv)
 				return false, "This command has been disabled."
 			end
 
-			if Variables.IsStudio and cmd.NoStudio then
+			if Variables.IsStudio and cmd.NoStudio and not Core.DebugMode then
 				return false, "This command cannot be used in Roblox Studio."
 			end
 
