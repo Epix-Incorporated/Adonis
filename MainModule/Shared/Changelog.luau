@@ -3,8 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v267 2025-05-29 10:48 UTC] @Dimenpsyonal";
+	"[v267 2025-06-06 13:09 UTC] @Dimenpsyonal";
 	"Disable code execution on new loaders by default";
+	"Add Keep Window Width on Minimize setting to preserve GUI window width (#1907)";
 	"(Git/WalkerOfBacon) Change fix lighting command from ;fix to ;resetlighting (#1873)";
 	"(Git/ccuser44) Add ;back alias to ;return (#1894)";
 	"(Git/EasternBloxxer) Made all asset ids work on capes and particles (#1895)";
