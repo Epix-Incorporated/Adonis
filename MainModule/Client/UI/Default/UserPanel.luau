@@ -539,7 +539,7 @@ return function(data, env)
 							Functions.NewCape({
 								Color = type(currentColor) == "table" and Color3.new(unpack(currentColor)) or currentColor or "White";
 								Parent = service.Players.LocalPlayer.Character;
-								Material = donorData.Cape.Image or "Neon";
+								Material = donorData.Cape.Material or "Neon";
 								--Reflectance = reflect;
 								Decal = donorData.Cape.Image;
 							})
