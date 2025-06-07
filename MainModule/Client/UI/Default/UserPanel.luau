@@ -533,13 +533,13 @@ return function(data, env)
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 
-				if settingsData.DonorCapes and playerData.isDonor then
+				if settingsData.Settings.DonorCapes and playerData.isDonor then
 					if type(donorData) == "table" and donorData.Cape and type(donorData.Cape) == "table" then
 						if donorData.Enabled and service.Players.LocalPlayer.Character then
 							Functions.NewCape({
 								Color = type(currentColor) == "table" and Color3.new(unpack(currentColor)) or currentColor or "White";
 								Parent = service.Players.LocalPlayer.Character;
-								Material = donorData.Cape.Image or "Neon";
+								Material = donorData.Cape.Material or "Neon";
 								--Reflectance = reflect;
 								Decal = donorData.Cape.Image;
 							})
