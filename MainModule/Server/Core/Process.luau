@@ -650,6 +650,7 @@ return function(Vargs, GetEnv)
 							Text = `{p.Name}: {filtered}`;
 							Desc = tostring(filtered);
 							Player = p;
+							Channel = "All"; -- Default channel, to be replaced with actual channel if available
 						})
 
 						if Settings.ChatCommands then
@@ -691,6 +692,7 @@ return function(Vargs, GetEnv)
 						Text = `[MUTED] {p.Name}: {filtered}`;
 						Desc = tostring(filtered);
 						Player = p;
+						Channel = "All"; -- Default channel, to be replaced with actual channel if available
 					})
 					service.Events.MutedPlayerChat_Filtered:Fire(p, filtered)
 				end

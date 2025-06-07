@@ -215,6 +215,19 @@ return function(Vargs, GetEnv)
 					return updater(data)
 				end
 			end;
+
+			ChatLogs = function(plr, data)
+				local channel = data and data.Channel
+				local logs = {}
+				local chats = Logs.Chats
+				local asTable = chats.__meta == "DLL" and chats:GetAsTable() or chats
+				for _, log in ipairs(asTable) do
+					if not channel or (log.Channel == channel) then
+						table.insert(logs, log)
+					end
+				end
+				return logs
+			end;
 		};
 	};
 
