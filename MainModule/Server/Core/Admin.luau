@@ -278,6 +278,23 @@ return function(Vargs, GetEnv)
 			end
 		end
 
+		if Settings.LoadAdminsFromDS then
+			for rank in Settings.Ranks do
+				service.Events[`DataStoreAdd_Settings.Ranks.{rank}.Users`]:Connect(function(data)
+					local userId = if type(data) == "string"
+						then (tonumber(string.match(data, ":(%d+)$")) or tonumber(data) or data)
+						elseif type(data) == "table" then (tonumber(data.UserId) or data.Name)
+						else nil
+
+					local plr = type(userId) == "number" and service.Players:GetPlayerByUserId(userId)
+						or type(userId) == "string" and service.Players:FindFirstChild(userId)
+					if plr then
+						Admin.UpdateCachedLevel(plr)
+					end
+				end)
+			end
+		end
+
 		if Settings.CommandCooldowns then
 			for cmdName, cooldownData in Settings.CommandCooldowns do
 				local realCmd = Admin.GetCommand(cmdName)
