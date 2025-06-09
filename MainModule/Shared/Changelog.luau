@@ -3,6 +3,10 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[Patch v267.1 2025-06-07 18:19 UTC] @Dimenpsyonal";
+	"(Git/kaiserandaxl) Fix updateStatus for Capes in UserPanel (#1914)";
+	"(Git/nixerus) Fix persistent view behaviour (#1913)";
+	"";
 	"[v267 2025-06-06 13:09 UTC] @Dimenpsyonal";
 	"Disable code execution on new loaders by default";
 	"Add Keep Window Width on Minimize setting to preserve GUI window width (#1907)";

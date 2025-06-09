@@ -1507,45 +1507,43 @@ return function(Vargs, env)
 					end
 					
 					viewPlayer(plr, rootPart, hum)
-					
-					if v.UserId ~= plr.UserId then
-						local persist = args[2]
-						local event
 
-						event = v.CharacterAdded:Connect(function(char)	
-							task.wait(0.5)
-							
-							local newhum = char:FindFirstChildOfClass("Humanoid")
-							local newRootPart = char.PrimaryPart
-							
-							if Variables.PersistView[plr.UserId] and Variables.PersistView[plr.UserId].Viewing then
-								if Variables.PersistView[plr.UserId].Viewing.UserId == v.UserId then
-									viewPlayer(plr, newRootPart, newhum)
-								else
-									event:Disconnect()
-								end
-								return;
-							elseif Variables.PersistView[plr.UserId] and not Variables.PersistView[plr.UserId].Viewing then
-								Variables.PersistView[plr.UserId] = nil
-								Remote.Send(plr, "Function", "SetView", "reset")
-								event:Disconnect()
-								
-								return;
-							else
-								if persist and persist:lower() == "false" then
-									Remote.Send(plr, "Function", "SetView", "reset")
-									event:Disconnect()
-									return;
-								else
-									Variables.PersistView[plr.UserId] = {
-										Viewing = v
-									}
-
-									viewPlayer(plr, newRootPart, newhum)
-								end
-							end
-						end)
+					if v.UserId == plr.UserId and Variables.PersistView[plr.UserId] then
+						Variables.PersistView[plr.UserId] = nil
+						continue
 					end
+
+					local persist = args[2]
+					local event
+
+					if persist and persist:lower() == "false" then
+						continue
+					end
+
+					Variables.PersistView[plr.UserId] = {
+						Viewing = v
+					}
+
+					event = v.CharacterAdded:Connect(function(char)	
+						task.wait(0.5)
+							
+						local newhum = char:FindFirstChildOfClass("Humanoid")
+						local newRootPart = char.PrimaryPart
+							
+						if Variables.PersistView[plr.UserId] and Variables.PersistView[plr.UserId].Viewing then
+							if Variables.PersistView[plr.UserId].Viewing.UserId == v.UserId then
+								viewPlayer(plr, newRootPart, newhum)
+							else
+								event:Disconnect()
+							end
+							return;
+						else
+							Variables.PersistView[plr.UserId] = nil
+							event:Disconnect()
+							
+							return;
+						end
+					end)
 				end
 			end
 		};
@@ -1578,7 +1576,12 @@ return function(Vargs, env)
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a character and/or HumanoidRootPart`, {plr})
 					end
+
 					Remote.Send(v, "Function", "SetView", "reset")
+
+					if Variables.PersistView[v.UserId] then
+						Variables.PersistView[v.UserId] = nil
+					end
 				end
 			end
 		};
