@@ -1,7 +1,11 @@
 return {
-	"Version: 267";
+	"Version: 268";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v268 2025-06-10 19:04 UTC] @Dimenpsyonal";
+	"(Git/fxeP1) Fix first joined player DS ranks (#1918)";
+	"(Git/fxeP1) Fix security related to Client G_API (#1919)";
 	"";
 	"[Patch v267.1 2025-06-07 18:19 UTC] @Dimenpsyonal";
 	"(Git/kaiserandaxl) Fix updateStatus for Capes in UserPanel (#1914)";
