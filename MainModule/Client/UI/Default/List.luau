@@ -114,15 +114,48 @@ return function(data, env)
 		return newTab
 	end
 
-	function doSearch(tab, text)
-		local found = {}
-		text = string.lower(tostring(text)):gsub("%%", "%%%%"):gsub("%[", "%%["):gsub("%]", "%%]")
+	function doSearch(tab, query)
+		if query == "" then
+			return tab
+		end
+	
+		local priorities = {{}, {}, {}, {}, {}, {}}
+		local total = 0
+		query = string.lower(query)
+	
 		for _, v in ipairs(tab) do
-			if text == "" or (type(v) == "string" and string.find(string.lower(v),text)) or (type(v) == "table" and ((v.Text and string.find(string.lower(tostring(v.Text)), text)) or (v.Filter and string.find(string.lower(v.Filter),text)))) then
-				table.insert(found, v)
+			local isTable = type(v) == "table"
+			local text = (isTable and v.Text) and string.lower(v.Text) or string.lower(tostring(v))
+			local desc = (isTable and v.Desc) and string.lower(v.Desc)
+			local filter = (isTable and v.Filter) and string.lower(v.Filter)
+	
+			if text == search then
+				total += 1
+				table.insert(priorities[1], v)
+			elseif string.find(text, query, 1, true) then
+				total += 1
+				table.insert(priorities[2], v)
+			elseif desc == search then
+				total += 1
+				table.insert(priorities[3], v)
+			elseif desc and string.find(desc, query, 1, true) then
+				total += 1
+				table.insert(priorities[4], v)
+			elseif filter == search then
+				total += 1
+				table.insert(priorities[5], v)
+			elseif filter and string.find(filter, query, 1, true) then
+				total += 1
+				table.insert(priorities[6], v)
 			end
 		end
-
+	
+		local found = table.create(total)
+	
+		for _, v in ipairs(priorities) do
+			table.move(v, 1, #v, #found + 1, found)
+		end
+	
 		return found
 	end
 

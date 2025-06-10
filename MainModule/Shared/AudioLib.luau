@@ -97,7 +97,7 @@ function AudioLib:__newindex(k, v)
 	end
 end
 
-function AudioLib:tostring()
+function AudioLib:__tostring()
 	return "AudioLib"
 end
 

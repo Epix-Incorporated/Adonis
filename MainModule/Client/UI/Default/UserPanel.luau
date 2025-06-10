@@ -499,7 +499,6 @@ return function(data, env)
 		Variables.Aliases = playerData.Aliases or {}
 		commandPrefix = if type(chatMod.Prefix) == "table" then chatMod.Prefix[1] else chatMod.Prefix
 
-
 		for _, v in loadingIcons do
 			v:Destroy()
 		end
@@ -533,6 +532,23 @@ return function(data, env)
 
 			local function updateStatus()
 				dStatus.Text = "Updating..."
+
+				if settingsData.Settings.DonorCapes and playerData.isDonor then
+					if type(donorData) == "table" and donorData.Cape and type(donorData.Cape) == "table" then
+						if donorData.Enabled and service.Players.LocalPlayer.Character then
+							Functions.NewCape({
+								Color = type(currentColor) == "table" and Color3.new(unpack(currentColor)) or currentColor or "White";
+								Parent = service.Players.LocalPlayer.Character;
+								Material = donorData.Cape.Material or "Neon";
+								--Reflectance = reflect;
+								Decal = donorData.Cape.Image;
+							})
+						elseif service.Players.LocalPlayer.Character then
+							Functions.RemoveCape(service.Players.LocalPlayer.Character)
+						end
+					end
+				end
+
 				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
 				task.wait(0.5)
 				dStatus.Text = "Donated"
@@ -681,7 +697,7 @@ return function(data, env)
 
 								local img = pWindow:Add("ImageLabel", {
 									BackgroundTransparency = 1;
-									Image = `rbxassetid://{Functions.GetTexture(currentTexture)}`;
+									Image = `rbxthumb://type=Asset&id={currentTexture}&w=420&h=420`;
 									Size = UDim2.new(1, -10, 1, -80);
 									Position = UDim2.new(0, 5, 0, 35);
 								})
@@ -701,7 +717,7 @@ return function(data, env)
 												local num = tonumber(text)
 												if num then
 													lastValid = num
-													img.Image = `rbxassetid://{Functions.GetTexture(num)}`;
+													img.Image = `rbxthumb://type=Asset&id={num}&w=420&h=420`;
 												else
 													new.Text = lastValid
 												end
@@ -1471,6 +1487,19 @@ return function(data, env)
 						toggle.Text = text
 					end
 				};--]]
+				{
+					Text = "Keep Window Width on Minimize: ";
+					Desc = "- Preserves window width when minimizing instead of resizing to fixed width";
+					Entry = "Boolean";
+					Value = Variables.KeepWindowWidthOnMinimize or false;
+					Function = function(enabled, toggle)
+						Variables.KeepWindowWidthOnMinimize = enabled
+						local text = toggle.Text
+						toggle.Text = "Saving.."
+						Remote.Get("UpdateClient","KeepWindowWidthOnMinimize",enabled)
+						toggle.Text = text
+					end
+				};
 				{
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";

@@ -139,9 +139,10 @@ local log = function(...)
 end
 
 --// Dump log on disconnect
+local Folder = script.Parent
 local isStudio = game:GetService("RunService"):IsStudio()
 game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
-	if not isStudio then
+	if not isStudio or Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
 		print("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
 		dumplog()
 	end
@@ -149,7 +150,6 @@ end)
 
 local unique = {}
 local origEnv = getfenv()
-local Folder = script.Parent
 setfenv(1, setmetatable({}, { __metatable = unique }))
 local startTime = time()
 local oldInstNew = Instance.new
@@ -170,9 +170,10 @@ end
 
 local function logError(...)
 	warn("ERROR: ", ...)
+	table.insert(clientLog, table.concat({"ERROR:", ...}, " "))
 
 	if client and client.Remote then
-		client.Remote.Send("LogError", table.concat({ ... }, " "))
+		client.Remote.Send("LogError", table.concat({...}, " "))
 	end
 end
 
@@ -364,7 +365,7 @@ locals = {
 
 log("Create service metatable")
 
-service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
+service = require(Folder.Parent.Shared.Service)(function(eType, msg, desc, ...)
 	--warn(eType, msg, desc, ...)
 	local extra = { ... }
 	if eType == "MethodError" then
@@ -543,11 +544,20 @@ return service.NewProxy({
 			data.DebugMode = false
 		end
 
+		log("Adding ACLI logs to the client logs")
+		if data.acliLogs then
+			for _, v in data.acliLogs do
+				log(v)
+			end
+		end
+
+		log("Clearing environment")
 		setfenv(1, setmetatable({}, { __metatable = unique }))
 
+		log("Loading necessary client values")
 		client.Folder = Folder
 		client.UIFolder = Folder:WaitForChild("UI", 9e9)
-		client.Shared = Folder:WaitForChild("Shared", 9e9)
+		client.Shared = Folder.Parent:WaitForChild("Shared", 9e9)
 
 		client.Loader = data.Loader
 		client.Module = data.Module
@@ -578,11 +588,13 @@ return service.NewProxy({
   	  	  	end
 	  	end
 
+		log("Fomratting chatlogs")
 		for i, line in ipairs(client.Changelog) do
         	client.FormattedChangelog[i] = applyColour(line)
   	 	end
 
 		--// Setup MatIcons
+		log("Setting up material icons")
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
 			client.MatIcons = setmetatable({}, {

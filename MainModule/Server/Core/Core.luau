@@ -175,11 +175,21 @@ return function(Vargs, GetEnv)
 			Ranks = true;
 			Commands = true;
 
+			CreatorPowers = true;
 			CodeExecution = true;
+			PlayerDataKeyBlacklist = true;
+
+			["Commands.MakeScript"] = true;
+			["Commands.ScriptBuilder"] = true;
+			["Commands.ScriptEditor"] = true;
+
+			["Variables.ScriptBuilder"] = true;
+			["Variables.ScriptEditor"] = true;
+			["Variables.DeveloperWhitelist"] = true;
+			["Variables.UrgentModuleId"] = true;
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
-			["Variables.UrgentModuleId"] = true;
 		};
 
 		--// Prevent certain keys from loading from the DataStore
@@ -320,34 +330,34 @@ return function(Vargs, GetEnv)
 				end
 
 				loader.Object:Destroy()
-			end;
+			end
 
 			local depsName = service.HttpService:GenerateGUID(false)
 			local folder = server.Client:Clone()
-			local acli = Deps.ClientMover:Clone();
+			local acli = Deps.ClientMover:Clone()
 			local client = folder.Client
-			local parentObj = parent or service.StarterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
+			local parentObj = parent or service.StarterPlayer:FindFirstChildOfClass("StarterPlayerScripts")
 			local clientLoader = {
 				Removing = false;
-			};
+			}
 
 			Core.MockClientKeys = Core.MockClientKeys or {
 				Special = depsName;
 				Module = client;
 			}
 
-			local depsName = Core.MockClientKeys.Special;
+			local depsName = Core.MockClientKeys.Special
 			local specialVal = service.New("StringValue")
 			specialVal.Value = `{Core.Name}\\{depsName}`
 			specialVal.Name = "Special"
 			specialVal.Parent = folder
 
-			acli.Parent = folder;
-			acli.Disabled = false;
+			acli.Parent = folder
+			acli.Disabled = false
 
-			folder.Archivable = false;
-			folder.Name = depsName; --"Adonis_Client"
-			folder.Parent = parentObj;
+			folder.Archivable = false
+			folder.Name = depsName --"Adonis_Client"
+			folder.Parent = parentObj
 
 			if not parent then
 				local oName = folder.Name
@@ -411,7 +421,7 @@ return function(Vargs, GetEnv)
 				folder.Parent = parentObj
 			end)
 
-			clientLoader.Removing = false;
+			clientLoader.Removing = false
 
 			AddLog("Script", "Created client")
 		end;
@@ -419,41 +429,44 @@ return function(Vargs, GetEnv)
 		HookClient = function(p)
 			local key = tostring(p.UserId)
 			local keys = Remote.Clients[key]
+
 			if keys then
 				local depsName = service.HttpService:GenerateGUID(false)
 				local eventName = service.HttpService:GenerateGUID(false)
-				local folder = server.Client:Clone()
-				local acli = Deps.ClientMover:Clone();
-				local client = folder.Client
+				local acli = Deps.ClientMover:Clone()
 				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
-				local parentObj = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
+				local folder = service.New("Folder") --// ^^^^ NO, the sun is a deadly lazer. - Roblox CEO, CEO of CEOs
+				local parentObj = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600)
 
 				if not p.Parent then
 					return false
 				elseif not parentObj then
-					p:Kick("[CLI-102495] Loading Error - PlayerGui Missing (Waited 10 Minutes)")
+					p:Kick("[ACLI-0x102495]: Loading Error - PlayerGui Missing (Waited 10 Minutes)")
 					return false
 				end
 
-				local container = service.New("ScreenGui");
-				container.ResetOnSpawn = false;
-				container.Enabled = false;
-				container.Name = "\0";
+				local container = service.New("ScreenGui")
+				container.ResetOnSpawn = false
+				container.Enabled = false
+				container.Name = "\0"
+
+				server.Client:Clone().Parent = folder
+				server.Shared:Clone().Parent = folder
 
 				local specialVal = service.New("StringValue")
 				specialVal.Value = `{Core.Name}\\{depsName}`
 				specialVal.Name = "Special"
-				specialVal.Parent = folder
+				specialVal.Parent = folder.Client
 
 				keys.Special = depsName
 				keys.EventName = eventName
-				keys.Module = client
+				keys.Module = folder.Client
 
-				acli.Parent = folder;
-				acli.Disabled = false;
+				acli.Parent = folder
+				acli.Disabled = false
 
-				folder.Name = "Adonis_Client"
-				folder.Parent = container;
+				folder.Name = depsName--"Adonis_Client"
+				folder.Parent = container
 
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
@@ -473,7 +486,7 @@ return function(Vargs, GetEnv)
 
 						leaveEvent:Disconnect()
 						leaveEvent = nil
-						event:Disconnect();
+						event:Disconnect()
 						event = nil
 					end
 				end)
@@ -483,14 +496,14 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not ok then
-					p:Kick(`[CLI-192385] Loading Error [HookClient Error: {err}]`)
+					p:Kick(`[ACLI-0x192385]: Loading Error [HookClient Error: {err}]`)
 					return false
 				else
 					return true
 				end
 			else
 				if p and p.Parent then
-					p:Kick("[CLI-5691283] Loading Error [HookClient: Keys Missing]")
+					p:Kick("[ACLI-0x5691283]: Loading Error [HookClient: Keys Missing]")
 				end
 			end
 		end;
@@ -772,11 +785,20 @@ return function(Vargs, GetEnv)
 		end;
 
 		DataStoreEncode = function(key)
-			if Core.DS_RESET_SALTS[key] then
-				key = Core.DS_RESET_SALTS[key] .. key
-			end
+            if Core.DS_RESET_SALTS[key] then
+                key = Core.DS_RESET_SALTS[key] .. key
+            end
+            
+            -- Only consider salting if the key isn't a number (like a player ID) and if the setting isn't true
+            local IsPlayer = tonumber(key) ~= nil
+            local SettingIsTrue = server.Settings.DontSaltDataStoreKey == true
+            local ShouldSaltKey = not IsPlayer and not SettingIsTrue
+            local EncryptionKey = Settings.DataStoreKey
+            if ShouldSaltKey then
+                EncryptionKey = ("SALT_" .. Settings.DataStoreKey):sub(1,50)
+            end
 
-			return Functions.Base64Encode(Remote.Encrypt(tostring(key), ("SALT_" .. Settings.DataStoreKey):sub(1,50)))
+            return Functions.Base64Encode(Remote.Encrypt(tostring(key), EncryptionKey))
 		end;
 
 		SaveData = function(...)

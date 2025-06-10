@@ -1944,7 +1944,11 @@ return function(data, env)
 			Main.Visible = false
 			Drag.BackgroundTransparency = Main.BackgroundTransparency
 			Drag.BackgroundColor3 = Main.BackgroundColor3
-			Drag.Size = UDim2.new(0, 200, Drag.Size.Y.Scale, Drag.Size.Y.Offset)
+			-- Check if user wants to keep width on minimize
+			local keepWidth = client and client.Variables and client.Variables.KeepWindowWidthOnMinimize
+			local currentWidth = Drag.Size.X.Offset
+			local newWidth = keepWidth and math.max(currentWidth, MinSize[1]) or 200
+			Drag.Size = UDim2.new(0, newWidth, Drag.Size.Y.Scale, Drag.Size.Y.Offset)
 
 			if hideLabel then
 				hideLabel.Text = "+"

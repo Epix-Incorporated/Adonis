@@ -310,7 +310,7 @@ locals = {
 	Pcall = Pcall;
 };
 
-service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
+service = require(Folder.Parent.Shared.Service)(function(eType, msg, desc, ...)
 	local extra = table.pack(...)
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
@@ -505,6 +505,13 @@ return service.NewProxy({
 			end
 		end
 
+		if data.NightlyMode then -- Wrap things that should be wrapped?
+			for _, v in {"Folder", "Deps", "CommandModules", "Client", "Dependancies", "PluginsFolder"} do
+				server[v] = service.Wrap(server[v])
+			end
+			locals.Folder = service.Wrap(locals.Folder)
+		end
+
 		if data.DebugMode == true then
 			if not silentStartup then
 				warn("Adonis was loaded with DebugMode enabled; This is intended for development use only, certain debug features intended for development use will be enabled, which can weaken Adonis's security in a production environment.")
@@ -535,7 +542,7 @@ return service.NewProxy({
 		server.LoadPackage = LoadPackage
 		server.ServiceSpecific = ServiceSpecific
 
-		server.Shared = Folder.Shared
+		server.Shared = Folder.Parent.Shared
 		server.ServerPlugins = data.ServerPlugins
 		server.ClientPlugins = data.ClientPlugins
 		server.Client = Folder.Parent.Client
@@ -548,16 +555,8 @@ return service.NewProxy({
 			--script:Destroy() -- Unnecessary and potentially harmful?
 		end
 
-		--// Copy client themes, plugins, and shared modules to the client folder
+		--// Copy client themes and plugins modules to the client folder
 		local packagesToRunWithPlugins = {}
-		local shared = service.New("Folder", {
-			Name = "Shared";
-			Parent = server.Client;
-		})
-
-		for _, module in ipairs(Folder.Shared:GetChildren()) do
-			module:Clone().Parent = shared
-		end
 
 		for _, module in ipairs(data.ClientPlugins or {}) do
 			if type(module) ~= "string" then
@@ -598,7 +597,7 @@ return service.NewProxy({
 		end
 
 		--// Attempts to patch Settings.Prefix to fix issues
-		if type(server.Settings.Prefix) == "table" then
+		if type(server.Settings.Prefix) == "table" then -- TODO: Move to backwards compatibility module?
 			setmetatable(server.Settings.Prefix, {
 				__concat = function(self, value)
 					return `{self[1]}{value}`
@@ -606,13 +605,12 @@ return service.NewProxy({
 				__tostring = function(self)
 					return self[1]
 				end,
-
+				__index = string, -- Fix backwards compatibility for namecall usage of prefix
+				__eq = function(self, v)
+					return rawequal(self, v) or table.find(self, v) or service.CompareTables(self, v) or false
+				end,
 			})
 		end
-
-
-
-
 
 		--// Bind cleanup
 		service.DataModel:BindToClose(function(...)

@@ -1235,7 +1235,7 @@ return function(Vargs, GetEnv)
 					task.wait()
 				end
 
-				event:Fire("SetSetting", {
+				task.defer(event.Fire, event, "SetSetting", {
 					Creator = player;
 					Friendly = friendly;
 					TeamColor = player.TeamColor;
@@ -1249,7 +1249,7 @@ return function(Vargs, GetEnv)
 				})
 
 				if walk then
-					event:Fire("Init")
+					task.defer(task.defer, event.Fire, event, "Init")
 				end
 
 				table.insert(Variables.Objects, new)
@@ -1642,7 +1642,9 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SHA256 = require(server.Shared.HashLib).SHA256;
+		SHA256 = function(...)
+			return require(server.Shared.HashLib).SHA256(...)
+		end;
 
 		ParseBrickColor = function(str: string, allowNil: boolean?)
 			if not str and allowNil then

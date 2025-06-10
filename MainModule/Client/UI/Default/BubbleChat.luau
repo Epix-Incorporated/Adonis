@@ -22,19 +22,19 @@ return function(data, env)
 		
 		if window then
 			local box = window:Add("TextBox",{
-				Text = "Click here or press \";\" to chat";
-				PlaceholderText = "Click here or press \";\" to chat";
+				Text = `Click here or press "{client.Functions.KeyCodeToName(Enum.KeyCode.Semicolon.Value)}" to chat`;
+				PlaceholderText = `Click here or press "{client.Functions.KeyCodeToName(Enum.KeyCode.Semicolon.Value)}" to chat`;
 				BackgroundTransparency = 1;
 				TextScaled = true;
 				TextSize = 20;
 			})
 			
 			box.FocusLost:Connect(function(enterPressed)
-				if enterPressed and service.Player.Character:FindFirstChild('Head') and color and box.Text~='Click here or press ";" to chat' then
+				if enterPressed and service.Player.Character:FindFirstChild('Head') and color and box.Text~=`Click here or press "{client.Functions.KeyCodeToName(Enum.KeyCode.Semicolon.Value)}" to chat` then
 					if #box.Text > 0 then
 						service.ChatService:Chat(service.Player.Character.Head, service.LaxFilter(box.Text), color)
 					end
-					box.Text = 'Click here or press ";" to chat'
+					box.Text = `Click here or press "{client.Functions.KeyCodeToName(Enum.KeyCode.Semicolon.Value)}" to chat`
 				end
 			end)
 			

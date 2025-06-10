@@ -113,12 +113,12 @@ return function(Vargs, GetEnv)
 		Arguments = 0;
 		Description = "Restart the server, placing all of the players in a reserved server and teleporting each of them to the new server";
 		Function = function(p,args,data)
-			if service.RunService:IsStudio() then return end
+			if service.RunService:IsStudio() and not server.Core.DebugMode then return end
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
-
+		
 			task.wait(2)
 
 			for _, v in Players:GetPlayers() do

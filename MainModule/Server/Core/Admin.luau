@@ -278,15 +278,20 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		if Settings.CustomRanks then
-			local Ranks = Settings.Ranks
-			for name, users in Settings.CustomRanks do
-				if not Ranks[name] then
-					Ranks[name] = {
-						Level = 1;
-						Users = users;
-					};
-				end
+		if Settings.LoadAdminsFromDS then
+			for rank in Settings.Ranks do
+				service.Events[`DataStoreAdd_Settings.Ranks.{rank}.Users`]:Connect(function(data)
+					local userId = if type(data) == "string"
+						then (tonumber(string.match(data, ":(%d+)$")) or tonumber(data) or data)
+						elseif type(data) == "table" then (tonumber(data.UserId) or data.Name)
+						else nil
+
+					local plr = type(userId) == "number" and service.Players:GetPlayerByUserId(userId)
+						or type(userId) == "string" and service.Players:FindFirstChild(userId)
+					if plr then
+						Admin.UpdateCachedLevel(plr)
+					end
+				end)
 			end
 		end
 
@@ -1506,7 +1511,7 @@ return function(Vargs, GetEnv)
 				return false, "This command has been disabled."
 			end
 
-			if Variables.IsStudio and cmd.NoStudio then
+			if Variables.IsStudio and cmd.NoStudio and not Core.DebugMode then
 				return false, "This command cannot be used in Roblox Studio."
 			end
 
