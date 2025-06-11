@@ -367,7 +367,7 @@ local service = wrappedEnv.Service
 
 	Commands.DebugLoadstring = {
 		Prefix = Settings.Prefix;
-		Commands = {"debugloadstring";};
+		Commands = {"debugloadstring"};
 		Args = {"code";};
 		Description = "DEBUG LOADSTRING";
 		Hidden = true;
@@ -406,6 +406,42 @@ local service = wrappedEnv.Service
 		Function = function(plr: Player, args: {string})
 			for _, v in service.GetPlayers(plr, args[1]) do
 				Anti.Detected(v, table.unpack(args, 2))
+			end
+		end
+	};
+
+	Commands.DebugDonor = {
+		Prefix = Settings.Prefix;
+		Commands = {"debugdonor", "debugadddonor", "debugsetdonor", "debuggetdoor"};
+		Args = {"player", "useids"};
+		Description = "Allows you to temporarily add donors";
+		Hidden = true;
+		Debug = true;
+		NoFilter = true;
+		AdminLevel = "HeadAdmins";
+		Function = function(plr: Player, args: {string})
+			local useIds = args[2] and string.lower(args[2]) == "true"
+
+			for _, v in useIds and string.split(args[1], ",") or service.GetPlayers(plr, args[1]) do
+				Variables.CachedDonors[not useIds and v.UserId or tonumber(v))] = os.time()
+			end
+		end
+	};
+
+	Commands.DebugRemoveDonor = {
+		Prefix = Settings.Prefix;
+		Commands = {"debugremovedonor", "debugdeletedonor", "debugunsetdonor", "debugantidonor"};
+		Args = {"player", "useids"};
+		Description = "Allows you to temporarily remove donors";
+		Hidden = true;
+		Debug = true;
+		NoFilter = true;
+		AdminLevel = "HeadAdmins";
+		Function = function(plr: Player, args: {string})
+			local useIds = args[2] and string.lower(args[2]) == "true"
+
+			for _, v in useIds and string.split(args[1], ",") or service.GetPlayers(plr, args[1]) do
+				Variables.CachedDonors[not useIds and v.UserId or tonumber(v))] = nil
 			end
 		end
 	};
