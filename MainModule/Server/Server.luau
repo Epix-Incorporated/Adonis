@@ -573,7 +573,7 @@ return service.NewProxy({
 
 		--// Server Variables
 		local setTab = select(2, xpcall(require, server.Panic, server.Deps:FindFirstChild("DefaultSettings"))) or {}
-		server.Defaults = setTab
+		server.Defaults = setTab or {}
 		server.Settings = data.Settings or setTab.Settings or {}
 		server.OriginalSettings = service.DeepCopy(server.Settings, true)
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
@@ -758,9 +758,9 @@ return service.NewProxy({
 			task.defer(xpcall, LoadModule, function(reason)
 				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
-				table.insert(server.messages, {
+				table.insert(server.Messages, {
 					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
-					Icon = "maticon://Dangerous",
+					Icon = "MatIcon://Dangerous",
 					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,
 					Time = 15
 				})
