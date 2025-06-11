@@ -423,7 +423,7 @@ local service = wrappedEnv.Service
 			local useIds = args[2] and string.lower(args[2]) == "true"
 
 			for _, v in useIds and string.split(args[1], ",") or service.GetPlayers(plr, args[1]) do
-				Variables.CachedDonors[not useIds and v.UserId or tonumber(v))] = os.time()
+				Variables.CachedDonors[not useIds and v.UserId or tonumber(v)] = os.time()
 			end
 		end
 	};
@@ -441,7 +441,7 @@ local service = wrappedEnv.Service
 			local useIds = args[2] and string.lower(args[2]) == "true"
 
 			for _, v in useIds and string.split(args[1], ",") or service.GetPlayers(plr, args[1]) do
-				Variables.CachedDonors[not useIds and v.UserId or tonumber(v))] = nil
+				Variables.CachedDonors[not useIds and v.UserId or tonumber(v)] = nil
 			end
 		end
 	};
