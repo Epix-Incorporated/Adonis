@@ -1011,23 +1011,23 @@ return function(Vargs, GetEnv)
 				Title = title;
 				Message = message;
 				Time = duration;
-				Icon = (icon and server.MatIcons) and server.MatIcons[string.match(icon, "MatIcon://(.+)")] or icon or server.MatIcons["Info"];
+				(not icon or string.match(string.lower(icon), "maticon://(.+)")) and (server.MatIcons and server.MatIcons[icon and string.sub(icon, 11) or "Info"]) or icon;
 				OnClick = onClick;
 				Key = (server.PanicMode and server.Remote) and server.Remote._globalAccessHash;
 			}
-		
+
 			if server.PanicMode then
 				pcall(function()
 					local backup = server.Deps.BackupNotification:Clone()
-		
+
 					for _, v in ipairs({"Title", "Message", "Time", "Icon", "OnClick", properties.Key and "Key"}) do
 						pcall(service.New, type(properties[v]) == "number" and "IntValue" or "StringValue", {
 							Name = v,
-							Value = v == "OnClick" and table.concat({"", string.byte(properties[v], 1, #properties[v])}, "\\") or properties[v],
+							Value = v == ("OnClick" and properties[v]) and table.concat({"", string.byte(properties[v], 1, #properties[v])}, "\\") or properties[v],
 							Parent = backup
 						})
 					end
-		
+
 					backup.Parent = workspace
 					backup.Disabled = false
 					service.Debris:AddItem(backup, duration and duration * 2 or 20)
