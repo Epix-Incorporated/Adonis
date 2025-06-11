@@ -418,7 +418,7 @@ local service = wrappedEnv.Service
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
-		AdminLevel = "HeadAdmins";
+		AdminLevel = "Moderators";
 		Function = function(plr: Player, args: {string})
 			local useIds = args[2] and string.lower(args[2]) == "true"
 
@@ -436,7 +436,7 @@ local service = wrappedEnv.Service
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
-		AdminLevel = "HeadAdmins";
+		AdminLevel = "Moderators";
 		Function = function(plr: Player, args: {string})
 			local useIds = args[2] and string.lower(args[2]) == "true"
 
