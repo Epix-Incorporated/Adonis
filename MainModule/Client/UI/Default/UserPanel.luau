@@ -533,7 +533,7 @@ return function(data, env)
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 
-				if settingsData.Settings.DonorCapes and playerData.isDonor then
+				if chatMod.DonorCapes and playerData.isDonor then
 					if type(donorData) == "table" and donorData.Cape and type(donorData.Cape) == "table" then
 						if donorData.Enabled and service.Players.LocalPlayer.Character then
 							Functions.NewCape({
