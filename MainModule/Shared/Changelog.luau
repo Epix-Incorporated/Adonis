@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v268 2025-06-10 19:04 UTC] @Dimenpsyonal";
+	"[v268 2025-06-24 15:30 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Fix first joined player DS ranks (#1918)";
 	"(Git/fxeP1) Fix security related to Client G_API (#1919)";
 	"(Git/ccuser44) Fix donor cape not updating from UserPanel (#1926)";
