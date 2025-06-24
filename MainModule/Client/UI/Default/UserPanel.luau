@@ -549,9 +549,11 @@ return function(data, env)
 					end
 				end
 
-				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
-				task.wait(0.5)
-				dStatus.Text = "Donated"
+				task.defer(function()
+					dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
+					task.wait(0.5)
+					dStatus.Text = "Donated"
+				end)
 			end
 
 			donorTab:Add("TextLabel", {
