@@ -218,6 +218,10 @@ return function(Vargs, GetEnv)
 
 			local API = {
 				Access = service.MetaFunc(function(...)
+					if not Variables.G_Access_Key then
+						return
+					end
+
 					local args = {...}
 					local key = args[1]
 					local ind = args[2]

@@ -81,7 +81,10 @@ return function(Vargs, GetEnv)
 			end
 		end)
 
-		Remote._globalAccessHash = Functions.SHA256(Settings.G_Access_Key..game.GameId)
+		if Settings.G_Access_Key ~= "Example_Key" and Settings.Allowed_API_Calls.Client then
+			Remote._globalAccessHash = Functions.SHA256(Settings.G_Access_Key..game.GameId)
+		end
+
 		Process.Init = nil
 		AddLog("Script", "Processing Module Initialized")
 	end;
