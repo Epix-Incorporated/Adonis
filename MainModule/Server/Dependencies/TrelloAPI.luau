@@ -38,7 +38,7 @@ end
 local HttpFunctions; HttpFunctions = {
 	Decode = function(str)
 		local success, tab = pcall(function()
-			return HttpService:JSONDecode(str)
+			return HttpFunctions.HttpService:JSONDecode(str)
 		end)
 
 		if success then
@@ -50,7 +50,7 @@ local HttpFunctions; HttpFunctions = {
 
 	Encode = function(tab)
 		local success, str = pcall(function()
-			return HttpService:JSONEncode(tab)
+			return HttpFunctions.HttpService:JSONEncode(tab)
 		end)
 
 		if success then
@@ -61,11 +61,11 @@ local HttpFunctions; HttpFunctions = {
 	end;
 
 	UrlEncode = function(str)
-		return HttpService:UrlEncode(str)
+		return HttpFunctions.HttpService:UrlEncode(str)
 	end;
 
 	Request = function(Url, Method, Headers, Body)
-		local RequestID = HttpService:GenerateGUID(false)
+		local RequestID = HttpFunctions.HttpService:GenerateGUID(false)
 		local ran, response = pcall(function()
 			local Request = {
 				Url = Url;
@@ -73,7 +73,7 @@ local HttpFunctions; HttpFunctions = {
 				Headers = {
 					["Content-Type"] = "application/json"
 				};
-				Body = HttpService:JSONEncode(Body);
+				Body = HttpFunctions.HttpService:JSONEncode(Body);
 			}
 
 			Queue[RequestID] = Request
@@ -83,7 +83,7 @@ local HttpFunctions; HttpFunctions = {
 			end
 
 			RateLimit()
-			return HttpService:RequestAsync(Request)
+			return HttpFunctions.HttpService:RequestAsync(Request)
 		end)
 
 		Queue[RequestID] = nil
@@ -96,12 +96,12 @@ local HttpFunctions; HttpFunctions = {
 	end;
 
 	Get = function(Url)
-		local RequestID = HttpService:GenerateGUID(false)
+		local RequestID = HttpFunctions.HttpService:GenerateGUID(false)
 		Queue[RequestID] = Url
 		RateLimit()
 
 		local ran, response = pcall(function()
-			return HttpService:GetAsync(Url, true)
+			return HttpFunctions.HttpService:GetAsync(Url, true)
 		end)
 
 		Queue[RequestID] = nil
@@ -114,12 +114,12 @@ local HttpFunctions; HttpFunctions = {
 	end;
 
 	Post = function(Url, Data, Type)
-		local RequestID = HttpService:GenerateGUID(false)
+		local RequestID = HttpFunctions.HttpService:GenerateGUID(false)
 		Queue[RequestID] = Url
 		RateLimit()
 
 		local ran, response = pcall(function()
-			return HttpService:PostAsync(Url, Data, Type)
+			return HttpFunctions.HttpService:PostAsync(Url, Data, Type)
 		end)
 
 		Queue[RequestID] = nil
@@ -151,11 +151,17 @@ local HttpFunctions; HttpFunctions = {
 			end
 		end
 	end;
+
+	HttpService = HttpService;
 }
 
-return function(AppKey, Token)
+return function(AppKey, Token, HttpService)
 	AppKey = AppKey or ""
 	Token = Token or ""
+
+	if HttpService and HttpService.IsA and HttpService:IsA("HttpService") then
+		HttpFunctions.HttpService = HttpService
+	end
 
 	local Arguments = `key={AppKey}&token={Token}`
 
@@ -171,13 +177,13 @@ return function(AppKey, Token)
 	
 	local CheckHttp = function()
 		local enabled, err = pcall(function()
-			HttpService:GetAsync(GetUrl("members/trello?fields=id"))
+			HttpFunctions.HttpService:GetAsync(GetUrl("members/trello?fields=id"))
 		end)
 		
 		return enabled
 	end;
 	
-	local HttpEnabled = pcall(HttpService.GetAsync, HttpService, "http://www.google.com/robots.txt");
+	local HttpEnabled = pcall(HttpFunctions.HttpService.GetAsync, HttpFunctions.HttpService, "http://www.google.com/robots.txt");
 	
 	if not HttpEnabled then
 		error("Unable to connect to trello, Http requests are not enabled. Enable them via game settings.")
@@ -366,7 +372,7 @@ return function(AppKey, Token)
 		API[ind] = func
 	end
 
-	API.http = HttpService
+	API.http = HttpFunctions.HttpService
 	API.getListObj = API.GetListObject
 	API.checkHttp = CheckHttp
 	API.CheckHttp = CheckHttp
@@ -398,7 +404,7 @@ return function(AppKey, Token)
 			return HttpFunctions.Decode(HttpFunctions.Get(GetUrl(subUrl)))
 		end
 	end;
-
+	API.httpFunctions = HttpFunctions
 	API.getUrl = GetUrl
 
 	return API
