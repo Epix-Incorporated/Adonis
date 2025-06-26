@@ -76,7 +76,7 @@ return function(Vargs, GetEnv)
 				Settings.Trello_Primary,
 				unpack(Settings.Trello_Secondary)
 			}
-			for _, v in boards do
+			for _, v in boards do
 				if not v or service.Trim(v) == "" then
 					continue
 				end
