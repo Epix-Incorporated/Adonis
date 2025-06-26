@@ -9,7 +9,7 @@
 -- It is requested that existing credits remain here.																											 --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local print = function(...) warn("[Adonis TrelloAPI]: INFO:", ...) end
+local print = function(...) print("[Adonis TrelloAPI]: INFO:", ...) end
 local error = function(...) warn("[Adonis TrelloAPI]: ERROR:", ...) end
 local warn = function(...) warn("[Adonis TrelloAPI]: WARN:", ...) end
 
