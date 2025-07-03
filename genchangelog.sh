@@ -70,15 +70,15 @@ if [ "$doEcho" != "1" ]; then
 	echo ""
 fi
 
-git --no-pager log v$tagVer..HEAD --max-count=1024 --show-pulls --format="https://github.com/Epix-Incorporated/Adonis/commit/%H (Git/%an) %s" | grep "\\(#[0-9]+\\)$" -E -v | grep "(Update|Add|Change|Bump|Publish|v\-?[0-9][0-9A-Fa-fXx\.]*[ab]?|Changelog)\s*(rojo|Adonis|model|to)?\s*(Version|Changelog|update|v\-?[0-9])" -E -i -v > Adonis_TEMP_ReleaseNotes.txt
+git --no-pager log v$tagVer..HEAD --max-count=1024 --show-pulls --format="https://github.com/Epix-Incorporated/Adonis/commit/%H (Git/%an) %s" | grep "\\(#[0-9]+\\)$" -E -v | grep "(Update|Add|Change|Bump|Publish|v\-?[0-9][0-9A-Fa-fXx\.]*[ab]?|Changelog)\s*(rojo|Adonis|model|to)?\s*(Version|Changelog|update|v\-?[0-9])" -E -i -v > Adonis_TEMP_ReleaseNotes.txt.tmp
 if [ "$fromStdin" = "1" ]; then
-	cat > Adonis_TEMP_ReleaseNotes.txt
+	cat > Adonis_TEMP_ReleaseNotes.txt.tmp
 elif [ "$doEcho" = "1" ]; then
 	read -p ""
 else
-	read -p "Please write the release notes (but not pulls) to Adonis_TEMP_ReleaseNotes.txt by examining the commits. DO NOT LEAVE AN UNFORMATTED CHANGELOG! When done, press Enter to continue..."
+	read -p "Please write the release notes (but not pulls) to Adonis_TEMP_ReleaseNotes.txt.tmp by examining the commits. DO NOT LEAVE AN UNFORMATTED CHANGELOG! When done, press Enter to continue..."
 fi
-if [ "$(tail -c1 Adonis_TEMP_ReleaseNotes.txt)" != "" ]; then
+if [ "$(tail -c1 Adonis_TEMP_ReleaseNotes.txt.tmp)" != "" ]; then
 	echo "Fatal error. File missing a newline!"
     exit 1
 fi
@@ -89,7 +89,7 @@ date +" %Y-%m-%d %T %Z" -u | tr -d "\n" >> SigmaSigmaBoy.tmp
 printf "] @" >> SigmaSigmaBoy.tmp
 git config user.name | sed -e 's/([Nn]ichole|([Dd]imenp?s[yi]onal|[Pp]bst?)[Ff]usion|[Dd]imenp?s[yi]onal)/Dimenpsyonal/g' | tr -d "\n" >> SigmaSigmaBoy.tmp
 echo "\";" >> SigmaSigmaBoy.tmp
-cat Adonis_TEMP_ReleaseNotes.txt | dos2unix -r -q --to-stdout | tr -d "\r" | sed 's/\\/\\\\/g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\",/g' >> SigmaSigmaBoy.tmp
+cat Adonis_TEMP_ReleaseNotes.txt.tmp | dos2unix -r -q --to-stdout | tr -d "\r" | sed 's/\\/\\\\/g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\",/g' >> SigmaSigmaBoy.tmp
 #echo "	\"\";" >> SigmaSigmaBoy.tmp
 git --no-pager log v$tagVer..HEAD --max-count=2048 --show-pulls --format="(Git/%an) %s" | grep "\\(#[0-9]+\\)$" -E | sed 's/\\/\\\\/g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\";/g' >> SigmaSigmaBoy.tmp
 
@@ -101,6 +101,6 @@ if [ "$doEcho" != "1" ]; then
 else
 	cat SigmaSigmaBoy.tmp | dos2unix -r -q --to-stdout | tr -d "\r"
 fi
-rm -f Adonis_TEMP_ReleaseNotes.txt
+rm -f Adonis_TEMP_ReleaseNotes.txt.tmp
 rm -f SigmaSigmaBoy.tmp
 exit 0
