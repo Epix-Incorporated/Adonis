@@ -89,7 +89,7 @@ date +" %Y-%m-%d %T %Z" -u | tr -d "\n" >> SigmaSigmaBoy.tmp
 printf "] @" >> SigmaSigmaBoy.tmp
 git config user.name | sed -e 's/([Nn]ichole|([Dd]imenp?s[yi]onal|[Pp]bst?)[Ff]usion|[Dd]imenp?s[yi]onal)/Dimenpsyonal/g' | tr -d "\n" >> SigmaSigmaBoy.tmp
 echo "\";" >> SigmaSigmaBoy.tmp
-cat Adonis_TEMP_ReleaseNotes.txt | dos2unix -r -q --to-stdout | tr -d "\r" | sed 's/\\/\\\\/g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\",/g' >> SigmaSigmaBoy.tmp
+cat Adonis_TEMP_ReleaseNotes.txt | dos2unix -r -q --to-stdout | tr -d "\r" | sed sed 's|\|\\|g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\",/g' >> SigmaSigmaBoy.tmp
 #echo "	\"\";" >> SigmaSigmaBoy.tmp
 git --no-pager log v$tagVer..HEAD --max-count=2048 --show-pulls --format="(Git/%an) %s" | grep "\\(#[0-9]+\\)$" -E | sed 's/\\/\\\\/g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\";/g' >> SigmaSigmaBoy.tmp
 
