@@ -601,42 +601,48 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
-						local oError = error
-						local newenv = GetEnv(getfenv(), {
-							print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
-							warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
-							error = function(reason, level)
-								if level ~= nil and type(level) ~= "number" then
-									oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
-								end
+						if Settings.CodeExecution then
+							local oError = error
+							local newenv = GetEnv(getfenv(), {
+								print = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `PRINT: {table.concat(args, " ")}`) end;
+								warn = function(...) local args = table.pack(...) for i = 1, args.n do args[i] = tostring(args[i]) end Remote.Terminal.LiveOutput(p, `WARN: {table.concat(args, " ")}`) end;
+								error = function(reason, level)
+									if level ~= nil and type(level) ~= "number" then
+										oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
+									end
 
-								Remote.Terminal.LiveOutput(p, `LUA_DEMAND_ERROR: {reason}`)
-								oError(`Adonis terminal error: {reason}`, (level or 1) + 1)
-							end;
-						})
-
-						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
-							local ans = Remote.GetGui(p, "YesNoPrompt", {
-								Icon = server.MatIcons.Warning;
-								Question = "Are you sure you want to load this script into the server env?";
-								Title = "Adonis DebugLoadstring";
-								Delay = 3;
+									Remote.Terminal.LiveOutput(p, `LUA_DEMAND_ERROR: {reason}`)
+									oError(`Adonis terminal error: {reason}`, (level or 1) + 1)
+								end;
 							})
 
-							if ans == "Yes" then
-								server.Remote.RemoteExecutionConfirmed[p.UserId] = true
-							else
-								return
-							end
-						end
+							if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
+								local ans = Remote.GetGui(p, "YesNoPrompt", {
+									Icon = server.MatIcons.Warning;
+									Question = "Are you sure you want to load this script into the server env?";
+									Title = "Adonis DebugLoadstring";
+									Delay = 3;
+								})
 
-						local func, err = Core.Loadstring(args[1], newenv)
-						if func then
-							xpcall(func, function(reason)
-								Remote.Terminal.LiveOutput(p,`LUA_ERROR: {string.match(reason, ":(.*)") or reason}`)
-							end)
+								if ans == "Yes" then
+									server.Remote.RemoteExecutionConfirmed[p.UserId] = true
+								else
+									return
+								end
+							end
+
+							local func, err = Core.Loadstring(args[1], newenv)
+							if func then
+								xpcall(func, function(reason)
+									Remote.Terminal.LiveOutput(p,`LUA_ERROR: {string.match(reason, ":(.*)") or reason}`)
+								end)
+							else
+								Remote.Terminal.LiveOutput(p,`SYNTAX_ERROR: {string.match(err, ":(.*)") or err}`)
+							end
 						else
-							Remote.Terminal.LiveOutput(p,`SYNTAX_ERROR: {string.match(err, ":(.*)") or err}`)
+							return {
+								`Code Execution is not enabled! (settings.CodeExecution)`
+							}
 						end
 					end
 				};
