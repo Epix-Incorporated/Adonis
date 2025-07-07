@@ -7,6 +7,29 @@ return function(Vargs, GetEnv)
 	local Settings = client.Settings
 	local Functions, Anti, Core, Logs, Remote, Process, Variables = client.Functions, client.Anti, client.Core, client.Logs, client.Remote, client.Process, client.Variables
 
+	--// Create formatted changelog from standard changelog
+	local function applyColour(line)
+		local prefix = line:sub(1, 2)
+
+		if prefix == "[v" or prefix == "[1" or prefix == "[0" or prefix == "1." or line:sub(1, 1) == "v" then
+			return `<font color='#8FAEFF'>{line}</font>`
+		elseif line:sub(1, 6) == "[Patch" then
+			return `<font color='#F0B654'>{line}</font>`
+		elseif line:sub(1, 9) == "Version: " then
+			return `<b>{line}</b>`
+		elseif line:sub(1,2) == "# " then
+			return `<b>{string.sub(line, 3)}</b>`
+		else
+			return line
+		end
+	end
+
+	GetEnv({}).log("Fomratting chatlogs")
+	client.FormattedChangelog = table.create(#client.Changelog)
+	for i, line in ipairs(client.Changelog) do
+		client.FormattedChangelog[i] = applyColour(line)
+	end
+
 	-- // Backwards compatibility
 	local Pcall = client.Pcall
 	local function cPcall(func, ...)
