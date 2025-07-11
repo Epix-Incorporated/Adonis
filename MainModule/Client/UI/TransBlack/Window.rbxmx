@@ -1176,7 +1176,7 @@ return function(data, env)
 				local maxWidth = 400
 				local bounds = service.TextService:GetTextSize(sizeText, label.TextSize, label.Font, Vector2.new(maxWidth, math.huge))
 
-				local sizeX, sizeY = bounds.X + 10, bounds.Y + 10
+				local sizeX, sizeY = bounds.X + 11, bounds.Y + 11
 				local posX = (x + 6 + sizeX) < GUI.AbsoluteSize.X and (x + 6) or (x - 6 - sizeX)
 				local posY = (y - 6 - sizeY) > 0 and (y - 6 - sizeY) or (y)
 
