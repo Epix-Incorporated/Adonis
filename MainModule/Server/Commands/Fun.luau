@@ -3757,9 +3757,7 @@ return function(Vargs, env)
 
 					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
 					local function setSizeAttribute(Val)
-						if not resizeAttributeValue then
-							char:SetAttribute("Adonis_Resize", Val)
-						elseif Val < Variables.SizeLimit then
+						if not resizeAttributeValue or Val < Variables.SizeLimit then
 							char:SetAttribute("Adonis_Resize", Val)
 						else
 							error(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100))
