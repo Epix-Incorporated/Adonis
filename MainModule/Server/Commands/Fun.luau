@@ -3768,7 +3768,7 @@ return function(Vargs, env)
 						setSizeAttribute(num)
 						char:ScaleTo(num)
 					elseif human and human.RigType == Enum.HumanoidRigType.R15 then
-						setSizeAttribute(resizeAttributeValue * num)
+						setSizeAttribute((resizeAttributeValue or 1) * num)
 						
 						for _, val in human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
@@ -3777,7 +3777,7 @@ return function(Vargs, env)
 						end
 						fixDensity(char)
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
-						setSizeAttribute(resizeAttributeValue * num)
+						setSizeAttribute((resizeAttributeValue or 1) * num)
 						
 						local motors = {}
 						table.insert(motors, char.HumanoidRootPart:FindFirstChild("RootJoint"))
