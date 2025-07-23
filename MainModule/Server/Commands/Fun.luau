@@ -3756,18 +3756,20 @@ return function(Vargs, env)
 					end
 
 					local resizeAttributeValue = char:GetAttribute("Adonis_Resize")
-					if not resizeAttributeValue then
-						char:SetAttribute("Adonis_Resize", num)
-					elseif resizeAttributeValue * num < Variables.SizeLimit then
-						char:SetAttribute("Adonis_Resize", resizeAttributeValue * num)
-					else
-						Functions.Hint(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
-						continue
+					local function setSizeAttribute(Val)
+						if not resizeAttributeValue or Val < Variables.SizeLimit then
+							char:SetAttribute("Adonis_Resize", Val)
+						else
+							error(string.format("Cannot resize %s's character by %g%%: size limit exceeded.", service.FormatPlayer(v), num*100))
+						end
 					end
 
 					if human and char:IsA("Model") then
+						setSizeAttribute(num)
 						char:ScaleTo(num)
 					elseif human and human.RigType == Enum.HumanoidRigType.R15 then
+						setSizeAttribute((resizeAttributeValue or 1) * num)
+						
 						for _, val in human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
 								val.Value *= num
@@ -3775,6 +3777,8 @@ return function(Vargs, env)
 						end
 						fixDensity(char)
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
+						setSizeAttribute((resizeAttributeValue or 1) * num)
+						
 						local motors = {}
 						table.insert(motors, char.HumanoidRootPart:FindFirstChild("RootJoint"))
 						for _, motor in char.Torso:GetChildren() do
