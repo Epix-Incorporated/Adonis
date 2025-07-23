@@ -6067,6 +6067,7 @@ return function(Vargs, env)
 						if oldga then oldga:Destroy() end
 						if olds then Remote.Send(v, "Function", "Unfly") olds:Destroy() end
 
+                        local new = scr:Clone()
 						local flightPositionAttachment: Attachment = service.New("Attachment", {
 							Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT",
 							Parent = part
@@ -6092,10 +6093,11 @@ return function(Vargs, env)
 							Parent = part
 						})
 
-						scr.Parent = part
-						scr.Disabled = false
+						new.Parent = part
+						new.Disabled = false
 					end
 				end
+                scr:Destroy()
 
 				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1]), 10)
 			end
