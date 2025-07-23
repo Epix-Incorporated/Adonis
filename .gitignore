@@ -1,5 +1,6 @@
 # CI workflow files (selene)
 /roblox.yml
+*.tmp
 
 # Build Files
 /Adonis_**.rbxm
@@ -10,3 +11,10 @@
 /Adonis.rbxmx
 /Adonis.rbxl
 /Adonis.rbxlx
+/rojo.exe
+/selene.exe
+/git.exe
+/bash.exe
+/sh.exe
+/PortableGit
+/Adonis_TEMP_ReleaseNotes.txt
