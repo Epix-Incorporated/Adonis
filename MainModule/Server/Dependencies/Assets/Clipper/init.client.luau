@@ -2,11 +2,15 @@ local RunService = game:GetService("RunService")
 
 local LIMB_NAMES = {
 	R6 = {
+		"CollisionPart",
+
 		"Torso",
 		"HumanoidRootPart",
 		"Head"
 	},
 	R15 = {
+		"CollisionPart",
+
 		"HumanoidRootPart",
 		"LowerTorso",
 		"UpperTorso"
