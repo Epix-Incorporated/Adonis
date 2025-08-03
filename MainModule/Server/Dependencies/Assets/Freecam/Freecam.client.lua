@@ -4,14 +4,14 @@
 -- Cinematic free camera for spectating and video production.
 ------------------------------------------------------------------------
 
-local pi    = math.pi
-local abs   = math.abs
+local pi = math.pi
+local abs = math.abs
 local clamp = math.clamp
-local exp   = math.exp
-local rad   = math.rad
-local sign  = math.sign
-local sqrt  = math.sqrt
-local tan   = math.tan
+local exp = math.exp
+local rad = math.rad
+local sign = math.sign
+local sqrt = math.sqrt
+local tan = math.tan
 
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
@@ -22,6 +22,8 @@ local Workspace = game:GetService("Workspace")
 local Settings = UserSettings()
 local GameSettings = Settings.GameSettings
 local Lighting = game:GetService("Lighting")
+local Debris = game:GetService('Debris')
+local RF = script.Parent:FindFirstChildOfClass("RemoteFunction")
 
 local LocalPlayer = Players.LocalPlayer
 if not LocalPlayer then
@@ -116,23 +118,23 @@ end
 local FREECAM_ENABLED_ATTRIBUTE_NAME = "FreecamEnabled"
 local TOGGLE_INPUT_PRIORITY = Enum.ContextActionPriority.Low.Value
 local INPUT_PRIORITY = Enum.ContextActionPriority.High.Value
-local FREECAM_MACRO_KB = {Enum.KeyCode.LeftShift, Enum.KeyCode.P}
+local FREECAM_MACRO_KB = { Enum.KeyCode.LeftShift, Enum.KeyCode.P }
 local FREECAM_TILT_RESET_KB = {
 	[Enum.KeyCode.Z] = true,
-	[Enum.KeyCode.C] = true
+	[Enum.KeyCode.C] = true,
 }
 local FREECAM_TILT_RESET_GP = {
 	[Enum.KeyCode.ButtonL1] = true,
-	[Enum.KeyCode.ButtonR1] = true
+	[Enum.KeyCode.ButtonR1] = true,
 }
 local FREECAM_DOF_TOGGLE = {
-	[Enum.KeyCode.BackSlash] = true
+	[Enum.KeyCode.BackSlash] = true,
 }
 
-local NAV_GAIN = Vector3.new(1, 1, 1)*64
-local PAN_GAIN = Vector2.new(0.75, 1)*8
+local NAV_GAIN = Vector3.new(1, 1, 1) * 64
+local PAN_GAIN = Vector2.new(0.75, 1) * 8
 local FOV_GAIN = 300
-local ROLL_GAIN = -pi/2
+local ROLL_GAIN = -pi / 2
 
 local PITCH_LIMIT = rad(90)
 
@@ -164,27 +166,28 @@ local DOUBLE_TAP_DEBOUNCE_TIME = 0.1
 local postEffects = {}
 ------------------------------------------------------------------------
 
-local Spring = {} do
+local Spring = {}
+do
 	Spring.__index = Spring
 
 	function Spring.new(freq, pos)
 		local self = setmetatable({}, Spring)
 		self.f = freq
 		self.p = pos
-		self.v = pos*0
+		self.v = pos * 0
 		return self
 	end
 
 	function Spring:Update(dt, goal)
-		local f = self.f*2*pi
+		local f = self.f * 2 * pi
 		local p0 = self.p
 		local v0 = self.v
 
 		local offset = goal - p0
-		local decay = exp(-f*dt)
+		local decay = exp(-f * dt)
 
-		local p1 = goal + (v0*dt - offset*(f*dt + 1))*decay
-		local v1 = (f*dt*(offset*f - v0) + v0)*decay
+		local p1 = goal + (v0 * dt - offset * (f * dt + 1)) * decay
+		local v1 = (f * dt * (offset * f - v0) + v0) * decay
 
 		self.p = p1
 		self.v = v1
@@ -198,7 +201,7 @@ local Spring = {} do
 
 	function Spring:Reset(pos)
 		self.p = pos
-		self.v = pos*0
+		self.v = pos * 0
 	end
 end
 
@@ -220,21 +223,23 @@ local rollSpring = Spring.new(ROLL_STIFFNESS, 0)
 
 ------------------------------------------------------------------------
 
-local Input = {} do
-	local thumbstickCurve do
+local Input = {}
+do
+	local thumbstickCurve
+	do
 		local K_CURVATURE = 2.0
 		local K_DEADZONE = 0.15
 
 		local function fCurve(x)
-			return (exp(K_CURVATURE*x) - 1)/(exp(K_CURVATURE) - 1)
+			return (exp(K_CURVATURE * x) - 1) / (exp(K_CURVATURE) - 1)
 		end
 
 		local function fDeadzone(x)
-			return fCurve((x - K_DEADZONE)/(1 - K_DEADZONE))
+			return fCurve((x - K_DEADZONE) / (1 - K_DEADZONE))
 		end
 
 		function thumbstickCurve(x)
-			return sign(x)*clamp(fDeadzone(abs(x)), 0, 1)
+			return sign(x) * clamp(fDeadzone(abs(x)), 0, 1)
 		end
 	end
 
@@ -286,7 +291,7 @@ local Input = {} do
 		M = 0,
 		BackSlash = 0,
 		Minus = 0,
-		Equals = 0
+		Equals = 0,
 	}
 
 	local mouse = {
@@ -294,27 +299,27 @@ local Input = {} do
 		MouseWheel = 0,
 	}
 
-	local DEFAULT_FPS         = 60
-	local NAV_GAMEPAD_SPEED   = Vector3.new(1, 1, 1)
-	local NAV_KEYBOARD_SPEED  = Vector3.new(1, 1, 1)
-	local PAN_MOUSE_SPEED     = Vector2.new(1, 1)*(pi/64)
-	local PAN_MOUSE_SPEED_DT  = PAN_MOUSE_SPEED/DEFAULT_FPS
-	local PAN_GAMEPAD_SPEED   = Vector2.new(1, 1)*(pi/8)
-	local FOV_WHEEL_SPEED     = 1.0
-	local FOV_WHEEL_SPEED_DT  = FOV_WHEEL_SPEED/DEFAULT_FPS
-	local FOV_GAMEPAD_SPEED   = 0.25
-	local ROLL_GAMEPAD_SPEED  = 1.0
+	local DEFAULT_FPS = 60
+	local NAV_GAMEPAD_SPEED = Vector3.new(1, 1, 1)
+	local NAV_KEYBOARD_SPEED = Vector3.new(1, 1, 1)
+	local PAN_MOUSE_SPEED = Vector2.new(1, 1) * (pi / 64)
+	local PAN_MOUSE_SPEED_DT = PAN_MOUSE_SPEED / DEFAULT_FPS
+	local PAN_GAMEPAD_SPEED = Vector2.new(1, 1) * (pi / 8)
+	local FOV_WHEEL_SPEED = 1.0
+	local FOV_WHEEL_SPEED_DT = FOV_WHEEL_SPEED / DEFAULT_FPS
+	local FOV_GAMEPAD_SPEED = 0.25
+	local ROLL_GAMEPAD_SPEED = 1.0
 	local ROLL_KEYBOARD_SPEED = 1.0
-	local NAV_ADJ_SPEED       = 0.75
-	local NAV_MIN_SPEED       = 0.01
-	local NAV_MAX_SPEED       = 4.0
-	local NAV_SHIFT_MUL       = 0.25
-	local FOV_ADJ_SPEED       = 0.75
-	local FOV_MIN_SPEED       = 0.01
-	local FOV_MAX_SPEED       = 4.0
-	local ROLL_ADJ_SPEED      = 0.75
-	local ROLL_MIN_SPEED      = 0.01
-	local ROLL_MAX_SPEED      = 4.0
+	local NAV_ADJ_SPEED = 0.75
+	local NAV_MIN_SPEED = 0.01
+	local NAV_MAX_SPEED = 4.0
+	local NAV_SHIFT_MUL = 0.25
+	local FOV_ADJ_SPEED = 0.75
+	local FOV_MIN_SPEED = 0.01
+	local FOV_MAX_SPEED = 4.0
+	local ROLL_ADJ_SPEED = 0.75
+	local ROLL_MIN_SPEED = 0.01
+	local ROLL_MAX_SPEED = 4.0
 	local DoFConstants = {
 		FarIntensity = {
 			ADJ = 0.1,
@@ -344,36 +349,39 @@ local Input = {} do
 
 	function Input.Vel(dt)
 		if FFlagUserFreecamControlSpeed then
-			navSpeed = clamp(navSpeed + dt*(keyboard.Up - keyboard.Down + gamepad.DPadUp - gamepad.DPadDown)*NAV_ADJ_SPEED, NAV_MIN_SPEED, NAV_MAX_SPEED)
+			navSpeed = clamp(
+				navSpeed + dt * (keyboard.Up - keyboard.Down + gamepad.DPadUp - gamepad.DPadDown) * NAV_ADJ_SPEED,
+				NAV_MIN_SPEED,
+				NAV_MAX_SPEED
+			)
 		else
-			navSpeed = clamp(navSpeed + dt*(keyboard.Up - keyboard.Down)*NAV_ADJ_SPEED, 0.01, 4)
+			navSpeed = clamp(navSpeed + dt * (keyboard.Up - keyboard.Down) * NAV_ADJ_SPEED, 0.01, 4)
 		end
 		local kGamepad = Vector3.new(
 			thumbstickCurve(gamepad.Thumbstick1.X),
 			thumbstickCurve(gamepad.ButtonR2) - thumbstickCurve(gamepad.ButtonL2),
 			thumbstickCurve(-gamepad.Thumbstick1.Y)
-		)*NAV_GAMEPAD_SPEED
+		) * NAV_GAMEPAD_SPEED
 
 		local kKeyboard = Vector3.new(
 			keyboard.D - keyboard.A + keyboard.K - keyboard.H,
 			keyboard.E - keyboard.Q + keyboard.I - keyboard.Y,
 			keyboard.S - keyboard.W + keyboard.J - keyboard.U
-		)*NAV_KEYBOARD_SPEED
+		) * NAV_KEYBOARD_SPEED
 
-		local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+		local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)
+			or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
 
-		return (kGamepad + kKeyboard)*(navSpeed*(shift and NAV_SHIFT_MUL or 1))
+		return (kGamepad + kKeyboard) * (navSpeed * (shift and NAV_SHIFT_MUL or 1))
 	end
 
 	function Input.Pan(dt)
-		local kGamepad = Vector2.new(
-			thumbstickCurve(gamepad.Thumbstick2.Y),
-			thumbstickCurve(-gamepad.Thumbstick2.X)
-		)*PAN_GAMEPAD_SPEED
-		local kMouse = mouse.Delta*PAN_MOUSE_SPEED
+		local kGamepad = Vector2.new(thumbstickCurve(gamepad.Thumbstick2.Y), thumbstickCurve(-gamepad.Thumbstick2.X))
+			* PAN_GAMEPAD_SPEED
+		local kMouse = mouse.Delta * PAN_MOUSE_SPEED
 		if FFlagUserFixFreecamDeltaTimeCalculation then
 			if dt > 0 then
-				kMouse = (mouse.Delta/dt)*PAN_MOUSE_SPEED_DT
+				kMouse = (mouse.Delta / dt) * PAN_MOUSE_SPEED_DT
 			end
 		end
 		mouse.Delta = Vector2.new()
@@ -382,79 +390,108 @@ local Input = {} do
 
 	function Input.Fov(dt)
 		if FFlagUserFreecamControlSpeed then
-			fovSpeed = clamp(fovSpeed + dt*(keyboard.Right - keyboard.Left + gamepad.DPadRight - gamepad.DPadLeft)*FOV_ADJ_SPEED, FOV_MIN_SPEED, FOV_MAX_SPEED)
+			fovSpeed = clamp(
+				fovSpeed + dt * (keyboard.Right - keyboard.Left + gamepad.DPadRight - gamepad.DPadLeft) * FOV_ADJ_SPEED,
+				FOV_MIN_SPEED,
+				FOV_MAX_SPEED
+			)
 		end
-		local kGamepad = (gamepad.ButtonX - gamepad.ButtonY)*FOV_GAMEPAD_SPEED
-		local kMouse = mouse.MouseWheel*FOV_WHEEL_SPEED
+		local kGamepad = (gamepad.ButtonX - gamepad.ButtonY) * FOV_GAMEPAD_SPEED
+		local kMouse = mouse.MouseWheel * FOV_WHEEL_SPEED
 		if FFlagUserFixFreecamDeltaTimeCalculation then
 			if dt > 0 then
-				kMouse = (mouse.MouseWheel/dt)*FOV_WHEEL_SPEED_DT
+				kMouse = (mouse.MouseWheel / dt) * FOV_WHEEL_SPEED_DT
 			end
 		end
 		mouse.MouseWheel = 0
 		if FFlagUserFreecamControlSpeed then
-			return (kGamepad + kMouse)*fovSpeed
+			return (kGamepad + kMouse) * fovSpeed
 		else
 			return kGamepad + kMouse
 		end
 	end
 
 	function Input.Roll(dt)
-		rollSpeed = clamp(rollSpeed + dt*(keyboard.Period - keyboard.Comma)*ROLL_ADJ_SPEED, ROLL_MIN_SPEED, ROLL_MAX_SPEED)
+		rollSpeed =
+			clamp(rollSpeed + dt * (keyboard.Period - keyboard.Comma) * ROLL_ADJ_SPEED, ROLL_MIN_SPEED, ROLL_MAX_SPEED)
 
-		local kGamepad = (gamepad.ButtonR1 - gamepad.ButtonL1)*ROLL_GAMEPAD_SPEED
-		local kKeyboard = (keyboard.C - keyboard.Z)*ROLL_KEYBOARD_SPEED
+		local kGamepad = (gamepad.ButtonR1 - gamepad.ButtonL1) * ROLL_GAMEPAD_SPEED
+		local kKeyboard = (keyboard.C - keyboard.Z) * ROLL_KEYBOARD_SPEED
 
-		return (kGamepad + kKeyboard)*rollSpeed
+		return (kGamepad + kKeyboard) * rollSpeed
 	end
 
 	function Input.SpringControl(dt)
 		if FFlagUserFreecamDepthOfFieldEffect then
-			local shiftIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
-			local ctrlIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+			local shiftIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)
+				or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+			local ctrlIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
+				or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
 
 			if shiftIsDown or ctrlIsDown then
 				return -- reserve Shift+Keybinds for other actions, in this case Shift+Brackets for Depth of Field controls
 			end
 		end
 
-		VEL_STIFFNESS = clamp(VEL_STIFFNESS + dt*(keyboard.RightBracket - keyboard.LeftBracket)*VEL_ADJ_STIFFNESS, VEL_MIN_STIFFNESS, VEL_MAX_STIFFNESS)
+		VEL_STIFFNESS = clamp(
+			VEL_STIFFNESS + dt * (keyboard.RightBracket - keyboard.LeftBracket) * VEL_ADJ_STIFFNESS,
+			VEL_MIN_STIFFNESS,
+			VEL_MAX_STIFFNESS
+		)
 		velSpring:SetFreq(VEL_STIFFNESS)
 
-		PAN_STIFFNESS = clamp(PAN_STIFFNESS + dt*(keyboard.Quote - keyboard.Semicolon)*PAN_ADJ_STIFFNESS, PAN_MIN_STIFFNESS, PAN_MAX_STIFFNESS)
+		PAN_STIFFNESS = clamp(
+			PAN_STIFFNESS + dt * (keyboard.Quote - keyboard.Semicolon) * PAN_ADJ_STIFFNESS,
+			PAN_MIN_STIFFNESS,
+			PAN_MAX_STIFFNESS
+		)
 		panSpring:SetFreq(PAN_STIFFNESS)
 
-		FOV_STIFFNESS = clamp(FOV_STIFFNESS + dt*(keyboard.B - keyboard.V)*FOV_ADJ_STIFFNESS, FOV_MIN_STIFFNESS, FOV_MAX_STIFFNESS)
+		FOV_STIFFNESS = clamp(
+			FOV_STIFFNESS + dt * (keyboard.B - keyboard.V) * FOV_ADJ_STIFFNESS,
+			FOV_MIN_STIFFNESS,
+			FOV_MAX_STIFFNESS
+		)
 		fovSpring:SetFreq(FOV_STIFFNESS)
 
-		ROLL_STIFFNESS = clamp(ROLL_STIFFNESS + dt*(keyboard.M - keyboard.N)*ROLL_ADJ_STIFFNESS, ROLL_MIN_STIFFNESS, ROLL_MAX_STIFFNESS)
+		ROLL_STIFFNESS = clamp(
+			ROLL_STIFFNESS + dt * (keyboard.M - keyboard.N) * ROLL_ADJ_STIFFNESS,
+			ROLL_MIN_STIFFNESS,
+			ROLL_MAX_STIFFNESS
+		)
 		rollSpring:SetFreq(ROLL_STIFFNESS)
 	end
 
 	function Input.DoF(dt)
-		local shiftIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
-		local ctrlIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+		local shiftIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)
+			or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+		local ctrlIsDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
+			or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
 
 		if shiftIsDown then
 			FreecamDepthOfField.FarIntensity = clamp(
-				FreecamDepthOfField.FarIntensity + dt * (keyboard.RightBracket - keyboard.LeftBracket) * DoFConstants.FarIntensity.ADJ,
+				FreecamDepthOfField.FarIntensity
+					+ dt * (keyboard.RightBracket - keyboard.LeftBracket) * DoFConstants.FarIntensity.ADJ,
 				DoFConstants.FarIntensity.MIN,
 				DoFConstants.FarIntensity.MAX
 			)
 			FreecamDepthOfField.InFocusRadius = clamp(
-				FreecamDepthOfField.InFocusRadius + dt * (keyboard.Equals - keyboard.Minus) * DoFConstants.FocusRadius.ADJ,
+				FreecamDepthOfField.InFocusRadius
+					+ dt * (keyboard.Equals - keyboard.Minus) * DoFConstants.FocusRadius.ADJ,
 				DoFConstants.FocusRadius.MIN,
 				DoFConstants.FocusRadius.MAX
 			)
 		elseif ctrlIsDown then
 			FreecamDepthOfField.NearIntensity = clamp(
-				FreecamDepthOfField.NearIntensity + dt * (keyboard.RightBracket - keyboard.LeftBracket) * DoFConstants.NearIntensity.ADJ,
+				FreecamDepthOfField.NearIntensity
+					+ dt * (keyboard.RightBracket - keyboard.LeftBracket) * DoFConstants.NearIntensity.ADJ,
 				DoFConstants.NearIntensity.MIN,
 				DoFConstants.NearIntensity.MAX
 			)
 		else
 			FreecamDepthOfField.FocusDistance = clamp(
-				FreecamDepthOfField.FocusDistance + dt * (keyboard.Equals - keyboard.Minus) * DoFConstants.FocusDistance.ADJ,
+				FreecamDepthOfField.FocusDistance
+					+ dt * (keyboard.Equals - keyboard.Minus) * DoFConstants.FocusDistance.ADJ,
 				DoFConstants.FocusDistance.MIN,
 				DoFConstants.FocusDistance.MAX
 			)
@@ -550,7 +587,6 @@ local Input = {} do
 			return Enum.ContextActionResult.Sink
 		end
 
-
 		local function GpButton(action, state, input)
 			gamepad[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
 
@@ -586,69 +622,169 @@ local Input = {} do
 
 		local function Zero(t)
 			for k, v in pairs(t) do
-				t[k] = v*0
+				t[k] = v * 0
 			end
 		end
 
 		function Input.StartCapture()
 			if FFlagUserFreecamControlSpeed then
-				ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY,
-					Enum.KeyCode.W, Enum.KeyCode.U,
-					Enum.KeyCode.A, Enum.KeyCode.H,
-					Enum.KeyCode.S, Enum.KeyCode.J,
-					Enum.KeyCode.D, Enum.KeyCode.K,
-					Enum.KeyCode.E, Enum.KeyCode.I,
-					Enum.KeyCode.Q, Enum.KeyCode.Y
+				ContextActionService:BindActionAtPriority(
+					"FreecamKeyboard",
+					Keypress,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.W,
+					Enum.KeyCode.U,
+					Enum.KeyCode.A,
+					Enum.KeyCode.H,
+					Enum.KeyCode.S,
+					Enum.KeyCode.J,
+					Enum.KeyCode.D,
+					Enum.KeyCode.K,
+					Enum.KeyCode.E,
+					Enum.KeyCode.I,
+					Enum.KeyCode.Q,
+					Enum.KeyCode.Y
 				)
-				ContextActionService:BindActionAtPriority("FreecamKeyboardControlSpeed", Keypress, false, INPUT_PRIORITY,
-					Enum.KeyCode.Up, Enum.KeyCode.Down,
-					Enum.KeyCode.Left, Enum.KeyCode.Right
+				ContextActionService:BindActionAtPriority(
+					"FreecamKeyboardControlSpeed",
+					Keypress,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.Up,
+					Enum.KeyCode.Down,
+					Enum.KeyCode.Left,
+					Enum.KeyCode.Right
 				)
-				ContextActionService:BindActionAtPriority("FreecamGamepadControlSpeed", GpButton, false, INPUT_PRIORITY,
-					Enum.KeyCode.DPadUp, Enum.KeyCode.DPadDown,
-					Enum.KeyCode.DPadLeft, Enum.KeyCode.DPadRight
+				ContextActionService:BindActionAtPriority(
+					"FreecamGamepadControlSpeed",
+					GpButton,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.DPadUp,
+					Enum.KeyCode.DPadDown,
+					--Enum.KeyCode.DPadLeft, -- So this was bit of a problem because we use DPadLeft to toggle it but Roblox had some other ideas
+					Enum.KeyCode.DPadRight   -- I myself would move the freecam toggle to another key but i dont know if that is a good idea. Well it will be someone else's problem now.
 				)
 			else
-				ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY,
-					Enum.KeyCode.W, Enum.KeyCode.U,
-					Enum.KeyCode.A, Enum.KeyCode.H,
-					Enum.KeyCode.S, Enum.KeyCode.J,
-					Enum.KeyCode.D, Enum.KeyCode.K,
-					Enum.KeyCode.E, Enum.KeyCode.I,
-					Enum.KeyCode.Q, Enum.KeyCode.Y,
-					Enum.KeyCode.Up, Enum.KeyCode.Down
+				ContextActionService:BindActionAtPriority(
+					"FreecamKeyboard",
+					Keypress,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.W,
+					Enum.KeyCode.U,
+					Enum.KeyCode.A,
+					Enum.KeyCode.H,
+					Enum.KeyCode.S,
+					Enum.KeyCode.J,
+					Enum.KeyCode.D,
+					Enum.KeyCode.K,
+					Enum.KeyCode.E,
+					Enum.KeyCode.I,
+					Enum.KeyCode.Q,
+					Enum.KeyCode.Y,
+					Enum.KeyCode.Up,
+					Enum.KeyCode.Down
 				)
 			end
 			if FFlagUserFreecamTiltControl then
-				ContextActionService:BindActionAtPriority("FreecamKeyboardTiltControl", Keypress, false, INPUT_PRIORITY,
-					Enum.KeyCode.Z, Enum.KeyCode.C
+				ContextActionService:BindActionAtPriority(
+					"FreecamKeyboardTiltControl",
+					Keypress,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.Z,
+					Enum.KeyCode.C
 				)
-				ContextActionService:BindActionAtPriority("FreecamGamepadTiltControl", GpButton, false, INPUT_PRIORITY,
-					Enum.KeyCode.ButtonL1, Enum.KeyCode.ButtonR1
+				ContextActionService:BindActionAtPriority(
+					"FreecamGamepadTiltControl",
+					GpButton,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.ButtonL1,
+					Enum.KeyCode.ButtonR1
 				)
-				ContextActionService:BindActionAtPriority("FreecamKeyboardTiltControlSpeed", Keypress, false, INPUT_PRIORITY,
-					Enum.KeyCode.Comma, Enum.KeyCode.Period
+				ContextActionService:BindActionAtPriority(
+					"FreecamKeyboardTiltControlSpeed",
+					Keypress,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.Comma,
+					Enum.KeyCode.Period
 				)
 				if FFlagUserFreecamSmoothnessControl then
-					ContextActionService:BindActionAtPriority("FreecamKeyboardSmoothnessControl", Keypress, false, INPUT_PRIORITY,
-						Enum.KeyCode.LeftBracket, Enum.KeyCode.RightBracket,
-						Enum.KeyCode.Semicolon, Enum.KeyCode.Quote,
-						Enum.KeyCode.V, Enum.KeyCode.B,
-						Enum.KeyCode.N, Enum.KeyCode.M
+					ContextActionService:BindActionAtPriority(
+						"FreecamKeyboardSmoothnessControl",
+						Keypress,
+						false,
+						INPUT_PRIORITY,
+						Enum.KeyCode.LeftBracket,
+						Enum.KeyCode.RightBracket,
+						Enum.KeyCode.Semicolon,
+						Enum.KeyCode.Quote,
+						Enum.KeyCode.V,
+						Enum.KeyCode.B,
+						Enum.KeyCode.N,
+						Enum.KeyCode.M
 					)
 				end
 			end
 			if FFlagUserFreecamDepthOfFieldEffect then
-				ContextActionService:BindActionAtPriority("FreecamKeyboardDoFToggle", Keypress, false, INPUT_PRIORITY, Enum.KeyCode.BackSlash)
-				ContextActionService:BindActionAtPriority("FreecamKeyboardDoFControls", Keypress, false, INPUT_PRIORITY,
-					Enum.KeyCode.Minus, Enum.KeyCode.Equals
+				ContextActionService:BindActionAtPriority(
+					"FreecamKeyboardDoFToggle",
+					Keypress,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.BackSlash
+				)
+				ContextActionService:BindActionAtPriority(
+					"FreecamKeyboardDoFControls",
+					Keypress,
+					false,
+					INPUT_PRIORITY,
+					Enum.KeyCode.Minus,
+					Enum.KeyCode.Equals
 				)
 			end
-			ContextActionService:BindActionAtPriority("FreecamMousePan",          MousePan,   false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
-			ContextActionService:BindActionAtPriority("FreecamMouseWheel",        MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
-			ContextActionService:BindActionAtPriority("FreecamGamepadButton",     GpButton,   false, INPUT_PRIORITY, Enum.KeyCode.ButtonX, Enum.KeyCode.ButtonY)
-			ContextActionService:BindActionAtPriority("FreecamGamepadTrigger",    Trigger,    false, INPUT_PRIORITY, Enum.KeyCode.ButtonR2, Enum.KeyCode.ButtonL2)
-			ContextActionService:BindActionAtPriority("FreecamGamepadThumbstick", Thumb,      false, INPUT_PRIORITY, Enum.KeyCode.Thumbstick1, Enum.KeyCode.Thumbstick2)
+			ContextActionService:BindActionAtPriority(
+				"FreecamMousePan",
+				MousePan,
+				false,
+				INPUT_PRIORITY,
+				Enum.UserInputType.MouseMovement
+			)
+			ContextActionService:BindActionAtPriority(
+				"FreecamMouseWheel",
+				MouseWheel,
+				false,
+				INPUT_PRIORITY,
+				Enum.UserInputType.MouseWheel
+			)
+			ContextActionService:BindActionAtPriority(
+				"FreecamGamepadButton",
+				GpButton,
+				false,
+				INPUT_PRIORITY,
+				Enum.KeyCode.ButtonX,
+				Enum.KeyCode.ButtonY
+			)
+			ContextActionService:BindActionAtPriority(
+				"FreecamGamepadTrigger",
+				Trigger,
+				false,
+				INPUT_PRIORITY,
+				Enum.KeyCode.ButtonR2,
+				Enum.KeyCode.ButtonL2
+			)
+			ContextActionService:BindActionAtPriority(
+				"FreecamGamepadThumbstick",
+				Thumb,
+				false,
+				INPUT_PRIORITY,
+				Enum.KeyCode.Thumbstick1,
+				Enum.KeyCode.Thumbstick2
+			)
 		end
 
 		function Input.StopCapture()
@@ -709,25 +845,29 @@ local function StepFreecam(dt)
 		roll = rollSpring:Update(dt, Input.Roll(dt))
 	end
 
-	local zoomFactor = sqrt(tan(rad(70/2))/tan(rad(cameraFov/2)))
+	local zoomFactor = sqrt(tan(rad(70 / 2)) / tan(rad(cameraFov / 2)))
 
-	cameraFov = clamp(cameraFov + fov*FOV_GAIN*(dt/zoomFactor), 1, 120)
+	cameraFov = clamp(cameraFov + fov * FOV_GAIN * (dt / zoomFactor), 1, 120)
 	local cameraCFrame
 	if FFlagUserFreecamTiltControl then
-		local panVector: Vector2 = pan*PAN_GAIN*(dt/zoomFactor)
-		cameraRot = cameraRot + Vector3.new(panVector.X, panVector.Y, roll*ROLL_GAIN*(dt/zoomFactor))
+		local panVector: Vector2 = pan * PAN_GAIN * (dt / zoomFactor)
+		cameraRot = cameraRot + Vector3.new(panVector.X, panVector.Y, roll * ROLL_GAIN * (dt / zoomFactor))
 		if FFlagUserFreecamSmoothnessControl then
-			cameraRot = Vector3.new(cameraRot.x%(2*pi), cameraRot.y%(2*pi), cameraRot.z%(2*pi))
+			cameraRot = Vector3.new(cameraRot.x % (2 * pi), cameraRot.y % (2 * pi), cameraRot.z % (2 * pi))
 		else
-			cameraRot = Vector3.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y%(2*pi), cameraRot.z)
+			cameraRot = Vector3.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y % (2 * pi), cameraRot.z)
 		end
 
-		cameraCFrame = CFrame.new(cameraPos)*CFrame.fromOrientation(cameraRot.x, cameraRot.y, cameraRot.z)*CFrame.new(vel*NAV_GAIN*dt)
+		cameraCFrame = CFrame.new(cameraPos)
+			* CFrame.fromOrientation(cameraRot.x, cameraRot.y, cameraRot.z)
+			* CFrame.new(vel * NAV_GAIN * dt)
 	else
-		cameraRot = cameraRot + pan*PAN_GAIN*(dt/zoomFactor)
-		cameraRot = Vector2.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y%(2*pi))
+		cameraRot = cameraRot + pan * PAN_GAIN * (dt / zoomFactor)
+		cameraRot = Vector2.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y % (2 * pi))
 
-		cameraCFrame = CFrame.new(cameraPos)*CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)*CFrame.new(vel*NAV_GAIN*dt)
+		cameraCFrame = CFrame.new(cameraPos)
+			* CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)
+			* CFrame.new(vel * NAV_GAIN * dt)
 	end
 
 	cameraPos = cameraCFrame.p
@@ -739,17 +879,22 @@ end
 
 local function CheckMouseLockAvailability()
 	local devAllowsMouseLock = Players.LocalPlayer.DevEnableMouseLock
-	local devMovementModeIsScriptable = Players.LocalPlayer.DevComputerMovementMode == Enum.DevComputerMovementMode.Scriptable
+	local devMovementModeIsScriptable = Players.LocalPlayer.DevComputerMovementMode
+		== Enum.DevComputerMovementMode.Scriptable
 	local userHasMouseLockModeEnabled = GameSettings.ControlMode == Enum.ControlMode.MouseLockSwitch
-	local userHasClickToMoveEnabled =  GameSettings.ComputerMovementMode == Enum.ComputerMovementMode.ClickToMove
-	local MouseLockAvailable = devAllowsMouseLock and userHasMouseLockModeEnabled and not userHasClickToMoveEnabled and not devMovementModeIsScriptable
+	local userHasClickToMoveEnabled = GameSettings.ComputerMovementMode == Enum.ComputerMovementMode.ClickToMove
+	local MouseLockAvailable = devAllowsMouseLock
+		and userHasMouseLockModeEnabled
+		and not userHasClickToMoveEnabled
+		and not devMovementModeIsScriptable
 
 	return MouseLockAvailable
 end
 
 ------------------------------------------------------------------------
 
-local PlayerState = {} do
+local PlayerState = {}
+do
 	local mouseBehavior
 	local mouseIconEnabled
 	local cameraType
@@ -955,11 +1100,24 @@ do
 			if input.KeyCode == FREECAM_MACRO_KB[#FREECAM_MACRO_KB] then
 				CheckMacro(FREECAM_MACRO_KB)
 			end
+
+			if input.KeyCode == Enum.KeyCode.F or input.KeyCode == Enum.KeyCode.DPadLeft then
+				ToggleFreecam()
+			end
 		end
+
 		return Enum.ContextActionResult.Pass
 	end
 
-	ContextActionService:BindActionAtPriority("FreecamToggle", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, FREECAM_MACRO_KB[#FREECAM_MACRO_KB])
+	ContextActionService:BindActionAtPriority(
+		"FreecamToggle",
+		HandleActivationInput,
+		false,
+		TOGGLE_INPUT_PRIORITY,
+		FREECAM_MACRO_KB[#FREECAM_MACRO_KB]
+	)
+
+	ContextActionService:BindActionAtPriority("FreecamToggleDPAD", HandleActivationInput, false, TOGGLE_INPUT_PRIORITY, Enum.KeyCode.DPadLeft)
 
 	if FFlagUserFreecamGuiDestabilization or FFlagUserShowGuiHideToggles then
 		script:SetAttribute(FREECAM_ENABLED_ATTRIBUTE_NAME, enabled)
@@ -983,5 +1141,33 @@ do
 				end
 			end
 		end)
+	end
+
+	RF.OnClientInvoke = function(a, b, c)
+		if a == "Disable" and enabled then
+			enabled = false
+			StopFreecam()
+		end
+
+		if a == "Enable" and not enabled then
+			enabled = true
+			StartFreecam()
+		end
+
+		if a == "Toggle" then
+			ToggleFreecam()
+		end
+
+		if a == "End" or a == "Stop" then
+			RF.OnClientInvoke = nil
+			Debris:AddItem(RF, 0.5)
+			ContextActionService:UnbindAction("FreecamToggle")
+			ContextActionService:UnbindAction("FreecamToggle2")
+			ContextActionService:UnbindAction("FreecamToggleDPAD")
+			if enabled then -- Had to add this check because it would break your camera if it wasnt here. Not sure why.
+				enabled = false
+				StopFreecam()
+			end
+		end
 	end
 end
