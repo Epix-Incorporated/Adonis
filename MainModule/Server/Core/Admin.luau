@@ -1219,7 +1219,7 @@ return function(Vargs, GetEnv)
 			if Variables.ChatCreateRobloxCommands then
 				-- // Support for commands to be ran via TextChat
 				task.spawn(function()
-					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
+					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 120)
 
 					if container then
 						for _, v in container:GetChildren() do
