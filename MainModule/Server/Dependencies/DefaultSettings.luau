@@ -75,7 +75,7 @@ local descs = {};			--// Contains settings descriptions
 				   settings.HeadAdmins = {"Group:181:121"}
 				   See? Not so hard is it?
 
-				If I wanted to add group 181 and all ranks in it to the ;slock whitelist I would do;
+				If I wanted to add group 181 and all ranks in it to the :slock whitelist I would do;
 					settings.Whitelist = {"Group:181";}
 
 				I can do the above if I wanted to give everyone in a group admin for any of the other admin tables
@@ -85,11 +85,11 @@ local descs = {};			--// Contains settings descriptions
 		--// Command Permissions
 
 			You can set the permission level for specific commands using setting.Permissions
-			If I wanted to make it so only HeadAdmins+ can use ;ff player then I would do:
+			If I wanted to make it so only HeadAdmins+ can use :ff player then I would do:
 
 				settings.Permissions = {"ff:HeadAdmins"}
 
-				ff is the Command ";ff scel" and HeadAdmins is the NewLevel
+				ff is the Command ":ff scel" and HeadAdmins is the NewLevel
 
 				Built-In Permissions Levels:
 					Players - 0
@@ -99,7 +99,7 @@ local descs = {};			--// Contains settings descriptions
 					Creators - 900
 
 				Note that when changing command permissions you MUST include the prefix;
-				So if you change the prefix to $ you would need to do $ff instead of ;ff
+				So if you change the prefix to $ you would need to do $ff instead of :ff
 
 
 		--// Trello
@@ -115,7 +115,7 @@ local descs = {};			--// Contains settings descriptions
 				6. Congrats! The board is ready to be used;
 				7. Create a list and add cards to it;
 
-				- You can view lists in-game using ;viewlist ListNameHere
+				- You can view lists in-game using :viewlist ListNameHere
 
 			Lists:
 				Moderators			- Card Format: Same as settings.Moderators
@@ -128,7 +128,7 @@ local descs = {};			--// Contains settings descriptions
 				Whitelist			- Card Format: Same as settings.Whitelist
 				Permissions			- Card Format: Same as settings.Permissions
 				Music				- Card Format: SongName:AudioID
-				Commands			- Card Format: Command  (eg. ;ff bob)
+				Commands			- Card Format: Command  (eg. :ff bob)
 
 			Card format refers to how card names should look
 
@@ -140,14 +140,13 @@ settings.HideScript = true						 -- When the game starts the Adonis_Loader model
 settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO ANYTHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
-settings.LocalDatastore = false					 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
+settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
-settings.Storage = game:GetService("ServerStorage")  -- Where things like tools are stored
-settings.RecursiveTools = false						 -- Whether tools that are included in sub-containers within settings.Storage will be available via the ;give command (useful if your tools are organized into multiple folders)
+settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
+settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
 		Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
@@ -199,17 +198,18 @@ settings.Ranks = {
 
 --// Use the below table to set command permissions; Commented commands are included for example purposes
 settings.Permissions = {
-	-- "ff:HeadAdmins"; --// Changes ;ff to HeadAdmins and higher (HeadAdmins = Level 300 by default)
-	-- "kill:300"; --// Changes ;kill to level 300 and higher (Level 300 = HeadAdmins by default)
-	-- "ban:200,300" --// Makes it so ;ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
+	-- "ff:HeadAdmins"; --// Changes :ff to HeadAdmins and higher (HeadAdmins = Level 300 by default)
+	-- "kill:300"; --// Changes :kill to level 300 and higher (Level 300 = HeadAdmins by default)
+	-- "ban:200,300" --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
 };	-- Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
 
 --// Use the below table to define "pre-set" command aliases
---// Command aliases; Format: {[";alias <arg1> <arg2> ..."] = ";command <arg1> <arg2> ..."}
+--// Command aliases; Format: {[":alias <arg1> <arg2> ..."] = ":command <arg1> <arg2> ..."}
 settings.Aliases = {
-	[";examplealias <player> <fireColor>"] = ";ff <player> | ;fling <player> | ;fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
+	[":examplealias <player> <fireColor>"] = ":ff <player> | :fling <player> | :fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
 };
 
+--// Use the below table to define pre-set cameras
 settings.Cameras = {
 --[[
 	"Camera Name" would be the name of your camera
@@ -225,33 +225,33 @@ settings.Muted = {}			-- List of people muted (cannot send chat messages)				 		
 settings.Blacklist = {}		-- List of people banned from running commands 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 
-settings.MusicList = {} 	-- List of songs to appear in the ;musiclist	  Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
+settings.MusicList = {} 	-- List of songs to appear in the :musiclist	  Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
 settings.CapeList = {}		-- List of capes							  Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
-settings.InsertList = {} 	-- List of models to appear in the ;insertlist and can be inserted using ';insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
-settings.Waypoints = {}     -- List of waypoints you can teleport via ';to wp-WAYPOINTNAME' or ';teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)}
+settings.InsertList = {} 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
+settings.Waypoints = {}     -- List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)}
 
-settings.OnStartup = {}		-- List of commands ran at server start								Format: {";notif TestNotif"}
-settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminlevel)		Format: {";cmds"}
-settings.OnSpawn = {}		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",";ff me"}
+settings.OnStartup = {}		-- List of commands ran at server start								Format: {":notif TestNotif"}
+settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
+settings.OnSpawn = {}		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
 
-settings.SaveAdmins = true		  -- If true anyone you ;admin or ;headadmin in-game will save
+settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
 settings.LoadAdminsFromDS = true  -- If false, any admins saved in your DataStores will not load
 settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
 
-settings.Prefix = {";", ":"}		-- A list of prefixes for commands, the ; in ;kill me
+settings.Prefix = {":", ";"}		-- A list of prefixes for commands, the : in :kill me
 settings.PlayerPrefix = "!"			-- The ! in !donate; Mainly used for commands that any player can run; Do not make it the same as settings.Prefix
-settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (If changed to ! you would do ;kill !me)
-settings.SplitKey = " "				-- The space in ;kill me (eg if you change it to / ;kill me would be ;kill/me)
-settings.BatchKey = "|"				-- ;kill me | ;ff bob | ;explode scel
+settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (If changed to ! you would do :kill !me)
+settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
+settings.BatchKey = "|"				-- :kill me | :ff bob | :explode scel
 settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 --// Easily add new custom commands below (without needing to create a plugin module)
 --// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)
 settings.Commands = {
 	ExampleCommand1 = {								--// The index & table of the command
-		Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ';' in ';ff me'
-		Commands = {"examplecommand1", "examplealias1", "examplealias2"};	--// A table containing the command strings (the things you chat in-game to run the command, the 'ff' in ';ff me')
-		Args = {"arg1", "arg2", "etc"};	--// Command arguments, these will be available in order as args[1], args[2], args[3], etc; This is the 'me' in ';ff me'
+		Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
+		Commands = {"examplecommand1", "examplealias1", "examplealias2"};	--// A table containing the command strings (the things you chat in-game to run the command, the 'ff' in ':ff me')
+		Args = {"arg1", "arg2", "etc"};	--// Command arguments, these will be available in order as args[1], args[2], args[3], etc; This is the 'me' in ':ff me'
 		Description = "Example command";--// The description of the command
 		AdminLevel = 100; -- Moderators	--// The commands minimum admin level; This can also be a table containing specific levels rather than a minimum level: {124, 152, "HeadAdmins", etc};
 		-- Alternative option: AdminLevel = "Moderators"
@@ -273,7 +273,7 @@ settings.Commands = {
 settings.CommandCooldowns = {
 --[[
 	REFERENCE:
-		command_full_name: The name of a command (e.g. ;cmds)
+		command_full_name: The name of a command (e.g. :cmds)
 
 	[command_full_name] = {
 		Player = 0;
@@ -291,25 +291,25 @@ settings.CommandFeedback = false		-- Should players be notified when commands wi
 settings.CrossServerCommands = true		-- Are commands which affect more than one server enabled?
 settings.ChatCommands = true			-- If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands
 settings.CreatorPowers = true			-- Gives me creator-level admin; This is strictly used for debugging; I can't debug without full access to the script
-settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as ;s) and a few other commands require this
+settings.CodeExecution = false			-- Enables the use of code execution in Adonis. Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true	-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
-settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is ;slocked
-settings.SystemTitle = "System Message"		-- Title to display in ;sm and ;bc
+settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
+settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 settings.MaxLogs = 5000			           -- Maximum logs to save before deleting the oldest
 settings.SaveCommandLogs = true	           -- If command logs are saved to the datastores
 settings.Notification = true	           -- Whether or not to show the "You're an admin" and "Updated" notifications
-settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via ;music
+settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
 settings.DefaultTheme = "Default"		   -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 settings.HiddenThemes = {}				   -- Hide themes from the theme selector tab inside the userpanel. Each theme name must be the specific name such as "Mobilius"
 settings.Messages = {}			           -- A list of notifications shown on join. Messages can either be strings or tables. Messages are shown to HeadAdmins+ by default but tables can define a different minimum level via .Level
 settings.AutoClean = false		           -- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	           -- Time between auto cleans
-settings.AutoBackup = false 	           -- Run ;backupmap automatically when the server starts. To restore the map, run ;restoremap
+settings.AutoBackup = false 	           -- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
 settings.ReJail = false			           -- If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed
 
 settings.Console = true				-- Whether the command console is enabled
@@ -339,7 +339,7 @@ settings.Trello_Primary = ""			-- Primary Trello board
 settings.Trello_Secondary = {}			-- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
 settings.Trello_AppKey = ""				-- Your Trello AppKey
 settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Get API key: /1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
-settings.Trello_HideRanks = false		-- If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via ;admins)
+settings.Trello_HideRanks = false		-- If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins)
 
 
 ---------------------
@@ -403,7 +403,7 @@ descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be 
 descs.LocalDatastore = [[ If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers ]]
 
 descs.Storage = [[ Where things like tools are stored ]]
-descs.RecursiveTools = [[ Whether tools that are included in sub-containers within settings.Storage will be available via the ;give command (useful if your tools are organized into multiple folders) ]]
+descs.RecursiveTools = [[ Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders) ]]
 
 descs.Theme = [[ UI theme; ]]
 descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
@@ -415,7 +415,7 @@ descs.HeadAdmins = [[ Head Admins; Format: {"Username"; "Username:UserId"; UserI
 descs.Creators = [[ Anyone to be identified as a place owner; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 
 descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
-descs.Aliases = [[ Command aliases; Format: {[";alias <arg1> <arg2> ..."] = ";command <arg1> <arg2> ..."} ]]
+descs.Aliases = [[ Command aliases; Format: {[":alias <arg1> <arg2> ..."] = ":command <arg1> <arg2> ..."} ]]
 descs.Cameras = [[ Cameras; Format: {Name = "CamName", Position = Vector3.new(X, Y, Z)} ]]
 
 descs.Commands = [[ Custom commands ]]
@@ -426,22 +426,22 @@ descs.Whitelist = [[ People who can join if whitelist enabled; Format: {"Usernam
 descs.MusicList = [[ List of songs to appear in the script; Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
 descs.CapeList = [[ List of capes; Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}} ]]
 descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
-descs.Waypoints = [[ List of waypoints you can teleport via ';to wp-WAYPOINTNAME' or ';teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)} ]]
+descs.Waypoints = [[ List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)} ]]
 descs.CustomRanks = [[ List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} ]]
 
-descs.OnStartup = [[ List of commands ran at server start								Format: {";notif TestNotif"} ]]
-descs.OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		Format: {";cmds"} ]]
-descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",";ff me"} ]]
+descs.OnStartup = [[ List of commands ran at server start								Format: {":notif TestNotif"} ]]
+descs.OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"} ]]
+descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]]
 
-descs.SaveAdmins = [[ If true anyone you ;mod, ;admin, or ;headadmin in-game will save]]
+descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]]
 descs.LoadAdminsFromDS = [[ If false, any admins saved in your DataStores will not load ]]
 descs.WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]]
 
-descs.Prefix = [[ The ; in ;kill me ]]
+descs.Prefix = [[ The : in :kill me ]]
 descs.PlayerPrefix = [[ The ! in !donate; Mainly used for commands that any player can run ]]
-descs.SpecialPrefix = [[ Used for things like "all", "me" and "others" (If changed to ! you would do ;kill !me) ]]
-descs.SplitKey = [[ The space in ;kill me (eg if you change it to / ;kill me would be ;kill/me) ]]
-descs.BatchKey = [[ ;kill me | ;ff bob | ;explode scel ]]
+descs.SpecialPrefix = [[ Used for things like "all", "me" and "others" (If changed to ! you would do :kill !me) ]]
+descs.SplitKey = [[ The space in ;kill me (eg if you change it to / :kill me would be :kill/me) ]]
+descs.BatchKey = [[ :kill me | :ff bob | :explode scel ]]
 descs.ConsoleKeyCode = [[ Keybind to open the console ]]
 
 descs.HttpWait = [[ How long things that use the HttpService will wait before updating again ]]
@@ -450,7 +450,7 @@ descs.Trello_Primary = [[ Primary Trello board ]]
 descs.Trello_Secondary = [[ Secondary Trello boards; Format: {"BoardID";"BoardID2","etc"} ]]
 descs.Trello_AppKey = [[ Your Trello AppKey; ]]
 descs.Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!) ]]
-descs.Trello_HideRanks = [[ If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via ;admins) ]]
+descs.Trello_HideRanks = [[ If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins) ]]
 
 descs.G_API = [[ If true, allows other server scripts to access certain functions described in the API module through _G.Adonis ]]
 descs.G_Access = [[ If enabled, allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player) ]]
@@ -469,15 +469,15 @@ descs.SilentCommandDenials = [[ If true, there will be no differences between th
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
 
 descs.BanMessage = [[ Message shown to banned users ]]
-descs.LockMessage = [[ Message shown to people when they are kicked while the game is ;slocked ]]
-descs.SystemTitle = [[ Title to display in ;sm ]]
+descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
+descs.SystemTitle = [[ Title to display in :sm ]]
 
 descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
-descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via ;music ]]
+descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme. ]]
 descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. Or if the moderator leaves everybody gets unjailed ]]
@@ -485,7 +485,7 @@ descs.ReJail = [[ If true then when a player rejoins they'll go back into jail. 
 descs.Messages = [[ A list of notifications shown on join. Messages can either be strings or tables. Messages are shown to HeadAdmins+ by default but tables can define a different minimum level via .Level ]]
 
 descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
-descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run ;restoremap ]]
+descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 descs.AutoCleanDelay = [[ Time between auto cleans ]]
 
 descs.PlayerList = [[ Custom playerlist ]]
@@ -604,7 +604,6 @@ order = {
 	"AutoBackup";
 	" ";
 	"PlayerList";
-	" ";
 	"Console";
 	"Console_AdminsOnly";
 	" ";
