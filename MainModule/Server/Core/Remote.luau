@@ -134,6 +134,7 @@ return function(Vargs, GetEnv)
 		WhitelistedVariable = {
 			MusicList = true,
 			CodeName = true,
+			ChatCreateRobloxCommands = true,
 		};
 
 		Returnables = {
