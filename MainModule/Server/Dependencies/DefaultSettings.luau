@@ -61,8 +61,9 @@ local descs = {};			--// Contains settings descriptions
 		If I wanted to make it so rank 134 in group 1029934 and BobJenkins123 had mod admin I would do
 		settings.Moderators = {"Group:1029943:134", "BobJenkins123"}
 
-
-		I was going to change the admin rank stuff but I figured it would confuse people too much, so I left it as mods/admins/HeadAdmins ;p
+		!NOTE! When adding a group to a table, you may be tempted to replace the word Group with the name of your group – DON'T.
+		The group name is IRRELEVANT! If one's group was named 2Drool4School and it had the ID 2847031, the correct form is {"Group:2847031"}
+		and not {"2Drool4School:2847031"}
 
 
 		--// Admins
@@ -140,14 +141,13 @@ settings.HideScript = true						 -- When the game starts the Adonis_Loader model
 settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO ANYTHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
-settings.LocalDatastore = false					 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
+settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
-settings.Storage = game:GetService("ServerStorage")  -- Where things like tools are stored
-settings.RecursiveTools = false						 -- Whether tools that are included in sub-containers within settings.Storage will be available via the ;give command (useful if your tools are organized into multiple folders)
+settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
+settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the ;give command (useful if your tools are organized into multiple folders)
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
 		Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
@@ -157,7 +157,7 @@ settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI el
 			settings.Ranks = {
 				["Moderators"] = {
 					Level = 100;
-					Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID"; "Subscription:SubscriptionId";}
+					Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 				}
 			}
 
@@ -210,6 +210,7 @@ settings.Aliases = {
 	[";examplealias <player> <fireColor>"] = ";ff <player> | ;fling <player> | ;fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
 };
 
+--// Use the below table to define pre-set cameras
 settings.Cameras = {
 --[[
 	"Camera Name" would be the name of your camera
@@ -605,7 +606,6 @@ order = {
 	"AutoBackup";
 	" ";
 	"PlayerList";
-	" ";
 	"Console";
 	"Console_AdminsOnly";
 	" ";
