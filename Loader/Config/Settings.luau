@@ -61,8 +61,9 @@ local descs = {};			--// Contains settings descriptions
 		If I wanted to make it so rank 134 in group 1029934 and BobJenkins123 had mod admin I would do
 		settings.Moderators = {"Group:1029943:134", "BobJenkins123"}
 
-
-		I was going to change the admin rank stuff but I figured it would confuse people too much, so I left it as mods/admins/HeadAdmins ;p
+		!NOTE! When adding a group to a table, you may be tempted to replace the word Group with the name of your group – DON'T.
+		The group name is IRRELEVANT! If one's group was named 2Drool4School and it had the ID 2847031, the correct form is {"Group:2847031"}
+		and not {"2Drool4School:2847031"}
 
 
 		--// Admins
