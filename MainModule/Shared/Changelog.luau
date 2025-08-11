@@ -3,11 +3,13 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v268 2025-06-24 15:30 UTC] @Dimenpsyonal";
+	"[v268 2025-08-11 15:12 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Fix first joined player DS ranks (#1918)";
 	"(Git/fxeP1) Fix security related to Client G_API (#1919)";
 	"(Git/ccuser44) Fix donor cape not updating from UserPanel (#1926)";
 	"(Git/ccuser44) Make donor status updating asynchronous (#1922)";
+	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
+	"(Git/kaiserandaxl) Fix Resize command Breaking (#1936)";
 	"";
 	"[Patch v267.1 2025-06-07 18:19 UTC] @Dimenpsyonal";
 	"(Git/kaiserandaxl) Fix updateStatus for Capes in UserPanel (#1914)";
