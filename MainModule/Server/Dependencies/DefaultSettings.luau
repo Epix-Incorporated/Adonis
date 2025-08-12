@@ -144,7 +144,7 @@ settings.DataStoreEnabled = true				 -- Disable if you don't want to load settin
 settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
 settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
-settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the ;give command (useful if your tools are organized into multiple folders)
+settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
