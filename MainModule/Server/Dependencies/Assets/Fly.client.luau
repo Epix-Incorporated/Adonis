@@ -128,6 +128,11 @@ function Stop()
 	flying = false
 	human.PlatformStand = false
 
+	local collisionPart: BasePart = human.Parent:FindFirstChild("CollisionPart")
+	if collisionPart then
+		collisionPart.CanCollide = true
+	end
+
 	if bPos then
 		bPos.MaxForce = 0
 	end

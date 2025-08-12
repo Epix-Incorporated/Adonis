@@ -533,7 +533,7 @@ return function(data, env)
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 
-				if settingsData.Settings.DonorCapes and playerData.isDonor then
+				if chatMod.DonorCapes and playerData.isDonor then
 					if type(donorData) == "table" and donorData.Cape and type(donorData.Cape) == "table" then
 						if donorData.Enabled and service.Players.LocalPlayer.Character then
 							Functions.NewCape({
@@ -549,9 +549,11 @@ return function(data, env)
 					end
 				end
 
-				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
-				task.wait(0.5)
-				dStatus.Text = "Donated"
+				task.defer(function()
+					dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
+					task.wait(0.5)
+					dStatus.Text = "Donated"
+				end)
 			end
 
 			donorTab:Add("TextLabel", {
