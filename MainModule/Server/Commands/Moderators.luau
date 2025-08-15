@@ -51,7 +51,7 @@ return function(Vargs, env)
 				Remote.Send(plr, "Function", "CharacterESP", false)
 
 				if args[1] then
-					for _2, v2 in service.GetPlayers(plr, args[1]) do
+					for _2, v2 in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if not v2.Character then
 							continue
 						end
@@ -138,7 +138,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing message")
 
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name")) do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name"), { NoFakePlayer = true }) do
 					Functions.Notification("Notification", service.Filter(args[2], plr, v), {v})
 				end
 			end
@@ -193,7 +193,7 @@ return function(Vargs, env)
 				local num = assert(tonumber(args[2]), "Missing or invalid time value (must be a number)")
 				assert(num <= 1000, "Countdown cannot be longer than 1000 seconds.")
 				assert(num >= 0, "Countdown cannot be negative.")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.MakeGui(v, "Countdown", {
 						Time = math.round(num);
 					})
