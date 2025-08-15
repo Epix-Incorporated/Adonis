@@ -4751,6 +4751,7 @@ return function(Vargs, env)
 				else
 					local target = service.GetPlayers(plr, args[2], { NoFakePlayer = true })[1]
 					local players = service.GetPlayers(plr, args[1], { NoFakePlayer = true })
+
 					if #players == 1 and players[1] == target then
 						local v = players[1]
 						local Character = v.Character
@@ -4794,6 +4795,8 @@ return function(Vargs, env)
 							end
 						end
 					else
+						if not target then return end
+
 						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 						if targ_root then
 							for k, v in players do
@@ -4911,9 +4914,12 @@ return function(Vargs, env)
 					assert(plr.Character,"Your character is missing"):FindFirstChild("HumanoidRootPart"),
 					"Your HumanoidRootPart is missing"
 				)
-				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"))
+				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"), { NoFakePlayer = true })
 				local numPlayers = #players
-				local lines = math.clamp(tonumber(args[2]) or 3, 1, numPlayers)
+				if numPlayers == 0 then return end
+
+				local minLines = math.min(tonumber(args[2]) or 3, numPlayers)
+				local lines = math.clamp(minLines, 1, numPlayers)
 
 				for l = 1, lines do
 					local offsetX = if l == 1 then 0
