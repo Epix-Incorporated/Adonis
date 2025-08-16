@@ -1,15 +1,24 @@
 return {
-	"Version: 268";
+	"Version: 269";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v268 2025-08-12 06:59 UTC] @Dimenpsyonal";
+	"[v269 2025-08-12 06:59 UTC] @Dimenpsyonal";
+	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
+	"(Git/kaiserandaxl) Fix Resize command Breaking (#1936)";
+	"(Git/kaiserandaxl) Change Modern Window from .rbxm to .rbxmx and fixed bug (#1937)";
+	"(Git/kaiserandaxl) Stop :fly command from Memory Leaking a Script (#1940)";
+	"(Git/kaiserandaxl) Fix past PR which fixed memory leak (#1941)";
+	"(Git/EasternBloxxer) Update freecam (#1945)";
+	"(Git/PurpleCreativity) Fix flight stop and unnoclip character collision (#1944)";
+	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
+	"(Git/kaiserandaxl) Fix Resize command Breaking (#1936)";
+	"";
+	"[v268 2025-06-24 15:29 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Fix first joined player DS ranks (#1918)";
 	"(Git/fxeP1) Fix security related to Client G_API (#1919)";
 	"(Git/ccuser44) Fix donor cape not updating from UserPanel (#1926)";
 	"(Git/ccuser44) Make donor status updating asynchronous (#1922)";
-	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
-	"(Git/kaiserandaxl) Fix Resize command Breaking (#1936)";
 	"";
 	"[Patch v267.1 2025-06-07 18:19 UTC] @Dimenpsyonal";
 	"(Git/kaiserandaxl) Fix updateStatus for Capes in UserPanel (#1914)";
@@ -43,7 +52,7 @@ return {
 	"";
 	"[v265 2025-03-22 19:42 UTC] @Dimenpsyonal";
 	"Change client dump to use print";
-    "(Git/Raineko826) Fixed :sword team kill argument not working (#1860)";
+	"(Git/Raineko826) Fixed :sword team kill argument not working (#1860)";
 	"(Git/kaiserandaxl) Added :return command (#1856)";
 	"(Git/Raineko826) Fix Commands.ScreenVideo not working due to typo (#1859)";
 	"(Git/SuperCater) Add ;starterhealth, ;unstarterhealth, ;starterspeed and ;unstarterspeed (#1850)";
