@@ -1440,7 +1440,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Pcall = Pcall;
 		Threads = Threads;
 		DataModel = game;
-		Font = Font;
 		WrapService = WrapService;
 		EventService = EventService;
 		ThreadService = ThreadService;
