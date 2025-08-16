@@ -4018,7 +4018,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				if args[2] then
-					for _, v in service.GetPlayers(plr, args[2]) do
+					for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 						Remote.SetLighting(v, "Brightness", args[1])
 					end
 				else
@@ -4035,7 +4035,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				if args[2] then
-					for _, v in service.GetPlayers(plr, args[2]) do
+					for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 						Remote.SetLighting(v, "TimeOfDay", args[1])
 					end
 				else
@@ -4059,7 +4059,7 @@ return function(Vargs, env)
 					Functions.SetAtmosphere("Color", color)
 				end
 				if args[2] then
-					for _, v in service.GetPlayers(plr, args[2]) do
+					for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 						Remote.SetLighting(v, "FogColor", color)
 					end
 				else
@@ -4076,7 +4076,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				if args[3] then
-					for _, v in service.GetPlayers(plr, args[3]) do
+					for _, v in service.GetPlayers(plr, args[3], { NoFakePlayer = true }) do
 						Remote.SetLighting(v, "FogEnd", args[2])
 						Remote.SetLighting(v, "FogStart", args[1])
 					end
@@ -4110,7 +4110,7 @@ return function(Vargs, env)
 					end
 				end
 				if #found > 0 then
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						for k, t in found do
 							t:Clone().Parent = v.StarterGear
 						end
@@ -4131,7 +4131,7 @@ return function(Vargs, env)
 			Description = "Removes the desired tool from the target player(s)'s StarterPack";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, string.lower(args[1])) do
+				for _, v in service.GetPlayers(plr, string.lower(args[1]), { NoFakePlayer = true }) do
 					local StarterGear = v:FindFirstChildOfClass("StarterGear")
 					if StarterGear then
 						for _, tool in StarterGear:GetChildren() do
@@ -4169,7 +4169,7 @@ return function(Vargs, env)
 					end
 				end
 				if #found > 0 then
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						for k, t in found do
 							t:Clone().Parent = v.Backpack
 						end
@@ -4243,7 +4243,7 @@ return function(Vargs, env)
 			Description = "Removes all of the target player(s)'s on-screen GUIs except Adonis GUIs";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
 				end
 			end
@@ -4256,7 +4256,7 @@ return function(Vargs, env)
 			Description = "Remove the target player(s)'s tools";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						local hum = v.Character:FindFirstChildOfClass("Humanoid")
 						if hum then hum:UnequipTools() end
@@ -4281,7 +4281,7 @@ return function(Vargs, env)
 			Description = "Remove a specified tool from the target player(s)'s backpack";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						for _, tool in v.Character:GetChildren() do
 							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
@@ -4329,7 +4329,7 @@ return function(Vargs, env)
 			Description = "Removes <number> HP from the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum:TakeDamage(args[2])
@@ -4345,7 +4345,7 @@ return function(Vargs, env)
 			Description = "Set the target player(s)'s health and max health to <number>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.MaxHealth = args[2]
@@ -4362,7 +4362,7 @@ return function(Vargs, env)
 			Description = "Set the target player(s)'s jump power to <number>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.JumpPower = args[2] or 50
@@ -4379,7 +4379,7 @@ return function(Vargs, env)
 			Description = "Set the target player(s)'s jump height to <number>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.JumpHeight = args[2] or 7.2
@@ -4399,7 +4399,7 @@ return function(Vargs, env)
 				assert(not args[2] or args[2]:lower() ~= "inf", "Speed cannot be infinite")
 				local speed = tonumber(args[2]) or 16
 				assert(speed >= 0, "Speed cannot be negative")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.WalkSpeed = speed
@@ -4531,7 +4531,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2] and tonumber(args[2]), "Missing or invalid FOV number")
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]].. math.clamp(tonumber(args[2]), 1, 120))
 				end
 			end
@@ -4550,7 +4550,7 @@ return function(Vargs, env)
 				local teleportOptions = if reservedServerInfo then service.New("TeleportOptions", {
 					ReservedServerAccessCode = reservedServerInfo.Code
 				}) else nil
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Routine(function()
 						if
 							Remote.MakeGuiGet(v, "Notification", {
@@ -4631,7 +4631,7 @@ return function(Vargs, env)
 			Hidden = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Notification("Teleport", "Click to teleport to Plaza Connect", service.GetPlayers(plr, args[1]), 30, "MatIcon://QR code scanner", Core.Bytecode("service.TeleportService:Teleport(5118029260)"))
+				Functions.Notification("Teleport", "Click to teleport to Plaza Connect", service.GetPlayers(plr, args[1], { NoFakePlayer = true }), 30, "MatIcon://QR code scanner", Core.Bytecode("service.TeleportService:Teleport(5118029260)"))
 			end
 		};
 
@@ -4891,7 +4891,7 @@ return function(Vargs, env)
 			Description = "Returns the player to their original position";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, player in service.GetPlayers(plr, args[1]) do
+				for i, player in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if Variables.ReturnPoints[player] then
 						player.Character.HumanoidRootPart.CFrame = Variables.ReturnPoints[player]
 						Variables.ReturnPoints[player] = nil;
