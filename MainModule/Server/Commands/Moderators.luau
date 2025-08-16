@@ -2191,7 +2191,7 @@ return function(Vargs, env)
 			Description = "Gives you a playable keyboard piano. Credit to NickPatella.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local Dropper = v:FindFirstChildOfClass("PlayerGui") or v:FindFirstChildOfClass("Backpack")
 					if Dropper then
 						local piano = Deps.Assets.Piano:Clone()
@@ -2333,7 +2333,7 @@ return function(Vargs, env)
 				end
 			end;
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.MakeGui(plr, "List", {
 						Title = `{service.FormatPlayer(v)}'s Client Instances`;
 						Table = Logs.ListUpdaters.ShowClientInstances(plr, v);
@@ -2353,7 +2353,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local deleteAll = args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if deleteAll then
 						Routine(Remote.RemoveGui, v, true)
 					else
@@ -2378,7 +2378,7 @@ return function(Vargs, env)
 			Description = "Removes all screen UI effects such as Spooky, Clown, ScreenImage, ScreenVideo, etc.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1] or "all") do
+				for _, v in service.GetPlayers(plr, args[1] or "all", { NoFakePlayer = true }) do
 					Remote.RemoveGui(v, "Effect")
 				end
 			end
@@ -2431,7 +2431,7 @@ return function(Vargs, env)
 			Description = "Sets the player's lighting to match the server's";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					for prop, val in Variables.LightingSettings do
 						Remote.SetLighting(v, prop, val)
 					end
@@ -2446,7 +2446,7 @@ return function(Vargs, env)
 			Description = "Sets target player(s)'s leader stats to 0 (N/A if it's a string)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, string.lower(args[1])) do
+				for _, v in service.GetPlayers(plr, string.lower(args[1]), { NoFakePlayer = true }) do
 					task.spawn(pcall, function()
 						if v and v:FindFirstChild("leaderstats") then
 							for a, q in v.leaderstats:GetChildren() do
@@ -2465,7 +2465,7 @@ return function(Vargs, env)
 			Description = "Prompts the player(s) to buy the product belonging to the ID you supply";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					service.MarketPlace:PromptPurchase(v, tonumber(args[2]), false)
 				end
 			end
@@ -2508,7 +2508,7 @@ return function(Vargs, env)
 						end
 					end
 				end
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Functions.Cape(v, false, mat, color, id, ref)
 				end
 			end
@@ -2521,7 +2521,7 @@ return function(Vargs, env)
 			Description = "Removes the target player(s)'s cape";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Functions.UnCape(v)
 				end
 			end
@@ -2537,7 +2537,7 @@ return function(Vargs, env)
 				local clipper = Deps.Assets.Clipper:Clone()
 				clipper.Name = "ADONIS_NoClip"
 
-				for i, p in service.GetPlayers(plr, args[1]) do
+				for i, p in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Admin.RunCommand(`{Settings.Prefix}clip`, p.Name)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
@@ -2557,7 +2557,7 @@ return function(Vargs, env)
 			Description = "Un-NoClips the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, p in service.GetPlayers(plr, args[1]) do
+				for i, p in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local old = p.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
 					if old then
 						if old.Clip.Value then
@@ -2598,7 +2598,7 @@ return function(Vargs, env)
 
 				local Color = args[3] and (string.lower(args[3]) == "rainbow" and "rainbow" or string.match(args[3], "%d") and Functions.ParseColor3(args[3]) or Functions.ParseBrickColor(args[3], true)) or BrickColor.new("White")
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local cHumanoidRootPart	= v.Character and v.Character.PrimaryPart or v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if cHumanoidRootPart then
 						local CF = CFrame.new(cHumanoidRootPart.CFrame.p + Vector3.new(0, 1, 0))
@@ -2824,7 +2824,7 @@ return function(Vargs, env)
 					off = "off"
 				}
 				local chatColor = args[2] and CHAT_COLORS[args[2]:lower()] or CHAT_COLORS.red
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.MakeGui(v, "BubbleChat", {Color = chatColor;})
 				end
 			end
@@ -2845,7 +2845,7 @@ return function(Vargs, env)
 					Variables.TrackingTable[plr.Name] = {}
 				end
 
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
+				for _, v: Player in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if persistent and Variables.TrackingTable[plr.Name] then
 						Variables.TrackingTable[plr.Name][v] = true
 					end
@@ -2953,7 +2953,7 @@ return function(Vargs, env)
 			Description = "Makes the player(s) character completely local";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.MakeLocal(v, v.Character)
 				end
 			end
@@ -2966,7 +2966,7 @@ return function(Vargs, env)
 			Description = "UnPhases the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						Remote.MoveLocal(v, v.Character.Name, false, workspace)
 						v.Character.Parent = workspace
@@ -2982,7 +2982,7 @@ return function(Vargs, env)
 			Description = "Gives the target player(s) tools that are in the game's StarterPack";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
 					if Backpack then
 						for a, q in service.StarterPack:GetChildren() do
