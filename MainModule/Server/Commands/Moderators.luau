@@ -3123,7 +3123,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local plrBackpack = assert(plr:FindFirstChildOfClass("Backpack"), "You have no backpack")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Teleport"
 					scr.Target.Value = v.Name
@@ -3148,7 +3148,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local plrBackpack = assert(plr:FindFirstChildOfClass("Backpack"), "You have no backpack")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Walk"
 					scr.Target.Value = v.Name
@@ -3172,7 +3172,7 @@ return function(Vargs, env)
 			Description = "Lets you take control of the target player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						local Humanoid = v.Character.Humanoid
 
@@ -3215,7 +3215,7 @@ return function(Vargs, env)
 			Description = "Refreshes the target player(s)'s character";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, p in service.GetPlayers(plr, args[1]) do
+				for i, p in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					task.defer(function()
 						local oChar = p.Character;
 						local oTools, pBackpack, oHumanoid, oPrimary, oPos;
@@ -3295,7 +3295,7 @@ return function(Vargs, env)
 			Description = "Kills the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						local hum = v.Character:FindFirstChildOfClass("Humanoid")
 						if hum then
@@ -3314,7 +3314,7 @@ return function(Vargs, env)
 			Description = "Respawns the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					task.defer(function()
 						pcall(v.LoadCharacter, v)
 						Remote.Send(v, "Function", "SetView", "reset")
@@ -3330,7 +3330,7 @@ return function(Vargs, env)
 			Description = "Converts players' character to R6";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					task.defer(Functions.ConvertPlayerCharacterToRig, v, "R6")
 				end
 			end
@@ -3343,7 +3343,7 @@ return function(Vargs, env)
 			Description = "Converts players' character to R15";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Functions.ConvertPlayerCharacterToRig(v, "R15")
 				end
 			end
@@ -3356,7 +3356,7 @@ return function(Vargs, env)
 			Description = "Stuns the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
 					if Humanoid then
@@ -3373,7 +3373,7 @@ return function(Vargs, env)
 			Description = "UnStuns the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
 					if Humanoid then
@@ -3390,7 +3390,7 @@ return function(Vargs, env)
 			Description = "Forces the target player(s) to jump";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if Humanoid then
 						Humanoid.Jump = true
@@ -3406,7 +3406,7 @@ return function(Vargs, env)
 			Description = "Forces the target player(s) to sit";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if Humanoid then
 						Humanoid.Sit = true
@@ -3422,7 +3422,7 @@ return function(Vargs, env)
 			Description = "Set the transparency of the target's character";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						for k, p in v.Character:GetChildren() do
 							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
@@ -3454,7 +3454,7 @@ return function(Vargs, env)
 			Description = "Set the transparency of the target's character's parts, including accessories; supports a comma-separated list of part names";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, player in service.GetPlayers(plr, args[1]) do
+				for i, player in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if player.Character then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
 						if humanoid then
@@ -3734,7 +3734,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) invisible";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						for a, obj in v.Character:GetChildren() do
 							if obj:IsA("BasePart") then
@@ -3777,7 +3777,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) visible";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						for a, obj in v.Character:GetChildren() do
 							if obj:IsA("BasePart") and obj.Name~="HumanoidRootPart" then
@@ -3832,7 +3832,7 @@ return function(Vargs, env)
 					color = assert(Functions.ParseColor3(args[2]), "Invalid color provided")
 				end
 
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
+				for _, v: Player in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
@@ -3854,7 +3854,7 @@ return function(Vargs, env)
 			Description = "Locks the target player(s), preventing the use of btools on the character";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						for a, obj in v.Character:GetChildren() do
 							if obj:IsA("BasePart") then
@@ -3875,7 +3875,7 @@ return function(Vargs, env)
 			Description = "UnLocks the the target player(s), makes it so you can use btools on them";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						for a, obj in v.Character:GetChildren() do
 							if obj:IsA("BasePart") then
@@ -3898,7 +3898,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local color = Functions.ParseColor3(args[2]) or BrickColor.new("Bright blue").Color
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						Functions.NewParticle(v.Character.HumanoidRootPart, "PointLight", {
 							Name = "ADONIS_LIGHT";
@@ -3918,7 +3918,7 @@ return function(Vargs, env)
 			Description = "UnLights the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						Functions.RemoveParticle(v.Character.HumanoidRootPart, "ADONIS_LIGHT")
 					end
@@ -3937,7 +3937,7 @@ return function(Vargs, env)
 				local color = assert(Functions.ParseColor3(args[1]), "Invalid color provided")
 
 				if args[2] then
-					for _, v in service.GetPlayers(plr, args[2]) do
+					for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 						Remote.SetLighting(v, "Ambient", color)
 					end
 				else
@@ -3957,7 +3957,7 @@ return function(Vargs, env)
 				local color = assert(Functions.ParseColor3(args[1]), "Invalid color provided")
 
 				if args[2] then
-					for _, v in service.GetPlayers(plr, args[2]) do
+					for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 						Remote.SetLighting(v, "OutdoorAmbient", color)
 					end
 				else
@@ -3974,7 +3974,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				if args[1] then
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						Remote.SetLighting(v, "FogEnd", 1000000000000)
 					end
 				else
@@ -3992,7 +3992,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				if string.lower(args[1])=="on" or string.lower(args[1])=="true" then
 					if args[2] then
-						for _, v in service.GetPlayers(plr, args[2]) do
+						for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 							Remote.SetLighting(v, "GlobalShadows", true)
 						end
 					else
@@ -4000,7 +4000,7 @@ return function(Vargs, env)
 					end
 				elseif string.lower(args[1])=="off" or string.lower(args[1])=="false" then
 					if args[2] then
-						for _, v in service.GetPlayers(plr, args[2]) do
+						for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 							Remote.SetLighting(v, "GlobalShadows", false)
 						end
 					else
