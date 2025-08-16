@@ -7005,7 +7005,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing target player")
 				args[2] = string.lower(assert(args[2], "Missing argument #2 (boolean expected)"))
 				assert(args[2] == "true" or args[2] == "false", "Invalid argument #2 (boolean expected)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.Send(v, "Function", "SetCore", "ResetButtonCallback", if args[2] == "true" then true else false)
 				end
 			end
