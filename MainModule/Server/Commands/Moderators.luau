@@ -1169,35 +1169,29 @@ return function(Vargs, env)
 			Description = "Hands an item to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local target = service.GetPlayers(plr, args[1])[1]
-
-				if target ~= plr then
-					local targetchar = target.Character
-
-					if not targetchar then
-						Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
-						return
-					end
-
-					local plrChar = plr.Character
-
-					if not plrChar then
-						Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
-						return
-					end
-
-					local tool = plrChar:FindFirstChildOfClass"Tool"
-
-					if not tool then
-						Functions.Hint("[HANDTO]: You must be holding an item", {plr})
-						return
-					else
-						tool.Parent = targetchar
-						Functions.Hint(`[HANDTO]: Successfully given the item to {target.Name}`, {plr})
-					end
-				else
+				local target = service.GetPlayers(plr, args[1], {NoFakePlayer = true})[1]
+				if not target then return end
+				if target == plr then
 					Functions.Hint("[HANDTO]: Cannot give item to yourself", {plr})
+					return
 				end
+
+				local targetchar = target.Character
+				local plrChar = plr.Character
+				if not targetchar or not plrChar then
+					Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
+					return
+				end
+
+				local tool = plrChar:FindFirstChildOfClass("Tool")
+				if not tool then
+					Functions.Hint("[HANDTO]: You must be holding an item", {plr})
+					return
+				end
+
+				local foundToolInTargetCharacter = targetchar:FindFirstChildOfClass("Tool")
+				tool.Parent = if foundToolInTargetCharacter then target.Backpack else targetchar
+				Functions.Hint(`[HANDTO]: Successfully given the item '{tool.Name}' to {target.Name}`, {plr})
 			end;
 		};
 
