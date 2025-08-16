@@ -228,7 +228,7 @@ return function(Vargs, env)
 			Description = "Stops all currently running countdowns";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.RemoveGui(v, "Countdown")
 				end
 				service.StopLoop("HintCountdown")
@@ -271,7 +271,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
 				end
 			end
@@ -311,7 +311,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.RemoveGui(v, "Notify")
 					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
 				end
@@ -555,7 +555,7 @@ return function(Vargs, env)
 			Description = "Makes a message in the target player(s)'s chat window";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[2]
 						if data.Options.Chat ~= true then
@@ -577,7 +577,7 @@ return function(Vargs, env)
 			Description = "Gives a force field to the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						service.New("ForceField", v.Character).Visible = if args[2] and args[2]:lower() == "false" then false else true
 					end
@@ -592,7 +592,7 @@ return function(Vargs, env)
 			Description = "Removes force fields on the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						Routine(function()
 							for _, c in v.Character:GetChildren() do
@@ -613,7 +613,7 @@ return function(Vargs, env)
 			Description = "Removes the target player(s)'s character";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local char = v.Character
 					if char then
 						Remote.LoadCode(v, [[service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)]])
@@ -630,7 +630,7 @@ return function(Vargs, env)
 			Description = "UnPunishes the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1])  do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true })  do
 					local char = v.Character
 					if char then
 						char.Parent = workspace
@@ -648,7 +648,7 @@ return function(Vargs, env)
 			Description = "Freezes the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Routine(function()
 						if v.Character then
 							for a, obj in v.Character:GetChildren() do
@@ -667,7 +667,7 @@ return function(Vargs, env)
 			Description = "UnFreezes the target players, thaws them out";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							local ice = v.Character:FindFirstChild("Adonis_Ice")
@@ -715,7 +715,7 @@ return function(Vargs, env)
 			Description = "FFs, Gods, Names, Freezes, and removes the target player's tools until they jump.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Routine(function()
 						local ff = service.New("ForceField", v.Character)
 						local hum = v.Character.Humanoid
@@ -756,7 +756,7 @@ return function(Vargs, env)
 			Description = "Heals the target player(s) (Regens their health)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.Health = hum.MaxHealth
@@ -772,7 +772,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) immortal, makes their health so high that normal non-explosive weapons can't kill them";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.MaxHealth = math.huge
@@ -792,7 +792,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) mortal again";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.MaxHealth = 100
@@ -816,7 +816,7 @@ return function(Vargs, env)
 			Description = `Same as {Functions.GetMainPrefix()}god, but also provides blast protection`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.MaxHealth = math.huge
@@ -841,7 +841,7 @@ return function(Vargs, env)
 			Description = "Removes any hats the target is currently wearing and from their HumanoidDescription.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, p in service.GetPlayers(plr, args[1]) do
+				for _, p in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
@@ -864,7 +864,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				-- TODO: HumanoidDescription
 				assert(args[2], "Argument(s) missing or nil")
-				for _, p in service.GetPlayers(plr, args[1]) do
+				for _, p in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if not p.Character then continue end
 					for _, v in p.Character:GetChildren() do
 						if v:IsA("Accessory") and v.Name:lower() == args[2]:lower() then
@@ -882,7 +882,7 @@ return function(Vargs, env)
 			Description = "Remvoes layered clothings from their HumanoidDescription.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, p in service.GetPlayers(plr, args[1]) do
+				for _, p in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
