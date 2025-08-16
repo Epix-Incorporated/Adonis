@@ -5098,7 +5098,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[2], "Missing stat name (argument #2)")
 				local valueToAdd = assert(tonumber(args[3]), "Missing/invalid numerical value to add (argument #3)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						leaderstats.Name = "leaderstats"
@@ -5128,7 +5128,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[2], "Missing stat name (argument #2)")
 				local valueToSubtract = assert(tonumber(args[3]), "Missing/invalid numerical value to subtract (argument #3)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						local absoluteMatch = leaderstats:FindFirstChild(statName)
@@ -5162,7 +5162,7 @@ return function(Vargs, env)
 
 				local clothingTemplate = `rbxassetid://{ClothingId}`
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						local bCreateNewDefaultClothing = false
@@ -5231,7 +5231,7 @@ return function(Vargs, env)
 
 				local clothingTemplate = `rbxassetid://{ClothingId}`
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						local bCreateNewDefaultClothing = false
@@ -5303,7 +5303,7 @@ return function(Vargs, env)
 
 				local clothingTemplate = `rbxassetid://{ClothingId}`
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						local bCreateNewDefaultClothing = false
@@ -5390,7 +5390,7 @@ return function(Vargs, env)
 					error("Invalid face(Image/robloxFace)", 0)
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local Head = v.Character and v.Character:FindFirstChild("Head")
 					local face = Head and Head:FindFirstChild("face")
 
@@ -5504,7 +5504,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
+				for _, v: Player in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
@@ -5565,7 +5565,7 @@ return function(Vargs, env)
 			Description = "Remove any t-shirt(s) worn by the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character then
 						local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 						if humanoid then
@@ -5585,7 +5585,7 @@ return function(Vargs, env)
 			Description = "Remove any shirt(s) worn by the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
+				for _, v: Player in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
@@ -5603,7 +5603,7 @@ return function(Vargs, env)
 			Description = "Remove any pants(s) worn by the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
+				for _, v: Player in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
@@ -5660,7 +5660,7 @@ return function(Vargs, env)
 				pitch = tonumber(args[4]) or pitch
 
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.Send(v, "Function", "PlayAudio", id, volume, pitch, loop)
 
 				end
@@ -5675,7 +5675,7 @@ return function(Vargs, env)
 			Description = "Stops audio playing on the specified player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.Send(v, "Function", "StopAudio", "all")
 
 				end
@@ -5714,7 +5714,7 @@ return function(Vargs, env)
 					SoundId = `rbxassetid://{args[2]}`;
 				})
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local char = v.Character
 					local rootPart = char and char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
@@ -5740,7 +5740,7 @@ return function(Vargs, env)
 			Description = `Removes audio placed into character via {Settings.Prefix}charaudio command`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local char = v.Character
 					local rootPart = char and char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
