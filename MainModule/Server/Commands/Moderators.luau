@@ -1056,7 +1056,7 @@ return function(Vargs, env)
 					CanManageUsers = true;
 				})
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v ~= plr then
 						newSession:AddUser(v)
 						Remote.MakeGui(v, "PrivateChat", {
@@ -1081,7 +1081,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local replyTicket = service.HttpService:GenerateGUID(false)
 					Variables.PMtickets[replyTicket] = plr
 
@@ -1102,7 +1102,7 @@ return function(Vargs, env)
 			Description = "UnColorCorrection the target player's screen";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, p in service.GetPlayers(plr, args[1]) do
+				for _, p in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.RemoveLocal(p, "WINDOW_COLORCORRECTION", "Camera")
 				end
 			end
@@ -1115,7 +1115,7 @@ return function(Vargs, env)
 			Description = "UnSunrays the target player's screen";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.RemoveLocal(v, "WINDOW_SUNRAYS", "Camera")
 				end
 			end
@@ -1128,7 +1128,7 @@ return function(Vargs, env)
 			Description = "UnBloom the target player's screen";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.RemoveLocal(v, "WINDOW_BLOOM", "Camera")
 				end
 			end
@@ -1141,7 +1141,7 @@ return function(Vargs, env)
 			Description = "UnBlur the target player's screen";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.RemoveLocal(v, "WINDOW_BLUR", "Camera")
 				end
 			end
@@ -1154,7 +1154,7 @@ return function(Vargs, env)
 			Description = "Remove admin made lighting effects from the target player's screen";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					for _, e in {"BLUR", "BLOOM", "THERMAL", "SUNRAYS", "COLORCORRECTION"} do
 						Remote.RemoveLocal(v, `WINDOW_{e}`, "Camera")
 					end
@@ -1232,7 +1232,7 @@ return function(Vargs, env)
 				return tab
 			end;
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Routine(function()
 						Remote.MakeGui(plr, "List", {
 							Title = `{service.FormatPlayer(v)}'s tools`;
@@ -1465,8 +1465,8 @@ return function(Vargs, env)
 			Description = "Forces one player to view another";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local targets = service.GetPlayers(plr, args[2])
-				for _, viewer in service.GetPlayers(plr, args[1]) do
+				local targets = service.GetPlayers(plr, args[2], { NoFakePlayer = true })
+				for _, viewer in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					for _, target in targets do
 						local targetHum = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
 						if not targetHum then continue end
@@ -1488,7 +1488,7 @@ return function(Vargs, env)
 			Description = "Makes you view the target player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local function viewPlayer(plr: Player, rootPart: BasePart, humanoid: Humanoid)
 						Functions.ResetReplicationFocus(plr)
 						plr.ReplicationFocus = rootPart
@@ -1555,7 +1555,7 @@ return function(Vargs, env)
 			Description = "Makes a viewport of the target player<s>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v and v.Character:FindFirstChildOfClass("Humanoid") then
 						Remote.MakeGui(plr, "Viewport", {Subject = v.Character.HumanoidRootPart});
 					end
@@ -1570,7 +1570,7 @@ return function(Vargs, env)
 			Description = "Resets your view";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					if v.Character and v.Character.PrimaryPart then
 						Functions.ResetReplicationFocus(v)
 					else
@@ -1594,7 +1594,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local p
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					p = v
 				end
 				if p then
@@ -1730,7 +1730,7 @@ return function(Vargs, env)
 			Description = "Shows the target player's ping";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Functions.Hint(`{service.FormatPlayer(v)}'s Ping is {v:GetNetworkPing() * 1000}ms`, {plr})
 				end
 			end
