@@ -6053,7 +6053,7 @@ return function(Vargs, env)
 
 				scr.Name = "ADONIS_FLIGHT"
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local part = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
@@ -6099,7 +6099,10 @@ return function(Vargs, env)
 				end
                 scr:Destroy()
 
-				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1]), 10)
+				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1], {
+					DontError = true,
+					NoFakePlayer = true
+				}), 10)
 			end
 		};
 
@@ -6112,7 +6115,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2])
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local scr = part:FindFirstChild("ADONIS_FLIGHT")
@@ -6137,7 +6140,7 @@ return function(Vargs, env)
 			Description = "Removes the target player(s)'s ability to fly";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local part = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
@@ -6162,7 +6165,7 @@ return function(Vargs, env)
 			Description = "Fling the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") then
 							local xran local zran
@@ -6194,7 +6197,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Sfling:Clone()
 				scr.Strength.Value = strength
 				scr.Name = "SUPER_FLING"
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local new = scr:Clone()
 					new.Parent = v.Character.HumanoidRootPart
 					new.Disabled = false
@@ -6210,7 +6213,7 @@ return function(Vargs, env)
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 					if human then
@@ -6233,7 +6236,7 @@ return function(Vargs, env)
 			Description = "Put the target player(s)'s back to normal";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 					if human then
@@ -6254,7 +6257,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local name = args[2] == "hide" and " " or args[2]
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
 					if humanoid then
@@ -6271,7 +6274,7 @@ return function(Vargs, env)
 			Description = "Put the target player(s)'s back to normal";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
 					if humanoid then
@@ -6316,7 +6319,7 @@ return function(Vargs, env)
 				local success, desc = pcall(service.Players.GetHumanoidDescriptionFromOutfitId, service.Players, assert(tonumber(args[2]), "Missing OutfitId"))
 
 				if success then
-					for _, v in service.GetPlayers(plr, args[1]) do
+					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 						if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
 							v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 						end
@@ -6343,7 +6346,7 @@ return function(Vargs, env)
 					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target.UserId)
 
 					if success then
-						for _, v in service.GetPlayers(plr, args[1]) do
+						for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 							v.CharacterAppearanceId = target.UserId
 
 							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
@@ -6364,7 +6367,7 @@ return function(Vargs, env)
 			Description = "Put the target player(s)'s character appearence back to normal";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Routine(function()
 						v.CharacterAppearanceId = v.UserId
 
@@ -6389,7 +6392,7 @@ return function(Vargs, env)
 			Description = "Continuously heals the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					task.defer(function()
 						service.StartLoop(`{v.UserId}LOOPHEAL`, 0.1, function()
 							if not v or v.Parent ~= service.Players then
@@ -6416,7 +6419,7 @@ return function(Vargs, env)
 			Description = `Undoes {Settings.Prefix}loopheal`;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					service.StopLoop(`{v.UserId}LOOPHEAL`)
 				end
 			end
@@ -6474,7 +6477,7 @@ return function(Vargs, env)
 				return if target and target.Parent then Remote.Get(target, "ClientLog") else {"Player is currently unreachable"}
 			end;
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.MakeGui(plr, "List", {
 						Title = `{service.FormatPlayer(v)}'s Local Log`;
 						Table = Logs.ListUpdaters.LocalLog(plr, v);
@@ -6736,7 +6739,7 @@ return function(Vargs, env)
 					autoUpdate = true
 				end
 				local str = `{Settings.Prefix}logs {tostring(autoUpdate) or ""}`
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Admin.RunCommandAsPlayer(str, v)
 				end
 			end
@@ -6854,7 +6857,7 @@ return function(Vargs, env)
 			Description = "Makes it so the target player(s)'s cam can move around freely (Press Shift+P, F, or DPadLeft to toggle freecam)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
 
 					if not plrgui or plrgui:FindFirstChild("Freecam") then
@@ -6878,7 +6881,7 @@ return function(Vargs, env)
 			Description = "UnFreecam";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
 					local freecam = plrgui and plrgui:FindFirstChild("Freecam")
 					if freecam then
@@ -6901,7 +6904,7 @@ return function(Vargs, env)
 			Description = "Toggles Freecam";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
 					local freecam = plrgui and plrgui:FindFirstChild("Freecam")
 					local remote = freecam and freecam:FindFirstChildOfClass("RemoteFunction")
@@ -6934,7 +6937,7 @@ return function(Vargs, env)
 					walk = true
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Functions.makeRobot(v, num, health, speed, damage, walk, attack, friendly)
 				end
 			end
@@ -6948,7 +6951,7 @@ return function(Vargs, env)
 			Description = "[Experimental] Says aloud the supplied text";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
 					Remote.Send(v, "Function", "TextToSpeech", args[2])
 				end
 			end
@@ -6980,7 +6983,7 @@ return function(Vargs, env)
 				end
 
 				if args[2] then
-					for _, v in service.GetPlayers(plr, args[2]) do
+					for _, v in service.GetPlayers(plr, args[2], { NoFakePlayer = true }) do
 						Remote.LoadCode(v, `game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType[{rev}]`)
 					end
 
