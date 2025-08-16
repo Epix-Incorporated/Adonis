@@ -1,7 +1,16 @@
 return {
-	"Version: 269";
+	"Version: 270";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v270 2025-08-16 20:44 UTC] @Maintainer";
+	"(Git/ccuser44) Switch default prefix order (#1920)";
+	"(Git/PurpleCreativity) add: userpanel settings clear confirmation (#1949)";
+	"(Git/xs4u) Update :dexnew to silence warnings and improve UI (#1925)";
+	"(Git/ChocoIate) Add Font to service so that it can be used in UI elements (#1935)";
+	"(Git/ccuser44) Add support for OldDonorList back (#1890)";
+	"(Git/GalacticInspired) fix wrong prefix caused by merge conflict (#1955)";
+	"(Git/ImFirstPlace) Fix and improve handto command (#1950)";
 	"";
 	"[v269 2025-08-12 06:59 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
