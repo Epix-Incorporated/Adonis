@@ -67,7 +67,11 @@ return function(Vargs, GetEnv)
 		Process.RateLimits = Remote.Get("RateLimits") or Process.RateLimits;
 
 		--// Hide TextChatComands
-		Process.HandleTextChatCommands()
+		task.defer(function()
+			if Remote.Get("Variable", "ChatCreateRobloxCommands") then
+				Process.HandleTextChatCommands()
+			end
+		end)
 
 		Process.RunAfterLoaded = nil;
 	end

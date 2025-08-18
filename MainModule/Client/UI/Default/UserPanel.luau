@@ -533,7 +533,7 @@ return function(data, env)
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 
-				if settingsData.Settings.DonorCapes and playerData.isDonor then
+				if chatMod.DonorCapes and playerData.isDonor then
 					if type(donorData) == "table" and donorData.Cape and type(donorData.Cape) == "table" then
 						if donorData.Enabled and service.Players.LocalPlayer.Character then
 							Functions.NewCape({
@@ -549,9 +549,11 @@ return function(data, env)
 					end
 				end
 
-				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
-				task.wait(0.5)
-				dStatus.Text = "Donated"
+				task.defer(function()
+					dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
+					task.wait(0.5)
+					dStatus.Text = "Donated"
+				end)
 			end
 
 			donorTab:Add("TextLabel", {
@@ -1638,7 +1640,31 @@ return function(data, env)
 							Position = UDim2.new(1, -100, 0, 0);
 							BackgroundTransparency = 1;
 							OnClick = function()
-								Remote.Send("ClearSavedSettings")
+								if
+									UI.MakeGui("YesNoPrompt", {
+										Title = "Are you sure?";
+										Question = "You are about to clear ALL of your saved settings, this action is IRREVERSIBLE!";
+									}) == "Yes"
+								then
+									if
+										UI.MakeGui("TextPrompt", {
+											Title = "No taksies backsies";
+											PlaceholderText = "I ACKNOWLEDGE";
+											Question = "Input 'I ACKNOWLEDGE' to proceed.";
+											Size = {325, 150}
+										}) == "I ACKNOWLEDGE"
+									then
+										Remote.Send("ClearSavedSettings")
+										UI.Make("Hint",{
+											Message = "Saved settings have been cleared."
+										})
+										return
+									end
+								end
+								
+								UI.Make("Hint",{
+									Message = "Operation cancelled, all of your data is safe!"
+								})
 							end
 						}
 					}

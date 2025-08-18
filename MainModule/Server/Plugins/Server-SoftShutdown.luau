@@ -1,6 +1,7 @@
 --// Originally written by Merely
 --// Edited by GitHub@LolloDev5123 and Irreflexive
 --// GitHub@Expertcoderz was here to make things look better
+--// GitHub@annoynumus was here to patch the return teleport
 
 return function(Vargs, GetEnv)
 	local server = Vargs.Server
@@ -78,8 +79,7 @@ return function(Vargs, GetEnv)
 				local data = type(joindata) == "table" and joindata.TeleportData
 
 				if type(data) == "table" and data[PARAMETER_NAME] then
-					sendMessage(player)
-					if TeleportTask.Running then
+					if TeleportTask.Running or TeleportTask.R_Status == "Idle" then
 						TeleportTask.Finished:wait()
 					end
 

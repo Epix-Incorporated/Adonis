@@ -1169,35 +1169,29 @@ return function(Vargs, env)
 			Description = "Hands an item to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local target = service.GetPlayers(plr, args[1])[1]
-
-				if target ~= plr then
-					local targetchar = target.Character
-
-					if not targetchar then
-						Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
-						return
-					end
-
-					local plrChar = plr.Character
-
-					if not plrChar then
-						Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
-						return
-					end
-
-					local tool = plrChar:FindFirstChildOfClass"Tool"
-
-					if not tool then
-						Functions.Hint("[HANDTO]: You must be holding an item", {plr})
-						return
-					else
-						tool.Parent = targetchar
-						Functions.Hint(`[HANDTO]: Successfully given the item to {target.Name}`, {plr})
-					end
-				else
+				local target = service.GetPlayers(plr, args[1], {NoFakePlayer = true})[1]
+				if not target then return end
+				if target == plr then
 					Functions.Hint("[HANDTO]: Cannot give item to yourself", {plr})
+					return
 				end
+
+				local targetchar = target.Character
+				local plrChar = plr.Character
+				if not targetchar or not plrChar then
+					Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
+					return
+				end
+
+				local tool = plrChar:FindFirstChildOfClass("Tool")
+				if not tool then
+					Functions.Hint("[HANDTO]: You must be holding an item", {plr})
+					return
+				end
+
+				local foundToolInTargetCharacter = targetchar:FindFirstChildOfClass("Tool")
+				tool.Parent = if foundToolInTargetCharacter then target.Backpack else targetchar
+				Functions.Hint(`[HANDTO]: Successfully given the item '{tool.Name}' to {target.Name}`, {plr})
 			end;
 		};
 
@@ -4751,6 +4745,7 @@ return function(Vargs, env)
 				else
 					local target = service.GetPlayers(plr, args[2], { NoFakePlayer = true })[1]
 					local players = service.GetPlayers(plr, args[1], { NoFakePlayer = true })
+
 					if #players == 1 and players[1] == target then
 						local v = players[1]
 						local Character = v.Character
@@ -4794,6 +4789,8 @@ return function(Vargs, env)
 							end
 						end
 					else
+						if not target then return end
+
 						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 						if targ_root then
 							for k, v in players do
@@ -4911,9 +4908,12 @@ return function(Vargs, env)
 					assert(plr.Character,"Your character is missing"):FindFirstChild("HumanoidRootPart"),
 					"Your HumanoidRootPart is missing"
 				)
-				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"))
+				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"), { NoFakePlayer = true })
 				local numPlayers = #players
-				local lines = math.clamp(tonumber(args[2]) or 3, 1, numPlayers)
+				if numPlayers == 0 then return end
+
+				local minLines = math.min(tonumber(args[2]) or 3, numPlayers)
+				local lines = math.clamp(minLines, 1, numPlayers)
 
 				for l = 1, lines do
 					local offsetX = if l == 1 then 0
@@ -6067,7 +6067,7 @@ return function(Vargs, env)
 						if oldga then oldga:Destroy() end
 						if olds then Remote.Send(v, "Function", "Unfly") olds:Destroy() end
 
-						local new = scr:Clone()
+                        local new = scr:Clone()
 						local flightPositionAttachment: Attachment = service.New("Attachment", {
 							Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT",
 							Parent = part
@@ -6097,6 +6097,7 @@ return function(Vargs, env)
 						new.Disabled = false
 					end
 				end
+                scr:Destroy()
 
 				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1]), 10)
 			end

@@ -57,6 +57,10 @@ return function(Vargs, GetEnv)
 								if not SenderPlayer then
 									return true
 								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
+									if IsOriginalSender then
+										Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, "You ran a command hidden from others!")
+									end
+
 									return false
 								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
 									if IsOriginalSender then
@@ -1219,7 +1223,7 @@ return function(Vargs, GetEnv)
 			if Variables.ChatCreateRobloxCommands then
 				-- // Support for commands to be ran via TextChat
 				task.spawn(function()
-					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 9e9)
+					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 120)
 
 					if container then
 						for _, v in container:GetChildren() do
