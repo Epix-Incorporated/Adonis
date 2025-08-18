@@ -877,8 +877,8 @@ return function(Vargs, GetEnv)
 			}
 			Variables.Capes[service.HttpService:GenerateGUID(false)] = capeData
 
-			local p = service.Players:GetPlayerFromCharacter(char)
-			if p and p == service.Player then
+			local plr = service.Players:GetPlayerFromCharacter(char)
+			if plr and plr == service.Player then
 				capeData.isPlayer = true
 			end
 
