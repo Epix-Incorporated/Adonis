@@ -57,6 +57,10 @@ return function(Vargs, GetEnv)
 								if not SenderPlayer then
 									return true
 								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
+									if IsOriginalSender then
+										Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, "You ran a command hidden from others!")
+									end
+
 									return false
 								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
 									if IsOriginalSender then
