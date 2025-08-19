@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[vXXX 2025-XX-XX XX:XX UTC] @Maintainer";
+	"Set debug commands to nil when not in Nightly mode";
+	"";
 	"[v270 2025-08-19 18:20 UTC] @Dimenpsyonal";
 	"(Git/ccuser44) Switch default prefix order (#1920)";
 	"(Git/PurpleCreativity) Add userpanel settings clear confirmation (#1949)";
