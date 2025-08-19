@@ -89,7 +89,7 @@ return {
 	"(Git/WalkerOfBacon) Prevent creating a team with the same name (#1836)";
 	"";
 	"[v262 2025-01-12 11:16 UTC] @Dimenpsyonal";
-	"*First update of 2025 (!!!)";
+	"*First update of 2025!";
 	"Set argument range limits on :lowres";
 	"(Git/fxeP1) Attempt to fix unbanning on changed player names (#1819)";
 	"(Git/WalkerOfBacon) Add a way to define cameras in settings (#1777)";
@@ -800,7 +800,7 @@ return {
 	"Improved :chargear and :plrgear";
 	"(Git/Expertcoderz) Remove all instances of pairs()/ipairs() in core modules (#870)";
 	"(Git/Expertcoderz) Avoid reloading Console and HelpButton GUIs upon respawn (#871)";
-	"(Git/pbstFusion) Theming Info update (#873)";
+	"(Git/Dimenpsyonal) Theming Info update (#873)";
 	"";
 	"[Patch v237.10 2022-07-22 06:50 EST] @Expertcoderz";
 	"Fixed admins not being able to run player-level commands such as :cmds when Settings.PlayerCommands is off";
@@ -898,7 +898,7 @@ return {
 	"(Git/Expertcoderz) Update !join and !joinfriend (#832)";
 	"(Git/Expertcoderz) Switch most teleportation-related commands to using TeleportAsync (#833)";
 	"(Git/Expertcoderz) Deprecation of Remote.UnEncrypted (#834)";
-	"(Git/pbstFusion) Rename Tools Cent\"er\" to \"Tools Panel\" (#835)";
+	"(Git/Dimenpsyonal) Rename Tools Cent\"er\" to \"Tools Panel\" (#835)";
 	"(Git/Expertcoderz) Command permission system changes (#837)";
 	" > Creators can no longer bypass CrossServerDenied (for security reasons)";
 	"(Git/fxeP1) No Description commands fix for :cmds (#839)";
@@ -918,7 +918,7 @@ return {
 	"(Git/L8X) Minor anti-exploit improvements (#619/#625/#627)";
 	"(Git/coasterteam) Security fixes related to DataStore (#656)";
 	"(Git/DaEnder) Add total ban count to :bans (#662)";
-	"(Git/pbstFusion) Minor grammar fix (#676)";
+	"(Git/Dimenpsyonal) Minor grammar fix (#676)";
 	"(Git/Expertcoderz) Revamp :tools command with new functionality (#685)";
 	"(Git/Honzzzox) Fix :remotelogs description (#688)";
 	"(Git/P3tray) Minor fix for cross-server commands (#690)";
@@ -936,7 +936,7 @@ return {
 	"(Git/fxeP1) Add error catching to group APIs (#712)";
 	"(Git/ccuser44) Fix anti-idle and anti-kick (#715)";
 	"(Git/ccuser44) Improve donation and third party sale behavior (#719)";
-	"(Git/pbstFusion) Rename comms center to comms panel (#722)";
+	"(Git/Dimenpsyonal) Rename comms center to comms panel (#722)";
 	"(Git/Awesomewebm) Minor improvements to :reverb (#714)";
 	"(Git/Awesomewebm) Remove unplayable audios from :musiclist (#725)";
 	"(Git/DaEnder) Add :startergear (#703)";
@@ -966,9 +966,9 @@ return {
 	"(Git/Expertcoderz) Introducing :disguise and :incognito #675";
 	"(Git/moo1210) Only deploy Nightly MainModule on push #670";
 	"(Git/L8X) Add donator check for contributors #669";
-	"(Git/pbstFusion) More icons pull #674";
-	"(Git/pbstFusion) Big icon adding pull request #672";
-	"(Git/pbstFusion) Add icon to theme command #668";
+	"(Git/Dimenpsyonal) More icons pull #674";
+	"(Git/Dimenpsyonal) Big icon adding pull request #672";
+	"(Git/Dimenpsyonal) Add icon to theme command #668";
 	"(Git/P3tray) Added some more commands (:userpanel & !theme) #667";
 	"(Git/CommodoreGamer118) Fixed :bring and :tp bringing you back while flying #666";
 	"(Git/jun022222222) Add Anti Client Tool #657";
@@ -1362,7 +1362,7 @@ return {
 	"(Git/fxeP1 #354) Update Fly.client.lua & /Server/Core/Functions.lua";
 	"(Git/GalacticInspired #353) Changed 'server.Settings.Prefix' to 'Settings.Prefix'";
 	"(Git/GalacticInspired #348) Added AntiBuildingTools; Updated AntiTools";
-	"(Git/pbstFusion #350) Open source contibutors are labeled as such in :inspect";
+	"(Git/Dimenpsyonal #350) Open source contibutors are labeled as such in :inspect";
 	"";
 	"[v219 5.16.2021 15:30 EST]";
 	"* Minor UI changes";
@@ -1414,7 +1414,7 @@ return {
 	"(Git/LolloDev5123) :admins now correctly shows \"Head Admin\" instead of \"Supervisor\"";
 	"(Git/btt-t) Character animations for clones";
 	"(Git/btt-t) Modified behaviour of kill command";
-	"(Git/p3tray & pbstFusion) Added :pban and :unpban as aliases for :gameban and :ungameban";
+	"(Git/p3tray & Dimenpsyonal) Added :pban and :unpban as aliases for :gameban and :ungameban";
 	"(Git/p3tray) Added _G.Adonis.RunCommandAsNonAdmin(command, playerToRunCommandAs)";
 	"(Git/Expertcoderz) Revamped server details UI";
 	"(Git/Expertcoderz) New client setting to auto-hide commands ran via chat";
@@ -1494,9 +1494,9 @@ return {
 	"(Git/EnterUwU) Update UserPanel.lua";
 	"";
 	"[v209 2.11.2021 14:42 EST]";
-	"*Added command/text aliases (Credit to Git/pbstFusion for some porting commits and spurring me to fully implment this)";
+	"*Added command/text aliases (Credit to Git/Dimenpsyonal for some porting commits and spurring me to fully implment this)";
 	"*Git merge:";
-	"(Git/pbstFusion) Ported aliases to Adonis from Kronos";
+	"(Git/Dimenpsyonal) Ported aliases to Adonis from Kronos";
 	"(Git/santefejay) Disabled dropper after first load";
 	"(Git/TheLegendarySpark) Allowed ServiceSpecific to be used in server";
 	"(Git/EpicFazbear) :Fly optimizations";
@@ -1544,7 +1544,7 @@ return {
 	"*Note: :crossservervote will ask every player in every server and cannot (currently) be directed to specific people";
 	"*:vote now shows you results in real time";
 	"*Git merges:";
-	"(Git/pbstFusion) Added system notify";
+	"(Git/Dimenpsyonal) Added system notify";
 	"(Git/Awesomewebm) Add Add/Subtract Support for :volume & :pitch";
 	"(Git/joritochip) Fix and improve many commands";
 	"(Git/fxeP1) Fixed error caused from NewParticle";
