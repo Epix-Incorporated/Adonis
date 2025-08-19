@@ -1111,7 +1111,10 @@ return function(Vargs, GetEnv)
 				--// Wait for UI stuff to finish
 				task.wait(1)
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
-					p:WaitForChild("PlayerGui", 9e9)
+					p:WaitForChild("PlayerGui", 60)
+					if not p.Parent then
+						return
+					end
 				end
 				Remote.Get(p,"UIKeepAlive")
 
