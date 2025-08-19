@@ -1555,7 +1555,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};
+		} or nil;
 
 		ResetView = {
 			Prefix = Settings.Prefix;
