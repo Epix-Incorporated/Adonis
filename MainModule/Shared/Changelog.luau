@@ -13,6 +13,7 @@ return {
 	"(Git/EasternBloxxer) Made hidden chat commands more obvious (#1840)";
 	"(Git/ImFirstPlace) Fix massbring command (#1951)";
 	"(Git/annoynumus9) Fix for ;restart not teleporting all players";
+	"(Git/EasternBloxxer) Fixed client cape disabling (#1958)";
 	"";
 	"[v269 2025-08-12 06:59 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
