@@ -765,7 +765,7 @@ return function(Vargs, GetEnv)
 					logError(p, retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2))
+					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2, retable.n))
 				end
 			end;
 
@@ -1172,7 +1172,10 @@ return function(Vargs, GetEnv)
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Function then
 				keys.Sent += 1
-				return RemoteEvent.Function:InvokeClient(p, { Mode = "Get", Sent = 0 }, ...)
+				local ran, ret = pcall(RemoteEvent.Function.InvokeClient, RemoteEvent.Function, p, { Mode = "Get", Sent = 0 }, ...)
+				if ran then
+					return ret
+				end
 			end
 		end;
 
