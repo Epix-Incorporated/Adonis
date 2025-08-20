@@ -203,22 +203,22 @@ return function(Vargs, GetEnv)
 		CrossServerDenied = true;
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
-			local time
+			local seconds = tonumber(args[2])
 			if args[2] then
-				time = string.lower(args[2])
+				local time = string.lower(args[2])
 				if string.sub(time, -1, -1) == "s" then
-					time = tonumber(string.sub(time, 1, -2))
+					seconds = tonumber(string.sub(time, 1, -2))
 				elseif string.sub(time, -1, -1) == "m" then
-					time = tonumber(string.sub(time, 1, -2)) * 60
+					seconds = tonumber(string.sub(time, 1, -2)) * 60
 				else
-					error("Invalid time specified.");
+					error(`Invalid time specified ({args[2]})`)
 				end
-				assert(time, "Invalid time specified.")
 			end
+			
 			if not Core.CrossServer("GlobalRestartRequest",
 				args[1] or "No reason specified.",
-				if args[2] then tonumber(args[2]) else args[2],
-				not (string.lower(args[3]) == "no" or string.lower(args[3]) == "false")
+				seconds,
+				not (args[3] and (string.lower(args[3]) == "no" or string.lower(args[3]) == "false"))
 				)
 			then
 				error("CrossServer handler not ready (try again later)")
@@ -235,12 +235,7 @@ return function(Vargs, GetEnv)
 		CrossServerDenied = true;
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
-			if not Core.CrossServer("GlobalRestartRequest",
-				"[CRS_SRV]:abort",
-				0,
-				false
-				)
-			then
+			if not Core.CrossServer("GlobalRestartRequest", "[CRS_SRV]:abort") then
 				error("CrossServer handler not ready (try again later)")
 			end
 		end
@@ -258,7 +253,10 @@ return function(Vargs, GetEnv)
 			for i,t in service.Threads.Tasks do
 				if t.Name == "GLOBALRESTART_COUNTDOWN" then
 					assert(t.abortable, "Failed to abort shutdown (access denied)")
-					t.Stop()
+					pcall(task.cancel, t.Thread)
+					t.Remove()
+					Functions.Hint("Server restart aborted. This server will no longer restart.", service.GetPlayers())
+					Logs.AddLog(Logs.Script, "Global restart aborted for this private server")
 				end
 			end
 		end
