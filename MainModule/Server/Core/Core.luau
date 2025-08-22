@@ -844,7 +844,6 @@ return function(Vargs, GetEnv)
 					else
 						logError(`DataStore RemoveAsync Failed: {ret}`)
 					end
-					task.wait(6)
 				end, 120, true)
 
 				if not ran2 then
@@ -870,8 +869,6 @@ return function(Vargs, GetEnv)
 						else
 							logError(`DataStore SetAsync Failed: {ret}`);
 						end
-
-						task.wait(6)
 					end, 120, true)
 
 					if not ran2 then
@@ -905,8 +902,6 @@ return function(Vargs, GetEnv)
 						logError(`DataStore UpdateAsync Failed: {ret}`)
 						return error(ret)
 					end
-
-					task.wait(6)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
