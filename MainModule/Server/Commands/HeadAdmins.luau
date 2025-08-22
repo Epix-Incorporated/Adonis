@@ -31,7 +31,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "time-ban", false) then
@@ -124,7 +124,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
 					IsKicking = true;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "game-ban", false) then
