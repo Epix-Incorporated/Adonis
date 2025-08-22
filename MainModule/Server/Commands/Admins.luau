@@ -39,7 +39,7 @@ return function(Vargs, env)
 				local senderLevel = data.PlayerData.Level
 
 				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
-				local v = Functions.GetPlayers(plr, args[1], {NoFakePlayer = false})
+				local v = Functions.GetPlayers(plr, args[1], {UseFakePlayer = true})
 				for _, p in v do
 					if senderLevel > Admin.GetLevel(p) then
 						Admin.AddAdmin(p, rankName)
