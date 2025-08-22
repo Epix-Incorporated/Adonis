@@ -172,7 +172,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: any)
 				local senderLevel = data.PlayerData.Level
 
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {UseFakePlayer = true}) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins", true)
 						Functions.LogAdminAction(plr, "Temporary Admin", v.Name, "Temporary admin granted.")
