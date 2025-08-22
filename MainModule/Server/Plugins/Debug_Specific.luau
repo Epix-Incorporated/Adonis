@@ -404,7 +404,7 @@ local service = wrappedEnv.Service
 		NoFilter = true;
 		AdminLevel = "HeadAdmins";
 		Function = function(plr: Player, args: {string})
-			for _, v in service.GetPlayers(plr, args[1]) do
+			for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 				Anti.Detected(v, table.unpack(args, 2))
 			end
 		end
