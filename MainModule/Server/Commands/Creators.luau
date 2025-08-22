@@ -177,7 +177,7 @@ return function(Vargs, env)
 			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins", true)
