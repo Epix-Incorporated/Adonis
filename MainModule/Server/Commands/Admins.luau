@@ -207,7 +207,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {UseFakePlayer = true}) do
 					local targetLevel = Admin.GetLevel(v)
 					if targetLevel > 0 then
 						if senderLevel > targetLevel then
@@ -235,7 +235,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {UseFakePlayer = true}) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators", true)
 						Functions.LogAdminAction(plr, "Temporary Moderator", v.Name, "N/A")
@@ -366,7 +366,7 @@ return function(Vargs, env)
 							DontError = true;
 							IsServer = false;
 							IsKicking = false;
-							NoFakePlayer = false;
+							UseFakePlayer = true;
 						})
 						if #plrs>0 then
 							for _, v in plrs do
@@ -1098,7 +1098,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing note (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local PlayerData = Core.GetPlayer(v)
 					if not PlayerData.AdminNotes then PlayerData.AdminNotes = {} end
 					table.insert(PlayerData.AdminNotes, args[2])
@@ -1116,7 +1116,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing note (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local PlayerData = Core.GetPlayer(v)
 					if PlayerData.AdminNotes then
 						if string.lower(args[2]) == "all" then
@@ -1142,7 +1142,7 @@ return function(Vargs, env)
 			Description = "Views notes on the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local PlayerData = Core.GetPlayer(v)
 					local notes = PlayerData.AdminNotes
 					if not notes then
@@ -1228,11 +1228,7 @@ return function(Vargs, env)
 			Description = "Crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "crash") then
 						Remote.Send(v, "Function", "Crash")
 					end
@@ -1247,11 +1243,7 @@ return function(Vargs, env)
 			Description = "Hard-crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "hard-crash") then
 						Remote.Send(v, "Function", "HardCrash")
 					end
@@ -1266,11 +1258,7 @@ return function(Vargs, env)
 			Description = "RAM-crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "RAM-crash") then
 						Remote.Send(v, "Function", "RAMCrash")
 					end
@@ -1285,11 +1273,7 @@ return function(Vargs, env)
 			Description = "GPU crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "GPU-crash") then
 						Remote.Send(v, "Function", "GPUCrash")
 					end
@@ -1312,11 +1296,7 @@ return function(Vargs, env)
 				local msg = service.BroadcastFilter(args[3], plr)
 				assert(msg == args[3], "Message was filtered: "..msg)
 
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if not Admin.CheckAuthority(plr, v, "custom-kick") then
 						continue
 					end
@@ -1386,7 +1366,7 @@ return function(Vargs, env)
 				local reason = args[2] or "No reason provided"
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "server-ban", false) then
