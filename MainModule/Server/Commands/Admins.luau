@@ -1527,16 +1527,10 @@ return function(Vargs, env)
 				Commands.Char.Function(plr, args)
 				Commands.DisplayName.Function(plr, {args[1], username})
 
-				local ChatService = Functions.GetChatService()
-
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if Variables.DisguiseBindings[v.UserId] then
 						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
 						Variables.DisguiseBindings[v.UserId].Rename = nil
-						if ChatService then
-							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
-							ChatService:UnregisterProcessCommandsFunction(`Disguise_{v.Name}`)
-						end
 					end
 
 					Variables.DisguiseBindings[v.UserId] = {
@@ -1545,29 +1539,6 @@ return function(Vargs, env)
 							Commands.DisplayName.Function(v, {v.Name, username})
 						end);
 					}
-
-					if ChatService then
-						local disguiseSpeaker = ChatService:AddSpeaker(username)
-						disguiseSpeaker:JoinChannel("All")
-						ChatService:RegisterProcessCommandsFunction(`Disguise_{v.Name}`, function(speaker, message, channelName)
-							if speaker == v.Name then
-								local filteredMessage = select(2, xpcall(function()
-									return service.TextService:FilterStringAsync(message, v.UserId, Enum.TextFilterContext.PrivateChat):GetChatForUserAsync(v.UserId)
-								end, function()
-									Remote.Send(v, "Function", "ChatMessage", "A message filtering error occurred.", Color3.new(1, 64/255, 77/255))
-									return
-								end))
-								if filteredMessage and not server.Admin.DoHideChatCmd(v, message) then
-									disguiseSpeaker:SayMessage(filteredMessage, channelName)
-									if v.Character then
-										service.Chat:Chat(v.Character, filteredMessage, Enum.ChatColor.White)
-									end
-								end
-								return true
-							end
-							return false
-						end)
-					end
 				end
 			end
 		};
@@ -1579,15 +1550,10 @@ return function(Vargs, env)
 			Description = "Removes the player's disguise";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local ChatService = Functions.GetChatService()
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if Variables.DisguiseBindings[v.UserId] then
 						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
 						Variables.DisguiseBindings[v.UserId].Rename = nil
-						pcall(function()
-							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
-							ChatService:UnregisterProcessCommandsFunction(`Disguise_{v.Name}`)
-						end)
 					end
 					Variables.DisguiseBindings[v.UserId] = nil
 				end

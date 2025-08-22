@@ -100,6 +100,7 @@ return {
 		{Text = "@omwot",			Desc = "Open Source Contributor"};
 		{Text = "@xs4u",			Desc = "Open Source Contributor"};
 		{Text = "@pupnetx",			Desc = "Open Source Contributor"};
+		{Text = "@ImFirstPlace",	Desc = "Open Source Contributor"};
 	};
 
 	Misc = {

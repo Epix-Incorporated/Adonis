@@ -57,6 +57,10 @@ return function(Vargs, GetEnv)
 								if not SenderPlayer then
 									return true
 								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
+									if IsOriginalSender then
+										Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, "You ran a command hidden from others!")
+									end
+
 									return false
 								elseif Admin.IsMuted(SenderPlayer) then -- // Mute handler
 									if IsOriginalSender then
@@ -208,59 +212,6 @@ return function(Vargs, GetEnv)
 				end
 
 				AddLog("Script", "TextChatService Handler Loaded")
-			end
-
-			--// Support for legacy Lua chat system
-			--// ChatService mute handler (credit to Coasterteam)
-			AddLog("Script", "Starting loading of legacy chatservice handler")
-			local chatService = Functions.GetChatService(300)
-			if chatService then
-				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
-					local speaker = chatService:GetSpeaker(speakerName)
-					local speakerPlayer = speaker and speaker:GetPlayer()
-
-					if not speakerPlayer then
-						return false
-					end
-
-					if Admin.DoHideChatCmd(speakerPlayer, message) then
-						return true
-					end
-
-					return false
-				end)
-
-				chatService:RegisterProcessCommandsFunction("ADONIS_MUTE_SERVER", function(speakerName, _, channelName)
-					local slowCache = Admin.SlowCache
-
-					local speaker = chatService:GetSpeaker(speakerName)
-					local speakerPlayer = speaker and speaker:GetPlayer()
-
-					if not speakerPlayer then
-						return false
-					end
-
-					if speakerPlayer and Admin.IsMuted(speakerPlayer) then
-						speaker:SendSystemMessage("[Adonis] :: You are muted!", channelName)
-						return true
-					elseif speakerPlayer and Admin.SlowMode and not Admin.CheckAdmin(speakerPlayer) and slowCache[speakerPlayer] and os.time() - slowCache[speakerPlayer] < Admin.SlowMode then
-						speaker:SendSystemMessage(string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[speakerPlayer])), channelName)
-						return true
-					end
-
-					if Admin.SlowMode then
-						slowCache[speakerPlayer] = os.time()
-					end
-
-					return false
-				end)
-
-				AddLog("Script", "ChatService Handler Loaded")
-			elseif chatService == false then
-				AddLog("Script", "Using TextChatService; Handler Loaded")
-			else
-				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
-				AddLog("Script", "ChatService Handler Not Found")
 			end
 		end)
 
@@ -1269,21 +1220,21 @@ return function(Vargs, GetEnv)
 							end
 
 							if command1 then
-								local command = service.New("TextChatCommand")
+								local command = service.New("TextChatCommand", {
+									Name = `Adonis_{name}`,
+									PrimaryAlias = command1,
+									SecondaryAlias = command2 or "",
+									Archivable = false,
+								})
+								command:SetAttribute("AdminLevel", tonumber(data.AdminLevel) or Admin.StringToComLevel(data.AdminLevel) or data.AdminLevel or nil)
+								command.Triggered:Connect(function(textSource: TextSource, text: string)
+									local player: Player = service.Players:GetPlayerByUserId(textSource.UserId)
 
-								command.Name = "Adonis_"..name
-								command.PrimaryAlias = command1
-								command.SecondaryAlias = command2 or ""
-								command.Archivable = false
-								command:SetAttribute("AdminLevel", tonumber(data.AdminLevel) or data.AdminLevel or nil)
-								command.Parent = container
-								command.Triggered:Connect(function(textSource, text)
-									local player = service.Players:GetPlayerByUserId(textSource.UserId)
-
-									if player then
-										Process.Command(player, string.sub(text, 2))
+									if player and type(text) == "string" then
+										Remote.Commands.ProcessCommand(player, {string.sub(text, 2)})
 									end
 								end)
+								command.Parent = container
 							end
 						end
 					end
