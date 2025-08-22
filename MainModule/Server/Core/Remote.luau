@@ -674,7 +674,7 @@ return function(Vargs, GetEnv)
 					Arguments = 2;
 					Description = "Disconnects the specified player from the server";
 					Function = function(p, args, data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							local ret = {}
 							for _,v in plrs do
@@ -694,7 +694,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Calls :BreakJoints() on the target player's character";
 					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							for _, v in plrs do
 								local ret = {}
@@ -719,7 +719,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Calls :LoadCharacter() on the target player";
 					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							local ret = {}
 							for _, v in plrs do
