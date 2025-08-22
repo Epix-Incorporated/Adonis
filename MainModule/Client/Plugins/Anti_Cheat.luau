@@ -529,7 +529,7 @@ return function(Vargs)
 				then return false end
 
 				for _, v in lookFor do
-					if (string.match(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
+					if string.match(string.lower(Message), string.lower(v)) or string.match(Message, v) then
 						return true
 					end
 				end
@@ -565,7 +565,7 @@ return function(Vargs)
 				task.wait()
 
 				if t and t.ClassName == "HopperBin" and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
-					if (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
+					if rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool) then
 						Detected("kick", "Building Tools detected; "..tostring(t.BinType))
 					end
 				end
