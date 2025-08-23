@@ -79,10 +79,14 @@ return function(Vargs, env)
 		Thru = {
 			Prefix = Settings.Prefix;
 			Commands = {"thru", "pass", "through"};
-			Args = {};
+			Args = {"distance? (default: 5)"};
 			Description = "Lets you pass through an object or a wall";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local rawDistance = tonumber(args[1] or 5)
+				assert(rawDistance, "Invalid distance value (must be a number)")
+
+				local distance = rawDistance * -1
 				if plr.Character:FindFirstChild("HumanoidRootPart") then
 					if plr.Character.Humanoid.SeatPart~=nil then
 						Functions.RemoveSeatWelds(plr.Character.Humanoid.SeatPart)
@@ -94,7 +98,7 @@ return function(Vargs, env)
 					Variables.ReturnPoints[plr] = plr.Character.HumanoidRootPart.CFrame
 
 					task.wait()
-					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, -5))
+					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, distance))
 				end
 			end
 		};
