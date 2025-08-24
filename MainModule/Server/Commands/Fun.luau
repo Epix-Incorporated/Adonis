@@ -357,6 +357,10 @@ return function(Vargs, env)
 								end
 							end
 							hum.PlatformStand = if steal then hum.PlatformStand else true
+
+							if hum.RigType == Enum.HumanoidRigType.R6 then
+								model.PrimaryPart = model.HumanoidRootPart -- Making this consistant with R15
+							end
 						end
 
 						model:PivotTo(cfr)
