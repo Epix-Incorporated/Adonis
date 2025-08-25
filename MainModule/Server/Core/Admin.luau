@@ -269,7 +269,7 @@ return function(Vargs, GetEnv)
 		--// Cache clearing job to clear GroupsCache every 6 minutes to prevent gradual memory leaking
 		service.StartLoop("GroupsCacheClear", 360, function()
 			for key, cache in Admin.GroupsCache do
-				if (os.time()-cache.LastUpdated > 300) then
+				if os.time() - cache.LastUpdated > 300 then
 					Admin.GroupsCache[key] = nil
 				end
 			end
