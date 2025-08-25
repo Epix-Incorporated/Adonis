@@ -772,7 +772,7 @@ return function(Vargs, env)
 			Description = "Opens the Roblox avatar inspect menu for the specified player";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
+				for _, v: Player in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					Remote.LoadCode(plr, `service.GuiService:InspectPlayerFromUserId({v.UserId})`)
 				end
 			end
@@ -892,7 +892,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
-				local players = service.GetPlayers(plr, args[1], {NoFakePlayer = true; NoSelectors = not elevated;})
+				local players = service.GetPlayers(plr, args[1], {NoSelectors = not elevated})
 
 				if #players > 2 then
 					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})
