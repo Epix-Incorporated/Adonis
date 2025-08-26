@@ -1629,7 +1629,7 @@ return function(Vargs, env)
 			Args = {"amount", "interval", "command"};
 			Description = "Repeats <command> for <amount> of times every <interval> seconds; Amount cannot exceed 50";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local amount = tonumber(args[1])
 				local timer = tonumber(args[2])
 				if timer<=0 then timer=0.1 end
@@ -1646,8 +1646,8 @@ return function(Vargs, env)
 				Functions.Hint(`Running {command} {amount} times every {timer} seconds.`, {plr})
 				for i = 1, amount do
 					if not Variables.CommandLoops[name..command] then break end
-					Process.Command(plr, command, {Check = false;})
-					wait(timer)
+					Process.Command(plr, command, {Check = false; CrossServer = (data and data.Options.CrossServer);})
+					task.wait(timer)
 				end
 				Variables.CommandLoops[name..command] = nil
 			end
