@@ -19,6 +19,8 @@ return {
 	"(Git/EasternBloxxer) Fixed client cape disabling (#1958)";
 	"(Git/fxeP1) Remotefunction safety #1959";
 	"(Git/fxeP1) Removal of legacy chatservice code & ChatCommand code patches (#1960)";
+	"(Git/fxeP1) Removal of final remnant of legacy chat (#1968)";
+	"(Git/coasterteam) Attempt a fix of nil tables being created on load for blocked entries & existing entries being overwriting if they fail to load (bad behavior)";
 	"";
 	"[v269 2025-08-12 06:59 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
