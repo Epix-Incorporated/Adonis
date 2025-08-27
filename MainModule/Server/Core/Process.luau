@@ -81,7 +81,10 @@ return function(Vargs, GetEnv)
 			end
 		end)
 
-		Remote._globalAccessHash = Functions.SHA256(Settings.G_Access_Key..game.GameId)
+		if Settings.G_Access_Key ~= "Example_Key" and Settings.Allowed_API_Calls.Client then
+			Remote._globalAccessHash = Functions.SHA256(Settings.G_Access_Key..game.GameId)
+		end
+
 		Process.Init = nil
 		AddLog("Script", "Processing Module Initialized")
 	end;
@@ -148,27 +151,6 @@ return function(Vargs, GetEnv)
 				Core.LoadExistingPlayer(p)
 			end
 		end
-
-		service.TrackTask("Thread: ChatCharacterLimit", function()
-			local ChatModules = service.Chat:WaitForChild("ClientChatModules", 5)
-			if ChatModules then
-				local ChatSettings = ChatModules:WaitForChild("ChatSettings", 5)
-				if ChatSettings then
-					local success, ChatSettingsModule = pcall(function()
-						return require(ChatSettings)
-					end)
-					if success then
-						local NewChatLimit = ChatSettingsModule.MaximumMessageLength
-						if NewChatLimit and type(NewChatLimit) == "number" then
-							Process.MaxChatCharacterLimit = NewChatLimit
-							AddLog("Script", `Chat Character Limit automatically set to {NewChatLimit}`)
-						end
-					else
-						AddLog("Script", "Failed to automatically get ChatSettings Character Limit, ignore if you use a custom chat system")
-					end
-				end
-			end
-		end)
 
 		Process.RunAfterPlugins = nil
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
@@ -1108,7 +1090,10 @@ return function(Vargs, GetEnv)
 				--// Wait for UI stuff to finish
 				task.wait(1)
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
-					p:WaitForChild("PlayerGui", 9e9)
+					p:WaitForChild("PlayerGui", 60)
+					if not p.Parent then
+						return
+					end
 				end
 				Remote.Get(p,"UIKeepAlive")
 

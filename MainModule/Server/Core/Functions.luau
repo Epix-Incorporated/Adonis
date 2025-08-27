@@ -439,17 +439,8 @@ return function(Vargs, GetEnv)
 			return fakePlayer
 		end;
 
-		GetChatService = function(waitTime)
-			local isTextChat = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", waitTime or isTextChat and 0.2 or 145)
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", waitTime or isTextChat and 0.2 or 145)
-
-			if chatMod then
-				return require(chatMod)
-			elseif isTextChat then
-				return false
-			end
-			return nil
+		GetChatService = function()
+			return if service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then false else nil
 		end;
 
 		ArgsToString = function(args)
@@ -1690,7 +1681,9 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SHA256 = require(server.Shared.HashLib).SHA256;
+		SHA256 = function(...)
+			return require(server.Shared.HashLib).SHA256(...)
+		end;
 
 		ParseBrickColor = function(str: string, allowNil: boolean?)
 			if not str and allowNil then
