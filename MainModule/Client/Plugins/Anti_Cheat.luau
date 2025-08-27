@@ -554,7 +554,7 @@ return function(Vargs)
 				for _,v in ipairs(soundIds) do
 					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
-					end
+					end%
 				end
 				return false
 			end

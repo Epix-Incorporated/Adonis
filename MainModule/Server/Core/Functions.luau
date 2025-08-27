@@ -1011,7 +1011,7 @@ return function(Vargs, GetEnv)
 				Title = title;
 				Message = message;
 				Time = duration;
-				(not icon or string.match(string.lower(icon), "maticon://(.+)")) and (server.MatIcons and server.MatIcons[icon and string.sub(icon, 11) or "Info"]) or icon;
+				Icon = (not icon or string.match(string.lower(icon), "maticon://(.+)")) and (server.MatIcons and server.MatIcons[icon and string.sub(icon, 11) or "Info"]) or icon;
 				OnClick = onClick;
 				Key = (server.PanicMode and server.Remote) and server.Remote._globalAccessHash;
 			}
