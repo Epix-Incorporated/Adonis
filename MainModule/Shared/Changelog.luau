@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v271 2025-XX-XX XX:XX UTC] @Maintainer";
+	"[v271 2025-XX-XX XX:XX UTC] @Dimenpsyonal";
 	"Set debug commands to nil when not in Nightly mode";
 	"Fix nil tables being created on load for blocked entries & overwriting existing entries if loading fails";
 	"(Git/fxeP1) Removal of final remnant of legacy chat (#1968)";
@@ -12,6 +12,9 @@ return {
 	"(Git/ImFirstPlace) Add distance arg to thru command (#1964)";
 	"(Git/GalacticInspired) Remove artificial 6-second wait from data funct (#1963)";
 	"(Git/0xFE0F) Minor AntiCheat Improvements (#1938)";
+	"(Git/ccuser44) Add donor debug commands (#1921)";
+	"(Git/ImFirstPlace) Change NoFakePlayer to UseFakePlayer and default to false (#1956)";
+	"(Git/ImFirstPlace) Fix fly command double error (#1970)";
 	"";
 	"[Patch v270.1 2025-XX-XX XX:XX UTC] @Coasterteam";
 	"(Git/duckymomo360) CrossServer Vuln Fix: Make ;repeat forward CrossServer option (#1969)";
