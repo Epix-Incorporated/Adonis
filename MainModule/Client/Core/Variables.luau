@@ -76,6 +76,7 @@ return function(Vargs, GetEnv)
 		ParticlesEnabled = true;
 		CapesEnabled = true;
 		HideChatCommands = false;
+		KeepWindowWidthOnMinimize = false;
 		CanUseEditableImages = false; -- TODO: Pool from FFlag
 		Particles = {};
 		KeyBinds = {};

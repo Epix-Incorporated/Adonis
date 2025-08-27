@@ -340,6 +340,6 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "TaskManager", {})
 			end
-		};
+		} or nil;
 	}
 end
