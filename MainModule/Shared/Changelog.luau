@@ -1,10 +1,20 @@
 return {
-	"Version: 270";
+	"Version: 271";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[vXXX 2025-XX-XX XX:XX UTC] @Maintainer";
+	"[v271 2025-XX-XX XX:XX UTC] @Maintainer";
 	"Set debug commands to nil when not in Nightly mode";
+	"Fix nil tables being created on load for blocked entries & overwriting existing entries if loading fails";
+	"(Git/fxeP1) Removal of final remnant of legacy chat (#1968)";
+	"(Git/ImFirstPlace) Fix chargear scaling issue (#1967)";
+	"(Git/ImFirstPlace) Fix command hidden from others message showing when ChatCommands is disabled";
+	"(Git/ImFirstPlace) Add distance arg to thru command (#1964)";
+	"(Git/GalacticInspired) Remove artificial 6-second wait from data funct (#1963)";
+	"(Git/0xFE0F) Minor AntiCheat Improvements (#1938)";
+	"";
+	"[Patch v270.1 2025-XX-XX XX:XX UTC] @Coasterteam";
+	"(Git/duckymomo360) CrossServer Vuln Fix: Make ;repeat forward CrossServer option (#1969)";
 	"";
 	"[v270 2025-08-19 18:20 UTC] @Dimenpsyonal";
 	"(Git/ccuser44) Switch default prefix order (#1920)";
@@ -19,8 +29,6 @@ return {
 	"(Git/EasternBloxxer) Fixed client cape disabling (#1958)";
 	"(Git/fxeP1) Remotefunction safety #1959";
 	"(Git/fxeP1) Removal of legacy chatservice code & ChatCommand code patches (#1960)";
-	"(Git/fxeP1) Removal of final remnant of legacy chat (#1968)";
-	"(Git/coasterteam) Attempt a fix of nil tables being created on load for blocked entries & existing entries being overwriting if they fail to load (bad behavior)";
 	"";
 	"[v269 2025-08-12 06:59 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Re-add ChatCreateRobloxCommands (#1946)";
