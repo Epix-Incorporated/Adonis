@@ -524,7 +524,7 @@ return function(Vargs, GetEnv)
 					-- more checks
 					for i, argname in ipairs(cmdArgs) do
 						if string.find(argname, "player") ~= nil or string.find(argname, "plr") ~= nil then
-							local playersamount = #(service.GetPlayers(p, args[i]));
+							local playersamount = #(service.GetPlayers(p, args[i], {UseFakePlayer = true}));
 							if playersamount > 1 then
 								if Remote.GetGui(p, "YesNoPrompt", {
 									Question = string.format("Are you sure you want to proceed? (%s selected %s possible players)", msg, playersamount);
