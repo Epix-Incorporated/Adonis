@@ -410,7 +410,7 @@ local service = wrappedEnv.Service
 		end
 	};
 
-  Commands.DebugPanic = {
+	Commands.DebugPanic = {
 		Prefix = Settings.Prefix;
 		Commands = {"panic", "enablepanic", "activatepanic", "adonispanic", "epixpanic", "testpanic", "debugpanic"};
 		Args = {"reason"};
