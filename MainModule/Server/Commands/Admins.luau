@@ -1437,23 +1437,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		Nil = {
-			Prefix = Settings.Prefix;
-			Commands = {"nil"};
-			Args = {"player"};
-			Hidden = true;
-			Description = `Deletes the player forcefully, causing them to be kicked for "Player has been removed from the DataModel"`;
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					v.Character = nil
-					v.Parent = nil
-					Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
-				end
-			end
-		};
-
+		
 		PromptPremiumPurchase = {
 			Prefix = Settings.Prefix;
 			Commands = {"promptpremiumpurchase", "premiumpurchaseprompt"};
