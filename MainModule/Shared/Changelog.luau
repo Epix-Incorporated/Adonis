@@ -16,7 +16,7 @@ return {
 	"(Git/ImFirstPlace) Change NoFakePlayer to UseFakePlayer and default to false (#1956)";
 	"(Git/ImFirstPlace) Fix fly command double error (#1970)";
 	"";
-	"[Patch v270.1 2025-XX-XX XX:XX UTC] @Coasterteam";
+	"[Patch v270.1 2025-08-26 17:48 UTC] @Coasterteam";
 	"(Git/duckymomo360) CrossServer Vuln Fix: Make ;repeat forward CrossServer option (#1969)";
 	"";
 	"[v270 2025-08-19 18:20 UTC] @Dimenpsyonal";
