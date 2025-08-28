@@ -72,6 +72,9 @@
 
 	local Actions = {
 		destroy = function(p: Player, args)
+			if args[1] and args[1]:IsA("Player") then
+				return false;
+			end
 			args[1]:Destroy();
 			return true;
 		end,
@@ -5803,16 +5806,18 @@ local function main()
 			end
 		end
 
-		context:AddRegistered("CUT")
-		context:AddRegistered("COPY")
-		context:AddRegistered("PASTE",emptyClipboard)
-		context:AddRegistered("DUPLICATE")
-		context:AddRegistered("DELETE")
-		context:AddRegistered("RENAME",#sList ~= 1)
+		if not presentClasses["Player"] then
+			context:AddRegistered("DELETE")
+			context:AddRegistered("CUT")
+			context:AddRegistered("COPY")
+			context:AddRegistered("PASTE",emptyClipboard)
+			context:AddRegistered("DUPLICATE")
+			context:AddRegistered("RENAME",#sList ~= 1)
+			context:AddRegistered("GROUP")
+			context:AddRegistered("UNGROUP")
+			context:AddDivider()
+		end
 
-		context:AddDivider()
-		context:AddRegistered("GROUP")
-		context:AddRegistered("UNGROUP")
 		context:AddRegistered("SELECT_CHILDREN")
 		context:AddRegistered("JUMP_TO_PARENT")
 		context:AddRegistered("EXPAND_ALL")
