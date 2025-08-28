@@ -5810,13 +5810,14 @@ local function main()
 			context:AddRegistered("DELETE")
 			context:AddRegistered("CUT")
 			context:AddRegistered("COPY")
-			context:AddRegistered("PASTE",emptyClipboard)
 			context:AddRegistered("DUPLICATE")
 			context:AddRegistered("RENAME",#sList ~= 1)
 			context:AddRegistered("GROUP")
 			context:AddRegistered("UNGROUP")
-			context:AddDivider()
 		end
+
+		context:AddRegistered("PASTE",emptyClipboard)
+		context:AddDivider()
 
 		context:AddRegistered("SELECT_CHILDREN")
 		context:AddRegistered("JUMP_TO_PARENT")
