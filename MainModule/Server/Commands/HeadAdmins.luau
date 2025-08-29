@@ -753,7 +753,7 @@ return function(Vargs, env)
 			Commands = {"ls", "localscript", "lscript"};
 			Args = {"code"};
 			Description = "Executes the given code on your client";
-			AdminLevel = "Admins";
+			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
 				Commands.LoadLocalScript.Function(plr, {`@{plr.Name}`, args[1]})
