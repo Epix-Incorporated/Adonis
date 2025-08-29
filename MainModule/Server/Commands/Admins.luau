@@ -1446,10 +1446,15 @@ return function(Vargs, env)
 			Description = `Deletes the player forcefully, causing them to be kicked for "Player has been removed from the DataModel"`;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				local sourcePlayerLevel = Admin.GetLevel(plr)
 				for _, v in service.GetPlayers(plr, args[1]) do
-					v.Character = nil
-					v.Parent = nil
-					Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
+					if Admin.GetLevel(v) <= sourcePlayerLevel then
+						v.Character = nil
+						v.Parent = nil
+						Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
+					else
+						Functions.Hint(`You don't have permission to send {service.FormatPlayer(v)} to nil`, {plr})
+					end
 				end
 			end
 		};
