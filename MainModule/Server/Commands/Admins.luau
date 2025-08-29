@@ -1028,6 +1028,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				assert(args[1], "Missing starter script name (argument #1)")
 				assert(args[2], "Missing LocalScript code (argument #2)")
 
@@ -1051,6 +1052,8 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+
 				local result = {}
 
 				for _,v : Instance in service.StarterGui:GetChildren() do
@@ -1076,6 +1079,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				assert(args[1], "No starterscript name provided!")
 
 				for _,v : Instance in service.StarterGui:GetChildren() do
