@@ -786,7 +786,7 @@ return function(Vargs, env)
 			Commands = {"scriptbuilder", "scriptb", "sb"};
 			Args = {"create/remove/edit/close/clear/append/run/stop/list", "localscript/script", "scriptName", "data"};
 			Description = "[Deprecated] Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
-			AdminLevel = "Admins";
+			AdminLevel = "HeadAdmins";
 			Hidden = true;
 			NoFilter = true;
 			CrossServerDenied = true;
@@ -952,7 +952,7 @@ return function(Vargs, env)
 			Commands = {"s", "ss", "serverscript", "sscript", "script", "makescript"};
 			Args = {"code"};
 			Description = "Executes the given Lua code on the server";
-			AdminLevel = "Admins";
+			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
@@ -986,7 +986,7 @@ return function(Vargs, env)
 			Commands = {"cs", "cscript", "clientscript"};
 			Args = {"player", "code"};
 			Description = "Executes the given code on the client of the target player(s)";
-			AdminLevel = "Admins";
+			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
