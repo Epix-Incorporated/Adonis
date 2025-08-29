@@ -188,15 +188,36 @@
 		end
 	end
 
+		-- Function used to remove Dex GUIs from a player.
+	function ServerNewDex.RemoveDexFromPlayer(ply, removeAuth)
+		if ply then
+			if removeAuth and ServerNewDex.Authorized[ply] then
+				ServerNewDex.Authorized[ply] = nil
+			end
+
+			for _, dexName in Variables.DexNames do
+				Remote.RemoveLocal(ply, dexName, "PlayerGui")
+			end
+		end
+	end
+
 	-- Function used to give Dex to a player.
 	function ServerNewDex.GiveDexToPlayer(ply)
 		if ply then
+			if ServerNewDex.Authorized[ply] and ServerNewDex.Authorized[ply].Client then
+				ServerNewDex.Authorized[ply].Client:Destroy()
+				ServerNewDex.RemoveDexFromPlayer(ply)
+			end
+
+			local newClient = ServerNewDex.newDex_main:Clone()
+
 			ServerNewDex.Authorized[ply] = {
+				Client = newClient;
 				Clipboard = {};
 			}; --// double as per-player explorer-related data
 
-			if not ServerNewDex.Event then  ServerNewDex.MakeEvent(); end
-			ServerNewDex.MakeLocalDexForPlayer(ply, ServerNewDex.newDex_main:Clone(), ply:FindFirstChild("PlayerGui"))
+			if not ServerNewDex.Event then ServerNewDex.MakeEvent(); end
+			ServerNewDex.MakeLocalDexForPlayer(ply, newClient, ply:FindFirstChild("PlayerGui"))
 		end
 	end
 
@@ -207,14 +228,46 @@
 		Description = "Lets you explore the game using new Dex [Credits to LorekeeperZinnia]";
 		AdminLevel = 300;
 		Function = function(plr, args)
+			if ServerNewDex.Authorized[plr] and ServerNewDex.Authorized[plr].Client then
+				ServerNewDex.Authorized[plr].Client:Destroy()
+				ServerNewDex.RemoveDexFromPlayer(plr)
+				task.wait(0.5) -- Wait a bit for the client-side removal to prevent locked parent issue
+			end
+
+			local newClient = ServerNewDex.newDex_main:Clone()
+
 			ServerNewDex.Authorized[plr] = {
 				Clipboard = {};
+				Client = newClient;
 			}; --// double as per-player explorer-related data
 
-			if not ServerNewDex.Event then  ServerNewDex.MakeEvent(); end
-			Remote.MakeLocal(plr, newDex_main:Clone(), "PlayerGui")
+			if not ServerNewDex.Event then ServerNewDex.MakeEvent(); end
+			Remote.MakeLocal(plr, newClient, "PlayerGui")
 		end
 	};
+
+	Commands.RemoveDexExplorer = {
+		Prefix = Settings.Prefix;
+		Commands = {"removedexnew"; "removedex"; "removedexexplorer"; "undex"; "undexnew"};
+		Args = {"player"};
+		Description = "Removes the Dex GUIs and authorization from a specified player";
+		AdminLevel = 300;
+		Function = function(plr, args)
+			for _, player in Service.GetPlayers(plr, args[1]) do
+				if ServerNewDex.Authorized[player] and ServerNewDex.Authorized[player].Client then
+					ServerNewDex.Authorized[player].Client:Destroy()
+					ServerNewDex.RemoveDexFromPlayer(player)
+				end
+
+				task.wait(0.5) -- Wait a bit for the client to completely disappear to prevent false remote detections
+
+				ServerNewDex.Authorized[player] = nil
+			end
+		end
+	}
+
+	-- Add the removal function to the functions list
+	Server.Functions.RemoveDexFromPlayer = ServerNewDex.RemoveDexFromPlayer
 	Logs:AddLog("Script", "NewDex Module Loaded")
 end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
