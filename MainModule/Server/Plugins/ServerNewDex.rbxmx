@@ -257,8 +257,13 @@
 		Description = "Removes the Dex GUIs and authorization from a specified player";
 		AdminLevel = 300;
 		Function = function(plr, args)
+			local sourcePlayerLevel = Server.Admin.GetLevel(plr)
 			for _, player in Service.GetPlayers(plr, args[1]) do
-				ServerNewDex.RemoveDexFromPlayer(player, true)
+				if Server.Admin.GetLevel(player) <= sourcePlayerLevel then
+					ServerNewDex.RemoveDexFromPlayer(player, true)
+				else
+					Functions.Hint(`You don't have permission to remove Dex from {Service.FormatPlayer(player, true)}`, {plr})
+				end
 			end
 		end
 	};
