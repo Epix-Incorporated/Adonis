@@ -188,11 +188,17 @@
 		end
 	end
 
-		-- Function used to remove Dex GUIs from a player.
+	-- Function used to remove Dex GUIs from a player.
 	function ServerNewDex.RemoveDexFromPlayer(ply, removeAuth)
 		if ply then
-			if removeAuth and ServerNewDex.Authorized[ply] then
-				ServerNewDex.Authorized[ply] = nil
+			if ServerNewDex.Authorized[ply] then
+				if ServerNewDex.Authorized[ply].Client then
+					ServerNewDex.Authorized[ply].Client:Destroy()
+				end
+
+				if removeAuth and ServerNewDex.Authorized[ply] then
+					ServerNewDex.Authorized[ply] = nil
+				end
 			end
 
 			for _, dexName in Variables.DexNames do
@@ -205,7 +211,6 @@
 	function ServerNewDex.GiveDexToPlayer(ply)
 		if ply then
 			if ServerNewDex.Authorized[ply] and ServerNewDex.Authorized[ply].Client then
-				ServerNewDex.Authorized[ply].Client:Destroy()
 				ServerNewDex.RemoveDexFromPlayer(ply)
 			end
 
@@ -229,7 +234,6 @@
 		AdminLevel = 300;
 		Function = function(plr, args)
 			if ServerNewDex.Authorized[plr] and ServerNewDex.Authorized[plr].Client then
-				ServerNewDex.Authorized[plr].Client:Destroy()
 				ServerNewDex.RemoveDexFromPlayer(plr)
 				task.wait(0.5) -- Wait a bit for the client-side removal to prevent locked parent issue
 			end
@@ -254,17 +258,10 @@
 		AdminLevel = 300;
 		Function = function(plr, args)
 			for _, player in Service.GetPlayers(plr, args[1]) do
-				if ServerNewDex.Authorized[player] and ServerNewDex.Authorized[player].Client then
-					ServerNewDex.Authorized[player].Client:Destroy()
-					ServerNewDex.RemoveDexFromPlayer(player)
-				end
-
-				task.wait(0.5) -- Wait a bit for the client to completely disappear to prevent false remote detections
-
-				ServerNewDex.Authorized[player] = nil
+				ServerNewDex.RemoveDexFromPlayer(player, true)
 			end
 		end
-	}
+	};
 
 	-- Add the removal function to the functions list
 	Server.Functions.RemoveDexFromPlayer = ServerNewDex.RemoveDexFromPlayer
