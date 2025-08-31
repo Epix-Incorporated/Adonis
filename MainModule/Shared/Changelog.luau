@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v271 2025-XX-XX XX:XX UTC] @Dimenpsyonal";
+	"[v271 2025-08-31 19:44 UTC] @Dimenpsyonal";
 	"Set debug commands to nil when not in Nightly mode";
 	"Fix nil tables being created on load for blocked entries & overwriting existing entries if loading fails";
 	"(Git/fxeP1) Removal of final remnant of legacy chat (#1968)";
@@ -13,7 +13,7 @@ return {
 	"(Git/GalacticInspired) Remove artificial 6-second wait from data funct (#1963)";
 	"(Git/0xFE0F) Minor AntiCheat Improvements (#1938)";
 	"(Git/ccuser44) Add donor debug commands (#1921)";
-	"(Git/ImFirstPlace) Change NoFakePlayer to UseFakePlayer and default to false (#1956)";
+	"(Git/ImFirstPlace) Major fix to command player validation (#1956)";
 	"(Git/ImFirstPlace) Fix fly command double error (#1970)";
 	"(Git/wilsontulus) Add permission checks for :nil (#1975)";
 	"";
