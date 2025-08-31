@@ -56,7 +56,7 @@ return function(Vargs, GetEnv)
 
 								if not SenderPlayer then
 									return true
-								elseif Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
+								elseif Settings.ChatCommands and Admin.DoHideChatCmd(SenderPlayer, chatMessage.Text) then -- // Hide chat commands?
 									if IsOriginalSender then
 										Remote.Send(SenderPlayer, "Function", "DisplaySystemMessageInTextChat", nil, "You ran a command hidden from others!")
 									end
@@ -265,6 +265,15 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end
+
+		--// Cache clearing job to clear GroupsCache every 6 minutes to prevent gradual memory leaking
+		service.StartLoop("GroupsCacheClear", 360, function()
+			for key, cache in Admin.GroupsCache do
+				if os.time() - cache.LastUpdated > 300 then
+					Admin.GroupsCache[key] = nil
+				end
+			end
+		end, true)
 
 		Admin.Init = nil;
 		AddLog("Script", "Admin Module Initialized")

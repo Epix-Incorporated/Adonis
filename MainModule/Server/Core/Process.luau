@@ -152,27 +152,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		service.TrackTask("Thread: ChatCharacterLimit", function()
-			local ChatModules = service.Chat:WaitForChild("ClientChatModules", 5)
-			if ChatModules then
-				local ChatSettings = ChatModules:WaitForChild("ChatSettings", 5)
-				if ChatSettings then
-					local success, ChatSettingsModule = pcall(function()
-						return require(ChatSettings)
-					end)
-					if success then
-						local NewChatLimit = ChatSettingsModule.MaximumMessageLength
-						if NewChatLimit and type(NewChatLimit) == "number" then
-							Process.MaxChatCharacterLimit = NewChatLimit
-							AddLog("Script", `Chat Character Limit automatically set to {NewChatLimit}`)
-						end
-					else
-						AddLog("Script", "Failed to automatically get ChatSettings Character Limit, ignore if you use a custom chat system")
-					end
-				end
-			end
-		end)
-
 		Process.RunAfterPlugins = nil
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
@@ -545,7 +524,7 @@ return function(Vargs, GetEnv)
 					-- more checks
 					for i, argname in ipairs(cmdArgs) do
 						if string.find(argname, "player") ~= nil or string.find(argname, "plr") ~= nil then
-							local playersamount = #(service.GetPlayers(p, args[i]));
+							local playersamount = #(service.GetPlayers(p, args[i], {UseFakePlayer = true}));
 							if playersamount > 1 then
 								if Remote.GetGui(p, "YesNoPrompt", {
 									Question = string.format("Are you sure you want to proceed? (%s selected %s possible players)", msg, playersamount);
