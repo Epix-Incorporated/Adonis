@@ -15,6 +15,7 @@ return {
 	"(Git/ccuser44) Add donor debug commands (#1921)";
 	"(Git/ImFirstPlace) Change NoFakePlayer to UseFakePlayer and default to false (#1956)";
 	"(Git/ImFirstPlace) Fix fly command double error (#1970)";
+	"(Git/wilsontulus) Add permission checks for :nil (#1975)";
 	"";
 	"[Patch v270.1 2025-08-26 17:48 UTC] @Coasterteam";
 	"(Git/duckymomo360) CrossServer Vuln Fix: Make ;repeat forward CrossServer option (#1969)";
