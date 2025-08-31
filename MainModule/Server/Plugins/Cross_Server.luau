@@ -89,26 +89,23 @@ return function(Vargs, GetEnv)
 
 		GlobalRestartRequest = function(jobId, reason, countdown, abortable)
 			local taskobj
+			
 			if reason == "[CRS_SRV]:abort" then
 				for i,t in service.Threads.Tasks do
 					if t.Name == "GLOBALRESTART_COUNTDOWN" then
-						pcall(task.cancel,t.Thread) -- forcefully close not caring about adonis's task system
-						coroutine.close(t.Thread)
-						t.Kill() -- mark it as killed so adonis sees it
-						Functions.Hint(`Server restart aborted. Server will no longer restart.`, service.GetPlayers())
+						pcall(task.cancel, t.Thread)
+						t.Remove()
+						Functions.Hint("Server restart aborted. This server will no longer restart.", service.GetPlayers())
+						Logs.AddLog(Logs.Script, `Global restart aborted`)
 						return
 					end
 				end
 				return
 			end
 			if countdown then
-				Logs.AddLog("Script", {
-					`Global restart issued {countdown} seconds for "{reason}"`
-				});
+				Logs.AddLog(Logs.Script, `Global restart issued {countdown} seconds for "{reason}"`)
 			else
-				Logs.AddLog("Script", {
-					`Global restart issued for "{reason}"`
-				});
+				Logs.AddLog(Logs.Script, `Global restart issued for "{reason}"`);
 			end
 			if countdown then
 				do
@@ -116,64 +113,53 @@ return function(Vargs, GetEnv)
 					if countdown < 60 then time = `{countdown} seconds`
 					else time = `{math.floor(countdown/60)} minutes`
 					end
-					Functions.Hint(`Server restart in {time}.`, service:GetPlayers())
+					Functions.Hint(`Server restart in {time}.`, service.GetPlayers())
 				end
-				local forceful_exit = false
 				for i,t in service.Threads.Tasks do
 					if t.Name == "GLOBALRESTART_COUNTDOWN" then
-						pcall(task.cancel,t.Thread) -- forcefully close not caring about adonis's task system
-						coroutine.close(t.Thread)
-						t.Kill() -- mark it as killed so adonis sees it
+						pcall(task.cancel, t.Thread)
+						t.Remove()
+						Logs.AddLog(Logs.Script, `Global restart aborted`)
+						return
 					end
 				end
-				taskobj = service.Threads.NewTask("THREAD: GLOBALRESTART_COUNTDOWN", function()
+				taskobj = select(2, service.Threads.NewTask("GLOBALRESTART_COUNTDOWN", function()
 					local brackets = {
-						[1800]="30 minutes",
-						[1200]="20 minutes",
-						[600]="10 minutes",
-						[300]="5 minutes",
-						[120]="2 minutes",
-						[60]="1 minute",
-						[30]="30 seconds",
-						[10]="10 seconds"
+						{1800, "30 minutes"},
+						{1200, "20 minutes"},
+						{600, "10 minutes"},
+						{300, "5 minutes"},
+						{120, "2 minutes"},
+						{60, "1 minute"},
+						{30, "30 seconds"},
+						{10, "10 seconds"},
 					}
 					local currentbracket,lastbracket
 					local function updatebracket()
-						local i = 1
-						local lastt
-						for time,bracket in pairs(brackets) do
-							if time <= countdown then
-								currentbracket = brackets[lastt]
+						for _, v in brackets do
+							if countdown <= v[1] then
+								currentbracket = v[2]
 							end
-							i+=1
 						end
 					end
 					updatebracket()
 					lastbracket = currentbracket
 					while countdown > 0 do
 						countdown -= task.wait(1)
-						if taskobj.R_Status == "Stopping" and abortable then
-							Functions.Hint(`Server restart aborted. Server will no longer restart.`, service.GetPlayers())
-							return
-						end
 						updatebracket()
 						if lastbracket ~= currentbracket then
 							Functions.Hint(`Server restart in {currentbracket}.`, service.GetPlayers())
 						end
 						lastbracket = currentbracket
 					end
-					Logs.AddLog("Script", {
-						`Server is restarting NOW. (issued global restart)`
-					});
+					Logs.AddLog(Logs.Script, "Server is restarting NOW. (issued global restart)")
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
-				end)
+				end))
 				taskobj.abortable = abortable
-				taskobj.Start()
+				taskobj.Resume()
 				return
 			end
-			Logs.AddLog("Script", {
-				`Server is restarting NOW. (issued global restart)`
-			});
+			Logs.AddLog(Logs.Script, "Server is restarting NOW. (issued global restart)")
 			Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 		end;
 
