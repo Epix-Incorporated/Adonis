@@ -34,8 +34,8 @@ return function(data, env)
 		Text = "General"
 	})
 
-	local friendstab = tabFrame:NewTab("Friends", {
-		Text = "Friends"
+	local friendstab = tabFrame:NewTab("Connections", {
+		Text = "Connections"
 	})
 
 	local groupstab = tabFrame:NewTab("Groups", {
@@ -50,7 +50,7 @@ return function(data, env)
 	if player ~= service.Players.LocalPlayer then
 		window:AddTitleButton({
 			Text = "";
-			ToolTip = isFriends and "Unfriend" or "Add friend";
+			ToolTip = isFriends and "Remove Connection" or "Add Connection";
 			OnClick = isFriends and function()
 				service.StarterGui:SetCore("PromptUnfriend", player)
 			end
@@ -245,7 +245,7 @@ return function(data, env)
 				Size = UDim2.new(1, -10, 0, 25);
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 0.5;
-				PlaceholderText = ("Search %d friends (%d online)"):format(friendCount, onlineCount);
+				PlaceholderText = ("Search %d connections (%d online)"):format(friendCount, onlineCount);
 				Text = "";
 				TextStrokeTransparency = 0.8;
 			})
