@@ -77,7 +77,10 @@
 				if Admin.GetLevel(args[1]) < Admin.GetLevel(realPlr) then
 					args[1]:Destroy();
 				else 
-					Functions.Hint(`You do not have the permission to delete player {args[1].DisplayName} (@{args[1].Name})`, {realPlr})
+					Remote.MakeGui(realPlr, "Output", {
+						Title = "Missing Permissions";
+						Message = `You do not have the permission to delete player {args[1].DisplayName} (@{args[1].Name})`;
+					})
 				end
 			end
 			return true;
