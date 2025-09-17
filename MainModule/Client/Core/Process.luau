@@ -209,23 +209,6 @@ return function(Vargs, GetEnv)
 				end
 
 				service.TextChatService.DescendantAdded:Connect(onCommandAdded)
-
-				-- Support hidden chat commands via /e :command using RBXEmoteCommand.Triggered
-				local TextChatCommandsFolder = service.TextChatService:FindFirstChild("TextChatCommands")
-				if TextChatCommandsFolder then
-					local EmoteCommand = TextChatCommandsFolder:FindFirstChild("RBXEmoteCommand")
-					if EmoteCommand and EmoteCommand:IsA("TextChatCommand") and EmoteCommand.Triggered then
-						EmoteCommand.Triggered:Connect(function(originTextSource, messageString)
-							local player = service.Players:GetPlayerByUserId(originTextSource.UserId)
-							if player == service.Player and type(messageString) == "string" then
-								-- Only process if message looks like a command (e.g. :cmd)
-								if string.sub(messageString, 1, 1) == ":" then
-									Process.Chat(messageString)
-								end
-							end
-						end)
-					end
-				end
 			end
 		end;
 	}
