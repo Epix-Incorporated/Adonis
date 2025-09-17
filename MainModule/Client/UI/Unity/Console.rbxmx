@@ -795,15 +795,19 @@ return function(data, env)
 		end
 	end)
 
-	BindEvent(service.UserInputService.InputBegan, function(InputObject)
+	BindEvent(service.Events.ToggleConsole, function()
+		if opened then
+			close()
+		else
+			open()
+		end
+		client.Variables.ConsoleOpen = opened
+	end)
+
+	BindEvent(service.UserInputService.InputBegan, function(InputObject, gameProcessedEvent)
 		local textbox = service.UserInputService:GetFocusedTextBox()
-		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
-			if opened then
-				close()
-			else
-				open()
-			end
-			client.Variables.ConsoleOpen = opened
+		if not textbox and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
+			service.Events.ToggleConsole:Fire()
 		end
 	end)
 
