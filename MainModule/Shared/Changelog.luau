@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
+	"[Patch v271.1 2025-09-17 18:34 UTC] @Dimenpsyonal";
+	"Remove CoreGui exploit detections";
+	"";
 	"[v271 2025-08-31 19:44 UTC] @Dimenpsyonal";
 	"Set debug commands to nil when not in Nightly mode";
 	"Fix nil tables being created on load for blocked entries & overwriting existing entries if loading fails";
