@@ -969,9 +969,9 @@ return function(Vargs, GetEnv)
 						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})
 
-					if Settings.ExploitGuiDetection and Settings.AllowClientAntiExploit then
-						Remote.Send(p, "LaunchAnti", "AntiCoreGui")
-					end
+					--if Settings.ExploitGuiDetection and Settings.AllowClientAntiExploit then
+					--	Remote.Send(p, "LaunchAnti", "AntiCoreGui")
+					--end
 				end
 
 				if Settings.AntiBuildingTools and Settings.AllowClientAntiExploit then
