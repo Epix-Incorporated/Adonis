@@ -811,6 +811,27 @@ return function(Vargs, GetEnv)
 					end
 				end)
 
+				-- Support hidden chat commands via /e :command using RBXEmoteCommand.Triggered
+				local TextChatService = service.TextChatService
+				if TextChatService and TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+					local TextChatCommandsFolder = TextChatService:FindFirstChild("TextChatCommands")
+					if TextChatCommandsFolder then
+						local EmoteCommand = TextChatCommandsFolder:FindFirstChild("RBXEmoteCommand")
+						if EmoteCommand and EmoteCommand:IsA("TextChatCommand") and EmoteCommand.Triggered then
+							EmoteCommand.Triggered:Connect(function(originTextSource, messageString)
+								if originTextSource and messageString and originTextSource.UserId == p.UserId then
+									if string.sub(messageString, 1, 1) == ":" then
+										local ran, err = TrackTask(`{p.Name}EmoteCommandTriggered`, Process.Chat, false, p, messageString)
+										if not ran then
+											logError(err)
+										end
+									end
+								end
+							end)
+						end
+					end
+				end
+
 				--// Character added
 				p.CharacterAdded:Connect(function(...)
 					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, false, p, ...)
