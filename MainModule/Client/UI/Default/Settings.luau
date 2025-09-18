@@ -113,9 +113,9 @@ return function(data, env)
 			Function = function(toggle)
 				local gotKey, visualName
 				toggle.Text = "Waiting..."
-				local event = service.UserInputService.InputBegan:Connect(function(InputObject)
+				local event = service.UserInputService.InputBegan:Connect(function(InputObject, gameProcessedEvent)
 					local textbox = service.UserInputService:GetFocusedTextBox()
-					if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+					if not (textbox) and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 						gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 					end
 				end)

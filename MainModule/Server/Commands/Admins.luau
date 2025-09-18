@@ -39,7 +39,7 @@ return function(Vargs, env)
 				local senderLevel = data.PlayerData.Level
 
 				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
-				local v = Functions.GetPlayers(plr, args[1], {NoFakePlayer = false})
+				local v = Functions.GetPlayers(plr, args[1], {UseFakePlayer = true})
 				for _, p in v do
 					if senderLevel > Admin.GetLevel(p) then
 						Admin.AddAdmin(p, rankName)
@@ -207,7 +207,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {UseFakePlayer = true}) do
 					local targetLevel = Admin.GetLevel(v)
 					if targetLevel > 0 then
 						if senderLevel > targetLevel then
@@ -235,7 +235,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level
 
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {UseFakePlayer = true}) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators", true)
 						Functions.LogAdminAction(plr, "Temporary Moderator", v.Name, "N/A")
@@ -366,7 +366,7 @@ return function(Vargs, env)
 							DontError = true;
 							IsServer = false;
 							IsKicking = false;
-							NoFakePlayer = false;
+							UseFakePlayer = true;
 						})
 						if #plrs>0 then
 							for _, v in plrs do
@@ -1098,7 +1098,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing note (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local PlayerData = Core.GetPlayer(v)
 					if not PlayerData.AdminNotes then PlayerData.AdminNotes = {} end
 					table.insert(PlayerData.AdminNotes, args[2])
@@ -1116,7 +1116,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing note (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local PlayerData = Core.GetPlayer(v)
 					if PlayerData.AdminNotes then
 						if string.lower(args[2]) == "all" then
@@ -1142,7 +1142,7 @@ return function(Vargs, env)
 			Description = "Views notes on the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local PlayerData = Core.GetPlayer(v)
 					local notes = PlayerData.AdminNotes
 					if not notes then
@@ -1228,11 +1228,7 @@ return function(Vargs, env)
 			Description = "Crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "crash") then
 						Remote.Send(v, "Function", "Crash")
 					end
@@ -1247,11 +1243,7 @@ return function(Vargs, env)
 			Description = "Hard-crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "hard-crash") then
 						Remote.Send(v, "Function", "HardCrash")
 					end
@@ -1266,11 +1258,7 @@ return function(Vargs, env)
 			Description = "RAM-crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "RAM-crash") then
 						Remote.Send(v, "Function", "RAMCrash")
 					end
@@ -1285,11 +1273,7 @@ return function(Vargs, env)
 			Description = "GPU crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "GPU-crash") then
 						Remote.Send(v, "Function", "GPUCrash")
 					end
@@ -1312,11 +1296,7 @@ return function(Vargs, env)
 				local msg = service.BroadcastFilter(args[3], plr)
 				assert(msg == args[3], "Message was filtered: "..msg)
 
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = false;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if not Admin.CheckAuthority(plr, v, "custom-kick") then
 						continue
 					end
@@ -1386,7 +1366,7 @@ return function(Vargs, env)
 				local reason = args[2] or "No reason provided"
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "server-ban", false) then
@@ -1466,10 +1446,15 @@ return function(Vargs, env)
 			Description = `Deletes the player forcefully, causing them to be kicked for "Player has been removed from the DataModel"`;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				local sourcePlayerLevel = Admin.GetLevel(plr)
 				for _, v in service.GetPlayers(plr, args[1]) do
-					v.Character = nil
-					v.Parent = nil
-					Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
+					if Admin.GetLevel(v) <= sourcePlayerLevel then
+						v.Character = nil
+						v.Parent = nil
+						Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
+					else
+						Functions.Hint(`You don't have permission to send {service.FormatPlayer(v)} to nil`, {plr})
+					end
 				end
 			end
 		};
@@ -1527,16 +1512,10 @@ return function(Vargs, env)
 				Commands.Char.Function(plr, args)
 				Commands.DisplayName.Function(plr, {args[1], username})
 
-				local ChatService = Functions.GetChatService()
-
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if Variables.DisguiseBindings[v.UserId] then
 						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
 						Variables.DisguiseBindings[v.UserId].Rename = nil
-						if ChatService then
-							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
-							ChatService:UnregisterProcessCommandsFunction(`Disguise_{v.Name}`)
-						end
 					end
 
 					Variables.DisguiseBindings[v.UserId] = {
@@ -1545,29 +1524,6 @@ return function(Vargs, env)
 							Commands.DisplayName.Function(v, {v.Name, username})
 						end);
 					}
-
-					if ChatService then
-						local disguiseSpeaker = ChatService:AddSpeaker(username)
-						disguiseSpeaker:JoinChannel("All")
-						ChatService:RegisterProcessCommandsFunction(`Disguise_{v.Name}`, function(speaker, message, channelName)
-							if speaker == v.Name then
-								local filteredMessage = select(2, xpcall(function()
-									return service.TextService:FilterStringAsync(message, v.UserId, Enum.TextFilterContext.PrivateChat):GetChatForUserAsync(v.UserId)
-								end, function()
-									Remote.Send(v, "Function", "ChatMessage", "A message filtering error occurred.", Color3.new(1, 64/255, 77/255))
-									return
-								end))
-								if filteredMessage and not server.Admin.DoHideChatCmd(v, message) then
-									disguiseSpeaker:SayMessage(filteredMessage, channelName)
-									if v.Character then
-										service.Chat:Chat(v.Character, filteredMessage, Enum.ChatColor.White)
-									end
-								end
-								return true
-							end
-							return false
-						end)
-					end
 				end
 			end
 		};
@@ -1579,15 +1535,10 @@ return function(Vargs, env)
 			Description = "Removes the player's disguise";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local ChatService = Functions.GetChatService()
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if Variables.DisguiseBindings[v.UserId] then
 						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
 						Variables.DisguiseBindings[v.UserId].Rename = nil
-						pcall(function()
-							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
-							ChatService:UnregisterProcessCommandsFunction(`Disguise_{v.Name}`)
-						end)
 					end
 					Variables.DisguiseBindings[v.UserId] = nil
 				end

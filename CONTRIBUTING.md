@@ -1,90 +1,120 @@
 <div align="center">
 
-# 📜 Adonis Contribution Guidelines
+# 📜 Adonis Contribution Policy
 
 ![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png)
 
-Adonis is an ever-expanding, frequently updated, slightly complicated, system. To keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
+Adonis is an ever-expanding, frequently updated, and sometimes complex system.
+To keep Adonis functional and somewhat readable rather than a tangled mess, this document sets out the policies governing contributions to consider before submitting a pull request:
 
-## Q: Who's in charge of handling pull requests (PRs)?
+## 1. Governance
 
-**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz)) and [@Dimenpsyonal](https://github.com/Dimenpsyonal) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
+- Pull requests (PRs) are reviewed and approved by [@Sceleratis](https://github.com/Sceleratis) or any of the appointed community maintainers:  
+  [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz), and [@Dimenpsyonal](https://github.com/Dimenpsyonal).
+- Maintainers may edit PR titles, descriptions, and labels for ease of classification.
+- Community members are allowed and encouraged to comment on, review, and provide feedback on PRs, but final approval rests with maintainers.
 
-Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
+## 2. Scope of Contributions
 
-Maintainers may manage PR labels or edit PR titles and descriptions where beneficial to conform to the standards described below.
+- **Permitted Contributions:**  
+  - Additions or modifications to Adonis features, commands, or systems.
+  - Bug fixes and stability improvements.
+  - Documentation and wiki improvements.
+  - Tutorials or technical references to support users and plugin developers.
 
-## Q: How should PRs be titled and formatted?
+- **Prohibited Contributions:**  
+  - Code or features that violate Roblox’s rules or could endanger games using Adonis.
+  - Any form of obfuscated code, either intentional or unintentional.
+  - **Note**: There is a very clear/obvious difference between unavoidably complex code and intentionally complicated code. Maintainers will check all file changes before merging and can usually spot something abnormal quickly.
+  - Contributions that add unnecessary complexity without clear benefit.
 
-**A:** **Title:** The title of a PR should be in the present tense, and equivalent to a concise statement describing what was added, changed or removed by the PR: "Add XXX setting"; "Add :somenewcommand"; "Fix for :somecommand not doing XXX"; "Fix for :somecommand to account for XXX"; ":somecommand now does XXX"; "Add confirmation prompt for :somecommand"
+## 3. Pull Request Standards
 
-A short explanation/clarification may be appended to the title, and should be included if the PR involves making a change with a rationale that users may not understand: "Add confirmation prompt for :somecommand to prevent XXX"
+- **Titles:**  
+  - Must be concise, written in the present tense, and clearly describe what is being added, changed, or fixed.
+  - Example formats:  
+    - `Add :somenewcommand`  
+    - `Fix :somecommand not accounting for XXX`  
+    - `Add confirmation prompt for :somecommand to prevent misuse`  
+  - Adonis commands must be referenced by their usage form (e.g. `:somecommand`), not the internal identifier (e.g. SomeCommand).
 
-Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
+- **Descriptions:**  
+  - Must provide a comprehensive list of changes.
+  - Should explain the rationale behind the change.
 
-**Description:** The description of a PR should be comprehensive and either describe, or list and describe the specific additions, changes, and/or removals made by the PR, and their full rationale.
+- **Proof of Functionality:**  
+  - PRs should include evidence (e.g., video, screenshots) demonstrating that the contribution works in Roblox Studio.
+  - Exceptions: small, obvious fixes such as typos or trivial adjustments.
 
-**Proof of functionality:** A PR must contain some form of you showcasing your PR working inside Roblox. This is to ensure that no breaking PRs are merged and to maintain a high quality of Pull Request. This can be a video or some other form of media which adequately displays that your PR is functional. Exceptions will be made for small PRs that are obviously functional such as fixing typos, tweaking minor functionality, etc.
-  
-ℹ️ **The above rules do not apply to individual commit names and descriptions.**
+- **Labels:**  
+  - PRs should include relevant labels where possible.
+  - Maintainers may add or adjust labels after submission.
 
-You may optionally include relevant [label(s)](https://github.com/Epix-Incorporated/Adonis/labels) in your PR to classify it. (Maintainers will add the labels otherwise after reviewing your PR.)
+## 4. Code Quality and Style
 
-## Q: What can I contribute?
+- There is no set styleguide for Adonis code, however contributions should match the style of surrounding code.
+- The [Roblox Luau Style Guide](https://roblox.github.io/lua-style-guide/) should be followed where applicable.
+- English must be the language used for variable names and user-facing text.
+- Contributors must ensure code is tested prior to submission.
 
-**A:** Anything within reason! Contributions can be to Adonis itself or the wiki (or both!) As long as your addition or change is useful and doesn't break something, and makes sense (while not violating Roblox's rules) it will *probably* be merged. However, something may occasionally be deemed unnecessary or incomplete, at which point a comment will be made on the PR for you to respond to or amend your code (or just so you know the maintainers' reasoning.)
+## 5. Changelog Policy
 
-## Q: What *can't* I contribute?
+- The changelog is the record of all notable changes.
+- Each release of Adonis is documented within the changelog – Adonis uses two forms of releases:
+- Full releases: most PRs are released in full releases.
+- Patch releases: denoted by adding a decimal version. Maintainers may choose to include your PR in a patch release if it is related to a non-trivial and/or uncommon bug.
+- Releases are delineated by:
+* the version number,
+* the ISO 8601 date (YYYY–MM–DD) and the time in UTC,
+* and the name of the maintainer responsible for that release (in old cases the changelog author(s))
+- The version number uses decimal versioning (e.g. v1.2 is an older version than v1.12), older releases use semantic versioning.
+- Entries should be concise, in the present tense, and reference Adonis commands by their usage name (e.g. `:somecommand`).
+- Maintainers will base the changelog entry off the title of your PR and may copyedit it for clarity.
+- Maintainers may edit or reorganize entries before release publication.
 
-**A:** Anything that violates Roblox's rules (as in, anything that could get Adonis or games using Adonis in trouble) is not allowed for obvious reasons. Additionally, please do not submit any form of obfuscated code as they have no place in the open-source project that Adonis is.
+## 6. Branching and Version Control
 
-There is a very clear/obvious difference between unavoidably complex code and intentionally complicated code. Maintainers are certain to check all file changes before merging and can *usually* spot something abnormal quickly.
+- All contributions must be based on the latest version of the `master` branch.
+- Changes should not be based on the `release` branch.
+- Outdated or conflicting code will not be merged.
+- Conflicting code can be rectified using GitHub's web editor or through Git CLI.
 
-## Q: Is there a style guide for writing code?
+## 7. Tooling and Development Environment
 
-**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing, as well as the [Roblox Luau Style Guide](https://roblox.github.io/lua-style-guide/) where applicable. Also, be sure to use US English spellings for both code variable names and user-facing text.
+- We reccomend using Rojo to sync with Roblox Studio.
+- Developers should install Rojo via the [official documentation](https://rojo.space/docs/v7/getting-started/installation/) and avoid deprecated Marketplace versions.
+- Aftman is used for dependency management.
+- Rojo may be run via `rojo serve` or the VSCode plugin.
 
-## Q: What are some things I should watch out for when submitting my changes?
+## 8. Documentation and Wiki
 
-**A:** Bugs! 🐛 If you are submitting code changes, please be sure to TEST THEM BEFORE SUBMITTING THEM! No one would be quite happy to spend an hour debugging your contribution when merging changes into the model.
+- Wiki contributions should focus on:  
+  - Technical documentation of Adonis functions and variables.
+  - Guidance for plugin developers.
+  - Tutorials for new or inexperienced users.
+- To contribute, contact a maintainer with your proposed addition for review.
 
-Also, try to double-check any text for spelling issues. Some of us frequently make typos/mistakes, so it's not a huge deal if you miss something, but a wholly incoherent string of letters and words is not acceptable.
+## 9. Post-Merge Process
 
-Finally, ***be sure to make file changes based on the latest version of the ``master`` branch, not ``release``!*** Outdated and conflicting code is often a pain to deal with.
+- Accepted contributions will be credited in the credits as:  
+  `@GitHub YourGitHubUsernameHere`.
+- If your first contribution is not properly credited, notify maintainers via Discord or PR comment.
+- After merging, maintainers will conduct additional testing.
+- Updated models are automatically published to Roblox once verified.
 
-## Q: How can I sync the Rojo project with Roblox Studio?
+## 10. Contributor Recognition
 
-**A:** Please check for [Rojo Documentation for full details](https://rojo.space/docs/v7/getting-started/installation/), but in short, you'll need to install the Rojo CLI if you don't already have it. If you don't have the Aftman toolchain manager, [install it](https://github.com/LPGhatguy/aftman#installation). Then, inside the Adonis folder, run `aftman install`. Finally, run `rojo plugin install` to add the plugin to your studio.
+- Accepted contributors may request the "GitHub Contributor" role in the [Discord server](https://discord.com/invite/H5RvTP3) and the "Contributors" rank in the [Roblox group](https://www.roblox.com/groups/886423).
+- To request recognition, post your GitHub, Discord, and Roblox usernames in the [discussion thread](https://github.com/Epix-Incorporated/Adonis/discussions/433).
+- Recognition is **not** granted for non-code contributions (e.g. .github changes, typo fixes).
 
-**Please note, that if you have installed a plugin from the Roblox Plugin Marketplace created by LPGhatguy, it will not work correctly and has been deprecated, DO NOT use this plugin, it WILL cause side effects, such as UI font size issues.**
-Alternatively, if you prefer, you may also download the plugin from the [Creator Marketplace](https://create.roblox.com/marketplace/asset/13916111004/Rojo), but do note your version may get out of sync without warning.
+## 11. Communication
 
-After installing Rojo, you can serve it by running `rojo serve` or by using the [optional VSCode plugin](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo). Then, connect thru the Rojo Plugin in Studio and accept the changes.
+- Questions, discussions, or clarification requests should be directed to the project’s [Discord server](https://discord.com/invite/H5RvTP3).
+- Contributors are encouraged to engage constructively in PR discussions.
 
-## Q: What can I contribute to the Wiki?
+<div align="center">
 
-**A:** Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when developing plugins for Adonis. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.) To add wiki contributions, message a maintainer with information regarding your requested fix and it will be reviewed.
-
-## Q: My contribution was accepted. Now what?
-
-**A:** After handling the merge, a maintainer will also add you to the credits list as "@GitHub YourGitHubUsernameHere" if it's your first contribution. If we forget to do this, and you notice, just us me know (via Discord or comment on the PR itself) and we'll fix it.
-
-Once in a while after changes are merged, some quick testing will be done by a maintainer to make sure everything works correctly. Once that's done, the updated models will be published to Roblox by an automated process, after which all new servers will be running the latest version of Adonis.
-
-## Q: How do I get the "GitHub Contributor" role and group rank?
-
-**A:** After your contribution is accepted, post your Discord & Roblox usernames into the discussion thread (<https://github.com/Epix-Incorporated/Adonis/discussions/433>). You will be given the "GitHub Contributor" role in the Discord server and the "Contributors" rank in the Roblox group (Epix Incorporated) by a maintainer, assuming you are a member of the server and group respectively.
-
-Roblox group: <https://www.roblox.com/groups/886423>
-
-Discord server: <https://discord.com/invite/H5RvTP3>
-
----
-
-### That's all, folks!
-
-Feel free to make enquiries on our Discord server.
-  
-<sub>Adonis Contribution Guide 2024</sub>
+<sub>Adonis Contribution Policy 2025</sub>
 
 </div>

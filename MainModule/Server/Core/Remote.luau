@@ -674,7 +674,7 @@ return function(Vargs, GetEnv)
 					Arguments = 2;
 					Description = "Disconnects the specified player from the server";
 					Function = function(p, args, data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							local ret = {}
 							for _,v in plrs do
@@ -694,7 +694,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Calls :BreakJoints() on the target player's character";
 					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							for _, v in plrs do
 								local ret = {}
@@ -719,7 +719,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Calls :LoadCharacter() on the target player";
 					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							local ret = {}
 							for _, v in plrs do
@@ -765,7 +765,7 @@ return function(Vargs, GetEnv)
 					logError(p, retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2))
+					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2, retable.n))
 				end
 			end;
 
@@ -1172,7 +1172,10 @@ return function(Vargs, GetEnv)
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Function then
 				keys.Sent += 1
-				return RemoteEvent.Function:InvokeClient(p, { Mode = "Get", Sent = 0 }, ...)
+				local ran, ret = pcall(RemoteEvent.Function.InvokeClient, RemoteEvent.Function, p, { Mode = "Get", Sent = 0 }, ...)
+				if ran then
+					return ret
+				end
 			end
 		end;
 
