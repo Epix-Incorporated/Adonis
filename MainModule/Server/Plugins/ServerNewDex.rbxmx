@@ -22,6 +22,7 @@
 	local Functions = Server.Functions;
 	local Logs = Server.Logs;
 	local Remote = Server.Remote;
+	local Admin = Server.Admin;
 
 	local HttpService = Service.HttpService
 	local Success, APIDump, Reflection = nil
@@ -71,8 +72,17 @@
 	ServerNewDex.Authorized = {}; --// Users who have been given Dex and are authorized to use the remote event
 
 	local Actions = {
-		destroy = function(p: Player, args)
-			args[1]:Destroy();
+		destroy = function(p: Player, args, realPlr: Player)
+			if args[1]:IsA("Player") then
+				if Admin.GetLevel(args[1]) < Admin.GetLevel(realPlr) then
+					args[1]:Destroy();
+				else 
+					Remote.MakeGui(realPlr, "Output", {
+						Title = "Missing Permissions";
+						Message = `You do not have the permission to delete player {args[1].DisplayName} (@{args[1].Name})`;
+					})
+				end
+			end
 			return true;
 		end,
 		clearclipboard = function(Player: Player, args)
@@ -174,7 +184,7 @@
 				local Action = string.lower(assert(Action, "Method argument missing!"))
 				local MethodFunction = assert(Actions[Action], `{Plr.Name} attempted to use an action that wasn't defined: {Action}`)
 
-				return MethodFunction(pData, args);
+				return MethodFunction(pData, args, Plr);
 			end)
 		end
 
@@ -5802,17 +5812,25 @@ local function main()
 				curClass = curClass.Superclass
 			end
 		end
-
+		
+		if not presentClasses["Player"] then
 		context:AddRegistered("CUT")
 		context:AddRegistered("COPY")
+		end
 		context:AddRegistered("PASTE",emptyClipboard)
+		if not presentClasses["Player"] then
 		context:AddRegistered("DUPLICATE")
+		end
 		context:AddRegistered("DELETE")
+		if not presentClasses["Player"] then
 		context:AddRegistered("RENAME",#sList ~= 1)
+		end
 
 		context:AddDivider()
+		if not presentClasses["Player"] then
 		context:AddRegistered("GROUP")
 		context:AddRegistered("UNGROUP")
+		end
 		context:AddRegistered("SELECT_CHILDREN")
 		context:AddRegistered("JUMP_TO_PARENT")
 		context:AddRegistered("EXPAND_ALL")
@@ -6117,7 +6135,11 @@ local function main()
 			local destroy = game.Destroy
 			local sList = selection.List
 			for i = 1,#sList do
-				pcall(destroy,sList[i].Obj)
+				pcall(function()
+					if not sList[i].Obj:IsA("Player") then
+						destroy(sList[i].Obj)
+					end
+				end)
 
 				-- ADONIS
 				Dex_RemoteFunction:InvokeServer("Destroy", sList[i].Obj)
