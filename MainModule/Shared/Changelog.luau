@@ -1,7 +1,10 @@
 return {
-	"Version: 271";
+	"Version: 272";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v272 2025-XX-XX XX:XX UTC] @Dimenpsyonal";
+	"(Git/fxeP1) Respect gameProcessedEvent for Console (#1984)";
 	"";
 	"[Patch v271.1 2025-09-17 18:34 UTC] @Dimenpsyonal";
 	"Remove CoreGui exploit detections";
