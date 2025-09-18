@@ -45,21 +45,22 @@ return function(Vargs, GetEnv)
 			local jobid
 			local startTask, TeleportTask = service.Threads.NewTask("Teleport Players", function()
 				jobid = TeleportService:TeleportPartyAsync(game.PlaceId, playersToTeleport, {[PARAMETER_2_NAME] = true})
+				Logs:AddLog("Script", `Teleported {#playersToTeleport} players back to the main game`)
 			end)
+
+			local function sendMessage(player)
+				task.defer(function()
+					repeat task.wait(0.25) until not player or not player.Parent or teleportedPlayers[player] or Remote.Clients[tostring(player.UserId)] and Remote.Clients[tostring(player.UserId)].FinishedLoading
+					Functions.Message("Adonis", Settings.SystemTitle, "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
+				end)
+			end
 
 			local function teleport(player)
 				local joindata = player:GetJoinData()
 				local data = type(joindata) == "table" and joindata.TeleportData
 
 				if type(data) == "table" and data[PARAMETER_NAME] then
-					Remote.RemoveGui(player, "Message")
-					Remote.MakeGui(player, "Message", {
-						Title = "Server Restart";
-						Message = "Teleporting back to main server..";
-						Scroll = false;
-						Time = 1000
-					})
-
+					sendMessage(player)
 					task.wait(waitTime + 5)
 					waitTime /= 2
 
@@ -82,6 +83,14 @@ return function(Vargs, GetEnv)
 						TeleportTask.Finished:wait()
 					end
 
+					if not jobid then
+						repeat task.wait(1) until jobid ~= nil
+					end
+
+					if not player or not player.Parent then
+						return
+					end
+
 					TeleportService:TeleportToPlaceInstance(game.PlaceId, jobid, player, "", {[PARAMETER_2_NAME] = true})
 				end
 			end)
@@ -91,6 +100,8 @@ return function(Vargs, GetEnv)
 			end
 
 			if #playersToTeleport > 0 then
+				Logs:AddLog("Script", `Teleporting {#playersToTeleport} players back to the main game`)
+				task.wait(1)
 				startTask()
 			end
 		end)
@@ -106,8 +117,8 @@ return function(Vargs, GetEnv)
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
-			
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
+		
 			task.wait(2)
 
 			for _, v in Players:GetPlayers() do
@@ -141,6 +152,9 @@ return function(Vargs, GetEnv)
 		Function = function(plr: Player, args: {string})
 			if #Players:GetPlayers() == 0 then return end
 
+			local newserver = TeleportService:ReserveServer(game.PlaceId)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
+
 			if Core.DataStore then
 				Core.UpdateData("ShutdownLogs", function(logs)
 					if plr then
@@ -167,9 +181,6 @@ return function(Vargs, GetEnv)
 				end)
 			end
 
-			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", 'MatIcon://Hourglass empty', service.GetPlayers(), false, 1000)
-			
 			task.wait(1)
 
 			for _, v in Players:GetPlayers() do
@@ -186,11 +197,9 @@ return function(Vargs, GetEnv)
 			task.delay(60, function()
 				Variables.ServerLock = true
 			end)
-
 			while #Players:GetPlayers() > 0 do
 				Players.PlayerRemoving:Wait()
 			end
-			-- done
 		end
 	}
 	Commands.GlobalSoftShutdown = {
@@ -210,15 +219,17 @@ return function(Vargs, GetEnv)
 					time = tonumber(string.sub(time, 1, -2))
 				elseif string.sub(time, -1, -1) == "m" then
 					time = tonumber(string.sub(time, 1, -2)) * 60
-				else
-					error("Invalid time specified.");
+				elseif time == ("#"):rep(string.len(time)) then -- This arg can sometimes be filtered.
+					error("Specified time was filtered by roblox. Try again.");
+				elseif time ~= "instant" then
+					time = nil -- This will force the error below if they do not use correct usage.
 				end
-				assert(time, "Invalid time specified.")
+				assert(time, "Invalid time specified. Example usage: 60s, 5m or \"instant\"");
 			end
 			if not Core.CrossServer("GlobalRestartRequest",
 				args[1] or "No reason specified.",
-				if args[2] then tonumber(args[2]) else args[2],
-				not (string.lower(args[3]) == "no" or string.lower(args[3]) == "false")
+				tonumber(time),
+				if args[3] then (string.lower(args[3]) == "no" or string.lower(args[3]) == "false") else true
 				)
 			then
 				error("CrossServer handler not ready (try again later)")
@@ -235,12 +246,7 @@ return function(Vargs, GetEnv)
 		CrossServerDenied = true;
 		IsCrossServer = true;
 		Function = function(plr: Player, args: {string})
-			if not Core.CrossServer("GlobalRestartRequest",
-				"[CRS_SRV]:abort",
-				0,
-				false
-				)
-			then
+			if not Core.CrossServer("GlobalRestartAbort") then
 				error("CrossServer handler not ready (try again later)")
 			end
 		end
@@ -254,13 +260,8 @@ return function(Vargs, GetEnv)
 		AdminLevel = "Players";
 		Disabled = game.PrivateServerOwnerId == 0; -- enabled only on VIP servers.
 		Function = function(plr: Player, args: {string})
-			assert(plr.UserId==game.PrivateServerOwnerId, "You don't have permission to run this command.")
-			for i,t in service.Threads.Tasks do
-				if t.Name == "GLOBALRESTART_COUNTDOWN" then
-					assert(t.abortable, "Failed to abort shutdown (access denied)")
-					t.Stop()
-				end
-			end
+			assert(plr.UserId == game.PrivateServerOwnerId, "You don't have permission to run this command.")
+			assert(Core.CrossServerCommands.GlobalRestartAbort())
 		end
 	}
 

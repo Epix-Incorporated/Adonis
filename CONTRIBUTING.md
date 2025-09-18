@@ -7,8 +7,6 @@
 Adonis is an ever-expanding, frequently updated, and sometimes complex system.
 To keep Adonis functional and somewhat readable rather than a tangled mess, this document sets out the policies governing contributions to consider before submitting a pull request:
 
-</div>
-
 ## 1. Governance
 
 - Pull requests (PRs) are reviewed and approved by [@Sceleratis](https://github.com/Sceleratis) or any of the appointed community maintainers:  

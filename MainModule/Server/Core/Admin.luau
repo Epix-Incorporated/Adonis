@@ -970,7 +970,7 @@ return function(Vargs, GetEnv)
 					Value = value;
 				})
 
-				Core.CrossServer("RemovePlayer", p.Name, Variables.BanMessage, value.Reason or "No reason provided")
+				Core.CrossServer("RemovePlayer", tonumber(p.UserId), Variables.BanMessage, value.Reason or "No reason provided")
 			end
 
 			if type(p) ~= "table" then
@@ -1001,7 +1001,7 @@ return function(Vargs, GetEnv)
 				Value = value;
 			})
 
-			Core.CrossServer("RemovePlayer", p.Name, Variables.BanMessage, value.Reason or "No reason provided")
+			Core.CrossServer("RemovePlayer", tonumber(p.UserId), Variables.BanMessage, value.Reason or "No reason provided")
 
 			if type(p) ~= "table" then
 				if not service.Players:FindFirstChild(p.Name) then
