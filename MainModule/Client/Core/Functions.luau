@@ -1283,6 +1283,15 @@ return function(Vargs, GetEnv)
 				local key = tostring(input.KeyCode.Value)
 				local textbox = service.UserInputService:GetFocusedTextBox()
 
+				--[[
+				## BreakingChange from roblox, this corrects not detecting the chat box being focused 
+				<SAKARI INSERT PULL REQUEST LINK HERE>
+				]]
+
+				if not textbox and service.TextChatService.ChatInputBarConfiguration.IsFocused  then
+					textbox = service.TextChatService.ChatInputBarConfiguration.TextBox
+				end
+				
 				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then
 					local isAdmin = Remote.Get("CheckAdmin")
 					if time() - timer > 5 or isAdmin then

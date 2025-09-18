@@ -173,6 +173,16 @@ return function(Vargs, GetEnv)
 			end
 
 			local textbox = service.UserInputService:GetFocusedTextBox()
+
+			--[[
+			## BreakingChange from roblox, this corrects not detecting the chat box being focused 
+			<SAKARI INSERT PULL REQUEST LINK HERE>
+			]]
+
+			if not textbox and service.TextChatService.ChatInputBarConfiguration.IsFocused  then
+				textbox = service.TextChatService.ChatInputBarConfiguration.TextBox
+			end
+
 			if textbox and service.CheckProperty(textbox, "ReleaseFocus") then
 				textbox:ReleaseFocus()
 			end

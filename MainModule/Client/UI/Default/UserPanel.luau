@@ -1054,6 +1054,16 @@ return function(data, env)
 					Variables.WaitingForBind = true
 					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject, gameProcessedEvent)
 						local textbox = service.UserInputService:GetFocusedTextBox()
+
+						--[[
+						## BreakingChange from roblox, this corrects not detecting the chat box being focused 
+						<SAKARI INSERT PULL REQUEST LINK HERE>
+						]]
+
+						if not textbox and service.TextChatService.ChatInputBarConfiguration.IsFocused  then
+							textbox = service.TextChatService.ChatInputBarConfiguration.TextBox
+						end
+
 						if not (textbox) and not gameProcessedEvent and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 							currentKey = InputObject.KeyCode
 							if currentKey then
@@ -1513,6 +1523,16 @@ return function(data, env)
 							toggle.Text = "Waiting..."
 							local event = service.UserInputService.InputBegan:Connect(function(InputObject, gameProcessedEvent)
 								local textbox = service.UserInputService:GetFocusedTextBox()
+
+								--[[
+								## BreakingChange from roblox, this corrects not detecting the chat box being focused 
+								<SAKARI INSERT PULL REQUEST LINK HERE>
+								]]
+
+								if not textbox and service.TextChatService.ChatInputBarConfiguration.IsFocused  then
+									textbox = service.TextChatService.ChatInputBarConfiguration.TextBox
+								end
+
 								if not (textbox) and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 									gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 								end

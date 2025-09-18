@@ -344,6 +344,16 @@ return function(data, env)
 	
 	service.UserInputService.InputBegan:Connect(function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
+		
+		--[[
+		## BreakingChange from roblox, this corrects not detecting the chat box being focused 
+		<SAKARI INSERT PULL REQUEST LINK HERE>
+		]]
+
+		if not textbox and service.TextChatService.ChatInputBarConfiguration.IsFocused  then
+			textbox = service.TextChatService.ChatInputBarConfiguration.TextBox
+		end
+		
 		if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Tab then
 			if drag.Visible then
 				drag.Visible = false
