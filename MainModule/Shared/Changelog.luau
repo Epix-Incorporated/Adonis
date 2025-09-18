@@ -3,8 +3,10 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v272 2025-XX-XX XX:XX UTC] @Dimenpsyonal";
+	"[v272 2025-09-18 13:06 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Respect gameProcessedEvent for Console (#1984)";
+	"(Git/xs4u) Update ;dexnew to not allow deleting players who have a higher rank than you (#1978)";
+	"(Git/ddust1n) Update logic for multiple commands & Cross_Server module (#1874)";
 	"";
 	"[Patch v271.1 2025-09-17 18:34 UTC] @Dimenpsyonal";
 	"Remove CoreGui exploit detections";
