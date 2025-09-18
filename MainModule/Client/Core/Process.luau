@@ -57,7 +57,7 @@ return function(Vargs, GetEnv)
 		--// Events
 		--service.NetworkClient.ChildRemoved:Connect(function() wait(30) client.Anti.Detected("crash", "Network client disconnected") end)
 		--service.NetworkClient.ChildAdded:Connect(function() client.Anti.Detected("crash", "Network client reconnected?") end)
-		service.Player.Chatted:Connect(service.EventTask("Event: ProcessChat", Process.Chat))
+		service.TextChatService.SendingMessage:Connect(service.EventTask("Event: ProcessChat", Process.Chat))
 		service.Player.CharacterRemoving:Connect(service.EventTask("Event: CharacterRemoving", Process.CharacterRemoving))
 		service.Player.CharacterAdded:Connect(service.Threads.NewEventTask("Event: CharacterAdded", Process.CharacterAdded))
 		service.LogService.MessageOut:Connect(Process.LogService) --service.Threads.NewEventTask("EVENT:MessageOut",client.Process.LogService,60))
