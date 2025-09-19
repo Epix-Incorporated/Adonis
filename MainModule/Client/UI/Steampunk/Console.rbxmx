@@ -336,7 +336,7 @@ return function(data, env)
 	end)
 
 	gTable.BindEvent(service.UserInputService.InputBegan, function(inputObject: InputObject, gameProcessedEvent)
-		local textbox = service.UserInputService:GetFocusedTextBox()
+		local textbox = service.UserInputService:GetFocusedTextBox() or service.TextChatService.ChatInputBarConfiguration.IsFocused
 		if not textbox and not gameProcessedEvent and rawequal(inputObject.UserInputType, Enum.UserInputType.Keyboard) and inputObject.KeyCode.Name == (Variables.CustomConsoleKey or consoleKey) then
 			service.Events.ToggleConsole:Fire()
 		end
