@@ -805,7 +805,7 @@ return function(data, env)
 	end)
 
 	BindEvent(service.UserInputService.InputBegan, function(InputObject, gameProcessedEvent)
-		local textbox = service.UserInputService:GetFocusedTextBox()
+		local textbox = service.UserInputService:GetFocusedTextBox() or service.TextChatService.ChatInputBarConfiguration.IsFocused
 		if not textbox and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
 			service.Events.ToggleConsole:Fire()
 		end
