@@ -50,6 +50,10 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
+		-- Initialize camera protection system for window interactions
+		if Functions.InitCameraProtection then
+			Functions.InitCameraProtection()
+		end
 		Functions.RunLast = nil;
 	end
 
@@ -190,6 +194,95 @@ return function(Vargs, GetEnv)
 				else
 					Functions.ESPify(UnWrap(target), color);
 				end
+			end
+		end;
+
+		-- Camera protection system to prevent unwanted movement during UI interactions
+		InitCameraProtection = function()
+			local CurrentCamera = workspace.CurrentCamera
+			local UserInputService = service.UserInputService
+			local RunService = service.RunService
+			local originalCameraType = nil
+			local isUIInteracting = false
+			local activeConnections = {}
+			
+			-- Function to disable camera movement
+			local function disableCameraMovement()
+				if not isUIInteracting and CurrentCamera.CameraType == Enum.CameraType.Custom then
+					originalCameraType = CurrentCamera.CameraType
+					isUIInteracting = true
+					-- Set camera to scriptable to prevent user input
+					CurrentCamera.CameraType = Enum.CameraType.Scriptable
+				end
+			end
+			
+			-- Function to restore camera movement
+			local function restoreCameraMovement()
+				if isUIInteracting and originalCameraType then
+					CurrentCamera.CameraType = originalCameraType
+					originalCameraType = nil
+					isUIInteracting = false
+				end
+			end
+			
+			-- Monitor for UI dragging/resizing operations
+			local function onInputBegan(input, gameProcessedEvent)
+				if gameProcessedEvent and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) then
+					-- UI processed this input, likely window dragging/resizing
+					disableCameraMovement()
+					
+					-- Clean up previous connection if any
+					if activeConnections.inputEnded then
+						activeConnections.inputEnded:Disconnect()
+					end
+					
+					-- Clean up timeout if any
+					if activeConnections.timeoutThread then
+						task.cancel(activeConnections.timeoutThread)
+					end
+					
+					-- Wait for input to end to restore camera
+					activeConnections.inputEnded = input.Changed:Connect(function()
+						if input.UserInputState == Enum.UserInputState.End then
+							restoreCameraMovement()
+							if activeConnections.inputEnded then
+								activeConnections.inputEnded:Disconnect()
+								activeConnections.inputEnded = nil
+							end
+							if activeConnections.timeoutThread then
+								task.cancel(activeConnections.timeoutThread)
+								activeConnections.timeoutThread = nil
+							end
+						end
+					end)
+					
+					-- Timeout to ensure camera gets restored even if events fail
+					activeConnections.timeoutThread = task.delay(2, function()
+						restoreCameraMovement()
+						if activeConnections.inputEnded then
+							activeConnections.inputEnded:Disconnect()
+							activeConnections.inputEnded = nil
+						end
+					end)
+				end
+			end
+			
+			-- Connect to UserInputService
+			activeConnections.inputBegan = UserInputService.InputBegan:Connect(onInputBegan)
+			
+			-- Store cleanup function
+			Variables.CameraProtectionCleanup = function()
+				restoreCameraMovement()
+				for _, connection in activeConnections do
+					if connection then
+						if type(connection) == "thread" then
+							task.cancel(connection)
+						else
+							connection:Disconnect()
+						end
+					end
+				end
+				activeConnections = {}
 			end
 		end;
 
