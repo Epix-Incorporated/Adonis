@@ -4,7 +4,7 @@ return {
 	"*Report bugs/issues on our GitHub repository*";
 	"";
 	"[Patch v272.1 2025-09-26 21:38 UTC] @Dimenpsyonal";
-	"Make the InputBegan KeyBindListener check for gameProcessedEvent (#1988)"
+	"Make the InputBegan KeyBindListener check for gameProcessedEvent (#1988)";
 	"";
 	"[v272 2025-09-18 13:06 UTC] @Dimenpsyonal";
 	"(Git/fxeP1) Respect gameProcessedEvent for Console (#1984)";
