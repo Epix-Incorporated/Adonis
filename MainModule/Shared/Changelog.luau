@@ -1,7 +1,10 @@
 return {
-	"Version: 272";
+	"Version: 273";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v273 2025-XX-XX XX:XX UTC] @Maintainer";
+	"(Git/ccuser44) QoL improvement for tamper check (#1900)";
 	"";
 	"[Patch v272.1 2025-09-26 21:38 UTC] @Dimenpsyonal";
 	"Make the InputBegan KeyBindListener check for gameProcessedEvent (#1988)";
