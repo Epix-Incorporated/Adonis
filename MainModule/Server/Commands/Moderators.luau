@@ -4234,7 +4234,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
+					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) and v.Name ~= "TouchGui" then pcall(v.Destroy, v) end end]])
 				end
 			end
 		};
