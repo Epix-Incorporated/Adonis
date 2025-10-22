@@ -1053,8 +1053,8 @@ return function(data, env)
 					button.Text = "Waiting..."
 					Variables.WaitingForBind = true
 					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject, gameProcessedEvent)
-						local textbox = service.UserInputService:GetFocusedTextBox()
-						if not (textbox) and not gameProcessedEvent and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+						local textbox = service.UserInputService:GetFocusedTextBox() ~= nil or service.TextChatService.ChatInputBarConfiguration.IsFocused or false
+						if not textbox and not gameProcessedEvent and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 							currentKey = InputObject.KeyCode
 							if currentKey then
 								button.Text = string.upper(keyCodeToName(currentKey.Value))
@@ -1512,8 +1512,8 @@ return function(data, env)
 							local gotKey, visualName
 							toggle.Text = "Waiting..."
 							local event = service.UserInputService.InputBegan:Connect(function(InputObject, gameProcessedEvent)
-								local textbox = service.UserInputService:GetFocusedTextBox()
-								if not (textbox) and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+								local textbox = service.UserInputService:GetFocusedTextBox() ~= nil or service.TextChatService.ChatInputBarConfiguration.IsFocused or false
+								if not textbox and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 									gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 								end
 							end)

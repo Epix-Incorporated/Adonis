@@ -342,9 +342,9 @@ return function(data, env)
 		fadeOut()
 	end)
 	
-	service.UserInputService.InputBegan:Connect(function(InputObject)
-		local textbox = service.UserInputService:GetFocusedTextBox()
-		if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Tab then
+	service.UserInputService.InputBegan:Connect(function(InputObject, gameProcessedEvent)
+		local textbox = service.UserInputService:GetFocusedTextBox() ~= nil or service.TextChatService.ChatInputBarConfiguration.IsFocused or false
+		if not textbox and not gameProcessedEvent and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Tab then
 			if drag.Visible then
 				drag.Visible = false
 			else
