@@ -1431,6 +1431,9 @@ return function(Vargs, GetEnv)
 				Service = service;
 			}
 
+			--// Support fake players properly for some exposed API functions
+			local PlayerType = t.union(t.instanceIsA("Player"), t.strictInterface({ UserId = t.integer, Name = t.optional(t.string) }))
+
 			local API = {
 				Access = MetaFunc(function(...)
 					local args = {...}
@@ -1525,17 +1528,17 @@ return function(Vargs, GetEnv)
 					end, true, { t.instanceIsA("LuaSourceContainer"), t.string });
 				}, nil, nil, true);
 
-				CheckAdmin = MetaFunc(Admin.CheckAdmin, true, { t.instanceOf("Player") });
+				CheckAdmin = MetaFunc(Admin.CheckAdmin, true, { PlayerType });
 
-				IsAdmin = MetaFunc(Admin.CheckAdmin, true, { t.instanceOf("Player") });
+				IsAdmin = MetaFunc(Admin.CheckAdmin, true, { PlayerType });
 
-				IsBanned = MetaFunc(Admin.CheckBan, true, { t.instanceOf("Player") });
+				IsBanned = MetaFunc(Admin.CheckBan, true, { PlayerType });
 
 				IsMuted = MetaFunc(Admin.IsMuted, true, { t.instanceOf("Player") });
 
 				CheckDonor = MetaFunc(Admin.CheckDonor, true, { t.instanceOf("Player") });
 
-				GetLevel = MetaFunc(Admin.GetLevel, true, { t.instanceOf("Player") });
+				GetLevel = MetaFunc(Admin.GetLevel, true, { PlayerType });
 
 				SetLighting = MetaFunc(Functions.SetLighting, true, { t.string, t.optional(t.any) });
 

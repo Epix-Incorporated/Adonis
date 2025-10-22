@@ -940,7 +940,7 @@ return function(Vargs, GetEnv)
 			for ind, admin in HTTP.Trello.Bans do
 				local name = type(admin) == "table" and admin.Name or admin
 				if doCheck(p, name) or banCheck(p, name) then
-					return true, (type(admin) == "table" and admin.Reason and service.Filter(admin.Reason, p, p))
+					return true, if type(admin) == "table" and admin.Reason and typeof(p) == "Instance" then service.Filter(admin.Reason, p, p) else admin.Reason
 				end
 			end
 
