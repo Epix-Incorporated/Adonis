@@ -1553,7 +1553,7 @@ return function(Vargs, GetEnv)
 
 				RemoveLocal = MetaFunc(Remote.RemoveLocal, true, { t.instanceOf("Player"), t.string, t.optional(t.string), t.optional(t.boolean) });
 
-				Hint = MetaFunc(Functions.Hint, true, { t.string, t.map(t.number, t.instanceOf("Player")), t.optional(t.number), t.string, t.optional(t.string) });
+				Hint = MetaFunc(Functions.Hint, true, { t.string, t.array(t.instanceOf("Player")), t.optional(t.number), t.string, t.optional(t.string) });
 
 				Message = MetaFunc(function(title: string, message: string, players: {Player}, scroll: boolean?, duration: number?)
 					duration = duration or (#tostring(message) / 19) + 2.5
@@ -1569,7 +1569,7 @@ return function(Vargs, GetEnv)
 							})
 						end)
 					end
-				end, true, { t.string, t.string, t.map(t.number, t.instanceOf("Player")), t.optional(t.boolean), t.optional(t.number) });
+				end, true, { t.string, t.string, t.array(t.instanceOf("Player")), t.optional(t.boolean), t.optional(t.number) });
 			}
 
 			if Core.DebugMode == true then
