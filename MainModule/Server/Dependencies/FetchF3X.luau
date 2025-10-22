@@ -3,6 +3,7 @@
 ]]
 
 script:Destroy()
+-- selene: allow(incorrect_standard_library_use)
 script = nil
 
 return select(2, pcall(function()
