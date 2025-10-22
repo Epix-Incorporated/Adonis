@@ -114,8 +114,9 @@ return function(data, env)
 				local gotKey, visualName
 				toggle.Text = "Waiting..."
 				local event = service.UserInputService.InputBegan:Connect(function(InputObject, gameProcessedEvent)
-					local textbox = service.UserInputService:GetFocusedTextBox() ~= nil or service.TextChatService.ChatInputBarConfiguration.IsFocused or false
-					if not textbox and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+					local textbox = service.UserInputService:GetFocusedTextBox() ~= nil
+					local chatFocused = service.TextChatService and service.TextChatService.ChatInputBarConfiguration and service.TextChatService.ChatInputBarConfiguration.IsFocused or false
+					if not textbox and not chatFocused and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 						gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 					end
 				end)
