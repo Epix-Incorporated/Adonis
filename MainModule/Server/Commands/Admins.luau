@@ -1003,7 +1003,7 @@ return function(Vargs, env)
 						return
 					end
 				end
-				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
+				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #1)"))
 				assert(string.find(bytecode, "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("Script", args[1], true)
