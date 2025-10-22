@@ -994,11 +994,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetLighting = function(prop, value)
-			if service.Lighting[prop] ~= nil then
-				service.Lighting[prop] = value
-				Variables.LightingSettings[prop] = value
-				for _, p in service.GetPlayers() do
-					Remote.SetLighting(p, prop, value)
+			if service.CheckProperty(service.Lighting, prop) then
+				local success = pcall(function()
+					service.Lighting[prop] = value
+				end)
+				if success then
+					Variables.LightingSettings[prop] = value
+					for _, p in service.GetPlayers() do
+						Remote.SetLighting(p, prop, value)
+					end
 				end
 			end
 		end;

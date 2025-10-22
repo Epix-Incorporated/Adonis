@@ -11,7 +11,7 @@ return function(Vargs, GetEnv)
 	local thisJobId = game.JobId;
 	local messagingService = service.MessagingService;
 	local encryptedSubKey = Core.DataStoreEncode("Adonis_CrossServerMessaging");
-	
+
 	local messagesSent = 0;
 	local lastMessageSent = os.clock();
 
@@ -29,9 +29,8 @@ return function(Vargs, GetEnv)
 
 	--// Cross Server Commands
 	Core.CrossServerCommands = {
-		ServerChat = function(jobId, data) 
+		ServerChat = function(jobId, data)
 			-- This function does not appear to be used in the Adonis codebase.
-
 			-- There is also a duplicate function of this named "CrossServerChat"
 			-- in MainModule/Server/Core/Process.luau which is not used.
 			if data then
@@ -56,13 +55,9 @@ return function(Vargs, GetEnv)
 
 		NewRunCommand = function(jobId, plrData, comString)
 			Process.Command(Functions.GetFakePlayer(plrData), comString, {
-				AdminLevel = plrData.AdminLevel, 
+				AdminLevel = plrData.AdminLevel,
 				CrossServer = true
 			})
-		end;
-
-		Loadstring = server.Data and server.Data.NightlyMode and function(jobId, source)
-			Core.Loadstring(source, GetEnv{})()
 		end;
 
 		Message = function(jobId, fromPlayer, message, duration)
@@ -119,9 +114,9 @@ return function(Vargs, GetEnv)
 				resumeTask, adonisTask = service.Threads.NewTask("Global Restart Countdown", function()
 					while countdown > 0 do
 						countdown = math.ceil(countdown - task.wait(1))
-						if adonisTask.R_Status ~= "Running" then 
+						if adonisTask.R_Status ~= "Running" then
 							-- The thread was killed. Do not continue.
-							return 
+							return
 						end
 						if secondsFormatted[countdown] then
 							Functions.Hint(`Server restart in {secondsFormatted[countdown]}. Reason: {reason}`, service.GetPlayers())
@@ -140,7 +135,7 @@ return function(Vargs, GetEnv)
 				Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 			end
 		end;
-		
+
 		GlobalRestartAbort = function(jobId)
 			for index, adonisTask in service.Threads.Tasks do
 				if adonisTask.Name == "Global Restart Countdown" then
@@ -403,8 +398,8 @@ return function(Vargs, GetEnv)
 			Desc = `Origin JobId: {serverId or "[MISSING]"}`
 		})
 
-		if not (serverId and command) then 
-			return 
+		if not (serverId and command) then
+			return
 		end
 
 		table.remove(data, 2)
@@ -418,12 +413,12 @@ return function(Vargs, GetEnv)
 		Core.SubEvent = not (Variables.IsStudio or Settings.LocalDatastore) and messagingService:SubscribeAsync(encryptedSubKey, function(...)
 			if not Settings.CrossServerCommands then
 				-- Ignore all incoming events from MessagingService if CrossServerCommands is disabled.
-				return 
-			end 
+				return
+			end
 			return Process.CrossServerMessage(...)
 		end)
 	end)
-	
+
 	--// Check for additions added by other modules in core before this one loaded
 	for i, v in oldCommands do
 		Core.CrossServerCommands[i] = v

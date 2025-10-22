@@ -9,37 +9,39 @@ return function(Vargs, GetEnv)
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if not Core.DebugMode then -- Nothing in this built-in plugin will be ran in normal environments, it's only ran if DebugMode is enabled.
 		return
 	end
 
-	--// Unfortunately not viable
-	--// TODO: Make this viable perhaps? If done so, expose as a :terminal command
-	Reboot = server.Data and server.Data.NightlyMode and {
-		Prefix = Settings.Prefix;
-		Commands = {"rebootadonis", "reloadadonis"};
-		Args = {};
-		Description = "Attempts to force Adonis to reload";
-		AdminLevel = "Creators";
-		Function = function(plr: Player, args: {string}, data: {any})
-			local rebootHandler = server.Deps.RebootHandler:Clone();
+	if server.Data and server.Data.NightlyMode then
+		--// Unfortunately not viable
+		--// TODO: Make this viable perhaps? If done so, expose as a :terminal command
+		Commands.Reboot = {
+			Prefix = Settings.Prefix;
+			Commands = {"rebootadonis", "reloadadonis"};
+			Args = {};
+			Description = "Attempts to force Adonis to reload";
+			AdminLevel = "Creators";
+			Function = function(plr: Player, args: {string}, data: {any})
+				local rebootHandler = server.Deps.RebootHandler:Clone();
 
-			if server.Runner then
-				rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
-				rebootHandler.Runner.Value = service.UnWrap(server.Runner);
-				rebootHandler.Model.Value = service.UnWrap(server.Model);
-				rebootHandler.Mode.Value = "REBOOT";
-				task.wait(0.03)
-				rebootHandler.Parent = service.ServerScriptService;
-				rebootHandler.Disabled = false;
-				task.wait(0.03)
-				server.CleanUp();
-			else
-				error("Unable to reload: Runner missing");
-			end
-		end;
-	};
+				if server.Runner then
+					rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
+					rebootHandler.Runner.Value = service.UnWrap(server.Runner);
+					rebootHandler.Model.Value = service.UnWrap(server.Model);
+					rebootHandler.Mode.Value = "REBOOT";
+					task.wait(0.03)
+					rebootHandler.Parent = service.ServerScriptService;
+					rebootHandler.Disabled = false;
+					task.wait(0.03)
+					server.CleanUp();
+				else
+					error("Unable to reload: Runner missing");
+				end
+			end;
+		};
+	end
 
 	Commands.DebugUsage = {
 		Prefix = Settings.PlayerPrefix;
@@ -96,7 +98,7 @@ return function(Vargs, GetEnv)
 			end
 
 			table.sort(tab, function(a, b) return a.Text < b.Text end)
-			
+
 			Remote.MakeGui(plr, "List", {
 				Title = `Debug Commands ({cmdCount})`;
 				Table = tab;
@@ -176,7 +178,7 @@ function WrapAdonisEnv(toWrap, chain)
 		local wrapped = newproxy(true)
 		local wrappedMeta = getmetatable(wrapped)
 		local existingMeta = DebugApiBindable:Invoke("GetEnvTableMeta", chain:sub(1, #chain - 3))
-		local existingMetaClone 
+		local existingMetaClone
 		if existingMeta == nil then
 			existingMeta = {}
 		elseif type(existingMeta) == "string" then
@@ -230,7 +232,7 @@ local wrappedEnv = DebugApiBindable == nil and DebugApi.Env or WrapAdonisEnv(Deb
 local server = wrappedEnv.Server
 local client = wrappedEnv.Client
 local service = wrappedEnv.Service
----- Your code with access to the Adonis Env below! Both server/client supported depending on which type of script your running				
+---- Your code with access to the Adonis Env below! Both server/client supported depending on which type of script your running
 ]],
 				ReadOnly = true,
 				AutoSelectAll = true
@@ -337,12 +339,12 @@ local service = wrappedEnv.Service
 			Remote.MakeGui(plr, "Settings", {
 				IsOwner = true
 			})
-			
+
 			local RemoteTime;
-			
+
 			local testColor = Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
 			print(testColor)
-			
+
 			local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
 				Icon = server.MatIcons["Bug report"];
 				Question = "Is this a test question?";
@@ -354,13 +356,13 @@ local service = wrappedEnv.Service
 			print(`PLAYER ANSWER: {ans}`)
 
 			task.wait(0.5)
-			
+
 			print("RemoteEvent Sending..")
-			
+
 			RemoteTime = os.clock();
-			
+
 			Remote.Send(plr, "TestEvent", "TestEvent", "hi mom I went thru the interwebs")
-			
+
 			print("RemoteEvent Fired successfully")
 		end;
 	};
