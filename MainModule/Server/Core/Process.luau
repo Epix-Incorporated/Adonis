@@ -834,7 +834,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		PlayerRemoving = function(p)
+		PlayerRemoving = function(p, r)
 			local data = Core.GetPlayer(p)
 			local key = tostring(p.UserId)
 
@@ -852,9 +852,15 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
+			local reasons = {
+				["Unknown"] = "Unknown Reason",
+				["PlatformKick"] = "Kicked by Roblox",
+				["CreatorKick"] = "Kicked by Creator"
+			}
+
 			AddLog("Leaves", {
 				Text = service.FormatPlayer(p);
-				Desc = `{p.Name} left the server`;
+				Desc = `{p.Name} left the server ({reasons[r.Name]})`;
 				Player = p;
 			})
 
