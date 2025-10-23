@@ -113,6 +113,7 @@ return function(Vargs, env)
 			Args = {"player", "placeId/serverName"};
 			Description = "Force the target player(s) to teleport to the desired place";
 			NoStudio = true;
+			CrossServerDenied = true;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				local reservedServerInfo = (Core.GetData("PrivateServers") or {})[args[2]]
@@ -249,10 +250,27 @@ return function(Vargs, env)
 			Commands = {"scripteditor", "se"};
 			Args = {"new/edit/delete/run","name"};
 			Description = "Opens Script editor";
-			CrossServerDenied = true;																
+			CrossServerDenied = true;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
+
+				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
+					local ans = Remote.GetGui(plr, "YesNoPrompt", {
+						Icon = server.MatIcons.Warning;
+						Question = "Are you sure you want to use the script editor command? (Once confirmed, you will not be asked again)";
+						Title = "Adonis ScriptEditor";
+						Delay = 3;
+					})
+
+					if ans == "Yes" then
+						Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] = true
+					else
+						return
+					end
+				end
+
 				local Operation = assert(args[1], "Operation not defined (argument #1)")
 				local Name = assert(args[2], "Name not defined (argument #2)")
 				local se = Variables.ScriptEditor[tostring(plr.UserId)]
@@ -260,12 +278,12 @@ return function(Vargs, env)
 					se = {}
 					Variables.ScriptEditor[tostring(plr.UserId)] = se
 				end
-				
+
 				if Operation:lower() == "new" then
 					se[Name] = {
 						Script = false;
 					}
-					
+
 					Commands.ScriptEditor.Function(plr,{"edit",Name})
 				elseif Operation:lower() == "edit" then
 					Remote.MakeGui(plr, "ScriptEditor",{
@@ -274,11 +292,11 @@ return function(Vargs, env)
 					})
 				elseif Operation:lower() == "delete" then
 					assert(se[Name], "No script found")
-					
+
 					se[Name] = nil
 				elseif Operation:lower() == "run" then
 					assert(se[Name], "No script found")
-					
+
 					local oError = error
 					local newenv = setfenv(getfenv(),{
 						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "WARN"; Message = `{str}`}) end;
@@ -307,6 +325,47 @@ return function(Vargs, env)
 					end)
 				end
 			end,
+		};
+
+		CreateStarterScript = {
+			Prefix = Settings.Prefix;
+			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
+			Args = {"name", "code"};
+			Description = "Executes the given code on everyone's client upon respawn";
+			AdminLevel = "Creators";
+			NoFilter = true;
+			CrossServerDenied = true;
+			Function = function(plr: Player, args: {string})
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
+
+				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
+					local ans = Remote.GetGui(plr, "YesNoPrompt", {
+						Icon = server.MatIcons.Warning;
+						Question = "Are you sure you want to use the starterscript command? (Once confirmed, you will not be asked again)";
+						Title = "Adonis StarterScript";
+						Delay = 3;
+					})
+
+					if ans == "Yes" then
+						Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] = true
+					else
+						return
+					end
+				end
+
+				assert(args[1], "Missing starter script name (argument #1)")
+				assert(args[2], "Missing LocalScript code (argument #2)")
+
+				local bytecode = Core.Bytecode(args[2])
+				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
+
+				local new = Core.NewScript("LocalScript", args[2], true)
+				new.Name = `[Adonis] {args[1]}`
+				new.Parent = service.StarterGui
+				new.Disabled = false
+				Functions.Hint("Created starter script", {plr})
+			end
 		};
 
 		ClearOldLogs = {

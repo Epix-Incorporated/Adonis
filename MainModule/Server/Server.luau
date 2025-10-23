@@ -468,7 +468,7 @@ return service.NewProxy({
 					if not m or m.Parent ~= service.RunService then
 						connection1:Disconnect()
 						connection2:Disconnect()
-						warn("Adonis module mutex removed; Regenerating...")
+						--warn("Adonis module mutex removed; Regenerating...")
 						mutex = mutexBackup:Clone()
 						mutex.Archivable = false
 						mutex.Parent = service.RunService
@@ -476,10 +476,11 @@ return service.NewProxy({
 					end
 				end)
 				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
-					if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
-						warn("Adonis module mutex renamed; Refreshing...")
-						m.Name = "__Adonis_MODULE_MUTEX"
-					end
+					pcall(function()
+						if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+							m.Name = "__Adonis_MODULE_MUTEX"
+						end
+					end)
 				end)
 			end
 			makePersistent(mutex)
