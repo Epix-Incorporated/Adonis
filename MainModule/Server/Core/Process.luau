@@ -857,10 +857,12 @@ return function(Vargs, GetEnv)
 				["PlatformKick"] = "Kicked by Roblox",
 				["CreatorKick"] = "Kicked by Creator"
 			}
+			
+			local reason = reasons[r.Name] or r.Name
 
 			AddLog("Leaves", {
 				Text = service.FormatPlayer(p);
-				Desc = `{p.Name} left the server ({reasons[r.Name]})`;
+				Desc = `{p.Name} left the server ({reason})`;
 				Player = p;
 			})
 
