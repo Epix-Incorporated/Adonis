@@ -203,7 +203,7 @@ local Immutable = function(...)
 end
 
 local Kill
-local Fire, Detected = nil, nil
+local Fire, Detected, Kick = nil, nil, nil
 do
 	Kill = Immutable(function(info)
 		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
@@ -219,6 +219,7 @@ do
 
 		spawn(pcall, function()
 			task.wait(1)
+			spawn(pcall, Kick, service.Player, info)
 			service.Player:Kick(info)
 		end)
 
@@ -692,6 +693,9 @@ return service.NewProxy({
 		client.Finish_Loading = function()
 			log("Client fired finished loading")
 			if client.Core.Key then
+				--// Push Remote & Anti related functions for Kill
+				Fire, Detected, Kick = client.Remote and client.Remote.Fire, client.Anti and client.Anti.Detected, service.Player.kick
+
 				--// Run anything from core modules that needs to be done after the client has finished loading
 				log("~! Doing run after loaded")
 				for _, f in runAfterLoaded do
@@ -703,9 +707,6 @@ return service.NewProxy({
 				for _, f in runLast do
 					Pcall(f, data)
 				end
-
-				--// Push Remote & Anti related functions for Kill
-				Fire, Detected = client.Remote and client.Remote.Fire, client.Anti and client.Anti.Detected
 
 				--// Finished loading
 				log("Finish loading")
