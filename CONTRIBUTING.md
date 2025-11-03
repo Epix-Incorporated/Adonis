@@ -81,7 +81,7 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 
 ## 7. Tooling and Development Environment
 
-- We reccomend using Rojo to sync with Roblox Studio.
+- We recommend using Rojo to sync with Roblox Studio.
 - Developers should install Rojo via the [official documentation](https://rojo.space/docs/v7/getting-started/installation/) and avoid deprecated Marketplace versions.
 - Aftman is used for dependency management.
 - Rojo may be run via `rojo serve` or the VSCode plugin.
