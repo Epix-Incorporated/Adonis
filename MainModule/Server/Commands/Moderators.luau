@@ -6778,6 +6778,11 @@ return function(Vargs, env)
 								Moderator = plr.UserId;
 							})
 
+							local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+							if audio then
+								audio.Muted = true
+							end
+
 							Functions.Hint(`Muted {service.FormatPlayer(v)}`, {plr})
 
 							Functions.Notification("Notification", `You have been muted!`, {v}, 10, "MatIcon://Warning")
@@ -6820,6 +6825,11 @@ return function(Vargs, env)
 						Target = v.UserId;
 						Moderator = plr.UserId;
 					})
+
+					local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+					if audio then
+						audio.Muted = false
+					end
 
 					Functions.Hint(`Unmuted {service.FormatPlayer(v)}`, {plr})
 
