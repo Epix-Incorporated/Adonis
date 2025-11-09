@@ -7,8 +7,6 @@
 Adonis is an ever-expanding, frequently updated, and sometimes complex system.
 To keep Adonis functional and somewhat readable rather than a tangled mess, this document sets out the policies governing contributions to consider before submitting a pull request:
 
-</div>
-
 ## 1. Governance
 
 - Pull requests (PRs) are reviewed and approved by [@Sceleratis](https://github.com/Sceleratis) or any of the appointed community maintainers:  
@@ -83,7 +81,7 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 
 ## 7. Tooling and Development Environment
 
-- We reccomend using Rojo to sync with Roblox Studio.
+- We recommend using Rojo to sync with Roblox Studio.
 - Developers should install Rojo via the [official documentation](https://rojo.space/docs/v7/getting-started/installation/) and avoid deprecated Marketplace versions.
 - Aftman is used for dependency management.
 - Rojo may be run via `rojo serve` or the VSCode plugin.

@@ -397,6 +397,7 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Reason (argument #1) must be supplied for this command!")
 

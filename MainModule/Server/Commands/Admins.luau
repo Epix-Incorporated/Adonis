@@ -578,8 +578,18 @@ return function(Vargs, env)
 
 					clonedDeps:Destroy()
 					return F3X
-				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached and Variables.F3XCached:Clone() or require(580330877)()
-				Variables.F3XCached = Variables.F3XCached or F3X:Clone()
+				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached and Variables.F3XCached:Clone()
+
+				if not F3X then
+					print(`Requiring F3X Tool MainModule; Model URL: https://www.roblox.com/library/580330877`)
+					F3X = require(Deps.FetchF3X:Clone())
+					assert(typeof(F3X) == "Instance", "Unable to load F3X.")
+				end
+
+				if Variables.F3XCached == nil then
+					Variables.F3XCached = F3X:Clone()
+				end
+
 				service.New("StringValue", {
 					Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
 					Parent = F3X
@@ -603,29 +613,31 @@ return function(Vargs, env)
 			Args = {"id"};
 			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or Roblox's inventory";
 			AdminLevel = "Admins";
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				local id = string.lower(args[1])
+				assert(plr ~= false and not service.Wrapped(plr), "A real player must be used to run insert.")
+				local id = string.lower(assert(args[1], "ID required (argument #1)"))
 
-				for i, v in Variables.InsertList do
+				for _, v in Variables.InsertList do
 					if id == string.lower(v.Name)then
 						id = v.ID
 						break
 					end
 				end
 
-				for i, v in HTTP.Trello.InsertList do
+				for _, v in HTTP.Trello.InsertList do
 					if id == string.lower(v.Name) then
 						id = v.ID
 						break
 					end
 				end
 
-				local obj = service.Insert(tonumber(id), true)
+				local obj: Model? = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj)
-					obj.Parent = workspace
 					pcall(obj.MakeJoints, obj)
 					obj:PivotTo(plr.Character:GetPivot())
+					obj.Parent = workspace
 				end
 			end
 		};
@@ -1138,10 +1150,15 @@ return function(Vargs, env)
 			Description = `Deletes the player forcefully, causing them to be kicked for "Player has been removed from the DataModel"`;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				local sourcePlayerLevel = Admin.GetLevel(plr)
 				for _, v in service.GetPlayers(plr, args[1]) do
-					v.Character = nil
-					v.Parent = nil
-					Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
+					if Admin.GetLevel(v) <= sourcePlayerLevel then
+						v.Character = nil
+						v.Parent = nil
+						Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
+					else
+						Functions.Hint(`You don't have permission to send {service.FormatPlayer(v)} to nil`, {plr})
+					end
 				end
 			end
 		};

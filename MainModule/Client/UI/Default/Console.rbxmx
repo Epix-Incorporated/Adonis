@@ -727,18 +727,18 @@ return function(data, env)
 	end)
 
 	text:GetPropertyChangedSignal("Text"):Connect(function()
-		if text.Text ~= "" and openConsole then
+		if text.Text ~= "" and opened then
 			local tabWhiteSpace = "	"
 			if string.sub(text.Text, string.len(text.Text)) == tabWhiteSpace then
 				if autoList:FindFirstChild("Entry 0") then
 					local args = string.split(text.Text, splitKey) -- Get command args
 					local textWithoutLastArg = string.sub(text.Text, 1, string.len(text.Text) - string.len(args[#args])) -- Remove the last arg
-					
+
 					text.Text = `{textWithoutLastArg}{autoList["Entry 0"].Text} ` -- Combine the text witout the last arg and the player name
 				elseif scroll:FindFirstChild("Entry 0") then
 					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
 				end
-				
+
 				text.CursorPosition = string.len(text.Text) + 1
 				text.Text = string.gsub(text.Text, tabWhiteSpace, "")
 			end
@@ -756,7 +756,7 @@ return function(data, env)
 			for _, v in commands do
 				local cmdName = string.match(string.lower(nText), `^(.-){splitKey}`) or string.lower(nText)
 				if string.sub(string.lower(v), 1, #nText) == string.lower(nText) or string.find(string.lower(v), cmdName, 1, true) then
-					selectedCmd = v 
+					selectedCmd = v
 					if not scrollOpen then
 						scrollOpenTween:Play()
 						--frame.Size = UDim2.new(1,0,0,140)
@@ -777,13 +777,13 @@ return function(data, env)
 					num += 1
 				end
 			end
-			
+
 			local aNum = 0
 			local fullSplit = string.split(nText, splitKey)
 			if num > 0 and #fullSplit > 1 then
 				local provided = string.match(nText, `.+{splitKey}(.*)$`)
 				local selectedSplit = string.split(selectedCmd, splitKey)
-				
+
 				local arg = selectedSplit[#fullSplit]
 				for _, v in UI.Autocomplete(provided, arg) do
 					local new = entry:Clone()
@@ -797,11 +797,11 @@ return function(data, env)
 						text.Text = text.Text..tostring(v)
 						text:CaptureFocus()
 					end)
-					
+
 					aNum += 1
 				end
 			end
-			
+
 			frame.Size = UDim2.new(1, 0, 0, math.clamp((math.max(num, aNum) * 20) + 40, 40, 140))
 			scroll.CanvasSize = UDim2.fromOffset(0, num * 20)
 		elseif text.Text == "" and opened then
@@ -815,7 +815,7 @@ return function(data, env)
 		end
 	end)
 
-	service.HookEvent("ToggleConsole", function()
+	gTable.BindEvent(service.Events.ToggleConsole, function()
 		if opened then
 			closeConsole()
 		else
@@ -824,9 +824,9 @@ return function(data, env)
 		Variables.ConsoleOpen = opened
 	end)
 
-	gTable.BindEvent(service.UserInputService.InputBegan, function(inputObject: InputObject)
+	gTable.BindEvent(service.UserInputService.InputBegan, function(inputObject: InputObject, gameProcessedEvent)
 		local textbox = service.UserInputService:GetFocusedTextBox()
-		if not textbox and rawequal(inputObject.UserInputType, Enum.UserInputType.Keyboard) and inputObject.KeyCode.Name == (Variables.CustomConsoleKey or consoleKey) then
+		if not textbox and not gameProcessedEvent and rawequal(inputObject.UserInputType, Enum.UserInputType.Keyboard) and inputObject.KeyCode.Name == (Variables.CustomConsoleKey or consoleKey) then
 			service.Events.ToggleConsole:Fire()
 		end
 	end)
