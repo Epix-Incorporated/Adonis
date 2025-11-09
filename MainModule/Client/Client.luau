@@ -588,7 +588,7 @@ return service.NewProxy({
   	  	  	end
 	  	end
 
-		log("Fomratting chatlogs")
+		log("Formatting chatlogs")
 		for i, line in ipairs(client.Changelog) do
         	client.FormattedChangelog[i] = applyColour(line)
   	 	end
