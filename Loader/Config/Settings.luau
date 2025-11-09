@@ -58,7 +58,7 @@ local descs = {};			--// Contains settings descriptions
 		settings.Ranks["Admins"] = {
 			Level = 200
 			Users = {
-				"Bobjenkins123", "Bobjenkins123:1234567", 1234567, "Group:BobFans:7463213:234", "Item:1237465"
+				"Bobjenkins123", "Bobjenkins123:1234567", 1234567, "Group:7463213:234", "Item:1237465"
 			}
 		}
 
