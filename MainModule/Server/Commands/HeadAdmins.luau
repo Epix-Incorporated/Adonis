@@ -570,8 +570,26 @@ return function(Vargs, env)
 			Hidden = true;
 			NoFilter = true;
 			CrossServerDenied = true;
+			Disabled = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
+
+				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
+					local ans = Remote.GetGui(plr, "YesNoPrompt", {
+						Icon = server.MatIcons.Warning;
+						Question = "Are you sure you want to use the script builder command? (Once confirmed, you will not be asked again)";
+						Title = "Adonis ScriptBuilder";
+						Delay = 3;
+					})
+
+					if ans == "Yes" then
+						Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] = true
+					else
+						return
+					end
+				end
+
 				local sb = Variables.ScriptBuilder[tostring(plr.UserId)]
 				if not sb then
 					sb = {
@@ -737,14 +755,29 @@ return function(Vargs, env)
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
-				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
+				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
+
+				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
+					local ans = Remote.GetGui(plr, "YesNoPrompt", {
+						Icon = server.MatIcons.Warning;
+						Question = "Are you sure you want to load this script onto the server? (Once confirmed, you will not be asked again)";
+						Title = "Adonis Loadstring";
+						Delay = 3;
+					})
+
+					if ans == "Yes" then
+						Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] = true
+					else
+						return
+					end
+				end
+				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #1)"))
 				assert(string.find(bytecode, "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
 
 				local cl = Core.NewScript("Script", args[1], true)
 				cl.Name = "[Adonis] Script"
-				cl.Parent = service.ServerScriptService
-				task.wait()
 				cl.Disabled = false
+				cl.Parent = service.ServerScriptService
 				Functions.Hint("Ran Script", {plr})
 			end
 		};
@@ -756,7 +789,10 @@ return function(Vargs, env)
 			Description = "Executes the given code on your client";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
 				Commands.LoadLocalScript.Function(plr, {`@{plr.Name}`, args[1]})
 			end
 		};
@@ -768,8 +804,10 @@ return function(Vargs, env)
 			Description = "Executes the given code on the client of the target player(s)";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
 				assert(args[2], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[2])
@@ -779,23 +817,24 @@ return function(Vargs, env)
 				local function cloneScript(targetPlayer)
 					local playerName = if targetPlayer == plr then "your client" else service.FormatPlayer(targetPlayer)
 
-					local backpack = targetPlayer:FindFirstChildOfClass("Backpack")
-					if not backpack then
-						Functions.Hint(`Couldn't run LocalScript on {playerName} (Backpack missing?)`, {plr})
+					local PlayerGui = targetPlayer:FindFirstChildOfClass("PlayerGui")
+					if not PlayerGui then
+						Functions.Hint(`Couldn't run LocalScript on {playerName} (PlayerGui missing?)`, {plr})
 						return
 					end
 
 					local cl = new:Clone()
 					cl.Name = "[Adonis] LocalScript"
-					cl.Disabled = true
-					cl.Parent = targetPlayer:FindFirstChildOfClass("Backpack")
-					task.wait(.1)
 					cl.Disabled = false
+					cl.Parent = PlayerGui
+
 					Functions.Hint(`Ran LocalScript on {playerName}`, {plr})
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(cloneScript, v)
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if Admin.CheckAuthority(plr, v, "client-script", true)  then
+						task.defer(cloneScript, v)
+					end
 				end
 			end
 		};
@@ -807,8 +846,26 @@ return function(Vargs, env)
 			Description = "Executes the given code on everyone's client upon respawn";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
+
+				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
+					local ans = Remote.GetGui(plr, "YesNoPrompt", {
+						Icon = server.MatIcons.Warning;
+						Question = "Are you sure you want to use the starterscript command? (Once confirmed, you will not be asked again)";
+						Title = "Adonis StarterScript";
+						Delay = 3;
+					})
+
+					if ans == "Yes" then
+						Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] = true
+					else
+						return
+					end
+				end
+
 				assert(args[1], "Missing starter script name (argument #1)")
 				assert(args[2], "Missing LocalScript code (argument #2)")
 
@@ -829,18 +886,15 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Show existing starterscripts";
 			AdminLevel = "HeadAdmins";
-			NoFilter = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 
 				local result = {}
-
 				for _,v : Instance in service.StarterGui:GetChildren() do
 					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
 						table.insert(result, (v.Name:gsub("%[Adonis%] ", "")))
 					end
 				end
-
 
 				Remote.MakeGui(plr,"List",{
 					Title = "Starter Scripts";
