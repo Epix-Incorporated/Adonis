@@ -3,9 +3,11 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
 	"";
-	"[v273 2025-XX-XX XX:XX UTC] @Maintainer";
+	"[v273 2025-11-10 21:14 UTC] @Dimenpsyonal";
 	"(Git/ccuser44) QoL improvement for tamper check (#1900)";
 	"(Git/fxeP1) Server API integrity patches (#2004)";
+	"(Git/fxeP1) Resolve locals being set nil in kill function (#2007)";
+	"(Git/ostrichman1) Add leave reasons to :leavelogs (#2005)";
 	"Changes to internal functionality inside Adonis:";
 	"> Remove warn usage by Adonis in reparent code (Server)";
 	"> Remove execute command in favor of sudo & tostring() plr UserId (Remote)";
