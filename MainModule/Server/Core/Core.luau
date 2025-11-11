@@ -1223,9 +1223,13 @@ return function(Vargs, GetEnv)
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
 				if type(displayName) == "string" then
-					for i,_ in pairs(ds_blacklist) do
-						if string.match(displayName,`^{i}`) then
-							return nil
+					for i in ds_blacklist do
+						local prefix = string.sub(displayName, 1, #i + 1)
+						if string.sub(prefix, 1, #i) == i then
+							local delim = string.sub(prefix, #i + 1)
+							if delim == "" or delim == "." then
+								return
+							end
 						end
 					end
 
