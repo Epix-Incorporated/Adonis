@@ -1231,8 +1231,14 @@ return function(Vargs, GetEnv)
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
 				if type(displayName) == "string" then
-					if ds_blacklist[displayName] then
-						return
+					for i in ds_blacklist do
+						local prefix = string.sub(displayName, 1, #i + 1)
+						if string.sub(prefix, 1, #i) == i then
+							local delim = string.sub(prefix, #i + 1)
+							if delim == "" or delim == "." then
+								return
+							end
+						end
 					end
 
 					if type(indList) == "table" and indList[1] == "Settings" and indList[2] == "Ranks" then
