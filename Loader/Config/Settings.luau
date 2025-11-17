@@ -149,7 +149,9 @@ settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI el
 			settings.Ranks = {
 				["Moderators"] = {
 					Level = 100;
-					Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID"; "Subscription:SubscriptionId";}
+					Users = {
+						"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID"; "Subscription:SubscriptionId";
+					}
 				}
 			}
 
