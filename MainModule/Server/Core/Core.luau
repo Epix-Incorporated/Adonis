@@ -1564,6 +1564,10 @@ return function(Vargs, GetEnv)
 
 				Hint = MetaFunc(Functions.Hint, true, { t.string, t.array(t.instanceOf("Player")), t.optional(t.number), t.string, t.optional(t.string) });
 
+				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin, true);
+
+				GetPlayers = MetaFunc(Functions.GetPlayers, true);
+
 				Message = MetaFunc(function(title: string, message: string, players: {Player}, scroll: boolean?, duration: number?)
 					duration = duration or (#tostring(message) / 19) + 2.5
 
