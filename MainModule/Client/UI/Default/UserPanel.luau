@@ -1052,9 +1052,9 @@ return function(data, env)
 					doneKey = false
 					button.Text = "Waiting..."
 					Variables.WaitingForBind = true
-					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject)
+					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject, gameProcessedEvent)
 						local textbox = service.UserInputService:GetFocusedTextBox()
-						if not (textbox) and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+						if not (textbox) and not gameProcessedEvent and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 							currentKey = InputObject.KeyCode
 							if currentKey then
 								button.Text = string.upper(keyCodeToName(currentKey.Value))
@@ -1511,9 +1511,9 @@ return function(data, env)
 						service.Debounce("CliSettingKeybinder", function()
 							local gotKey, visualName
 							toggle.Text = "Waiting..."
-							local event = service.UserInputService.InputBegan:Connect(function(InputObject)
+							local event = service.UserInputService.InputBegan:Connect(function(InputObject, gameProcessedEvent)
 								local textbox = service.UserInputService:GetFocusedTextBox()
-								if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+								if not (textbox) and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 									gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 								end
 							end)
@@ -1661,7 +1661,7 @@ return function(data, env)
 										return
 									end
 								end
-								
+
 								UI.Make("Hint",{
 									Message = "Operation cancelled, all of your data is safe!"
 								})

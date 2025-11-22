@@ -21,11 +21,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {
-					IsKicking = true;
-					NoFakePlayer = true; --// Can't really kick someone not in game...
-					})
-				do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "kick") then
 						local playerName = service.FormatPlayer(v)
 						if not service.Players:FindFirstChild(v.Name) then
@@ -363,7 +359,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "warn", false) then
@@ -401,11 +397,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing target player(s) (argument #1)")
 				local reason = assert(args[2], "Missing reason (argument #2)")
 
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = true;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "kick-warn", false) then
 						local playerData = Core.GetPlayer(v)
 						table.insert(playerData.Warnings, {
@@ -419,7 +411,7 @@ return function(Vargs, env)
 						if typeof(v) == "Instance" then
 							v:Kick(string.format("\n[Warning from %s]\nReason: %s", service.FormatPlayer(plr), reason))
 						else
-							Core.CrossServer("RemovePlayer", v.Name, `Warning from {service.FormatPlayer(plr)}`, reason)
+							Core.CrossServer("RemovePlayer", tonumber(v.UserId), `Warning from {service.FormatPlayer(plr)}`, reason)
 						end
 
 						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
@@ -443,7 +435,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "remove warning(s) from") then
@@ -490,7 +482,7 @@ return function(Vargs, env)
 			Description = "Clears any warnings on a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local playerData = Core.GetPlayer(v)
 					table.clear(playerData.Warnings)
 
@@ -527,7 +519,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 
@@ -1173,7 +1165,7 @@ return function(Vargs, env)
 			Description = "Hands an item to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local target = service.GetPlayers(plr, args[1], {NoFakePlayer = true})[1]
+				local target = service.GetPlayers(plr, args[1])[1]
 				if not target then return end
 				if target == plr then
 					Functions.Hint("[HANDTO]: Cannot give item to yourself", {plr})
@@ -1742,7 +1734,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, target)
 				if target then
-					for _, v in Functions.GetPlayers(plr, target) do
+					for _, v in Functions.GetPlayers(plr, target, {UseFakePlayer = true}) do
 						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 						local temp = table.create(#cTasks + 1)
 
@@ -4242,7 +4234,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
+					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) and v.Name ~= "TouchGui" then pcall(v.Destroy, v) end end]])
 				end
 			end
 		};
@@ -4309,7 +4301,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing group name (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local groupInfo = Admin.GetPlayerGroup(v, args[2])
 					if groupInfo then
 						Functions.Hint(string.format("%s has rank [%d] %s in %s", service.FormatPlayer(v), groupInfo.Rank, groupInfo.Role, groupInfo.Name), {plr})
@@ -4418,7 +4410,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing team name")
-				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					for a, tm in service.Teams:GetChildren() do
 						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
@@ -4651,7 +4643,7 @@ return function(Vargs, env)
 						end
 					end
 
-					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+					for _, v in service.GetPlayers(plr, args[1]) do
 						if point then
 							local Character = v.Character
 
@@ -4703,7 +4695,7 @@ return function(Vargs, env)
 					if not point then Functions.Hint(`Waypoint {m} was not found.`, {plr}) end
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
-					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+					for _, v in service.GetPlayers(plr, args[1]) do
 						local Character = v.Character
 						local root = Character and Character:FindFirstChild('HumanoidRootPart')
 
@@ -4747,8 +4739,8 @@ return function(Vargs, env)
 						end
 					end
 				else
-					local target = service.GetPlayers(plr, args[2], { NoFakePlayer = true })[1]
-					local players = service.GetPlayers(plr, args[1], { NoFakePlayer = true })
+					local target = service.GetPlayers(plr, args[2])[1]
+					local players = service.GetPlayers(plr, args[1])
 
 					if #players == 1 and players[1] == target then
 						local v = players[1]
@@ -4912,7 +4904,7 @@ return function(Vargs, env)
 					assert(plr.Character,"Your character is missing"):FindFirstChild("HumanoidRootPart"),
 					"Your HumanoidRootPart is missing"
 				)
-				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"), { NoFakePlayer = true })
+				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"))
 				local numPlayers = #players
 				if numPlayers == 0 then return end
 
@@ -5004,7 +4996,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[2], "Missing stat name (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						local absolute = leaderstats:FindFirstChild(statName)
@@ -6103,7 +6095,7 @@ return function(Vargs, env)
 				end
                 scr:Destroy()
 
-				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1]), 10)
+				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1], {DontError = true}), 10)
 			end
 		};
 
@@ -6341,6 +6333,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				local target = service.GetPlayers(plr, assert(args[2], "Missing username or UserId"), {
 					AllowUnknownUsers = true;
+					UseFakePlayer = true
 				})
 				if target then
 					target = target[1]
@@ -6768,7 +6761,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					if Admin.CheckAuthority(plr, v, "mute", false) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat", false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
@@ -6784,6 +6777,11 @@ return function(Vargs, env)
 								Target = v.UserId;
 								Moderator = plr.UserId;
 							})
+
+							local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+							if audio then
+								audio.Muted = true
+							end
 
 							Functions.Hint(`Muted {service.FormatPlayer(v)}`, {plr})
 
@@ -6816,7 +6814,7 @@ return function(Vargs, env)
 			Description = "Makes it so the target player(s) can talk again. No effect if on Trello mute list.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					for k, m in Settings.Muted do
 						if Admin.DoCheck(v, m) then
 							table.remove(Settings.Muted, k)
@@ -6827,6 +6825,11 @@ return function(Vargs, env)
 						Target = v.UserId;
 						Moderator = plr.UserId;
 					})
+
+					local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+					if audio then
+						audio.Muted = false
+					end
 
 					Functions.Hint(`Unmuted {service.FormatPlayer(v)}`, {plr})
 
@@ -7060,7 +7063,7 @@ return function(Vargs, env)
 			Description = `Shows you a list and count of players selected in the supplied argument, ex: '{Settings.Prefix}select %raiders true' to monitor people in the 'raiders' team`;
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, selection: string?)
-				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
+				local players = service.GetPlayers(plr, selection, {DontError = true})
 				local tab = {
 					{
 						Text = `Specified: "{selection or `{Settings.SpecialPrefix}me`}"`;

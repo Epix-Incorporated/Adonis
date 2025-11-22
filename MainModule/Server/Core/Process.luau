@@ -524,7 +524,7 @@ return function(Vargs, GetEnv)
 					-- more checks
 					for i, argname in ipairs(cmdArgs) do
 						if string.find(argname, "player") ~= nil or string.find(argname, "plr") ~= nil then
-							local playersamount = #(service.GetPlayers(p, args[i]));
+							local playersamount = #(service.GetPlayers(p, args[i], {UseFakePlayer = true}));
 							if playersamount > 1 then
 								if Remote.GetGui(p, "YesNoPrompt", {
 									Question = string.format("Are you sure you want to proceed? (%s selected %s possible players)", msg, playersamount);
@@ -834,7 +834,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		PlayerRemoving = function(p)
+		PlayerRemoving = function(p, r)
 			local data = Core.GetPlayer(p)
 			local key = tostring(p.UserId)
 
@@ -852,9 +852,17 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
+			local reasons = {
+				["Unknown"] = "Unknown Reason",
+				["PlatformKick"] = "Kicked by Roblox",
+				["CreatorKick"] = "Kicked by Creator"
+			}
+			
+			local reason = reasons[r.Name] or r.Name
+
 			AddLog("Leaves", {
 				Text = service.FormatPlayer(p);
-				Desc = `{p.Name} left the server`;
+				Desc = `{p.Name} left the server ({reason})`;
 				Player = p;
 			})
 
@@ -969,9 +977,9 @@ return function(Vargs, GetEnv)
 						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})
 
-					if Settings.ExploitGuiDetection and Settings.AllowClientAntiExploit then
-						Remote.Send(p, "LaunchAnti", "AntiCoreGui")
-					end
+					--if Settings.ExploitGuiDetection and Settings.AllowClientAntiExploit then
+					--	Remote.Send(p, "LaunchAnti", "AntiCoreGui")
+					--end
 				end
 
 				if Settings.AntiBuildingTools and Settings.AllowClientAntiExploit then
@@ -1163,48 +1171,51 @@ return function(Vargs, GetEnv)
 		end;
 
 		NetworkAdded = function(cli)
-			task.wait(0.25)
+			if cli.ClassName == "ServerReplicator" then
+				task.wait(0.25)
 
-			local p = cli:GetPlayer()
+				local p = cli:GetPlayer()
+				if p then
+					Core.Connections[cli] = p
 
-			if p then
-				Core.Connections[cli] = p
+					AddLog("Script", {
+						Text = `{p.Name} connected`;
+						Desc = `{p.Name} successfully established a RakPeer network connection with the server (RakNet)`;
+						Player = p;
+					})
+				else
+					AddLog("Script", {
+						Text = "<UNKNOWN> connected";
+						Desc = "An unknown user without a player instance successfully established a RakPeer network connection with the server (RakNet)";
+					})
+				end
 
-				AddLog("Script", {
-					Text = `{p.Name} connected`;
-					Desc = `{p.Name} successfully established a RakPeer network connection with the server (RakNet)`;
-					Player = p;
-				})
-			else
-				AddLog("Script", {
-					Text = "<UNKNOWN> connected";
-					Desc = "An unknown user without a player instance successfully established a RakPeer network connection with the server (RakNet)";
-				})
+				service.Events.NetworkAdded:Fire(cli)
 			end
-
-			service.Events.NetworkAdded:Fire(cli)
 		end;
 
 		NetworkRemoved = function(cli)
-			local p = cli:GetPlayer() or Core.Connections[cli]
+			if cli.ClassName == "ServerReplicator" then
+				local p = cli:GetPlayer() or Core.Connections[cli]
 
-			Core.Connections[cli] = nil
+				Core.Connections[cli] = nil
 
-			if p then
-				Anti.KickedPlayers[p] = nil
-				AddLog("Script", {
-					Text = `{p.Name} disconnected`;
-					Desc = `{p.Name} disconnected from the server (RakNet)`;
-					Player = p;
-				})
-			else
-				AddLog("Script", {
-					Text = "<UNKNOWN> disconnected";
-					Desc = "An unknown user without a player instance disconnected from the server (RakNet)";
-				})
+				if p then
+					Anti.KickedPlayers[p] = nil
+					AddLog("Script", {
+						Text = `{p.Name} disconnected`;
+						Desc = `{p.Name} disconnected from the server (RakNet)`;
+						Player = p;
+					})
+				else
+					AddLog("Script", {
+						Text = "<UNKNOWN> disconnected";
+						Desc = "An unknown user without a player instance disconnected from the server (RakNet)";
+					})
+				end
+
+				service.Events.NetworkRemoved:Fire(cli)
 			end
-
-			service.Events.NetworkRemoved:Fire(cli)
 		end;
 
 		--[[
