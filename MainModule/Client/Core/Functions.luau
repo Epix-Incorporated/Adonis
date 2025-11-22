@@ -744,17 +744,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		NewLocal = function(class, props, parent)
-			local obj = service.New(class)
-			for prop,value in props do
-				obj[prop] = value
-			end
-
-			if not parent or parent == "LocalContainer" then
-				obj.Parent = service.LocalContainer()
-			elseif parent == "Camera" then
-				obj.Parent = workspace.CurrentCamera
-			elseif parent == "PlayerGui" then
-				obj.Parent = service.PlayerGui
+			local success, obj = pcall(service.New, class, props)
+			if success then
+				if not parent or parent == "LocalContainer" then
+					obj.Parent = service.LocalContainer()
+				elseif parent == "Camera" then
+					obj.Parent = workspace.CurrentCamera
+				elseif parent == "PlayerGui" then
+					obj.Parent = service.PlayerGui
+				end
 			end
 		end;
 
@@ -877,8 +875,8 @@ return function(Vargs, GetEnv)
 			}
 			Variables.Capes[service.HttpService:GenerateGUID(false)] = capeData
 
-			local p = service.Players:GetPlayerFromCharacter(char)
-			if p and p == service.Player then
+			local plr = service.Players:GetPlayerFromCharacter(char)
+			if plr and plr == service.Player then
 				capeData.isPlayer = true
 			end
 
@@ -1028,9 +1026,13 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetLighting = function(prop, value)
-			if service.Lighting[prop] ~= nil then
-				service.Lighting[prop] = value
-				Variables.LightingSettings[prop] = value
+			if service.CheckProperty(service.Lighting, prop) ~= nil then
+				local success = pcall(function()
+					service.Lighting[prop] = value
+				end)
+				if success then
+					Variables.LightingSettings[prop] = value
+				end
 			end
 		end;
 
@@ -1279,11 +1281,11 @@ return function(Vargs, GetEnv)
 
 			Variables.KeyBinds = keybinds or data and data.Keybinds or {}
 
-			service.UserInputService.InputBegan:Connect(function(input)
+			service.UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+				if gameProcessedEvent then return end
 				local key = tostring(input.KeyCode.Value)
-				local textbox = service.UserInputService:GetFocusedTextBox()
 
-				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then
+				if Variables.KeybindsEnabled and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then
 					local isAdmin = Remote.Get("CheckAdmin")
 					if time() - timer > 5 or isAdmin then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)

@@ -203,36 +203,35 @@ local Immutable = function(...)
 end
 
 local Kill
-local Fire, Detected = nil, nil
+local Fire, Detected, Kick = nil, nil, nil
 do
 	Kill = Immutable(function(info)
 		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
-		spawn(pcall, function()
-			if Detected then
-				Detected("kick", info)
-			elseif Fire then
-				Fire("BadMemes", info)
-			end
-		end)
+		if type(info) == "string" then
+			spawn(pcall, function()
+				if Detected then
+					Detected("kick", info)
+				elseif Fire then
+					Fire("BadMemes", info)
+				end
+			end)
+		end
 
 		spawn(pcall, function()
 			task.wait(1)
+			spawn(pcall, Kick, service.Player, info)
 			service.Player:Kick(info)
 		end)
 
 		if not isStudio then
 			spawn(pcall, function()
 				task.wait(5)
+				spawn(pcall, function() task.wait(5) while true do continue end end)
 				if client.Core and client.Core.RemoteEvent then
 					spawn(pcall, table.clear, client.Core.RemoteEvent)
 					spawn(pcall, table.freeze, client.Core.RemoteEvent)
 					client.Core.RemoteEvent = nil
 				end
-
-				spawn(pcall, table.clear, locals)
-				spawn(pcall, table.freeze, locals)
-				client = nil
-				locals = nil
 
 				while true do continue end
 			end)
@@ -334,19 +333,19 @@ client = setmetatable({
 	--Kill = Kill;
 	}, {
 	  __index = function(self, ind)
-	    if ind == "Kill" then
- 	     local ran, func = pcall(function()
-	        return Kill()
-	      end)
+		if ind == "Kill" then
+			local ran, func = pcall(function()
+				return Kill()
+			end)
 
-	      if not ran or type(func) ~= "function" then
- 		   	service.Players.LocalPlayer:Kick("1x00353 Adonis (PlrClientIndexKlErr)")
-	        warn("Failed to retrieve Kill function")
-  	      return function() end
-    	  end
+			if not ran or type(func) ~= "function" then
+				service.Players.LocalPlayer:Kick("1x00353 Adonis (PlrClientIndexKlErr)")
+				print("Failed to retrieve Kill function")
+				return function() end
+			end
 
-   	   return func
-  	  end
+			return func
+		end
 	end,
 })
 
@@ -588,7 +587,7 @@ return service.NewProxy({
   	  	  	end
 	  	end
 
-		log("Fomratting chatlogs")
+		log("Formatting chatlogs")
 		for i, line in ipairs(client.Changelog) do
         	client.FormattedChangelog[i] = applyColour(line)
   	 	end
@@ -694,6 +693,9 @@ return service.NewProxy({
 		client.Finish_Loading = function()
 			log("Client fired finished loading")
 			if client.Core.Key then
+				--// Push Remote & Anti related functions for Kill
+				Fire, Detected, Kick = client.Remote and client.Remote.Fire, client.Anti and client.Anti.Detected, service.Player.kick
+
 				--// Run anything from core modules that needs to be done after the client has finished loading
 				log("~! Doing run after loaded")
 				for _, f in runAfterLoaded do

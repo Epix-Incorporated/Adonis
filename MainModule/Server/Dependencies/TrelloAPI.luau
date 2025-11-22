@@ -9,9 +9,13 @@
 -- It is requested that existing credits remain here.																											 --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local print = function(...) print("[Adonis TrelloAPI]: INFO:", ...) end
-local error = function(...) warn("[Adonis TrelloAPI]: ERROR:", ...) end
-local warn = function(...) warn("[Adonis TrelloAPI]: WARN:", ...) end
+local print = function(...)
+	print(":: Adonis ::", ...)
+end
+
+local warn = function(...)
+	warn(":: Adonis ::", ...)
+end
 
 local HttpService = game:GetService("HttpService")
 local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
@@ -23,7 +27,7 @@ local WaitTime = 10
 
 local RateLimit = function()
 	if Requests >= MaxRequests then
-		warn("Trello RateLimit Reached! Waiting 10 seconds...")
+		warn("Trello rate limit reached! Waiting "..WaitTime.." seconds...")
 		task.wait(WaitTime)
 		Requests = 0
 	end
@@ -90,7 +94,7 @@ local HttpFunctions; HttpFunctions = {
 		if ran then
 			return response
 		else
-			warn(`RequestAsync failed: {response}`)
+			warn(`Trello RequestAsync failed: {response}`)
 			return false
 		end
 	end;
@@ -108,7 +112,7 @@ local HttpFunctions; HttpFunctions = {
 		if ran then
 			return response
 		else
-			warn(`GetAsync failed: {response}`)
+			warn(`Trello GetAsync failed: {response}`)
 			return false
 		end
 	end;
@@ -126,7 +130,7 @@ local HttpFunctions; HttpFunctions = {
 		if ran then
 			return response
 		else
-			warn(`PostAsync failed: {response}`)
+			warn(`Trello PostAsync failed: {response}`)
 			return false
 		end
 	end;
@@ -134,9 +138,9 @@ local HttpFunctions; HttpFunctions = {
 	Trim = function(str)
 		return string.match(str, "^%s*(.-)%s*$")
 	end;
-
+	
 	GetListObject = function(Lists, Name)
-		if not Name then error("Missing search term") end
+		if not Name then warn("No search term for GetListObject() (Trello)") end
 		for _, List in Lists do
 			if type(Name)=="table" then
 				for _, Name in Name do
@@ -183,15 +187,14 @@ return function(AppKey, Token, HttpService)
 		return enabled
 	end;
 	
-	local HttpEnabled = pcall(HttpFunctions.HttpService.GetAsync, HttpFunctions.HttpService, "http://www.google.com/robots.txt");
-	
-	if not HttpEnabled then
-		error("Unable to connect to trello, Http requests are not enabled. Enable them via game settings.")
+
+	if not HttpService.HttpEnabled then -- https://devforum.roblox.com/t/allow-scripts-to-access-httpenabled/73975/
+		warn("Unable to connect to trello, Http requests are not enabled. Enable them via game settings.")
 		return
-	end
-	
+	end;
+
 	if not CheckHttp() then
-		error("Could not connect to Trello! Please check if your app-key/token are valid.")
+		warn("Unable to connect to trello. Please check if your app key and token are valid.")
 		return
 	end;
 

@@ -235,7 +235,7 @@ return function(Vargs, GetEnv)
 
 			for _, v in service.GetPlayers(plr, args[1], {
 				IsKicking = true;
-				NoFakePlayer = false;
+				UseFakePlayer = true;
 				})
 			do
 				if level > Admin.GetLevel(v) then

@@ -1440,6 +1440,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Pcall = Pcall;
 		Threads = Threads;
 		DataModel = game;
+		Font = Font;
 		WrapService = WrapService;
 		EventService = EventService;
 		ThreadService = ThreadService;
@@ -1547,6 +1548,18 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				changedLocale = translator.LocaleId
 			end)
 		end, warn)
+	end
+
+	if server ~= nil then
+		service.StartLoop("AssetCacheCheck", 360, function()
+			for _, cacheTable in { passOwnershipCache, assetOwnershipCache, subscriptionStatusCache, assetInfoCache, groupInfoCache } do
+				for key, cache in cacheTable do
+					if type(cache) == "table" and type(cache.lastUpdated) == "number" and os.time() - cache.lastUpdated > 300 then
+						cacheTable[key] = nil
+					end
+				end
+			end
+		end, true);
 	end
 
 	return service

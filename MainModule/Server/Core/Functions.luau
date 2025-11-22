@@ -439,17 +439,8 @@ return function(Vargs, GetEnv)
 			return fakePlayer
 		end;
 
-		GetChatService = function(waitTime)
-			local isTextChat = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", waitTime or isTextChat and 0.2 or 145)
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", waitTime or isTextChat and 0.2 or 145)
-
-			if chatMod then
-				return require(chatMod)
-			elseif isTextChat then
-				return false
-			end
-			return nil
+		GetChatService = function()
+			return if service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then false else nil
 		end;
 
 		ArgsToString = function(args)
@@ -553,7 +544,7 @@ return function(Vargs, GetEnv)
 								options.IsKicking,
 								options.IsServer,
 								options.DontError,
-								not options.NoFakePlayer,
+								options.UseFakePlayer,
 								options.AllowUnknownUsers
 							)
 						end
@@ -591,7 +582,7 @@ return function(Vargs, GetEnv)
 							end
 
 							if plrCount == 0 then
-								if not options.NoFakePlayer then
+								if options.UseFakePlayer then
 									--// Attempt to retrieve non-ingame user
 									local UserId
 									if Functions.GetUserIdFromNameAsync(s) then
@@ -614,7 +605,7 @@ return function(Vargs, GetEnv)
 								if plrCount == 0 and not options.DontError then
 									Remote.MakeGui(plr, "Output", {
 										Title = "Missing player";
-										Message = if not options.NoFakePlayer then `No user named '{s}' exists`
+										Message = if options.UseFakePlayer then `No user named '{s}' exists`
 											else `No players matching '{s}' were found!`;
 									})
 								end
@@ -1003,11 +994,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetLighting = function(prop, value)
-			if service.Lighting[prop] ~= nil then
-				service.Lighting[prop] = value
-				Variables.LightingSettings[prop] = value
-				for _, p in service.GetPlayers() do
-					Remote.SetLighting(p, prop, value)
+			if service.CheckProperty(service.Lighting, prop) then
+				local success = pcall(function()
+					service.Lighting[prop] = value
+				end)
+				if success then
+					Variables.LightingSettings[prop] = value
+					for _, p in service.GetPlayers() do
+						Remote.SetLighting(p, prop, value)
+					end
 				end
 			end
 		end;
