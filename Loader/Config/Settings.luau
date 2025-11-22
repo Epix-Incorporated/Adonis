@@ -195,7 +195,15 @@ settings.Ranks = {
 settings.Permissions = {
 	-- "ff:HeadAdmins"; --// Changes :ff to HeadAdmins and higher (HeadAdmins = Level 300 by default)
 	-- "kill:300"; --// Changes :kill to level 300 and higher (Level 300 = HeadAdmins by default)
-	-- "ban:200,300" --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
+	-- "ban:200,300"; --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
+
+	-- Set script access scripts to HeadAdmins only. If you want admins to run script remove the lines below
+	"scriptbuilder:HeadAdmins";
+	"makescript:HeadAdmins";
+	"lscript:HeadAdmins";
+	"cscript:HeadAdmins";
+	"starterclientscripts:HeadAdmins";
+	"removestarterclientscripts:HeadAdmins";
 };	-- Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
 
 --// Use the below table to define "pre-set" command aliases
