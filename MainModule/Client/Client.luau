@@ -568,29 +568,6 @@ return service.NewProxy({
 
 		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
 		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
-		client.FormattedChangelog = table.create(#client.Changelog)
-
-		--// Create formatted changelog from standard changelog
-	  	local function applyColour(line)
-			local prefix = line:sub(1, 2)
-
-  	  	  	if prefix == "[v" or prefix == "[1" or prefix == "[0" or prefix == "1." or line:sub(1, 1) == "v" then
-      	  	  	return `<font color='#8FAEFF'>{line}</font>`
-  	  	  	elseif line:sub(1, 6) == "[Patch" then
-  	  	  	  	return `<font color='#F0B654'>{line}</font>`
-  	  	  	elseif line:sub(1, 9) == "Version: " then
-				return `<b>{line}</b>`
-			elseif line:sub(1,2) == "# " then
-				return `<b>{string.sub(line, 3)}</b>`
-			else
-  	  	  	  	return line
-  	  	  	end
-	  	end
-
-		log("Formatting chatlogs")
-		for i, line in ipairs(client.Changelog) do
-        	client.FormattedChangelog[i] = applyColour(line)
-  	 	end
 
 		--// Setup MatIcons
 		log("Setting up material icons")
