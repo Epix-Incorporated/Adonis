@@ -159,12 +159,12 @@ return function(Vargs)
 
 		if Admin.GetLevel(p) > 0 then
 			Functions.Notification(
-				"Adonis Restricted Mode";
-				"Click to view more information.";
-				{p};
-				900;
-				"rbxassetid://7467273592";
-				Core.Bytecode("client.Remote.Send('ProcessCommand', ':aciminfo')");
+				"Adonis Restricted Mode",
+				"Click to view more information.",
+				{p},
+				900,
+				"rbxassetid://7467273592",
+				Core.Bytecode("client.Remote.Send('ProcessCommand', ':aciminfo')")
 		   )
 		end
 	end
