@@ -93,7 +93,7 @@ return function(Vargs, GetEnv)
 				local pData = Core.PlayerData[tostring(id)]
 				local userInfo = pData.userInfo
 
-				if not userInfo then -- Cache table allocation for player KKK table to save on memory
+				if not userInfo then -- Cache table allocation for player userInfo table to save on memory
 					userInfo = {
 						Name = log.Player.Name;
 						UserId = id;
