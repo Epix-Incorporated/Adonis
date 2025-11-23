@@ -1362,7 +1362,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		UnallowedCache = {},
 		Insert = function(id, rawModel)
 			if service.UnallowedCache and service.UnallowedCache[id] then return end
-			local model = ({xpcall(function() return nil, service.AssetService:LoadAssetAsync(moduleId) end, warn)})[3] or service.InsertService:LoadAsset(id)
+			local model = ({xpcall(function() return nil, service.AssetService:LoadAssetAsync(id) end, warn)})[3] or service.InsertService:LoadAsset(id)
 			if not rawModel and model:IsA("Model") and model.Name == "Model" then
 				local asset = model:GetChildren()[1]
 				asset.Parent = model.Parent
