@@ -2,6 +2,6 @@
 	"ClassName": "PackageLink",
 	"Properties": {
 		"AutoUpdate": true,
-		"PackageId": 0,
+		"PackageId": 0
 	}
 }
