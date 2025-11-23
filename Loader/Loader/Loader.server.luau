@@ -46,7 +46,7 @@ local function yxpcall(f, callback, ...)
 end
 
 local function loadModuleAsset(moduleId: number)
-	local asset = ({yxpcall(function() return nil, AssetService:LoadAssetAsync(moduleId) end), warn)})[3] or InsertService:LoadAsset(moduleId)
+	local asset = ({yxpcall(function() return nil, AssetService:LoadAssetAsync(moduleId) end, warn))})[3] or InsertService:LoadAsset(moduleId)
 
 	if asset.Name == "MainModule" then
 		return assert(require(asset), ":LoadAsset() module returned invalid values!")
