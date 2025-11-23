@@ -33,6 +33,7 @@ end
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 local InsertService = game:GetService("InsertService")
+local AssetService = game:GetService("AssetService")
 
 -- Support yieldable xpcall
 local function yxpcall(f, callback, ...)
