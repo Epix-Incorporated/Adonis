@@ -78,7 +78,7 @@ local AVAILABLE_COMMAND_MODULES = { "Donors", "Fun", "Players", "Moderators", "A
 return function(Vargs)
 	local service = Vargs.Service
 	local server = Vargs.Server
-	local settings = server.Settings
+	local Settings = server.Settings
 
 	if not server.Variables then
 		server.Variables = { _isBackupByCriticalPlugin = true }
@@ -89,6 +89,7 @@ return function(Vargs)
 	local Remote = server.Remote
 	local Logs = server.Logs
 	local Variables = server.Variables
+	local Functions = server.Functions
 
 	if not server.CriticalMode then -- Only run this code if server flips flag. This should *only* be on for the fallback module!
 		return
@@ -107,14 +108,14 @@ return function(Vargs)
 
 		for i, v in ipairs(list) do
 			if type(v) == "table" then
-				v[2] = string.rep(" ", maxSize - string.len())
+				v[2] = string.rep(" ", maxSize - string.len(v[1]))
 				list[i] = table.concat(v, " ")
 			end
 		end
 	end
 
 	local function getFormattedStatus(name, status)
-		return string.format(`<font color = 'rgb({status ~= true and 255 or 0}, {status == true and 255 or status == false and 0 or 162}, {0})'>[{name}]</font>`)
+		return `<font color = 'rgb({status ~= true and 255 or 0}, {status == true and 255 or status == false and 0 or 162}, {0})'>[{name}]</font>`
 	end
 
 	local function getCommandStatusData()
@@ -134,7 +135,7 @@ return function(Vargs)
 		local list = table.create(#SETTINGS_OVERRIDE)
 		list[1], list[2], list[3] = "", "Settings:", ""
 
-		if not settings then
+		if not Settings then
 			table.insert(list, {"All setting data", "", getFormattedStatus("Loss of services.", false)})
 		else
 			for _, v in ipairs(SETTINGS_OVERRIDE) do
@@ -185,9 +186,9 @@ return function(Vargs)
 		})
 	end
 
-	if settings then
+	if Settings then
 		for k, v in SETTINGS_OVERRIDE do
-			settings[k] = v
+			Settings[k] = v
 		end
 	end
 
