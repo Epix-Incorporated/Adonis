@@ -1,0 +1,8 @@
+{
+	"name": "Loader",
+	"emitLegacyScripts": true,
+	"tree": {
+		"$className": "Folder",
+		"$path": "../Loader/Loader"
+	}
+}
