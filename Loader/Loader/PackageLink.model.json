@@ -1,0 +1,7 @@
+{
+	"ClassName": "PackageLink",
+	"Properties": {
+		"AutoUpdate": true,
+		"PackageId": 0,
+	}
+}
