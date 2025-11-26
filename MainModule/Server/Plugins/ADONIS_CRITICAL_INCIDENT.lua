@@ -53,24 +53,24 @@ local ACMI_HEADER = {
 
 local ACMI_FOOTER = {
 	"";
-    "Core";
-    "";
-    "Server Plugins         <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
-    "Client Plugins         <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
-    "";
-    "AntiExploit            <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
-    "(SERVER)AntiCheat      <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
-    "(CLIENT)AntiCheat      <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
-    "HelpSystem             <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
-    "WebPanel               <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
-    "CrossServer Functions  <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
-    "_G Services            <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
-    "TrelloAPI              <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
-    "DataStore              <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
-    "";
-    "Client:";
-    "";
-    "UI Themes              <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"Core";
+	"";
+	"Server Plugins         <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
+	"Client Plugins         <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
+	"";
+	"AntiExploit            <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"(SERVER)AntiCheat      <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"(CLIENT)AntiCheat      <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"HelpSystem             <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"WebPanel               <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"CrossServer Functions  <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"_G Services            <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
+	"TrelloAPI              <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
+	"DataStore              <font color = 'rgb(0,255,0)'>[Services remain operational.]</font>";
+	"";
+	"Client:";
+	"";
+	"UI Themes              <font color = 'rgb(255,0,0)'>[Loss of services.]</font>";
 }
 
 local AVAILABLE_COMMAND_MODULES = { "Donors", "Fun", "Players", "Moderators", "Admins", "HeadAdmins", "Creators" }
@@ -101,7 +101,7 @@ return function(Vargs)
 		for i, v in ipairs(list) do
 			if type(v) == "table" then
 				if string.len(v[1]) > maxSize then
-					maxSize = v[1]
+					maxSize = string.len(v[1])
 				end
 			end
 		end
@@ -112,6 +112,8 @@ return function(Vargs)
 				list[i] = table.concat(v, " ")
 			end
 		end
+
+		return list
 	end
 
 	local function getFormattedStatus(name, status)
@@ -129,29 +131,33 @@ return function(Vargs)
 				table.insert(list, {v, "", getFormattedStatus("Temporary loss of services. Essential commands remain.", "warn")})
 			end
 		end
+
+		return list
 	end
 
 	local function genOverrideListData()
-		local list = table.create(#SETTINGS_OVERRIDE)
-		list[1], list[2], list[3] = "", "Settings:", ""
+		local list = {"", "Settings:", ""}
 
 		if not Settings then
 			table.insert(list, {"All setting data", "", getFormattedStatus("Loss of services.", false)})
 		else
-			for _, v in ipairs(SETTINGS_OVERRIDE) do
-				table.insert(list, {v, "", getFormattedStatus(type(v) ~= "boolean" and "Has been forced to 'Default'." or v and "Has been forced enabled." or "Has been forced disabled.", type(v) ~= "boolean" and "warn" or v)})
+			for k, v in pairs(SETTINGS_OVERRIDE) do
+				table.insert(list, {k, "", getFormattedStatus(type(v) ~= "boolean" and "Has been forced to 'Default'." or v and "Has been forced enabled." or "Has been forced disabled.", type(v) ~= "boolean" and "warn" or v)})
 			end
 		end
+
+		return list
 	end
 
 	local function getServiceStatusData()
 		local list = table.clone(Variables.ACMI_HEADER)
 
 		table.move(getCommandStatusData(), 1, #AVAILABLE_COMMAND_MODULES + 3, #list + 1, list)
-		table.move(genOverrideListData(), 1, #SETTINGS_OVERRIDE + 3, #list + 1, list)
+		table.move(genOverrideListData(), 1, service.CountTable(SETTINGS_OVERRIDE) + 3, #list + 1, list)
 		table.move(table.clone(Variables.ACMI_FOOTER), 1, #Variables.ACMI_FOOTER, #list + 1, list) -- TODO: Make this check status dynamically as well
 		Variables.CachedACMI = list
-
+		
+		print(createPaddingForList(list))
 		return list
 	end
 
@@ -166,7 +172,7 @@ return function(Vargs)
 				900,
 				"rbxassetid://7467273592",
 				Core.Bytecode("client.Remote.Send('ProcessCommand', ':aciminfo')")
-		   )
+			)
 		end
 	end
 
