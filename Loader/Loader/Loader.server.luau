@@ -205,7 +205,7 @@ else
 			success = true
 		end, function(reason)
 			warn(`Failed to load Adonis mainmodule {moduleId} via :LoadAsset() method due to {reason}! Loading the nightly MainModule...`)
-			local newModuleId = not data.NightlyMode and data.NightlyModuleID or data.ModuleId
+			local newModuleId = not data.NightlyMode and data.NightlyModuleID or data.ModuleID
 			yxpcall(function()
 				module = assert(require(newModuleId), "Nightly module returned invalid values!")
 				success = true
