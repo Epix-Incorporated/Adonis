@@ -188,7 +188,7 @@ return function(AppKey, Token, HttpService)
 	end;
 	
 
-	if not HttpService.HttpEnabled then -- https://devforum.roblox.com/t/allow-scripts-to-access-httpenabled/73975/
+	if not HttpFunctions.HttpService.HttpEnabled then -- https://devforum.roblox.com/t/allow-scripts-to-access-httpenabled/73975/
 		warn("Unable to connect to trello, Http requests are not enabled. Enable them via game settings.")
 		return
 	end;
