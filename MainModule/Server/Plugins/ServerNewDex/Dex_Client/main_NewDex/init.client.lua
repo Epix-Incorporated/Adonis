@@ -14,7 +14,7 @@
 ]]
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, Console, ModelViewer, DefaultSettings, Notebook, Serializer, Lib
 local API, RMD
 local SettingsEditor
 local AboutMenu
@@ -99,6 +99,10 @@ DefaultSettings = (function()
 				Bracket = rgb(204, 204, 204),
 			},
 		},
+		Window = {
+			TitleOnMiddle = false,
+			Transparency = 0.2,
+		},
 	}
 end)()
 
@@ -148,7 +152,7 @@ end
 Main = (function()
 	local Main = {}
 
-	Main.ModuleList = { "Explorer", "Properties" } --Main.ModuleList = {"Explorer","Properties","ScriptViewer"}
+	Main.ModuleList = { "Explorer", "Properties", "Console", "ModelViewer" } --Main.ModuleList = {"Explorer","Properties","ScriptViewer"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "Beta 1.0.6 Adonis"
@@ -230,10 +234,14 @@ Main = (function()
 		Explorer = Apps.Explorer
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
+		Console = Apps.Console
+		ModelViewer = Apps.ModelViewer
 		Notebook = Apps.Notebook
 		local appTable = {
 			Explorer = Explorer,
 			Properties = Properties,
+			Console = Console,
+			ModelViewer = ModelViewer,
 			ScriptViewer = ScriptViewer,
 			Notebook = Notebook,
 		}
@@ -1459,6 +1467,9 @@ Main = (function()
 			Window = Properties.Window,
 		})
 
+		Main.CreateApp({ Name = "Console", IconMap = Main.LargeIcons, Icon = "Output", Window = Console.Window })
+
+		Main.CreateApp({ Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window })
 		--Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 
 		Lib.ShowGui(gui)
@@ -1569,6 +1580,8 @@ Main = (function()
 		intro.SetProgress("Initializing Modules", 0.9)
 		Explorer.Init()
 		Properties.Init()
+		Console.Init()
+		ModelViewer.Init()
 		--ScriptViewer.Init()
 
 		SettingsEditor.Init() -- init this last

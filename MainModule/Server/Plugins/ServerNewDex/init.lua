@@ -11,6 +11,7 @@ return function(Vargs)
 	local Logs = Server.Logs
 	local Remote = Server.Remote
 	local Admin = Server.Admin
+	local Core = Server.Core
 
 	local HttpService = Service.HttpService
 	local Success, APIDump, Reflection = nil
@@ -192,6 +193,21 @@ return function(Vargs)
 			CollectionService:RemoveTag(obj, tag)
 
 			return true
+		end,
+
+		loadstring = function(Player: Player, args)
+			assert(Settings.CodeExecution, "CodeExecution must be enabled for this to work.")
+			local func, err = Core.Loadstring(args[1])
+			if func then
+				local Succ, Err = pcall(function()
+					func()
+				end)
+				if Succ then
+					return true
+				else
+					return false, Err
+				end
+			end
 		end,
 	}
 

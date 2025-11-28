@@ -11,7 +11,7 @@ local Dex_RemoteFunction = ReplicatedStorage:WaitForChild("NewDex_Event") :: Rem
 
 -- Common Locals
 local Main, Lib, Apps, Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notebook, ModelViewer -- Major Apps
 local API, RMD, env, service, plr, create, createSimple -- Main Locals
 
 local function tweenInEntry(entry, fromPos, toPos)
@@ -46,6 +46,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	ModelViewer = Apps.ModelViewer
 	Notebook = Apps.Notebook
 end
 
@@ -1192,6 +1193,7 @@ local function main()
 
 		if presentClasses["BasePart"] or presentClasses["Model"] then
 			context:AddRegistered("TELEPORT_TO")
+			context:AddRegistered("VIEW_MODEL")
 			context:AddRegistered("VIEW_OBJECT")
 		end
 
@@ -1883,6 +1885,23 @@ local function main()
 					or "No description available for this class. The RMD may be missing some information."
 
 				InstanceInfoWindow:Show()
+			end,
+		})
+
+		context:Register("VIEW_MODEL", {
+			Name = "View Model",
+			IconMap = Explorer.ClassIcons,
+			Icon = 5,
+			OnClick = function()
+				local sList = selection.List
+				local isa = game.IsA
+
+				if #sList == 1 then
+					if isa(sList[1].Obj, "BasePart") or isa(sList[1].Obj, "Model") then
+						ModelViewer.ViewModel(sList[1].Obj)
+						return
+					end
+				end
 			end,
 		})
 
