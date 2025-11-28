@@ -582,7 +582,7 @@ local function main()
 
 		ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0)
-		ScrollingFrame.ScrollBarThickness = 6
+		ScrollingFrame.ScrollBarThickness = 12
 
 		local UILIstLayout = Instance.new("UIListLayout")
 		UILIstLayout.SortOrder = Enum.SortOrder.LayoutOrder
