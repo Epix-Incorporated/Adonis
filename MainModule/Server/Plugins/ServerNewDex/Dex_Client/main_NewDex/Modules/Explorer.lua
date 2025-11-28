@@ -3133,6 +3133,74 @@ local function main()
 			Explorer.Refresh()
 		end)
 
+		-- Add touch drag scrolling for mobile
+		local touchStarting = false
+		local dragging = false
+		local dragStartY = nil
+		local dragIndexStart = nil
+		local userInputService = service.UserInputService
+		local dragThreshold = 10 -- Pixels to move before starting drag (allows taps to select items)
+
+		userInputService.InputBegan:Connect(function(input)
+			if
+				input.UserInputType == Enum.UserInputType.Touch
+				or (input.UserInputType == Enum.UserInputType.MouseButton1 and userInputService.TouchEnabled)
+			then
+				-- Check if touch is within treeFrame bounds
+				local pos = input.Position
+				local framePos = treeFrame.AbsolutePosition
+				local frameSize = treeFrame.AbsoluteSize
+
+				if
+					pos.X >= framePos.X
+					and pos.X <= framePos.X + frameSize.X
+					and pos.Y >= framePos.Y
+					and pos.Y <= framePos.Y + frameSize.Y
+				then
+					touchStarting = true
+					dragging = false
+					dragStartY = input.Position.Y
+					dragIndexStart = scrollV.Index
+				end
+			end
+		end)
+
+		userInputService.InputChanged:Connect(function(input)
+			if
+				(touchStarting or dragging)
+				and (
+					input.UserInputType == Enum.UserInputType.Touch
+					or (input.UserInputType == Enum.UserInputType.MouseMovement and userInputService.TouchEnabled)
+				)
+			then
+				local dragDelta = math.abs(dragStartY - input.Position.Y)
+
+				-- Start dragging if we've moved past the threshold
+				if not dragging and dragDelta > dragThreshold then
+					dragging = true
+					touchStarting = false
+				end
+				if dragging then
+					local signedDelta = dragStartY - input.Position.Y
+					local scrollSensitivity = 0.15 -- Pixels per list index
+					local newIndex = math.floor(dragIndexStart + (signedDelta * scrollSensitivity))
+					scrollV:ScrollTo(newIndex)
+				end
+			end
+		end)
+
+		userInputService.InputEnded:Connect(function(input)
+			if
+				input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseButton1
+			then
+				touchStarting = false
+				dragging = false
+				dragStartY = nil
+				dragIndexStart = nil
+			end
+		end)
+
 		scrollH = Lib.ScrollBar.new(true)
 		scrollH.Increment = 5
 		scrollH.WheelIncrement = Explorer.EntryIndent
