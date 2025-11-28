@@ -12,9 +12,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Dex_RemoteFunction = ReplicatedStorage:WaitForChild("NewDex_Event") :: RemoteFunction
 
 -- Common Locals
-local Main,Lib,Apps,Settings -- Main Containers
+local Main, Lib, Apps, Settings -- Main Containers
 local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
-local API,RMD,env,service,plr,create,createSimple -- Main Locals
+local API, RMD, env, service, plr, create, createSimple -- Main Locals
 
 local function initDeps(data)
 	Main = data.Main
@@ -38,7 +38,6 @@ local function initAfterMain()
 	Notebook = Apps.Notebook
 end
 
-
 local function main()
 	local SettingsEditor = {}
 
@@ -56,7 +55,7 @@ local function main()
 		Main = Main,
 		Lib = Lib,
 		Apps = Apps,
-		Settings = Settings
+		Settings = Settings,
 	})
 
 	-- silencer
@@ -316,7 +315,6 @@ local function main()
 		return Entry
 	end
 
-
 	SettingsEditor.StringToValue = function(settingInfo, str)
 		local typeName = settingInfo.typeName
 
@@ -325,48 +323,66 @@ local function main()
 			typeName = Apps.Properties.TypeNameConvert[typeName]
 		end
 
-
 		if typeName == "string" or typeName == "Content" then
 			return str
 		elseif Apps.Properties.ToNumberTypes[typeName] then
 			return tonumber(str)
 		elseif typeName == "Vector2" then
 			local vals = str:split(",")
-			local x,y = tonumber(vals[1]),tonumber(vals[2])
-			if x and y and #vals >= 2 then return Vector2.new(x,y) end
+			local x, y = tonumber(vals[1]), tonumber(vals[2])
+			if x and y and #vals >= 2 then
+				return Vector2.new(x, y)
+			end
 		elseif typeName == "Vector3" then
 			local vals = str:split(",")
-			local x,y,z = tonumber(vals[1]),tonumber(vals[2]),tonumber(vals[3])
-			if x and y and z and #vals >= 3 then return Vector3.new(x,y,z) end
+			local x, y, z = tonumber(vals[1]), tonumber(vals[2]), tonumber(vals[3])
+			if x and y and z and #vals >= 3 then
+				return Vector3.new(x, y, z)
+			end
 		elseif typeName == "UDim" then
 			local vals = str:split(",")
-			local scale,offset = tonumber(vals[1]),tonumber(vals[2])
-			if scale and offset and #vals >= 2 then return UDim.new(scale,offset) end
+			local scale, offset = tonumber(vals[1]), tonumber(vals[2])
+			if scale and offset and #vals >= 2 then
+				return UDim.new(scale, offset)
+			end
 		elseif typeName == "UDim2" then
-			local vals = str:gsub("[{}]",""):split(",")
-			local xScale,xOffset,yScale,yOffset = tonumber(vals[1]),tonumber(vals[2]),tonumber(vals[3]),tonumber(vals[4])
-			if xScale and xOffset and yScale and yOffset and #vals >= 4 then return UDim2.new(xScale,xOffset,yScale,yOffset) end
+			local vals = str:gsub("[{}]", ""):split(",")
+			local xScale, xOffset, yScale, yOffset =
+				tonumber(vals[1]), tonumber(vals[2]), tonumber(vals[3]), tonumber(vals[4])
+			if xScale and xOffset and yScale and yOffset and #vals >= 4 then
+				return UDim2.new(xScale, xOffset, yScale, yOffset)
+			end
 		elseif typeName == "CFrame" then
 			local vals = str:split(",")
-			local s,result = pcall(CFrame.new,unpack(vals))
-			if s and #vals >= 12 then return result end
+			local s, result = pcall(CFrame.new, unpack(vals))
+			if s and #vals >= 12 then
+				return result
+			end
 		elseif typeName == "Rect" then
 			local vals = str:split(",")
-			local s,result = pcall(Rect.new,unpack(vals))
-			if s and #vals >= 4 then return result end
+			local s, result = pcall(Rect.new, unpack(vals))
+			if s and #vals >= 4 then
+				return result
+			end
 		elseif typeName == "Ray" then
-			local vals = str:gsub("[{}]",""):split(",")
-			local s,origin = pcall(Vector3.new,unpack(vals,1,3))
-			local s2,direction = pcall(Vector3.new,unpack(vals,4,6))
-			if s and s2 and #vals >= 6 then return Ray.new(origin,direction) end
+			local vals = str:gsub("[{}]", ""):split(",")
+			local s, origin = pcall(Vector3.new, unpack(vals, 1, 3))
+			local s2, direction = pcall(Vector3.new, unpack(vals, 4, 6))
+			if s and s2 and #vals >= 6 then
+				return Ray.new(origin, direction)
+			end
 		elseif typeName == "NumberRange" then
 			local vals = str:split(",")
-			local s,result = pcall(NumberRange.new,unpack(vals))
-			if s and #vals >= 1 then return result end
+			local s, result = pcall(NumberRange.new, unpack(vals))
+			if s and #vals >= 1 then
+				return result
+			end
 		elseif typeName == "Color3" then
-			local vals = str:gsub("[{}]",""):split(",")
-			local s,result = pcall(Color3.fromRGB,unpack(vals))
-			if s and #vals >= 3 then return result end
+			local vals = str:gsub("[{}]", ""):split(",")
+			local s, result = pcall(Color3.fromRGB, unpack(vals))
+			if s and #vals >= 3 then
+				return result
+			end
 		end
 
 		return nil
@@ -378,7 +394,7 @@ local function main()
 		if typeName == "Color3" then
 			return Lib.ColorToBytes(val)
 		elseif typeName == "NumberRange" then
-			return val.Min..", "..val.Max
+			return val.Min .. ", " .. val.Max
 		end
 
 		return tostring(val)
@@ -387,8 +403,39 @@ local function main()
 	-- InputBox
 	SettingsEditor.CreateInputBox = function(valueBox)
 		local inputBox = create({
-			{1,"Frame",{BackgroundColor3=Color3.new(0.14901961386204,0.14901961386204,0.14901961386204),BorderSizePixel=0,Name="InputBox",Size=UDim2.new(0,200,0,22),Visible=false,ZIndex=2,}},
-			{2,"TextBox",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BackgroundTransparency=1,BorderColor3=Color3.new(0.062745101749897,0.51764708757401,1),BorderSizePixel=0,ClearTextOnFocus=false,Font=3,Parent={1},PlaceholderColor3=Color3.new(0.69803923368454,0.69803923368454,0.69803923368454),Position=UDim2.new(0,3,0,0),Size=UDim2.new(1,-6,1,0),Text="",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=0,ZIndex=2,}},
+			{
+				1,
+				"Frame",
+				{
+					BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+					BorderSizePixel = 0,
+					Name = "InputBox",
+					Size = UDim2.new(0, 200, 0, 22),
+					Visible = false,
+					ZIndex = 2,
+				},
+			},
+			{
+				2,
+				"TextBox",
+				{
+					BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+					BackgroundTransparency = 1,
+					BorderColor3 = Color3.new(0.062745101749897, 0.51764708757401, 1),
+					BorderSizePixel = 0,
+					ClearTextOnFocus = false,
+					Font = 3,
+					Parent = { 1 },
+					PlaceholderColor3 = Color3.new(0.69803923368454, 0.69803923368454, 0.69803923368454),
+					Position = UDim2.new(0, 3, 0, 0),
+					Size = UDim2.new(1, -6, 1, 0),
+					Text = "",
+					TextColor3 = Color3.new(1, 1, 1),
+					TextSize = 14,
+					TextXAlignment = 0,
+					ZIndex = 2,
+				},
+			},
 		})
 		local inputTextBox = inputBox.TextBox
 		inputBox.BackgroundColor3 = Settings.Theme.TextBox
@@ -404,7 +451,7 @@ local function main()
 		end)
 
 		valueBox.Changed:Connect(function(property)
-			if (property == "Text") then
+			if property == "Text" then
 				inputTextBox.Text = valueBox.Text
 			end
 		end)
@@ -414,12 +461,10 @@ local function main()
 			valueBox.Visible = false
 		end)
 
-
 		Lib.ViewportTextBox.convert(inputTextBox)
 
 		return inputBox
 	end
-
 
 	SettingsEditor.DisplayColorEditor = function(obj, currentColor)
 		local editor = SettingsEditor.ColorEditor
@@ -430,16 +475,20 @@ local function main()
 			SettingsEditor.ColorEditor = editor
 		end
 
-		if (editor) then
-			if (SettingsEditor.ColorEditor.con_OnSelect) then
+		if editor then
+			if SettingsEditor.ColorEditor.con_OnSelect then
 				SettingsEditor.ColorEditor.con_OnSelect:Disconnect()
 				SettingsEditor.ColorEditor.con_OnSelect = nil
 			end
 
 			local connection
 			connection = editor.OnSelect:Connect(function(col)
-				if not editor.CurrentProp then return end
-				if not (editor.CurrentProp == obj) then return end
+				if not editor.CurrentProp then
+					return
+				end
+				if not (editor.CurrentProp == obj) then
+					return
+				end
 
 				local colVal = (col or BrickColor.new(col))
 
@@ -461,14 +510,13 @@ local function main()
 		return editor
 	end
 
-
 	SettingsEditor.NewPropEntry = function()
 		local newEntry = SettingsEditor.EntryTemplate():Clone()
 		local nameFrame = newEntry.NameFrame
 		local valueFrame = newEntry.ValueFrame
 
 		local iconFrame = Main.MiscIcons:GetLabel()
-		iconFrame.Position = UDim2.new(0,2,0,3)
+		iconFrame.Position = UDim2.new(0, 2, 0, 3)
 		iconFrame.Parent = newEntry.ValueFrame.RightButton
 
 		return {
@@ -484,8 +532,8 @@ local function main()
 				RightButtonIcon = iconFrame,
 				SoundPreview = valueFrame.SoundPreview,
 				SoundPreviewSlider = valueFrame.SoundPreview.TimeLine.Slider,
-				InfoButton = newEntry.InfoButton
-			}
+				InfoButton = newEntry.InfoButton,
+			},
 		}
 	end
 
@@ -517,7 +565,6 @@ local function main()
 			local UIGradient = Instance.new("UIGradient")
 			UIGradient.Parent = ColorPreview
 
-
 			return ColorButton
 		end
 
@@ -530,25 +577,23 @@ local function main()
 			self:SetPreviewColor(color)
 		end
 
-		local mt = {__index = funcs}
+		local mt = { __index = funcs }
 
 		local function new()
 			local colorButton = createButton()
 
 			local obj = setmetatable({
-				Gui = colorButton;
+				Gui = colorButton,
 				GuiElems = {
-					ColorButton = colorButton;
-					ColorPreview = colorButton.ColorPreview;
-					Gradient = colorButton.ColorPreview.UIGradient;
-				};
+					ColorButton = colorButton,
+					ColorPreview = colorButton.ColorPreview,
+					Gradient = colorButton.ColorPreview.UIGradient,
+				},
 
-				OnColorChange = Lib.Signal.new();
-
+				OnColorChange = Lib.Signal.new(),
 			}, mt)
 
 			obj.CurrentColor3 = Color3.fromRGB(255, 255, 255)
-
 
 			colorButton.ZIndex = 2 -- so it's clickable because ColorPreview obstructs it
 
@@ -559,20 +604,14 @@ local function main()
 			return obj
 		end
 
-		return {new = new}
+		return { new = new }
 	end)()
 
-	SettingsEditor.Update = function()
+	SettingsEditor.Update = function() end
 
-	end
+	SettingsEditor.UpdateView = function() end
 
-	SettingsEditor.UpdateView = function()
-
-	end
-
-	SettingsEditor.Refresh = function()
-
-	end
+	SettingsEditor.Refresh = function() end
 
 	SettingsEditor.ScrollBarFrame = function()
 		local ScrollingFrame = Instance.new("ScrollingFrame")
@@ -591,7 +630,6 @@ local function main()
 		return ScrollingFrame
 	end
 
-
 	SettingsEditor.CategoryListFrame = function()
 		local List = Instance.new("Frame")
 		List.Name = "List"
@@ -601,15 +639,12 @@ local function main()
 		List.BackgroundTransparency = 1
 		List.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 
-
 		local UILIstLayout = Instance.new("UIListLayout")
 		UILIstLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		UILIstLayout.Parent = List
 
 		return List
 	end
-
-
 
 	-- Creates a dropdown
 	SettingsEditor.CategoryDropdown = (function()
@@ -694,11 +729,11 @@ local function main()
 			end
 
 			Expand.MouseButton1Click:Connect(function()
-				if (self.ToggleFrame) then
+				if self.ToggleFrame then
 					self.ToggleFrame.Visible = not self.ToggleFrame.Visible
 				end
 
-				if (self.ToggleFrame.Visible) then
+				if self.ToggleFrame.Visible then
 					self.Expanded = true
 				else
 					self.Expanded = false
@@ -713,9 +748,9 @@ local function main()
 		end
 
 		function funcs:SetDisplayName(displayName)
-			if (self.Gui:FindFirstChild("NameFrame")) then
+			if self.Gui:FindFirstChild("NameFrame") then
 				self.Gui.NameFrame.PropName.Text = displayName
-			end	
+			end
 		end
 
 		-- Set the frame to toggle
@@ -724,7 +759,6 @@ local function main()
 
 			return self.ToggleFrame
 		end
-
 
 		local mt = {}
 		mt.__index = funcs
@@ -735,7 +769,7 @@ local function main()
 			obj.Gui = createFrame(obj)
 
 			obj.GuiElems = {
-				Icon = obj.Gui.NameFrame.Expand.Icon
+				Icon = obj.Gui.NameFrame.Expand.Icon,
 			}
 
 			obj.Expanded = true -- Whether expanded
@@ -746,55 +780,49 @@ local function main()
 
 			obj:SetToggleFrame(toggleFrame)
 
-
 			return obj
 		end
 
-		return {new = new}
+		return { new = new }
 	end)()
-
 
 	-- Change a setting
 	SettingsEditor.SetSettingValue = function(categoryName, settingName, settingInfo, newValue)
-		if (settingInfo.OnChange) then
+		if settingInfo.OnChange then
 			settingInfo.OnChange(newValue)
 		else
 			Settings[categoryName][settingName] = newValue
 		end
 	end
 
-
 	SettingsEditor.SetupInfoDesc = function()
 		local infoDescBox = SettingsEditor.InfoDescBox
 		-- TODO: Maybe change this
 
-		if not (infoDescBox) then
+		if not infoDescBox then
 			local newFrame = Instance.new("Frame")
-			newFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+			newFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 			newFrame.BackgroundTransparency = 0.2
 			newFrame.BorderSizePixel = 0
-			newFrame.Size = UDim2.new(0,0,0,0)
+			newFrame.Size = UDim2.new(0, 0, 0, 0)
 			newFrame.AutomaticSize = Enum.AutomaticSize.XY
 			newFrame.Visible = false -- not visible
 
 			local newTextBox = Instance.new("TextBox")
 			newTextBox.BackgroundTransparency = 1
 			newTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-			newTextBox.Size = UDim2.new(0,0,0,0)
+			newTextBox.Size = UDim2.new(0, 0, 0, 0)
 			newTextBox.AutomaticSize = Enum.AutomaticSize.XY
 			newTextBox.Parent = newFrame
 
-
 			infoDescBox = newFrame
 			SettingsEditor.InfoDescBox = infoDescBox
-
 
 			infoDescBox.Parent = SettingsEditor.Window.Gui
 		end
 
 		return infoDescBox
 	end
-
 
 	SettingsEditor.CreateSettingEntry = function(categoryName, settingName, settingInfo)
 		local newEntry = SettingsEditor.NewPropEntry()
@@ -804,8 +832,8 @@ local function main()
 
 		local InfoButton: TextBox = newEntry.GuiElems.InfoButton
 
-		if (settingInfo.desc) then
-			local infoDescBox:Frame = SettingsEditor.InfoDescBox
+		if settingInfo.desc then
+			local infoDescBox: Frame = SettingsEditor.InfoDescBox
 			local isEnter = false
 
 			InfoButton.MouseEnter:Connect(function(x, y)
@@ -824,7 +852,7 @@ local function main()
 			end)
 
 			InfoButton.MouseLeave:Connect(function(x, y)
-				if (isEnter == true) then
+				if isEnter == true then
 					isEnter = false
 					infoDescBox.Visible = false
 				end
@@ -834,19 +862,16 @@ local function main()
 			InfoButton.Visible = false
 		end
 
-
 		-- ValueBox
 		local ValueBox: TextButton = newEntry.Gui.ValueFrame.ValueBox
 
-
 		-- Boolean
-		if (settingInfo.typeName == "boolean") then
+		if settingInfo.typeName == "boolean" then
 			-- Checkbox
 			local newCheckbox = Lib.Checkbox.new()
 
 			-- Set current value
 			newCheckbox:SetState(Settings[categoryName][settingName], false)
-
 
 			-- Whenever Checkbox value changes
 			newCheckbox.OnInput:Connect(function()
@@ -858,9 +883,8 @@ local function main()
 
 			newCheckbox.Gui.Parent = newEntry.Gui.ValueFrame
 
-
 			-- Color3
-		elseif (settingInfo.typeName == "Color3") then
+		elseif settingInfo.typeName == "Color3" then
 			local colorButton = SettingsEditor.ColorButton.new()
 			colorButton.Gui.Parent = newEntry.Gui.ValueFrame
 
@@ -869,15 +893,12 @@ local function main()
 
 			colorButton.Gui.Visible = true
 
-
 			-- Fired once color input was changed
 			colorButton.OnColorChange:Connect(function()
 				local newColor = colorButton.CurrentColor3
 
 				SettingsEditor.SetSettingValue(categoryName, settingName, settingInfo, newColor)
 			end)
-
-
 		else
 			-- For anything else
 			local inputBox = SettingsEditor.CreateInputBox(ValueBox)
@@ -888,7 +909,7 @@ local function main()
 			inputTextBox.FocusLost:Connect(function()
 				local convertedVal = SettingsEditor.StringToValue(settingInfo, inputTextBox.Text)
 
-				if (convertedVal) then
+				if convertedVal then
 					ValueBox.Text = SettingsEditor.ValueToString(convertedVal)
 
 					-- Sets value
@@ -903,13 +924,12 @@ local function main()
 		return newEntry
 	end
 
-
 	-- Set up the settings.
 	SettingsEditor.SetupSettings = function(categoryIndex, parentTo)
 		local infoTable = SettingsEditor.SettingsInfo[categoryIndex]
 
 		for _, settingName in ipairs(infoTable.Order) do
-			if (infoTable.Info[settingName]) then
+			if infoTable.Info[settingName] then
 				local settingInfo = infoTable.Info[settingName]
 
 				local newEntry = SettingsEditor.CreateSettingEntry(categoryIndex, settingName, settingInfo)
@@ -918,8 +938,6 @@ local function main()
 			end
 		end
 	end
-
-
 
 	-- Create new Category
 	SettingsEditor.NewCategory = function(indexName, displayName, parentTo)
@@ -933,7 +951,6 @@ local function main()
 		-- Setup settings
 		SettingsEditor.SetupSettings(indexName, categoryListFrame)
 
-
 		local category = SettingsEditor.CategoryDropdown.new(categoryListFrame, displayName)
 		category.Gui.Parent = parentTo
 
@@ -943,16 +960,12 @@ local function main()
 		return category
 	end
 
-
-
-
 	-- Generate Setting buttons and stuff
 	SettingsEditor.RenderSettings = function()
-		for _,categoryName in ipairs(SettingsEditor.SettingsInfo._Categories) do
+		for _, categoryName in ipairs(SettingsEditor.SettingsInfo._Categories) do
 			SettingsEditor.NewCategory(categoryName, categoryName, settingsListFrame)
 		end
 	end
-
 
 	-- Init
 	SettingsEditor.Init = function()
@@ -967,20 +980,16 @@ local function main()
 
 		SettingsEditor.Window.GuiElems.Main.Parent.Name = "Dex_SettingsWindow" -- Change ScreenGui name
 
-
 		-- Setup Gui
 		SettingsEditor.SetupInfoDesc() -- Hover text description
 
 		SettingsEditor.RenderSettings() -- Sets up UI to change settings
 
-
 		-- Window Add, adds things to the "Content"
 		window:Add(settingsListFrame)
 	end
 
-
-
 	return SettingsEditor
 end
 
-return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+return { InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main }

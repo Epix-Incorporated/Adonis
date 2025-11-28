@@ -744,10 +744,7 @@ local function main()
 	end
 
 	Properties.MakeSubProp = function(prop, subName, valueType, displayName)
-		local subProp = {}
-		for i, v in pairs(prop) do
-			subProp[i] = v
-		end
+		local subProp = table.clone(prop)
 		subProp.RootType = subProp.RootType or subProp.ValueType
 		subProp.ValueType = valueType
 		subProp.SubName = subProp.SubName and (subProp.SubName .. subName) or subName
@@ -813,11 +810,7 @@ local function main()
 		if
 			(prop.Name == "SoundId" and prop.Class == "Sound") or (prop.Name == "Asset" and prop.Class == "AudioPlayer")
 		then
-			local preview = {}
-			local preview = {}
-			for k, v in pairs(Properties.SoundPreviewProp) do
-				preview[k] = v
-			end
+			local preview = table.clone(Properties.SoundPreviewProp)
 			preview.Class = prop.Class
 			preview.Category = prop.Category
 			preview.IsSoundPreview = true

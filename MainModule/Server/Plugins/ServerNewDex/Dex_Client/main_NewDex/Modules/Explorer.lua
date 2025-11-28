@@ -1049,20 +1049,19 @@ local function main()
 			end)
 		end
 
-		if Settings.Explorer.UseNameWidth then
-			itemChangedCon = game.ItemChanged:Connect(function(obj, prop)
-				if prop == "Parent" and nodes[obj] then
-					moveObject(obj)
-				elseif prop == "Name" and nodes[obj] then
-					nodes[obj].NameWidth = nil
-				end
-			end)
-		else
-			itemChangedCon = game.ItemChanged:Connect(function(obj, prop)
-				if prop == "Parent" and nodes[obj] then
+		for obj, node in pairs(nodes) do
+			obj.AncestryChanged:Connect(function(_, _)
+				if nodes[obj] then
 					moveObject(obj)
 				end
 			end)
+			if Settings.Explorer.UseNameWidth then
+				obj:GetPropertyChangedSignal("Name"):Connect(function()
+					if nodes[obj] then
+						nodes[obj].NameWidth = nil
+					end
+				end)
+			end
 		end
 	end
 
@@ -1557,7 +1556,10 @@ local function main()
 
 				--local model = Instance.new("Model",sList[#sList].Obj.Parent)
 				local model = Dex_RemoteFunction:InvokeServer("InstanceNew", "Model", sList[#sList].Obj.Parent)
-					or Instance.new("Model", sList[#sList].Obj.Parent)
+				if not model then
+					model = Instance.new("Model")
+					model.Parent = sList[#sList].Obj.Parent
+				end
 				for i = 1, #sList do
 					pcall(function()
 						sList[i].Obj.Parent = model

@@ -645,13 +645,14 @@ local function main()
 							currentToken = currentToken .. character
 						end
 					elseif inString then
-						if character == inString and source:sub(i - 1, i - 1) ~= "\\" or character == "\n" then
-							currentToken = currentToken .. character
+						currentToken = currentToken .. character
+						if (character == inString and source:sub(i - 1, i - 1) ~= "\\") or character == "\n" then
 							inString = false
-						else
-							currentToken = currentToken .. character
 						end
 					else
+						local shouldInsertToken = false
+						local shouldInsertCharacter = false
+
 						if source:sub(i, i + 1) == "--" then
 							table.insert(tokens, currentToken)
 							currentToken = "-"
@@ -661,15 +662,18 @@ local function main()
 							table.insert(tokens, currentToken)
 							currentToken = character
 							inString = character
-						elseif operatorsSet[character] then
-							table.insert(tokens, currentToken)
-							table.insert(tokens, character)
-							currentToken = ""
+						elseif operatorsSet[character] or character:match("%s") then
+							shouldInsertToken = true
+							shouldInsertCharacter = true
 						elseif character:match("[%w_]") then
 							currentToken = currentToken .. character
-						else
+						end
+
+						if shouldInsertToken then
 							table.insert(tokens, currentToken)
-							table.insert(tokens, character)
+							if shouldInsertCharacter then
+								table.insert(tokens, character)
+							end
 							currentToken = ""
 						end
 					end

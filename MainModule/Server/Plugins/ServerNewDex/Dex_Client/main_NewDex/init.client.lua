@@ -315,20 +315,19 @@ Main = (function()
 		recur(DefaultSettings :: any, Settings)
 	end
 
-	Main.LoadSettings = function()
-		local s, data = pcall(env.readfile or error, "DexSettings.json")
-		if s and data and data ~= "" then
-			local s, decoded = service.HttpService:JSONDecode(data)
-			if s and decoded then
-				for i, v in next, decoded do
-				end
-			else
-				-- TODO: Notification
-			end
-		else
-			Main.ResetSettings()
-		end
-	end
+	-- Main.LoadSettings = function()
+	-- 	local s, data = pcall(env.readfile or error, "DexSettings.json")
+	-- 	if s and data and data ~= "" then
+	-- 		local s, decoded = service.HttpService:JSONDecode(data)
+	-- 		if s and decoded then
+	-- 			for i, v in next, decoded do
+	-- 				Settings[i] = v
+	-- 			end
+	-- 		end
+	-- 	else
+	-- 		Main.ResetSettings()
+	-- 	end
+	-- end
 
 	Main.FetchAPI = function()
 		local api, rawAPI
@@ -1498,7 +1497,7 @@ Main = (function()
 			local a = game:GetService("CoreGui"):GetFullName()
 		end)
 		Main.InitEnv()
-		Main.LoadSettings()
+		-- Main.LoadSettings()
 		Main.SetupFilesystem()
 
 		-- Load Lib
