@@ -6,7 +6,7 @@
 
 -- Common Locals
 local Main, Lib, Apps, Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer -- Major Apps
 local API, RMD, env, service, plr, create, createSimple -- Main Locals
 
 local function initDeps(data)
@@ -28,7 +28,6 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notebook = Apps.Notebook
 end
 
 local function getPath(obj)
@@ -162,7 +161,7 @@ local function main()
 		viewportFrame = Instance.new("ViewportFrame")
 		viewportFrame.Parent = window.GuiElems.Content
 		viewportFrame.BackgroundTransparency = 1
-		viewportFrame.Size = UDim2.new(1, 0, 1, 0)
+		viewportFrame.Size = UDim2.fromScale(1, 1)
 
 		pathLabel = Lib.Label.new()
 		pathLabel.Gui.Parent = window.GuiElems.Content
@@ -174,10 +173,12 @@ local function main()
 		pathLabel.Gui.Size = UDim2.new(1, -1, 0, 15)
 		pathLabel.Gui.BackgroundTransparency = 1
 
-		settingsButton = Instance.new("ImageButton", window.GuiElems.Content)
+		settingsButton = Instance.new("ImageButton")
+		settingsButton.Parent = window.GuiElems.Content
+
 		settingsButton.AnchorPoint = Vector2.new(1, 0)
 		settingsButton.BackgroundTransparency = 1
-		settingsButton.Size = UDim2.new(0, 15, 0, 15)
+		settingsButton.Size = UDim2.fromOffset(15, 15)
 		settingsButton.Position = UDim2.new(1, -3, 0, 3)
 		settingsButton.Image = "rbxassetid://6578871732"
 		settingsButton.ImageTransparency = 0.5
