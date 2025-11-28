@@ -648,24 +648,32 @@ local function main()
 
 		-- Gather tags from selected instances
 		if Settings.Properties.ShowTags then
+			local foundTags = {}
 			for i = 1, #sList do
 				local obj = sList[i].Obj
-				local tags = obj:GetTags()
+				local success, tags = pcall(function()
+					return obj:GetTags()
+				end)
 
-				for _, tagName in ipairs(tags) do
-					local tagProp = {
-						Name = "TAG_" .. tagName,
-						DisplayName = tagName,
-						Class = obj.ClassName,
-						ValueType = { Name = "string", Category = "Primitive" },
-						Category = "Tags",
-						Tags = {},
-						IsTag = true,
-						TagName = tagName,
-						Depth = 1,
-					}
-					props[propCount] = tagProp
-					propCount = propCount + 1
+				if success and tags then
+					for _, tagName in ipairs(tags) do
+						if not foundTags[tagName] then
+							local tagProp = {
+								Name = "TAG_" .. tagName,
+								DisplayName = tagName,
+								Class = obj.ClassName,
+								ValueType = { Name = "string", Category = "Primitive" },
+								Category = "Tags",
+								Tags = {},
+								IsTag = true,
+								TagName = tagName,
+								Depth = 1,
+							}
+							props[propCount] = tagProp
+							propCount = propCount + 1
+							foundTags[tagName] = true
+						end
+					end
 				end
 			end
 
@@ -1847,7 +1855,7 @@ local function main()
 	end
 
 	Properties.DisplayProp = function(prop, entryIndex)
-		if prop.IsTag or prop.IsAddTagButton or prop.Category == "Tags" and prop.SpecialRow then
+		if prop.IsAddTagButton or (prop.Category == "Tags" and prop.SpecialRow == "AddTag") then
 			-- Hide all value UI elements for Add Tag row
 			local entryData = propEntries[entryIndex]
 			if entryData and entryData.GuiElems then
@@ -1938,7 +1946,7 @@ local function main()
 			valueBox.Visible = true
 			valueBox.Text = prop.TagName
 			valueBox.TextColor3 = Settings.Theme.Text
-			valueBox.ClearTextOnFocus = false
+			-- valueBox.ClearTextOnFocus = false
 			valueBox.Active = false
 
 			-- Show X button on right side to remove tag
@@ -2009,17 +2017,6 @@ local function main()
 
 			valueBox.TextColor3 = tags.ReadOnly and Settings.Theme.PlaceholderText or Settings.Theme.Text
 		end
-	end
-
-	function Properties.RemoveTag(prop)
-		local obj = Explorer.Selection.List[1].Obj
-		if not obj then
-			return
-		end
-
-		local tag = prop.TagName
-		Properties.Remote:InvokeServer("removetag", obj, tag)
-		Properties.Refresh()
 	end
 
 	Properties.Refresh = function()
@@ -2158,28 +2155,28 @@ local function main()
 										Properties.DisplayProp(prop, i)
 									end
 								)
-							else
+							elseif not prop.IsTag and not prop.IsAddTagButton and prop.SpecialRow ~= "AddTag" then
 								propCons[#propCons + 1] = getPropChangedSignal(propObj, propName):Connect(function()
 									Properties.DisplayProp(prop, i)
 								end)
 							end
 						end
 
-						-- Tag display
-						if prop.IsTag then
-							valueBox.Text = prop.TagName
+						-- -- Tag display
+						-- if prop.IsTag then
+						-- 	valueBox.Text = prop.TagName
 
-							local deleteButton = entryFrame.ValueFrame.RightButton
-							deleteButton.Visible = true
-							deleteButton.Icon.Image = "rbxassetid://5034718129"
-							deleteButton.Icon.ImageRectSize = Vector2.new(16, 16)
-						end
+						-- 	local deleteButton = entryFrame.ValueFrame.RightButton
+						-- 	deleteButton.Visible = true
+						-- 	deleteButton.Icon.Image = "rbxassetid://5034718129"
+						-- 	deleteButton.Icon.ImageRectSize = Vector2.new(16, 16)
+						-- end
 
-						-- "Add Tag" special row
-						if prop.SpecialRow == "AddTag" then
-							valueBox.Text = "+"
-							valueBox.TextColor3 = Settings.Theme.Main1
-						end
+						-- -- "Add Tag" special row
+						-- if prop.SpecialRow == "AddTag" then
+						-- 	valueBox.Text = "+"
+						-- 	valueBox.TextColor3 = Settings.Theme.Main1
+						-- end
 
 						-- Position and resize Input Box
 						local beforeVisible = valueBox.Visible
