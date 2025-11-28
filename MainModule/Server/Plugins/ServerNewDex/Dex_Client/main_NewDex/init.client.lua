@@ -151,7 +151,7 @@ Main = (function()
 	Main.ModuleList = { "Explorer", "Properties" } --Main.ModuleList = {"Explorer","Properties","ScriptViewer"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "Beta 1.0.5 Adonis"
+	Main.Version = "Beta 1.0.6 Adonis"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
