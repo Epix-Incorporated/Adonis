@@ -437,6 +437,141 @@ local function main()
 	G2L["23"]["PaddingTop"] = UDim.new(0, 1)
 	G2L["23"]["PaddingBottom"] = UDim.new(0, 1)
 
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation
+	G2L["24"] = Instance.new("Frame")
+	G2L["24"].Parent = ConsoleFrame
+	G2L["24"]["BorderSizePixel"] = 0
+	G2L["24"]["BackgroundColor3"] = Color3.fromRGB(40, 40, 40)
+	G2L["24"]["AnchorPoint"] = Vector2.new(0.5, 0.5)
+	G2L["24"]["Size"] = UDim2.new(0.85, 0, 0, 170)
+	G2L["24"]["Position"] = UDim2.new(0.5, 0, 0.5, 0)
+	G2L["24"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["24"]["Name"] = [[ExecuteConfirmation]]
+	G2L["24"]["Visible"] = false
+	G2L["24"]["ZIndex"] = 100
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.UIStroke
+	G2L["25"] = Instance.new("UIStroke")
+	G2L["25"].Parent = G2L["24"]
+	G2L["25"]["Color"] = Color3.fromRGB(70, 70, 70)
+	G2L["25"]["Thickness"] = 2
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.Title
+	G2L["26"] = Instance.new("TextLabel")
+	G2L["26"].Parent = G2L["24"]
+	G2L["26"]["BorderSizePixel"] = 0
+	G2L["26"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["26"]["TextSize"] = 16
+	G2L["26"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+	G2L["26"]["TextColor3"] = Color3.fromRGB(255, 85, 85)
+	G2L["26"]["BackgroundTransparency"] = 1
+	G2L["26"]["Size"] = UDim2.new(1, 0, 0, 20)
+	G2L["26"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["26"]["Text"] = [[⚠ WARNING: Code Execution ⚠]]
+	G2L["26"]["Name"] = [[Title]]
+	G2L["26"]["ZIndex"] = 101
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.Warning
+	G2L["27"] = Instance.new("TextLabel")
+	G2L["27"].Parent = G2L["24"]
+	G2L["27"]["BorderSizePixel"] = 0
+	G2L["27"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["27"]["TextSize"] = 11
+	G2L["27"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+	G2L["27"]["TextColor3"] = Color3.fromRGB(255, 200, 100)
+	G2L["27"]["BackgroundTransparency"] = 1
+	G2L["27"]["Size"] = UDim2.new(1, -10, 0, 30)
+	G2L["27"]["Position"] = UDim2.new(0, 5, 0, 22)
+	G2L["27"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["27"]["Text"] = [[Executing arbitrary code can be dangerous and may harm your game or account. Only execute code you understand and trust.]]
+	G2L["27"]["Name"] = [[Warning]]
+	G2L["27"]["TextWrapped"] = true
+	G2L["27"]["ZIndex"] = 101
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.Context
+	G2L["27b"] = Instance.new("TextLabel")
+	G2L["27b"].Parent = G2L["24"]
+	G2L["27b"]["BorderSizePixel"] = 0
+	G2L["27b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["27b"]["TextSize"] = 11
+	G2L["27b"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+	G2L["27b"]["TextColor3"] = Color3.fromRGB(150, 200, 255)
+	G2L["27b"]["BackgroundTransparency"] = 1
+	G2L["27b"]["Size"] = UDim2.new(1, 0, 0, 15)
+	G2L["27b"]["Position"] = UDim2.new(0, 0, 0, 54)
+	G2L["27b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["27b"]["Text"] = [[Execution Context: Client]]
+	G2L["27b"]["Name"] = [[Context]]
+	G2L["27b"]["ZIndex"] = 101
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.CodePreview
+	G2L["28"] = Instance.new("ScrollingFrame")
+	G2L["28"].Parent = G2L["24"]
+	G2L["28"]["Active"] = true
+	G2L["28"]["BorderSizePixel"] = 0
+	G2L["28"]["BackgroundColor3"] = Color3.fromRGB(30, 30, 30)
+	G2L["28"]["Size"] = UDim2.new(1, -20, 0, 50)
+	G2L["28"]["Position"] = UDim2.new(0, 10, 0, 72)
+	G2L["28"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["28"]["ScrollBarThickness"] = 4
+	G2L["28"]["Name"] = [[CodePreview]]
+	G2L["28"]["ZIndex"] = 101
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.CodePreview.TextLabel
+	G2L["29"] = Instance.new("TextLabel")
+	G2L["29"].Parent = G2L["28"]
+	G2L["29"]["BorderSizePixel"] = 0
+	G2L["29"]["TextXAlignment"] = Enum.TextXAlignment.Left
+	G2L["29"]["TextYAlignment"] = Enum.TextYAlignment.Top
+	G2L["29"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["29"]["TextSize"] = 12
+	G2L["29"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+	G2L["29"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["29"]["BackgroundTransparency"] = 1
+	G2L["29"]["AutomaticSize"] = Enum.AutomaticSize.XY
+	G2L["29"]["Size"] = UDim2.new(1, -10, 1, 0)
+	G2L["29"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["29"]["Text"] = [[print("hello")]]
+	G2L["29"]["ZIndex"] = 102
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.CodePreview.TextLabel.UIPadding
+	G2L["30"] = Instance.new("UIPadding")
+	G2L["30"].Parent = G2L["29"]
+	G2L["30"]["PaddingTop"] = UDim.new(0, 5)
+	G2L["30"]["PaddingRight"] = UDim.new(0, 5)
+	G2L["30"]["PaddingLeft"] = UDim.new(0, 5)
+	G2L["30"]["PaddingBottom"] = UDim.new(0, 5)
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.Confirm
+	G2L["31"] = Instance.new("TextButton")
+	G2L["31"].Parent = G2L["24"]
+	G2L["31"]["BorderSizePixel"] = 0
+	G2L["31"]["BackgroundColor3"] = Color3.fromRGB(40, 120, 40)
+	G2L["31"]["TextSize"] = 14
+	G2L["31"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+	G2L["31"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["31"]["Size"] = UDim2.new(0.45, 0, 0, 25)
+	G2L["31"]["Name"] = [[Confirm]]
+	G2L["31"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["31"]["Text"] = [[Execute]]
+	G2L["31"]["Position"] = UDim2.new(0.05, 0, 1, -32)
+	G2L["31"]["ZIndex"] = 101
+
+	-- StarterGui.ScreenGui.Console.ExecuteConfirmation.Cancel
+	G2L["32"] = Instance.new("TextButton")
+	G2L["32"].Parent = G2L["24"]
+	G2L["32"]["BorderSizePixel"] = 0
+	G2L["32"]["BackgroundColor3"] = Color3.fromRGB(120, 40, 40)
+	G2L["32"]["TextSize"] = 14
+	G2L["32"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+	G2L["32"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["32"]["Size"] = UDim2.new(0.45, 0, 0, 25)
+	G2L["32"]["Name"] = [[Cancel]]
+	G2L["32"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["32"]["Text"] = [[Cancel]]
+	G2L["32"]["Position"] = UDim2.new(0.5, 0, 1, -32)
+	G2L["32"]["ZIndex"] = 101
+
 	-- StarterGui.ScreenGui.ConsoleHandler
 	G2L["1c"] = Instance.new("LocalScript")
 	G2L["1c"].Parent = G2L["1"]
@@ -786,6 +921,9 @@ local function main()
 		local CommandHistory = {} -- Stores executed commands
 		local CommandHistoryIndex = 0 -- Current position in history (0 = no history selected)
 		local MAX_COMMAND_HISTORY = 50
+
+		-- Warning prompt state
+		local HasShownExecutionWarning = false
 
 		local LogService = game:GetService("LogService")
 		local Players = game:GetService("Players")
@@ -1189,41 +1327,73 @@ local function main()
 			end
 		end)
 
+		-- Function to execute code (called after confirmation)
+		local function executeCode(code)
+			print("> " .. code)
+
+			-- Add to command history
+			table.insert(CommandHistory, code)
+			if #CommandHistory > MAX_COMMAND_HISTORY then
+				table.remove(CommandHistory, 1)
+			end
+			CommandHistoryIndex = 0 -- Reset history index
+
+			-- Execute on server or client based on mode
+			if IsServerMode then
+				-- Execute on server
+				local success, err = Dex_RemoteFunction:InvokeServer("Loadstring", code)
+				if not success and err then
+					warn("Server execution error: " .. tostring(err))
+				end
+			else
+				-- Execute on client through Adonis (checks CodeExecution setting)
+				-- Remote.LoadCode handles all the bytecode compilation and client execution
+				local success = Dex_RemoteFunction:InvokeServer("LoadstringClient", code)
+				if not success then
+					warn("Client execution failed - check if CodeExecution is enabled")
+				end
+			end
+
+			Console.CommandLine.ScrollingFrame.TextBox.Text = ""
+
+			-- Re-focus the textbox after executing command
+			task.defer(function()
+				Console.CommandLine.ScrollingFrame.TextBox:CaptureFocus()
+			end)
+		end
+
+		-- Show confirmation dialog (only first time)
 		Console.CommandLine.ScrollingFrame.TextBox.FocusLost:Connect(function(enterPressed)
 			if enterPressed and Console.CommandLine.ScrollingFrame.TextBox.Text ~= "" then
 				local code = Console.CommandLine.ScrollingFrame.TextBox.Text
-				print("> " .. code)
 
-				-- Add to command history
-				table.insert(CommandHistory, code)
-				if #CommandHistory > MAX_COMMAND_HISTORY then
-					table.remove(CommandHistory, 1)
-				end
-				CommandHistoryIndex = 0 -- Reset history index
-
-				-- Execute on server or client based on mode
-				if IsServerMode then
-					-- Execute on server
-					local success, err = Dex_RemoteFunction:InvokeServer("Loadstring", code)
-					if not success and err then
-						warn("Server execution error: " .. tostring(err))
-					end
+				if not HasShownExecutionWarning then
+					-- First time: Show warning dialog
+					Console.ExecuteConfirmation.CodePreview.TextLabel.Text = code
+					Console.ExecuteConfirmation.Context.Text = "Execution Context: " .. (IsServerMode and "Server" or "Client")
+					Console.ExecuteConfirmation.Visible = true
 				else
-					-- Execute on client through Adonis (checks CodeExecution setting)
-					-- Remote.LoadCode handles all the bytecode compilation and client execution
-					local success = Dex_RemoteFunction:InvokeServer("LoadstringClient", code)
-					if not success then
-						warn("Client execution failed - check if CodeExecution is enabled")
-					end
+					-- Already warned: Execute directly
+					executeCode(code)
 				end
-
-				Console.CommandLine.ScrollingFrame.TextBox.Text = ""
-
-				-- Re-focus the textbox after executing command
-				task.defer(function()
-					Console.CommandLine.ScrollingFrame.TextBox:CaptureFocus()
-				end)
 			end
+		end)
+
+		-- Confirmation dialog - Confirm button
+		Console.ExecuteConfirmation.Confirm.MouseButton1Click:Connect(function()
+			local code = Console.ExecuteConfirmation.CodePreview.TextLabel.Text
+			Console.ExecuteConfirmation.Visible = false
+			HasShownExecutionWarning = true -- Mark as shown
+			executeCode(code)
+		end)
+
+		-- Confirmation dialog - Cancel button
+		Console.ExecuteConfirmation.Cancel.MouseButton1Click:Connect(function()
+			Console.ExecuteConfirmation.Visible = false
+			-- Re-focus the textbox
+			task.defer(function()
+				Console.CommandLine.ScrollingFrame.TextBox:CaptureFocus()
+			end)
 		end)
 
 		UserInputService.InputBegan:Connect(function(input, gameProcessed)
