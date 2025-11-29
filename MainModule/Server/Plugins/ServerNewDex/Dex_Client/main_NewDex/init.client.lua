@@ -1498,6 +1498,7 @@ Main = (function()
 		end)
 		Main.InitEnv()
 		-- Main.LoadSettings()
+		Main.ResetSettings() -- Initialize Settings with DefaultSettings
 		Main.SetupFilesystem()
 
 		-- Load Lib
