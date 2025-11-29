@@ -782,6 +782,11 @@ local function main()
 		local ClientLogHistory = {} -- Stores client logs when switching to server mode
 		local ServerLogHistory = {} -- Stores server logs when switching to client mode
 
+		-- Command history for up/down arrow navigation
+		local CommandHistory = {} -- Stores executed commands
+		local CommandHistoryIndex = 0 -- Current position in history (0 = no history selected)
+		local MAX_COMMAND_HISTORY = 50
+
 		local LogService = game:GetService("LogService")
 		local Players = game:GetService("Players")
 		local LocalPlayer = Players.LocalPlayer
@@ -1169,18 +1174,32 @@ local function main()
 			end
 		end)
 
+		local isNavigatingHistory = false -- Flag to prevent text change from resetting index
+
 		Console.CommandLine.ScrollingFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
 			local oneliner = string.gsub(Console.CommandLine.ScrollingFrame.TextBox.Text, "\n", "    ")
 			Console.CommandLine.ScrollingFrame.TextBox.Text = oneliner
 
 			Console.CommandLine.ScrollingFrame.Highlight.Text =
 				SyntaxHighlightingModule.run(Console.CommandLine.ScrollingFrame.TextBox.Text)
+
+			-- Reset history index when user manually types (not from arrow navigation)
+			if not isNavigatingHistory and Console.CommandLine.ScrollingFrame.TextBox:IsFocused() then
+				CommandHistoryIndex = 0
+			end
 		end)
 
 		Console.CommandLine.ScrollingFrame.TextBox.FocusLost:Connect(function(enterPressed)
 			if enterPressed and Console.CommandLine.ScrollingFrame.TextBox.Text ~= "" then
 				local code = Console.CommandLine.ScrollingFrame.TextBox.Text
 				print("> " .. code)
+
+				-- Add to command history
+				table.insert(CommandHistory, code)
+				if #CommandHistory > MAX_COMMAND_HISTORY then
+					table.remove(CommandHistory, 1)
+				end
+				CommandHistoryIndex = 0 -- Reset history index
 
 				-- Execute on server or client based on mode
 				if IsServerMode then
@@ -1199,6 +1218,58 @@ local function main()
 				end
 
 				Console.CommandLine.ScrollingFrame.TextBox.Text = ""
+
+				-- Re-focus the textbox after executing command
+				task.defer(function()
+					Console.CommandLine.ScrollingFrame.TextBox:CaptureFocus()
+				end)
+			end
+		end)
+
+		UserInputService.InputBegan:Connect(function(input, gameProcessed)
+			-- if gameProcessed then
+			-- 	return
+			-- end
+
+			if Console.CommandLine.ScrollingFrame.TextBox:IsFocused() then
+				if input.KeyCode == Enum.KeyCode.Up then
+					-- Navigate to older command
+					if #CommandHistory > 0 and CommandHistoryIndex < #CommandHistory then
+						CommandHistoryIndex = CommandHistoryIndex + 1
+						local historyItem = CommandHistory[#CommandHistory - CommandHistoryIndex + 1]
+						isNavigatingHistory = true
+						Console.CommandLine.ScrollingFrame.TextBox.Text = historyItem
+						-- Move cursor to end after text is set
+						task.spawn(function()
+							task.wait()
+							Console.CommandLine.ScrollingFrame.TextBox.CursorPosition = #historyItem + 1
+							isNavigatingHistory = false
+						end)
+					end
+				elseif input.KeyCode == Enum.KeyCode.Down then
+					-- Navigate to newer command
+					if CommandHistoryIndex > 0 then
+						CommandHistoryIndex = CommandHistoryIndex - 1
+						isNavigatingHistory = true
+						if CommandHistoryIndex == 0 then
+							-- Back to empty
+							Console.CommandLine.ScrollingFrame.TextBox.Text = ""
+							task.spawn(function()
+								task.wait()
+								isNavigatingHistory = false
+							end)
+						else
+							local historyItem = CommandHistory[#CommandHistory - CommandHistoryIndex + 1]
+							Console.CommandLine.ScrollingFrame.TextBox.Text = historyItem
+							-- Move cursor to end after text is set
+							task.spawn(function()
+								task.wait()
+								Console.CommandLine.ScrollingFrame.TextBox.CursorPosition = #historyItem + 1
+								isNavigatingHistory = false
+							end)
+						end
+					end
+				end
 			end
 		end)
 	end
