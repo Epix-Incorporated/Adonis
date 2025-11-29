@@ -404,6 +404,39 @@ local function main()
 	G2L["1f"]["PaddingTop"] = UDim.new(0, 1)
 	G2L["1f"]["PaddingBottom"] = UDim.new(0, 1)
 
+	-- StarterGui.ScreenGui.Console.ContextSwitcher (Client/Server)
+	G2L["21"] = Instance.new("ImageButton")
+	G2L["21"].Parent = ConsoleFrame
+	G2L["21"]["BorderSizePixel"] = 0
+	G2L["21"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57)
+	G2L["21"]["Size"] = UDim2.new(0, 60, 0, 15)
+	G2L["21"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["21"]["Name"] = [[ContextSwitcher]]
+	G2L["21"]["Position"] = UDim2.new(0, 175, 0, 4)
+
+	-- StarterGui.ScreenGui.Console.ContextSwitcher.TextLabel
+	G2L["22"] = Instance.new("TextLabel")
+	G2L["22"].Parent = G2L["21"]
+	G2L["22"]["TextWrapped"] = true
+	G2L["22"]["Interactable"] = false
+	G2L["22"]["BorderSizePixel"] = 0
+	G2L["22"]["TextSize"] = 20
+	G2L["22"]["TextScaled"] = true
+	G2L["22"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["22"]["FontFace"] =
+		Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+	G2L["22"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+	G2L["22"]["BackgroundTransparency"] = 1
+	G2L["22"]["Size"] = UDim2.new(1, 0, 1, 0)
+	G2L["22"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+	G2L["22"]["Text"] = [[Client]]
+
+	-- StarterGui.ScreenGui.Console.ContextSwitcher.UIPadding
+	G2L["23"] = Instance.new("UIPadding")
+	G2L["23"].Parent = G2L["21"]
+	G2L["23"]["PaddingTop"] = UDim.new(0, 1)
+	G2L["23"]["PaddingBottom"] = UDim.new(0, 1)
+
 	-- StarterGui.ScreenGui.ConsoleHandler
 	G2L["1c"] = Instance.new("LocalScript")
 	G2L["1c"].Parent = G2L["1"]
@@ -743,6 +776,8 @@ local function main()
 
 		local CtrlScroll = false
 		local AutoScroll = false
+		local IsServerMode = false -- false = Client mode, true = Server mode
+		local ServerLogConnection = nil -- Connection for server logs
 
 		local LogService = game:GetService("LogService")
 		local Players = game:GetService("Players")
@@ -855,7 +890,7 @@ local function main()
 
 		local focussedOutput
 
-		LogService.MessageOut:Connect(function(msg, msgtype)
+		local function addOutputMessage(msg, msgtype)
 			local formattedText = ""
 			local unformattedText = ""
 			local newOutputText = Console.OutputTemplate:Clone()
@@ -903,6 +938,84 @@ local function main()
 			if AutoScroll then
 				Console.Output.CanvasPosition = Vector2.new(0, 9e9)
 			end
+		end
+
+		-- Context Switcher (Client/Server Mode)
+		local function updateContextSwitcher()
+			if IsServerMode then
+				Console.ContextSwitcher.TextLabel.Text = "Server"
+				Console.ContextSwitcher.BackgroundColor3 = Color3.fromRGB(11, 90, 175)
+			else
+				Console.ContextSwitcher.TextLabel.Text = "Client"
+				Console.ContextSwitcher.BackgroundColor3 = Color3.fromRGB(56, 56, 56)
+			end
+		end
+
+		local function switchToServerMode()
+			IsServerMode = true
+			updateContextSwitcher()
+
+			-- Clear current output
+			for _, log in pairs(Console.Output:GetChildren()) do
+				if log:IsA("TextBox") then
+					log:Destroy()
+				end
+			end
+
+			-- Request server logs from server
+			local serverLogs = Dex_RemoteFunction:InvokeServer("GetServerLogs")
+			if serverLogs and type(serverLogs) == "table" then
+				for _, logData in ipairs(serverLogs) do
+					addOutputMessage(logData.message, logData.messageType)
+				end
+			end
+
+			-- Start listening for server log updates
+			if not ServerLogConnection then
+				ServerLogConnection = RunService.Heartbeat:Connect(function()
+					local newLogs = Dex_RemoteFunction:InvokeServer("PollServerLogs")
+					if newLogs and type(newLogs) == "table" then
+						for _, logData in ipairs(newLogs) do
+							addOutputMessage(logData.message, logData.messageType)
+						end
+					end
+				end)
+			end
+		end
+
+		local function switchToClientMode()
+			IsServerMode = false
+			updateContextSwitcher()
+
+			-- Disconnect server log polling
+			if ServerLogConnection then
+				ServerLogConnection:Disconnect()
+				ServerLogConnection = nil
+			end
+
+			-- Clear current output
+			for _, log in pairs(Console.Output:GetChildren()) do
+				if log:IsA("TextBox") then
+					log:Destroy()
+				end
+			end
+		end
+
+		Console.ContextSwitcher.MouseButton1Click:Connect(function()
+			if IsServerMode then
+				switchToClientMode()
+			else
+				switchToServerMode()
+			end
+		end)
+
+		updateContextSwitcher()
+
+		LogService.MessageOut:Connect(function(msg, msgtype)
+			-- Only show client logs when in client mode
+			if not IsServerMode then
+				addOutputMessage(msg, msgtype)
+			end
 		end)
 
 		Console.Output.MouseLeave:Connect(function()
@@ -921,10 +1034,26 @@ local function main()
 
 		Console.CommandLine.ScrollingFrame.TextBox.FocusLost:Connect(function(enterPressed)
 			if enterPressed and Console.CommandLine.ScrollingFrame.TextBox.Text ~= "" then
-				print("> " .. Console.CommandLine.ScrollingFrame.TextBox.Text)
-				Dex_RemoteFunction:InvokeServer("Loadstring", Console.CommandLine.ScrollingFrame.TextBox.Text)
+				local code = Console.CommandLine.ScrollingFrame.TextBox.Text
+				print("> " .. code)
 
-				-- loadstring(Console.CommandLine.ScrollingFrame.TextBox.Text)()
+				-- Execute on server or client based on mode
+				if IsServerMode then
+					-- Execute on server
+					local success, err = Dex_RemoteFunction:InvokeServer("Loadstring", code)
+					if not success and err then
+						warn("Server execution error: " .. tostring(err))
+					end
+				else
+					-- Execute on client through Adonis (checks CodeExecution setting)
+					-- Remote.LoadCode handles all the bytecode compilation and client execution
+					local success = Dex_RemoteFunction:InvokeServer("LoadstringClient", code)
+					if not success then
+						warn("Client execution failed - check if CodeExecution is enabled")
+					end
+				end
+
+				Console.CommandLine.ScrollingFrame.TextBox.Text = ""
 			end
 		end)
 	end

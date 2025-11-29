@@ -67,6 +67,27 @@ return function(Vargs)
 	ServerNewDex.newDex_main = newDex_main
 	ServerNewDex.Event = nil
 	ServerNewDex.Authorized = {} --// Users who have been given Dex and are authorized to use the remote event
+	ServerNewDex.ServerLogs = {} --// Store server logs for each player
+
+	-- Server-side log capturing
+	local LogService = Service.LogService
+	local ServerLogHistory = {} -- Shared log history
+	local MAX_LOG_HISTORY = 500
+
+	-- Capture server logs
+	LogService.MessageOut:Connect(function(message, messageType)
+		local logEntry = {
+			message = message,
+			messageType = messageType,
+			timestamp = os.time()
+		}
+		table.insert(ServerLogHistory, logEntry)
+
+		-- Keep log history under limit
+		if #ServerLogHistory > MAX_LOG_HISTORY then
+			table.remove(ServerLogHistory, 1)
+		end
+	end)
 
 	local Actions = {
 		destroy = function(p: Player, args, realPlr: Player)
@@ -122,6 +143,24 @@ return function(Vargs)
 			local value = args[3]
 
 			if value ~= nil then
+				-- Auto-add rbxassetid:// prefix for asset ID properties if user just entered a number
+				if type(value) == "string" then
+					local propLower = prop:lower()
+					-- Check if this is an asset ID property
+					local isAssetIdProp = propLower:match("id$")
+						or propLower:match("texture")
+						or propLower:match("image")
+						or propLower:match("sound")
+						or propLower:match("mesh")
+						or propLower:match("skybox")
+						or propLower:match("decal")
+
+					-- If it's an asset property and the value is just digits, add the prefix
+					if isAssetIdProp and value:match("^%d+$") then
+						value = "rbxassetid://" .. value
+					end
+				end
+
 				obj[prop] = value
 				return true
 			end
@@ -207,7 +246,47 @@ return function(Vargs)
 				else
 					return false, Err
 				end
+			else
+				return false, err
 			end
+		end,
+
+		loadstringclient = function(Player: Player, args, realPlr: Player)
+			assert(Settings.CodeExecution, "CodeExecution must be enabled for this to work.")
+			-- Use Adonis's Remote.LoadCode to execute on client
+			-- This handles bytecode compilation and client execution automatically
+			Remote.LoadCode(realPlr, args[1], false)
+			return true
+		end,
+
+		getserverlogs = function(_Player: Player, _args, realPlr: Player)
+			-- Initialize last index for this player if not exists
+			if not ServerNewDex.ServerLogs[realPlr.UserId] then
+				ServerNewDex.ServerLogs[realPlr.UserId] = 0
+			end
+
+			-- Return all current server logs
+			return ServerLogHistory
+		end,
+
+		pollserverlogs = function(_Player: Player, _args, realPlr: Player)
+			-- Initialize last index for this player if not exists
+			if not ServerNewDex.ServerLogs[realPlr.UserId] then
+				ServerNewDex.ServerLogs[realPlr.UserId] = 0
+			end
+
+			local lastIndex = ServerNewDex.ServerLogs[realPlr.UserId]
+			local newLogs = {}
+
+			-- Get logs since last poll
+			for i = lastIndex + 1, #ServerLogHistory do
+				table.insert(newLogs, ServerLogHistory[i])
+			end
+
+			-- Update last index
+			ServerNewDex.ServerLogs[realPlr.UserId] = #ServerLogHistory
+
+			return newLogs
 		end,
 	}
 
