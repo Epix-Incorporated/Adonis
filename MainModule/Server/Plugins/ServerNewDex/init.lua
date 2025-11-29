@@ -243,21 +243,22 @@ return function(Vargs)
 			return true
 		end,
 
-		loadstring = function(Player: Player, args)
+		loadstring = function(Player: Player, args, realPlr: Player)
 			assert(Settings.CodeExecution, "CodeExecution must be enabled for this to work.")
-			local func, err = Core.Loadstring(args[1])
-			if func then
-				local Succ, Err = pcall(function()
-					func()
-				end)
-				if Succ then
-					return true
-				else
-					return false, Err
-				end
-			else
-				return false, err
-			end
+			-- Compile to bytecode and validate
+			local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #1)"))
+			assert(
+				string.find(bytecode, "\27Lua"),
+				`Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`
+			)
+
+			-- Create and run the script
+			local cl = Core.NewScript("Script", args[1], true)
+			cl.Name = "[Adonis] Script"
+			cl.Disabled = false
+			cl.Parent = Service.ServerScriptService
+
+			return true
 		end,
 
 		loadstringclient = function(Player: Player, args, realPlr: Player)
