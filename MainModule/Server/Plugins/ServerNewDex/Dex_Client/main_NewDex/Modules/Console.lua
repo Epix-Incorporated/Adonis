@@ -777,14 +777,19 @@ local function main()
 		local CtrlScroll = false
 		local AutoScroll = false
 		local IsServerMode = false -- false = Client mode, true = Server mode
-		local ServerLogConnection = nil -- Connection for server logs
+
+		-- Separate log histories for client and server
+		local ClientLogHistory = {} -- Stores client logs when switching to server mode
+		local ServerLogHistory = {} -- Stores server logs when switching to client mode
 
 		local LogService = game:GetService("LogService")
 		local Players = game:GetService("Players")
 		local LocalPlayer = Players.LocalPlayer
 		local Mouse = LocalPlayer:GetMouse()
 		local UserInputService = game:GetService("UserInputService")
-		local RunService = game:GetService("RunService")
+
+		-- Get LogEvent for receiving server logs
+		local Dex_LogEvent = ReplicatedStorage:WaitForChild("NewDex_LogEvent") :: RemoteEvent
 
 		local Console = ConsoleFrame
 		local SyntaxHighlightingModule = require(script.SyntaxHighlighter)
@@ -951,35 +956,124 @@ local function main()
 			end
 		end
 
+		-- Request initial server log history
+		task.spawn(function()
+			local initialServerLogs = Dex_RemoteFunction:InvokeServer("GetServerLogHistory")
+			if initialServerLogs and type(initialServerLogs) == "table" then
+				for _, logData in ipairs(initialServerLogs) do
+					local newOutputText = Console.OutputTemplate:Clone()
+					local formattedText = ""
+
+					if logData.messageType == Enum.MessageType.MessageOutput then
+						formattedText = os.date("%H:%M:%S", logData.timestamp)
+							.. '   <font color="rgb(204, 204, 204)">'
+							.. logData.message
+							.. "</font>"
+						newOutputText.Text = formattedText
+					elseif logData.messageType == Enum.MessageType.MessageWarning then
+						formattedText = os.date("%H:%M:%S", logData.timestamp)
+							.. '   <b><font color="rgb(255, 142, 60)">'
+							.. logData.message
+							.. "</font></b>"
+						newOutputText.Text = formattedText
+					elseif logData.messageType == Enum.MessageType.MessageError then
+						formattedText = os.date("%H:%M:%S", logData.timestamp)
+							.. '   <b><font color="rgb(255, 68, 68)">'
+							.. logData.message
+							.. "</font></b>"
+						newOutputText.Text = formattedText
+					elseif logData.messageType == Enum.MessageType.MessageInfo then
+						formattedText = os.date("%H:%M:%S", logData.timestamp)
+							.. '   <font color="rgb(128, 215, 255)">'
+							.. logData.message
+							.. "</font>"
+						newOutputText.Text = formattedText
+					end
+
+					newOutputText.TextSize = OutputTextSize.Value
+					table.insert(ServerLogHistory, newOutputText)
+				end
+			end
+		end)
+
+		-- Always listen for server logs (even when not in server mode)
+		Dex_LogEvent.OnClientEvent:Connect(function(logEntry)
+			if logEntry then
+				if IsServerMode then
+					-- In server mode: display the log immediately
+					addOutputMessage(logEntry.message, logEntry.messageType)
+				else
+					-- In client mode: store in ServerLogHistory for later
+					local newOutputText = Console.OutputTemplate:Clone()
+					local formattedText = ""
+
+					if logEntry.messageType == Enum.MessageType.MessageOutput then
+						formattedText = os.date("%H:%M:%S", logEntry.timestamp)
+							.. '   <font color="rgb(204, 204, 204)">'
+							.. logEntry.message
+							.. "</font>"
+						newOutputText.Text = formattedText
+					elseif logEntry.messageType == Enum.MessageType.MessageWarning then
+						formattedText = os.date("%H:%M:%S", logEntry.timestamp)
+							.. '   <b><font color="rgb(255, 142, 60)">'
+							.. logEntry.message
+							.. "</font></b>"
+						newOutputText.Text = formattedText
+					elseif logEntry.messageType == Enum.MessageType.MessageError then
+						formattedText = os.date("%H:%M:%S", logEntry.timestamp)
+							.. '   <b><font color="rgb(255, 68, 68)">'
+							.. logEntry.message
+							.. "</font></b>"
+						newOutputText.Text = formattedText
+					elseif logEntry.messageType == Enum.MessageType.MessageInfo then
+						formattedText = os.date("%H:%M:%S", logEntry.timestamp)
+							.. '   <font color="rgb(128, 215, 255)">'
+							.. logEntry.message
+							.. "</font>"
+						newOutputText.Text = formattedText
+					end
+
+					newOutputText.TextSize = OutputTextSize.Value
+					table.insert(ServerLogHistory, newOutputText)
+
+					-- Keep server history under limit
+					if #ServerLogHistory > OutputLimit.Value then
+						local oldest = table.remove(ServerLogHistory, 1)
+						if oldest and typeof(oldest) == "Instance" then
+							oldest:Destroy()
+						end
+					end
+				end
+			end
+		end)
+
 		local function switchToServerMode()
 			IsServerMode = true
 			updateContextSwitcher()
 
-			-- Clear current output
+			-- Save current client logs to history
+			ClientLogHistory = {}
 			for _, log in pairs(Console.Output:GetChildren()) do
 				if log:IsA("TextBox") then
+					table.insert(ClientLogHistory, log:Clone())
 					log:Destroy()
 				end
 			end
 
-			-- Request server logs from server
-			local serverLogs = Dex_RemoteFunction:InvokeServer("GetServerLogs")
-			if serverLogs and type(serverLogs) == "table" then
-				for _, logData in ipairs(serverLogs) do
-					addOutputMessage(logData.message, logData.messageType)
-				end
+			-- Clear displayedOutput array
+			displayedOutput = {}
+
+			-- Restore server logs from history
+			for _, savedLog in ipairs(ServerLogHistory) do
+				local restoredLog = savedLog:Clone()
+				restoredLog.Parent = Console.Output
+				restoredLog.Visible = true
+				table.insert(displayedOutput, restoredLog)
 			end
 
-			-- Start listening for server log updates
-			if not ServerLogConnection then
-				ServerLogConnection = RunService.Heartbeat:Connect(function()
-					local newLogs = Dex_RemoteFunction:InvokeServer("PollServerLogs")
-					if newLogs and type(newLogs) == "table" then
-						for _, logData in ipairs(newLogs) do
-							addOutputMessage(logData.message, logData.messageType)
-						end
-					end
-				end)
+			-- Scroll to bottom
+			if AutoScroll then
+				Console.Output.CanvasPosition = Vector2.new(0, 9e9)
 			end
 		end
 
@@ -987,17 +1081,29 @@ local function main()
 			IsServerMode = false
 			updateContextSwitcher()
 
-			-- Disconnect server log polling
-			if ServerLogConnection then
-				ServerLogConnection:Disconnect()
-				ServerLogConnection = nil
-			end
-
-			-- Clear current output
+			-- Save current server logs to history
+			ServerLogHistory = {}
 			for _, log in pairs(Console.Output:GetChildren()) do
 				if log:IsA("TextBox") then
+					table.insert(ServerLogHistory, log:Clone())
 					log:Destroy()
 				end
+			end
+
+			-- Clear displayedOutput array
+			displayedOutput = {}
+
+			-- Restore client logs from history
+			for _, savedLog in ipairs(ClientLogHistory) do
+				local restoredLog = savedLog:Clone()
+				restoredLog.Parent = Console.Output
+				restoredLog.Visible = true
+				table.insert(displayedOutput, restoredLog)
+			end
+
+			-- Scroll to bottom
+			if AutoScroll then
+				Console.Output.CanvasPosition = Vector2.new(0, 9e9)
 			end
 		end
 
@@ -1012,9 +1118,48 @@ local function main()
 		updateContextSwitcher()
 
 		LogService.MessageOut:Connect(function(msg, msgtype)
-			-- Only show client logs when in client mode
 			if not IsServerMode then
+				-- In client mode: add log to display
 				addOutputMessage(msg, msgtype)
+			else
+				-- In server mode: save to client history for later
+				local newOutputText = Console.OutputTemplate:Clone()
+				local formattedText = ""
+				local unformattedText = ""
+
+				unformattedText = os.date("%H:%M:%S") .. "   " .. msg
+				if msgtype == Enum.MessageType.MessageOutput then
+					formattedText = os.date("%H:%M:%S") .. '   <font color="rgb(204, 204, 204)">' .. msg .. "</font>"
+					newOutputText.Text = formattedText
+				elseif msgtype == Enum.MessageType.MessageWarning then
+					formattedText = os.date("%H:%M:%S")
+						.. '   <b><font color="rgb(255, 142, 60)">'
+						.. msg
+						.. "</font></b>"
+					newOutputText.Text = formattedText
+				elseif msgtype == Enum.MessageType.MessageError then
+					formattedText = os.date("%H:%M:%S")
+						.. '   <b><font color="rgb(255, 68, 68)">'
+						.. msg
+						.. "</font></b>"
+					newOutputText.Text = formattedText
+				elseif msgtype == Enum.MessageType.MessageInfo then
+					formattedText = os.date("%H:%M:%S") .. '   <font color="rgb(128, 215, 255)">' .. msg .. "</font>"
+					newOutputText.Text = formattedText
+				end
+
+				newOutputText.TextSize = OutputTextSize.Value
+
+				-- Store in client history (not displayed yet)
+				table.insert(ClientLogHistory, newOutputText)
+
+				-- Keep client history under limit
+				if #ClientLogHistory > OutputLimit.Value then
+					local oldest = table.remove(ClientLogHistory, 1)
+					if oldest and typeof(oldest) == "Instance" then
+						oldest:Destroy()
+					end
+				end
 			end
 		end)
 

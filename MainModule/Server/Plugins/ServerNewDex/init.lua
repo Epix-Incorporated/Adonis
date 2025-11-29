@@ -66,26 +66,35 @@ return function(Vargs)
 
 	ServerNewDex.newDex_main = newDex_main
 	ServerNewDex.Event = nil
+	ServerNewDex.LogEvent = nil -- RemoteEvent for pushing logs to clients
 	ServerNewDex.Authorized = {} --// Users who have been given Dex and are authorized to use the remote event
-	ServerNewDex.ServerLogs = {} --// Store server logs for each player
 
 	-- Server-side log capturing
 	local LogService = Service.LogService
 	local ServerLogHistory = {} -- Shared log history
 	local MAX_LOG_HISTORY = 500
 
-	-- Capture server logs
+	-- Capture server logs and broadcast to all authorized Dex clients
 	LogService.MessageOut:Connect(function(message, messageType)
 		local logEntry = {
 			message = message,
 			messageType = messageType,
-			timestamp = os.time()
+			timestamp = os.time(),
 		}
 		table.insert(ServerLogHistory, logEntry)
 
 		-- Keep log history under limit
 		if #ServerLogHistory > MAX_LOG_HISTORY then
 			table.remove(ServerLogHistory, 1)
+		end
+
+		-- Broadcast to all authorized Dex clients (not just those viewing server console)
+		if ServerNewDex.LogEvent then
+			for player, _ in pairs(ServerNewDex.Authorized) do
+				if player and player.Parent then
+					ServerNewDex.LogEvent:FireClient(player, logEntry)
+				end
+			end
 		end
 	end)
 
@@ -259,34 +268,9 @@ return function(Vargs)
 			return true
 		end,
 
-		getserverlogs = function(_Player: Player, _args, realPlr: Player)
-			-- Initialize last index for this player if not exists
-			if not ServerNewDex.ServerLogs[realPlr.UserId] then
-				ServerNewDex.ServerLogs[realPlr.UserId] = 0
-			end
-
-			-- Return all current server logs
+		getserverloghistory = function(_Player: Player, _args, realPlr: Player)
+			-- Send complete server log history to client
 			return ServerLogHistory
-		end,
-
-		pollserverlogs = function(_Player: Player, _args, realPlr: Player)
-			-- Initialize last index for this player if not exists
-			if not ServerNewDex.ServerLogs[realPlr.UserId] then
-				ServerNewDex.ServerLogs[realPlr.UserId] = 0
-			end
-
-			local lastIndex = ServerNewDex.ServerLogs[realPlr.UserId]
-			local newLogs = {}
-
-			-- Get logs since last poll
-			for i = lastIndex + 1, #ServerLogHistory do
-				table.insert(newLogs, ServerLogHistory[i])
-			end
-
-			-- Update last index
-			ServerNewDex.ServerLogs[realPlr.UserId] = #ServerLogHistory
-
-			return newLogs
 		end,
 	}
 
@@ -313,6 +297,14 @@ return function(Vargs)
 
 				return MethodFunction(pData, args, Plr)
 			end
+		end
+
+		-- Create LogEvent RemoteEvent for pushing server logs to clients
+		if not ServerNewDex.LogEvent then
+			ServerNewDex.LogEvent = Service.New("RemoteEvent", {
+				Name = "NewDex_LogEvent",
+				Parent = game:GetService("ReplicatedStorage"),
+			}, true, true)
 		end
 	end
 
