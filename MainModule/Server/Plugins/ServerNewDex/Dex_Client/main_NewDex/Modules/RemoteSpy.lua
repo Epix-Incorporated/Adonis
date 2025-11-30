@@ -101,7 +101,13 @@ local function main()
 			local hasContent = false
 			for k, v in pairs(value) do
 				hasContent = true
-				result = result .. indentStr .. "  [" .. serializeValue(k, indent + 1, visited) .. "] = " .. serializeValue(v, indent + 1, visited) .. ",\n"
+				result = result
+					.. indentStr
+					.. "  ["
+					.. serializeValue(k, indent + 1, visited)
+					.. "] = "
+					.. serializeValue(v, indent + 1, visited)
+					.. ",\n"
 			end
 			if hasContent then
 				result = result .. indentStr .. "}"
@@ -142,7 +148,9 @@ local function main()
 
 	-- Update detail panel with selected log
 	local function updateDetailPanel(logData)
-		if not DetailPanel then return end
+		if not DetailPanel then
+			return
+		end
 
 		-- Clear existing detail content
 		for _, child in ipairs(DetailPanel:GetChildren()) do
@@ -484,7 +492,9 @@ local function main()
 
 		-- Client-side monitoring setup
 		local function setupClientMonitoring()
-			if MonitoringClient then return end
+			if MonitoringClient then
+				return
+			end
 			MonitoringClient = true
 
 			-- Hook all existing RemoteEvents and RemoteFunctions
@@ -492,9 +502,11 @@ local function main()
 				if descendant:IsA("RemoteEvent") then
 					local remoteName = descendant:GetFullName()
 					local connection = descendant.OnClientEvent:Connect(function(...)
-						if IsPaused then return end
+						if IsPaused then
+							return
+						end
 
-						local args = {...}
+						local args = { ... }
 						local formattedArgs = {}
 						for _, arg in ipairs(args) do
 							table.insert(formattedArgs, tostring(arg))
@@ -524,9 +536,11 @@ local function main()
 					task.wait(0.1)
 					local remoteName = descendant:GetFullName()
 					local conn = descendant.OnClientEvent:Connect(function(...)
-						if IsPaused then return end
+						if IsPaused then
+							return
+						end
 
-						local args = {...}
+						local args = { ... }
 						local formattedArgs = {}
 						for _, arg in ipairs(args) do
 							table.insert(formattedArgs, tostring(arg))
@@ -636,7 +650,8 @@ local function main()
 
 		AutoScrollButton.MouseButton1Click:Connect(function()
 			AutoScroll = not AutoScroll
-			AutoScrollButton.BackgroundColor3 = AutoScroll and Color3.fromRGB(40, 120, 40) or Color3.fromRGB(120, 40, 40)
+			AutoScrollButton.BackgroundColor3 = AutoScroll and Color3.fromRGB(40, 120, 40)
+				or Color3.fromRGB(120, 40, 40)
 		end)
 
 		-- Create Block List Editor Window
@@ -835,7 +850,6 @@ local function main()
 		BlockListButton.MouseButton1Click:Connect(function()
 			createBlockListEditor()
 		end)
-
 	end
 
 	-- Add log entry to UI (implementation)
