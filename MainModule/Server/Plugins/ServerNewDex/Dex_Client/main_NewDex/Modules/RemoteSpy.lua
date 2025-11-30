@@ -643,12 +643,14 @@ local function main()
 		local function createBlockListEditor()
 			if blockListWindow then
 				blockListWindow:Show()
+				blockListWindow.Gui.DisplayOrder = 100 -- Always on top
 				return
 			end
 
 			blockListWindow = Lib.Window.new()
 			blockListWindow:SetTitle("Block List Editor")
-			blockListWindow:Resize(400, 300)
+			blockListWindow:Resize(500, 300)
+			blockListWindow.Gui.DisplayOrder = 100 -- Always on top
 
 			local editorFrame = createSimple("Frame", {
 				Name = "BlockListEditorContent",
@@ -706,7 +708,7 @@ local function main()
 				Parent = editorFrame,
 				BackgroundColor3 = Settings.Theme.Button,
 				BorderSizePixel = 0,
-				Position = UDim2.new(1, -80, 0, 25),
+				Position = UDim2.new(1, -80, 0, 42),
 				Size = UDim2.new(0, 75, 0, 25),
 				Font = Enum.Font.SourceSansBold,
 				Text = "Add",
@@ -718,7 +720,7 @@ local function main()
 			local listLabel = createSimple("TextLabel", {
 				Parent = editorFrame,
 				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 5, 0, 60),
+				Position = UDim2.new(0, 5, 0, 77),
 				Size = UDim2.new(1, -10, 0, 15),
 				Font = Enum.Font.SourceSansBold,
 				Text = "Blocked Remotes:",
@@ -733,8 +735,8 @@ local function main()
 				BackgroundColor3 = Settings.Theme.Main2,
 				BorderSizePixel = 1,
 				BorderColor3 = Settings.Theme.Outline1,
-				Position = UDim2.new(0, 5, 0, 80),
-				Size = UDim2.new(1, -10, 1, -85),
+				Position = UDim2.new(0, 5, 0, 97),
+				Size = UDim2.new(1, -10, 1, -102),
 				ScrollBarThickness = 6,
 				ScrollBarImageColor3 = Settings.Theme.Outline2,
 				CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -792,12 +794,15 @@ local function main()
 
 					removeBtn.MouseButton1Click:Connect(function()
 						removeFromBlockList(pattern)
-						refreshBlockList()
+						-- refreshBlockList is called automatically via callback
 					end)
 				end
 
 				blockListScroll.CanvasSize = UDim2.new(0, 0, 0, #BlockList * 27)
 			end
+
+			-- Set the refresh callback so block buttons can update this UI
+			blockListRefreshCallback = refreshBlockList
 
 			-- Add button handler
 			addButton.MouseButton1Click:Connect(function()
