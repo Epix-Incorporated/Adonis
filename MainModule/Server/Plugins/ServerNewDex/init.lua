@@ -68,9 +68,7 @@ return function(Vargs)
 	ServerNewDex.newDex_main = newDex_main
 	ServerNewDex.Event = nil
 	ServerNewDex.LogEvent = nil -- RemoteEvent for pushing logs to clients
-	ServerNewDex.RemoteSpy_LogEvent = nil -- RemoteEvent for RemoteSpy logs
 	ServerNewDex.Authorized = {} --// Users who have been given Dex and are authorized to use the remote event
-	ServerNewDex.RemoteSpyMonitoring = {} -- Players actively monitoring remotes
 
 	-- Server-side log capturing
 	local LogService = Service.LogService
@@ -276,24 +274,6 @@ return function(Vargs)
 			-- Send complete server log history to client
 			return ServerLogHistory
 		end,
-
-		startremotespy = function(_Player: Player, _args, realPlr: Player)
-			-- Start monitoring remotes for this player
-			if not ServerNewDex.RemoteSpyMonitoring[realPlr] then
-				ServerNewDex.RemoteSpyMonitoring[realPlr] = true
-				return true
-			end
-			return false
-		end,
-
-		stopremotespy = function(_Player: Player, _args, realPlr: Player)
-			-- Stop monitoring remotes for this player
-			if ServerNewDex.RemoteSpyMonitoring[realPlr] then
-				ServerNewDex.RemoteSpyMonitoring[realPlr] = nil
-				return true
-			end
-			return false
-		end,
 	}
 
 	function ServerNewDex.MakeEvent()
@@ -328,77 +308,7 @@ return function(Vargs)
 				Parent = game:GetService("ReplicatedStorage"),
 			}, true, true)
 		end
-
-		-- Create RemoteSpy_LogEvent for pushing remote spy logs to clients
-		if not ServerNewDex.RemoteSpy_LogEvent then
-			ServerNewDex.RemoteSpy_LogEvent = Service.New("RemoteEvent", {
-				Name = "RemoteSpy_LogEvent",
-				Parent = game:GetService("ReplicatedStorage"),
-			}, true, true)
-		end
 	end
-
-	-- Remote monitoring system
-	local MonitoredRemotes = {}
-	local function setupRemoteMonitoring(remote)
-		if MonitoredRemotes[remote] then
-			return -- Already monitoring
-		end
-
-		local remoteName = remote:GetFullName()
-		local remoteType = remote.ClassName
-
-		if remoteType == "RemoteEvent" then
-			-- Hook OnServerEvent
-			local originalEvent = remote.OnServerEvent
-			MonitoredRemotes[remote] = originalEvent:Connect(function(player, ...)
-				-- Broadcast to all monitoring clients
-				for monitoringPlayer, _ in pairs(ServerNewDex.RemoteSpyMonitoring) do
-					if monitoringPlayer and monitoringPlayer.Parent and ServerNewDex.RemoteSpy_LogEvent then
-						local args = { ... }
-
-						local logData = {
-							remoteType = "FireServer",
-							remoteName = remoteName,
-							caller = player.Name,
-							args = args, -- Send raw args to client for detailed inspection
-							timestamp = os.time(),
-						}
-
-						ServerNewDex.RemoteSpy_LogEvent:FireClient(monitoringPlayer, logData)
-					end
-				end
-			end)
-		elseif remoteType == "RemoteFunction" then
-			-- RemoteFunctions can't be hooked because OnServerInvoke is write-only
-			-- and we can't override the metatable on Roblox instances
-			-- For now, just mark as seen but don't actually hook
-			MonitoredRemotes[remote] = true
-		end
-	end
-
-	-- Monitor all existing and future RemoteEvents/RemoteFunctions
-	local function monitorAllRemotes()
-		-- Monitor existing remotes (only RemoteEvents will actually be hooked)
-		for _, descendant in ipairs(game:GetDescendants()) do
-			if descendant:IsA("RemoteEvent") then
-				setupRemoteMonitoring(descendant)
-			end
-		end
-
-		-- Monitor new remotes
-		game.DescendantAdded:Connect(function(descendant)
-			if descendant:IsA("RemoteEvent") then
-				task.wait(0.1) -- Small delay to let it initialize
-				setupRemoteMonitoring(descendant)
-			end
-		end)
-	end
-
-	-- Start monitoring when the plugin loads
-	task.spawn(function()
-		monitorAllRemotes()
-	end)
 
 	function ServerNewDex.MakeLocalDexForPlayer(ply, dexGui, destination)
 		if ply then
