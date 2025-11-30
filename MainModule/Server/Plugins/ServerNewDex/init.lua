@@ -397,7 +397,6 @@ return function(Vargs)
 
 	-- Start monitoring when the plugin loads
 	task.spawn(function()
-		task.wait(2) -- Wait for game to initialize
 		monitorAllRemotes()
 	end)
 
