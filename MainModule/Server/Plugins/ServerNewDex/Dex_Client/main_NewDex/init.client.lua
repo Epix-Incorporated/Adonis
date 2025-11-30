@@ -1237,9 +1237,9 @@ Main = (function()
 					BackgroundColor3 = Color3.new(1, 1, 1),
 					BackgroundTransparency = 1,
 					Font = 3,
-					Name = "Settings",
+					Name = "Unload",
 					Parent = { 6 },
-					Position = UDim2.new(1, -48, 0, 0),
+					Position = UDim2.new(1, -72, 0, 0),
 					Size = UDim2.new(0, 24, 1, 0),
 					Text = "",
 					TextColor3 = Color3.new(1, 1, 1),
@@ -1252,7 +1252,7 @@ Main = (function()
 				{
 					BackgroundColor3 = Color3.new(1, 1, 1),
 					BackgroundTransparency = 1,
-					Image = "rbxassetid://6578871732",
+					Image = "rbxassetid://6031094678",
 					ImageTransparency = 0.20000000298023,
 					Name = "Icon",
 					Parent = { 10 },
@@ -1262,6 +1262,36 @@ Main = (function()
 			},
 			{
 				12,
+				"TextButton",
+				{
+					BackgroundColor3 = Color3.new(1, 1, 1),
+					BackgroundTransparency = 1,
+					Font = 3,
+					Name = "Settings",
+					Parent = { 6 },
+					Position = UDim2.new(1, -48, 0, 0),
+					Size = UDim2.new(0, 24, 1, 0),
+					Text = "",
+					TextColor3 = Color3.new(1, 1, 1),
+					TextSize = 14,
+				},
+			},
+			{
+				13,
+				"ImageLabel",
+				{
+					BackgroundColor3 = Color3.new(1, 1, 1),
+					BackgroundTransparency = 1,
+					Image = "rbxassetid://6578871732",
+					ImageTransparency = 0.20000000298023,
+					Name = "Icon",
+					Parent = { 12 },
+					Position = UDim2.new(0, 4, 0, 4),
+					Size = UDim2.new(0, 16, 0, 16),
+				},
+			},
+			{
+				14,
 				"TextButton",
 				{
 					BackgroundColor3 = Color3.new(1, 1, 1),
@@ -1277,7 +1307,7 @@ Main = (function()
 				},
 			},
 			{
-				13,
+				15,
 				"ImageLabel",
 				{
 					BackgroundColor3 = Color3.new(1, 1, 1),
@@ -1285,13 +1315,13 @@ Main = (function()
 					Image = "rbxassetid://6578933307",
 					ImageTransparency = 0.20000000298023,
 					Name = "Icon",
-					Parent = { 12 },
+					Parent = { 14 },
 					Position = UDim2.new(0, 4, 0, 4),
 					Size = UDim2.new(0, 16, 0, 16),
 				},
 			},
 			{
-				14,
+				16,
 				"ScrollingFrame",
 				{
 					Active = true,
@@ -1309,20 +1339,20 @@ Main = (function()
 				},
 			},
 			{
-				15,
+				17,
 				"Frame",
 				{
 					BackgroundColor3 = Color3.new(1, 1, 1),
 					BackgroundTransparency = 1,
 					Name = "Container",
-					Parent = { 14 },
+					Parent = { 16 },
 					Position = UDim2.new(0, 7, 0, 8),
 					Size = UDim2.new(1, -14, 0, 2),
 				},
 			},
-			{ 16, "UIGridLayout", { CellSize = UDim2.new(0, 66, 0, 74), Parent = { 15 }, SortOrder = 2 } },
+			{ 18, "UIGridLayout", { CellSize = UDim2.new(0, 66, 0, 74), Parent = { 17 }, SortOrder = 2 } },
 			{
-				17,
+				19,
 				"Frame",
 				{
 					BackgroundColor3 = Color3.new(1, 1, 1),
@@ -1334,7 +1364,7 @@ Main = (function()
 				},
 			},
 			{
-				18,
+				20,
 				"TextButton",
 				{
 					AutoButtonColor = false,
@@ -1342,7 +1372,7 @@ Main = (function()
 					BorderSizePixel = 0,
 					Font = 3,
 					Name = "Main",
-					Parent = { 17 },
+					Parent = { 19 },
 					Size = UDim2.new(1, 0, 0, 60),
 					Text = "",
 					TextColor3 = Color3.new(0, 0, 0),
@@ -1350,7 +1380,7 @@ Main = (function()
 				},
 			},
 			{
-				19,
+				21,
 				"ImageLabel",
 				{
 					BackgroundColor3 = Color3.new(1, 1, 1),
@@ -1358,14 +1388,14 @@ Main = (function()
 					Image = "rbxassetid://6579106223",
 					ImageRectSize = Vector2.new(32, 32),
 					Name = "Icon",
-					Parent = { 18 },
+					Parent = { 20 },
 					Position = UDim2.new(0.5, -16, 0, 4),
 					ScaleType = 4,
 					Size = UDim2.new(0, 32, 0, 32),
 				},
 			},
 			{
-				20,
+				22,
 				"TextLabel",
 				{
 					BackgroundColor3 = Color3.new(1, 1, 1),
@@ -1373,7 +1403,7 @@ Main = (function()
 					BorderSizePixel = 0,
 					Font = 3,
 					Name = "AppName",
-					Parent = { 18 },
+					Parent = { 20 },
 					Position = UDim2.new(0, 2, 0, 38),
 					Size = UDim2.new(1, -4, 1, -40),
 					Text = "Explorer",
@@ -1386,13 +1416,13 @@ Main = (function()
 				},
 			},
 			{
-				21,
+				23,
 				"Frame",
 				{
 					BackgroundColor3 = Color3.new(0, 0.66666668653488, 1),
 					BorderSizePixel = 0,
 					Name = "Highlight",
-					Parent = { 18 },
+					Parent = { 20 },
 					Position = UDim2.new(0, 0, 1, -2),
 					Size = UDim2.new(1, 0, 0, 2),
 				},
@@ -1437,6 +1467,68 @@ Main = (function()
 					)
 					:Play()
 			end
+		end)
+
+		-- Unload Button
+		local unloadButton = gui.OpenButton.MainFrame.BottomFrame.Unload
+		unloadButton.MouseButton1Click:Connect(function()
+			-- Close all windows first
+			if Lib.StoredWindows then
+				for _, windowData in pairs(Lib.StoredWindows) do
+					if windowData.Close then
+						pcall(function() windowData:Close() end)
+					end
+					if windowData.Gui then
+						windowData.Gui:Destroy()
+					end
+				end
+			end
+
+			-- Destroy all major app windows
+			if Explorer and Explorer.Window and Explorer.Window.Gui then
+				Explorer.Window.Gui:Destroy()
+			end
+			if Properties and Properties.Window and Properties.Window.Gui then
+				Properties.Window.Gui:Destroy()
+			end
+			if Console and Console.Window and Console.Window.Gui then
+				Console.Window.Gui:Destroy()
+			end
+			if ModelViewer and ModelViewer.Window and ModelViewer.Window.Gui then
+				ModelViewer.Window.Gui:Destroy()
+			end
+			if RemoteSpy and RemoteSpy.Window and RemoteSpy.Window.Gui then
+				RemoteSpy.Window.Gui:Destroy()
+			end
+
+			-- Destroy main GUIs
+			if Lib.SidesGui then
+				Lib.SidesGui:Destroy()
+			end
+			if Main.MainGui then
+				Main.MainGui:Destroy()
+			end
+
+			-- Find and destroy ALL Dex-related GUIs in PlayerGui
+			local playerGui = plr:FindFirstChild("PlayerGui")
+			if playerGui then
+				for _, child in ipairs(playerGui:GetChildren()) do
+					if string.find(child.Name, "Dex") then
+						child:Destroy()
+					end
+				end
+			end
+
+			-- Destroy the script itself
+			local scriptToDestroy = script
+			task.spawn(function()
+				task.wait(0.1) -- Small delay to ensure GUIs are destroyed first
+				if scriptToDestroy and scriptToDestroy.Parent then
+					scriptToDestroy:Destroy()
+				end
+			end)
+
+			print("Dex has been unloaded")
 		end)
 
 		-- Settings Button
