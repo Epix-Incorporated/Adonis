@@ -14,7 +14,7 @@
 ]]
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, Console, ModelViewer, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, Console, ModelViewer, RemoteSpy, DefaultSettings, Notebook, Serializer, Lib
 local API, RMD
 local SettingsEditor
 local AboutMenu
@@ -152,7 +152,7 @@ end
 Main = (function()
 	local Main = {}
 
-	Main.ModuleList = { "Explorer", "Properties", "Console", "ModelViewer" } --Main.ModuleList = {"Explorer","Properties","ScriptViewer"}
+	Main.ModuleList = { "Explorer", "Properties", "Console", "ModelViewer", "RemoteSpy" } --Main.ModuleList = {"Explorer","Properties","ScriptViewer"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "Beta 1.0.6 Adonis"
@@ -235,12 +235,14 @@ Main = (function()
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
 		Console = Apps.Console
+		RemoteSpy = Apps.RemoteSpy
 		ModelViewer = Apps.ModelViewer
 		Notebook = Apps.Notebook
 		local appTable = {
 			Explorer = Explorer,
 			Properties = Properties,
 			Console = Console,
+			RemoteSpy = RemoteSpy,
 			ModelViewer = ModelViewer,
 			ScriptViewer = ScriptViewer,
 			Notebook = Notebook,
@@ -1469,6 +1471,13 @@ Main = (function()
 		Main.CreateApp({ Name = "Console", IconMap = Main.LargeIcons, Icon = "Output", Window = Console.Window })
 
 		Main.CreateApp({ Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window })
+
+		Main.CreateApp({
+			Name = "Remote Spy",
+			IconMap = Main.MiscIcons,
+			Icon = "CallRemote",
+			Window = RemoteSpy.Window,
+		})
 		--Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 
 		Lib.ShowGui(gui)
@@ -1582,6 +1591,7 @@ Main = (function()
 		Properties.Init()
 		Console.Init()
 		ModelViewer.Init()
+		RemoteSpy.Init()
 		--ScriptViewer.Init()
 
 		SettingsEditor.Init() -- init this last
