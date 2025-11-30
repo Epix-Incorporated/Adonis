@@ -17,6 +17,11 @@ return function(Vargs)
 	local Success, APIDump, Reflection = nil
 	local ServerNewDex = {}
 
+	-- API/Reflection URLs
+	local ROBLOX_CLIENT_TRACKER_BASE = "https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox"
+	local API_DUMP_URL = "https://github.com/MaximumADHD/Roblox-Client-Tracker/raw/roblox/API-Dump.json"
+	local REFLECTION_METADATA_URL = ROBLOX_CLIENT_TRACKER_BASE .. "/ReflectionMetadata.xml"
+
 	local newDex_main = script:WaitForChild("Dex_Client", 120)
 	local Event = ServerNewDex.Event
 
@@ -35,9 +40,7 @@ return function(Vargs)
 		if Server.HTTP.HttpEnabled then
 			while true do
 				Success, APIDump = pcall(function()
-					return HttpService:GetAsync(
-						"https://github.com/MaximumADHD/Roblox-Client-Tracker/raw/roblox/API-Dump.json"
-					)
+					return HttpService:GetAsync(API_DUMP_URL)
 				end)
 				if Success and APIDump then
 					break
@@ -47,9 +50,7 @@ return function(Vargs)
 			Logs:AddLog("Script", "Successfully loaded instance API dump to Dex")
 			while true do
 				Success, Reflection = pcall(function()
-					return HttpService:GetAsync(
-						"https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/ReflectionMetadata.xml"
-					)
+					return HttpService:GetAsync(REFLECTION_METADATA_URL)
 				end)
 				if Success and Reflection then
 					break
