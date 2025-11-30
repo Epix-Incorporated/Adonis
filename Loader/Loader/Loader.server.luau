@@ -121,8 +121,8 @@ else
 		--// Module used in case MainModule is unavailable, containing only essential commands
 		Backup = 17438792001; 	--// https://create.roblox.com/store/asset/17438792001/
 
-		DebugMode = true;
-		SilentStartup = false;
+		DebugMode = false;
+		SilentStartup = true;
 	}
 
 	--// Init
