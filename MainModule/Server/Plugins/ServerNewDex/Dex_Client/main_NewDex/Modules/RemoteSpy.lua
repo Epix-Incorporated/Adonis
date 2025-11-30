@@ -600,7 +600,7 @@ local function main()
 
 		ClearButton.MouseButton1Click:Connect(function()
 			for _, child in ipairs(LogList:GetChildren()) do
-				if child:IsA("Frame") then
+				if child:IsA("TextButton") then
 					child:Destroy()
 				end
 			end
@@ -980,9 +980,28 @@ local function main()
 		})
 
 		blockButton.MouseButton1Click:Connect(function()
-			addToBlockList(logData.remoteName)
-			-- Remove this entry from the display
-			LogEntry:Destroy()
+			local blockedRemoteName = logData.remoteName
+			addToBlockList(blockedRemoteName)
+
+			-- Remove all entries with this remote name from the display
+			for _, child in ipairs(LogList:GetChildren()) do
+				if child:IsA("TextButton") and child.Name == "LogEntry" then
+					local remoteNameLabel = child:FindFirstChild("RemoteName")
+					if remoteNameLabel and remoteNameLabel.Text == blockedRemoteName then
+						child:Destroy()
+					end
+				end
+			end
+
+			-- Remove all entries with this remote name from the log array
+			for i = #RemoteLogs, 1, -1 do
+				if RemoteLogs[i].remoteName == blockedRemoteName then
+					table.remove(RemoteLogs, i)
+				end
+			end
+
+			-- Update canvas size
+			LogList.CanvasSize = UDim2.new(0, 0, 0, #RemoteLogs * 62)
 		end)
 
 		-- Click handler to show details
@@ -1017,9 +1036,9 @@ local function main()
 		-- Update canvas size
 		LogList.CanvasSize = UDim2.new(0, 0, 0, #RemoteLogs * 62)
 
-		-- Auto-scroll to top for new entries if enabled
+		-- Auto-scroll to bottom for new entries if enabled
 		if AutoScroll then
-			LogList.CanvasPosition = Vector2.new(0, 0)
+			LogList.CanvasPosition = Vector2.new(0, 9e9)
 		end
 	end
 
