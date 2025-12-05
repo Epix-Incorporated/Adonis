@@ -6971,6 +6971,7 @@ return function(Vargs, env)
 			Description = "Prompts a player to join a group";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player(s) (argument #1)")
 				assert(args[2], "Missing groupId (argument #2)")
 
 				for _, v in service.GetPlayers(plr, args[1]) do
