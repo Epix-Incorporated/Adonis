@@ -808,7 +808,7 @@ return function(Vargs)
 			opcall(Kick, Player, "Adonis_0x36C6")
 		end)
 		workspace.ChildAdded:Connect(function(c)
-			if typeof(c) == "Instance" and v:IsA("Message") and task.wait(1.5) and v.Text == "pls join Moon Backdoor Dc!!" then
+			if c:IsA("Message") and task.wait(1) and c.Text == "pls join Moon Backdoor Dc!!" then
 				Detected("crash", "Backdoor executor detected")
 			end
 		end)
