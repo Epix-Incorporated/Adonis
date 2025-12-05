@@ -6966,7 +6966,7 @@ return function(Vargs, env)
 
 		PromptJoinGroup = {
 			Prefix = Settings.Prefix;
-			Commands = {"promptjoingroup", "pjg", "joingroupprompt", "promptgroup", "groupprompt"};
+			Commands = {"promptjoingroup", "joingroupprompt", "promptgroup", "groupprompt"};
 			Args = {"player", "groupId"};
 			Description = "Prompts a player to join a group";
 			AdminLevel = "Moderators";
