@@ -11,7 +11,9 @@ GetEnv = nil
 
 return function(Vargs)
 	local client, service = Vargs.Client, Vargs.Service
-	local env = GetEnv(nil, {script = script})
+	local env = GetEnv(nil, {
+		script = script
+	})
 	setfenv(1, env)
 
 	local _G, game, script, getfenv, setfenv, workspace,
@@ -84,67 +86,67 @@ return function(Vargs)
 		proxyMt.__index = function()
 			Detected("kick", "Proxy methamethod 0x215F")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__newindex = function()
 			Detected("kick", "Proxy methamethod 0x86F1")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__tostring = function()
 			Detected("kick", "Proxy methamethod 0xC0BD0")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__unm = function()
 			Detected("kick", "Proxy methamethod 0x10F00")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__add = function()
 			Detected("kick", "Proxy methamethod 0x60DC3")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__sub = function()
 			Detected("kick", "Proxy methamethod 0x90F5D")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__mul = function()
 			Detected("kick", "Proxy methamethod 0x19999")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__div = function()
 			Detected("kick", "Proxy methamethod 0x1D14AC")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__mod = function()
 			Detected("kick", "Proxy methamethod 0x786C64")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__pow = function()
 			Detected("kick", "Proxy methamethod 0x1D948C")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__len = function()
 			Detected("kick", "Proxy methamethod 0xBE931")
 
-			return task.wait(2e2)
+			return task.wait(4)
 		end
 
 		proxyMt.__metatable = "The metatable is locked"
@@ -166,7 +168,7 @@ return function(Vargs)
 					return
 				end
 				hasActivated = true
-				Detected("crash", "Tamper Protection 0xC0FA6; "..tostring(message).."; ")
+				Detected("crash", "Tamper Protection 0xC0FA6; " .. tostring(message) .. "; ")
 				wait(1)
 				pcall(Disconnect, "Adonis_0xC0FA6")
 				pcall(Kill, "Adonis_0xC0FA6")
@@ -222,8 +224,8 @@ return function(Vargs)
 				connection = idledEvent:Connect(function(time)
 					if type(time) ~= "number" or not (time > 0) then
 						idleTamper("Invalid time data")
-					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false and not clientHasClosed then
-						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
+					elseif time > 1800 and isAntiAntiIdlecheck ~= false and not clientHasClosed then
+						Detected("kick", "Anti-idle detected. " .. tostring(math.ceil(time / 60) - 20) .. " minutes above maximum possible Roblox value")
 					end
 				end)
 
@@ -258,7 +260,7 @@ return function(Vargs)
 			local event
 			local doing = true
 			if humanoid then
-				event = humanoid.StateChanged:Connect(function(_,new)
+				event = humanoid.StateChanged:Connect(function(_, new)
 					if not doing then
 						event:Disconnect()
 					end
@@ -422,7 +424,9 @@ return function(Vargs)
 					string.find(string.lower(Message), "failed to load", 1, true) or
 					string.find(string.lower(Message), "meshcontentprovider failed to process", 1, true) or
 					string.find(string.lower(Message), "unknown 'active' animation:", 1, true)
-				then return false end
+				then
+					return false
+				end
 
 				for _, v in lookFor do
 					if string.match(string.lower(Message), string.lower(v)) or string.match(Message, v) then
@@ -439,17 +443,17 @@ return function(Vargs)
 					not service.UserInputService.TouchEnabled
 				then
 					if not pcall(function()
-							if not isStudio and (findService(game, "VirtualUser") or findService(game, "VirtualInputManager") or findService(game, "UGCValidationService")) then
-								Detected("crash", "Disallowed Services Detected")
-							end
-						end) then
+						if not isStudio and (findService(game, "VirtualUser") or findService(game, "VirtualInputManager") or findService(game, "UGCValidationService")) then
+							Detected("crash", "Disallowed Services Detected")
+						end
+					end) then
 						Detected("kick", "Disallowed Services Finding Error")
 					end
 				end
 			end
 
 			local function soundIdCheck(Sound)
-				for _,v in ipairs(soundIds) do
+				for _, v in ipairs(soundIds) do
 					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
 					end
@@ -462,7 +466,7 @@ return function(Vargs)
 
 				if t and t.ClassName == "HopperBin" and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool) then
-						Detected("kick", "Building Tools detected; "..tostring(t.BinType))
+						Detected("kick", "Building Tools detected; " .. tostring(t.BinType))
 					end
 				end
 			end
@@ -475,7 +479,7 @@ return function(Vargs)
 				if child:IsA("Sound") and child.Parent == service.PolicyService then
 					for i = 1, 5 do
 						if soundIdCheck(child) then
-							Detected("crash", "CMDx Detected; "..tostring(child))
+							Detected("crash", "CMDx Detected; " .. tostring(child))
 						end
 						task.wait(0.1)
 					end
@@ -492,23 +496,9 @@ return function(Vargs)
 					pcall(Kill, "Adonis_0x600D")
 					pcall(Kick, Player, "Adonis_0x600D")
 				elseif check(Message) then
-					Detected("crash", "Exploit detected; "..Message)
+					Detected("crash", "Exploit detected; " .. Message)
 				end
 			end)
-
-			--[[
-			service.ScriptContext.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) ~= "CoreScript" then
-					Detected("kick","Non-CoreScript Detected; "..tostring(child))
-				end
-			end)
-
-			service.ReplicatedFirst.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) == "LocalScript" then
-					Detected("kick", "Localscript Detected; "..tostring(child))
-				end
-			end)
-			]]
 
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
 				Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
@@ -516,13 +506,13 @@ return function(Vargs)
 				if Script and Script == "tpircsnaisyle" then
 					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
-					Detected("crash", "Exploit detected; "..Message.." "..Trace.." "..Script)
+					Detected("crash", "Exploit detected; " .. Message .. " " .. Trace .. " " .. Script)
 				elseif not Script or (not Trace or Trace == "") then
 					local tab = service.LogService:GetLogHistory()
 					local found = false
 					if Script then
 						for i, v in pairs(tab) do
-							if v.message == Message and tab[i+1] and tab[i+1].message == Trace then
+							if v.message == Message and tab[i + 1] and tab[i + 1].message == Trace then
 								found = true
 							end
 						end
@@ -547,7 +537,9 @@ return function(Vargs)
 			local hasPrinted = false
 			service.StartLoop("Detection", 15, function()
 				--// Stuff
-				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
+				local ran, _ = pcall(function()
+					service.ScriptContext.Name = "ScriptContext"
+				end)
 				if not ran then
 					Detected("log", "ScriptContext error?")
 				end
@@ -585,14 +577,14 @@ return function(Vargs)
 					not rawequal(type(First.message), "string") or
 					not rawequal(typeof(First.messageType), "EnumItem") or
 					not rawequal(type(First.timestamp), "number") or
-					First.timestamp < os.time() - os.clock() - 60 * 60 * 48 or
-					First.timestamp > os.time() + 60 * 60 * 24 * 7 * 4 * 5 -- If the timestamp is five months in the future, it's safe to say its invalid
+					First.timestamp < os.time() - os.clock() - 172800 or
+					First.timestamp > os.time() + 604800 * 4 * 5 -- If the timestamp is five months in the future, it's safe to say its invalid
 				then
 					Detected("kick", "Bypass detected 0x48248")
 				else
 					for _, v in ipairs(Logs), Logs, lastLogIndex do
 						if check(v.message) then
-							Detected("crash", "Exploit detected; "..v.message)
+							Detected("crash", "Exploit detected; " .. v.message)
 						end
 					end
 					lastLogIndex = #Logs
@@ -631,7 +623,7 @@ return function(Vargs)
 
 				-- // Detects certain anti-dex bypasses
 				local tbl = setmetatable({}, mt)
-				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or "_" == "v" or "v" ~= "v" then
+				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or false or false then
 					Detected("crash", "Anti-dex bypass found. Method 0x1")
 				else
 					local success, value = pcall(function()
@@ -685,7 +677,7 @@ return function(Vargs)
 						connection3:Disconnect()
 
 						if eventCount < 4 then
-							Detected("kick", "Humanoid tampering detected. Method 0x2. Count: "..tostring(eventCount))
+							Detected("kick", "Humanoid tampering detected. Method 0x2. Count: " .. tostring(eventCount))
 						end
 					end)
 				end, function()
@@ -698,8 +690,11 @@ return function(Vargs)
 
 				xpcall(function()
 					local strings = {
-						"Loaded press z to", "press x to respawn", "Fe Invisible Fling By",
-						"Diemiers#4209", "Respawning dont spam"
+						"Loaded press z to",
+						"press x to respawn",
+						"Fe Invisible Fling By",
+						"Diemiers#4209",
+						"Respawning dont spam"
 					}
 
 					for _, object in ipairs(workspace:GetChildren()) do
@@ -769,7 +764,7 @@ return function(Vargs)
 				end
 
 				if not isStudio then
-					local newName = "\n\n"..string.rep("\n", math.random(1, 50)).."ModuleScript"
+					local newName = "\n\n" .. string.rep("\n", math.random(1, 50)) .. "ModuleScript"
 
 					if newName == oldName then
 						lastChanged1 = os.clock()
@@ -811,6 +806,11 @@ return function(Vargs)
 			opcall(Disconnect, "Adonis_0x36C6")
 			opcall(Kill, "Adonis_0x36C6")
 			opcall(Kick, Player, "Adonis_0x36C6")
+		end)
+		workspace.ChildAdded:Connect(function(c)
+			if typeof(c) == "Instance" and v:IsA("Message") and task.wait(1.5) and v.Text == "pls join Moon Backdoor Dc!!" then
+				Detected("crash", "Backdoor executor detected")
+			end
 		end)
 	end
 end
