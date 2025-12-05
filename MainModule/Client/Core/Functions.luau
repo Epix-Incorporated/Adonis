@@ -1947,5 +1947,9 @@ return function(Vargs, GetEnv)
 			data["Resolution"] = math.floor(workspace.CurrentCamera.ViewportSize.X).." x "..math.floor(workspace.CurrentCamera.ViewportSize.Y)
 			return data
 		end;
+
+		PromptJoinGroup = function(groupId)
+			service.GroupService:PromptJoinAsync(groupId)
+		end;
 	};
 end
