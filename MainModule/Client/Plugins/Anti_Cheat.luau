@@ -739,6 +739,7 @@ return function(Vargs)
 		local oWait = meta(wait)
 		local time = meta(time)
 		local oldName = ""
+		local violations = 0
 
 		track("Thread: Anti Cheat tamper check", meta(function()
 			while oWait(1) do
@@ -754,11 +755,17 @@ return function(Vargs)
 					typeof(checkEvent) ~= "RBXScriptConnection" or
 					checkEvent.Connected ~= true
 				then
-					opcall(Detected, "crash", "Tamper Protection 0x16471")
-					oWait(1)
-					opcall(Disconnect, "Adonis_0x16471")
-					opcall(Kill, "Adonis_0x16471")
-					opcall(Kick, Player, "Adonis_0x16471")
+					if violations >= 5 then
+						opcall(Detected, "crash", "Tamper Protection 0x16471")
+						oWait(1)
+						opcall(Disconnect, "Adonis_0x16471")
+						opcall(Kill, "Adonis_0x16471")
+						opcall(Kick, Player, "Adonis_0x16471")
+					else
+						violations += 1
+					end
+				else
+					violations = 0
 				end
 
 				if not isStudio then
@@ -782,11 +789,17 @@ return function(Vargs)
 					not isStudio and math.abs(lastChanged3 - lastChanged1) > 90 or
 					math.abs(lastChanged3 - lastChanged2) > 90
 				then
-					opcall(Detected, "crash", "Tamper Protection 0xE28D")
-					oWait(1)
-					opcall(Disconnect, "Adonis_0xE28D")
-					opcall(Kill, "Adonis_0xE28D")
-					opcall(Kick, Player, "Adonis_0xE28D")
+					if violations >= 5 then
+						opcall(Detected, "crash", "Tamper Protection 0xE28D")
+						oWait(1)
+						opcall(Disconnect, "Adonis_0xE28D")
+						opcall(Kill, "Adonis_0xE28D")
+						opcall(Kick, Player, "Adonis_0xE28D")
+					else
+						violations += 1
+					end
+				else
+					violations = 0
 				end
 
 				task.wait(1)

@@ -55,33 +55,25 @@ local descs = {};			--// Contains settings descriptions
 		group "BobFans" (group ID 7463213) under the rank number 234, or owns the item belonging to ID 1237465
 		I can do any of the following:
 
-		settings.Admins = {"Bobjenkins123", "Bobjenkins123:1234567", 1234567, "Group:BobFans:7463213:234", "Item:1237465"}
+		settings.Ranks["Admins"] = {
+			Level = 200
+			Users = {
+				"Bobjenkins123", "Bobjenkins123:1234567", 1234567, "Group:7463213:234", "Item:1237465"
+			}
+		}
 
 
 		If I wanted to make it so rank 134 in group 1029934 and BobJenkins123 had mod admin I would do
-		settings.Moderators = {"Group:1029943:134", "BobJenkins123"}
+		settings.Ranks["Moderators"] = {
+			Level = 100
+			Users = {
+				"Group:1029943:134", "BobJenkins123"
+			}
+		}
 
 		!NOTE! When adding a group to a table, you may be tempted to replace the word Group with the name of your group – DON'T.
 		The group name is IRRELEVANT! If one's group was named 2Drool4School and it had the ID 2847031, the correct form is {"Group:2847031"}
 		and not {"2Drool4School:2847031"}
-
-
-		--// Admins
-
-			settings.Moderators = {"Sceleratis"; "BobJenkins:1237123"; 1237666; "Group:181:255"; "Item:1234567"}
-				This will make the person with the username Sceleratis, or the name BobJenkins, or the ID 1237123 OR 123766,
-				   or is in group 181 in the rank 255, or owns the item belonging to the ID 1234567 a moderator
-
-				If I wanted to give the rank 121 in group 181 Owner admin I would do:
-				   settings.HeadAdmins = {"Group:181:121"}
-				   See? Not so hard is it?
-
-				If I wanted to add group 181 and all ranks in it to the :slock whitelist I would do;
-					settings.Whitelist = {"Group:181";}
-
-				I can do the above if I wanted to give everyone in a group admin for any of the other admin tables
-
-
 
 		--// Command Permissions
 
@@ -157,7 +149,9 @@ settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI el
 			settings.Ranks = {
 				["Moderators"] = {
 					Level = 100;
-					Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID"; "Subscription:SubscriptionId";}
+					Users = {
+						"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID"; "Subscription:SubscriptionId";
+					}
 				}
 			}
 

@@ -4234,7 +4234,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
+					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) and v.Name ~= "TouchGui" then pcall(v.Destroy, v) end end]])
 				end
 			end
 		};
@@ -6778,6 +6778,11 @@ return function(Vargs, env)
 								Moderator = plr.UserId;
 							})
 
+							local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+							if audio then
+								audio.Muted = true
+							end
+
 							Functions.Hint(`Muted {service.FormatPlayer(v)}`, {plr})
 
 							Functions.Notification("Notification", `You have been muted!`, {v}, 10, "MatIcon://Warning")
@@ -6820,6 +6825,11 @@ return function(Vargs, env)
 						Target = v.UserId;
 						Moderator = plr.UserId;
 					})
+
+					local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+					if audio then
+						audio.Muted = false
+					end
 
 					Functions.Hint(`Unmuted {service.FormatPlayer(v)}`, {plr})
 

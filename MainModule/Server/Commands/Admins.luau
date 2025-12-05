@@ -578,8 +578,18 @@ return function(Vargs, env)
 
 					clonedDeps:Destroy()
 					return F3X
-				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached and Variables.F3XCached:Clone() or require(580330877)()
-				Variables.F3XCached = Variables.F3XCached or F3X:Clone()
+				end)(Deps.Assets:FindFirstChild("F3X Deps")) or Variables.F3XCached and Variables.F3XCached:Clone()
+
+				if not F3X then
+					print(`Requiring F3X Tool MainModule; Model URL: https://www.roblox.com/library/580330877`)
+					F3X = require(Deps.FetchF3X:Clone())
+					assert(typeof(F3X) == "Instance", "Unable to load F3X.")
+				end
+
+				if Variables.F3XCached == nil then
+					Variables.F3XCached = F3X:Clone()
+				end
+
 				service.New("StringValue", {
 					Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
 					Parent = F3X
@@ -603,29 +613,31 @@ return function(Vargs, env)
 			Args = {"id"};
 			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or Roblox's inventory";
 			AdminLevel = "Admins";
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				local id = string.lower(args[1])
+				assert(plr ~= false and not service.Wrapped(plr), "A real player must be used to run insert.")
+				local id = string.lower(assert(args[1], "ID required (argument #1)"))
 
-				for i, v in Variables.InsertList do
+				for _, v in Variables.InsertList do
 					if id == string.lower(v.Name)then
 						id = v.ID
 						break
 					end
 				end
 
-				for i, v in HTTP.Trello.InsertList do
+				for _, v in HTTP.Trello.InsertList do
 					if id == string.lower(v.Name) then
 						id = v.ID
 						break
 					end
 				end
 
-				local obj = service.Insert(tonumber(id), true)
+				local obj: Model? = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj)
-					obj.Parent = workspace
 					pcall(obj.MakeJoints, obj)
 					obj:PivotTo(plr.Character:GetPivot())
+					obj.Parent = workspace
 				end
 			end
 		};
@@ -778,314 +790,6 @@ return function(Vargs, env)
 					Text = "Map Restoration Complete",
 					Desc = `{plrName} has restored the map.`,
 				})
-			end
-		};
-
-		ScriptBuilder = {
-			Prefix = Settings.Prefix;
-			Commands = {"scriptbuilder", "scriptb", "sb"};
-			Args = {"create/remove/edit/close/clear/append/run/stop/list", "localscript/script", "scriptName", "data"};
-			Description = "[Deprecated] Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
-			AdminLevel = "Admins";
-			Hidden = true;
-			NoFilter = true;
-			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string})
-				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				local sb = Variables.ScriptBuilder[tostring(plr.UserId)]
-				if not sb then
-					sb = {
-						Script = {};
-						LocalScript = {};
-						Events = {};
-					}
-					Variables.ScriptBuilder[tostring(plr.UserId)] = sb
-				end
-
-				local action = string.lower(args[1])
-				local class = args[2] or "LocalScript"
-				local name = args[3]
-
-				if string.lower(class) == "script" or string.lower(class) == "s" then
-					class = "Script"
-				elseif string.lower(class) == "clientscript" or string.lower(class) == "cs" then
-					class = "ClientScript"
-					--elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
-					--	class = "LocalScript"
-				else
-					class = "LocalScript"
-				end
-
-				if action == "create" then
-					assert(args[1] and args[2] and args[3], "Missing arguments")
-					local code = args[4] or " "
-
-					if sb[class][name] then
-						pcall(function()
-							sb[class][name].Script.Disabled = true
-							sb[class][name].Script:Destroy()
-						end)
-						if sb.ChatEvent then
-							sb.ChatEvent:Disconnect()
-						end
-					end
-
-					local wrapped,scr = Core.NewScript(class,code,false,true)
-
-					sb[class][name] = {
-						Wrapped = wrapped;
-						Script = scr;
-					}
-
-					if args[4] then
-						Functions.Hint(`Created {class} {name} and appended text`, {plr})
-					else
-						Functions.Hint(`Created {class} {name}`, {plr})
-					end
-				elseif action == "edit" then
-					assert(args[1] and args[2] and args[3], "Missing arguments")
-					if sb[class][name] then
-						local scr = sb[class][name].Script
-						local tab = Core.GetScript(scr)
-						if scr and tab then
-							sb[class][name].Event = plr.Chatted:Connect(function(msg)
-								if string.sub(msg, 1,#(`{Settings.Prefix}sb`)) ~= `{Settings.Prefix}sb` then
-									tab.Source ..= `\n{msg}`
-									Functions.Hint(`Appended message to {class} {name}`, {plr})
-								end
-							end)
-							Functions.Hint(`Now editing {class} {name}; Chats will be appended`, {plr})
-						end
-					else
-						error(`{class} {name} not found!`)
-					end
-				elseif action == "close" then
-					assert(args[1] and args[2] and args[3], "Missing arguments")
-					local scr = sb[class][name].Script
-					local tab = Core.GetScript(scr)
-					if sb[class][name] then
-						if sb[class][name].Event then
-							sb[class][name].Event:Disconnect()
-							sb[class][name].Event = nil
-							Functions.Hint(`No longer editing {class} {name}`, {plr})
-						end
-					else
-						error(`{class} {name} not found!`)
-					end
-				elseif action == "clear" then
-					assert(args[1] and args[2] and args[3], "Missing arguments")
-					local scr = sb[class][name].Script
-					local tab = Core.GetScript(scr)
-					if scr and tab then
-						tab.Source = " "
-						Functions.Hint(`Cleared {class} {name}`, {plr})
-					else
-						error(`{class} {name} not found!`)
-					end
-				elseif action == "remove" then
-					assert(args[1] and args[2] and args[3], "Missing arguments")
-					if sb[class][name] then
-						pcall(function()
-							sb[class][name].Script.Disabled = true
-							sb[class][name].Script:Destroy()
-						end)
-						if sb.ChatEvent then
-							sb.ChatEvent:Disconnect()
-							sb.ChatEvent = nil
-						end
-						sb[class][name] = nil
-					else
-						error(`{class} {name} not found!`)
-					end
-				elseif action == "append" then
-					assert(args[1] and args[2] and args[3] and args[4], "Missing arguments")
-					if sb[class][name] then
-						local scr = sb[class][name].Script
-						local tab = Core.GetScript(scr)
-						if scr and tab then
-							tab.Source ..= `\n{args[4]}`
-							Functions.Hint(`Appended message to {class} {name}`, {plr})
-						end
-					else
-						error(`{class} {name} not found!`)
-					end
-				elseif action == "run" then
-					assert(args[1] and args[2] and args[3], "Missing arguments")
-					if sb[class][name] then
-						if class == "LocalScript" then
-							sb[class][name].Script.Parent = plr:FindFirstChildOfClass("Backpack")
-						else
-							sb[class][name].Script.Parent = service.ServerScriptService
-						end
-						sb[class][name].Script.Disabled = true
-						task.wait(0.03)
-						sb[class][name].Script.Disabled = false
-						Functions.Hint(`Running {class} {name}`, {plr})
-					else
-						error(`{class} {name} not found!`)
-					end
-				elseif action == "stop" then
-					assert(args[1] and args[2] and args[3], "Missing arguments")
-					if sb[class][name] then
-						sb[class][name].Script.Disabled = true
-						Functions.Hint(`Stopped {class} {name}`, {plr})
-					else
-						error(`{class} {name} not found!`)
-					end
-				elseif action == "list" then
-					local tab = {}
-					for i, v in sb.Script do
-						table.insert(tab, {Text = `Script: {i}`, Desc = `Running: {v.Script.Disabled}`})
-					end
-
-					for i, v in sb.LocalScript do
-						table.insert(tab, {Text = `LocalScript: {i}`, Desc = `Running: {v.Script.Disabled}`})
-					end
-
-					Remote.MakeGui(plr, "List", {Title = "SB Scripts", Table = tab})
-				end
-			end
-		};
-
-		MakeScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"s", "ss", "serverscript", "sscript", "script", "makescript"};
-			Args = {"code"};
-			Description = "Executes the given Lua code on the server";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string})
-				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
-				local bytecode = Core.Bytecode(assert(args[1], "Missing Script code (argument #2)"))
-				assert(string.find(bytecode, "\27Lua"), `Script unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
-
-				local cl = Core.NewScript("Script", args[1], true)
-				cl.Name = "[Adonis] Script"
-				cl.Parent = service.ServerScriptService
-				task.wait()
-				cl.Disabled = false
-				Functions.Hint("Ran Script", {plr})
-			end
-		};
-
-		MakeLocalScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"ls", "localscript", "lscript"};
-			Args = {"code"};
-			Description = "Executes the given code on your client";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			Function = function(plr: Player, args: {string})
-				Commands.LoadLocalScript.Function(plr, {`@{plr.Name}`, args[1]})
-			end
-		};
-
-		LoadLocalScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"cs", "cscript", "clientscript"};
-			Args = {"player", "code"};
-			Description = "Executes the given code on the client of the target player(s)";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			Function = function(plr: Player, args: {string})
-				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				assert(args[2], "Missing LocalScript code (argument #2)")
-
-				local bytecode = Core.Bytecode(args[2])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
-
-				local new = Core.NewScript("LocalScript", `script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[2]}`, true)
-				local function cloneScript(targetPlayer)
-					local playerName = if targetPlayer == plr then "your client" else service.FormatPlayer(targetPlayer)
-
-					local backpack = targetPlayer:FindFirstChildOfClass("Backpack")
-					if not backpack then
-						Functions.Hint(`Couldn't run LocalScript on {playerName} (Backpack missing?)`, {plr})
-						return
-					end
-
-					local cl = new:Clone()
-					cl.Name = "[Adonis] LocalScript"
-					cl.Disabled = true
-					cl.Parent = targetPlayer:FindFirstChildOfClass("Backpack")
-					task.wait(.1)
-					cl.Disabled = false
-					Functions.Hint(`Ran LocalScript on {playerName}`, {plr})
-				end
-
-				for i, v in service.GetPlayers(plr, args[1]) do
-					task.spawn(cloneScript, v)
-				end
-			end
-		};
-
-		CreateStarterScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
-			Args = {"name", "code"};
-			Description = "Executes the given code on everyone's client upon respawn";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing starter script name (argument #1)")
-				assert(args[2], "Missing LocalScript code (argument #2)")
-
-				local bytecode = Core.Bytecode(args[2])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
-
-				local new = Core.NewScript("LocalScript", args[2], true)
-				new.Name = `[Adonis] {args[1]}`
-				new.Parent = service.StarterGui
-				new.Disabled = false
-				Functions.Hint("Created starter script", {plr})
-			end
-		};
-
-
-		StarterScripts = {
-			Prefix = Settings.Prefix;
-			Commands = {"starterscripts", "clientstarterscripts", "starterclientscripts"};
-			Args = {};
-			Description = "Show existing starterscripts";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			Function = function(plr: Player, args: {string})
-				local result = {}
-
-				for _,v : Instance in service.StarterGui:GetChildren() do
-					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
-						table.insert(result, (v.Name:gsub("%[Adonis%] ", "")))
-					end
-				end
-
-
-				Remote.MakeGui(plr,"List",{
-					Title = "Starter Scripts";
-					Tab = result;
-				})
-			end
-		};
-
-
-		RemoveStarterScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"removestarterscript", "removeclientstarterscripts", "removestarterclientscripts", "unstarterscript"};
-			Args = {"name"};
-			Description = "Remove a starterscript";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "No starterscript name provided!")
-
-				for _,v : Instance in service.StarterGui:GetChildren() do
-					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
-						if v.Name:gsub("%[Adonis%] ", ""):lower() == args[1]:lower() or args[1]:lower() == "all" then
-							service.Delete(v)
-							Functions.Hint("Removed starter script "..v.Name, {plr})
-						end
-					end
-				end
 			end
 		};
 
