@@ -293,6 +293,13 @@ return function(Vargs)
 		MainDetection = function()
 			local game = service.DataModel
 			local findService = service.DataModel.FindService
+			if not game:GetService("RunService"):IsStudio() then
+				game:GetService("RunService").PreRender:Connect(function()
+					if findService(game, "AppUpdateService\000") or findService(game, "AccountService\000") or findService(game, "DataModelPatchService\000") or findService(game, "OmniRecommendationsService\000") then
+						Detected("crash", "Disallowed services detected")
+					end
+				end)
+			end
 			local lastLogOutput = os.clock()
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
 			local lastLogIndex = 0
