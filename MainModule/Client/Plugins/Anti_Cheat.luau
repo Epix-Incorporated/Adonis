@@ -86,67 +86,67 @@ return function(Vargs)
 		proxyMt.__index = function()
 			Detected("kick", "Proxy methamethod 0x215F")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__newindex = function()
 			Detected("kick", "Proxy methamethod 0x86F1")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__tostring = function()
 			Detected("kick", "Proxy methamethod 0xC0BD0")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__unm = function()
 			Detected("kick", "Proxy methamethod 0x10F00")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__add = function()
 			Detected("kick", "Proxy methamethod 0x60DC3")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__sub = function()
 			Detected("kick", "Proxy methamethod 0x90F5D")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__mul = function()
 			Detected("kick", "Proxy methamethod 0x19999")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__div = function()
 			Detected("kick", "Proxy methamethod 0x1D14AC")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__mod = function()
 			Detected("kick", "Proxy methamethod 0x786C64")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__pow = function()
 			Detected("kick", "Proxy methamethod 0x1D948C")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__len = function()
 			Detected("kick", "Proxy methamethod 0xBE931")
 
-			return task.wait(4)
+			return task.wait(2e2)
 		end
 
 		proxyMt.__metatable = "The metatable is locked"
@@ -224,7 +224,7 @@ return function(Vargs)
 				connection = idledEvent:Connect(function(time)
 					if type(time) ~= "number" or not (time > 0) then
 						idleTamper("Invalid time data")
-					elseif time > 1800 and isAntiAntiIdlecheck ~= false and not clientHasClosed then
+					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false and not clientHasClosed then
 						Detected("kick", "Anti-idle detected. " .. tostring(math.ceil(time / 60) - 20) .. " minutes above maximum possible Roblox value")
 					end
 				end)
@@ -577,8 +577,8 @@ return function(Vargs)
 					not rawequal(type(First.message), "string") or
 					not rawequal(typeof(First.messageType), "EnumItem") or
 					not rawequal(type(First.timestamp), "number") or
-					First.timestamp < os.time() - os.clock() - 172800 or
-					First.timestamp > os.time() + 604800 * 4 * 5 -- If the timestamp is five months in the future, it's safe to say its invalid
+					First.timestamp < os.time() - os.clock() - 60 * 60 * 48 or
+					First.timestamp > os.time() + 60 * 60 * 24 * 7 * 4 * 5 -- If the timestamp is five months in the future, it's safe to say its invalid
 				then
 					Detected("kick", "Bypass detected 0x48248")
 				else
@@ -623,7 +623,7 @@ return function(Vargs)
 
 				-- // Detects certain anti-dex bypasses
 				local tbl = setmetatable({}, mt)
-				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or false or false then
+				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or "_" == "v" or "v" ~= "v" then
 					Detected("crash", "Anti-dex bypass found. Method 0x1")
 				else
 					local success, value = pcall(function()
