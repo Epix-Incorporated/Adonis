@@ -236,6 +236,12 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		GroupJoin = function(ID)
+			local success, result = pcall(function()
+				return service.GroupService:PromptJoinAsync(ID)
+			end)
+		end,
+
 		Playlist = function()
 			return Remote.Get("Playlist")
 		end;
