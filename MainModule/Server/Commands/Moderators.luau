@@ -2461,6 +2461,19 @@ return function(Vargs, env)
 			end
 		};
 
+		GroupJoin = {
+			Prefix = Settings.Prefix;
+			Commands = {"promptgroupjoin", "promptgroup", "groupjoin", "communityjoin", "promptcommunity", "promptcommunityjoin"};
+			Args = {"player", "id"};
+			Description = "Prompts the player(s) to join the community/group belonging to the ID you supply";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(plr, "Function", "GroupJoin", args[2])
+				end
+			end
+		};
+
 		Capes = {
 			Prefix = Settings.Prefix;
 			Commands = {"capes", "capelist"};
