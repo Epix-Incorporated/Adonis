@@ -1949,7 +1949,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		PromptJoinGroup = function(groupId)
-			service.GroupService:PromptJoinAsync(groupId)
+			xpcall(function()
+				service.GroupService:PromptJoinAsync(groupId)
+			end, function(err)
+				warn(err)
+			end)
 		end;
 	};
 end
