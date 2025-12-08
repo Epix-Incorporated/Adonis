@@ -6964,6 +6964,22 @@ return function(Vargs, env)
 			end
 		};
 
+		PromptJoinGroup = {
+			Prefix = Settings.Prefix;
+			Commands = {"groupinvite", "invitegroup", "groupprompt", "communityinvite"};
+			Args = {"player", "groupId"};
+			Description = "Prompts player(s) to join the specified community/group";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player(s) (argument #1)")
+				assert(args[2], "Missing groupId (argument #2)")
+
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(v, "Function", "PromptJoinGroup", args[2])
+				end
+			end
+		};
+
 		Reverb = {
 			Prefix = Settings.Prefix;
 			Commands = {"reverb", "ambientreverb"};
