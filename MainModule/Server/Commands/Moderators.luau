@@ -6968,7 +6968,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"groupinvite", "invitegroup", "groupprompt", "communityinvite"};
 			Args = {"player", "groupId"};
-			Description = "Prompts a player to join a group";
+			Description = "Prompts player(s) to join the specified community/group";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player(s) (argument #1)")
