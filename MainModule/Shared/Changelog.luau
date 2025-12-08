@@ -1,7 +1,10 @@
 return {
-	"Version: 273";
+	"Version: 274";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository*";
+	"";
+	"[v274 2025-12-05 17:10 UTC] @Dimenpsyonal";
+	"(Git/ImFirstPlace) Add PromptJoinGroup command (#2026)";
 	"";
 	"[v273 2025-12-05 17:10 UTC] @Dimenpsyonal";
 	"(Git/ccuser44) QoL improvement for tamper check (#1900)";
