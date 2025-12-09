@@ -586,6 +586,8 @@ return function(Vargs, env)
 					assert(typeof(F3X) == "Instance", "Unable to load F3X.")
 				end
 
+				F3X.CanBeDropped = Settings.CanDropBtools
+
 				if Variables.F3XCached == nil then
 					Variables.F3XCached = F3X:Clone()
 				end
