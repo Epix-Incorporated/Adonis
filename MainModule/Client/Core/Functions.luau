@@ -1432,6 +1432,10 @@ return function(Vargs, GetEnv)
 			service.StarterGui:SetCore(...)
 		end;
 
+		InspectPlayerFromUserId = function(...)
+			service.GuiService:InspectPlayerFromUserId(...)
+		end;
+
 		UnCape = function()
 			local cape = service.LocalContainer():FindFirstChild("::Adonis::Cape")
 			if cape then cape:Destroy() end

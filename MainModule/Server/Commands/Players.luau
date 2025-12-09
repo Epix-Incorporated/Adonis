@@ -9,7 +9,6 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	local Routine = env.Routine
-	local Pcall = env.Pcall
 
 	return {
 		ViewCommands = {
@@ -450,78 +449,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Join = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"join", "follow", "followplayer"};
-			Args = {"username"};
-			Description = "Makes you follow the player you gave the username of to the server they are in";
-			NoStudio = true; -- TeleportService cannot be used in Roblox Studio
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Argument #1 (username) is required")
-				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-
-				local UserId = Functions.GetUserIdFromNameAsync(args[1])
-				if UserId then
-					local success, samePlace, errorMessage, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
-
-					if success then
-						if samePlace then
-							error("You're already in this server!")
-						end
-
-						if placeId and jobId then
-							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
-								ServerInstanceId = jobId
-							}))
-							Functions.Hint("Teleporting...", {plr})
-						else
-							Functions.Hint(`{service.Players:GetNameFromUserIdAsync(UserId)} was not found playing this game`, {plr})
-						end
-					else
-						Functions.Hint(`Unexpected internal error: {errorMessage or samePlace}`, {plr})
-					end
-				else
-					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
-				end
-			end
-		};
-
-		GlobalJoin = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"joinfriend", "globaljoin"};
-			Args = {"username"};
-			Description = "Joins your friend outside/inside of the game (must be online)";
-			NoStudio = true;
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
-				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-
-				assert(args[1], "Argument #1 (username) is required")
-				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-
-				local UserId = Functions.Functions.GetUserIdFromNameAsync(args[1])
-				if UserId then
-					for _, v in plr:GetFriendsOnline() do
-						if v.VisitorId == UserId then
-							if v.IsOnline and v.PlaceId and v.GameId then
-								service.TeleportService:TeleportAsync(v.PlaceId, {plr})
-								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
-							else
-								Functions.Hint("{v.UserName} is not currently playing a game", {plr})
-							end
-
-							return
-						end
-					end
-
-					Functions.Hint("You are not a friend of the specified user", {plr})
-				else
-					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
-				end
-			end
-		};
-
 		Credits = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"credit", "credits"};
@@ -652,7 +579,7 @@ return function(Vargs, env)
 					Message = if args[1] then `UI theme set to '{args[1]}'!` else `UI theme reset to default.`;
 					Time = 5;
 				})
-				Remote.LoadCode(plr, `client.Variables.CustomTheme = {if args[1] then `[[{args[1]}]]` else "nil"}`)
+				Remote.Send(plr, "SetVariables", { CustomTheme = args[1] or false })
 			end
 		};
 
@@ -733,38 +660,6 @@ return function(Vargs, env)
 			end
 		};
 
-		AddFriend = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"addfriend", "friendrequest", "sendfriendrequest"};
-			Args = {"player"};
-			Description = "Send a friend request to the specified player";
-			Hidden = true;
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
-					assert(v ~= plr, "Cannot friend yourself!")
-					assert(not plr:IsFriendsWith(v.UserId), `You are already friends with {v.Name}`)
-					Remote.Send(plr, "Function", "SetCore", "PromptSendFriendRequest", v)
-				end
-			end
-		};
-
-		UnFriend = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"unfriend", "removefriend"};
-			Args = {"player"};
-			Description = "Prompts you to unfriend the specified player";
-			Hidden = true;
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				for i, v: Player in service.GetPlayers(plr, args[1]) do
-					assert(v ~= plr, "Cannot unfriend yourself!")
-					assert(plr:IsFriendsWith(v.UserId), `You are not currently friends with {v.Name}`)
-					Remote.Send(plr, "Function", "SetCore", "PromptUnfriend", v)
-				end
-			end
-		};
-
 		InspectAvatar = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"inspectavatar", "avatarinspect", "viewavatar", "examineavatar"};
@@ -773,7 +668,9 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
-					Remote.LoadCode(plr, `service.GuiService:InspectPlayerFromUserId({v.UserId})`)
+					if v.UserId > 0 then
+						Remote.Send(plr, "Function", "InspectPlayerFromUserId", v.UserId)
+					end
 				end
 			end
 		};
@@ -796,64 +693,7 @@ return function(Vargs, env)
 			Description = "Tells you how many players are in the server";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local num = 0
-				local nilNum = 0
-				for _, v in service.GetPlayers() do
-					if v.Parent ~= service.Players then
-						nilNum += 1
-					end
-					num += 1
-				end
-
-				if nilNum > 0 and Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
-					Functions.Hint(`There are currently {num} player(s); {nilNum} are nil or loading`, {plr})
-				else
-					Functions.Hint(`There are {num} player(s)`, {plr})
-				end
-			end
-		};
-
-		TimeDate = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"timedate", "date", "datetime"};
-			Args = {};
-			Description = "Shows you the current time and date.";
-			AdminLevel = "Players";
-			ListUpdater = function(plr: Player)
-				local ostime = os.time()
-				local tab = {
-					{Text = "―――――――――――――――――――――――"},
-					{"Date"; os.date("%x", ostime)},
-					{"Time"; os.date("%H:%M | %I:%M %p", ostime)},
-					{"Timezone"; os.date("%Z", ostime)},
-					{Text = "―――――――――――――――――――――――"},
-					{"Minute"; os.date("%M", ostime)},
-					{"Hour"; os.date("%H | %I %p" , ostime)},
-					{"Day"; os.date("%d %A", ostime)},
-					{"Week (first Sunday)"; os.date("%U", ostime)},
-					{"Week (first Monday)"; os.date("%W", ostime)},
-					{"Month"; os.date("%m %B", ostime)},
-					{"Year"; os.date("%Y", ostime)},
-					{Text = "―――――――――――――――――――――――"},
-					{"Day of the year"; os.date("%j", ostime)},
-					{"Day of the month"; os.date("%d", ostime)},
-					{Text = "―――――――――――――――――――――――"},
-				}
-				for i, v in tab do
-					if not v[2] then continue end
-					tab[i] = {Text = `<b>{v[1]}:</b> {v[2]}`; Desc = v[2];}
-				end
-				return tab
-			end;
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "List", {
-					Title = "Date";
-					Table = Logs.ListUpdaters.TimeDate(plr);
-					RichText = true;
-					Update = "TimeDate";
-					AutoUpdate = 59;
-					Size = {288, 390};
-				})
+				Functions.Hint(`There are {#service.Players:GetPlayers()} player(s)`, {plr})
 			end
 		};
 
@@ -906,12 +746,17 @@ return function(Vargs, env)
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
 							gameData = {
-								IsMuted = table.find(Settings.Muted, `{v.Name}:{v.UserId}`) and true or false;
+								IsMuted = Admin.IsMuted(v);
 								AdminLevel = `[{level}] {rank or "Unknown"}`;
-								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A"
 							}
-							for k, d in Remote.Get(v, "Function", "GetUserInputServiceData") do
-								gameData[k] = d
+
+							local inputData = Remote.Get(v, "Function", "GetUserInputServiceData")
+							if type(inputData) == "table" then
+								for k, d in inputData do
+									if type(k) ~= "string" then break end
+									gameData[k] = d
+								end
 							end
 						end
 
@@ -942,7 +787,7 @@ return function(Vargs, env)
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 							CmdPrefix = Functions.GetMainPrefix();
 							CmdSplitKey = Settings.SplitKey;
-							OnlineFriends = Remote.Get(v, "Function", "GetFriendsOnline");
+							OnlineFriends = elevated and Remote.Get(v, "Function", "GetFriendsOnline");
 						})
 					end)
 				end
@@ -956,9 +801,6 @@ return function(Vargs, env)
 			Description = "Shows you details about the current server";
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
-				local elevated = Admin.CheckAdmin(plr)
-				local data = {}
-
 				local donorList = {}
 				for _, v in service.GetPlayers() do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
@@ -967,7 +809,7 @@ return function(Vargs, env)
 				end
 
 				local adminDictionary, workspaceInfo
-				if elevated then
+				if Admin.CheckAdmin(plr) then
 					adminDictionary = {}
 					for _, v in service.GetPlayers() do
 						local level, rank = Admin.GetLevel(v)
@@ -977,7 +819,7 @@ return function(Vargs, env)
 					end
 					local nilPlayers = 0
 					for _, v in service.NetworkServer:GetChildren() do
-						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+						if v:IsA("NetworkReplicator") and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 							nilPlayers += 1
 						end
 					end
@@ -1028,96 +870,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GetGroupInfo = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"getgroupinfo", "groupinfo", "viewgroupinfo"};
-			Args = {"group ID"};
-			Description = "Shows you information about the specified Roblox group";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				local groupId = assert(args[1] and tonumber(args[1]), "Missing/invalid group ID")
-				local groupInfo = assert(select(2, xpcall(service.GroupService.GetGroupInfoAsync, function() return nil end, service.GroupService, groupId)), "Error fetching data")
-				local tab = {
-					`Name: {groupInfo.Name}`,
-					`ID: {groupInfo.Id}`,
-					if groupInfo.Owner then string.format("Owner: %s [%d]", groupInfo.Owner.Name or "???", groupInfo.Owner.Id) else "[No Owner]",
-					{Text = string.format("――― Roles (%d): ―――――――――――――――――", #groupInfo.Roles)},
-				}
-				for _, role in groupInfo.Roles do
-					table.insert(tab, string.format("[%d] %s", role.Rank, role.Name))
-				end
-
-				local function getPageItems(pages: StandardPages, res: {any})
-					res = res or {}
-					for _, item in pages:GetCurrentPage() do
-						table.insert(res, item)
-					end
-					if not pages.IsFinished then
-						pages:AdvanceToNextPageAsync()
-						getPageItems(pages, res)
-					end
-					return res
-				end
-
-				local done = false
-				local startTime = os.clock()
-				task.defer(function()
-					local allies = getPageItems(service.GroupService:GetAlliesAsync(groupId))
-					table.insert(tab, {Text = string.format("――― Allies (%d): ―――――――――――――――――", #allies)})
-					if #allies > 0 then
-						local names, refs = {}, {}
-						for _, grp in allies do
-							table.insert(names, grp.Name)
-							refs[grp.Name] = grp
-						end
-						table.sort(names)
-						for _, name in names do
-							local grp = refs[name]
-							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = `Owner: {if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"}`})
-						end
-					else
-						table.insert(tab, {Text = "This group doesn't have any allies."})
-					end
-
-					local enemies = getPageItems(service.GroupService:GetEnemiesAsync(groupId))
-					table.insert(tab, {Text = string.format("――― Enemies (%d): ―――――――――――――――――", #enemies)})
-					if #enemies > 0 then
-						local names, refs = {}, {}
-						for _, grp in enemies do
-							table.insert(names, grp.Name)
-							refs[grp.Name] = grp
-						end
-						table.sort(names)
-						for _, name in names do
-							local grp = refs[name]
-							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = `Owner: {if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"}`})
-						end
-					else
-						table.insert(tab, {Text = "This group doesn't have any enemies."})
-					end
-
-					table.insert(tab, {Text = "―――――――――――――――――――――――"})
-					Remote.MakeGui(plr, "List", {
-						Title = string.format("Group Information (%.2fs)", os.clock() - startTime);
-						Icon = server.MatIcons.Info;
-						Tab = tab;
-						Size = {300, 300};
-					})
-					done = true
-				end)
-				task.delay(5, function()
-					if not done then
-						Functions.Hint("Taking a while to load group information...", {plr})
-						task.delay(10, function()
-							if not done then
-								Functions.Hint("We're still loading group info...", {plr})
-							end
-						end)
-					end
-				end)
-			end
-		};
-
 		AudioPlayer = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
@@ -1125,46 +877,9 @@ return function(Vargs, env)
 			Description = "Opens the audio player";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local canUseGlobalBroadcast
-				local cmd, ind
-				for i, v in Admin.SearchCommands(plr, "all") do
-					for _, p in ipairs(v.Commands) do
-						if (v.Prefix or "")..string.lower(p) == (v.Prefix or "")..string.lower("music") then
-							cmd, ind = v, i
-							break
-						end
-					end
-					if ind then break end
-				end
-				if cmd then
-					canUseGlobalBroadcast = true
-				else
-					canUseGlobalBroadcast = false
-				end
 				Remote.MakeGui(plr, "Music", {
 					Song = args[1],
-					GlobalPerms = canUseGlobalBroadcast
-				})
-			end
-		};
-
-		CountryList = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"countries", "countrylist", "countrycodes"},
-			Args = {},
-			Description = "Shows you a list of countries and their respective codes",
-			AdminLevel = "Players";
-			Hidden = true;
-			Function = function(plr: Player, args: {string})
-				local list = {}
-				for code, name in require(server.Dependencies.CountryRegionCodes) do
-					table.insert(list, `{code} - {name}`)
-				end
-				table.sort(list)
-				Remote.MakeGui(plr, "List", {
-					Title = "Countries";
-					Icon = server.MatIcons.Language;
-					Table = list;
+					GlobalPerms = Commands.Music and Admin.CheckComLevel(Admin.GetLevel(plr), Commands.Music.AdminLevel);
 				})
 			end
 		};
@@ -1181,12 +896,6 @@ return function(Vargs, env)
 				assert(not (success and assetAlreadyOwned), "You already own the asset!")
 				local success, assetInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId)
 				assert(success and not assetInfo.IsLimited, "Cannot buy limited assets!")
-				local connection; connection = service.MarketplaceService.PromptPurchaseFinished:Connect(function(_, boughtAssetId, isPurchased)
-					if boughtAssetId == assetId then
-						connection:Disconnect()
-						Functions.Notification("Adonis purchase", (isPurchased and string.format("Asset %d was purchased successfully!", assetId) or string.format("Asset %d was not bought", assetId)), {plr}, 10, "MatIcon://Shopping cart")
-					end
-				end)
 				service.MarketplaceService:PromptPurchase(plr, assetId, false)
 			end
 		};
@@ -1198,31 +907,7 @@ return function(Vargs, env)
 			Description = "Shows your current position in the game world";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local guiName = "CoordinatesDisplay"
-				Remote.RemoveGui(plr, guiName)
-				local updater
-
-				updater = plr.CharacterAdded:Connect(function(char)
-					local rootPart = char:WaitForChild("HumanoidRootPart")
-					while rootPart and plr.Parent do
-						if Remote.GetGui(plr, guiName) then
-							Remote.UpdateGui(plr, guiName, {
-								Message = string.format("X: %.2f, Y: %.2f, Z: %.2f", rootPart.Position.X, rootPart.Position.Y, rootPart.Position.Z)
-							})
-						else
-							updater:Disconnect()
-						end
-						task.wait(0.2)
-					end
-				end)
-
-				local initialPos = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character.HumanoidRootPart.Position or Vector3.new()
-				Remote.MakeGui(plr, "Coords", {
-					Title = "Coordinates";
-					Message = string.format("X: %.2f, Y: %.2f, Z: %.2f", initialPos.X, initialPos.Y, initialPos.Z);
-					Time = math.huge;
-					Name = guiName;
-				})
+				Remote.MakeGui(plr, "Coords")
 			end;
 		};
 
@@ -1231,9 +916,9 @@ return function(Vargs, env)
 			Commands = {"wait"};
 			Args = {"time"};
 			Description = "Waits for the desired amount of time in seconds. Only works with batch commands";
-			AdminLevel = -math.huge;
+			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				task.wait(tonumber(args[1]) or 0)
+				task.wait(math.clamp(tonumber(args[1]) or 0, 0, 600))
 
 				return args
 			end
