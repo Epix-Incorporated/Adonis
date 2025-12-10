@@ -213,7 +213,7 @@ return function(data, env)
 								AutomaticSize = "Y";
 								TextWrapped = true;
 								TextScaled = false;
-								RichText = true;
+								RichText = data.RichText;
 								BackgroundTransparency = 1;
 							};
 						}
@@ -342,11 +342,19 @@ return function(data, env)
 	if data.History then
 		for i,data in ipairs(data.History) do
 			local p = data.Sender;
+			local message = data.Message
+			if p.IsMessageRestricted then
+				message = "<font color='rgb(230,0,0)'>Message unavailable due to chat restrictions.</font>"
+			elseif p.IsMessageRestrictedError then
+				message = "<font color='rgb(230,0,0)'>Message unavailable due to an error.</font>"
+			end
+
 			newMessage({
 				PlayerName = p.Name;
 				PlayerDisplayName = p.DisplayName;
-				Message = data.Message;
+				Message = message;
 				Icon = p.Icon or 0;
+				RichText = p.IsMessageRestricted or p.IsMessageRestrictedError;
 			});
 		end
 	end
@@ -358,11 +366,18 @@ return function(data, env)
 				local p = vargs[1]
 				local message = vargs[2]
 				if newMessage then
+					if p.IsMessageRestricted then
+						message = "<font color='rgb(230,0,0)'>Message unavailable due to chat restrictions.</font>"
+					elseif p.IsMessageRestrictedError then
+						message = "<font color='rgb(230,0,0)'>Message unavailable due to an error.</font>"
+					end
+
 					newMessage({
 						PlayerName = p.Name;
 						PlayerDisplayName = p.DisplayName;
 						Message = message;
 						Icon = p.Icon or 0;
+						RichText = p.IsMessageRestricted or p.IsMessageRestrictedError;
 					})
 				end
 			elseif cmd == "UpdatePeerList" then

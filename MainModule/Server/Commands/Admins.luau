@@ -514,7 +514,20 @@ return function(Vargs, env)
 			Description = "Get someone's attention";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr,string.lower(args[1]))do
+				for _, v in service.GetPlayers(plr,string.lower(args[1])) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to alert {service.FormatPlayer(v)} due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to alert {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					Remote.MakeGui(v, "Alert", {Message = args[2] and service.Filter(args[2],plr, v) or "Wake up; Your attention is required"})
 				end
 			end
