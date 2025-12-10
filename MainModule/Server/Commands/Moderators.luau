@@ -1082,7 +1082,7 @@ return function(Vargs, env)
 										canUsersChat = true
 									else
 										local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, p.UserId, {sessionPlayer.UserId})
-										if not canUsersDirectChatAsyncSuccess then
+										if canUsersDirectChatAsyncSuccess then
 											canUsersChat = #canUsersDirectChatAsyncData > 0
 											newData.IsMessageRestricted = not canUsersChat
 										else
