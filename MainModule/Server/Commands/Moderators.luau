@@ -140,13 +140,13 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name")) do
 					if v.UserId ~= plr.UserId then
-						local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not canUsersDirectChatAsyncSuccess then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
 							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due an error.`, {plr})
 							continue
 						end
 
-						if #canUsersDirectChatAsyncData == 0 then
+						if #canUserChatData == 0 then
 							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due to chat restrictions.`, {plr})
 							continue
 						end
@@ -286,13 +286,13 @@ return function(Vargs, env)
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.UserId ~= plr.UserId then
-						local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not canUsersDirectChatAsyncSuccess then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
 							continue
 						end
 
-						if #canUsersDirectChatAsyncData == 0 then
+						if #canUserChatData == 0 then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
 							continue
 						end
@@ -339,13 +339,13 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.UserId ~= plr.UserId then
-						local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not canUsersDirectChatAsyncSuccess then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
 							continue
 						end
 
-						if #canUsersDirectChatAsyncData == 0 then
+						if #canUserChatData == 0 then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
 							continue
 						end
@@ -592,13 +592,13 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.UserId ~= plr.UserId then
-						local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not canUsersDirectChatAsyncSuccess then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
 							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due an error.`, {plr})
 							continue
 						end
 
-						if #canUsersDirectChatAsyncData == 0 then
+						if #canUserChatData == 0 then
 							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due to chat restrictions.`, {plr})
 							continue
 						end
@@ -1003,9 +1003,9 @@ return function(Vargs, env)
 							canUsersChat = canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
 							newHistoryItem.Sender.IsMessageRestricted = not canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
 						else
-							local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, player.UserId, {historyItem.Sender.UserId})
-							if canUsersDirectChatAsyncSuccess then
-								canUsersChat = #canUsersDirectChatAsyncData > 0
+							local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, player.UserId, {historyItem.Sender.UserId})
+							if success then
+								canUsersChat = #canUserChatData > 0
 								canUsersDirectChatAsyncCache[historyItem.Sender.UserId] = canUsersChat
 								newHistoryItem.Sender.IsMessageRestricted = not canUsersChat
 							else
@@ -1081,9 +1081,9 @@ return function(Vargs, env)
 									if p.UserId == sessionPlayer.UserId then
 										canUsersChat = true
 									else
-										local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, p.UserId, {sessionPlayer.UserId})
-										if canUsersDirectChatAsyncSuccess then
-											canUsersChat = #canUsersDirectChatAsyncData > 0
+										local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, p.UserId, {sessionPlayer.UserId})
+										if success then
+											canUsersChat = #canUserChatData > 0
 											newData.IsMessageRestricted = not canUsersChat
 										else
 											newData.IsMessageRestrictedError = true
@@ -1181,8 +1181,8 @@ return function(Vargs, env)
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v ~= plr then
-						local canUserChatSuccess, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
-						if not canUserChatSuccess then
+						local success, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
+						if not success then
 							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session because an error occurred.`, {plr})
 							continue
 						end
@@ -1217,13 +1217,13 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.UserId ~= plr.UserId then
-						local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not canUsersDirectChatAsyncSuccess then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
 							continue
 						end
 
-						if #canUsersDirectChatAsyncData == 0 then
+						if #canUserChatData == 0 then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
 							continue
 						end
@@ -7111,13 +7111,13 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.UserId ~= plr.UserId then
-						local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not canUsersDirectChatAsyncSuccess then
+						local success, data = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
 							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due an error.`, {plr})
 							continue
 						end
 
-						if #canUsersDirectChatAsyncData == 0 then
+						if #data == 0 then
 							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to chat restrictions.`, {plr})
 							continue
 						end
