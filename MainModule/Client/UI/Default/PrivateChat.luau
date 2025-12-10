@@ -366,7 +366,6 @@ return function(data, env)
 				local p = vargs[1]
 				local message = vargs[2]
 				if newMessage then
-					print(p)
 					if p.IsMessageRestricted then
 						message = "<font color='rgb(230,0,0)'>Message unavailable due to chat restrictions.</font>"
 					elseif p.IsMessageRestrictedError then
