@@ -996,7 +996,7 @@ return function(Vargs, env)
 							}
 						}
 
-						if (player.UserId == historyItem.Sender.UserId or historyItem.Sender.UserId == 0) then
+						if player.UserId == historyItem.Sender.UserId or historyItem.Sender.UserId == 0 then
 							canUsersChat = true
 							newHistoryItem.Sender.IsMessageRestricted = false
 						elseif canUsersDirectChatAsyncCache[historyItem.Sender.UserId] ~= nil then
