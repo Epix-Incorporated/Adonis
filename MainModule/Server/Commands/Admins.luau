@@ -516,13 +516,13 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr,string.lower(args[1])) do
 					if v.UserId ~= plr.UserId then
-						local canUsersDirectChatAsyncSuccess, canUsersDirectChatAsyncData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not canUsersDirectChatAsyncSuccess then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
 							Functions.Hint(`Unable to alert {service.FormatPlayer(v)} due an error.`, {plr})
 							continue
 						end
 
-						if #canUsersDirectChatAsyncData == 0 then
+						if #canUserChatData == 0 then
 							Functions.Hint(`Unable to alert {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
 							continue
 						end
