@@ -35,10 +35,54 @@ return function(Vargs)
 		end
 	end
 
-	-- Generate API and RMD data from ReflectionService asynchronously
-	task.delay(0.25, function()
+	-- Helper functions for API/RMD generation (moved outside to minimize closure memory)
+	local function getPropertyScore(propName, propertyPriority)
+		return propertyPriority[propName] or 100 + string.len(propName)
+	end
+
+	local function getClassCategory(tagsDict)
+		if tagsDict.Service then
+			return "Service"
+		end
+		if tagsDict.Creatable then
+			return "Instance"
+		end
+		if tagsDict.Deprecated then
+			return "Deprecated"
+		end
+		return "Other"
+	end
+
+	local function getClassIcon(className, tagsDict, classIconMap)
+		if classIconMap[className] then
+			return classIconMap[className]
+		end
+		if tagsDict.Service then
+			return 10
+		end
+		if tagsDict.Creatable then
+			if
+				className:match("Gui$")
+				or className:match("Label$")
+				or className:match("Button$")
+				or className:match("Frame$")
+			then
+				return 40
+			elseif className:match("Script$") then
+				return 30
+			end
+		end
+		return 0
+	end
+
+	-- Main function to generate API and RMD data from ReflectionService
+	-- This is called lazily when Dex is first opened to save memory
+	local function generateAPIAndRMD()
 		local reflectionSuccess, apiResult, rmdResult = pcall(function()
 			local classesData = ReflectionService:GetClasses()
+			local propertyPriority = DataMaps.propertyPriority
+			local classIconMap = DataMaps.classIconMap
+			local classExplorerOrder = DataMaps.classExplorerOrder
 
 			-- Build API structure from ReflectionService
 			local apiData = {
@@ -51,56 +95,6 @@ return function(Vargs)
 				Classes = {},
 			}
 
-			-- Property importance order (loaded from Data.lua)
-			local propertyPriority = DataMaps.propertyPriority
-
-			-- Class icon mapping from original RMD (loaded from Data.lua)
-			local classIconMap = DataMaps.classIconMap
-
-			-- Class sort/display order (loaded from Data.lua)
-			local classExplorerOrder = DataMaps.classExplorerOrder
-
-			-- Get property importance score
-			local function getPropertyScore(propName)
-				return propertyPriority[propName] or 100 + string.len(propName)
-			end
-
-			-- Categorize class based on tags (expects dictionary)
-			local function getClassCategory(tagsDict)
-				if tagsDict.Service then
-					return "Service"
-				end
-				if tagsDict.Creatable then
-					return "Instance"
-				end
-				if tagsDict.Deprecated then
-					return "Deprecated"
-				end
-				return "Other"
-			end
-
-			-- Get icon index for a class (expects dictionary)
-			local function getClassIcon(className, tagsDict)
-				if classIconMap[className] then
-					return classIconMap[className]
-				end
-				if tagsDict.Service then
-					return 10
-				end
-				if tagsDict.Creatable then
-					if
-						className:match("Gui$")
-						or className:match("Label$")
-						or className:match("Button$")
-						or className:match("Frame$")
-					then
-						return 40
-					elseif className:match("Script$") then
-						return 30
-					end
-				end
-				return 0
-			end
 
 			-- Build class lookup by name for superclass resolution
 			local classLookup = {}
@@ -180,8 +174,8 @@ return function(Vargs)
 
 				-- Sort by importance
 				table.sort(sortedProps, function(a, b)
-					local scoreA = getPropertyScore(a.Name)
-					local scoreB = getPropertyScore(b.Name)
+					local scoreA = getPropertyScore(a.Name, propertyPriority)
+					local scoreB = getPropertyScore(b.Name, propertyPriority)
 					return scoreA < scoreB
 				end)
 
@@ -249,7 +243,7 @@ return function(Vargs)
 				local rmdClassEntry = {
 					Name = className,
 					ClassCategory = getClassCategory(tagsDict),
-					ExplorerImageIndex = getClassIcon(className, tagsDict),
+					ExplorerImageIndex = getClassIcon(className, tagsDict, classIconMap),
 					ExplorerOrder = classExplorerOrder[className] or 9999,
 				}
 
@@ -276,11 +270,13 @@ return function(Vargs)
 		if reflectionSuccess then
 			APIDump = apiResult
 			RMDData = rmdResult
-			Logs:AddLog("Script", "Successfully generated API and RMD data from ReflectionService")
+			print("[SERVER] Successfully generated API and RMD data from ReflectionService")
 		else
-			Logs:AddLog("Errors", "Failed to generate API and RMD data from ReflectionService: " .. tostring(apiResult))
+			warn("[SERVER ERROR] Failed to generate API and RMD data from ReflectionService: " .. tostring(apiResult))
 		end
-	end)
+
+		return APIDump, RMDData
+	end
 
 	ServerNewDex.newDex_main = newDex_main
 	ServerNewDex.Event = nil
@@ -426,14 +422,18 @@ return function(Vargs)
 			end
 		end,
 		fetchapi = function(Player: Player)
+			-- Lazy-load API on first request
+			if not APIDump then
+				generateAPIAndRMD()
+			end
 			return APIDump or false
 		end,
 		fetchrmd = function(Player: Player)
-			-- Generate RMD data from ReflectionService for client use
-			if RMDData then
-				return RMDData
+			-- Lazy-load RMD on first request
+			if not RMDData then
+				generateAPIAndRMD()
 			end
-			return false
+			return RMDData or false
 		end,
 		addtag = function(Player: Player, args)
 			local obj = args[1]
