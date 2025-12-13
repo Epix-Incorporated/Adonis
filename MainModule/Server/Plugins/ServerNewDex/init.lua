@@ -128,6 +128,15 @@ return function(Vargs)
 				return inherited
 			end
 
+			-- Define abstract classes that shouldn't be creatable
+			local abstractClasses = {
+				BasePart = true,
+				BaseValue = true,
+				BaseScript = true,
+				PVInstance = true,
+				BaseWrap = true,
+			}
+
 			-- Process classes
 			for _, classInfo in ipairs(classesData) do
 				local className = classInfo.Name
@@ -141,6 +150,12 @@ return function(Vargs)
 						tagsDict[tagStr] = true
 						table.insert(tags, tagStr)
 					end
+				end
+
+				-- Mark abstract classes as non-creatable
+				if abstractClasses[className] and not tagsDict.NotCreatable then
+					table.insert(tags, "NotCreatable")
+					tagsDict.NotCreatable = true
 				end
 
 				-- Build API class entry with ReflectionService data
@@ -321,11 +336,11 @@ return function(Vargs)
 						end
 					end
 
-					-- Add entry for critical class
+					-- Add entry for critical class with NotCreatable tag
 					apiData.Classes[criticalClassName] = {
 						Name = criticalClassName,
 						Superclass = nil,
-						Tags = {},
+						Tags = { "NotCreatable" },
 						Members = criticalProps,
 					}
 					-- Add minimal RMD entry
