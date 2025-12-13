@@ -2144,11 +2144,21 @@ local function main()
 			end
 		end
 		table.sort(classes, function(a, b)
+			local rmdA = RMD.Classes[a[1].Name]
+			local rmdB = RMD.Classes[b[1].Name]
+			local orderA = (rmdA and rmdA.DisplayOrder) or 100
+			local orderB = (rmdB and rmdB.DisplayOrder) or 100
+
+			-- First sort by DisplayOrder (for Workspace, Players, Lighting, etc)
+			if orderA ~= orderB then
+				return orderA < orderB
+			end
+			-- Then by category
 			if a[2] ~= b[2] then
 				return a[2] < b[2]
-			else
-				return a[1].Name < b[1].Name
 			end
+			-- Finally by name
+			return a[1].Name < b[1].Name
 		end)
 
 		local function onClick(className)

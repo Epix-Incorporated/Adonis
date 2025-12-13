@@ -343,6 +343,9 @@ local function main()
 			return Lib.ColorToBytes(val)
 		elseif typeName == "NumberRange" then
 			return val.Min .. ", " .. val.Max
+		elseif typeData.Category == "Enum" then
+			-- For enums, extract just the name (e.g., "Enum.Material.Brick" -> "Brick")
+			return val.Name
 		end
 
 		return tostring(val)
