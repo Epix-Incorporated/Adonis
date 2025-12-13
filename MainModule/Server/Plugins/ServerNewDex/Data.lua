@@ -23,8 +23,6 @@ return {
 		Size = 26,
 		Scale = 27,
 		CanCollide = 30,
-		Friction = 31,
-		Elasticity = 32,
 		Density = 33,
 		Velocity = 34,
 		RotVelocity = 35,
