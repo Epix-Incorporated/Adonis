@@ -95,7 +95,6 @@ return function(Vargs)
 				Classes = {},
 			}
 
-
 			-- Build class lookup by name for superclass resolution
 			local classLookup = {}
 			for _, classInfo in ipairs(classesData) do
@@ -260,6 +259,87 @@ return function(Vargs)
 				rmdData.Classes[className] = rmdClassEntry
 			end
 
+			-- Ensure critical classes are in API even if ReflectionService doesn't provide them
+			-- This handles special classes like Player that may not be returned by GetClasses()
+			local criticalClasses = { "Player" }
+			for _, criticalClassName in ipairs(criticalClasses) do
+				if not apiData.Classes[criticalClassName] and classIconMap[criticalClassName] then
+					-- Try to get properties from ReflectionService
+					local criticalProps = {}
+					local propsSuccess, propsData = pcall(function()
+						return ReflectionService:GetPropertiesOfClass(criticalClassName)
+					end)
+
+					if propsSuccess and propsData then
+						-- Build members from ReflectionService properties
+						for _, prop in ipairs(propsData) do
+							if prop.Type then
+								local valueTypeName = prop.Type.ScriptType or prop.Type.EngineType
+								if valueTypeName then
+									local category = "Primitive"
+
+									-- Detect enum types
+									if
+										(prop.Type.ScriptType == "EnumItem" or prop.Type.EngineType == "Enum")
+										and prop.Type.EnumType
+									then
+										valueTypeName = prop.Type.EnumType
+										category = "Enum"
+									elseif valueTypeName == "Instance" or valueTypeName:match("^Class%.") then
+										category = "Class"
+									elseif valueTypeName == "boolean" then
+										valueTypeName = "bool"
+									end
+
+									local propTags = {}
+									if prop.Tags then
+										for _, tag in ipairs(prop.Tags) do
+											table.insert(propTags, tostring(tag))
+										end
+									end
+
+									table.insert(criticalProps, {
+										Name = prop.Name,
+										MemberType = "Property",
+										Category = (prop.Display and prop.Display.Category) or "Data",
+										Security = {
+											Read = (prop.Permits and tostring(prop.Permits.Read)) or "None",
+											Write = (prop.Permits and tostring(prop.Permits.Write)) or "None",
+										},
+										Serialization = {
+											CanSave = prop.Serialized or false,
+											CanLoad = prop.Serialized or false,
+										},
+										Tags = propTags,
+										ValueType = {
+											Name = valueTypeName,
+											Category = category,
+										},
+									})
+								end
+							end
+						end
+					end
+
+					-- Add entry for critical class
+					apiData.Classes[criticalClassName] = {
+						Name = criticalClassName,
+						Superclass = nil,
+						Tags = {},
+						Members = criticalProps,
+					}
+					-- Add minimal RMD entry
+					if not rmdData.Classes[criticalClassName] then
+						rmdData.Classes[criticalClassName] = {
+							Name = criticalClassName,
+							ClassCategory = "Instance",
+							ExplorerImageIndex = classIconMap[criticalClassName],
+							ExplorerOrder = classExplorerOrder[criticalClassName] or 9999,
+						}
+					end
+				end
+			end
+
 			-- JSON encode for transmission to client
 			local apiJson = game:GetService("HttpService"):JSONEncode(apiData)
 			local rmdJson = game:GetService("HttpService"):JSONEncode(rmdData)
@@ -270,9 +350,6 @@ return function(Vargs)
 		if reflectionSuccess then
 			APIDump = apiResult
 			RMDData = rmdResult
-			print("[SERVER] Successfully generated API and RMD data from ReflectionService")
-		else
-			warn("[SERVER ERROR] Failed to generate API and RMD data from ReflectionService: " .. tostring(apiResult))
 		end
 
 		return APIDump, RMDData
