@@ -331,16 +331,285 @@ Main = (function()
 	-- 	end
 	-- end
 
+	-- Load data maps for client-side API/RMD generation
+	local DataMaps = require(script:WaitForChild("Modules"):WaitForChild("Data"))
+
+	-- Helper functions for client-side API/RMD generation
+	local function getPropertyScore(propName, propertyPriority)
+		return propertyPriority[propName] or 100 + string.len(propName)
+	end
+
+	local function getClassCategory(tagsDict)
+		if tagsDict.Service then return "Service" end
+		if tagsDict.Creatable then return "Instance" end
+		if tagsDict.Deprecated then return "Deprecated" end
+		return "Other"
+	end
+
+	local function getClassIcon(className, tagsDict, classIconMap)
+		if classIconMap[className] then return classIconMap[className] end
+		if tagsDict.Service then return 10 end
+		if tagsDict.Creatable then
+			if className:match("Gui$") or className:match("Label$") or className:match("Button$") or className:match("Frame$") then
+				return 40
+			elseif className:match("Script$") then
+				return 30
+			end
+		end
+		return 0
+	end
+
+	-- Client-side API and RMD generation from ReflectionService
+	local function generateAPIAndRMD()
+		local reflectionSuccess, apiResult, rmdResult = pcall(function()
+			local ReflectionService = service.ReflectionService
+			local classesData = ReflectionService:GetClasses()
+			local propertyPriority = DataMaps.propertyPriority
+			local classIconMap = DataMaps.classIconMap
+			local classExplorerOrder = DataMaps.classExplorerOrder
+
+			local apiData = { Classes = {}, Enums = {} }
+			local rmdData = { Classes = {} }
+
+			local classLookup = {}
+			for _, classInfo in ipairs(classesData) do
+				classLookup[classInfo.Name] = classInfo
+			end
+
+			local allClassProps = {}
+			for _, classInfo in ipairs(classesData) do
+				local propsData = ReflectionService:GetPropertiesOfClass(classInfo.Name)
+				local propSet = {}
+				for _, prop in ipairs(propsData) do
+					propSet[prop.Name] = prop
+				end
+				allClassProps[classInfo.Name] = propSet
+			end
+
+			local function getInheritedProps(className)
+				local inherited = {}
+				local classInfo = classLookup[className]
+				if classInfo and classInfo.Superclass then
+					local superName = classInfo.Superclass
+					if allClassProps[superName] then
+						for propName, _ in pairs(allClassProps[superName]) do
+							inherited[propName] = true
+						end
+					end
+				end
+				return inherited
+			end
+
+			local abstractClasses = { BasePart = true, BaseValue = true, BaseScript = true, PVInstance = true, BaseWrap = true }
+
+			for _, classInfo in ipairs(classesData) do
+				local className = classInfo.Name
+				local tagsDict = {}
+				local tags = {}
+				if classInfo.Tags then
+					for _, tag in ipairs(classInfo.Tags) do
+						local tagStr = tostring(tag)
+						tagsDict[tagStr] = true
+						table.insert(tags, tagStr)
+					end
+				end
+
+				if abstractClasses[className] and not tagsDict.NotCreatable then
+					table.insert(tags, "NotCreatable")
+					tagsDict.NotCreatable = true
+				end
+
+				local classEntry = {
+					Name = className,
+					Superclass = classInfo.Superclass,
+					Tags = tags,
+					Members = {},
+				}
+
+				local thisClassProps = allClassProps[className] or {}
+				local inheritedProps = getInheritedProps(className)
+
+				local sortedProps = {}
+				for propName, prop in pairs(thisClassProps) do
+					if not inheritedProps[propName] then
+						local firstChar = string.sub(propName, 1, 1)
+						if firstChar == string.upper(firstChar) then
+							table.insert(sortedProps, prop)
+						end
+					end
+				end
+
+				table.sort(sortedProps, function(a, b)
+					local scoreA = getPropertyScore(a.Name, propertyPriority)
+					local scoreB = getPropertyScore(b.Name, propertyPriority)
+					return scoreA < scoreB
+				end)
+
+				local propertyOrder = 0
+				for _, prop in ipairs(sortedProps) do
+					local propTags = {}
+					if prop.Tags then
+						for _, tag in ipairs(prop.Tags) do
+							table.insert(propTags, tostring(tag))
+						end
+					end
+
+					local memberEntry = {
+						Name = prop.Name,
+						MemberType = "Property",
+						Category = (prop.Display and prop.Display.Category) or "Data",
+						Security = {
+							Read = (prop.Permits and tostring(prop.Permits.Read)) or "None",
+							Write = (prop.Permits and tostring(prop.Permits.Write)) or "None",
+						},
+						Serialization = {
+							CanSave = prop.Serialized or false,
+							CanLoad = prop.Serialized or false,
+						},
+						Tags = propTags,
+					}
+
+					if prop.Type then
+						local valueTypeName = prop.Type.ScriptType or prop.Type.EngineType
+						if valueTypeName then
+							local category = "Primitive"
+
+							if (prop.Type.ScriptType == "EnumItem" or prop.Type.EngineType == "Enum") and prop.Type.EnumType then
+								valueTypeName = prop.Type.EnumType
+								category = "Enum"
+							elseif valueTypeName == "Instance" or valueTypeName:match("^Class%.") then
+								category = "Class"
+							elseif valueTypeName == "boolean" then
+								valueTypeName = "bool"
+							end
+
+							memberEntry.ValueType = {
+								Name = valueTypeName,
+								Category = category,
+							}
+						end
+					end
+
+					table.insert(classEntry.Members, memberEntry)
+					propertyOrder = propertyOrder + 1
+				end
+				apiData.Classes[className] = classEntry
+
+				local rmdClassEntry = {
+					Name = className,
+					ClassCategory = getClassCategory(tagsDict),
+					ExplorerImageIndex = getClassIcon(className, tagsDict, classIconMap),
+					ExplorerOrder = classExplorerOrder[className] or 9999,
+				}
+
+				if propertyOrder > 0 then
+					rmdClassEntry.PropertyOrders = {}
+					local order = 0
+					for _, prop in ipairs(sortedProps) do
+						rmdClassEntry.PropertyOrders[prop.Name] = order
+						order = order + 1
+					end
+				end
+
+				rmdData.Classes[className] = rmdClassEntry
+			end
+
+			local criticalClasses = { "Player" }
+			for _, criticalClassName in ipairs(criticalClasses) do
+				if not apiData.Classes[criticalClassName] and classIconMap[criticalClassName] then
+					local criticalProps = {}
+					local propsSuccess, propsData = pcall(function()
+						return ReflectionService:GetPropertiesOfClass(criticalClassName)
+					end)
+
+					if propsSuccess and propsData then
+						for _, prop in ipairs(propsData) do
+							if prop.Type then
+								local valueTypeName = prop.Type.ScriptType or prop.Type.EngineType
+								if valueTypeName then
+									local category = "Primitive"
+
+									if (prop.Type.ScriptType == "EnumItem" or prop.Type.EngineType == "Enum") and prop.Type.EnumType then
+										valueTypeName = prop.Type.EnumType
+										category = "Enum"
+									elseif valueTypeName == "Instance" or valueTypeName:match("^Class%.") then
+										category = "Class"
+									elseif valueTypeName == "boolean" then
+										valueTypeName = "bool"
+									end
+
+									local propTags = {}
+									if prop.Tags then
+										for _, tag in ipairs(prop.Tags) do
+											table.insert(propTags, tostring(tag))
+										end
+									end
+
+									table.insert(criticalProps, {
+										Name = prop.Name,
+										MemberType = "Property",
+										Category = (prop.Display and prop.Display.Category) or "Data",
+										Security = {
+											Read = (prop.Permits and tostring(prop.Permits.Read)) or "None",
+											Write = (prop.Permits and tostring(prop.Permits.Write)) or "None",
+										},
+										Serialization = {
+											CanSave = prop.Serialized or false,
+											CanLoad = prop.Serialized or false,
+										},
+										Tags = propTags,
+										ValueType = {
+											Name = valueTypeName,
+											Category = category,
+										},
+									})
+								end
+							end
+						end
+					end
+
+					apiData.Classes[criticalClassName] = {
+						Name = criticalClassName,
+						Superclass = nil,
+						Tags = { "NotCreatable" },
+						Members = criticalProps,
+					}
+					if not rmdData.Classes[criticalClassName] then
+						rmdData.Classes[criticalClassName] = {
+							Name = criticalClassName,
+							ClassCategory = "Instance",
+							ExplorerImageIndex = classIconMap[criticalClassName],
+							ExplorerOrder = classExplorerOrder[criticalClassName] or 9999,
+						}
+					end
+				end
+			end
+
+			local apiJson = service.HttpService:JSONEncode(apiData)
+			local rmdJson = service.HttpService:JSONEncode(rmdData)
+
+			return apiJson, rmdJson
+		end)
+
+		if reflectionSuccess then
+			return apiResult, rmdResult
+		end
+		return nil, nil
+	end
+
 	Main.FetchAPI = function()
 		local api, rawAPI
-		local didwedoit = Dex_RemoteFunction:InvokeServer("fetchapi")
-		if didwedoit and type(didwedoit) == "string" then
-			rawAPI = didwedoit
+
+		-- Generate API locally from ReflectionService
+		local apiJson, _ = generateAPIAndRMD()
+		if apiJson then
+			rawAPI = apiJson
 		else
+			-- Fallback to bundled API if generation fails
 			if script:FindFirstChild("API") then
 				rawAPI = require(script.API)
 			else
-				error("No API exists")
+				error("Failed to generate API and no bundled API exists")
 			end
 		end
 
@@ -505,12 +774,17 @@ Main = (function()
 
 	Main.FetchRMD = function()
 		local rmdData
-		local didwedoit = Dex_RemoteFunction:InvokeServer("fetchrmd")
+		local didwedoit
 
-		if not didwedoit or didwedoit == false then
-			-- Fallback to empty structure if server doesn't have RMD yet
+		-- Generate RMD locally from ReflectionService
+		local _, rmdJson = generateAPIAndRMD()
+		if not rmdJson then
+			-- Fallback to empty structure if generation fails
 			return { Classes = {}, Enums = {}, PropertyOrders = {} }
-		elseif type(didwedoit) == "string" then
+		end
+		didwedoit = rmdJson
+
+		if type(didwedoit) == "string" then
 			-- Server provided JSON or XML string
 			Main.RawRMD = didwedoit
 
