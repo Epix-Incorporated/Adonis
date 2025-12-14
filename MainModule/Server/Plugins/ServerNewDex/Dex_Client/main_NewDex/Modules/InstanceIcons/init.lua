@@ -1,10 +1,13 @@
 local HttpService = game:GetService("HttpService")
-local JSON = require(script.JSON)
+local JSONArray = require(script.JSON)
+
+-- Build lookup table from array format [className, x, y]
+local ClassLookup = {}
+for _, entry in ipairs(JSONArray) do
+	ClassLookup[entry[1]] = { entry[2], entry[3] }
+end
+
 return function(className, iconImage)
-	local info = JSON[className] or JSON["Configuration"]
-	local x, y = info.frame.x, info.frame.y
-	return { x, y }
-	--iconImage.Image = "http://www.roblox.com/asset/?id=15288945291"
-	--iconImage.ImageRectSize = Vector2.new(16,16)
-	--iconImage.ImageRectOffset = Vector2.new(x,y)
+	local coords = ClassLookup[className] or ClassLookup["Configuration"] or { 1, 1 }
+	return coords
 end
