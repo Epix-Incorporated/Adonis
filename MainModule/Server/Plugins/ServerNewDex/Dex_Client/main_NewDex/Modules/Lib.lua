@@ -3209,12 +3209,10 @@ local function main()
 					else
 						local iconIndex = item.Disabled and item.DisabledIcon or item.Icon
 						if item.IconMap then
-							if type(iconIndex) == "number" then
+							if type(iconIndex) == "number" or type(iconIndex) == "table" then
 								item.IconMap:Display(newEntry.Icon, iconIndex)
 							elseif type(iconIndex) == "string" then
 								item.IconMap:DisplayByKey(newEntry.Icon, iconIndex)
-							elseif type(iconIndex) == "table" then
-								item.IconMap:Display(newEntry.Icon, iconIndex)
 							end
 						elseif type(iconIndex) == "string" then
 							newEntry.Icon.Image = iconIndex
