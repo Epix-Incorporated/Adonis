@@ -333,6 +333,7 @@ Main = (function()
 
 	-- Load data maps for client-side API/RMD generation
 	local DataMaps = require(script:WaitForChild("Modules"):WaitForChild("Data"))
+	local InstanceIcons = require(script:WaitForChild("Modules"):WaitForChild("InstanceIcons"))
 
 	-- Helper functions for client-side API/RMD generation
 	local function getPropertyScore(propName, propertyPriority)
@@ -347,6 +348,16 @@ Main = (function()
 	end
 
 	local function getClassIcon(className, tagsDict, classIconMap)
+		-- Use InstanceIcons module to get actual icon index from JSON data
+		local iconCoords = InstanceIcons(className, nil)
+		if iconCoords and #iconCoords >= 2 then
+			-- Convert coordinates to index (assuming 16x16 grid, 256 wide)
+			local x, y = iconCoords[1], iconCoords[2]
+			local index = (y // 16) * 16 + (x // 16)
+			return index
+		end
+
+		-- Fall back to the hardcoded map if InstanceIcons doesn't have it
 		if classIconMap[className] then return classIconMap[className] end
 		if tagsDict.Service then return 10 end
 		if tagsDict.Creatable then
@@ -1961,6 +1972,7 @@ Main = (function()
 			Properties = 1,
 			Script_Viewer = 2,
 		})
+		Main.ExplorerIcons = Lib.IconMap.newLinear("rbxassetid://117023139832275", 16, 16)
 
 		-- Fetch external deps
 		intro.SetProgress("Fetching API", 0.35)

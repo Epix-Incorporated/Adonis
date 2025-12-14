@@ -908,7 +908,8 @@ local function main()
 					)
 				else
 					local rmdEntry = RMD.Classes[obj.ClassName]
-					Explorer.ClassIcons:Display(entry.Indent.Icon, rmdEntry and rmdEntry.ExplorerImageIndex or 0)
+					local iconCoords = Explorer.InstanceIcons(obj.ClassName, entry.Indent.Icon)
+					Explorer.ClassIcons:Display(entry.Indent.Icon, iconCoords or { 0, 0 })
 				end
 
 				if selection.Map[node] then
@@ -1893,7 +1894,7 @@ local function main()
 		context:Register("VIEW_MODEL", {
 			Name = "View Model",
 			IconMap = Explorer.ClassIcons,
-			Icon = 5,
+			Icon = Explorer.InstanceIcons("Model"),
 			OnClick = function()
 				local sList = selection.List
 				local isa = game.IsA
@@ -1910,7 +1911,7 @@ local function main()
 		context:Register("VIEW_OBJECT", {
 			Name = "View Object (Right click to reset)",
 			IconMap = Explorer.ClassIcons,
-			Icon = 5,
+			Icon = Explorer.InstanceIcons("Model"),
 			OnClick = function()
 				local sList = selection.List
 				local isa = game.IsA
@@ -2178,14 +2179,19 @@ local function main()
 		for i = 1, #classes do
 			local class = classes[i][1]
 			local rmdEntry = RMD.Classes[class.Name]
-			local iconInd = rmdEntry and tonumber(rmdEntry.ExplorerImageIndex) or 0
+			local iconCoords = Explorer.InstanceIcons(class.Name)
 			local category = classes[i][2]
 
 			if lastCategory ~= category then
 				context:AddDivider(category)
 				lastCategory = category
 			end
-			context:Add({ Name = class.Name, IconMap = Explorer.ClassIcons, Icon = iconInd, OnClick = onClick })
+			context:Add({
+				Name = class.Name,
+				IconMap = Explorer.ClassIcons,
+				Icon = iconCoords or { 0, 0 },
+				OnClick = onClick,
+			})
 		end
 
 		Explorer.InsertObjectContext = context
@@ -2990,7 +2996,9 @@ local function main()
 	end
 
 	Explorer.Init = function()
-		Explorer.ClassIcons = Lib.IconMap.newLinear("rbxasset://textures/ClassImages.png", 16, 16)
+		local InstanceIcons = require(script.Parent:WaitForChild("InstanceIcons"))
+		Explorer.InstanceIcons = InstanceIcons
+		Explorer.ClassIcons = Lib.IconMap.newLinear("rbxassetid://117023139832275", 16, 16)
 		Explorer.MiscIcons = Main.MiscIcons
 
 		clipboard = {}

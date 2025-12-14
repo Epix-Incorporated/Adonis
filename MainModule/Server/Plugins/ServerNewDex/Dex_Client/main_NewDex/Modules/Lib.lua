@@ -713,7 +713,12 @@ local function main()
 
 		funcs.Display = function(self, obj, index)
 			obj.Image = self.MapId
-			if not self.NumX then
+
+			-- Handle coordinate-based display (from InstanceIcons)
+			if type(index) == "table" and #index >= 2 then
+				-- index is {x, y} coordinates
+				obj.ImageRectOffset = Vector2.new(index[1], index[2])
+			elseif not self.NumX then
 				obj.ImageRectOffset = Vector2.new(self.IconSizeX * index, 0)
 			else
 				obj.ImageRectOffset =
@@ -3208,6 +3213,8 @@ local function main()
 								item.IconMap:Display(newEntry.Icon, iconIndex)
 							elseif type(iconIndex) == "string" then
 								item.IconMap:DisplayByKey(newEntry.Icon, iconIndex)
+							elseif type(iconIndex) == "table" then
+								item.IconMap:Display(newEntry.Icon, iconIndex)
 							end
 						elseif type(iconIndex) == "string" then
 							newEntry.Icon.Image = iconIndex
