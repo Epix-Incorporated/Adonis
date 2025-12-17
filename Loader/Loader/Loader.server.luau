@@ -156,22 +156,6 @@ else
 		end
 	end
 
-	local hasASettingsModuleErrorOccured = false
-
-	local success, settingsData = pcall(function()
-		for _, module in settingsFolder:GetChildren() do
-			local requiredModule = require(module)
-
-			for key, value in requiredModule do
-				if key == "Messages" then
-					data.Messages = value
-				end
-
-				data.Settings[key] = value
-			end
-		end
-	end)
-
 	local erroredSettingsModules = {}
 
 	for _, module in settingsFolder:GetChildren() do
