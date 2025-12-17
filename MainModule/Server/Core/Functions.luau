@@ -970,14 +970,19 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon, onClick)
-			icon = icon and string.match(icon, "MatIcon://(.+)") or icon
+			local matchedMatIcon = icon and string.match(icon, "MatIcon://(.+)")
+			if matchedMatIcon then
+				icon = server.MatIcons[matchedMatIcon] or server.MatIcons["Info"]
+			else
+				icon = icon or server.MatIcons["Info"]
+			end
 
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
 					Message = message;
 					Time = duration;
-					Icon = server.MatIcons[icon or "Info"];
+					Icon = icon;
 					OnClick = onClick;
 				})
 			end

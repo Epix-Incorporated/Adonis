@@ -658,7 +658,6 @@ return service.NewProxy({
 						self[ind] = `rbxassetid://{materialIcon}`
 						return self[ind]
 					end
-					return ""
 				end,
 				__metatable = if data.DebugMode then unique else "Adonis_MatIcons"
 			})
