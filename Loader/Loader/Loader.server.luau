@@ -204,18 +204,6 @@ else
 		data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults.
 	end
 
-	-- if not success then
-	-- 	warn("[DEVELOPER ERROR] A settings module errored while loading; Using defaults; Error Message:", settingsData)
-	-- 	table.insert(data.Messages, {
-	-- 		Title = "Warning!";
-	-- 		Icon = "MatIcon://Dangerous";
-	-- 		Message = "Settings module error detected; using default settings.";
-	-- 		Time = 15;
-	-- 	})
-
-	-- 	data.Settings = {}
-	-- end
-
 	xpcall(function()
 		data.Descriptions = require(inGameSettingsEditorSettingsFolder.Descriptions)
 	end, function(err)
