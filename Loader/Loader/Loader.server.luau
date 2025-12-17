@@ -16,7 +16,7 @@
 --                                Adonis Loader                                 --
 --                            By Epix Incorporated                              --
 ----------------------------------------------------------------------------------
---          Edit settings using the Settings module in the Config folder        --
+--              Edit settings inside the Config -> Settings folder              --
 ----------------------------------------------------------------------------------
 --       This script loads the Adonis source (MainModule) into the game.        --
 --            Only edit this script if you know what you're doing!              --
@@ -87,8 +87,10 @@ else
 	local runner = script
 
 	local settingsModule = configFolder.Settings
+	local settingsFolder = configFolder.Settings
 	local pluginsFolder = configFolder.Plugins
 	local themesFolder = configFolder.Themes
+	local inGameSettingsEditorSettingsFolder = configFolder.InGameSettingsEditorSettings
 
 	local backup = model:Clone()
 
@@ -154,23 +156,89 @@ else
 		end
 	end
 
-	local success, setTab = pcall(require, settingsModule)
-	if success then
-		data.Messages = setTab.Settings.Messages
-	else
-		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
-		table.insert(data.Messages, {
-			Title = "Warning!";
-			Icon = "maticon://Dangerous";
-			Message = "Settings module error detected; using default settings.";
-			Time = 15;
-		})
-		setTab = {}
+	local hasASettingsModuleErrorOccured = false
+
+	local success, settingsData = pcall(function()
+		for _, module in settingsFolder:GetChildren() do
+			local requiredModule = require(module)
+
+			for key, value in requiredModule do
+				if key == "Messages" then
+					data.Messages = value
+				end
+
+				data.Settings[key] = value
+			end
+		end
+	end)
+
+	local erroredSettingsModules = {}
+
+	for _, module in settingsFolder:GetChildren() do
+		xpcall(function()
+			local requiredModule = require(module)
+
+			for key, value in requiredModule do
+				if key == "Messages" then
+					data.Messages = value
+				end
+
+				data.Settings[key] = value
+			end
+		end, function(err)
+			table.insert(erroredSettingsModules, {Name = module.Name, Error = err})
+		end)
 	end
 
-	data.Settings = setTab.Settings
-	data.Descriptions = setTab.Description
-	data.Order = setTab.Order
+	for _, erroredSettingModule in erroredSettingsModules do
+		warn(`[DEVELOPER ERROR] The Settings.{erroredSettingModule.Name} module errored while loading; Using defaults for this module; Error Message: {erroredSettingModule.Error}`)
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Icon = "MatIcon://Dangerous";
+			Message = `The Settings.{erroredSettingModule.Name} module errored while loading; Using defaults for this module.`;
+			Time = 15;
+		})
+	end
+
+	if #erroredSettingsModules > 0 then
+		data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults.
+	end
+
+	-- if not success then
+	-- 	warn("[DEVELOPER ERROR] A settings module errored while loading; Using defaults; Error Message:", settingsData)
+	-- 	table.insert(data.Messages, {
+	-- 		Title = "Warning!";
+	-- 		Icon = "MatIcon://Dangerous";
+	-- 		Message = "Settings module error detected; using default settings.";
+	-- 		Time = 15;
+	-- 	})
+
+	-- 	data.Settings = {}
+	-- end
+
+	xpcall(function()
+		data.Descriptions = require(inGameSettingsEditorSettingsFolder.Descriptions)
+	end, function(err)
+		warn("[DEVELOPER ERROR] The InGameSettingsEditorSettings.Descriptions module errored while loading; Using defaults; Error Message:", err)
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Icon = "MatIcon://Dangerous";
+			Message = "The InGameSettingsEditorSettings.Descriptions module errored while loading; Using defaults.";
+			Time = 15;
+		})
+	end)
+
+	xpcall(function()
+		data.Order = require(inGameSettingsEditorSettingsFolder.Order)
+	end, function(err)
+		warn("[DEVELOPER ERROR] The InGameSettingsEditorSettings.Order module errored while loading; Using defaults; Error Message:", err)
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Icon = "MatIcon://Dangerous";
+			Message = "The InGameSettingsEditorSettings.Order module errored while loading; Using defaults.";
+			Time = 15;
+		})
+	end)
 
 	for _, module in pluginsFolder:GetChildren() do
 		local name = string.lower(module.Name)
@@ -197,7 +265,7 @@ else
 	local success, module = pcall(require, moduleId)
 
 	--// Backup method for loading Adonis
-	if not success and type(moduleId) == "number" then -- ccuser44 was here
+	if not success and type(moduleId) == "number" then
 		warn(`Failed to load Adonis MainModule {moduleId} due to {module}! If this does not work please purchase the Adonis MainModule to your inventory. Using backup method...`)
 		yxpcall(function()
 			module = loadModuleAsset(moduleId)
