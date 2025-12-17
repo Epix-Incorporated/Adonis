@@ -86,7 +86,6 @@ else
 	local loader = loaderFolder.Loader
 	local runner = script
 
-	local settingsModule = configFolder.Settings
 	local settingsFolder = configFolder.Settings
 	local pluginsFolder = configFolder.Plugins
 	local themesFolder = configFolder.Themes
