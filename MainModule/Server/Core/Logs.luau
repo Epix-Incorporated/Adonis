@@ -88,6 +88,22 @@ return function(Vargs, GetEnv)
 				log.Time = os.time()
 			end
 
+			if log.Player and type(log.Player) ~= "table" then
+				local id = log.Player.UserId
+				local pData = Core.PlayerData[tostring(id)]
+				local userInfo = pData.userInfo
+
+				if not userInfo then -- Cache table allocation for player userInfo table to save on memory
+					userInfo = {
+						Name = log.Player.Name;
+						UserId = id;
+					}
+					pData.userInfo = userInfo
+				end
+
+				log.Player = userInfo
+			end
+
 			if tab then
 				if tab.__meta == "DLL" then
 					tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
@@ -153,7 +169,7 @@ return function(Vargs, GetEnv)
 					local newTab = if isTable then table.clone(log) else log
 
 					if (isTable and not log.NoSave) or not isTable then
-						if isTable and log.Player then
+						if isTable and log.Player and type(log.Player) ~= "table" then
 							local p = log.Player
 							log.Player = {
 								Name = p.Name;
