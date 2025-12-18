@@ -7318,5 +7318,38 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		Join = {
+			Prefix = Settings.Prefix;
+			Commands = {"join", "follow", "followplayer"};
+			Args = {"username"};
+			Description = "Makes you follow the player you gave the username of to the server they are in";
+			NoStudio = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+
+				local UserId = Functions.GetUserIdFromNameAsync(args[1])
+				if UserId then
+					local success, samePlace, errorMessage, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
+					if success then
+						assert(samePlace, "You're already in this server")
+						if placeId and jobId then
+							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
+								ServerInstanceId = jobId
+							}))
+							Functions.Hint("Teleporting...", {plr})
+						else
+							Functions.Hint(`{args[1]} was not found playing this game`, {plr})
+						end
+					else
+						Functions.Hint(`Unexpected internal error: {errorMessage or samePlace}`, {plr})
+					end
+				else
+					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
+				end
+			end
+		};
 	}
 end
