@@ -7113,7 +7113,7 @@ return function(Vargs, env)
 					if v.UserId ~= plr.UserId then
 						local success, data = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
 						if not success then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due an error.`, {plr})
+							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to an error.`, {plr})
 							continue
 						end
 
