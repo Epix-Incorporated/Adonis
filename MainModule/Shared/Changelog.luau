@@ -7,7 +7,7 @@ return {
 	"Players who have chat restrictions may no longer communicate with others via Adonis.";
 	"(Git/ImFirstPlace) Add CanUsersDirectChat checks to communicative commands (#2033)";
 	"(Git/ImFirstPlace) Add PromptJoinGroup command (#2026)";
-	"(Git/kaiserandxl) Removed unused ExploitGuiDetection setting from new loaders (#2029)";
+	"(Git/kaiserandaxl) Removed unused ExploitGuiDetection setting from new loaders (#2029)";
 	"(Git/fxeP1) PlayerCommand patches (#2032)";
 	"(Git/ccuser44) Decrease memory consumption caused by logs (#2017)";
 	"Command related changes done:";
