@@ -510,7 +510,6 @@ descs.AntiGod = [[ If a player does not respawn when they should have they get r
 descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games ]]
-descs.ExploitGuiDetection = [[ (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
 
 order = {
 	"HideScript";
@@ -624,7 +623,6 @@ order = {
 	"AntiSpeed";
 	"AntiBuildingTools";
 	"AntiAntiIdle";
-	"ExploitGuiDetection";
 }
 
 return {Settings = settings, Descriptions = descs, Order = order}

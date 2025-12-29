@@ -1432,6 +1432,10 @@ return function(Vargs, GetEnv)
 			service.StarterGui:SetCore(...)
 		end;
 
+		InspectPlayerFromUserId = function(...)
+			service.GuiService:InspectPlayerFromUserId(...)
+		end;
+
 		UnCape = function()
 			local cape = service.LocalContainer():FindFirstChild("::Adonis::Cape")
 			if cape then cape:Destroy() end
@@ -1946,6 +1950,14 @@ return function(Vargs, GetEnv)
 			end
 			data["Resolution"] = math.floor(workspace.CurrentCamera.ViewportSize.X).." x "..math.floor(workspace.CurrentCamera.ViewportSize.Y)
 			return data
+		end;
+
+		PromptJoinGroup = function(groupId)
+			xpcall(function()
+				service.GroupService:PromptJoinAsync(groupId)
+			end, function(err)
+				warn(err)
+			end)
 		end;
 	};
 end

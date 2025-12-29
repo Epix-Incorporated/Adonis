@@ -1,7 +1,25 @@
 return {
-	"Version: 273";
+	"Version: 274";
 	"*Drag edges to expand*";
-	"*Report bugs/issues on our GitHub repository*";
+	"*Report bugs/issues on our repository*";
+	"";
+	"[v274 2025-12-29 12:45 UTC] @Dimenpsyonal";
+	"Players who have chat restrictions may no longer communicate with others via Adonis";
+	"(Git/ImFirstPlace) Add CanUsersDirectChat checks to communicative commands (#2033)";
+	"(Git/ImFirstPlace) Add PromptJoinGroup command (#2026)";
+	"(Git/kaiserandaxl) Removed unused ExploitGuiDetection setting from new loaders (#2029)";
+	"(Git/fxeP1) PlayerCommand patches (#2032)";
+	"(Git/ccuser44) Decrease memory consumption caused by logs (#2017)";
+	"Command related changes done:";
+	"> Alert, ChatNotify, MPM, Notify, NPM, PM, PrivateChat, and TTS commands now have CanUsersDirectChat checks";
+	"> Moved !join to Moderators (!join > :join)";
+	"> Removed Un/AddFriend commands";
+	"> Simplified !pnum (Nil players aren't possible anymore on the server)";
+	"> More simplification/typechecking for inspect";
+	"> Removed !getgroupinfo for being too expensive for a player command";
+	"> Reduce !audioplayer command size to one line";
+	"> !coords is also reduced to one line now";
+	"> !wait actually uses the Players level";
 	"";
 	"[v273 2025-12-05 17:10 UTC] @Dimenpsyonal";
 	"(Git/ccuser44) QoL improvement for tamper check (#1900)";
