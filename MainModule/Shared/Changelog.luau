@@ -1,10 +1,10 @@
 return {
 	"Version: 274";
 	"*Drag edges to expand*";
-	"*Report bugs/issues on our GitHub repository*";
+	"*Report bugs/issues on our repository*";
 	"";
 	"[v274 2025-12-05 17:10 UTC] @Dimenpsyonal";
-	"Players who have chat restrictions may no longer communicate with others via Adonis.";
+	"Players who have chat restrictions may no longer communicate with others via Adonis";
 	"(Git/ImFirstPlace) Add CanUsersDirectChat checks to communicative commands (#2033)";
 	"(Git/ImFirstPlace) Add PromptJoinGroup command (#2026)";
 	"(Git/kaiserandaxl) Removed unused ExploitGuiDetection setting from new loaders (#2029)";
