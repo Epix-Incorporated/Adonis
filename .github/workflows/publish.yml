@@ -76,8 +76,10 @@ jobs:
         with:
           webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
-          content: ${{ github.event_name == 'release' && format('**{}** has been released by **{}**.', github.event.release.tag_name, github.actor) || format('Stable build from **{}** branch has been created by **{}**.', github.ref_name, github.actor) }}
-          
+          content: ${{ github.event_name == 'release'
+            && format('**{0}** has been released by **{1}**.', github.event.release.tag_name, github.actor)
+            || format('Stable build from **{0}** branch has been created by **{1}**.', github.ref_name, github.actor)
+            }}     
       - name: Publish Loader
         uses: fjogeleit/http-request-action@v1.16.6
         with:
