@@ -692,7 +692,6 @@ return {
 	"(Git/wilsontultus) Update Moderators.lua - :invisible and :visible command... (#1146)";
 	"(Git/wilsontulus) Update !playerinfo command - Mail & Phone/ID Verified Status (#1147)";
 	"(Git/Dimenpsyonal) Add age restriction settings (#1149)";
-	"(Git/Dimenpsyonal) Remove GitHub link (#1150)";
 	"(Git/Dimenpsyonal) v240 changelog (3) (#1156)";
 	"(Git/ccuser44) Made Yuenliang compiler work with Luau code (#793)";
 	"(Git/ccuser44) Fix selene linting about TestEz files (#1207)";
@@ -989,7 +988,7 @@ return {
 	"(Git/Expertcoderz) Enhancement towards how commands are registered/handled (#852)";
 	"";
 	"[v236 6.12.2022 12:30 EST]";
-	"*Refer to GitHub repository for more information.";
+	"*Refer to repository for more information.";
 	"";
 	"[v235 3.29.2022 01:38 EST]";
 	"(Git/L8X) Remove math.randomseed() due to Luau optimizations (#624)";
@@ -1291,7 +1290,6 @@ return {
 	"[v224.2 7.27.2021 15:52 EST]";
 	"*The client will now dump it's loading log when the localplayer is kicked";
 	"*IF YOU ARE KICKED FOR A CLIENT TIMEOUT, PLEASE VIEW THE CONSOLE AND SCREENSHOT ANY ADONIS RELATED MESSAGES!";
-	"*You can send them to my Discord (Sceleratis#0001); Currently investigating a client loading issue affecting specific players randomly";
 	"";
 	"[v224.1 7.26.2021 17:50 EST]";
 	"*More verbosity";
@@ -1984,7 +1982,6 @@ return {
 	"*FlyNoclip now uses GetService(\"Players\")";
 	"*Invisible now makes faces and forcefields invisible";
 	"*Set 1-120 limit on FOV cmd";
-	"*Also Adonis is now on Github";
 	"";
 	"v134 1.2.22b [6/7/2018]";
 	"*Killed some datastore error spam";
