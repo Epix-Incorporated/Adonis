@@ -1009,7 +1009,7 @@ return {
     "(Git/P3tray) Update NotificationHolder to fix canvas size issue (#760)";
     "(Git/ccuser44) Fixed anti-idle for the final time (#756)";
     "(Git/ccuser44) Remove legacy check Anti-Cheat Parent not players from the pre-Filtering Enabled era (#755)";
-    "(Git/ccuser44) (Important) Remove "Shananigans denied" bug which is kicking random people (#766)";
+    "(Git/ccuser44) (Important) Remove 'Shananigans denied' bug which is kicking random people (#766)";
     "(Git/ccuser44) Changed the system shutdown title to that of the system message (#762)";
     "(Git/P3tray) Added settings.Messages, also did a lot more. (#757)";
     "(Git/P3tray) Remove and replace private audios. (#751)";
@@ -1033,7 +1033,7 @@ return {
     "(Git/ccuser44) Added settings.SaveCommandLogs (#794)";
     "(Git/jun022222222) Fixed some player commands (#792)";
     "(Git/ccuser44) Fixed some ENV related vulns also prevented a more severe issue (#770)";
-    "(Git/bqsi) Admin.AddTimeBan, Admin.RemoveTimeBan, fix for !join / !follow (#780")";
+    "(Git/bqsi) Admin.AddTimeBan, Admin.RemoveTimeBan, fix for !join / !follow (#780)";
 	"";
 	"[v235 3.29.2022 01:38 EST]";
 	"(Git/L8X) Remove math.randomseed() due to Luau optimizations (#624)";
