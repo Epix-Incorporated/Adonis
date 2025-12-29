@@ -74,8 +74,8 @@ jobs:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           content: ${{ format(
-            'Commit `{0}` {1} pushed by {2}',
-            github.sha,
+            '`{0}` "{1}" pushed by {2}',
+            github.sha.substr(0, 7),
             github.event.head_commit.message,
             github.actor
             ) }}
