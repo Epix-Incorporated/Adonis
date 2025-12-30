@@ -87,14 +87,12 @@ jobs:
             ) }}
           
       - name: Publish Nightly MainModule
-        uses: fjogeleit/http-request-action@v1.16.6
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
-        with:
-          url: "https://apis.roblox.com/assets/v1/assets/${{ secrets.NIGHTLY_MODULE_ID }}"
-          method: "PATCH"
-          contentType: "multipart/form-data"
-          files: '{ "fileContent": "module.rbxm" }'
-          data: '{ "assetType": "model/x-rbxm", "assetId": "${{ secrets.NIGHTLY_MODULE_ID }}" }'
-          customHeaders: '{ "x-api-key": "${{ secrets.ROBLOX_API_KEY }}" }'
-          timeout: 10000
-          preventFailureOnNoResponse: 'true'
+        run: |
+          curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.NIGHTLY_MODULE_ID }}' \
+          --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
+          --form 'request={
+            \"assetType\": \"model/x-rbxm\",
+            \"assetId\": \"${{ secrets.NIGHTLY_MODULE_ID }}\"
+          }' \
+          --form 'fileContent=@"${{ steps.naming.outputs.output_name }}.rbxm"'
