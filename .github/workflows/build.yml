@@ -95,4 +95,4 @@ jobs:
             "assetType": "Model",
             "assetId": "${{ secrets.NIGHTLY_MODULE_ID }}"
           }' \
-          --form 'fileContent=@"module.rbxm"'
+          --form 'fileContent=@module.rbxm;type=model/x-rbxm'
