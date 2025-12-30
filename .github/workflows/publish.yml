@@ -80,32 +80,33 @@ jobs:
             && format('{0} has been released by {1}.', github.event.release.tag_name, github.actor)
             || format('Stable build has been created by {0}.', github.actor)
             }}     
+
       - name: Publish Loader
-        uses: fjogeleit/http-request-action@v1.16.6
-        with:
-          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "Adonis_Loader.rbxm" }'
-          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-          timeout: 10000
-          
+        run: |
+          curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.LOADER_ID }}' \
+          --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
+          --form 'request={
+            "assetType": "Model",
+            "assetId": "${{ secrets.LOADER_ID }}"
+          }' \
+          --form 'fileContent=@Adonis_Loader.rbxm;type=model/x-rbxm'
+
       - name: Publish Module
-        uses: fjogeleit/http-request-action@v1.16.6
-        with:
-          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "Adonis_MainModule.rbxm" }'
-          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-          timeout: 10000
-          
+        run: |
+          curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.MODULE_ID }}' \
+          --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
+          --form 'request={
+            "assetType": "Model",
+            "assetId": "${{ secrets.MODULE_ID }}"
+          }' \
+          --form 'fileContent=@Adonis_MainModule.rbxm;type=model/x-rbxm'
+
       - name: Publish Alerts Module
-        uses: fjogeleit/http-request-action@v1.16.6
-        with:
-          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.ALERTS_MODULE_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "Adonis_AlertsModule.rbxm" }'
-          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-          timeout: 10000
+        run: |
+          curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.ALERTS_MODULE_ID }}' \
+          --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
+          --form 'request={
+            "assetType": "Model",
+            "assetId": "${{ secrets.ALERTS_MODULE_ID }}"
+          }' \
+          --form 'fileContent=@Adonis_AlertsModule.rbxm;type=model/x-rbxm'
