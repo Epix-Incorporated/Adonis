@@ -92,7 +92,7 @@ jobs:
           curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.NIGHTLY_MODULE_ID }}' \
           --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
           --form 'request={
-            \"assetType\": \"model/x-rbxm\",
-            \"assetId\": \"${{ secrets.NIGHTLY_MODULE_ID }}\"
+            "assetType": "model/x-rbxm",
+            "assetId": "${{ secrets.NIGHTLY_MODULE_ID }}"
           }' \
-          --form 'fileContent=@"${{ steps.naming.outputs.output_name }}.rbxm"'
+          --form 'fileContent=@"module.rbxm"'
