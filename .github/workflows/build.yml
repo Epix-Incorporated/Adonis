@@ -67,6 +67,12 @@ jobs:
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
         run: rojo build -o module.rbxm .github/module.deploy.project.json
 
+      - name: Get short SHA
+        id: get-short-sha
+        run: |
+          id=$(echo ${{github.sha}} | cut -c 1-7)
+          echo "::set-output name=id::$id"
+
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v7.0.0
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push' && github.ref_name == 'master'
@@ -75,7 +81,7 @@ jobs:
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
           content: ${{ format(
             '`{0}` "{1}" pushed by {2}',
-            github.sha.substr(0, 7),
+            steps.get-short-sha.outputs.id,
             github.event.head_commit.message,
             github.actor
             ) }}
