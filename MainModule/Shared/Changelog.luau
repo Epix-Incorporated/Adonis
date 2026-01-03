@@ -5,6 +5,7 @@ return {
 	"";
 	"[v275 2026-XX-XX XX:XX UTC] @Maintainer";
 	"*First update of 2026!";
+	"(Git/Dimenpsyonal) Fix tabbing player autocomplete";
 	"(Git/fxeP1) Join command logic fix (#2046)";
 	"";
 	"[v274 2025-12-29 12:45 UTC] @Dimenpsyonal";
