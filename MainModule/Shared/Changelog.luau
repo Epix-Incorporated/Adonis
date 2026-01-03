@@ -1,7 +1,11 @@
 return {
-	"Version: 274";
+	"Version: 275";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v275 2026-XX-XX XX:XX UTC] @Maintainer";
+	"*First update of 2026!";
+	"(Git/fxeP1) Join command logic fix (#2046)";
 	"";
 	"[v274 2025-12-29 12:45 UTC] @Dimenpsyonal";
 	"Players who have chat restrictions may no longer communicate with others via Adonis";
@@ -621,7 +625,7 @@ return {
 	"Fix sing not removing animatedface";
 	"Fix wrapped checks";
 	"";
-	"[v240 2023-11-05 09:20 UTC] @Dimenpsyonal&@ccuser44";
+	"[v240 2023-11-05 09:20 UTC] @Dimenpsyonal";
 	"Add TextChatService command support";
 	"Added commands :createstat and :removestats";
 	"RateLimiter memory leak fix";
@@ -713,10 +717,10 @@ return {
 	"(Git/moo1210) Rewrite :thru and bring use error than error (QOL) (#1239)";
 	"(Git/moo1210) Fix MetaTable issues; prevent anti-cheat from crashing studio (#1240)";
 	"";
-	"[Patch v239.2 2023-04-09 14:50 UTC] @Dimenpsyonal";
+	"[Patch v239.2 2023-04-09 14:50 UTC] @Sceleratis";
 	"(Git/ccuser44) Fixes potential issue with :commands erroring (#1069)";
 	"";
-	"[Patch v239.1 2023-04-07 11:50 UTC] @Dimenpsyonal";
+	"[Patch v239.1 2023-04-07 11:50 UTC] @Sceleratis";
 	"Disabled DOS protection";
 	"Fixed Unity and XP themes";
 	"Reverted the :nuke command to old functionality";
@@ -727,7 +731,7 @@ return {
 	"Add DeepCopy - coasterteam";
 	"Fixed double command bar";
 	"";
-	"[v239 2023-04-06 21:20 UTC] @Dimenpsyonal";
+	"[v239 2023-04-06 21:20 UTC] @Sceleratis";
 	"*First update of 2023!";
 	"Add nightly module & NightlyMode setting to Loader";
 	"Remote spam fix changes";
