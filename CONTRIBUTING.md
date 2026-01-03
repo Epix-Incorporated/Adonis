@@ -6,13 +6,14 @@
 
 Adonis is an ever-expanding, frequently updated, and sometimes complex system.
 To keep Adonis functional and somewhat readable rather than a tangled mess, this document sets out the policies governing contributions to consider before submitting a pull request:
+(A very abridged version is available [here](https://github.com/Epix-Incorporated/Adonis/blob/master/.github/pull_request_template.md))
 
 ## 1. Governance
 
 - Pull requests (PRs) are reviewed and approved by [@Sceleratis](https://github.com/Sceleratis) or any of the appointed community maintainers:  
-  [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz), and [@Dimenpsyonal](https://github.com/Dimenpsyonal).
+  [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip), [@Expertcoderz](https://github.com/Expertcoderz), [@Dimenpsyonal](https://github.com/Dimenpsyonal), and [@GalacticInspired](https://github.com/GalacticInspired).
 - Maintainers may edit PR titles, descriptions, and labels for ease of classification.
-- Community members are allowed and encouraged to comment on, review, and provide feedback on PRs, but final approval rests with maintainers.
+- Community members are allowed and encouraged to comment on, review, and provide feedback on PRs, though final approval rests with maintainers.
 
 ## 2. Scope of Contributions
 
@@ -60,17 +61,17 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 ## 5. Changelog Policy
 
 - The changelog is the record of all notable changes.
-- Each release of Adonis is documented within the changelog – Adonis uses two forms of releases:
+- Each release of Adonis is documented within the changelog. Adonis uses two forms of releases:
 - Full releases: most PRs are released in full releases.
 - Patch releases: denoted by adding a decimal version. Maintainers may choose to include your PR in a patch release if it is related to a non-trivial and/or uncommon bug.
 - Releases are delineated by:
 * the version number,
-* the ISO 8601 date (YYYY–MM–DD) and the time in UTC,
-* and the name of the maintainer responsible for that release (in old cases the changelog author(s))
+* the ISO 8601 date (YYYY–MM–DD) and the time (usually in UTC, some old releases in EST),
+* and the name of the maintainer responsible for that release.
 - The version number uses decimal versioning (e.g. v1.2 is an older version than v1.12), older releases use semantic versioning.
 - Entries should be concise, in the present tense, and reference Adonis commands by their usage name (e.g. `:somecommand`).
 - Maintainers will base the changelog entry off the title of your PR and may copyedit it for clarity.
-- Maintainers may edit or reorganize entries before release publication.
+- Maintainers may edit or reorganise entries before release publication.
 
 ## 6. Branching and Version Control
 
@@ -106,7 +107,7 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 
 - Accepted contributors may request the "GitHub Contributor" role in the [Discord server](https://discord.com/invite/H5RvTP3) and the "Contributors" rank in the [Roblox group](https://www.roblox.com/groups/886423).
 - To request recognition, post your GitHub, Discord, and Roblox usernames in the [discussion thread](https://github.com/Epix-Incorporated/Adonis/discussions/433).
-- Recognition is **not** granted for non-code contributions (e.g. .github changes, typo fixes).
+- Recognition is **not** granted for non-code contributions (e.g. .github changes, typo fixes), a maintainer will usually let you know if this is the case.
 
 ## 11. Communication
 
