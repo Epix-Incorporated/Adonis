@@ -156,11 +156,11 @@ else
 	end
 
 	if settingsFolder == nil then
-		warn("[DEVELOPER ERROR] Settings module not found; using default settings.")
+		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
 		table.insert(data.Messages, {
 			Title = "Warning!";
 			Icon = "maticon://Dangerous";
-			Message = "Settings module not found; using default settings.";
+			Message = "No settings folder or module found; using default settings.";
 			Time = 15;
 		})
 	elseif settingsFolder:IsA("Folder") then
