@@ -18,7 +18,7 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps;
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps, t;
 	local AddLog, Queue, TrackTask
 	local logError = env.logError
 	local function Init(data)
@@ -33,6 +33,7 @@ return function(Vargs, GetEnv)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		Deps = server.Deps;
+		t = server.Typechecker;
 
 		AddLog = Logs.AddLog;
 		Queue = service.Queue;
@@ -149,6 +150,7 @@ return function(Vargs, GetEnv)
 			LocalDatastore = true;
 
 			CrossServerCommands = true;
+			RemoteExecutionConfirmed = true;
 
 			Creators = true;
 			Permissions = true;
@@ -199,7 +201,7 @@ return function(Vargs, GetEnv)
 			LastLevelUpdate = true;
 			Groups = true;
 		};
-		
+
 		UpdatePlayerConnection = function(p)
 			for i, cli in next,service.NetworkServer:GetChildren() do
 				if cli:GetPlayer() == p then
@@ -237,7 +239,13 @@ return function(Vargs, GetEnv)
 						return ev.Changed:Connect(function()
 							if Core.RemoteEvent == rTable and not secureTriggered then
 								if ev == func then
-									func.OnServerInvoke = Process.Remote
+									func.OnServerInvoke = function(p, cliData, com, ...)
+										if t.interface({Mode = t.string})(cliData) then
+											cliData.Mode = "Get"
+											return Process.Remote(p, cliData, com, ...)
+										end
+										return nil
+									end;
 								end
 
 								if ev.Name ~= name then
@@ -261,14 +269,14 @@ return function(Vargs, GetEnv)
 					rTable.Events.FuncSec = secure(func, func.Name, event)
 
 					func.OnServerInvoke = function(p, cliData, com, ...)
-						if server.Typechecker.interface({Mode = server.Typechecker.string})(cliData) then
+						if t.interface({Mode = t.string})(cliData) then
 							cliData.Mode = "Get"
 							return Process.Remote(p, cliData, com, ...)
 						end
 						return nil
 					end;
 					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, function(p, cliData, com, ...)
-						if server.Typechecker.interface({Mode = server.Typechecker.string})(cliData) then
+						if t.interface({Mode = t.string})(cliData) then
 							cliData.Mode = "Fire"
 							Process.Remote(p, cliData, com, ...)
 						end
@@ -712,7 +720,7 @@ return function(Vargs, GetEnv)
 					for _, blacklistedData in ipairs({"Groups", "LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
 						data[blacklistedData] = nil
 					end
-					
+
 					--// We want to only save data if actual user data is different
 					local CompareOptions = {
 						IgnoreKeys = {"Groups", "AdminLevel", "AdminRank", "LastLevelUpdate", "LastDataSave"}
@@ -788,7 +796,7 @@ return function(Vargs, GetEnv)
             if Core.DS_RESET_SALTS[key] then
                 key = Core.DS_RESET_SALTS[key] .. key
             end
-            
+
             -- Only consider salting if the key isn't a number (like a player ID) and if the setting isn't true
             local IsPlayer = tonumber(key) ~= nil
             local SettingIsTrue = server.Settings.DontSaltDataStoreKey == true
@@ -952,7 +960,7 @@ return function(Vargs, GetEnv)
 					elseif repeatCount > 0 then
 						return Core.GetData(key, repeatCount - 1, showStatus)
 					end
-					-- 
+					--
 					if showStatus then
 						return nil, false
 					end
@@ -1038,7 +1046,7 @@ return function(Vargs, GetEnv)
 					break
 				end
 			end
-			
+
 			if not tableName then
 				-- No table found, ditch data! Malicious maybe?
 				return false;
@@ -1055,8 +1063,8 @@ return function(Vargs, GetEnv)
 					Core.SetData("SavedTables", tabs)
 				end
 			end
-			
-			local Data, Success = Core.GetData(foundTable.TableKey, nil, true) 
+
+			local Data, Success = Core.GetData(foundTable.TableKey, nil, true)
 			if not Success then
 				Core.SetData(foundTable.TableKey, {})
 			end
@@ -1223,8 +1231,14 @@ return function(Vargs, GetEnv)
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
 				if type(displayName) == "string" then
-					if ds_blacklist[displayName] then
-						return
+					for i in ds_blacklist do
+						local prefix = string.sub(displayName, 1, #i + 1)
+						if string.sub(prefix, 1, #i) == i then
+							local delim = string.sub(prefix, #i + 1)
+							if delim == "" or delim == "." then
+								return
+							end
+						end
 					end
 
 					if type(indList) == "table" and indList[1] == "Settings" and indList[2] == "Ranks" then
@@ -1279,7 +1293,7 @@ return function(Vargs, GetEnv)
 				if Core.DataStore and Settings.DataStoreEnabled then
 
 					local SuccessSettings, SuccessTables = false, false
-					
+
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
 					if not key then
 						SavedSettings, SuccessSettings = GetData("SavedSettings", nil, true)
@@ -1423,6 +1437,9 @@ return function(Vargs, GetEnv)
 				Service = service;
 			}
 
+			--// Support fake players properly for some exposed API functions
+			local PlayerType = t.union(t.instanceIsA("Player"), t.strictInterface({ UserId = t.integer, Name = t.optional(t.string) }))
+
 			local API = {
 				Access = MetaFunc(function(...)
 					local args = {...}
@@ -1475,12 +1492,15 @@ return function(Vargs, GetEnv)
 					else
 						error("Incorrect key or G_Access is disabled")
 					end
-				end, true);
+				end, true, { t.string, t.string });
 
 				Scripts = service.ReadOnly({
 					ExecutePermission = MetaFunc(function(srcScript, code)
-						local exists;
+						if not Settings.CodeExecution then
+							return
+						end
 
+						local exists;
 						for _, v in Core.ScriptCache do
 							if v.Script == srcScript then
 								exists = v
@@ -1511,44 +1531,54 @@ return function(Vargs, GetEnv)
 							end
 							return data.Source, module
 						end
-					end, true);
+					end, true, { t.instanceIsA("LuaSourceContainer"), t.string });
 				}, nil, nil, true);
 
-				CheckAdmin = MetaFunc(Admin.CheckAdmin, true);
+				CheckAdmin = MetaFunc(Admin.CheckAdmin, true, { PlayerType });
 
-				IsAdmin = MetaFunc(Admin.CheckAdmin, true);
+				IsAdmin = MetaFunc(Admin.CheckAdmin, true, { PlayerType });
 
-				IsBanned = MetaFunc(Admin.CheckBan, true);
+				IsBanned = MetaFunc(Admin.CheckBan, true, { PlayerType });
 
-				IsMuted = MetaFunc(Admin.IsMuted, true);
+				IsMuted = MetaFunc(Admin.IsMuted, true, { t.instanceOf("Player") });
 
-				CheckDonor = MetaFunc(Admin.CheckDonor, true);
+				CheckDonor = MetaFunc(Admin.CheckDonor, true, { t.instanceOf("Player") });
 
-				GetLevel = MetaFunc(Admin.GetLevel, true);
+				GetLevel = MetaFunc(Admin.GetLevel, true, { PlayerType });
 
-				SetLighting = MetaFunc(Functions.SetLighting, true);
+				SetLighting = MetaFunc(Functions.SetLighting, true, { t.string, t.optional(t.any) });
 
-				SetPlayerLighting = MetaFunc(Remote.SetLighting, true);
+				SetPlayerLighting = MetaFunc(Remote.SetLighting, true, { t.instanceOf("Player"), t.string, t.optional(t.any) });
 
-				NewParticle = MetaFunc(Functions.NewParticle, true);
+				NewParticle = MetaFunc(Functions.NewParticle, true, { t.instanceIsA("BasePart"), t.string, t.map(t.string, t.any )});
 
-				RemoveParticle = MetaFunc(Functions.RemoveParticle, true);
+				RemoveParticle = MetaFunc(Functions.RemoveParticle, true, { t.instanceIsA("BasePart"), t.string });
 
-				NewLocal = MetaFunc(Remote.NewLocal, true);
+				NewLocal = MetaFunc(Remote.NewLocal, true, { t.instanceOf("Player"), t.string, t.map(t.string, t.any), t.optional(t.string) });
 
-				MakeLocal = MetaFunc(Remote.MakeLocal, true);
+				MakeLocal = MetaFunc(Remote.MakeLocal, true, { t.instanceOf("Player"), t.Instance, t.optional(t.string), t.optional(t.boolean) });
 
-				MoveLocal = MetaFunc(Remote.MoveLocal, true);
+				MoveLocal = MetaFunc(Remote.MoveLocal, true, { t.instanceOf("Player"), t.string, t.optional(t.string), t.Instance });
 
-				RemoveLocal = MetaFunc(Remote.RemoveLocal, true);
+				RemoveLocal = MetaFunc(Remote.RemoveLocal, true, { t.instanceOf("Player"), t.string, t.optional(t.string), t.optional(t.boolean) });
 
-				Hint = MetaFunc(Functions.Hint, true);
+				Hint = MetaFunc(Functions.Hint, true, { t.string, t.array(t.instanceOf("Player")), t.optional(t.number), t.string, t.optional(t.string) });
 
-				Message = MetaFunc(Functions.Message, true);
+				Message = MetaFunc(function(title: string, message: string, players: {Player}, scroll: boolean?, duration: number?)
+					duration = duration or (#tostring(message) / 19) + 2.5
 
-				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin, true);
-
-				GetPlayers = MetaFunc(Functions.GetPlayers, true);
+					for _, v in ipairs(players) do
+						task.defer(function()
+							Remote.RemoveGui(v, "Message")
+							Remote.MakeGui(v, "Message", {
+								Title = title;
+								Message = message;
+								Scroll = scroll;
+								Time = duration;
+							})
+						end)
+					end
+				end, true, { t.string, t.string, t.array(t.instanceOf("Player")), t.optional(t.boolean), t.optional(t.number) });
 			}
 
 			if Core.DebugMode == true then
@@ -1572,8 +1602,8 @@ return function(Vargs, GetEnv)
 							end
 							return RealEnvResult, false
 						end
-					end	
-					
+					end
+
 					local AdonisDebugAPIBindable = service.New("BindableFunction")
 					AdonisDebugAPIBindable.Name = "Adonis_Debug_API"
 					AdonisDebugAPIBindable.Parent = service.ReplicatedStorage

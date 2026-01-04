@@ -3,8 +3,7 @@ name: publish
 on:
   push:
     branches: [release]
-    tags: 
-      - v**
+
   release:
     types: [published]
 
@@ -12,7 +11,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7  # Using the latest version
+      - uses: actions/checkout@v6.0.1  # Using the latest version
         with:
           ref: refs/heads/release
           
@@ -30,9 +29,6 @@ jobs:
           if [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [ "$GIT_REF" == "refs/heads/release" ]
           then
             BUILD_TYPE="Stable"
-          elif [ "$GITHUB_ACTION_EVENT_NAME" == "push" ] && [[ "$GIT_REF" == "refs/tags/v"* ]]
-          then
-            BUILD_TYPE="Release"
           elif [ "$GITHUB_ACTION_EVENT_NAME" == "release" ] && [ "$GITHUB_IS_PRE_RELEASE" == "false" ]
           then
             BUILD_TYPE="Release"
@@ -61,7 +57,7 @@ jobs:
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
      
-      - uses: actions/upload-artifact@v4.3.6
+      - uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
@@ -76,37 +72,41 @@ jobs:
         run: rojo build -o Adonis_AlertsModule.rbxm .github/alerts.deploy.project.json
         
       - name: Send Standalone Release to Discord channel
-        uses: tsickert/discord-webhook@v6.0.0
+        uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
           filename: ${{ steps.naming.outputs.output_name }}.rbxm
-          
+          content: ${{ github.event_name == 'release'
+            && format('{0} has been released by {1}.', github.event.release.tag_name, github.actor)
+            || format('Stable build has been created by {0}.', github.actor)
+            }}     
+
       - name: Publish Loader
-        uses: fjogeleit/http-request-action@v1.16.1
-        with:
-          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "Adonis_Loader.rbxm" }'
-          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-          timeout: 10000
-          
+        run: |
+          curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.LOADER_ID }}' \
+          --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
+          --form 'request={
+            "assetType": "Model",
+            "assetId": "${{ secrets.LOADER_ID }}"
+          }' \
+          --form 'fileContent=@Adonis_Loader.rbxm;type=model/x-rbxm'
+
       - name: Publish Module
-        uses: fjogeleit/http-request-action@v1.16.1
-        with:
-          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "Adonis_MainModule.rbxm" }'
-          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-          timeout: 10000
-          
+        run: |
+          curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.MODULE_ID }}' \
+          --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
+          --form 'request={
+            "assetType": "Model",
+            "assetId": "${{ secrets.MODULE_ID }}"
+          }' \
+          --form 'fileContent=@Adonis_MainModule.rbxm;type=model/x-rbxm'
+
       - name: Publish Alerts Module
-        uses: fjogeleit/http-request-action@v1.16.1
-        with:
-          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.ALERTS_MODULE_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "Adonis_AlertsModule.rbxm" }'
-          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
-          timeout: 10000
+        run: |
+          curl --location --request PATCH 'https://apis.roblox.com/assets/v1/assets/${{ secrets.ALERTS_MODULE_ID }}' \
+          --header 'x-api-key: ${{ secrets.ROBLOX_API_KEY }}' \
+          --form 'request={
+            "assetType": "Model",
+            "assetId": "${{ secrets.ALERTS_MODULE_ID }}"
+          }' \
+          --form 'fileContent=@Adonis_AlertsModule.rbxm;type=model/x-rbxm'

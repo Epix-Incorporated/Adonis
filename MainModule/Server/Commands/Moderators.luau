@@ -139,6 +139,19 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name")) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					Functions.Notification("Notification", service.Filter(args[2], plr, v), {v})
 				end
 			end
@@ -264,7 +277,7 @@ return function(Vargs, env)
 			Commands = {"mpm", "messagepm"};
 			Args = {"player", "message"};
 			Filter = true;
-			Description = "Makes a message on the target player(s) screen.";
+			Description = "Makes a private message on the target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -272,6 +285,19 @@ return function(Vargs, env)
 
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
 				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
 				end
 			end
@@ -306,12 +332,25 @@ return function(Vargs, env)
 			Commands = {"npm", "smallmessagepm", "nmessagepm", "nmsgpm", "npmmsg", "smsgpm", "spmmsg", "smessagepm"};
 			Args = {"player", "message"};
 			Filter = true;
-			Description = "Makes a small message on the target player(s) screen.";
+			Description = "Makes a small private message on the target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					Remote.RemoveGui(v, "Notify")
 					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
 				end
@@ -552,6 +591,19 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[2]
 						if data.Options.Chat ~= true then
@@ -928,6 +980,47 @@ return function(Vargs, env)
 					return peers
 				end
 
+				local function getFilteredHistory(player)
+					local canUsersDirectChatAsyncCache = {}
+					local newHistory = {}
+
+					for _, historyItem in history do
+						local canUsersChat = false
+						local newHistoryItem = {
+							Message = nil,
+							Sender = {
+								Name = historyItem.Sender.Name,
+								DisplayName = historyItem.Sender.DisplayName,
+								UserId = historyItem.Sender.UserId,
+								Icon = historyItem.Sender.Icon
+							}
+						}
+
+						if player.UserId == historyItem.Sender.UserId or historyItem.Sender.UserId == 0 then
+							canUsersChat = true
+							newHistoryItem.Sender.IsMessageRestricted = false
+						elseif canUsersDirectChatAsyncCache[historyItem.Sender.UserId] ~= nil then
+							canUsersChat = canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
+							newHistoryItem.Sender.IsMessageRestricted = not canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
+						else
+							local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, player.UserId, {historyItem.Sender.UserId})
+							if success then
+								canUsersChat = #canUserChatData > 0
+								canUsersDirectChatAsyncCache[historyItem.Sender.UserId] = canUsersChat
+								newHistoryItem.Sender.IsMessageRestricted = not canUsersChat
+							else
+								newHistoryItem.Sender.IsMessageRestrictedError = true
+							end
+						end
+
+						newHistoryItem.Message = canUsersChat and historyItem.Message or nil
+
+						table.insert(newHistory, newHistoryItem)
+					end
+
+					return newHistory
+				end
+
 				local function systemMessage(msg)
 					local data = {
 						Name = "* SYSTEM *";
@@ -976,7 +1069,31 @@ return function(Vargs, env)
 									table.remove(history, 1)
 								end
 
-								newSession:SendToUsers("PlayerSentMessage", data, msg)
+								for sessionPlayer in newSession.Users do
+									local newData = {
+										Name = data.Name,
+										DisplayName = data.DisplayName,
+										UserId = data.UserId,
+										Icon = data.Icon
+									}
+
+									local canUsersChat = false
+									if p.UserId == sessionPlayer.UserId then
+										canUsersChat = true
+									else
+										local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, p.UserId, {sessionPlayer.UserId})
+										if success then
+											canUsersChat = #canUserChatData > 0
+											newData.IsMessageRestricted = not canUsersChat
+										else
+											newData.IsMessageRestrictedError = true
+										end
+									end
+
+									local messageToSend = canUsersChat and msg or nil
+
+									newSession:SendToUser(sessionPlayer, "PlayerSentMessage", newData, messageToSend)
+								end
 							end
 						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
 							newSession:RemoveUser(p)
@@ -991,18 +1108,28 @@ return function(Vargs, env)
 							systemMessage("<i>Session ended</i>")
 							newSession:End()
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
-							local player = args[1]
+							local peer = args[1]
+							local filteredHistory = getFilteredHistory(peer)
 
-							if player then
-								newSession:AddUser(player)
-								newSession:SendToUser(player, "AddedToSession")
-								systemMessage(string.format("<i>%s added %s to the session</i>", p.Name, player.Name))
-								Remote.MakeGui(player, "PrivateChat", {
+							if peer then
+								local canUserChatSuccess, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, peer.UserId)
+								if not canUserChatSuccess then
+									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session because an error occurred.`, {p})
+								end
+
+								if not canUserChatData then
+									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session due to them not being able to chat.`, {p})
+								end
+
+								newSession:AddUser(peer)
+								newSession:SendToUser(peer, "AddedToSession")
+								systemMessage(string.format("<i>%s added %s to the session</i>", service.FormatPlayer(p), service.FormatPlayer(peer)))
+								Remote.MakeGui(peer, "PrivateChat", {
 									Owner = plr;
 									SessionKey = newSession.SessionKey;
 									SessionName = sessionName;
-									History = history;
-									CanManageUsers = Admin.CheckAdmin(player);
+									History = filteredHistory;
+									CanManageUsers = Admin.CheckAdmin(peer);
 								})
 								newSession:SendToUsers("UpdatePeerList", getPeerList())
 							end
@@ -1048,18 +1175,29 @@ return function(Vargs, env)
 					Owner = plr;
 					SessionKey = newSession.SessionKey;
 					SessionName = sessionName;
-					History = history;
+					History = getFilteredHistory(plr);
 					CanManageUsers = true;
 				})
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v ~= plr then
+						local success, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
+						if not success then
+							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session because an error occurred.`, {plr})
+							continue
+						end
+
+						if not canUserChatData then
+							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session due to them not being able to chat.`, {plr})
+							continue
+						end
+
 						newSession:AddUser(v)
 						Remote.MakeGui(v, "PrivateChat", {
 							Owner = plr;
 							SessionKey = newSession.SessionKey;
 							SessionName = sessionName;
-							History = history;
+							History = getFilteredHistory(v);
 							CanManageUsers = Admin.CheckAdmin(v);
 						})
 					end
@@ -1078,6 +1216,19 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					local replyTicket = service.HttpService:GenerateGUID(false)
 					Variables.PMtickets[replyTicket] = plr
 
@@ -6778,6 +6929,11 @@ return function(Vargs, env)
 								Moderator = plr.UserId;
 							})
 
+							local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+							if audio then
+								audio.Muted = true
+							end
+
 							Functions.Hint(`Muted {service.FormatPlayer(v)}`, {plr})
 
 							Functions.Notification("Notification", `You have been muted!`, {v}, 10, "MatIcon://Warning")
@@ -6820,6 +6976,11 @@ return function(Vargs, env)
 						Target = v.UserId;
 						Moderator = plr.UserId;
 					})
+
+					local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+					if audio then
+						audio.Muted = false
+					end
 
 					Functions.Hint(`Unmuted {service.FormatPlayer(v)}`, {plr})
 
@@ -6949,7 +7110,36 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.UserId ~= plr.UserId then
+						local success, data = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to an error.`, {plr})
+							continue
+						end
+
+						if #data == 0 then
+							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					Remote.Send(v, "Function", "TextToSpeech", args[2])
+				end
+			end
+		};
+
+		PromptJoinGroup = {
+			Prefix = Settings.Prefix;
+			Commands = {"groupinvite", "invitegroup", "groupprompt", "communityinvite"};
+			Args = {"player", "groupId"};
+			Description = "Prompts player(s) to join the specified community/group";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player(s) (argument #1)")
+				assert(args[2], "Missing groupId (argument #2)")
+
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(v, "Function", "PromptJoinGroup", args[2])
 				end
 			end
 		};
@@ -7289,6 +7479,39 @@ return function(Vargs, env)
 				Functions.Hint(`Your starter speed was reset`, plrs)
 				if Settings.CommandFeedback then
 					Functions.Hint(`You reset {#plrs} players starter speed`, {plr})
+				end
+			end
+		};
+
+		Join = {
+			Prefix = Settings.Prefix;
+			Commands = {"join", "follow", "followplayer"};
+			Args = {"username"};
+			Description = "Makes you follow the player you gave the username of to the server they are in";
+			NoStudio = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+
+				local UserId = Functions.GetUserIdFromNameAsync(args[1])
+				if UserId then
+					local success, samePlace, errorMessage, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
+					if success then
+						assert(not samePlace, "You're already in this server")
+						if placeId and jobId then
+							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
+								ServerInstanceId = jobId
+							}))
+							Functions.Hint("Teleporting...", {plr})
+						else
+							Functions.Hint(`{args[1]} was not found playing this game`, {plr})
+						end
+					else
+						Functions.Hint(`Unexpected internal error: {errorMessage or samePlace}`, {plr})
+					end
+				else
+					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
 				end
 			end
 		};

@@ -744,17 +744,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		NewLocal = function(class, props, parent)
-			local obj = service.New(class)
-			for prop,value in props do
-				obj[prop] = value
-			end
-
-			if not parent or parent == "LocalContainer" then
-				obj.Parent = service.LocalContainer()
-			elseif parent == "Camera" then
-				obj.Parent = workspace.CurrentCamera
-			elseif parent == "PlayerGui" then
-				obj.Parent = service.PlayerGui
+			local success, obj = pcall(service.New, class, props)
+			if success then
+				if not parent or parent == "LocalContainer" then
+					obj.Parent = service.LocalContainer()
+				elseif parent == "Camera" then
+					obj.Parent = workspace.CurrentCamera
+				elseif parent == "PlayerGui" then
+					obj.Parent = service.PlayerGui
+				end
 			end
 		end;
 
@@ -1028,9 +1026,13 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetLighting = function(prop, value)
-			if service.Lighting[prop] ~= nil then
-				service.Lighting[prop] = value
-				Variables.LightingSettings[prop] = value
+			if service.CheckProperty(service.Lighting, prop) ~= nil then
+				local success = pcall(function()
+					service.Lighting[prop] = value
+				end)
+				if success then
+					Variables.LightingSettings[prop] = value
+				end
 			end
 		end;
 
@@ -1428,6 +1430,10 @@ return function(Vargs, GetEnv)
 
 		SetCore = function(...)
 			service.StarterGui:SetCore(...)
+		end;
+
+		InspectPlayerFromUserId = function(...)
+			service.GuiService:InspectPlayerFromUserId(...)
 		end;
 
 		UnCape = function()
@@ -1944,6 +1950,14 @@ return function(Vargs, GetEnv)
 			end
 			data["Resolution"] = math.floor(workspace.CurrentCamera.ViewportSize.X).." x "..math.floor(workspace.CurrentCamera.ViewportSize.Y)
 			return data
+		end;
+
+		PromptJoinGroup = function(groupId)
+			xpcall(function()
+				service.GroupService:PromptJoinAsync(groupId)
+			end, function(err)
+				warn(err)
+			end)
 		end;
 	};
 end

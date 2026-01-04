@@ -616,7 +616,7 @@ return function(Vargs, GetEnv)
 							end;
 						})
 
-						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
+						if not Remote.RemoteExecutionConfirmed[tostring(p.UserId)] then
 							local ans = Remote.GetGui(p, "YesNoPrompt", {
 								Icon = server.MatIcons.Warning;
 								Question = "Are you sure you want to load this script into the server env?";
@@ -625,7 +625,7 @@ return function(Vargs, GetEnv)
 							})
 
 							if ans == "Yes" then
-								server.Remote.RemoteExecutionConfirmed[p.UserId] = true
+								Remote.RemoteExecutionConfirmed[tostring(p.UserId)] = true
 							else
 								return
 							end
@@ -639,32 +639,6 @@ return function(Vargs, GetEnv)
 						else
 							Remote.Terminal.LiveOutput(p,`SYNTAX_ERROR: {string.match(err, ":(.*)") or err}`)
 						end
-					end
-				};
-
-				Execute = {
-					Usage = "execute <command>";
-					Command = "execute";
-					Arguments = 1;
-					Description = "Runs the specified command as the server";
-					Function = function(p,args,data)
-						Process.Command(p, args[1], {DontLog = true, Check = true}, true)
-						return {
-							`Command ran: {args[1]}`
-						}
-					end
-				};
-
-				Sudo = {
-					Usage = "sudo <player> <command>";
-					Command = "sudo";
-					Arguments = 1;
-					Description = "Runs the specified command on the specified player as the server";
-					Function = function(p,args,data)
-						Process.Command(p, `{Settings.Prefix}sudo {args[1]}`, {DontLog = true, Check = true}, true)
-						return {
-							`Command ran: {Settings.Prefix}sudo {args[1]}`
-						}
 					end
 				};
 
