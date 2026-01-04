@@ -177,7 +177,6 @@ return function(Vargs, GetEnv)
 			Ranks = true;
 			Commands = true;
 
-			CreatorPowers = true;
 			CodeExecution = true;
 			PlayerDataKeyBlacklist = true;
 
