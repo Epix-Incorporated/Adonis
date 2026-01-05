@@ -1744,7 +1744,7 @@ return {
 	"*Someone is spoofing \"alerts\" in the exploit logs that attempt to get you to run their backdoor";
 	"*If you see something strange, like a message telling you to update in the exploit logs";
 	"*Be sure to run :remotelogs immediately and look for a user who ran \"Detected\" as that's probably the person doing it";
-	"*Send a message to my disc (Sceleratis#0001) or make a comment on git issue #149 if you encounter this";
+	"*Send a message to me (Sceleratis) or make a comment on git issue #149 if you encounter this";
 	"";
 	"[v193 10.26.2020]";
 	"*Mute now uses the ChatSystem (Credits to Coasterteam)";
