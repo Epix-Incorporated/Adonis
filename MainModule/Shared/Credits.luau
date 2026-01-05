@@ -5,10 +5,11 @@ return {
 		{Text = "einsteinK",				Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best programmer I know"};
 		{Text = "Rerumu (Shining_Diamando)",Desc = "Numerous contributions (Endless stairs, FiOne, Parser, Steampunk theme)"};
 		{Text = "Cald_fan", 				Desc = "WebPanel Maintainer & Creator"};
-		{Text = "joritochip",				Desc = "Senior Maintainer & WebPanel Developer"};
-		{Text = "Coasterteam",				Desc = "Senior Maintainer & Development contributions (Kronos developer)"};
+		{Text = "joritochip",				Desc = "Community Maintainer & WebPanel Developer"};
+		{Text = "Coasterteam",				Desc = "Community Maintainer & Development contributions (Kronos developer)"};
 		{Text = "Expertcoderz",				Desc = "Community Maintainer"};
 		{Text = "Dimenpsyonal",				Desc = "Community Maintainer"};
+		{Text = "GalacticInspired",			Desc = "Community Maintainer"};
 	};
 
 	Contributors = {
