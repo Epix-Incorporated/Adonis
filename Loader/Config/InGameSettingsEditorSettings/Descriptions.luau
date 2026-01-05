@@ -81,7 +81,6 @@ return {
 	LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]];
 	SystemTitle = [[ Title to display in :sm ]];
 
-	CreatorPowers = [[ Gives me creator-level admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]];
 	MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]];
 	SaveCommandLogs = [[ If command logs are saved to the datastores ]];
 	Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]];

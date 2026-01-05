@@ -69,7 +69,6 @@ return {
 	"CommandFeedback";
 	"CrossServerCommands";
 	"ChatCommands";
-	"CreatorPowers";
 	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";

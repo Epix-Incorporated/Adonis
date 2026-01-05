@@ -37,8 +37,6 @@
 --------------------
 
 return {
-	CreatorPowers = false;	-- Gives me creator-level admin; This is strictly used for debugging; I can't debug without full access to the script
-
 	Ranks = {
 		["Moderators"] = {
 			Level = 100;
