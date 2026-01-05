@@ -8,6 +8,7 @@ return {
 	"Fix tabbing player autocomplete";
 	"Typecheck online friends";
 	"Remove CreatorPowers functions and associated setting";
+	"Add :xray as an alternative for :esp";
 	"(Git/fxeP1) Join command logic fix (#2046)";
 	"";
 	"[v274 2025-12-29 12:45 UTC] @Dimenpsyonal";
