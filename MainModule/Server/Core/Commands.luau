@@ -141,7 +141,7 @@ return function(Vargs, GetEnv)
 
 			local isValid, fault = ValidateCommandDefinition(cmd)
 			if not isValid then
-				logError(`Invalid command definition table {ind}:`, fault)
+				logError(`The command {ind} is not formatted correctly:`, fault)
 				Commands[ind] = nil
 			end
 
