@@ -731,10 +731,15 @@ return function(data, env)
 			local tabWhiteSpace = "	"
 			if string.sub(text.Text, string.len(text.Text)) == tabWhiteSpace then
 				if autoList:FindFirstChild("Entry 0") then
-					local args = string.split(text.Text, splitKey) -- Get command args
-					local textWithoutLastArg = string.sub(text.Text, 1, string.len(text.Text) - string.len(args[#args])) -- Remove the last arg
+					local args = string.split(text.Text, splitKey)
+					args[#args] = nil
+					local textWithoutLastArg = table.concat(args, splitKey)
 
-					text.Text = `{textWithoutLastArg}{autoList["Entry 0"].Text} ` -- Combine the text witout the last arg and the player name
+					if textWithoutLastArg ~= "" then
+						textWithoutLastArg ..= splitKey
+					end
+
+					text.Text = textWithoutLastArg .. autoList["Entry 0"].Text .. " "
 				elseif scroll:FindFirstChild("Entry 0") then
 					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
 				end

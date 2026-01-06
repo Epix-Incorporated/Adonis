@@ -38,7 +38,7 @@ return function(Vargs, env)
 
 		ESP = {
 			Prefix = Settings.Prefix;
-			Commands = {"esp"};
+			Commands = {"esp", "xray"};
 			Args = {"target (optional)", "brickcolor (optional)"};
 			Filter = true;
 			Description = "Allows you to see <target> (or all humanoids if no target is supplied) through walls";
@@ -62,7 +62,7 @@ return function(Vargs, env)
 
 		UnESP = {
 			Prefix = Settings.Prefix;
-			Commands = {"unesp"};
+			Commands = {"unesp", "unxray"};
 			Args = {};
 			Filter = true;
 			Description = "Removes ESP";
@@ -7498,7 +7498,7 @@ return function(Vargs, env)
 				if UserId then
 					local success, samePlace, errorMessage, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
 					if success then
-						assert(samePlace, "You're already in this server")
+						assert(not samePlace, "You're already in this server")
 						if placeId and jobId then
 							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
 								ServerInstanceId = jobId
