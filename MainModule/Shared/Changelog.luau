@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v275 2026-XX-XX XX:XX UTC] @Maintainer";
+	"[v275 2026-01-06 00:16 UTC] @Dimenpsyonal";
 	"*First update of 2026!";
 	"Fix tabbing player autocomplete";
 	"Typecheck online friends";
