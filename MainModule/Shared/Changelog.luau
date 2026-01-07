@@ -1,7 +1,10 @@
 return {
-	"Version: 275";
+	"Version: 276";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v276 2026-XX-XX XX:XX UTC] @Maintainer";
+	"Autocomplete now works identically with click and tab";
 	"";
 	"[v275 2026-01-06 00:16 UTC] @Dimenpsyonal";
 	"*First update of 2026!";
