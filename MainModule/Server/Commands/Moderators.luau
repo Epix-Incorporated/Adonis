@@ -5001,7 +5001,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local players = service.GetPlayers(plr, if args[1] then args[1] else "me")
 				if #players == 1 and players[1] == plr then
-					Commands.Thru.Function(plr, {`@{plr.Name}`})
+					Commands.Thru.Function(plr, {})
 					return
 				end
 				if #players < 10 or not Commands.MassBring or Remote.GetGui(plr, "YesNoPrompt", {
