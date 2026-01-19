@@ -1400,6 +1400,7 @@ return function(Vargs, GetEnv)
 			local ipairs = ipairs
 			local next = next
 			local table = table
+			local task = task
 			local getfenv = getfenv
 			local setfenv = setfenv
 			local require = require
