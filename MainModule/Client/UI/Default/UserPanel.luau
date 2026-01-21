@@ -466,6 +466,18 @@ return function(data, env)
 				Position = UDim2.new(1, -22, 0, 4);
 			})
 
+			infoTab:Add("TextButton", {
+				Text = "Open Console";
+				Size = UDim2.new(0, 130, 0, 40);
+				Position = UDim2.new(1, -135, 0, 230);
+				BackgroundTransparency = 0.5;
+				Events = {
+					MouseButton1Down = function()
+						service.Events.ToggleConsole:Fire()
+					end
+				}
+			})
+
 		end
 
 		local LOAD_ICON = {
