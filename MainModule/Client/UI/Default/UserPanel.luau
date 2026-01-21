@@ -1563,9 +1563,9 @@ return function(data, env)
 					Desc = "- Toggles what the help button does by default";
 					Entry = "DropDown";
 					Setting = "HelpButtonAction";
-					Value = Variables.HelpButtonAction or "Info";
+					Value = Variables.HelpButtonAction or "info";
 					Options = (function()
-						return {"Info";"Console"}
+						return {"info";"console"}
 					end)();
 					Function = function(selection)
 						Variables.HelpButtonAction = selection
