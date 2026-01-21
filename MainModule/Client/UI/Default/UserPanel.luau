@@ -56,7 +56,7 @@ return function(data, env)
 		Name  = "UserPanel";
 		Title = Variables.NightlyMode and "Adonis Nightly" or "Adonis";
 		Icon = Variables.NightlyMode and "rbxassetid://6877822142" or "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
-		Size  = {465, 325};
+		Size  = {465, 340};
 		AllowMultiple = false;
 		OnClose = function()
 			Variables.WaitingForBind = false
