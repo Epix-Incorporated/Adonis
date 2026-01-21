@@ -1557,7 +1557,21 @@ return function(data, env)
 							UI.Make("UserPanel", {Tab = "Client"})
 						end)
 					end
-				}
+				};
+				{
+					Text = "Default help button action: ";
+					Desc = "- Toggles what the help button does by default";
+					Entry = "DropDown";
+					Setting = "HelpButtonAction";
+					Value = Variables.HelpButtonAction or "Info";
+					Options = (function()
+						return {"Info";"Console"}
+					end)();
+					Function = function(selection)
+						Variables.HelpButtonAction = selection
+						Remote.Get("UpdateClient", "HelpButtonAction", selection)
+					end
+				};
 			}
 
 			local num = 0
