@@ -159,7 +159,7 @@ else
 		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
 		table.insert(data.Messages, {
 			Title = "Warning!";
-			Icon = "maticon://Dangerous";
+			Icon = "MatIcon://Dangerous";
 			Message = "No settings folder or module found; using default settings.";
 			Time = 15;
 		})
@@ -230,7 +230,7 @@ else
 			warn("[DEVELOPER ERROR] Settings module errored while loading; using default settings; Error Message: ", settingsData)
 			table.insert(data.Messages, {
 				Title = "Warning!";
-				Icon = "maticon://Dangerous";
+				Icon = "MatIcon://Dangerous";
 				Message = "Settings module error detected; using default settings.";
 				Time = 15;
 			})
