@@ -432,19 +432,19 @@ return function(Vargs, env)
 			Description = "Sets a small hint message at the top of the screen";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message (or enter 'off' to disable)")
+				local message = not (args[1] == "off" or args[1] == "false") and assert(args[1], "Missing message (or enter 'off' to disable)") or nil
 
-				if args[1] == "off" or args[1] == "false" then
-					Variables.NotifMessage = nil
-					for _, v in service.GetPlayers() do
-						Remote.RemoveGui(v, "Notif")
-					end
-				else
-					Variables.NotifMessage = args[1]
-					for _, v in service.GetPlayers() do
+				if server.PanicMode and server._tempBackupHint then
+					server._tempBackupHint.Text = `~= Adonis PanicMode Enabled{message and " - " or ""}{message or ""} =~`
+				end
+				Variables.NotifMessage = message
+				for _, v in service.GetPlayers() do
+					if Variables.NotifMessage then
 						Remote.MakeGui(v, "Notif", {
 							Message = Variables.NotifMessage;
 						})
+					else
+						Remote.RemoveGui(v, "Notif")
 					end
 				end
 			end

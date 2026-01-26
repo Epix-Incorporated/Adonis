@@ -20,7 +20,7 @@ return function(Vargs, GetEnv)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		logError = server.logError;
-		Functions.NuclearExplode = select(2, xpcall(require, warn, server.Dependencies.FastNuke));
+		Functions.NuclearExplode = require(server.Dependencies.FastNuke);
 
 		Functions.Init = nil
 		Logs:AddLog("Script", "Functions Module Initialized")
@@ -886,6 +886,17 @@ return function(Vargs, GetEnv)
 		Hint = function(message, players, duration, title, image)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
+			if server.PanicMode and server._tempBackupHint then
+				local message = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}: {message}`
+				server._tempBackupHint.Text = message
+
+				task.delay(duration, function()
+					if server._tempBackupHint.Text == message then
+						server._tempBackupHint.Text = `~= Adonis PanicMode Enabled - {Variables and Variables.NotifMessage} =~`
+					end
+				end)
+			end
+
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
 					Message = message;
@@ -897,7 +908,6 @@ return function(Vargs, GetEnv)
 		end;
 
 		Message = function(sender, title, message, image, players, scroll, duration)
-
 			-- Currently not used
 			if sender == "Adonis" or sender == "HelpSystem" or sender == "Command" then
 				sender = nil
@@ -938,6 +948,15 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			if server.PanicMode then
+				service.Debris:AddItem(service.New("Message", {
+					Text = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}:\n\n{message}`,
+					Name = `ADONIS_TEMPMESSAGE_{server.CodeName}_{math.random()}`,
+					Archivable = false,
+					Parent = workspace,
+				}), duration)
+			end
+
 			for _, v in players do
 				task.defer(function()
 					Remote.RemoveGui(v, "Message")
@@ -956,6 +975,15 @@ return function(Vargs, GetEnv)
 		Notify = function(title, message, players, duration, author)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
+			if server.PanicMode then
+				service.Debris:AddItem(service.New("Message", {
+					Text = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}:\n\n{message}`,
+					Name = `ADONIS_TEMPNOTIFY_{server.CodeName}_{math.random()}`,
+					Archivable = false,
+					Parent = workspace,
+				}), duration)
+			end
+
 			for _, v in players do
 				task.defer(function()
 					Remote.RemoveGui(v, "Notify")
@@ -970,16 +998,36 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notification = function(title, message, players, duration, icon, onClick)
-			icon = icon and string.match(icon, "MatIcon://(.+)") or icon
+			local properties = {
+				Title = title;
+				Message = message;
+				Time = duration;
+				Icon = (not icon or string.match(string.lower(icon), "maticon://(.+)")) and (server.MatIcons and server.MatIcons[icon and string.sub(icon, 11) or "Info"]) or icon;
+				OnClick = onClick;
+				Key = (server.PanicMode and server.Remote) and server.Remote._globalAccessHash;
+			}
+
+			if server.PanicMode then
+				pcall(function()
+					local backup = server.Deps.BackupNotification:Clone()
+
+					for _, v in ipairs({"Title", "Message", "Time", "Icon", "OnClick", properties.Key and "Key"}) do
+						pcall(service.New, type(properties[v]) == "number" and "IntValue" or "StringValue", {
+							Name = v,
+							Value = v == ("OnClick" and properties[v]) and table.concat({"", string.byte(properties[v], 1, #properties[v])}, "\\") or properties[v],
+							Parent = backup
+						})
+					end
+
+					backup.Parent = workspace
+					backup.Disabled = false
+					service.Debris:AddItem(backup, duration and duration * 2 or 20)
+					server.Shared.FiOne:Clone().Parent = backup
+				end)
+			end
 
 			for _, v in players do
-				Remote.MakeGui(v, "Notification", {
-					Title = title;
-					Message = message;
-					Time = duration;
-					Icon = server.MatIcons[icon or "Info"];
-					OnClick = onClick;
-				})
+				Remote.MakeGui(v, "Notification", properties)
 			end
 		end;
 
