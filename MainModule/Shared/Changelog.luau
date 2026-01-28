@@ -5,6 +5,7 @@ return {
 	"";
 	"[v276 2026-XX-XX XX:XX UTC] @Maintainer";
 	"Autocomplete now works identically with click and tab";
+	"(Git/ImFirstPlace) Modularise the settings and improve the loader (#2050)";
 	"";
 	"[v275 2026-01-06 00:16 UTC] @Dimenpsyonal";
 	"*First update of 2026!";
