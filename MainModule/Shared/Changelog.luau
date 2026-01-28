@@ -21,6 +21,9 @@ return {
 	"(Git/ImFirstPlace) Add PromptJoinGroup command (#2026)";
 	"(Git/kaiserandaxl) Removed unused ExploitGuiDetection setting from new loaders (#2029)";
 	"(Git/fxeP1) PlayerCommand patches (#2032)";
+	"> Simplified player some command UIs";
+	"> Removed AddFriend, GetGroupInfo, and TimeDate";
+	"> !join is now :join, and Mod+";
 	"(Git/ccuser44) Decrease memory consumption caused by logs (#2017)";
 	"Command related changes done:";
 	"> Alert, ChatNotify, MPM, Notify, NPM, PM, PrivateChat, and TTS commands now have CanUsersDirectChat checks";
