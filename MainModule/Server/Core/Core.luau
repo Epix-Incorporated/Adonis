@@ -716,13 +716,13 @@ return function(Vargs, GetEnv)
 					local data = service.DeepCopy(pData)
 
 					--// Temporary junk that will be removed on save.
-					for _, blacklistedData in ipairs({"Groups", "LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
+					for _, blacklistedData in ipairs({"Groups", "LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave", "UserInfo"}) do
 						data[blacklistedData] = nil
 					end
 
 					--// We want to only save data if actual user data is different
 					local CompareOptions = {
-						IgnoreKeys = {"Groups", "AdminLevel", "AdminRank", "LastLevelUpdate", "LastDataSave"}
+						IgnoreKeys = {"Groups", "AdminLevel", "AdminRank", "LastLevelUpdate", "LastDataSave", "UserInfo"}
 					}
 
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
