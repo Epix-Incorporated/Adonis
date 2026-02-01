@@ -167,14 +167,20 @@ return function(data, env)
 
 	toggle.MouseButton1Down:Connect(function()
 		local found = client.UI.Get("UserPanel",nil,true)
-		if found then
-			found.Object:Destroy()
-		else
-			client.UI.Make("UserPanel",{})
+		local setting = client.Variables.HelpButtonAction
+		if string.lower(setting) == "console" then
+			service.Events.ToggleConsole:Fire()
+		else -- defaulting to info just incase anything happens
+			if found then
+				found.Object:Destroy()
+			else
+				client.UI.Make("UserPanel")
+			end
 		end
 	end)
 
 	script.Parent.Parent.Parent = playergui
+	toggle.Parent.Enabled = true -- workaround for Adonis not enabling the UI for some reason
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
