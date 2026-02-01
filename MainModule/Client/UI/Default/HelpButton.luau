@@ -42,7 +42,7 @@ return function(data, env)
 	toggle.MouseButton1Down:Connect(function()
 		local found = UI.Get("UserPanel", nil, true)
 		local setting = client.Variables.HelpButtonAction
-		if setting == "console" then
+		if string.lower(setting) == "console" then
 			service.Events.ToggleConsole:Fire()
 		else -- defaulting to info just incase anything happens
 			if found then

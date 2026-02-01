@@ -112,6 +112,6 @@ return function(Vargs, GetEnv)
 			Haze = atmosphere and atmosphere.Haze,
 		};
 		KeycodeNames = require(client.Shared.KeycodeNames);
-		HelpButtonAction = "info",
+		HelpButtonAction = "Info",
 	};
 end
