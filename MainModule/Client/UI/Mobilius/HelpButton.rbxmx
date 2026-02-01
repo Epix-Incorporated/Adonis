@@ -180,6 +180,7 @@ return function(data, env)
 	end)
 
 	script.Parent.Parent.Parent = playergui
+	toggle.Parent.Enabled = true -- workaround for Adonis not enabling the UI for some reason
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
