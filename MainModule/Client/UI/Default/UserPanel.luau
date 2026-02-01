@@ -1571,7 +1571,7 @@ return function(data, env)
 					end
 				};
 				{
-					Text = "Default help button action: ";
+					Text = "Default Help Button Action: ";
 					Desc = "- Toggles what the help button does by default";
 					Entry = "DropDown";
 					Setting = "HelpButtonAction";
