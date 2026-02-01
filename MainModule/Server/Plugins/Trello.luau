@@ -317,15 +317,15 @@ return function(Vargs, GetEnv)
 				Message = "You have enabled Trello without having an AppKey and thus Trello will likely not work! For better behavior it is adviced to also add a Trello Token. Click to see more";
 				Time = 15;
 				Icon = "MatIcon://Description";
-				onClick = (server.Data and server.Data.NightlyMode) and Core.Bytecode([[ -- TODO: Upload image for this tutorial
+				onClick = (server.Data and server.Data.NightlyMode) and Core.Bytecode([[
 					local window = client.UI.Make("Window", {
-						Title = "How to change the DataStore key";
+						Title = "How to change the Trello AppKey";
 						Size = {700,300};
 						Icon = "rbxassetid://7510994359";
 					})
 
 					window:Add("ImageLabel", {
-						Image = "rbxassetid://1059543904";
+						Image = "rbxassetid://111103486118064";
 					})
 
 					window:Ready()
