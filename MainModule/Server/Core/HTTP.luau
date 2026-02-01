@@ -30,17 +30,19 @@ return function(Vargs, GetEnv)
 
 		if Settings.Trello_Enabled then
 			HTTP.Trello.API = require(server.Deps.TrelloAPI)(Settings.Trello_AppKey, Settings.Trello_Token)
+			Logs:AddLog("Script", `Loaded Trello API as {HTTP.Trello.API}`)
 		end
 
 		-- Check HTTP asynchronously
 		task.spawn(function()
 			if service.RunService:IsStudio() then
-				server.HTTP.HttpEnabled = service.HttpService.HttpEnabled
+				HTTP.HttpEnabled = service.HttpService.HttpEnabled
+				Logs:AddLog("Script", `Pooled HttpEnabled from service as {HTTP.HttpEnabled}`)
 			else
 				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
-				server.HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
+				HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
+				Logs:AddLog("Script", `Pooled HttpEnabled from request as {HTTP.HttpEnabled}. Status {success}`)
 			end
-			Logs:AddLog("Script", "Successfully pooled HttpEnabled")
 		end)
 
 		HTTP.Init = nil;
