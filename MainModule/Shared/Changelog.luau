@@ -5,7 +5,13 @@ return {
 	"";
 	"[v276 2026-XX-XX XX:XX UTC] @Maintainer";
 	"Autocomplete now works identically with click and tab";
+	"Readded timedate command (rewritten)";
+	"Add (prob temp) Trello AppKey Guide";
 	"(Git/ImFirstPlace) Modularise the settings and improve the loader (#2050)";
+	"(Git/EasternBloxxer) Add typechecking for command args; add a setting to open console with help button (#2045)";
+	"(Git/ccuser44) Improve Trello behavior (#1928)";
+	"(Git/ccuser44) Allow :insert command to load 3rd party assets (#2019)";
+	"(Git/fxeP1) Fix AddLog player reference error (#2057)";
 	"";
 	"[v275 2026-01-06 00:16 UTC] @Dimenpsyonal";
 	"*First update of 2026!";
