@@ -13,6 +13,7 @@ return {
 	"(Git/ccuser44) Allow :insert command to load 3rd party assets (#2019)";
 	"(Git/fxeP1) Fix AddLog player reference error (#2057)";
 	"(Git/kaiserandaxl) Fix using :bring on just yourself erroring (#2056)";
+	"(Git/jun022222222) Define task library in Core (#2059)";
 	"";
 	"[v275 2026-01-06 00:16 UTC] @Dimenpsyonal";
 	"*First update of 2026!";
