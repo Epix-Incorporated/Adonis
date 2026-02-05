@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "Updating Roblox standard library"
 selene generate-roblox-std
