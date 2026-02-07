@@ -41,7 +41,7 @@ return function(Vargs, GetEnv)
 					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
 
 					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
-						AddLog("Script", "Overriding ShouldDeliverCallback for " .. textchannel.Name)
+						AddLog("Script", `Overriding ShouldDeliverCallback for {textchannel.Name}`)
 						textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
 							if
 								chatMessage.Status == Enum.TextChatMessageStatus.Success
@@ -79,7 +79,7 @@ return function(Vargs, GetEnv)
 								end
 
 								if Variables.DisguiseBindings[SenderId] then -- // Disguise command handler
-									chatMessage.PrefixText = Variables.DisguiseBindings[SenderId].TargetUsername..":"
+									chatMessage.PrefixText = `{Variables.DisguiseBindings[SenderId].TargetUsername}:`
 								end
 
 								if Admin.SlowMode and IsOriginalSender then
@@ -1202,25 +1202,23 @@ return function(Vargs, GetEnv)
 							for _, v in data.Commands do
 								if type(data.Prefix) == "table" then
 									for _, p in data.Prefix do
-										if not blacklistedCommands["/"..p..v] then
+										if not blacklistedCommands[`/{p}{v}`] then
 											if not command1 then
-												command1 = "/"..p..v
+												command1 = `/{p}{v}`
 											else
-												command2 = "/"..p..v
+												command2 = `/{p}{v}`
 											end
 										end
 									end
 								else
-									if not blacklistedCommands["/"..data.Prefix..v] then
+									if not blacklistedCommands[`/{data.Prefix}{v}`] then
 										if not command1 then
-											command1 = "/"..data.Prefix..v
+											command1 = `/{data.Prefix}{v}`
 										else
-											command2 = "/"..data.Prefix..v
+											command2 = `/{data.Prefix}{v}`
 										end
 									end
-
 								end
-
 							end
 
 							if command1 then
