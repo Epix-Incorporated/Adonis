@@ -96,7 +96,7 @@ return function(Vargs, GetEnv)
 							bb.Parent = part
 
 							if player ~= LocalPlayer then
-								spawn(function()
+								task.spawn(function()
 									repeat
 										if not part then
 											break

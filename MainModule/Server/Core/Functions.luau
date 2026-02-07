@@ -481,7 +481,7 @@ return function(Vargs, GetEnv)
 
 				for _, data in Functions.PlayerFinders do
 					if not data.Level or (data.Level and PlrLevel >= data.Level) then
-						local check = ((data.Prefix and Settings.SpecialPrefix) or "")..data.Match
+						local check = `{(data.Prefix and Settings.SpecialPrefix) or ""}{data.Match}`
 						if (data.Absolute and msg == check) or (not data.Absolute and string.sub(msg, 1, #check) == string.lower(check)) then
 							if data.Absolute then
 								return data
