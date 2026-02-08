@@ -157,8 +157,8 @@ end
 local function Kill(info)
 	if DebugMode then warn(info) return end
 	pcall(function() Kick(player, info) end)
-	wait(1)
-	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
+	task.wait(1)
+	pcall(function() while not DebugMode and task.wait() do pcall(function() while true do end end) end end)
 end
 
 local function Locked(obj)
@@ -218,7 +218,7 @@ if module and module:IsA("ModuleScript") then
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
 	print("Changing child parent...")
 	mainFolder.Name = ""
-	wait(0.01)
+	task.wait(0.01)
 	mainFolder.Parent = nil --// We cannot do this asynchronously or it will disconnect events that manage to connect before it changes parent to nil...
 
 	print("Debug: Loading the client?")

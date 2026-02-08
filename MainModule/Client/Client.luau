@@ -208,7 +208,7 @@ do
 	Kill = Immutable(function(info)
 		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
 		if type(info) == "string" then
-			spawn(pcall, function()
+			task.spawn(pcall, function()
 				if Detected then
 					Detected("kick", info)
 				elseif Fire then
@@ -217,19 +217,19 @@ do
 			end)
 		end
 
-		spawn(pcall, function()
+		task.spawn(pcall, function()
 			task.wait(1)
-			spawn(pcall, Kick, service.Player, info)
+			task.spawn(pcall, Kick, service.Player, info)
 			service.Player:Kick(info)
 		end)
 
 		if not isStudio then
-			spawn(pcall, function()
+			task.spawn(pcall, function()
 				task.wait(5)
-				spawn(pcall, function() task.wait(5) while true do continue end end)
+				task.spawn(pcall, function() task.wait(5) while true do continue end end)
 				if client.Core and client.Core.RemoteEvent then
-					spawn(pcall, table.clear, client.Core.RemoteEvent)
-					spawn(pcall, table.freeze, client.Core.RemoteEvent)
+					task.spawn(pcall, table.clear, client.Core.RemoteEvent)
+					task.spawn(pcall, table.freeze, client.Core.RemoteEvent)
 					client.Core.RemoteEvent = nil
 				end
 

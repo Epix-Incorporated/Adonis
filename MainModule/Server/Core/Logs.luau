@@ -88,20 +88,15 @@ return function(Vargs, GetEnv)
 				log.Time = os.time()
 			end
 
-			if log.Player and type(log.Player) ~= "table" then
-				local id = log.Player.UserId
-				local pData = Core.PlayerData[tostring(id)]
-				local userInfo = pData.userInfo
-
-				if not userInfo then -- Cache table allocation for player userInfo table to save on memory
-					userInfo = {
-						Name = log.Player.Name;
-						UserId = id;
-					}
-					pData.userInfo = userInfo
+			local p = log.Player
+			if p and type(p) ~= "table" then
+				local pData = Core.PlayerData[tostring(p.UserId)]
+				local UserInfo = pData and pData.UserInfo or { Name = p.Name, UserId = p.UserId }
+				if pData and not pData.UserInfo then
+					pData.UserInfo = UserInfo
 				end
 
-				log.Player = userInfo
+				log.Player = UserInfo
 			end
 
 			if tab then
@@ -113,7 +108,7 @@ return function(Vargs, GetEnv)
 						table.remove(tab, #tab)
 					end
 				end
-				
+
 				service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 			end
 		end;

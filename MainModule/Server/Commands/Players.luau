@@ -697,6 +697,29 @@ return function(Vargs, env)
 			end
 		};
 
+		TimeDate = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"timedate", "date", "time"};
+			Args = {};
+			Description = "Shows the current time and date.";
+			AdminLevel = "Players";
+		
+			Function = function(plr: Player)
+				local now = os.time()
+		
+				Remote.MakeGui(plr, "List", {
+					Title = "Time & Date";
+					Table = {
+						{Text = "Date: " .. os.date("%x", now)},
+						{Text = "Time: " .. os.date("%H:%M", now)},
+						{Text = "Timezone: " .. os.date("%Z", now)},
+					};
+					AutoUpdate = 60;
+					Size = {260, 160};
+				})
+			end
+		};
+
 		PersonalCountdown = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"countdown", "timer", "cd"};
