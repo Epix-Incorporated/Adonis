@@ -189,7 +189,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end)
 
 			if props.Interval then
-				while wait(props.Interval) and new.Running do
+				while task.wait(props.Interval) and new.Running do
 					new:Trigger(os.time())
 				end
 			end
@@ -1220,19 +1220,19 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				elseif delay == "Heartbeat" then
 					repeat
 						func()
-						service.RunService.Heartbeat:wait()
+						service.RunService.Heartbeat:Wait()
 					until RunningLoops[index] ~= tab or not tab.Running
 					kill()
 				elseif delay == "RenderStepped" then
 					repeat
 						func()
-						service.RunService.RenderStepped:wait()
+						service.RunService.RenderStepped:Wait()
 					until RunningLoops[index] ~= tab or not tab.Running
 					kill()
 				elseif delay == "Stepped" then
 					repeat
 						func()
-						service.RunService.Stepped:wait()
+						service.RunService.Stepped:Wait()
 					until RunningLoops[index] ~= tab or not tab.Running
 					kill()
 				else
@@ -1334,11 +1334,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 		Wait = function(mode)
 			if not mode or mode == "Stepped" then
-				service.RunService.Stepped:wait()
+				service.RunService.Stepped:Wait()
 			elseif mode == "Heartbeat" then
-				service.RunService.Heartbeat:wait()
+				service.RunService.Heartbeat:Wait()
 			elseif mode and tonumber(mode) then
-				wait(tonumber(mode))
+				task.wait(tonumber(mode))
 			end
 		end;
 		OrigRawEqual = rawequal;
