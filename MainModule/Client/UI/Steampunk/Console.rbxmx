@@ -92,6 +92,13 @@ return function(data, env)
 	local commands = Remote.Get("FormattedCommands") or {}
 
 	local opened = false
+
+	Variables.ConsoleHistory = Variables.ConsoleHistory or {}
+	Variables.ConsoleHistoryIndex = Variables.ConsoleHistoryIndex or 0
+
+	local history = Variables.ConsoleHistory
+	local historyIndex = Variables.ConsoleHistoryIndex
+
 	local scrolling = false
 	local scrollOpen = false
 	local debounce = false
@@ -239,6 +246,10 @@ return function(data, env)
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text ~= '' and string.len(text.Text) > 1 then
+				table.insert(history, text.Text)
+				historyIndex = #history + 1
+				Variables.ConsoleHistoryIndex = historyIndex
+
 				Remote.Send('ProcessCommand', text.Text)
 			end
 			closeConsole()
@@ -249,17 +260,26 @@ return function(data, env)
 
 	text:GetPropertyChangedSignal("Text"):Connect(function()
 		if text.Text ~= "" and openConsole then
-			if string.sub(text.Text, string.len(text.Text)) == "	" then
+			if string.sub(text.Text, -1) == "\t" then
+				local clean = text.Text:sub(1, -2)
+
+				local base, last = clean:match("^(.*"..splitKey..")(.*)$")
+
 				if players:FindFirstChild("Entry 0") then
-					text.Text = `{string.sub(text.Text, 1, (string.len(text.Text) - 1))}{players["Entry 0"].Text} `
+					local val = players["Entry 0"].Text
+					text.Text = (base or "") .. val
+
 				elseif scroll:FindFirstChild("Entry 0") then
-					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
+					local val = scroll["Entry 0"].Text
+					text.Text = (base or "") .. val
+
 				else
-					text.Text = text.Text..prefix
+					text.Text = clean
 				end
-				text.CursorPosition = string.len(text.Text) + 1
-				text.Text = string.gsub(text.Text, "	", "")
+
+				text.CursorPosition = #text.Text + 1
 			end
+
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
 
@@ -270,24 +290,48 @@ return function(data, env)
 			end
 
 			local pNum = 0
-			local pMatch = string.match(nText, `.+{splitKey}(.*)$`)
-			for _, v in service.Players:GetPlayers() do
-				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,`{splitKey}$`) then
-					local new = entry:Clone()
-					new.Text = tostring(v)
-					new.Name = `Entry {pNum}`
-					new.TextXAlignment = "Right"
-					new.Visible = true
-					new.Parent = players
-					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:Connect(function()
-						text.Text = text.Text..tostring(v)
-						text:CaptureFocus()
-					end)
-					pNum += 1
+			local argMatch = string.match(nText, `.+{splitKey}(.*)$`) or ""
+
+			local ok, suggestions = pcall(function()
+				return Remote.Get("GetArgSuggestions", nText)
+			end)
+
+			local function addEntry(value)
+				local new = entry:Clone()
+				new.Text = tostring(value)
+				new.Name = `Entry {pNum}`
+				new.TextXAlignment = "Right"
+				new.Visible = true
+				new.Parent = players
+				new.Position = UDim2.new(0,0,0,20*pNum)
+
+				new.MouseButton1Down:Connect(function()
+					local base = string.match(text.Text, `^(.*{splitKey})`) or text.Text..splitKey
+					text.Text = base .. tostring(value)
+					text:CaptureFocus()
+				end)
+
+				pNum += 1
+			end
+
+			if ok and type(suggestions) == "table" and #suggestions > 0 then
+				for _,v in ipairs(suggestions) do
+					if argMatch == "" or string.sub(string.lower(v),1,#argMatch) == string.lower(argMatch) then
+						addEntry(v)
+					end
 				end
 			end
 
+			if pNum == 0 then
+				for _,v in service.Players:GetPlayers() do
+					local name = tostring(v)
+					if argMatch == "" or string.sub(string.lower(name),1,#argMatch) == string.lower(argMatch) then
+						addEntry(name)
+					end
+				end
+			end
+
+			players.Visible = pNum > 0
 			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
 
 			local num = 0
@@ -341,7 +385,23 @@ return function(data, env)
 			service.Events.ToggleConsole:Fire()
 		end
 	end)
+	gTable.BindEvent(service.UserInputService.InputBegan, function(input, gp)
+		if not opened then return end
 
+		local textbox = service.UserInputService:GetFocusedTextBox()
+		if textbox ~= text then return end
+
+		if input.KeyCode == Enum.KeyCode.Up then
+			historyIndex = math.max(1, historyIndex - 1)
+			text.Text = history[historyIndex] or ""
+			text.CursorPosition = #text.Text + 1
+
+		elseif input.KeyCode == Enum.KeyCode.Down then
+			historyIndex = math.min(#history + 1, historyIndex + 1)
+			text.Text = history[historyIndex] or ""
+			text.CursorPosition = #text.Text + 1
+		end
+	end)
 	gTable:Ready()
 end
 ]]></ProtectedString>
