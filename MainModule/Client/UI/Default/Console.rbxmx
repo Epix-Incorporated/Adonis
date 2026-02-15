@@ -575,6 +575,13 @@ return function(data, env)
 	local scrollOpen = false
 	local debounce = false
 
+	Variables.ConsoleHistory = Variables.ConsoleHistory or {}
+	Variables.ConsoleHistoryIndex = Variables.ConsoleHistoryIndex or (#Variables.ConsoleHistory + 1)
+
+	local history = Variables.ConsoleHistory
+	local historyIndex = Variables.ConsoleHistoryIndex
+	local selectingSuggestion = false
+
 	local tweenInfo = TweenInfo.new(0.15)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40), nil, nil,0.3, nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
 	local scrollOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = UDim2.new(1, 0, 0, 140);
@@ -718,6 +725,10 @@ return function(data, env)
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text ~= '' and string.len(text.Text) > 1 then
+				table.insert(history, text.Text)
+				historyIndex = #history + 1
+				Variables.ConsoleHistoryIndex = historyIndex
+
 				Remote.Send('ProcessCommand', text.Text)
 			end
 			closeConsole()
@@ -727,6 +738,11 @@ return function(data, env)
 	end)
 
 	text:GetPropertyChangedSignal("Text"):Connect(function()
+		if selectingSuggestion then
+			scroll:ClearAllChildren()
+			autoList:ClearAllChildren()
+			return
+		end
 		if text.Text ~= "" and opened then
 			local tabWhiteSpace = "	"
 			if string.sub(text.Text, string.len(text.Text)) == tabWhiteSpace then
@@ -776,8 +792,11 @@ return function(data, env)
 					b.Name = `Entry {num}`
 					b.Position = UDim2.fromOffset(0, 20*num)
 					b.MouseButton1Down:Connect(function()
+						selectingSuggestion = true
 						text.Text = b.Text
 						text:CaptureFocus()
+						task.wait()
+						selectingSuggestion = false
 					end)
 					num += 1
 				end
@@ -790,7 +809,19 @@ return function(data, env)
 				local selectedSplit = string.split(selectedCmd, splitKey)
 
 				local arg = selectedSplit[#fullSplit]
-				for _, v in UI.Autocomplete(provided, arg) do
+				local function RequestSuggestions(fullText, provided)
+					local ok, res = pcall(function()
+						return client.Remote.Get("GetArgSuggestions", fullText, provided)
+					end)
+
+					if ok and type(res) == "table" then
+						return res
+					end
+
+					return {}
+				end
+				local suggestions = RequestSuggestions(nText, provided)
+				for _, v in ipairs(suggestions) do
 					local new = entry:Clone()
 					new.Text = v
 					new.Name = `Entry {aNum}`
@@ -798,18 +829,20 @@ return function(data, env)
 					new.Visible = true
 					new.Parent = autoList
 					new.Position = UDim2.new(0, 0, 0, 20 * aNum)
+
 					new.MouseButton1Down:Connect(function()
+						selectingSuggestion = true
+
 						local args = string.split(text.Text, splitKey)
-						args[#args] = nil
-						
-						local textWithoutLastArg = table.concat(args, splitKey)
-						if textWithoutLastArg ~= "" then
-							textWithoutLastArg ..= splitKey
-						end
-						
-						text.Text = textWithoutLastArg .. tostring(v) .. " "
+						args[#args] = tostring(v)
+
+						text.Text = table.concat(args, splitKey)
+
 						text.CursorPosition = #text.Text + 1
 						text:CaptureFocus()
+
+						task.wait()
+						selectingSuggestion = false
 					end)
 
 					aNum += 1
@@ -844,9 +877,31 @@ return function(data, env)
 			service.Events.ToggleConsole:Fire()
 		end
 	end)
+	gTable.BindEvent(service.UserInputService.InputBegan, function(input, gp)
+		if not opened then return end
+
+		local textbox = service.UserInputService:GetFocusedTextBox()
+		if textbox ~= text then return end
+
+		if input.KeyCode == Enum.KeyCode.Up then
+			historyIndex = math.max(1, historyIndex - 1)
+			Variables.ConsoleHistoryIndex = historyIndex
+
+			text.Text = history[historyIndex] or ""
+			text.CursorPosition = #text.Text + 1
+
+		elseif input.KeyCode == Enum.KeyCode.Down then
+			historyIndex = math.min(#history + 1, historyIndex + 1)
+			Variables.ConsoleHistoryIndex = historyIndex
+
+			text.Text = history[historyIndex] or ""
+			text.CursorPosition = #text.Text + 1
+		end
+	end)
 
 	gTable:Ready()
 end
+
 ]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
