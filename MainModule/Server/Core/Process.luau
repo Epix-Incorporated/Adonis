@@ -1223,5 +1223,77 @@ return function(Vargs, GetEnv)
 
 		end;
 		]]
+		GetSuggestions = function(p, fullMsg)
+			local suggestions = {}
+
+			if type(fullMsg) == "table" then
+				fullMsg = tostring(fullMsg[1])
+			end
+
+			if type(fullMsg) ~= "string" then
+				return suggestions
+			end
+
+			fullMsg = fullMsg:gsub("^%s+", "") -- trim только слева		
+			if fullMsg == "" then
+				return suggestions
+			end
+
+			local splitKey = Settings.SplitKey or " "
+
+			local index, command = Admin.GetCommand(fullMsg)
+			if not command then
+				return suggestions
+			end
+
+			-- берём всё после команды
+			local parts = Functions.Split(fullMsg, splitKey)
+
+			-- удаляем имя команды
+			table.remove(parts, 1)
+
+			local endsWithSpace = string.sub(fullMsg, -1) == splitKey
+
+			local argIndex
+			local provided
+
+			if endsWithSpace then
+				argIndex = #parts + 1
+				provided = ""
+			else
+				argIndex = #parts
+				provided = parts[#parts] or ""
+			end
+
+			provided = string.lower(provided)
+
+			local provider = command.Suggestions and command.Suggestions[argIndex]
+
+			-- fallback игроки
+			if not command.Suggestions or provider == nil then
+				for _,plr in ipairs(service.GetPlayers()) do
+					local name = plr.Name
+					if provided == "" or string.find(string.lower(name), provided, 1, true) then
+						table.insert(suggestions, name)
+					end
+				end
+				return suggestions
+			end
+
+			local ok, res = pcall(function()
+				return provider(p, provided, parts)
+			end)
+
+			if not ok or type(res) ~= "table" then
+				return {}
+			end
+
+			local MAX = 25
+			for i=1, math.min(#res, MAX) do
+				suggestions[i] = tostring(res[i])
+			end
+
+			return suggestions
+		end;
 	};
 end
