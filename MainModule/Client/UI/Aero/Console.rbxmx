@@ -869,7 +869,7 @@ return function(data, env)
 		if internalChange then return end
 		if c == 'Text' and text.Text ~= '' and open and not internalChange then
 			if string.sub(text.Text, -1) == "\t" then
-				local raw = string.sub(text.Text, 1, -2) -- убрали таб
+				local raw = string.sub(text.Text, 1, -2)
 
 				local before, current = raw:match("^(.*"..splitKey..")([^"..splitKey.."]*)$")
 
