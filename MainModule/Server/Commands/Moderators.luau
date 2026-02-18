@@ -272,19 +272,6 @@ return function(Vargs, env)
 
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
 				end
 			end
@@ -565,19 +552,6 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[2]
 						if data.Options.Chat ~= true then
@@ -7084,19 +7058,6 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, data = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to an error.`, {plr})
-							continue
-						end
-
-						if #data == 0 then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Remote.Send(v, "Function", "TextToSpeech", args[2])
 				end
 			end
