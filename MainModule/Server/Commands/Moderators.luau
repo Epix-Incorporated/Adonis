@@ -139,19 +139,6 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name")) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Functions.Notification("Notification", service.Filter(args[2], plr, v), {v})
 				end
 			end
@@ -338,19 +325,6 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Remote.RemoveGui(v, "Notify")
 					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
 				end
