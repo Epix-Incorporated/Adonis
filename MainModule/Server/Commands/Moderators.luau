@@ -7515,5 +7515,21 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		RefreshServerLocation = {
+			Prefix = Settings.Prefix;
+			Commands = {"refreshserverlocation"};
+			Args = {};
+			Description = `Refreshes the server location shown in {Settings.PlayerPrefix}serverinfo`;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local res = Functions.FetchServerInfo()
+				if type(res) == "table" then
+					Variables.IPInfo = res
+					Functions.Hint(`You have refreshed the server location info`, {plr})
+					return
+				end
+			end
+		};
 	}
 end
