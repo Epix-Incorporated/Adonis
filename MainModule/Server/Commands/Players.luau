@@ -703,10 +703,8 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows the current time and date.";
 			AdminLevel = "Players";
-
 			Function = function(plr: Player)
 				local now = os.time()
-
 				Remote.MakeGui(plr, "List", {
 					Title = "Time & Date";
 					Table = {
@@ -871,11 +869,11 @@ return function(Vargs, env)
 						city = res.city,
 						region = res.region,
 						zipcode = res.postal or "N/A",
-						timezone = res.timezone,
+						timezone = "N/A",
 						ip = elevated and res.ip or "[Redacted]",
 						coords = elevated and string.format("LAT: %s, LON: %s", string.match(res.loc, "(.*),(.*)")) or "[Redacted]",
 					}
-				end, function(err) return warn(err) end))
+				end, function() return end))
 
 				Remote.MakeGui(plr, "ServerDetails", {
 					CreatorId = game.CreatorId;

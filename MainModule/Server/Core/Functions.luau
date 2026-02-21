@@ -9,22 +9,22 @@ return function(Vargs, GetEnv)
 	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
-		Functions = server.Functions
-		Admin = server.Admin
-		Anti = server.Anti
-		Core = server.Core
-		HTTP = server.HTTP
-		Logs = server.Logs
-		Remote = server.Remote
-		Process = server.Process
-		Variables = server.Variables
-		Settings = server.Settings
-		logError = server.logError
-		Functions.NuclearExplode = select(2, xpcall(require, warn, server.Dependencies.FastNuke))
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
+		logError = server.logError;
+		Functions.NuclearExplode = select(2, xpcall(require, warn, server.Dependencies.FastNuke));
 
 		Functions.Init = nil
 		Logs:AddLog("Script", "Functions Module Initialized")
-	end
+	end;
 
 	local function RunAfterPlugins(data)
 		Functions.RunAfterPlugins = nil
@@ -352,7 +352,7 @@ return function(Vargs, GetEnv)
 						local num = tonumber(matched)
 						if not num then
 							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
-							return
+							return;
 						end
 
 						for i = 1, math.min(num, #service.Players:GetPlayers()) do
@@ -370,7 +370,7 @@ return function(Vargs, GetEnv)
 						local num = tonumber(matched)
 						if not num then
 							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
-							return
+							return;
 						end
 
 						for _,v in parent:GetChildren() do
@@ -1341,18 +1341,18 @@ return function(Vargs, GetEnv)
 			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
 
 			if ran and info and info.AssetTypeId == 1 then
-				return true
+				return true;
 			else
-				return false
+				return false;
 			end
 		end;
 
 		GetTexture = function(id)
-			local id = tonumber(id)
+			local id = tonumber(id);
 			if id and Functions.IsValidTexture(id) then
-				return id
+				return id;
 			else
-				return 6825455804
+				return 6825455804;
 			end
 		end;
 
@@ -1528,16 +1528,16 @@ return function(Vargs, GetEnv)
 			if reverse then
 				for i,v in intab do
 					if tonumber(i) then
-						tab[tonumber(i)] = v
+						tab[tonumber(i)] = v;
 					end
 				end
 			else
 				for i,v in intab do
-					tab[tostring(i)] = v
+					tab[tostring(i)] = v;
 				end
 			end
 
-			return tab
+			return tab;
 		end;
 
 		GetIndex = function(tab,match)
@@ -1628,7 +1628,7 @@ return function(Vargs, GetEnv)
 			if #color == 3 then
 				return Color3.fromRGB(color[1], color[2], color[3])
 			else
-				local brickColor = BrickColor.new(str::any)
+				local brickColor = BrickColor.new(str::any);
 				if str == tostring(brickColor) then
 					return brickColor.Color
 				else
@@ -1682,7 +1682,7 @@ return function(Vargs, GetEnv)
 					region = res.region or "N/A",
 					postal = res.postalCode or "N/A",
 					timezone = "N/A", -- not supported. Keeping it just incase.
-					query = res.ip or "N/A",
+					ip = res.ip or "N/A",
 					loc = res.loc or "N/A",
 				}
 			end, function()
