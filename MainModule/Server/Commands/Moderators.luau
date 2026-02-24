@@ -139,19 +139,6 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name")) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a notification due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Functions.Notification("Notification", service.Filter(args[2], plr, v), {v})
 				end
 			end
@@ -285,19 +272,6 @@ return function(Vargs, env)
 
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
 				end
 			end
@@ -338,19 +312,6 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Remote.RemoveGui(v, "Notify")
 					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
 				end
@@ -591,19 +552,6 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a chat message due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 						local TextToUse = args[2]
 						if data.Options.Chat ~= true then
@@ -7110,19 +7058,6 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.UserId ~= plr.UserId then
-						local success, data = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to an error.`, {plr})
-							continue
-						end
-
-						if #data == 0 then
-							Functions.Hint(`Unable to send {service.FormatPlayer(v)} a tts message due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Remote.Send(v, "Function", "TextToSpeech", args[2])
 				end
 			end
