@@ -564,7 +564,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			})) or {}
 			for k, v in tab do
-				if type(v) == "table" then 
+				if type(v) == "table" then
 					new[k] = service.DeepCopy(v)
 				else
 					new[k] = v
@@ -638,9 +638,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		RecursiveMtSearch = function(tab)
-			for index, val in tab do 
-				if type(val) == "table" or typeof(val) == "userdata" then
-					if getmetatable(val) ~= nil or service.RecursiveMtSearch(val) then
+			for index, val in tab do
+				if type(index) == "table" or typeof(index) == "userdata" then
+					if getmetatable(index) ~= nil or service.RecursiveMtSearch(index) then
+						return true
+					end
+				elseif type(val) == "table" or typeof(val) == "userdata" then
+					if getmetatable(val) ~= nil or service.RecursiveMtSearch(val)  then
 						return true
 					end
 				end
@@ -657,7 +661,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 								--// Prevent grabbing env through metatables
 								return false
 							elseif argumentTypes then
-								for index, val in {...} do 
+								for index, val in {...} do
 									if argumentTypes[index] and not argumentTypes[index](val) then
 										return false
 									end
@@ -1273,7 +1277,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 		ReadOnly = function(tabl, excluded, killOnError, noChecks)
 			local doChecks = not noChecks and service.RunService:IsClient()
-			if main.Core and main.Core.DebugMode then 
+			if main.Core and main.Core.DebugMode then
 				doChecks = false
 			end
 			local player = doChecks and service.Players.LocalPlayer
@@ -1391,13 +1395,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			-- No classes except those in whitelistedClasses are allowed
 			local whitelistedClasses = {"Accoutrement", "BasePart", "SpecialMesh", "Attachment", "Weld", "WeldConstraint", "Motor6D", "Folder", "ValueBase", "ParticleEmitter", "Sparkles", "Fire"}
 			local blacklistedClasses = {"LuaSourceContainer", "Model", "Tool", "Hopperbin"} -- extra security
-			
+
 			for _, v in item:GetDescendants() do
 				if v:IsA("BasePart") then
 					v.CanCollide = false
 				end
 			end
-			
+
 			-- If a blacklisted class is found, cancel the command
 			for _, v in item:GetDescendants() do
 				local blacklisted = false
@@ -1411,9 +1415,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					return reject()
 				end
 			end
-			
+
 			-- If a non-whitelisted class is found, delete it
-			for _, v in item:GetDescendants() do 
+			for _, v in item:GetDescendants() do
 				local allowed = false
 				for _, x in whitelistedClasses do
 					if v:IsA(x) then
