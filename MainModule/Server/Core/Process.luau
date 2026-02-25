@@ -32,6 +32,11 @@ return function(Vargs, GetEnv)
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
 
+		Remote.Returnables = Remote.Returnables or {}
+		Remote.Returnables.GetArgSuggestions = function(p, fullMsg, provided)
+			return server.Process.GetSuggestions(p, fullMsg, provided)
+		end
+
 		--// NetworkServer Events
 		if service.NetworkServer then
 			service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
@@ -1234,7 +1239,7 @@ return function(Vargs, GetEnv)
 				return suggestions
 			end
 
-			fullMsg = fullMsg:gsub("^%s+", "")
+			fullMsg = fullMsg:gsub("^%s+", "") -- trim ?????? ?????
 			if fullMsg == "" then
 				return suggestions
 			end
@@ -1246,8 +1251,10 @@ return function(Vargs, GetEnv)
 				return suggestions
 			end
 
+			-- ????? ??? ????? ???????
 			local parts = Functions.Split(fullMsg, splitKey)
 
+			-- ??????? ??? ???????
 			table.remove(parts, 1)
 
 			local endsWithSpace = string.sub(fullMsg, -1) == splitKey
@@ -1267,6 +1274,7 @@ return function(Vargs, GetEnv)
 
 			local provider = command.Suggestions and command.Suggestions[argIndex]
 
+			-- fallback ??????
 			if not command.Suggestions or provider == nil then
 				for _,plr in ipairs(service.GetPlayers()) do
 					local name = plr.Name
@@ -1285,7 +1293,8 @@ return function(Vargs, GetEnv)
 				return {}
 			end
 
-			for i=1, math.min(#res, 25) do
+			local MAX = 25
+			for i=1, math.min(#res, MAX) do
 				suggestions[i] = tostring(res[i])
 			end
 
