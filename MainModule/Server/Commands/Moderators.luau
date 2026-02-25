@@ -4241,6 +4241,26 @@ return function(Vargs, env)
 			Args = {"player", "tool"};
 			Description = "Gives the target player(s) the desired tool(s)";
 			AdminLevel = "Moderators";
+			Suggestions = {
+				[2] = function(_, provided)
+					local res = {}
+					provided = string.lower(provided or "")
+
+					for _, tool in if Settings.RecursiveTools then Settings.Storage:GetDescendants() else Settings.Storage:GetChildren() do
+						if tool:IsA("Tool") then
+							local name = tool.Name
+							local lower = string.lower(name)
+
+							if provided == "" or string.find(lower, provided, 1, true) then
+								table.insert(res, name)
+							end
+						end
+					end
+
+					table.sort(res)
+					return res
+				end
+			};
 			Function = function(plr: Player, args: {string})
 				local found = {}
 				local temp = service.New("Folder")
