@@ -1239,7 +1239,7 @@ return function(Vargs, GetEnv)
 				return suggestions
 			end
 
-			fullMsg = fullMsg:gsub("^%s+", "") -- trim ?????? ?????
+			fullMsg = fullMsg:gsub("^%s+", "")
 			if fullMsg == "" then
 				return suggestions
 			end
@@ -1250,11 +1250,8 @@ return function(Vargs, GetEnv)
 			if not command then
 				return suggestions
 			end
-
-			-- ????? ??? ????? ???????
 			local parts = Functions.Split(fullMsg, splitKey)
 
-			-- ??????? ??? ???????
 			table.remove(parts, 1)
 
 			local endsWithSpace = string.sub(fullMsg, -1) == splitKey
@@ -1274,7 +1271,6 @@ return function(Vargs, GetEnv)
 
 			local provider = command.Suggestions and command.Suggestions[argIndex]
 
-			-- fallback ??????
 			if not command.Suggestions or provider == nil then
 				for _,plr in ipairs(service.GetPlayers()) do
 					local name = plr.Name
@@ -1293,8 +1289,7 @@ return function(Vargs, GetEnv)
 				return {}
 			end
 
-			local MAX = 25
-			for i=1, math.min(#res, MAX) do
+			for i=1, math.min(#res, 25) do
 				suggestions[i] = tostring(res[i])
 			end
 
