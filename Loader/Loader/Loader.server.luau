@@ -33,6 +33,7 @@ end
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 local InsertService = game:GetService("InsertService")
+local AssetService = game:GetService("AssetService")
 
 -- Support yieldable xpcall
 local function yxpcall(f, callback, ...)
@@ -46,7 +47,7 @@ local function yxpcall(f, callback, ...)
 end
 
 local function loadModuleAsset(moduleId: number)
-	local asset = InsertService:LoadAsset(moduleId)
+	local asset = ({yxpcall(function() return nil, AssetService:LoadAssetAsync(moduleId) end, warn)})[3] or InsertService:LoadAsset(moduleId)
 
 	if asset.Name == "MainModule" then
 		return assert(require(asset), ":LoadAsset() module returned invalid values!")
@@ -268,18 +269,31 @@ else
 			module = loadModuleAsset(moduleId)
 			success = true
 		end, function(reason)
-			warn(`Failed to load Adonis mainmodule {moduleId} via :LoadAsset() method due to {reason}! Loading the backup MainModule...`)
+			warn(`Failed to load Adonis mainmodule {moduleId} via :LoadAsset() method due to {reason}! Loading the nightly MainModule...`)
+			local newModuleId = not data.NightlyMode and data.NightlyModuleID or data.ModuleID
 			yxpcall(function()
-				module = assert(require(data.Backup), "Backup module returned invalid values!")
+				module = assert(require(newModuleId), "Nightly module returned invalid values!")
 				success = true
 			end, function(reason)
-				warn(`Failed to load Adonis backup MainModule {data.Backup} due to {reason}! If this does not work please purchase the Adonis backup MainModule to your inventory. Using backup method...`)
+				warn(`Failed to load Adonis nightly MainModule {newModuleId} due to {reason}! If this does not work please purchase the Adonis nightly MainModule to your inventory. Using backup method...`)
 				yxpcall(function()
-					module = loadModuleAsset(data.Backup)
+					module = loadModuleAsset(newModuleId)
 					success = true
 				end, function(reason)
-					module = nil
-					warn(`FATAL ERROR! Failed to load Adonis backup MainModule {moduleId} via :LoadAsset() method due to {reason}! Adonis can't be booted up! Please contact the Adonis helpers immediately and add both the regular MainModule and the backup MainModule to your user&group inventory!`)
+					warn(`Failed to load Adonis nightly mainmodule {newModuleId} via :LoadAsset() method due to {reason}! Loading the backup MainModule...`)
+					yxpcall(function()
+						module = assert(require(data.Backup), "Backup module returned invalid values!")
+						success = true
+					end, function(reason)
+						warn(`Failed to load Adonis backup MainModule {data.Backup} due to {reason}! If this does not work please purchase the Adonis backup MainModule to your inventory. Using backup method...`)
+						yxpcall(function()
+							module = loadModuleAsset(data.Backup)
+							success = true
+						end, function(reason)
+							module = nil
+							warn(`FATAL ERROR! Failed to load Adonis backup MainModule {moduleId} via :LoadAsset() method due to {reason}! Adonis can't be booted up! Please contact the Adonis helpers immediately and add both the regular MainModule and the backup MainModule to your user&group inventory!`)
+						end)
+					end)
 				end)
 			end)
 		end)
