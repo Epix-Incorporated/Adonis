@@ -668,6 +668,11 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			-- Automatically remove the Dex GUI and the authorization if unranked, or demoted below 300 (HeadAdmin)
+			if Commands.DexExplorerNew and Functions.RemoveDexFromPlayer and level < 300 then
+				Functions.RemoveDexFromPlayer(p, true)
+			end
+
 			return level, rank
 		end;
 
