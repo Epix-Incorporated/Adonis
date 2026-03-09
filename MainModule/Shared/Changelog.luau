@@ -1,7 +1,10 @@
 return {
-	"Version: 276";
+	"Version: 276.1";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[Patch v276.1 2026-03-09 22:02 UTC] @Dimenpsyonal";
+	"Revert #2019 allowing :insert to load 3rd party assets";
 	"";
 	"[v276 2026-03-09 18:15 UTC] @Dimenpsyonal";
 	"Autocomplete now works identically with click and tab";
