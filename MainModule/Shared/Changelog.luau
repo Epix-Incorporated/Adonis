@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v276 2026-XX-XX XX:XX UTC] @Maintainer";
+	"[v276 2026-03-09 18:15 UTC] @Dimenpsyonal";
 	"Autocomplete now works identically with click and tab";
 	"Re-add !timedate command (rewritten)";
 	"Add info on how to change TrelloAppKey if not set";
