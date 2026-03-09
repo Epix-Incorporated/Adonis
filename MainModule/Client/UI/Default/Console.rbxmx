@@ -799,7 +799,16 @@ return function(data, env)
 					new.Parent = autoList
 					new.Position = UDim2.new(0, 0, 0, 20 * aNum)
 					new.MouseButton1Down:Connect(function()
-						text.Text = text.Text..tostring(v)
+						local args = string.split(text.Text, splitKey)
+						args[#args] = nil
+						
+						local textWithoutLastArg = table.concat(args, splitKey)
+						if textWithoutLastArg ~= "" then
+							textWithoutLastArg ..= splitKey
+						end
+						
+						text.Text = textWithoutLastArg .. tostring(v) .. " "
+						text.CursorPosition = #text.Text + 1
 						text:CaptureFocus()
 					end)
 

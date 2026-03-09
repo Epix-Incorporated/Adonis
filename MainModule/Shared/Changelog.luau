@@ -1,7 +1,27 @@
 return {
-	"Version: 275";
+	"Version: 276";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v276 2026-03-09 18:15 UTC] @Dimenpsyonal";
+	"Autocomplete now works identically with click and tab";
+	"Re-add !timedate command (rewritten)";
+	"Add info on how to change TrelloAppKey if not set";
+	"Fix Window Icon misalignment in certain themes (e.g. Rounded)";
+	"(Git/ImFirstPlace) Modularise the settings and improve the loader (#2050)";
+	"(Git/krampuszc) Add client setting to open console via help button (#2045)";
+	"(Git/krampuszc) Make text in !profile selectable (#2072)";
+	"(Git/ccuser44) Improve Trello behavior (#1928)";
+	"(Git/ccuser44) Allow :insert command to load 3rd party assets (#2019)";
+	"(Git/fxeP1) Fix AddLog player reference error (#2057)";
+	"(Git/kaiserandaxl) Fix :bring erroring with no user argument (#2056)";
+	"(Git/jun022222222) Define task library in Core (#2059)";
+	"(Git/jcydienz) Fix Syntax Errors & Deprecated API Replacements (#2065)";
+	"(Git/YellowCreativity) Remove the CanUsersChat check from select commands (#2071)";
+	"Command related changes done:";
+	"> Alert, Notification, MPM, NPM, ChatNotify and TTS no longer have CanUsersDirectChat checks";
+	"> User info in !profile can now be selectable & copied";
+	"> :insert can now load 3rd-party assets if permitted by experience settings";
 	"";
 	"[v275 2026-01-06 00:16 UTC] @Dimenpsyonal";
 	"*First update of 2026!";
@@ -17,6 +37,9 @@ return {
 	"(Git/ImFirstPlace) Add PromptJoinGroup command (#2026)";
 	"(Git/kaiserandaxl) Removed unused ExploitGuiDetection setting from new loaders (#2029)";
 	"(Git/fxeP1) PlayerCommand patches (#2032)";
+	"> Simplified player some command UIs";
+	"> Removed AddFriend, GetGroupInfo, and TimeDate";
+	"> !join is now :join, and Mod+";
 	"(Git/ccuser44) Decrease memory consumption caused by logs (#2017)";
 	"Command related changes done:";
 	"> Alert, ChatNotify, MPM, Notify, NPM, PM, PrivateChat, and TTS commands now have CanUsersDirectChat checks";
@@ -35,7 +58,7 @@ return {
 	"(Git/fxeP1) Resolve locals being set nil in kill function (#2007)";
 	"(Git/ostrichman1) Add leave reasons to :leavelogs (#2005)";
 	"(Git/xBaconEgg) Patch LoadData Vulnerability (#1980)";
-	"(Git/Purple_Creativity) Refactor: Change CodeExecution commands from Admins to HeadAdmins (#1976)";
+	"(Git/PurpleCreativity) Refactor: Change CodeExecution commands from Admins to HeadAdmins (#1976)";
 	"(Git/P3tray) Make ;mute(ing) voice chat possible (#2013)";
 	"(Git/GuestDaProtogen) Audio API Support for :dex (#2000)";
 	"Changes to internal functionality inside Adonis:";

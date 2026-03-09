@@ -9,7 +9,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local client = client
 	local service = client.Service
 
@@ -97,11 +97,14 @@ return function(data, env)
 				Size = UDim2.new(1, -135, 0, 30);
 				Position = UDim2.new(0, 130, 0, (30*(i-1))+5);
 				TextXAlignment = "Left";
-			}):Add("TextLabel", {
+			}):Add("TextBox", {
 				Text = v[2];
 				BackgroundTransparency = 1;
 				Size = UDim2.new(0, 120, 1, 0);
 				Position = UDim2.new(1, -130, 0, 0);
+				TextEditable = false;
+				ClearTextOnFocus = false;
+				Selectable = true;
 				TextXAlignment = "Right";
 			})
 		end

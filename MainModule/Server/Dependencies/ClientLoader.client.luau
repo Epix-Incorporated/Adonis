@@ -70,8 +70,8 @@ end
 local function Kill(info)
 	if DebugMode then warn(info) return end
 	pcall(function() Kick(player, info) end)
-	wait(1)
-	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
+	task.wait(1)
+	pcall(function() while not DebugMode and task.wait() do pcall(function() while true do end end) end end)
 end
 
 local function Locked(obj)
@@ -120,7 +120,7 @@ local function loadingTime()
 end
 
 local function checkChild(child)
-	print(`Checking child: child and child.ClassName} : {child and child:GetFullName()}`)
+	print(`Checking child: {child and child.ClassName} : {child and child:GetFullName()}`)
 	callCheck(child)
 	if child and not foundClient and not checkedChildren[child] and child:IsA("Folder") and child.Name == "Adonis_Client" then
 		print("Loading Folder...")
@@ -151,8 +151,8 @@ local function checkChild(child)
 
 		print("Destroying parent...")
 		if container and container:IsA("ScreenGui") and container.Name == "Adonis_Container" then
-			spawn(function()
-				wait(0.5)
+			task.spawn(function()
+				task.wait(0.5)
 				container:Destroy()
 			end)
 		end
@@ -254,7 +254,7 @@ else
 	print("Waiting and scanning (incase event fails)...")
 	repeat
 		scan(playerGui)
-		wait(5)
+		task.wait(5)
 	until (time() - start > 600) or foundClient
 
 	print(`Elapsed: {time() - start}`)

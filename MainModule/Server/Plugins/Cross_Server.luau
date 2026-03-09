@@ -265,7 +265,7 @@ return function(Vargs, GetEnv)
 					TextSelectable = true;
 				})
 
-				delay(500, doDisconnect)
+				task.delay(500, doDisconnect)
 			end
 		end;
 	};
@@ -354,7 +354,7 @@ return function(Vargs, GetEnv)
 				AutoUpdate = 1,
 			})
 
-			delay(120, function()
+			task.delay(120, function()
 				Logs.TempUpdaters[voteKey] = nil
 				msgSub:Disconnect()
 			end)

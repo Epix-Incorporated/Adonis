@@ -56,7 +56,7 @@ return function(data, env)
 		Name  = "UserPanel";
 		Title = Variables.NightlyMode and "Adonis Nightly" or "Adonis";
 		Icon = Variables.NightlyMode and "rbxassetid://6877822142" or "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
-		Size  = {465, 325};
+		Size  = {465, 340};
 		AllowMultiple = false;
 		OnClose = function()
 			Variables.WaitingForBind = false
@@ -464,6 +464,18 @@ return function(data, env)
 				ImageTransparency = 0.2;
 				Size = UDim2.new(0, 18, 0, 18);
 				Position = UDim2.new(1, -22, 0, 4);
+			})
+
+			infoTab:Add("TextButton", {
+				Text = "Open Console";
+				Size = UDim2.new(0, 130, 0, 40);
+				Position = UDim2.new(1, -135, 0, 230);
+				BackgroundTransparency = 0.5;
+				Events = {
+					MouseButton1Down = function()
+						service.Events.ToggleConsole:Fire()
+					end
+				}
 			})
 
 		end
@@ -1557,7 +1569,21 @@ return function(data, env)
 							UI.Make("UserPanel", {Tab = "Client"})
 						end)
 					end
-				}
+				};
+				{
+					Text = "Default Help Button Action: ";
+					Desc = "- Toggles what the help button does by default";
+					Entry = "DropDown";
+					Setting = "HelpButtonAction";
+					Value = Variables.HelpButtonAction or "Info";
+					Options = (function()
+						return {"Info";"Console"}
+					end)();
+					Function = function(selection)
+						Variables.HelpButtonAction = selection
+						Remote.Get("UpdateClient", "HelpButtonAction", selection)
+					end
+				};
 			}
 
 			local num = 0

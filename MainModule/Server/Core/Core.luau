@@ -716,13 +716,13 @@ return function(Vargs, GetEnv)
 					local data = service.DeepCopy(pData)
 
 					--// Temporary junk that will be removed on save.
-					for _, blacklistedData in ipairs({"Groups", "LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
+					for _, blacklistedData in ipairs({"Groups", "LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave", "UserInfo"}) do
 						data[blacklistedData] = nil
 					end
 
 					--// We want to only save data if actual user data is different
 					local CompareOptions = {
-						IgnoreKeys = {"Groups", "AdminLevel", "AdminRank", "LastLevelUpdate", "LastDataSave"}
+						IgnoreKeys = {"Groups", "AdminLevel", "AdminRank", "LastLevelUpdate", "LastDataSave", "UserInfo"}
 					}
 
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
@@ -730,7 +730,7 @@ return function(Vargs, GetEnv)
 
 					if Core.SavedPlayerData[p.UserId] and Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data, CompareOptions) and Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId], CompareOptions) then
 						AddLog(Logs.Script, {
-							Text = "Didn't save data due to redundancy ".. p.Name;
+							Text = `Didn't save data due to redundancy {p.Name}`;
 							Desc = "Player data was not saved to the datastore due to it being already saved.";
 						})
 					elseif not Functions.LaxCheckMatch(Core.DefaultPlayerData(p), data, CompareOptions) or Core.SavedPlayerData[p.UserId] and not (Functions.LaxCheckMatch(Core.SavedPlayerData[p.UserId], data, CompareOptions) or Functions.LaxCheckMatch(data, Core.SavedPlayerData[p.UserId], CompareOptions)) then
@@ -802,7 +802,7 @@ return function(Vargs, GetEnv)
             local ShouldSaltKey = not IsPlayer and not SettingIsTrue
             local EncryptionKey = Settings.DataStoreKey
             if ShouldSaltKey then
-                EncryptionKey = ("SALT_" .. Settings.DataStoreKey):sub(1,50)
+                EncryptionKey = (`SALT_{Settings.DataStoreKey}`):sub(1,50)
             end
 
             return Functions.Base64Encode(Remote.Encrypt(tostring(key), EncryptionKey))
@@ -1400,6 +1400,7 @@ return function(Vargs, GetEnv)
 			local ipairs = ipairs
 			local next = next
 			local table = table
+			local task = task
 			local getfenv = getfenv
 			local setfenv = setfenv
 			local require = require
