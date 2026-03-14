@@ -181,7 +181,7 @@ else
 				table.insert(data.Messages, {
 					Title = "Warning!";
 					Icon = "MatIcon://Dangerous";
-					Message = `The Settings.{erroredSettingModule.Name} module errored while loading; using defaults for this module.`;
+					Message = `The Settings.{module.Name} module errored while loading; using defaults for this module.`;
 					Time = 15;
 				})
 			end)
