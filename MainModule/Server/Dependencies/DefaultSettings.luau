@@ -291,7 +291,6 @@ settings.WarnDangerousCommand = false		-- Do dangerous commands ask for confirma
 settings.CommandFeedback = false			-- Should players be notified when commands with non-obvious effects are run on them?
 settings.CrossServerCommands = true			-- Are commands which affect more than one server enabled?
 settings.ChatCommands = true				-- If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands
-settings.CreatorPowers = true				-- Gives me creator-level admin; This is strictly used for debugging; I can't debug without full access to the script
 settings.CodeExecution = false				-- Enables the use of code execution in Adonis. Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false		-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
@@ -390,7 +389,6 @@ settings.AntiGod = false 					-- (Default: false)	If a player does not respawn w
 settings.AntiSpeed = false 				-- (Default: false)	(Client-Sided) Attempts to detect speed exploits.
 settings.AntiBuildingTools = false		-- (Default: false)	(Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client.
 settings.AntiAntiIdle = false 			-- (Default: false)	(Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games.
-settings.ExploitGuiDetection = false 	-- (Default: false)	(Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you).
 
 ---------------------
 -- END OF SETTINGS --
@@ -474,7 +472,6 @@ descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
 descs.SystemTitle = [[ Title to display in :sm ]]
 
-descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
@@ -517,7 +514,6 @@ descs.AntiGod = [[ If a player does not respawn when they should have they get r
 descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games ]]
-descs.ExploitGuiDetection = [[ (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
 
 order = {
 	"HideScript";
@@ -584,7 +580,6 @@ order = {
 	"CommandFeedback";
 	"CrossServerCommands";
 	"ChatCommands";
-	"CreatorPowers";
 	"";
 	"SilentCommandDenials";
 	"OverrideChatCallbacks";
@@ -631,7 +626,6 @@ order = {
 	"AntiSpeed";
 	"AntiBuildingTools";
 	"AntiAntiIdle";
-	"ExploitGuiDetection";
 }
 
 return {Settings = settings, Descriptions = descs, Order = order}

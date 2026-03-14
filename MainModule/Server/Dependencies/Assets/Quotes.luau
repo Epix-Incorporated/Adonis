@@ -32,4 +32,5 @@ return {
 	'"The journey of a thousand miles begins with one step." - Lao Tzu';
 	'"I\'ll be with you... even if you can\'t see me." - Little Foot\'s Mother in Land Before Time';
 	'"You were worth it, old friend, and a thousand times over." - Where the red fern grows.';
+	'"You cannot spell Adonis without Ado" - Japanese proverb';
 }

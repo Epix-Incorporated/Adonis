@@ -88,6 +88,17 @@ return function(Vargs, GetEnv)
 				log.Time = os.time()
 			end
 
+			local p = log.Player
+			if p and type(p) ~= "table" then
+				local pData = Core.PlayerData[tostring(p.UserId)]
+				local UserInfo = pData and pData.UserInfo or { Name = p.Name, UserId = p.UserId }
+				if pData and not pData.UserInfo then
+					pData.UserInfo = UserInfo
+				end
+
+				log.Player = UserInfo
+			end
+
 			if tab then
 				if tab.__meta == "DLL" then
 					tab:AddToStartAndRemoveEndIfEnd(log, Logs.MaxLogs)
@@ -97,7 +108,7 @@ return function(Vargs, GetEnv)
 						table.remove(tab, #tab)
 					end
 				end
-				
+
 				service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 			end
 		end;
@@ -153,7 +164,7 @@ return function(Vargs, GetEnv)
 					local newTab = if isTable then table.clone(log) else log
 
 					if (isTable and not log.NoSave) or not isTable then
-						if isTable and log.Player then
+						if isTable and log.Player and type(log.Player) ~= "table" then
 							local p = log.Player
 							log.Player = {
 								Name = p.Name;

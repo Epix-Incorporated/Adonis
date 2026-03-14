@@ -30,7 +30,7 @@ return function(data, env)
 	local round1 = Instance.new("UICorner")
 	round1.CornerRadius = UDim.new(0, 6)
 	round1.Parent = toggle
-	
+
 	local useCustomIcon
 	local gTable = client.UI.Register(gui)
 
@@ -45,7 +45,7 @@ return function(data, env)
 	else
 		useCustomIcon = true
 	end
-		
+
 	gTable.Name = "HelpButton"
 	gTable.CanKeepAlive = false
 
@@ -72,11 +72,16 @@ return function(data, env)
 
 	toggle.MouseButton1Down:Connect(
 		function()
-			local found = client.UI.Get("UserPanel", nil, true)
-			if found then
-				found.Object:Destroy()
-			else
-				client.UI.Make("UserPanel", {})
+			local setting = client.Variables.HelpButtonAction
+			if string.lower(setting) == "console" then
+				service.Events.ToggleConsole:Fire()
+			else -- defaulting to info just incase anything happens
+				local found = client.UI.Get("UserPanel", nil, true)
+				if found then
+					found.Object:Destroy()
+				else
+					client.UI.Make("UserPanel")
+				end
 			end
 		end
 	)

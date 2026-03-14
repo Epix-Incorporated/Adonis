@@ -2080,9 +2080,9 @@ return function(data, env)
 	if Icon then
 		Iconf.Visible = true
 		Iconf.Image = Icon
-		Iconf.Size = UDim2.new(0, 16, 0, 16)
-		Iconf.Position = UDim2.new(0, 6, 0, 5)
-		Iconf.ImageTransparency = 0
+	--	Iconf.Size = UDim2.new(0, 16, 0, 16)
+	--	Iconf.Position = UDim2.new(0, 6, 0, 5)
+	--	Iconf.ImageTransparency = 0
 	end
 
 	if CanvasSize then

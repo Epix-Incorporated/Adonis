@@ -41,7 +41,7 @@ return function(Vargs, GetEnv)
 					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
 
 					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
-						AddLog("Script", "Overriding ShouldDeliverCallback for " .. textchannel.Name)
+						AddLog("Script", `Overriding ShouldDeliverCallback for {textchannel.Name}`)
 						textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
 							if
 								chatMessage.Status == Enum.TextChatMessageStatus.Success
@@ -79,7 +79,7 @@ return function(Vargs, GetEnv)
 								end
 
 								if Variables.DisguiseBindings[SenderId] then -- // Disguise command handler
-									chatMessage.PrefixText = Variables.DisguiseBindings[SenderId].TargetUsername..":"
+									chatMessage.PrefixText = `{Variables.DisguiseBindings[SenderId].TargetUsername}:`
 								end
 
 								if Admin.SlowMode and IsOriginalSender then
@@ -660,7 +660,7 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
-			if Settings.Console and (oLevel ~= level or oRank ~= rank) then
+			if Settings.Console and type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
 				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
 					task.defer(Remote.RefreshGui, p, "Console")
 				else
@@ -745,12 +745,6 @@ return function(Vargs, GetEnv)
 
 		IsPlaceOwner = function(p)
 			if type(p) == "userdata" and p:IsA("Player") then
-				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
-				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-				if Settings.CreatorPowers and table.find({1237666, 76328606, 698712377}, p.UserId) then
-					return true
-				end
-
 				if tonumber(CreatorId) and p.UserId == CreatorId then
 					return true
 				end
@@ -1208,25 +1202,23 @@ return function(Vargs, GetEnv)
 							for _, v in data.Commands do
 								if type(data.Prefix) == "table" then
 									for _, p in data.Prefix do
-										if not blacklistedCommands["/"..p..v] then
+										if not blacklistedCommands[`/{p}{v}`] then
 											if not command1 then
-												command1 = "/"..p..v
+												command1 = `/{p}{v}`
 											else
-												command2 = "/"..p..v
+												command2 = `/{p}{v}`
 											end
 										end
 									end
 								else
-									if not blacklistedCommands["/"..data.Prefix..v] then
+									if not blacklistedCommands[`/{data.Prefix}{v}`] then
 										if not command1 then
-											command1 = "/"..data.Prefix..v
+											command1 = `/{data.Prefix}{v}`
 										else
-											command2 = "/"..data.Prefix..v
+											command2 = `/{data.Prefix}{v}`
 										end
 									end
-
 								end
-
 							end
 
 							if command1 then

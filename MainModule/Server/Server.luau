@@ -114,7 +114,7 @@ local logError = function(plr, err)
 	end
 
 	if server.Core and server.Core.DebugMode then
-		warn(`::Adonis:: Error: {plr}: {err}`)
+		warn(`:: Adonis :: Error: {plr}: {err}`)
 	end
 
 	if server and server.Logs then

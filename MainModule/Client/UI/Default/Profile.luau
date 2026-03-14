@@ -9,7 +9,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local client = client
 	local service = client.Service
 
@@ -97,11 +97,14 @@ return function(data, env)
 				Size = UDim2.new(1, -135, 0, 30);
 				Position = UDim2.new(0, 130, 0, (30*(i-1))+5);
 				TextXAlignment = "Left";
-			}):Add("TextLabel", {
+			}):Add("TextBox", {
 				Text = v[2];
 				BackgroundTransparency = 1;
 				Size = UDim2.new(0, 120, 1, 0);
 				Position = UDim2.new(1, -130, 0, 0);
+				TextEditable = false;
+				ClearTextOnFocus = false;
+				Selectable = true;
 				TextXAlignment = "Right";
 			})
 		end
@@ -207,15 +210,17 @@ return function(data, env)
 		local friendCount = 0
 		local onlineCount = 0
 
-		for _, user in data.OnlineFriends do
-			onlineFriends[user.VisitorId] = {
-				lastOnline = DateTime.fromIsoDate(user.LastOnline),
-				isOnline = user.IsOnline,
-				lastLocation = user.LastLocation,
-				placeId = user.PlaceId,
-				jobId = user.GameId,
-				locationType = LOCATION_TYPE[user.LocationType and user.LocationType + 1]
-			}
+		if type(data.OnlineFriends) == "table" then
+			for _, user in pairs(data.OnlineFriends) do
+				onlineFriends[user.VisitorId] = {
+					lastOnline = DateTime.fromIsoDate(user.LastOnline),
+					isOnline = user.IsOnline,
+					lastLocation = user.LastLocation,
+					placeId = user.PlaceId,
+					jobId = user.GameId,
+					locationType = LOCATION_TYPE[user.LocationType and user.LocationType + 1]
+				}
+			end
 		end
 
 		Routine(function()

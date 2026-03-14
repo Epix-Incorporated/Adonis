@@ -514,7 +514,7 @@ return function(Vargs, env)
 			Description = "Get someone's attention";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr,string.lower(args[1]))do
+				for _, v in service.GetPlayers(plr,string.lower(args[1])) do
 					Remote.MakeGui(v, "Alert", {Message = args[2] and service.Filter(args[2],plr, v) or "Wake up; Your attention is required"})
 				end
 			end
@@ -585,6 +585,8 @@ return function(Vargs, env)
 					F3X = require(Deps.FetchF3X:Clone())
 					assert(typeof(F3X) == "Instance", "Unable to load F3X.")
 				end
+
+				F3X.CanBeDropped = false
 
 				if Variables.F3XCached == nil then
 					Variables.F3XCached = F3X:Clone()

@@ -85,7 +85,7 @@ return function(Vargs, GetEnv)
 		WebPanel_Initiated = false,
 		DeveloperWhitelist = {1237666, 76328606, 698712377},
 		HTTPCheckUrl = "https://www.google.com/humans.txt",
-		IPInfoUrl = "https://ipinfo.io/json",
+		IPInfoUrl = "https://speed.cloudflare.com/meta",
 		SizeLimit = 20,
 		ChatCreateRobloxCommands = true,
 		OriginalGravity = workspace.Gravity,
