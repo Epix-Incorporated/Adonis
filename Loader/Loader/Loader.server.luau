@@ -89,7 +89,6 @@ else
 	local settingsFolder = configFolder:FindFirstChild("Settings")
 	local pluginsFolder = configFolder.Plugins
 	local themesFolder = configFolder.Themes
-	local inGameSettingsEditorSettingsFolder = configFolder:FindFirstChild("InGameSettingsEditorSettings")
 
 	local backup = model:Clone()
 
