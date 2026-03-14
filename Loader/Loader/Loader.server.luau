@@ -101,6 +101,12 @@ else
 		ClientPlugins = {} :: {ModuleScript|string};
 		Packages = {} :: {Folder};
 		Themes = {} :: {Instance};
+		MergeTableOverrides = {		
+			Settings = "Settings";
+			Descriptions = "Description";
+			Order = "Order";
+			Message = "Messages";
+		} :: {[string]: string};
 
 		ModelParent = model.Parent;
 		Model = model;
@@ -155,15 +161,7 @@ else
 		end
 	end
 
-	if settingsFolder == nil then
-		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
-		table.insert(data.Messages, {
-			Title = "Warning!";
-			Icon = "MatIcon://Dangerous";
-			Message = "No settings folder or module found; using default settings.";
-			Time = 15;
-		})
-	elseif settingsFolder:IsA("Folder") then
+	if settingsFolder and settingsFolder:IsA("Folder") then
 		local erroredSettingsModules = {}
 
 		for _, module in settingsFolder:GetChildren() do
@@ -171,11 +169,11 @@ else
 				local requiredModule = require(module)
 
 				for key, value in requiredModule do
-					if key == "Messages" then
-						data.Messages = value
+					if data.MergeTableOverrides[key] then
+						data.MergeTableOverrides[key] = value -- TODO: Make this merge in to already existing tables (and sub tables?)
+					else
+						data.Settings[key] = value
 					end
-
-					data.Settings[key] = value
 				end
 			end, function(err)
 				table.insert(erroredSettingsModules, {Name = module.Name, Error = err})
@@ -189,49 +187,17 @@ else
 			end)
 		end
 
-		if #erroredSettingsModules > 0 then -- TODO: Investigate what this is for
+		if #erroredSettingsModules > 0 then -- TODO: Investigate what this is for, and if it's needed
 			data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults.
 		end
-
-		xpcall(function() -- TODO: Bork these pieces of code completely so there is no extra "inGameSettingsEditorSettingsFolder" folder. Lol what a name
-			data.Descriptions = require(inGameSettingsEditorSettingsFolder.Descriptions)
-		end, function(err)
-			warn("[DEVELOPER ERROR] The InGameSettingsEditorSettings.Descriptions module errored while loading; using defaults; Error Message:", err)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = "The InGameSettingsEditorSettings.Descriptions module errored while loading; using defaults.";
-				Time = 15;
-			})
-		end)
-
-		xpcall(function()
-			data.Order = require(inGameSettingsEditorSettingsFolder.Order)
-		end, function(err)
-			warn("[DEVELOPER ERROR] The InGameSettingsEditorSettings.Order module errored while loading; using defaults; Error Message:", err)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = "The InGameSettingsEditorSettings.Order module errored while loading; using defaults.";
-				Time = 15;
-			})
-		end)
-	else -- Account for legacy settings module
-		local success, settingsData = pcall(require, settingsFolder)
-		if success then
-			data.Settings = settingsData.Settings
-			data.Descriptions = settingsData.Description
-			data.Order = settingsData.Order
-			data.Messages = settingsData.Settings.Messages
-		else
-			warn("[DEVELOPER ERROR] Settings module errored while loading; using default settings; Error Message: ", settingsData)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = "Settings module error detected; using default settings.";
-				Time = 15;
-			})
-		end
+	elseif not data.DebugMode then
+		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Icon = "MatIcon://Dangerous";
+			Message = "No settings folder or module found; using default settings.";
+			Time = 15;
+		})
 	end
 
 	for _, module in pluginsFolder:GetChildren() do
