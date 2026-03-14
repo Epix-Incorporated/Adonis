@@ -36,6 +36,7 @@ return function(Vargs, GetEnv)
 		local ValidateCommandDefinition = t.interface({
 			Prefix = t.union(t.string, t.array(t.string)),
 			Commands = t.array(t.string),
+			Args = t.array(t.union(t.string, t.number)),
 			Description = t.string,
 			AdminLevel = t.union(t.string, t.number, t.nan, t.array(t.union(t.string, t.number, t.nan))),
 			Fun = t.boolean,
@@ -67,6 +68,7 @@ return function(Vargs, GetEnv)
 			for opt, default in {
 				Prefix = Settings.Prefix;
 				Commands = {};
+				Args = {};
 				Description = "(No description)";
 				Fun = false;
 				Hidden = false;
@@ -139,7 +141,7 @@ return function(Vargs, GetEnv)
 
 			local isValid, fault = ValidateCommandDefinition(cmd)
 			if not isValid then
-				logError(`Invalid command definition table {ind}:`, fault)
+				logError(`The command {ind} is not formatted correctly:`, fault)
 				Commands[ind] = nil
 			end
 

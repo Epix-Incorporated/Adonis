@@ -21,11 +21,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {})
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {
-					IsKicking = true;
-					NoFakePlayer = true; --// Can't really kick someone not in game...
-					})
-				do
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "kick") then
 						local playerName = service.FormatPlayer(v)
 						if not service.Players:FindFirstChild(v.Name) then
@@ -42,7 +38,7 @@ return function(Vargs, env)
 
 		ESP = {
 			Prefix = Settings.Prefix;
-			Commands = {"esp"};
+			Commands = {"esp", "xray"};
 			Args = {"target (optional)", "brickcolor (optional)"};
 			Filter = true;
 			Description = "Allows you to see <target> (or all humanoids if no target is supplied) through walls";
@@ -66,7 +62,7 @@ return function(Vargs, env)
 
 		UnESP = {
 			Prefix = Settings.Prefix;
-			Commands = {"unesp"};
+			Commands = {"unesp", "unxray"};
 			Args = {};
 			Filter = true;
 			Description = "Removes ESP";
@@ -79,10 +75,14 @@ return function(Vargs, env)
 		Thru = {
 			Prefix = Settings.Prefix;
 			Commands = {"thru", "pass", "through"};
-			Args = {};
+			Args = {"distance? (default: 5)"};
 			Description = "Lets you pass through an object or a wall";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local rawDistance = tonumber(args[1] or 5)
+				assert(rawDistance, "Invalid distance value (must be a number)")
+
+				local distance = rawDistance * -1
 				if plr.Character:FindFirstChild("HumanoidRootPart") then
 					if plr.Character.Humanoid.SeatPart~=nil then
 						Functions.RemoveSeatWelds(plr.Character.Humanoid.SeatPart)
@@ -92,9 +92,9 @@ return function(Vargs, env)
 						plr.Character.Humanoid.Jump = true
 					end
 					Variables.ReturnPoints[plr] = plr.Character.HumanoidRootPart.CFrame
-					
+
 					task.wait()
-					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, -5))
+					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, distance))
 				end
 			end
 		};
@@ -264,7 +264,7 @@ return function(Vargs, env)
 			Commands = {"mpm", "messagepm"};
 			Args = {"player", "message"};
 			Filter = true;
-			Description = "Makes a message on the target player(s) screen.";
+			Description = "Makes a private message on the target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -306,7 +306,7 @@ return function(Vargs, env)
 			Commands = {"npm", "smallmessagepm", "nmessagepm", "nmsgpm", "npmmsg", "smsgpm", "spmmsg", "smessagepm"};
 			Args = {"player", "message"};
 			Filter = true;
-			Description = "Makes a small message on the target player(s) screen.";
+			Description = "Makes a small private message on the target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -359,7 +359,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "warn", false) then
@@ -397,11 +397,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing target player(s) (argument #1)")
 				local reason = assert(args[2], "Missing reason (argument #2)")
 
-				for _, v in service.GetPlayers(plr, args[1], {
-					IsKicking = true;
-					NoFakePlayer = true;
-					})
-				do
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if Admin.CheckAuthority(plr, v, "kick-warn", false) then
 						local playerData = Core.GetPlayer(v)
 						table.insert(playerData.Warnings, {
@@ -415,7 +411,7 @@ return function(Vargs, env)
 						if typeof(v) == "Instance" then
 							v:Kick(string.format("\n[Warning from %s]\nReason: %s", service.FormatPlayer(plr), reason))
 						else
-							Core.CrossServer("RemovePlayer", v.Name, `Warning from {service.FormatPlayer(plr)}`, reason)
+							Core.CrossServer("RemovePlayer", tonumber(v.UserId), `Warning from {service.FormatPlayer(plr)}`, reason)
 						end
 
 						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
@@ -439,7 +435,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "remove warning(s) from") then
@@ -486,7 +482,7 @@ return function(Vargs, env)
 			Description = "Clears any warnings on a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local playerData = Core.GetPlayer(v)
 					table.clear(playerData.Warnings)
 
@@ -523,7 +519,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					NoFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 
@@ -932,6 +928,47 @@ return function(Vargs, env)
 					return peers
 				end
 
+				local function getFilteredHistory(player)
+					local canUsersDirectChatAsyncCache = {}
+					local newHistory = {}
+
+					for _, historyItem in history do
+						local canUsersChat = false
+						local newHistoryItem = {
+							Message = nil,
+							Sender = {
+								Name = historyItem.Sender.Name,
+								DisplayName = historyItem.Sender.DisplayName,
+								UserId = historyItem.Sender.UserId,
+								Icon = historyItem.Sender.Icon
+							}
+						}
+
+						if player.UserId == historyItem.Sender.UserId or historyItem.Sender.UserId == 0 then
+							canUsersChat = true
+							newHistoryItem.Sender.IsMessageRestricted = false
+						elseif canUsersDirectChatAsyncCache[historyItem.Sender.UserId] ~= nil then
+							canUsersChat = canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
+							newHistoryItem.Sender.IsMessageRestricted = not canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
+						else
+							local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, player.UserId, {historyItem.Sender.UserId})
+							if success then
+								canUsersChat = #canUserChatData > 0
+								canUsersDirectChatAsyncCache[historyItem.Sender.UserId] = canUsersChat
+								newHistoryItem.Sender.IsMessageRestricted = not canUsersChat
+							else
+								newHistoryItem.Sender.IsMessageRestrictedError = true
+							end
+						end
+
+						newHistoryItem.Message = canUsersChat and historyItem.Message or nil
+
+						table.insert(newHistory, newHistoryItem)
+					end
+
+					return newHistory
+				end
+
 				local function systemMessage(msg)
 					local data = {
 						Name = "* SYSTEM *";
@@ -980,7 +1017,31 @@ return function(Vargs, env)
 									table.remove(history, 1)
 								end
 
-								newSession:SendToUsers("PlayerSentMessage", data, msg)
+								for sessionPlayer in newSession.Users do
+									local newData = {
+										Name = data.Name,
+										DisplayName = data.DisplayName,
+										UserId = data.UserId,
+										Icon = data.Icon
+									}
+
+									local canUsersChat = false
+									if p.UserId == sessionPlayer.UserId then
+										canUsersChat = true
+									else
+										local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, p.UserId, {sessionPlayer.UserId})
+										if success then
+											canUsersChat = #canUserChatData > 0
+											newData.IsMessageRestricted = not canUsersChat
+										else
+											newData.IsMessageRestrictedError = true
+										end
+									end
+
+									local messageToSend = canUsersChat and msg or nil
+
+									newSession:SendToUser(sessionPlayer, "PlayerSentMessage", newData, messageToSend)
+								end
 							end
 						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
 							newSession:RemoveUser(p)
@@ -995,18 +1056,28 @@ return function(Vargs, env)
 							systemMessage("<i>Session ended</i>")
 							newSession:End()
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
-							local player = args[1]
+							local peer = args[1]
+							local filteredHistory = getFilteredHistory(peer)
 
-							if player then
-								newSession:AddUser(player)
-								newSession:SendToUser(player, "AddedToSession")
-								systemMessage(string.format("<i>%s added %s to the session</i>", p.Name, player.Name))
-								Remote.MakeGui(player, "PrivateChat", {
+							if peer then
+								local canUserChatSuccess, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, peer.UserId)
+								if not canUserChatSuccess then
+									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session because an error occurred.`, {p})
+								end
+
+								if not canUserChatData then
+									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session due to them not being able to chat.`, {p})
+								end
+
+								newSession:AddUser(peer)
+								newSession:SendToUser(peer, "AddedToSession")
+								systemMessage(string.format("<i>%s added %s to the session</i>", service.FormatPlayer(p), service.FormatPlayer(peer)))
+								Remote.MakeGui(peer, "PrivateChat", {
 									Owner = plr;
 									SessionKey = newSession.SessionKey;
 									SessionName = sessionName;
-									History = history;
-									CanManageUsers = Admin.CheckAdmin(player);
+									History = filteredHistory;
+									CanManageUsers = Admin.CheckAdmin(peer);
 								})
 								newSession:SendToUsers("UpdatePeerList", getPeerList())
 							end
@@ -1052,18 +1123,29 @@ return function(Vargs, env)
 					Owner = plr;
 					SessionKey = newSession.SessionKey;
 					SessionName = sessionName;
-					History = history;
+					History = getFilteredHistory(plr);
 					CanManageUsers = true;
 				})
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v ~= plr then
+						local success, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
+						if not success then
+							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session because an error occurred.`, {plr})
+							continue
+						end
+
+						if not canUserChatData then
+							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session due to them not being able to chat.`, {plr})
+							continue
+						end
+
 						newSession:AddUser(v)
 						Remote.MakeGui(v, "PrivateChat", {
 							Owner = plr;
 							SessionKey = newSession.SessionKey;
 							SessionName = sessionName;
-							History = history;
+							History = getFilteredHistory(v);
 							CanManageUsers = Admin.CheckAdmin(v);
 						})
 					end
@@ -1082,6 +1164,19 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
 					local replyTicket = service.HttpService:GenerateGUID(false)
 					Variables.PMtickets[replyTicket] = plr
 
@@ -1170,34 +1265,28 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local target = service.GetPlayers(plr, args[1])[1]
-
-				if target ~= plr then
-					local targetchar = target.Character
-
-					if not targetchar then
-						Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
-						return
-					end
-
-					local plrChar = plr.Character
-
-					if not plrChar then
-						Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
-						return
-					end
-
-					local tool = plrChar:FindFirstChildOfClass"Tool"
-
-					if not tool then
-						Functions.Hint("[HANDTO]: You must be holding an item", {plr})
-						return
-					else
-						tool.Parent = targetchar
-						Functions.Hint(`[HANDTO]: Successfully given the item to {target.Name}`, {plr})
-					end
-				else
+				if not target then return end
+				if target == plr then
 					Functions.Hint("[HANDTO]: Cannot give item to yourself", {plr})
+					return
 				end
+
+				local targetchar = target.Character
+				local plrChar = plr.Character
+				if not targetchar or not plrChar then
+					Functions.Hint(`[HANDTO]: Unable to hand item to {target.Name}`, {plr})
+					return
+				end
+
+				local tool = plrChar:FindFirstChildOfClass("Tool")
+				if not tool then
+					Functions.Hint("[HANDTO]: You must be holding an item", {plr})
+					return
+				end
+
+				local foundToolInTargetCharacter = targetchar:FindFirstChildOfClass("Tool")
+				tool.Parent = if foundToolInTargetCharacter then target.Backpack else targetchar
+				Functions.Hint(`[HANDTO]: Successfully given the item '{tool.Name}' to {target.Name}`, {plr})
 			end;
 		};
 
@@ -1494,7 +1583,7 @@ return function(Vargs, env)
 						plr.ReplicationFocus = rootPart
 						Remote.Send(plr, "Function", "SetView", humanoid)
 					end
-					
+
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if not hum then
 						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a character humanoid`, {plr})
@@ -1505,7 +1594,7 @@ return function(Vargs, env)
 						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a HumanoidRootPart`, {plr})
 						continue
 					end
-					
+
 					viewPlayer(plr, rootPart, hum)
 
 					if v.UserId == plr.UserId and Variables.PersistView[plr.UserId] then
@@ -1524,12 +1613,12 @@ return function(Vargs, env)
 						Viewing = v
 					}
 
-					event = v.CharacterAdded:Connect(function(char)	
+					event = v.CharacterAdded:Connect(function(char)
 						task.wait(0.5)
-							
+
 						local newhum = char:FindFirstChildOfClass("Humanoid")
 						local newRootPart = char.PrimaryPart
-							
+
 						if Variables.PersistView[plr.UserId] and Variables.PersistView[plr.UserId].Viewing then
 							if Variables.PersistView[plr.UserId].Viewing.UserId == v.UserId then
 								viewPlayer(plr, newRootPart, newhum)
@@ -1540,7 +1629,7 @@ return function(Vargs, env)
 						else
 							Variables.PersistView[plr.UserId] = nil
 							event:Disconnect()
-							
+
 							return;
 						end
 					end)
@@ -1561,7 +1650,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};
+		} or nil;
 
 		ResetView = {
 			Prefix = Settings.Prefix;
@@ -1635,7 +1724,7 @@ return function(Vargs, env)
 			Args = {"amount", "interval", "command"};
 			Description = "Repeats <command> for <amount> of times every <interval> seconds; Amount cannot exceed 50";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local amount = tonumber(args[1])
 				local timer = tonumber(args[2])
 				if timer<=0 then timer=0.1 end
@@ -1652,8 +1741,8 @@ return function(Vargs, env)
 				Functions.Hint(`Running {command} {amount} times every {timer} seconds.`, {plr})
 				for i = 1, amount do
 					if not Variables.CommandLoops[name..command] then break end
-					Process.Command(plr, command, {Check = false;})
-					wait(timer)
+					Process.Command(plr, command, {Check = false; CrossServer = (data and data.Options.CrossServer);})
+					task.wait(timer)
 				end
 				Variables.CommandLoops[name..command] = nil
 			end
@@ -1744,7 +1833,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, target)
 				if target then
-					for _, v in Functions.GetPlayers(plr, target) do
+					for _, v in Functions.GetPlayers(plr, target, {UseFakePlayer = true}) do
 						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 						local temp = table.create(#cTasks + 1)
 
@@ -4244,7 +4333,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
+					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) and v.Name ~= "TouchGui" then pcall(v.Destroy, v) end end]])
 				end
 			end
 		};
@@ -4311,7 +4400,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing group name (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local groupInfo = Admin.GetPlayerGroup(v, args[2])
 					if groupInfo then
 						Functions.Hint(string.format("%s has rank [%d] %s in %s", service.FormatPlayer(v), groupInfo.Rank, groupInfo.Role, groupInfo.Name), {plr})
@@ -4420,7 +4509,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing team name")
-				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					for a, tm in service.Teams:GetChildren() do
 						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
@@ -4653,7 +4742,7 @@ return function(Vargs, env)
 						end
 					end
 
-					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+					for _, v in service.GetPlayers(plr, args[1]) do
 						if point then
 							local Character = v.Character
 
@@ -4687,12 +4776,12 @@ return function(Vargs, env)
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
-							
+
 							Variables.ReturnPoints[v] = root.CFrame
-							
+
 							task.wait()
 
-							if root then		
+							if root then
 								root.CFrame = CFrame.new(point)
 								if FlightPos and FlightGyro then
 									FlightPos.Position = root.Position
@@ -4705,7 +4794,7 @@ return function(Vargs, env)
 					if not point then Functions.Hint(`Waypoint {m} was not found.`, {plr}) end
 				elseif args[2] and string.find(args[2], ",") then
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
-					for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+					for _, v in service.GetPlayers(plr, args[1]) do
 						local Character = v.Character
 						local root = Character and Character:FindFirstChild('HumanoidRootPart')
 
@@ -4736,9 +4825,9 @@ return function(Vargs, env)
 							FlightPos.Position = root.Position
 							FlightGyro.CFrame = root.CFrame
 						end
-						
+
 						Variables.ReturnPoints[v] = root.CFrame
-						
+
 						task.wait()
 
 						root.CFrame = CFrame.new(Vector3.new(tonumber(x), tonumber(y), tonumber(z)))
@@ -4749,8 +4838,9 @@ return function(Vargs, env)
 						end
 					end
 				else
-					local target = service.GetPlayers(plr, args[2], { NoFakePlayer = true })[1]
-					local players = service.GetPlayers(plr, args[1], { NoFakePlayer = true })
+					local target = service.GetPlayers(plr, args[2])[1]
+					local players = service.GetPlayers(plr, args[1])
+
 					if #players == 1 and players[1] == target then
 						local v = players[1]
 						local Character = v.Character
@@ -4781,9 +4871,9 @@ return function(Vargs, env)
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
-							
+
 							Variables.ReturnPoints[v] = root.CFrame
-							
+
 							task.wait()
 
 							root.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
@@ -4794,6 +4884,8 @@ return function(Vargs, env)
 							end
 						end
 					else
+						if not target then return end
+
 						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 						if targ_root then
 							for k, v in players do
@@ -4828,9 +4920,9 @@ return function(Vargs, env)
 										FlightPos.Position = root.Position
 										FlightGyro.CFrame = root.CFrame
 									end
-									
+
 									Variables.ReturnPoints[v] = root.CFrame
-									
+
 									task.wait()
 
 									if root and targ_root then
@@ -4857,7 +4949,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local players = service.GetPlayers(plr, if args[1] then args[1] else "me")
 				if #players == 1 and players[1] == plr then
-					Commands.Thru.Function(plr, {`@{plr.Name}`})
+					Commands.Thru.Function(plr, {})
 					return
 				end
 				if #players < 10 or not Commands.MassBring or Remote.GetGui(plr, "YesNoPrompt", {
@@ -4883,7 +4975,7 @@ return function(Vargs, env)
 				Commands.Teleport.Function(plr, {`@{plr.Name}`, if args[1] then args[1] else "me"})
 			end
 		};
-		
+
 		Return = {
 			Prefix = Settings.Prefix;
 			Commands = {"back", "return"};
@@ -4913,7 +5005,10 @@ return function(Vargs, env)
 				)
 				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"))
 				local numPlayers = #players
-				local lines = math.clamp(tonumber(args[2]) or 3, 1, numPlayers)
+				if numPlayers == 0 then return end
+
+				local minLines = math.min(tonumber(args[2]) or 3, numPlayers)
+				local lines = math.clamp(minLines, 1, numPlayers)
 
 				for l = 1, lines do
 					local offsetX = if l == 1 then 0
@@ -4942,7 +5037,7 @@ return function(Vargs, env)
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
 						Variables.ReturnPoints[players[i]] = rootPart.CFrame
-						
+
 						if rootPart then
 							rootPart.CFrame = (
 								plrRootPart.CFrame
@@ -4978,7 +5073,7 @@ return function(Vargs, env)
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
 						Variables.ReturnPoints[players[i]] = rootPart.CFrame
-						
+
 						if rootPart then
 							rootPart.CFrame = (
 								plrRootPart.CFrame
@@ -5000,7 +5095,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[2], "Missing stat name (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1], { NoFakePlayer = true }) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						local absolute = leaderstats:FindFirstChild(statName)
@@ -6067,7 +6162,7 @@ return function(Vargs, env)
 						if oldga then oldga:Destroy() end
 						if olds then Remote.Send(v, "Function", "Unfly") olds:Destroy() end
 
-						local new = scr:Clone()
+                        local new = scr:Clone()
 						local flightPositionAttachment: Attachment = service.New("Attachment", {
 							Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT",
 							Parent = part
@@ -6097,8 +6192,9 @@ return function(Vargs, env)
 						new.Disabled = false
 					end
 				end
+                scr:Destroy()
 
-				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1]), 10)
+				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1], {DontError = true}), 10)
 			end
 		};
 
@@ -6336,6 +6432,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				local target = service.GetPlayers(plr, assert(args[2], "Missing username or UserId"), {
 					AllowUnknownUsers = true;
+					UseFakePlayer = true
 				})
 				if target then
 					target = target[1]
@@ -6763,7 +6860,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					if Admin.CheckAuthority(plr, v, "mute", false) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat", false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
@@ -6779,6 +6876,11 @@ return function(Vargs, env)
 								Target = v.UserId;
 								Moderator = plr.UserId;
 							})
+
+							local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+							if audio then
+								audio.Muted = true
+							end
 
 							Functions.Hint(`Muted {service.FormatPlayer(v)}`, {plr})
 
@@ -6811,7 +6913,7 @@ return function(Vargs, env)
 			Description = "Makes it so the target player(s) can talk again. No effect if on Trello mute list.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					for k, m in Settings.Muted do
 						if Admin.DoCheck(v, m) then
 							table.remove(Settings.Muted, k)
@@ -6822,6 +6924,11 @@ return function(Vargs, env)
 						Target = v.UserId;
 						Moderator = plr.UserId;
 					})
+
+					local audio: AudioDeviceInput = v:FindFirstChild("AudioDeviceInput")
+					if audio then
+						audio.Muted = false
+					end
 
 					Functions.Hint(`Unmuted {service.FormatPlayer(v)}`, {plr})
 
@@ -6881,13 +6988,16 @@ return function(Vargs, env)
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
 					local freecam = plrgui and plrgui:FindFirstChild("Freecam")
 					if freecam then
-						if freecam:FindFirstChildOfClass("RemoteFunction") then
-							freecam:FindFirstChildOfClass("RemoteFunction"):InvokeClient(v, "End")
-						end
+						task.defer(function()
+							local remote: RemoteFunction? = freecam:FindFirstChildOfClass("RemoteFunction")
+							if remote then
+								pcall(remote.InvokeClient, remote, v, "End")
+							end
 
-						Remote.Send(v, "Function", "SetView", "reset")
-						service.Debris:AddItem(freecam, 2)
-						Functions.Notification("Notification", "Freecam has been disabled.", {v}, 15)
+							Remote.Send(v, "Function", "SetView", "reset")
+							service.Debris:AddItem(freecam, 2)
+							Functions.Notification("Notification", "Freecam has been disabled.", {v}, 15)
+						end)
 					end
 				end
 			end
@@ -6903,10 +7013,10 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
 					local freecam = plrgui and plrgui:FindFirstChild("Freecam")
-					local remote = freecam and freecam:FindFirstChildOfClass("RemoteFunction")
+					local remote: RemoteFunction? = freecam and freecam:FindFirstChildOfClass("RemoteFunction")
 
 					if remote then
-						remote:InvokeClient(v, "Toggle")
+						task.defer(pcall, remote.InvokeClient, remote, v, "Toggle")
 					end
 				end
 			end
@@ -6949,6 +7059,22 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "TextToSpeech", args[2])
+				end
+			end
+		};
+
+		PromptJoinGroup = {
+			Prefix = Settings.Prefix;
+			Commands = {"groupinvite", "invitegroup", "groupprompt", "communityinvite"};
+			Args = {"player", "groupId"};
+			Description = "Prompts player(s) to join the specified community/group";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player(s) (argument #1)")
+				assert(args[2], "Missing groupId (argument #2)")
+
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(v, "Function", "PromptJoinGroup", args[2])
 				end
 			end
 		};
@@ -7052,7 +7178,7 @@ return function(Vargs, env)
 			Description = `Shows you a list and count of players selected in the supplied argument, ex: '{Settings.Prefix}select %raiders true' to monitor people in the 'raiders' team`;
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, selection: string?)
-				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
+				local players = service.GetPlayers(plr, selection, {DontError = true})
 				local tab = {
 					{
 						Text = `Specified: "{selection or `{Settings.SpecialPrefix}me`}"`;
@@ -7288,6 +7414,55 @@ return function(Vargs, env)
 				Functions.Hint(`Your starter speed was reset`, plrs)
 				if Settings.CommandFeedback then
 					Functions.Hint(`You reset {#plrs} players starter speed`, {plr})
+				end
+			end
+		};
+
+		Join = {
+			Prefix = Settings.Prefix;
+			Commands = {"join", "follow", "followplayer"};
+			Args = {"username"};
+			Description = "Makes you follow the player you gave the username of to the server they are in";
+			NoStudio = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+
+				local UserId = Functions.GetUserIdFromNameAsync(args[1])
+				if UserId then
+					local success, samePlace, errorMessage, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
+					if success then
+						assert(not samePlace, "You're already in this server")
+						if placeId and jobId then
+							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
+								ServerInstanceId = jobId
+							}))
+							Functions.Hint("Teleporting...", {plr})
+						else
+							Functions.Hint(`{args[1]} was not found playing this game`, {plr})
+						end
+					else
+						Functions.Hint(`Unexpected internal error: {errorMessage or samePlace}`, {plr})
+					end
+				else
+					Functions.Hint(`'{args[1]}' is not a valid Roblox user`, {plr})
+				end
+			end
+		};
+
+		RefreshServerLocation = {
+			Prefix = Settings.Prefix;
+			Commands = {"refreshserverlocation"};
+			Args = {};
+			Description = `Refreshes the server location shown in {Settings.PlayerPrefix}serverinfo`;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local res = Functions.FetchServerInfo()
+				if type(res) == "table" then
+					Variables.IPInfo = res
+					Functions.Hint(`You have refreshed the server location info`, {plr})
+					return
 				end
 			end
 		};

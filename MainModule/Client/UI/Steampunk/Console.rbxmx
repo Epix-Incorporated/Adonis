@@ -326,7 +326,7 @@ return function(data, env)
 		end
 	end)
 
-	service.HookEvent("ToggleConsole", function()
+	gTable.BindEvent(service.Events.ToggleConsole, function()
 		if opened then
 			closeConsole()
 		else
@@ -335,9 +335,9 @@ return function(data, env)
 		Variables.ConsoleOpen = opened
 	end)
 
-	gTable.BindEvent(service.UserInputService.InputBegan, function(inputObject: InputObject)
+	gTable.BindEvent(service.UserInputService.InputBegan, function(inputObject: InputObject, gameProcessedEvent)
 		local textbox = service.UserInputService:GetFocusedTextBox()
-		if not textbox and rawequal(inputObject.UserInputType, Enum.UserInputType.Keyboard) and inputObject.KeyCode.Name == (Variables.CustomConsoleKey or consoleKey) then
+		if not textbox and not gameProcessedEvent and rawequal(inputObject.UserInputType, Enum.UserInputType.Keyboard) and inputObject.KeyCode.Name == (Variables.CustomConsoleKey or consoleKey) then
 			service.Events.ToggleConsole:Fire()
 		end
 	end)

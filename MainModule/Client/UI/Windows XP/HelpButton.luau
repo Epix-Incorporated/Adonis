@@ -16,7 +16,7 @@ return function(data, env)
 	local gui = service.New("ScreenGui")
 	local toggle = service.New("ImageButton", gui)
 	local gTable = client.UI.Register(gui)
-	
+
 	local useCustomIcon
 
 	if client.UI.Get("HelpButton", gui, true) then
@@ -49,11 +49,16 @@ return function(data, env)
 	--end
 
 	toggle.MouseButton1Down:Connect(function()
-		local found = client.UI.Get("UserPanel",nil,true)
-		if found then
-			found.Object:Destroy()
-		else
-			client.UI.Make("UserPanel",{})
+		local setting = client.Variables.HelpButtonAction
+		if string.lower(setting) == "console" then
+			service.Events.ToggleConsole:Fire()
+		else -- defaulting to info just incase anything happens
+			local found = client.UI.Get("UserPanel", nil, true)
+			if found then
+				found.Object:Destroy()
+			else
+				client.UI.Make("UserPanel")
+			end
 		end
 	end)
 

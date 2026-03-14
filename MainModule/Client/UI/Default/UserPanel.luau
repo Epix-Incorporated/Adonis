@@ -56,7 +56,7 @@ return function(data, env)
 		Name  = "UserPanel";
 		Title = Variables.NightlyMode and "Adonis Nightly" or "Adonis";
 		Icon = Variables.NightlyMode and "rbxassetid://6877822142" or "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
-		Size  = {465, 325};
+		Size  = {465, 340};
 		AllowMultiple = false;
 		OnClose = function()
 			Variables.WaitingForBind = false
@@ -464,6 +464,18 @@ return function(data, env)
 				ImageTransparency = 0.2;
 				Size = UDim2.new(0, 18, 0, 18);
 				Position = UDim2.new(1, -22, 0, 4);
+			})
+
+			infoTab:Add("TextButton", {
+				Text = "Open Console";
+				Size = UDim2.new(0, 130, 0, 40);
+				Position = UDim2.new(1, -135, 0, 230);
+				BackgroundTransparency = 0.5;
+				Events = {
+					MouseButton1Down = function()
+						service.Events.ToggleConsole:Fire()
+					end
+				}
 			})
 
 		end
@@ -1052,9 +1064,9 @@ return function(data, env)
 					doneKey = false
 					button.Text = "Waiting..."
 					Variables.WaitingForBind = true
-					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject)
+					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject, gameProcessedEvent)
 						local textbox = service.UserInputService:GetFocusedTextBox()
-						if not (textbox) and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+						if not (textbox) and not gameProcessedEvent and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 							currentKey = InputObject.KeyCode
 							if currentKey then
 								button.Text = string.upper(keyCodeToName(currentKey.Value))
@@ -1511,9 +1523,9 @@ return function(data, env)
 						service.Debounce("CliSettingKeybinder", function()
 							local gotKey, visualName
 							toggle.Text = "Waiting..."
-							local event = service.UserInputService.InputBegan:Connect(function(InputObject)
+							local event = service.UserInputService.InputBegan:Connect(function(InputObject, gameProcessedEvent)
 								local textbox = service.UserInputService:GetFocusedTextBox()
-								if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+								if not (textbox) and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 									gotKey, visualName = InputObject.KeyCode.Name, Functions.KeyCodeToName(InputObject.KeyCode.Value)
 								end
 							end)
@@ -1557,7 +1569,21 @@ return function(data, env)
 							UI.Make("UserPanel", {Tab = "Client"})
 						end)
 					end
-				}
+				};
+				{
+					Text = "Default Help Button Action: ";
+					Desc = "- Toggles what the help button does by default";
+					Entry = "DropDown";
+					Setting = "HelpButtonAction";
+					Value = Variables.HelpButtonAction or "Info";
+					Options = (function()
+						return {"Info";"Console"}
+					end)();
+					Function = function(selection)
+						Variables.HelpButtonAction = selection
+						Remote.Get("UpdateClient", "HelpButtonAction", selection)
+					end
+				};
 			}
 
 			local num = 0
@@ -1640,7 +1666,31 @@ return function(data, env)
 							Position = UDim2.new(1, -100, 0, 0);
 							BackgroundTransparency = 1;
 							OnClick = function()
-								Remote.Send("ClearSavedSettings")
+								if
+									UI.MakeGui("YesNoPrompt", {
+										Title = "Are you sure?";
+										Question = "You are about to clear ALL of your saved settings, this action is IRREVERSIBLE!";
+									}) == "Yes"
+								then
+									if
+										UI.MakeGui("TextPrompt", {
+											Title = "No taksies backsies";
+											PlaceholderText = "I ACKNOWLEDGE";
+											Question = "Input 'I ACKNOWLEDGE' to proceed.";
+											Size = {325, 150}
+										}) == "I ACKNOWLEDGE"
+									then
+										Remote.Send("ClearSavedSettings")
+										UI.Make("Hint",{
+											Message = "Saved settings have been cleared."
+										})
+										return
+									end
+								end
+
+								UI.Make("Hint",{
+									Message = "Operation cancelled, all of your data is safe!"
+								})
 							end
 						}
 					}

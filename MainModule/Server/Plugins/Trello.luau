@@ -1,3 +1,7 @@
+-- Trello plugin
+type Card = {id: string, name: string, desc: string, labels: {any}?}
+type List = {id: string, name: string, cards: {Card}}
+
 return function(Vargs, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -8,11 +12,13 @@ return function(Vargs, GetEnv)
 
 	HTTP.Trello.Update = function()
 		if not HTTP.Trello.API or not Settings.Trello_Enabled then
+			Logs:AddLog("Script", "Not running Trello API update")
 			return
 		end
 
 		if not HTTP.HttpEnabled then
 			warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
+			Logs:AddLog("Script", "Not running Trello API update due to HTTP request being disabled.")
 			return
 		else
 			local data = {
@@ -41,6 +47,7 @@ return function(Vargs, GetEnv)
 					for _, override in HTTP.Trello.Overrides do
 						if table.find(override.Lists, list.name) then
 							foundOverride = true
+							Logs:AddLog("Script", `Found override {list.name} for board {board} with {type(list.cards) == "table" and #list.cards or list.cards} cards.`)
 							for _, card in list.cards do
 								override.Process(card, data)
 							end
@@ -58,6 +65,7 @@ return function(Vargs, GetEnv)
 								table.insert(users, card.name)
 							end
 							data.Ranks[list.name] = users
+							Logs:AddLog("Script", `Found custom rank override {list.name} for board {board} with {type(list.cards) == "table" and #list.cards or list.cards} cards.`)
 						end
 					end
 				end
@@ -68,15 +76,19 @@ return function(Vargs, GetEnv)
 				Settings.Trello_Primary,
 				unpack(Settings.Trello_Secondary)
 			}
-			for i,v in boards do
+			for _, v in boards do
 				if not v or service.Trim(v) == "" then
 					continue
 				end
+				Logs:AddLog("Script", `Attempting to pool data from Trello board {v}.`)
 				local ran, err = pcall(grabData, v)
 				if not ran then
 					warn("Unable to reach Trello. Ensure your board IDs, Trello key, and token are all correct. If issue persists, try increasing HttpWait in your Adonis settings.")
+					Logs:AddLog("Script", `Failed to pool data from Trello board {v} due to {err}.`)
 					success = false
 					break
+				else
+					Logs:AddLog("Script", `Successfully pooled data from Trello board {v}.`)
 				end
 			end
 
@@ -108,7 +120,7 @@ return function(Vargs, GetEnv)
 					}
 				end
 
-				for i, v in service.GetPlayers() do
+				for _, v in service.GetPlayers() do
 					local isBanned, Reason = Admin.CheckBan(v)
 					if isBanned then
 						v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
@@ -128,8 +140,8 @@ return function(Vargs, GetEnv)
 
 	Remote.Commands.TrelloOperation = function(p: Player, args: {[number]: any})
 		local adminLevel = Admin.GetLevel(p)
-
 		local data = args[1]
+
 		if data.Action == "MakeCard" then
 			local command = Commands.MakeCard
 			if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then
@@ -141,7 +153,7 @@ return function(Vargs, GetEnv)
 
 				for _, overrideList in HTTP.Trello.GetOverrideLists() do
 					if service.Trim(string.lower(overrideList)) == service.Trim(string.lower(listName)) then
-						Functions.Hint("You cannot create a card in that list", {p})
+						Functions.Hint("You cannot create a card in that list", {p}) -- Why??
 						return
 					end
 				end
@@ -172,15 +184,15 @@ return function(Vargs, GetEnv)
 		TrelloRequired = true;
 		AdminLevel = "Moderators";
 		ListUpdater = function(plr: Player)
-			local tab = table.create(#HTTP.Trello.Bans)
+			local tab = table.create(#HTTP.Trello.Bans + 2)
+			tab[1] = `# Banned Users: {#HTTP.Trello.Bans}`
+			tab[2] = "―――――――――――――――――――――――"
 			for _, banData in HTTP.Trello.Bans do
 				table.insert(tab, {
 					Text = banData.Name,
 					Desc = banData.Reason or "No reason specified",
 				})
 			end
-			table.insert(tab, 1, `# Banned Users: {#HTTP.Trello.Bans}`)
-			table.insert(tab, 2, "―――――――――――――――――――――――")
 			return tab
 		end;
 		Function = function(plr: Player, args: {string})
@@ -223,7 +235,7 @@ return function(Vargs, GetEnv)
 
 			for _, v in service.GetPlayers(plr, args[1], {
 				IsKicking = true;
-				NoFakePlayer = false;
+				UseFakePlayer = true;
 				})
 			do
 				if level > Admin.GetLevel(v) then
@@ -252,19 +264,17 @@ return function(Vargs, GetEnv)
 		TrelloRequired = true;
 		AdminLevel = "HeadAdmins";
 		Function = function(plr: Player, args: {string})
-			assert(args[1], "You need to supply a list name.")
-
 			local trello = HTTP.Trello.API
 			if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
 
-			local list = trello.Boards.MakeList(Settings.Trello_Primary, args[1])
+			local list = trello.Boards.MakeList(Settings.Trello_Primary, assert(args[1], "You need to supply a list name."))
 			Functions.Hint(`Made list {list.name}`, {plr})
 		end
 	}
 
 	Commands.ViewList = {
 		Prefix = Settings.Prefix;
-		Commands = {"viewlist", "viewtrellolist"};
+		Commands = {"viewtrellolist", "viewlist"};
 		Args = {"name"};
 		Description = "Views the specified Trello list from the primary board set in Settings.";
 		TrelloRequired = true;
@@ -298,6 +308,29 @@ return function(Vargs, GetEnv)
 	-- // Initialization
 	if Settings.Trello_Enabled then
 		service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, HTTP.Trello.Update, true)
+		Logs:AddLog("Script", `Trello update loop has been started to run every {Settings.HttpWait} seconds.`)
+
+		if not Settings.Trello_AppKey or Settings.Trello_AppKey == "" then
+			table.insert(server.Messages, {
+				Level = 301;
+				Title = "Potential Trello issue!";
+				Message = "You have enabled Trello without having an AppKey and thus Trello will likely not work! For better behavior it is adviced to also add a Trello Token. Click to see more";
+				Time = 15;
+				Icon = "MatIcon://Description";
+				onClick = (server.Data and server.Data.NightlyMode) and Core.Bytecode([[
+					local window = client.UI.Make("Window", {
+						Title = "How to change the Trello AppKey";
+						Size = {700,300};
+						Icon = "rbxassetid://7510994359";
+					})
+
+					window:Add("ImageLabel", {
+						Image = "rbxassetid://111103486118064";
+					})
+
+					window:Ready()
+			]]) or nil})
+		end
 	end
 	Logs:AddLog("Script", "Trello Module Loaded")
 end

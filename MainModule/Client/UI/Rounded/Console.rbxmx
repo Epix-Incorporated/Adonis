@@ -540,7 +540,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local player = service.Players.LocalPlayer
 	local playergui = player.PlayerGui
 	local gui = script.Parent.Parent
@@ -739,15 +739,19 @@ return function(data, env)
 		end
 	end)
 
-	BindEvent(service.UserInputService.InputBegan, function(InputObject)
+	BindEvent(service.Events.ToggleConsole, function()
+		if opened then
+			close()
+		else
+			open()
+		end
+		client.Variables.ConsoleOpen = opened
+	end)
+
+	BindEvent(service.UserInputService.InputBegan, function(InputObject, gameProcessedEvent)
 		local textbox = service.UserInputService:GetFocusedTextBox()
-		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
-			if opened then
-				close()
-			else
-				open()
-			end
-			client.Variables.ConsoleOpen = opened
+		if not textbox and not gameProcessedEvent and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
+			service.Events.ToggleConsole:Fire()
 		end
 	end)
 

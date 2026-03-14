@@ -134,6 +134,7 @@ return function(Vargs, GetEnv)
 		WhitelistedVariable = {
 			MusicList = true,
 			CodeName = true,
+			ChatCreateRobloxCommands = true,
 		};
 
 		Returnables = {
@@ -615,7 +616,7 @@ return function(Vargs, GetEnv)
 							end;
 						})
 
-						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
+						if not Remote.RemoteExecutionConfirmed[tostring(p.UserId)] then
 							local ans = Remote.GetGui(p, "YesNoPrompt", {
 								Icon = server.MatIcons.Warning;
 								Question = "Are you sure you want to load this script into the server env?";
@@ -624,7 +625,7 @@ return function(Vargs, GetEnv)
 							})
 
 							if ans == "Yes" then
-								server.Remote.RemoteExecutionConfirmed[p.UserId] = true
+								Remote.RemoteExecutionConfirmed[tostring(p.UserId)] = true
 							else
 								return
 							end
@@ -641,39 +642,13 @@ return function(Vargs, GetEnv)
 					end
 				};
 
-				Execute = {
-					Usage = "execute <command>";
-					Command = "execute";
-					Arguments = 1;
-					Description = "Runs the specified command as the server";
-					Function = function(p,args,data)
-						Process.Command(p, args[1], {DontLog = true, Check = true}, true)
-						return {
-							`Command ran: {args[1]}`
-						}
-					end
-				};
-
-				Sudo = {
-					Usage = "sudo <player> <command>";
-					Command = "sudo";
-					Arguments = 1;
-					Description = "Runs the specified command on the specified player as the server";
-					Function = function(p,args,data)
-						Process.Command(p, `{Settings.Prefix}sudo {args[1]}`, {DontLog = true, Check = true}, true)
-						return {
-							`Command ran: {Settings.Prefix}sudo {args[1]}`
-						}
-					end
-				};
-
 				Kick = {
 					Usage = "kick <player> <reason>";
 					Command = "kick";
 					Arguments = 2;
 					Description = "Disconnects the specified player from the server";
 					Function = function(p, args, data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							local ret = {}
 							for _,v in plrs do
@@ -693,7 +668,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Calls :BreakJoints() on the target player's character";
 					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							for _, v in plrs do
 								local ret = {}
@@ -718,7 +693,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Calls :LoadCharacter() on the target player";
 					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
+						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
 							local ret = {}
 							for _, v in plrs do
@@ -764,7 +739,7 @@ return function(Vargs, GetEnv)
 					logError(p, retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2))
+					Remote.Send(p, "GiveReturn", key, table.unpack(retable, 2, retable.n))
 				end
 			end;
 
@@ -1171,7 +1146,10 @@ return function(Vargs, GetEnv)
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Function then
 				keys.Sent += 1
-				return RemoteEvent.Function:InvokeClient(p, { Mode = "Get", Sent = 0 }, ...)
+				local ran, ret = pcall(RemoteEvent.Function.InvokeClient, RemoteEvent.Function, p, { Mode = "Get", Sent = 0 }, ...)
+				if ran then
+					return ret
+				end
 			end
 		end;
 
