@@ -210,6 +210,15 @@ t.CatalogSearchParams = t.typeof("CatalogSearchParams")
 t.CFrame = t.typeof("CFrame")
 
 --[[**
+	ensures Roblox Content type
+
+	@param value The value to check against
+
+	@returns True iff the condition is satisfied, false otherwise
+**--]]
+t.Content = t.typeof("Content")
+
+--[[**
 	ensures Roblox Color3 type
 
 	@param value The value to check against
@@ -516,6 +525,33 @@ t.Vector3 = t.typeof("Vector3")
 t.Vector3int16 = t.typeof("Vector3int16")
 
 --[[**
+	ensures value is any of the given literal values
+
+	@param literals The literals to check against
+
+	@returns A function that will return true if the condition is passed
+**--]]
+function t.literalList(literals)
+	-- optimization for primitive types
+	local set = {}
+	for _, literal in ipairs(literals) do
+		set[literal] = true
+	end
+	return function(value)
+		if set[value] then
+			return true
+		end
+		for _, literal in ipairs(literals) do
+			if literal == value then
+				return true
+			end
+		end
+
+		return false, "bad type for literal list"
+	end
+end
+
+--[[**
 	ensures value is a given literal value
 
 	@param literal The literal to use
@@ -540,7 +576,7 @@ function t.literal(...)
 			literals[i] = t.literal(value)
 		end
 
-		return t.union(table.unpack(literals, 1, size))
+		return t.unionList(literals)
 	end
 end
 
@@ -560,7 +596,7 @@ t.exactly = t.literal
 function t.keyOf(keyTable)
 	local keys = {}
 	local length = 0
-	for key in keyTable do
+	for key in pairs(keyTable) do
 		length = length + 1
 		keys[length] = key
 	end
@@ -578,7 +614,7 @@ end
 function t.valueOf(valueTable)
 	local values = {}
 	local length = 0
-	for _, value in valueTable do
+	for _, value in pairs(valueTable) do
 		length = length + 1
 		values[length] = value
 	end
@@ -849,7 +885,7 @@ function t.keys(check)
 			return false, tableErrMsg or ""
 		end
 
-		for key in value do
+		for key in pairs(value) do
 			local success, errMsg = check(key)
 			if success == false then
 				return false, string.format("bad key %s:\n\t%s", tostring(key), errMsg or "")
@@ -875,7 +911,7 @@ function t.values(check)
 			return false, tableErrMsg or ""
 		end
 
-		for key, val in value do
+		for key, val in pairs(value) do
 			local success, errMsg = check(val)
 			if success == false then
 				return false, string.format("bad value for key %s:\n\t%s", tostring(key), errMsg or "")
@@ -953,7 +989,7 @@ do
 				arraySize = arraySize + 1
 			end
 
-			for key in value do
+			for key in pairs(value) do
 				if key < 1 or key > arraySize then
 					return false, string.format("[array] key %s must be sequential", tostring(key))
 				end
@@ -990,7 +1026,7 @@ do
 				return false, string.format("[strictArray] Array size exceeds limit of %d", #valueTypes)
 			end
 
-			for idx, typeFn in valueTypes do
+			for idx, typeFn in pairs(valueTypes) do
 				local typeSuccess, typeErrMsg = typeFn(value[idx])
 				if not typeSuccess then
 					return false, string.format("[strictArray] Array index #%d - %s", idx, typeErrMsg)
@@ -1007,12 +1043,11 @@ do
 --[[**
 		creates a union type
 
-		@param ... The checks to union
+		@param checks The checks to union
 
 		@returns A function that will return true iff the condition is passed
 	**--]]
-	function t.union(...)
-		local checks = { ... }
+	function t.unionList(checks)
 		assert(callbackArray(checks))
 
 		return function(value)
@@ -1027,6 +1062,17 @@ do
 	end
 
 --[[**
+		creates a union type
+
+		@param ... The checks to union
+
+		@returns A function that will return true iff the condition is passed
+	**--]]
+	function t.union(...)
+		return t.unionList({ ... })
+	end
+
+--[[**
 		Alias for t.union
 	**--]]
 	t.some = t.union
@@ -1034,12 +1080,11 @@ do
 --[[**
 		creates an intersection type
 
-		@param ... The checks to intersect
+		@param checks The checks to intersect
 
 		@returns A function that will return true iff the condition is passed
 	**--]]
-	function t.intersection(...)
-		local checks = { ... }
+	function t.intersectionList(checks)
 		assert(callbackArray(checks))
 
 		return function(value)
@@ -1052,6 +1097,17 @@ do
 
 			return true
 		end
+	end
+
+--[[**
+		creates an intersection type
+
+		@param ... The checks to intersect
+
+		@returns A function that will return true iff the condition is passed
+	**--]]
+	function t.intersection(...)
+		return t.intersectionList({ ... })
 	end
 
 --[[**
@@ -1103,14 +1159,14 @@ do
 				return false, tableErrMsg or ""
 			end
 
-			for key, check in checkTable do
+			for key, check in pairs(checkTable) do
 				local success, errMsg = check(value[key])
 				if success == false then
 					return false, string.format("[interface] bad value for %s:\n\t%s", tostring(key), errMsg or "")
 				end
 			end
 
-			for key in value do
+			for key in pairs(value) do
 				if not checkTable[key] then
 					return false, string.format("[interface] unexpected field %q", tostring(key))
 				end
@@ -1286,7 +1342,7 @@ do
 				end
 			end
 
-			for name, check in checkTable do
+			for name, check in pairs(checkTable) do
 				local success, errMsg = check(childrenByName[name])
 				if not success then
 					return false, string.format("[%s.%s] %s", value:GetFullName(), name, errMsg or "")
