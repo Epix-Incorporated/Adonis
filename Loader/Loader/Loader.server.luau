@@ -179,24 +179,21 @@ else
 				end
 			end, function(err)
 				table.insert(erroredSettingsModules, {Name = module.Name, Error = err})
+				warn(`[DEVELOPER ERROR] The Settings.{module.Name} module errored while loading; using defaults for this module; Error Message: {err}`)
+				table.insert(data.Messages, {
+					Title = "Warning!";
+					Icon = "MatIcon://Dangerous";
+					Message = `The Settings.{erroredSettingModule.Name} module errored while loading; using defaults for this module.`;
+					Time = 15;
+				})
 			end)
 		end
 
-		for _, erroredSettingModule in erroredSettingsModules do
-			warn(`[DEVELOPER ERROR] The Settings.{erroredSettingModule.Name} module errored while loading; using defaults for this module; Error Message: {erroredSettingModule.Error}`)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = `The Settings.{erroredSettingModule.Name} module errored while loading; using defaults for this module.`;
-				Time = 15;
-			})
-		end
-
-		if #erroredSettingsModules > 0 then
+		if #erroredSettingsModules > 0 then -- TODO: Investigate what this is for
 			data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults.
 		end
 
-		xpcall(function()
+		xpcall(function() -- TODO: Bork these pieces of code completely so there is no extra "inGameSettingsEditorSettingsFolder" folder. Lol what a name
 			data.Descriptions = require(inGameSettingsEditorSettingsFolder.Descriptions)
 		end, function(err)
 			warn("[DEVELOPER ERROR] The InGameSettingsEditorSettings.Descriptions module errored while loading; using defaults; Error Message:", err)
