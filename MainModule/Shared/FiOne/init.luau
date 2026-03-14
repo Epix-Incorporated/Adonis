@@ -374,7 +374,7 @@ function stm_lua_func(S, psrc)
 	stm_upval_list(S)
 
 	-- post process optimization
-	proto.needs_arg = bit.band(proto.is_vararg, 0x5) == 0x5
+	proto.needs_arg = bit32.band(proto.is_vararg, 0x5) == 0x5
 	for _, v in ipairs(proto.code) do
 		if v.is_K then
 			v.const = proto.const[v.Bx + 1] -- offset for 1 based index
