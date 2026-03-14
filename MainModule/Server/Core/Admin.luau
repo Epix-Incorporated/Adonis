@@ -660,7 +660,7 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
-			if Settings.Console and (oLevel ~= level or oRank ~= rank) then
+			if Settings.Console and type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
 				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
 					task.defer(Remote.RefreshGui, p, "Console")
 				else

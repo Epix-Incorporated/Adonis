@@ -703,10 +703,8 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows the current time and date.";
 			AdminLevel = "Players";
-		
 			Function = function(plr: Player)
 				local now = os.time()
-		
 				Remote.MakeGui(plr, "List", {
 					Title = "Time & Date";
 					Table = {
@@ -862,7 +860,7 @@ return function(Vargs, env)
 				local elevated = Admin.CheckAdmin(plr)
 
 				local serverInfo = select(2, xpcall(function()
-					local res = Variables.IPInfo or service.HttpService:JSONDecode(service.HttpService:GetAsync(Variables.IPInfoUrl))
+					local res = Variables.IPInfo or Functions.FetchServerInfo()
 					if not Variables.IPInfo then
 						Variables.IPInfo = res
 					end
@@ -871,7 +869,7 @@ return function(Vargs, env)
 						city = res.city,
 						region = res.region,
 						zipcode = res.postal or "N/A",
-						timezone = res.timezone,
+						timezone = "N/A",
 						ip = elevated and res.ip or "[Redacted]",
 						coords = elevated and string.format("LAT: %s, LON: %s", string.match(res.loc, "(.*),(.*)")) or "[Redacted]",
 					}

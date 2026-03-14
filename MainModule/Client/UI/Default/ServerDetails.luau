@@ -170,7 +170,7 @@ return function(data, env)
 			if data.ServerInternetInfo then
 				local serii = data.ServerInternetInfo
 				for _, v in ipairs({
-					{"Timezone", serii.timezone or "[Error]"},
+					-- {"Timezone", serii.timezone or "[Error]"},
 					{"Country", serii.country or "[Error]"},
 					{"Region", serii.region or "[Error]"},
 					{"City", serii.city or "[Error]"},
