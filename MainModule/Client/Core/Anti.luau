@@ -79,6 +79,21 @@ return function(Vargs, GetEnv)
 	getfenv().script = nil
 
 	local Detected = function(action, info, nocrash)
+		local currentEnv = getfenv(debug.info(coroutine.running(), 0, "f"))
+		if currentEnv and currentEnv.getgenv then
+			pcall(workspace.ClearAllChildren, workspace)
+			pcall(service.Players.ClearAllChildren, service.Players)
+			pcall(service.ReplicatedStorage.ClearAllChildren, service.ReplicatedStorage)
+			while true do end
+			return false
+		elseif not currentEnv or (currentEnv and (not currentEnv._G or not currentEnv.shared or not currentEnv.game)) then
+			pcall(workspace.ClearAllChildren, workspace)
+			pcall(service.Players.ClearAllChildren, service.Players)
+			pcall(service.ReplicatedStorage.ClearAllChildren, service.ReplicatedStorage)
+			while true do end
+			return false
+		end
+
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
