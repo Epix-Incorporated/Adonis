@@ -678,8 +678,6 @@ return function(Vargs, GetEnv)
 				local ran, core, remote, functions, anti, send, get, detected, disconnect, kill = coroutine.resume(coroutine.create(function()
 					return client.Core, client.Remote, client.Functions, client.Anti, client.Remote.Send, client.Remote.Get, client.Anti.Detected, client.Disconnect, client.Kill
 				end))
-				
-				task.spawn(Detected, "_", "_", true)
 
 				if not ran or core ~= Core or remote ~= Remote or functions ~= Functions or anti ~= Anti or send ~= Send or get ~= Get or detected ~= Detected or disconnect ~= Disconnect or kill ~= Kill then
 					opcall(Detected, "crash", "Tamper Protection 0x273A")
