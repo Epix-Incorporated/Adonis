@@ -106,8 +106,8 @@ local function DigestBlocks(Blocks: buffer, Length: number): (number, number, nu
 	return A, B, C, D, E, F, G, H
 end
 
-local function SHA256(Message: buffer): (string, buffer)
-	local ProcessedMessage, Length = PreProcess(Message)
+local function SHA256(Message: buffer | string): (string, buffer)
+	local ProcessedMessage, Length = PreProcess(type(Message) == "string" and buffer.fromstring(Message) or Message)
 	local A, B, C, D, E, F, G, H = DigestBlocks(ProcessedMessage, Length)
 
 	local Digest = buffer.create(32)
