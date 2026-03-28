@@ -47,9 +47,11 @@ local HEIGHT_SUPRESS = 1000
 local ANGLE_MULTIPLY = 100
 
 game:GetService("RunService").PreSimulation:Connect(function()
-	local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
-	local loudness = script.Parent.PlaybackLoudness
-	mouthMesh.Scale = mouthMesh.Scale:Lerp(Vector3.new(originalSize.X + loudness/WIDTH_SUPRESS * relativeSize.X, loudness/HEIGHT_SUPRESS * relativeSize.Y, originalSize.Z), SIZE_SMOOTHNESS)
-	orgC0 = orgC0:Lerp(CFrame.Angles(math.rad(mouthMesh.Scale.Y / relativeSize.Y * ANGLE_MULTIPLY) * (isR15 and 1 or -1), 0, 0), ANGLE_SMOOTHNESS)
-	neck.Transform *= orgC0
+	task.defer(function()
+		local relativeSize = head.Size / (isR15 and Vector3.new(1.2, 1.2, 1.2) or Vector3.new(2, 1, 1))
+		local loudness = script.Parent.PlaybackLoudness
+		mouthMesh.Scale = mouthMesh.Scale:Lerp(Vector3.new(originalSize.X + loudness/WIDTH_SUPRESS * relativeSize.X, loudness/HEIGHT_SUPRESS * relativeSize.Y, originalSize.Z), SIZE_SMOOTHNESS)
+		orgC0 = orgC0:Lerp(CFrame.Angles(math.rad(mouthMesh.Scale.Y / relativeSize.Y * ANGLE_MULTIPLY) * (isR15 and 1 or -1), 0, 0), ANGLE_SMOOTHNESS)
+		neck.Transform *= orgC0
+	end)
 end)
