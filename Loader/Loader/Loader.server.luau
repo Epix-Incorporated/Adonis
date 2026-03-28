@@ -47,13 +47,11 @@ local function yxpcall(f, callback, ...)
 end
 
 local function unSandbox(obj: Instance): Instance
-	xpcall(function()
-		for _, v in Enum.SecurityCapability:GetEnumItems() do
-			xpcall(function()
-				obj.Capabilities = obj.Capabilities:Add(v)
-			end, warn)
-		end
-	end, warn)
+	for _, v in Enum.SecurityCapability and Enum.SecurityCapability:GetEnumItems() or {} do
+		xpcall(function()
+			obj.Capabilities = obj.Capabilities:Add(v)
+		end, warn)
+	end
 
 	xpcall(function()
 		obj.Sandboxed = false
