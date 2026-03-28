@@ -573,7 +573,7 @@ return service.NewProxy({
 		setfenv(1, setmetatable({}, {__metatable = unique}))
 
 		--// Server Variables
-		local setTab = select(2, xpcall(require, server.Panic, server.Deps:FindFirstChild("DefaultSettings"))) or {}
+		local setTab = select(2, xpcall(require, server.Panic, server.Deps:FindFirstChild("DefaultSettings"))) or { Settings = {}, Descriptions = {}, Order = {} }
 		server.Defaults = setTab or {}
 		server.Settings = data.Settings or setTab.Settings or {}
 		server.OriginalSettings = service.DeepCopy(server.Settings, true)
