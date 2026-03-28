@@ -17,9 +17,12 @@ return {
 		{Text = "@TheCakeChicken", 	Desc = "Open Source Contributor"};
 		{Text = "@NNickey", 		Desc = "Open Source Contributor"};
 		{Text = "@FungusGenerator", Desc = "Open Source Contributor"};
+		{Text = "@gjkeller", 		Desc = "Open Source Contributor"};
 		{Text = "@Kan18", 			Desc = "Open Source Contributor"};
 		{Text = "@Brandon-Beck", 	Desc = "Open Source Contributor"};
+		{Text = "@AaronVickers", 	Desc = "Open Source Contributor"};
 		{Text = "@moo1210", 		Desc = "Open Source Contributor"};
+		{Text = "@ken-tn", 			Desc = "Open Source Contributor"};
 		{Text = "@crywink", 		Desc = "Open Source Contributor"};
 		{Text = "@jaydns",	 		Desc = "Open Source Contributor"};
 		{Text = "@ccuser44",		Desc = "Open Source Contributor"};
@@ -28,6 +31,7 @@ return {
 		{Text = "@krampuszc",		Desc = "Open Source Contributor"};
 		{Text = "@Dimenpsyonal",	Desc = "Open Source Contributor"};
 		{Text = "@policetonyR",		Desc = "Open Source Contributor"};
+		{Text = "@enescglyn",		Desc = "Open Source Contributor"};
 		{Text = "@EpicFazbear",		Desc = "Open Source Contributor"};
 		{Text = "@P3tray",			Desc = "Open Source Contributor"};
 		{Text = "@okgabe",			Desc = "Open Source Contributor"};
@@ -40,6 +44,7 @@ return {
 		{Text = "@GalacticInspired",Desc = "Open Source Contributor"};
 		{Text = "@lukashoracek",	Desc = "Open Source Contributor"};
 		{Text = "@DrewBokman",		Desc = "Open Source Contributor"};
+		{Text = "@Kw6m",			Desc = "Open Source Contributor"};
 		{Text = "@chexburger",		Desc = "Open Source Contributor"};
 		{Text = "@TjeerdoBoy112",	Desc = "Open Source Contributor"};
 		{Text = "@Jack5079",		Desc = "Open Source Contributor"};
@@ -54,6 +59,7 @@ return {
 		{Text = "@sea4h",			Desc = "Open Source Contributor"};
 		{Text = "@Tj33rd",			Desc = "Open Source Contributor"};
 		{Text = "@DaRealGandhi20",	Desc = "Open Source Contributor"};
+		{Text = "@L8X",				Desc = "Open Source Contributor"};
 		{Text = "@h0nzzz",			Desc = "Open Source Contributor"};
 		{Text = "@Smaltin", 		Desc = "Open Source Contributor"};
 		{Text = "@xvarmkorv2",		Desc = "Open Source Contributor"};
