@@ -1,7 +1,10 @@
 return {
-	"Version: 276.1";
+	"Version: 277";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v277 2026-XX-XX XX:XX UTC] @Maintainer";
+	"(Git/wilsontulus) Fix :invisible and :visible to query all Decals and BillboardGui in BaseParts (#2087)";
 	"";
 	"[Patch v276.1 2026-03-09 22:02 UTC] @Dimenpsyonal";
 	"Revert #2019 allowing :insert to load 3rd party assets";
