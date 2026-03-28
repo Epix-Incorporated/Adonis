@@ -1,4 +1,5 @@
 --# selene: allow(empty_loop)
+-- selene: allow(if_same_then_else)
 client = nil
 service = nil
 Pcall = nil
