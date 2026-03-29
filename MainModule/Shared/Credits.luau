@@ -17,6 +17,7 @@ return {
 		{Text = "@TheCakeChicken", 	Desc = "Open Source Contributor"};
 		{Text = "@NNickey", 		Desc = "Open Source Contributor"};
 		{Text = "@FungusGenerator", Desc = "Open Source Contributor"};
+		{Text = "@gjkeller", 		Desc = "Open Source Contributor"};
 		{Text = "@Kan18", 			Desc = "Open Source Contributor"};
 		{Text = "@Brandon-Beck", 	Desc = "Open Source Contributor"};
 		{Text = "@AaronVickers", 	Desc = "Open Source Contributor"};
