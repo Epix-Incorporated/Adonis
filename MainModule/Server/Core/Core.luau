@@ -477,37 +477,59 @@ return function(Vargs, GetEnv)
 				folder.Name = depsName--"Adonis_Client"
 				folder.Parent = container
 
-				--// Event only fires AFTER the client is alive and well
-				local event; event = service.Events.ClientLoaded:Connect(function(plr)
-					if p == plr and container.Parent == parentObj then
-						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
-						container.Parent = nil
+				local event
+
+				local Cleanup = function(player, loaded)
+					if player ~= p then
+						return
+					end
+
+					if event then
 						event:Disconnect()
 						event = nil
 					end
-				end)
 
-				--// i personaly think the old method of cleaning it up was stupid and also not working
-				Connections["HookClient_"..p.UserId] = game.Players.PlayerRemoving:Connect(function(Player)
-					if Player == p then
-						if event then
-							event:Disconnect()
-							event = nil
+					if Connections["HookClient_" .. p.UserId] then
+						Connections["HookClient_" .. p.UserId]:Disconnect()
+						Connections["HookClient_" .. p.UserId] = nil
+					end
+
+					if keys then
+						keys.Module = nil
+						keys.EventName = nil
+					end
+
+					if loaded then
+						if container then
+							container.Parent = nil
 						end
-
-						Connections["HookClient_"..p.UserId]:Disconnect()
-						Connections["HookClient_"..p.UserId] = nil
+					else
 						if container then
 							pcall(function()
 								container:Destroy()
-								container = nil
-								if folder then
-									folder:Destroy()
-									folder = nil
-								end
+							end)
+						end
+
+						if folder then
+							pcall(function()
+								folder:Destroy()
 							end)
 						end
 					end
+
+					container = nil
+					folder = nil
+				end
+
+				--// Event only fires AFTER the client is alive and well
+				event = service.Events.ClientLoaded:Connect(function(plr)
+					if p == plr and container and container.Parent == parentObj then
+						Cleanup(plr, true)
+					end
+				end)
+
+				Connections["HookClient_" .. p.UserId] = game.Players.PlayerRemoving:Connect(function(Player)
+					Cleanup(Player, false)
 				end)
 
 				local ok, err = pcall(function()
