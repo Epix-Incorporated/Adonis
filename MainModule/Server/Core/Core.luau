@@ -67,6 +67,8 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Core Module Initialized")
 	end;
 
+	local Connections = {}
+
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
 		Core.MakeEvent()
@@ -478,23 +480,33 @@ return function(Vargs, GetEnv)
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
-
 						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
 						container.Parent = nil
-						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
-							task.wait()
-							if p.Parent == nil then
-								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
-								pcall(function()
-									container:Destroy()
-								end)
-							end
-						end)
-
-						leaveEvent:Disconnect()
-						leaveEvent = nil
 						event:Disconnect()
 						event = nil
+					end
+				end)
+
+				--// i personaly think the old method of cleaning it up was stupid and also not working
+				Connections["HookClient_"..p.UserId] = game.Players.PlayerRemoving:Connect(function(Player)
+					if Player == p then
+						if event then
+							event:Disconnect()
+							event = nil
+						end
+
+						Connections["HookClient_"..p.UserId]:Disconnect()
+						Connections["HookClient_"..p.UserId] = nil
+						if container then
+							pcall(function()
+								container:Destroy()
+								container = nil
+								if folder then
+									folder:Destroy()
+									folder = nil
+								end
+							end)
+						end
 					end
 				end)
 

@@ -89,6 +89,9 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Processing Module Initialized")
 	end;
 
+	local Connections = {}
+	local Tasks = {}
+
 	local function RunAfterPlugins(data)
 		local existingPlayers = service.Players:GetPlayers()
 
@@ -718,6 +721,10 @@ return function(Vargs, GetEnv)
 			Core.PlayerData[key] = nil
 			Remote.Clients[key] = keyData
 
+			Connections[p.UserId] = {}
+			Tasks[p.UserId] = {}
+				
+
 			local ran, err = Pcall(function()
 				task.spawn(function()
 					if Anti.UserSpoofCheck(p) then
@@ -804,7 +811,7 @@ return function(Vargs, GetEnv)
 				})
 
 				--// Get chats
-				p.Chatted:Connect(function(msg)
+				Connections[p.UserId].Chatted = p.Chatted:Connect(function(msg)
 					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, false, p, msg)
 					if not ran then
 						logError(err);
@@ -812,14 +819,16 @@ return function(Vargs, GetEnv)
 				end)
 
 				--// Character added
-				p.CharacterAdded:Connect(function(...)
+				--// well bro you never disconencted these
+				Connections[p.UserId].CharacterAdded = p.CharacterAdded:Connect(function(...)
 					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, false, p, ...)
 					if not ran then
 						logError(err);
 					end
 				end)
 
-				task.delay(600, function()
+				--// cleans it up incase player leaves during loading
+				Tasks[p.UserId].LoadTimeout = task.delay(600, function()
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						AddLog("Script", {
 							Text = `{p.Name} Failed to Load`,
@@ -845,6 +854,24 @@ return function(Vargs, GetEnv)
 					Core.PlayerData[key] = nil
 				end
 			end)
+
+			if Connections[p.UserId] then
+				for Index, Connection in pairs(Connections[p.UserId]) do
+					if Connection and Connection.Disconnect then
+						Connection:Disconnect()
+					end
+				end
+				Connections[p.UserId] = nil
+			end
+
+			if Tasks[p.UserId] then
+				for Index, Task in pairs(Tasks[p.UserId]) do
+					if Task then
+						task.cancel(Task)
+					end
+				end
+				Tasks[p.UserId] = nil
+			end
 
 			AddLog("Script", {
 				Text = string.format("Triggered PlayerRemoving for %s", p.Name);
@@ -874,6 +901,10 @@ return function(Vargs, GetEnv)
 			end
 
 			Core.SavePlayerData(p, data)
+
+			if Remote.Clients[key] then
+				Remote.Clients[key] = nil
+			end
 
 			if Settings.ReJail then
 				for i,v in pairs(Variables.Jails) do
