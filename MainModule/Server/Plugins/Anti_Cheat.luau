@@ -20,6 +20,8 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "AntiExploit Plugin Module Initialized")
 	end
 
+	local Connections = {}
+
 	local function RunAfterPlugins(data)
 		local function onPlayerAdded(player)
 			if not player.Character then
@@ -47,13 +49,15 @@ return function(Vargs, GetEnv)
 		for _, v in service.Players:GetPlayers() do
 			task.spawn(onPlayerAdded, v)
 		end
-		
+
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
 		Logs:AddLog("Script", "Anti Plugin Module RunAfterPlugins Finished")
 	end
 
 	server.Anti.CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
 		local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
+
+		Connections[player.UserId] = {}
 
 		local function Detected(player, action, reason)
 			if charGood then
@@ -85,7 +89,7 @@ return function(Vargs, GetEnv)
 		local function onCharacterAdded(character)
 			charGood = true
 
-			character.ChildAdded:Connect(function(child)
+			Connections[player.UserId].ChildAdded = character.ChildAdded:Connect(function(child)
 				if child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
 					local count = 0
 
@@ -132,7 +136,7 @@ return function(Vargs, GetEnv)
 					connection:Disconnect()
 
 					if service.Players.RespawnTime == math.huge then return end
-					
+
 					task.wait(service.Players.RespawnTime + 1.5)
 
 					if workspace:IsAncestorOf(humanoid) then
@@ -186,9 +190,21 @@ return function(Vargs, GetEnv)
 			task.spawn(onCharacterAdded, player.Character)
 		end
 
-		player.CharacterRemoving:Connect(onCharacterRemoving)
-		player.CharacterAdded:Connect(onCharacterAdded)
+		--// Roblox never disconnects these connections when player leaves the game
+		Connections[player.UserId].CharacterRemoving = player.CharacterRemoving:Connect(onCharacterRemoving)
+		Connections[player.UserId].CharacterAdded = player.CharacterAdded:Connect(onCharacterAdded)
 	end;
+
+	service.Players.PlayerRemoving:Connect(function(Player)
+		if Connections[Player.UserId] then
+			for Index, Connection in pairs(Connections[Player.UserId]) do
+				if Connection and Connection.Disconnect then
+					Connection:Disconnect()
+				end
+			end
+			Connections[Player.UserId] = nil
+		end
+	end)
 
 	Init();
 	task.wait()
