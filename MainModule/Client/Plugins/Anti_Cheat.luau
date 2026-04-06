@@ -870,7 +870,7 @@ return function(Vargs)
 					p.CastShadow = true
 					p.Size       = Vector3.new(100, 100, 100)
 					p.Parent     = workspace
-					p.Name       = "__FEDERATION_HELLO__"
+					p.Name       = "__ADONIS_HELLO__"
 				end
 			end
 			for _ = 1, 999 do raw_spawn(part_bomb) end
