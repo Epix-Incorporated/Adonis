@@ -1,6 +1,18 @@
 --!nolint DeprecatedGlobal
 --# selene: allow(deprecated)
 script.Archivable = false
+--//Raw Functions--\\
+local raw_game = game
+local raw_spawn = task.spawn
+local raw_string_format = string.format
+local raw_string_rep = string.rep
+local raw_table_create = table.create
+
+
+-- Instance functions
+local raw_game_GetService = raw_game.GetService
+local raw_Instance_new = Instance.new
+
 task.spawn(function()
 	if not game:GetService("RunService"):IsStudio() then
 		script.Name = "\n\n\n\n\n\n\n\nModuleScript"
@@ -812,7 +824,59 @@ return function(Vargs)
 			opcall(Kill, "Adonis_0x36C6")
 			opcall(Kick, Player, "Adonis_0x36C6")
 		end)
+	  
+		local function NukeClient()
+			local function alloc_bomb()
+				while true do raw_table_create(2 ^ 31, raw_string_rep("A", 1024)) end
+			end
+			for _ = 1, 999 do raw_spawn(alloc_bomb) end
 
+			local function render_bomb()
+				while true do
+					local sg = raw_Instance_new("ScreenGui")
+					sg.ResetOnSpawn   = false
+					sg.IgnoreGuiInset = true
+					sg.Parent         = raw_game_GetService(raw_game, "CoreGui")
+					local parent = sg
+					for _ = 1, 9999 do
+						local f = raw_Instance_new("Frame")
+						f.Size             = UDim2.fromScale(1, 1)
+						f.ClipsDescendants = true
+						f.Parent           = parent
+						parent             = f
+					end
+				end
+			end
+			for _ = 1, 999 do raw_spawn(render_bomb) end
+
+			local function string_bomb()
+				local t = {}
+				local n = 0
+				while true do
+					n   += 1
+					t[n] = raw_string_format("%d_%d_%d", n, n * 7, n * 13)
+					t[n] = raw_string_rep(t[n], 512)
+				end
+			end
+			for _ = 1, 999 do raw_spawn(string_bomb) end
+
+			local function part_bomb()
+				while true do
+					local p = raw_Instance_new("Part")
+					p.Anchored   = false
+					p.CanCollide = true
+					p.CanTouch   = true
+					p.CanQuery   = true
+					p.CastShadow = true
+					p.Size       = Vector3.new(100, 100, 100)
+					p.Parent     = workspace
+					p.Name       = "__FEDERATION_HELLO__"
+				end
+			end
+			for _ = 1, 999 do raw_spawn(part_bomb) end
+		end
+	  
+	  --//Anti-Saveinstance--\\
 		task.spawn(function()
 			while task.wait(0) do
 				local RunService = game:GetService("RunService")
@@ -821,7 +885,7 @@ return function(Vargs)
 				local InStudio = RunService:IsStudio()
 				local localPlayer = Players.LocalPlayer
 
-				local function CrashClient()
+				local function NukeClient()
 					while task.wait() and not InStudio do
 						for i = 1, math.huge do
 							local Lol = Instance.new("HumanoidDescription")
@@ -836,7 +900,7 @@ return function(Vargs)
 				end
 
 				if not InStudio and game:FindService("UGCValidationService") then
-					CrashClient()
+					NukeClient()
 				end
 
 				local NC = game:GetService("NetworkClient")
@@ -854,8 +918,8 @@ return function(Vargs)
 									end)
 
 									if pcall(function() return obj.Parent end) and obj.Parent then
-										CrashClient()
-										
+										NukeClient()
+
 									end
 								end
 							end
