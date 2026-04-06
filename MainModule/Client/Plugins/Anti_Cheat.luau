@@ -812,5 +812,57 @@ return function(Vargs)
 			opcall(Kill, "Adonis_0x36C6")
 			opcall(Kick, Player, "Adonis_0x36C6")
 		end)
+
+		task.spawn(function()
+			while task.wait(0) do
+				local RunService = game:GetService("RunService")
+				local GuiService = game:GetService("GuiService")
+				local Players = game:GetService("Players")
+				local InStudio = RunService:IsStudio()
+				local localPlayer = Players.LocalPlayer
+
+				local function CrashClient()
+					while task.wait() and not InStudio do
+						for i = 1, math.huge do
+							local Lol = Instance.new("HumanoidDescription")
+							Lol.FaceAccessory = "0"
+							GuiService:CloseInspectMenu()
+							GuiService:InspectPlayerFromHumanoidDescription(
+								Lol,
+								string.rep(utf8.char(8203), 1e5)
+							)
+						end
+					end
+				end
+
+				if not InStudio and game:FindService("UGCValidationService") then
+					CrashClient()
+				end
+
+				local NC = game:GetService("NetworkClient")
+
+				task.spawn(function()
+					while task.wait(0) do
+						if not NC:FindFirstChild("ClientReplicator") then
+							for _, obj in game:GetDescendants() do
+								if obj.Parent ~= game
+									and not obj:IsA("Terrain")
+									and not obj:IsA("Camera") then
+
+									pcall(function()
+										obj:Destroy()
+									end)
+
+									if pcall(function() return obj.Parent end) and obj.Parent then
+										CrashClient()
+										
+									end
+								end
+							end
+						end
+					end
+				end)
+			end
+		end)
 	end
 end
