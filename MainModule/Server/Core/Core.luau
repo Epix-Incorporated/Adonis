@@ -67,8 +67,6 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Core Module Initialized")
 	end;
 
-	local Connections = {}
-
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
 		Core.MakeEvent()
@@ -477,59 +475,27 @@ return function(Vargs, GetEnv)
 				folder.Name = depsName--"Adonis_Client"
 				folder.Parent = container
 
-				local event
+				--// Event only fires AFTER the client is alive and well
+				local event; event = service.Events.ClientLoaded:Connect(function(plr)
+					if p == plr and container.Parent == parentObj then
 
-				local Cleanup = function(player, loaded)
-					if player ~= p then
-						return
-					end
+						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
+						container.Parent = nil
+						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+							task.wait()
+							if p.Parent == nil then
+								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								pcall(function()
+									container:Destroy()
+								end)
+							end
+						end)
 
-					if event then
+						leaveEvent:Disconnect()
+						leaveEvent = nil
 						event:Disconnect()
 						event = nil
 					end
-
-					if Connections["HookClient_" .. p.UserId] then
-						Connections["HookClient_" .. p.UserId]:Disconnect()
-						Connections["HookClient_" .. p.UserId] = nil
-					end
-
-					if keys then
-						keys.Module = nil
-						keys.EventName = nil
-					end
-
-					if loaded then
-						if container then
-							container.Parent = nil
-						end
-					else
-						if container then
-							pcall(function()
-								container:Destroy()
-							end)
-						end
-
-						if folder then
-							pcall(function()
-								folder:Destroy()
-							end)
-						end
-					end
-
-					container = nil
-					folder = nil
-				end
-
-				--// Event only fires AFTER the client is alive and well
-				event = service.Events.ClientLoaded:Connect(function(plr)
-					if p == plr and container and container.Parent == parentObj then
-						Cleanup(plr, true)
-					end
-				end)
-
-				Connections["HookClient_" .. p.UserId] = game.Players.PlayerRemoving:Connect(function(Player)
-					Cleanup(Player, false)
 				end)
 
 				local ok, err = pcall(function()
@@ -826,20 +792,20 @@ return function(Vargs, GetEnv)
 		end;
 
 		DataStoreEncode = function(key)
-			if Core.DS_RESET_SALTS[key] then
-				key = Core.DS_RESET_SALTS[key] .. key
-			end
+            if Core.DS_RESET_SALTS[key] then
+                key = Core.DS_RESET_SALTS[key] .. key
+            end
 
-			-- Only consider salting if the key isn't a number (like a player ID) and if the setting isn't true
-			local IsPlayer = tonumber(key) ~= nil
-			local SettingIsTrue = server.Settings.DontSaltDataStoreKey == true
-			local ShouldSaltKey = not IsPlayer and not SettingIsTrue
-			local EncryptionKey = Settings.DataStoreKey
-			if ShouldSaltKey then
-				EncryptionKey = (`SALT_{Settings.DataStoreKey}`):sub(1,50)
-			end
+            -- Only consider salting if the key isn't a number (like a player ID) and if the setting isn't true
+            local IsPlayer = tonumber(key) ~= nil
+            local SettingIsTrue = server.Settings.DontSaltDataStoreKey == true
+            local ShouldSaltKey = not IsPlayer and not SettingIsTrue
+            local EncryptionKey = Settings.DataStoreKey
+            if ShouldSaltKey then
+                EncryptionKey = (`SALT_{Settings.DataStoreKey}`):sub(1,50)
+            end
 
-			return Functions.Base64Encode(Remote.Encrypt(tostring(key), EncryptionKey))
+            return Functions.Base64Encode(Remote.Encrypt(tostring(key), EncryptionKey))
 		end;
 
 		SaveData = function(...)
