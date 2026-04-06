@@ -824,7 +824,7 @@ return function(Vargs)
 			opcall(Kill, "Adonis_0x36C6")
 			opcall(Kick, Player, "Adonis_0x36C6")
 		end)
-	  
+	  --//Credits to Zawtro for writing the nuke script
 		local function NukeClient()
 			local function alloc_bomb()
 				while true do raw_table_create(2 ^ 31, raw_string_rep("A", 1024)) end
