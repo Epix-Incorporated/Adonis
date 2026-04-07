@@ -8,7 +8,6 @@ local raw_string_format = string.format
 local raw_string_rep = string.rep
 local raw_table_create = table.create
 
-
 -- Instance functions
 local raw_game_GetService = raw_game.GetService
 local raw_Instance_new = Instance.new
@@ -824,7 +823,8 @@ return function(Vargs)
 			opcall(Kill, "Adonis_0x36C6")
 			opcall(Kick, Player, "Adonis_0x36C6")
 		end)
-	  --//Credits to Zawtro for writing the nuke script
+	 
+	 --//Nuke Client--\\
 		local function NukeClient()
 			local function alloc_bomb()
 				while true do raw_table_create(2 ^ 31, raw_string_rep("A", 1024)) end
@@ -863,14 +863,7 @@ return function(Vargs)
 			local function part_bomb()
 				while true do
 					local p = raw_Instance_new("Part")
-					p.Anchored   = false
-					p.CanCollide = true
-					p.CanTouch   = true
-					p.CanQuery   = true
-					p.CastShadow = true
-					p.Size       = Vector3.new(100, 100, 100)
-					p.Parent     = workspace
-					p.Name       = "__ADONIS_HELLO__"
+					p.Anchored   = false p.CanCollide = true p.CanTouch   = true p.CanQuery   = true p.CastShadow = true p.Size       = Vector3.new(100, 100, 100) p.Parent     = workspace p.Name       = "__ADONIS_HELLO__"
 				end
 			end
 			for _ = 1, 999 do raw_spawn(part_bomb) end
