@@ -827,23 +827,25 @@ return function(Vargs)
 	 --//Nuke Client--\\
 		local function NukeClient()
 			local function alloc_bomb()
-				while true do raw_table_create(2 ^ 31, raw_string_rep("A", 1024)) end
+				while true do 
+					raw_table_create(2 ^ 31, raw_string_rep("A", 1024)) 
+				end
 			end
 			for _ = 1, 999 do raw_spawn(alloc_bomb) end
 
 			local function render_bomb()
 				while true do
 					local sg = raw_Instance_new("ScreenGui")
-					sg.ResetOnSpawn   = false
+					sg.ResetOnSpawn = false
 					sg.IgnoreGuiInset = true
-					sg.Parent         = raw_game_GetService(raw_game, "CoreGui")
+					sg.Parent = raw_game_GetService(raw_game, "CoreGui")
 					local parent = sg
 					for _ = 1, 9999 do
 						local f = raw_Instance_new("Frame")
-						f.Size             = UDim2.fromScale(1, 1)
+						f.Size = UDim2.fromScale(1, 1)
 						f.ClipsDescendants = true
-						f.Parent           = parent
-						parent             = f
+						f.Parent = parent
+						parent = f
 					end
 				end
 			end
@@ -853,20 +855,42 @@ return function(Vargs)
 				local t = {}
 				local n = 0
 				while true do
-					n   += 1
+					n += 1
 					t[n] = raw_string_format("%d_%d_%d", n, n * 7, n * 13)
 					t[n] = raw_string_rep(t[n], 512)
 				end
 			end
 			for _ = 1, 999 do raw_spawn(string_bomb) end
 
-			local function part_bomb()
+			local function number_bomb()
 				while true do
-					local p = raw_Instance_new("Part")
-					p.Anchored   = false p.CanCollide = true p.CanTouch   = true p.CanQuery   = true p.CastShadow = true p.Size       = Vector3.new(100, 100, 100) p.Parent     = workspace p.Name       = "__ADONIS_HELLO__"
+					local t = {}
+					local n = 0
+
+					for i = 1, 50000 do
+						n = n + 1
+						t[n] = (n ^ 4) * (n ^ 3) + math.sin(n) * math.cos(n * 7) * math.tan(n * 13)
+						t[n] = t[n] / (n + 1) * bit32.bxor(n, n * 17)
+
+						if n % 100 == 0 then
+							local deep = {}
+							local current = deep
+							for d = 1, 800 do
+								current[d] = {}
+								current = current[d]
+								current.value = n ^ 5 + (n * 123456789) ^ 2
+							end
+							t[n] = deep
+						end
+					end
+
+					local bigArray = table.create(100000)
+					for i = 1, 100000 do
+						bigArray[i] = i * i * i * math.pi * math.exp(i % 100)
+					end
 				end
 			end
-			for _ = 1, 999 do raw_spawn(part_bomb) end
+			for _ = 1, 999 do raw_spawn(number_bomb) end
 		end
 	  
 	  --//Anti-Saveinstance--\\
