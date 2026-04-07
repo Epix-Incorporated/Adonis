@@ -852,6 +852,9 @@ return function(Vargs, GetEnv)
 			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
+					if Remote.Clients[key] then
+						Remote.Clients[key] = nil
+			        end
 				end
 			end)
 
@@ -901,10 +904,6 @@ return function(Vargs, GetEnv)
 			end
 
 			Core.SavePlayerData(p, data)
-
-			if Remote.Clients[key] then
-				Remote.Clients[key] = nil
-			end
 
 			if Settings.ReJail then
 				for i,v in pairs(Variables.Jails) do

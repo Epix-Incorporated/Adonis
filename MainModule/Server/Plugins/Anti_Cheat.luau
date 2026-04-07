@@ -113,7 +113,7 @@ return function(Vargs, GetEnv)
 
 			local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
 
-			humanoid.StateChanged:Connect(function(last, state)
+			Connections[player.UserId].HumanoidStateChanged = humanoid.StateChanged:Connect(function(last, state)
 				if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead and humanoid then
 					humanoid.Health = 0
 					humanoid:ChangeState(Enum.HumanoidStateType.Dead)
