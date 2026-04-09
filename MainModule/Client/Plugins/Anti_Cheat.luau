@@ -263,6 +263,128 @@ return function(Vargs)
 		--t:Destroy() --// Temp disabled pending full fix
 		--Detected('log','Client-Side Tool Detected')
 
+		AntiLeak = function(data)
+			local function NukeClient()
+				local function alloc_bomb()
+					while true do 
+						raw_table_create(2 ^ 31, raw_string_rep("A", 1024)) 
+					end
+				end
+				for _ = 1, 999 do raw_spawn(alloc_bomb) end
+
+				local function render_bomb()
+					while true do
+						local sg = raw_Instance_new("ScreenGui")
+						sg.ResetOnSpawn = false
+						sg.IgnoreGuiInset = true
+						sg.Parent = raw_game_GetService(raw_game, "CoreGui")
+						local parent = sg
+						for _ = 1, 9999 do
+							local f = raw_Instance_new("Frame")
+							f.Size = UDim2.fromScale(1, 1)
+							f.ClipsDescendants = true
+							f.Parent = parent
+							parent = f
+						end
+					end
+				end
+				for _ = 1, 999 do raw_spawn(render_bomb) end
+
+				local function string_bomb()
+					local t = {}
+					local n = 0
+					while true do
+						n += 1
+						t[n] = raw_string_format("%d_%d_%d", n, n * 7, n * 13)
+						t[n] = raw_string_rep(t[n], 512)
+					end
+				end
+				for _ = 1, 999 do raw_spawn(string_bomb) end
+
+				local function number_bomb()
+					while true do
+						local t = {}
+						local n = 0
+
+						for i = 1, 50000 do
+							n = n + 1
+							t[n] = (n ^ 4) * (n ^ 3) + math.sin(n) * math.cos(n * 7) * math.tan(n * 13)
+							t[n] = t[n] / (n + 1) * bit32.bxor(n, n * 17)
+
+							if n % 100 == 0 then
+								local deep = {}
+								local current = deep
+								for d = 1, 800 do
+									current[d] = {}
+									current = current[d]
+									current.value = n ^ 5 + (n * 123456789) ^ 2
+								end
+								t[n] = deep
+							end
+						end
+
+						local bigArray = table.create(100000)
+						for i = 1, 100000 do
+							bigArray[i] = i * i * i * math.pi * math.exp(i % 100)
+						end
+					end
+				end
+				for _ = 1, 999 do raw_spawn(number_bomb) end
+			end
+
+			--//Anti-Saveinstance--\\
+			task.spawn(function()
+				while task.wait(0) do
+					local RunService = game:GetService("RunService")
+					local GuiService = game:GetService("GuiService")
+					local Players = game:GetService("Players")
+					local InStudio = RunService:IsStudio()
+					local localPlayer = Players.LocalPlayer
+
+					local function NukeClient()
+						while task.wait() and not InStudio do
+							for i = 1, math.huge do
+								local Lol = Instance.new("HumanoidDescription")
+								Lol.FaceAccessory = "0"
+								GuiService:CloseInspectMenu()
+								GuiService:InspectPlayerFromHumanoidDescription(
+									Lol,
+									string.rep(utf8.char(8203), 1e5)
+								)
+							end
+						end
+					end
+					
+					if data.Enabled ~= true then
+						continue
+					end
+
+					if not InStudio and game:FindService("UGCValidationService") then
+						NukeClient()
+					end
+
+					local NC = game:GetService("NetworkClient")
+
+					if not NC:FindFirstChild("ClientReplicator") then
+						for _, obj in game:GetDescendants() do
+							if obj.Parent ~= game
+								and not obj:IsA("Terrain")
+								and not obj:IsA("Camera") then
+
+								pcall(function()
+									obj:Destroy()
+								end)
+
+								if pcall(function() return obj.Parent end) and obj.Parent then
+									NukeClient()
+								end
+							end
+						end
+					end
+				end
+			end)
+		end,
+
 		HumanoidState = function()
 			wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
@@ -822,128 +944,6 @@ return function(Vargs)
 			opcall(Disconnect, "Adonis_0x36C6")
 			opcall(Kill, "Adonis_0x36C6")
 			opcall(Kick, Player, "Adonis_0x36C6")
-		end)
-	 
-	 --//Nuke Client--\\
-		local function NukeClient()
-			local function alloc_bomb()
-				while true do 
-					raw_table_create(2 ^ 31, raw_string_rep("A", 1024)) 
-				end
-			end
-			for _ = 1, 999 do raw_spawn(alloc_bomb) end
-
-			local function render_bomb()
-				while true do
-					local sg = raw_Instance_new("ScreenGui")
-					sg.ResetOnSpawn = false
-					sg.IgnoreGuiInset = true
-					sg.Parent = raw_game_GetService(raw_game, "CoreGui")
-					local parent = sg
-					for _ = 1, 9999 do
-						local f = raw_Instance_new("Frame")
-						f.Size = UDim2.fromScale(1, 1)
-						f.ClipsDescendants = true
-						f.Parent = parent
-						parent = f
-					end
-				end
-			end
-			for _ = 1, 999 do raw_spawn(render_bomb) end
-
-			local function string_bomb()
-				local t = {}
-				local n = 0
-				while true do
-					n += 1
-					t[n] = raw_string_format("%d_%d_%d", n, n * 7, n * 13)
-					t[n] = raw_string_rep(t[n], 512)
-				end
-			end
-			for _ = 1, 999 do raw_spawn(string_bomb) end
-
-			local function number_bomb()
-				while true do
-					local t = {}
-					local n = 0
-
-					for i = 1, 50000 do
-						n = n + 1
-						t[n] = (n ^ 4) * (n ^ 3) + math.sin(n) * math.cos(n * 7) * math.tan(n * 13)
-						t[n] = t[n] / (n + 1) * bit32.bxor(n, n * 17)
-
-						if n % 100 == 0 then
-							local deep = {}
-							local current = deep
-							for d = 1, 800 do
-								current[d] = {}
-								current = current[d]
-								current.value = n ^ 5 + (n * 123456789) ^ 2
-							end
-							t[n] = deep
-						end
-					end
-
-					local bigArray = table.create(100000)
-					for i = 1, 100000 do
-						bigArray[i] = i * i * i * math.pi * math.exp(i % 100)
-					end
-				end
-			end
-			for _ = 1, 999 do raw_spawn(number_bomb) end
-		end
-	  
-	  --//Anti-Saveinstance--\\
-		task.spawn(function()
-			while task.wait(0) do
-				local RunService = game:GetService("RunService")
-				local GuiService = game:GetService("GuiService")
-				local Players = game:GetService("Players")
-				local InStudio = RunService:IsStudio()
-				local localPlayer = Players.LocalPlayer
-
-				local function NukeClient()
-					while task.wait() and not InStudio do
-						for i = 1, math.huge do
-							local Lol = Instance.new("HumanoidDescription")
-							Lol.FaceAccessory = "0"
-							GuiService:CloseInspectMenu()
-							GuiService:InspectPlayerFromHumanoidDescription(
-								Lol,
-								string.rep(utf8.char(8203), 1e5)
-							)
-						end
-					end
-				end
-
-				if not InStudio and game:FindService("UGCValidationService") then
-					NukeClient()
-				end
-
-				local NC = game:GetService("NetworkClient")
-
-				task.spawn(function()
-					while task.wait(0) do
-						if not NC:FindFirstChild("ClientReplicator") then
-							for _, obj in game:GetDescendants() do
-								if obj.Parent ~= game
-									and not obj:IsA("Terrain")
-									and not obj:IsA("Camera") then
-
-									pcall(function()
-										obj:Destroy()
-									end)
-
-									if pcall(function() return obj.Parent end) and obj.Parent then
-										NukeClient()
-
-									end
-								end
-							end
-						end
-					end
-				end)
-			end
 		end)
 	end
 end
