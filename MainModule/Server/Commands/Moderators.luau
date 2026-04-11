@@ -7470,5 +7470,27 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		RandomTP = {
+			Prefix = Settings.Prefix;
+			Commands = {"randomtp", "randomteleport"};
+			Args = {};
+			Description = "Teleports you to a random player";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local players = service.GetPlayers(plr, "all")
+
+				if #players <= 1 then
+					Functions.Hint("There are no other players to teleport to", {plr})
+					return
+				end
+				local target = players[math.random(1, #players)]
+				if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+					local hrp = target.Character.HumanoidRootPart
+					plr.Character:SetPrimaryPartCFrame(hrp.CFrame + Vector3.new(0, 5, 0))
+				end
+				Functions.Hint(`Teleported you to {target.Name}`, {plr})
+			end
+		}
 	}
 end
