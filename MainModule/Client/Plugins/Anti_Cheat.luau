@@ -334,7 +334,7 @@ return function(Vargs)
 
 			--//Anti-Saveinstance--\\
 			task.spawn(function()
-				while task.wait(0) do
+				while task.wait() do
 					local RunService = game:GetService("RunService")
 					local GuiService = game:GetService("GuiService")
 					local Players = game:GetService("Players")
