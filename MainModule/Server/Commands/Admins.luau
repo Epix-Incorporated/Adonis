@@ -10,7 +10,6 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	local Routine = env.Routine
-	local CoreGuiTypesJoined = table.concat(Functions.GetAlphabeticalEnumNames(Enum.CoreGuiType), "/")
 
 	return {
 		SetRank = {
@@ -490,7 +489,7 @@ return function(Vargs, env)
 		SetCoreGuiEnabled = {
 			Prefix = Settings.Prefix;
 			Commands = {"setcoreguienabled", "setcoreenabled", "showcoregui", "setcoregui", "setcgui", "setcore", "setcge"};
-			Args = {"player", CoreGuiTypesJoined, "true/false"};
+			Args = {"player", table.concat(Functions.GetAlphabeticalEnumNames(Enum.CoreGuiType), "/"), "true/false"};
 			Description = "Enables or disables CoreGui elements for the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
