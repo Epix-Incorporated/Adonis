@@ -2902,7 +2902,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"bchat", "dchat", "bubblechat", "dialogchat"};
 			Args = {"player", "color(red/green/blue/white/off)"};
-			Description = "Gives the target player(s) a little chat gui, when used will let them chat using dialog bubbles";
+			Description = "Gives the target player(s) a little chat gui, when used will let them chat (local only messages) using dialog bubbles";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local CHAT_COLORS = {
