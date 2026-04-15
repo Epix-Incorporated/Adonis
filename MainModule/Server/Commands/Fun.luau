@@ -1411,6 +1411,7 @@ return function(Vargs, env)
 				for i, p in players do
 					if not Admin.CheckAuthority(plr, p, "timeout") then
 						table.remove(players, i)
+						Functions.Hint(`Unable to send {service.FormatPlayer(p)} to The Forest (insufficient permission level)`, {plr})
 					end
 				end
 				service.TeleportService:TeleportAsync(209424751, players)
