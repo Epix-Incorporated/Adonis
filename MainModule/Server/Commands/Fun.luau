@@ -1894,8 +1894,10 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-							Admin.RunCommand(`{Settings.Prefix}pants`, v.Name, "233373970")
-							Admin.RunCommand(`{Settings.Prefix}shirt`, v.Name, "133078195")
+							for _, v in v.Character:GetChildren() do
+								if v.Name == "Shirt" then local cl = v:Clone() cl.Parent = v.Parent cl.ShirtTemplate = "http://www.roblox.com/asset/?id=133078195" v:Destroy() end
+								if v.Name == "Pants" then local cl = v:Clone() cl.Parent = v.Parent cl.PantsTemplate = "http://www.roblox.com/asset/?id=233373970" v:Destroy() end
+							end
 
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Accoutrement") or v:IsA("CharacterMesh") then
