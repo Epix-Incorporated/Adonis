@@ -2369,9 +2369,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local num = tonumber(args[2]) or 200
+
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character:FindFirstChild("HumanoidRootPart") then
-						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame+Vector3.new(0, tonumber(args[2]), 0)
+						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame+Vector3.new(0, num, 0)
 					end
 				end
 			end
