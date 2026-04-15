@@ -825,7 +825,7 @@ return function(Vargs, env)
 		Neon = {
 			Prefix = Settings.Prefix;
 			Commands = {"neon", "neonify"};
-			Args = {"player", "(optional)color"};
+			Args = {"player", "color"};
 			Description = "Make the target neon";
 			Fun = true;
 			AdminLevel = "Moderators";
