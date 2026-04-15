@@ -56,7 +56,7 @@ return function(Vargs, env)
 				if num <= 0 then
 					error("Intensity must be above 0")
 				end
-				
+
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "ghost"
@@ -800,12 +800,12 @@ return function(Vargs, env)
 				local chosenMat = args[2] or "Plastic"
 
 				if not args[2] then
-					Functions.Hint("Material wasn't supplied; Plastic was chosen instead")
+					Functions.Hint("Material wasn't supplied; Plastic was chosen instead", {plr})
 				elseif tonumber(args[2]) then
 					chosenMat = table.find(mats, tonumber(args[2]))
 				end
 
-				if not chosenMat then
+				if not chosenMat or not Enum.Material:FromName(chosenMat) then
 					Remote.MakeGui(plr, "Output", {Title = "Error"; Message = "Invalid material choice";})
 					return
 				end
