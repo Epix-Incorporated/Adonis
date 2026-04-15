@@ -20,7 +20,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tostring(args[2] or 15)
+				local num = tonumber(args[2]) or 15
+
+				if num <= 0 then
+					error("Intensity must be above 0")
+				end
+				
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "trippy"
@@ -46,7 +51,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tostring(args[2] or 150)
+				local num = tonumber(args[2]) or 150
+
+				if num <= 0 then
+					error("Intensity must be above 0")
+				end
+				
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "ghost"
@@ -72,7 +82,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tostring(args[2] or 0.1)
+				local num = tonumber(args[2]) or 0.1
+
+				if num <= 0 then
+					error("Intensity must be above 0")
+				end
+
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "vibrate"
