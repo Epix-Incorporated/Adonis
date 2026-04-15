@@ -2389,23 +2389,66 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for kay, player in service.GetPlayers(plr, args[1]) do
 					local m = player.Character
+					local r6 = m:FindFirstChild("Torso") ~= nil
+
+					if r6 then
+						if m.Head:FindFirstChild("Mesh") then
+							m.Head.Mesh:Destroy()
+						end
+
+						local b = service.New("SpecialMesh")
+						b.Parent = m.Head
+						b.MeshType = "Sphere"
+						b.Scale = Vector3.new(0.5, 1, 1)
+
+						m.Head.Transparency = 0
+						m.Head.BrickColor = BrickColor.new(0, 0, 0)
+					else
+						local w = service.New("WeldConstraint")
+						local s = service.New("Part")
+						s.Anchored = false
+						s.Shape = Enum.PartType.Ball
+						s.Size = Vector3.new(1, 1, 1)
+						s.BrickColor = BrickColor.new(0, 0, 0)
+						s.Material = Enum.Material.SmoothPlastic
+
+						w.Part0 = s
+						w.Part1 = m.Head
+						w.Parent = s
+
+						s.CFrame = m.Head.CFrame
+						s.Parent = m.Head
+
+						local f = service.New("Decal")
+						f.Parent = s
+						f.Texture = "rbxasset://textures/face.png"
+
+						m.Head.Transparency = 1
+					end
+
+					local whitelistedLimbs = {
+						"Head",
+						"LeftUpperArm",
+						"RightUpperArm",
+						"LeftLowerLeg",
+						"RightLowerLeg"
+					}
+					
 					for i, v in m:GetChildren() do
-						if v:IsA("Part") then
+						if v:IsA("BasePart") then
+							if v.Name ~= "Head" then
+								v.Transparency = 1
+							end
+
+							if not r6 and not table.find(whitelistedLimbs, v.Name) then
+								continue
+							end
+
 							local s = service.New("SelectionPartLasso")
 							s.Parent = m.HumanoidRootPart
 							s.Part = v
 							s.Humanoid = m.Humanoid
 							s.Color = BrickColor.new(0, 0, 0)
-							v.Transparency = 1
-							m.Head.Transparency = 0
-							if m.Head:FindFirstChild("Mesh") then
-								m.Head.Mesh:Destroy()
-							end
-							local b = service.New("SpecialMesh")
-							b.Parent = m.Head
-							b.MeshType = "Sphere"
-							b.Scale = Vector3.new(0.5, 1, 1)
-							m.Head.BrickColor = BrickColor.new("Black")
 						end
 					end
 				end
