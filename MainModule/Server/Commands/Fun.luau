@@ -670,32 +670,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local scr = Core.NewScript("ClientScript", [[
-					local restore = {}
-					local tween = game:GetService("TweenService")
-
-					repeat
-						task.wait()
-						local char = script.Parent.Parent
-						local clr = BrickColor.random()
-						for i, v in next, char:GetChildren() do
-							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
-								if not restore[v] then
-									restore[v] = v.Color
-								end
-								v.Color = Color3.fromHSV(os.clock() % 1, 1, 1)
-							end
-						end
-					until not char or script.Name == "Stop" -- signal to unrainbowify
-
-					if script.Name == "Stop" then
-						for item, clr in next, restore do
-							item.Color = clr -- restore old colors
-						end
-						script:Destroy()
-					end
-				]], true)
-				scr.Name = "Rainbowify"
+				local scr = Deps.Assets.Rainbowify
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
