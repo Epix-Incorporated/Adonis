@@ -2680,13 +2680,12 @@ return function(Vargs, env)
 								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
 							end
 							local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("UpperTorso"), CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
-							local head = char:FindFirstChild("Head")
 
 							torso.Transparency = 1
 
 							for _, v in torso:GetChildren() do
 								if v:IsA("Motor6D") then
-									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
+									service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
 								end
 							end
 
@@ -2704,7 +2703,7 @@ return function(Vargs, env)
 							})
 
 							local attachment = service.New("Attachment", {Parent = st})
-							local bf = service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
+							service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
 
 							st.CFrame = torso.CFrame
 							st.Parent = char
@@ -2717,6 +2716,31 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
+							local bypass = {}
+
+							for _, animType in plr.Character.Animate:GetChildren() do
+								if not animType:IsA("StringValue") then
+									continue
+								end
+
+								for _, anim in animType:GetChildren() do
+									local allowed = {"run", "walk"}
+
+									if table.find(allowed, animType.Name) then
+										table.insert(bypass, anim.AnimationId)
+										continue
+									end
+
+									anim.AnimationId = "rbxassetid://0"
+								end
+							end
+							
+							for _, anim in plr.Character.Humanoid.Animator:GetPlayingAnimationTracks() do
+								if not table.find(bypass, anim.Animation.AnimationId) then
+									anim:Stop()
+								end
+							end
+
 							if plr.Character:FindFirstChild("Shirt") then
 								plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
 							end
@@ -2728,25 +2752,12 @@ return function(Vargs, env)
 
 							uppertorso.Transparency = 1
 							lowertorso.Transparency = 1
+							head.NeckRigAttachment.CFrame = CFrame.new(0, 1, 2) * CFrame.Angles(0, 0, 0)
 
-							for _, v in uppertorso:GetChildren() do
-								if v:IsA("Motor6D") then
-									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
-								end
-							end
-
-							for _, v in lowertorso:GetChildren() do
-								if v:IsA("Motor6D") then
-									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
-								end
-							end
-
-							head.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(0, 0, 0)
-
-							char.RightUpperArm["RightShoulder"].C0 = CFrame.new(.5, -1, -1.5) * ca1
-							char.LeftUpperArm["LeftShoulder"].C0 = CFrame.new(-.5, -1, -1.5) * ca2
-							char.RightUpperLeg["RightHip"].C0 = CFrame.new(1, -0.3, 1.5) * ca1
-							char.LeftUpperLeg["LeftHip"].C0 = CFrame.new(-1, -0.3, 1.5) * ca2
+							char.UpperTorso.RightShoulderRigAttachment.CFrame = CFrame.new(.5, -1, -1.5) * ca1
+							char.UpperTorso.LeftShoulderRigAttachment.CFrame = CFrame.new(-.5, -1, -1.5) * ca2
+							char.LowerTorso.RightHipRigAttachment.CFrame = CFrame.new(1, 0.2, 1.5) * ca1
+							char.LowerTorso.LeftHipRigAttachment.CFrame = CFrame.new(-1, 0.2, 1.5) * ca2
 							local st = service.New("Seat", {
 								Name = "Adonis_Torso",
 								TopSurface = 0,
@@ -2755,7 +2766,7 @@ return function(Vargs, env)
 							})
 
 							local attachment = service.New("Attachment", {Parent = st})
-							local bf = service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
+							service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
 
 							st.CFrame = uppertorso.CFrame
 							st.Parent = char
