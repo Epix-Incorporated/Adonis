@@ -3403,7 +3403,7 @@ return function(Vargs, env)
 		Flatten = {
 			Prefix = Settings.Prefix;
 			Commands = {"flatten", "2d", "flat"};
-			Args = {"player", "optional num"};
+			Args = {"player", "num"};
 			Description = "Flatten.";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3525,7 +3525,7 @@ return function(Vargs, env)
 		OldFlatten = {
 			Prefix = Settings.Prefix;
 			Commands = {"oldflatten", "o2d", "oflat"};
-			Args = {"player", "optional num"};
+			Args = {"player", "num"};
 			Description = "Old Flatten. Went lazy on this one.";
 			Fun = true;
 			AdminLevel = "Moderators";
