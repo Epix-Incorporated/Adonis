@@ -1,7 +1,16 @@
 return {
-	"Version: 276.1";
+	"Version: 277";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v277 2026-04-16 19:48 UTC] @Dimenpsyonal";
+	"(Git/wilsontulus) Fix :invisible and :visible to query all Decals and BillboardGui in BaseParts (#2087)";
+	"(Git/ccuser44) Fix :sing not tilting head (#2091)";
+	"(Git/ccuser44) Update :bchat to indicate bubble chat is local only (#2079)";
+	"(Git/ImFirstPlace) Update :systemmessage description (#2103)";
+	"(Git/ccuser44) Add support for future Zstandard decompression (#2083)";
+	"(Git/ccuser44) Update hashlib implementation to be up to date with upstream (#2080)";
+	"(Git/ccuser44) Update FiOne to upstream (#2081)";
 	"";
 	"[Patch v276.1 2026-03-09 22:02 UTC] @Dimenpsyonal";
 	"Revert #2019 allowing :insert to load 3rd party assets";

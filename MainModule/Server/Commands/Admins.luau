@@ -479,7 +479,7 @@ return function(Vargs, env)
 			Commands = {"sm", "systemmessage", "sysmsg"};
 			Args = {"message"};
 			Filter = true;
-			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
+			Description = "Same as the message command, but uses what's set in the 'SystemTitle' setting (default: 'System Message') instead of your name as the title";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(assert(args[1], "Missing message (argument #1)"), plr), service.GetPlayers(), true)

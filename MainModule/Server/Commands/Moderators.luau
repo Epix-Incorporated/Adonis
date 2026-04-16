@@ -2902,7 +2902,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"bchat", "dchat", "bubblechat", "dialogchat"};
 			Args = {"player", "color(red/green/blue/white/off)"};
-			Description = "Gives the target player(s) a little chat gui, when used will let them chat using dialog bubbles";
+			Description = "Gives the target player(s) a little chat gui, when used will let them chat (local only messages) using dialog bubbles";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local CHAT_COLORS = {
@@ -3828,11 +3828,13 @@ return function(Vargs, env)
 						for a, obj in v.Character:GetChildren() do
 							if obj:IsA("BasePart") then
 								obj.Transparency = 1
-								if obj:FindFirstChild("face") then
-									obj.face.Transparency = 1
-								end
-								if obj:FindFirstChildOfClass("BillboardGui") then
-									obj:FindFirstChildOfClass("BillboardGui").Enabled = false
+								for b, subObj in obj:GetChildren() do
+									if subObj:IsA("Decal") then
+										subObj.Transparency = 1
+									end
+									if subObj:IsA("BillboardGui") then
+										subObj.Enabled = false
+									end
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 1
@@ -3871,11 +3873,13 @@ return function(Vargs, env)
 						for a, obj in v.Character:GetChildren() do
 							if obj:IsA("BasePart") and obj.Name~="HumanoidRootPart" then
 								obj.Transparency = 0
-								if obj:FindFirstChild("face") then
-									obj.face.Transparency = 0
-								end
-								if obj:FindFirstChildOfClass("BillboardGui") then
-									obj:FindFirstChildOfClass("BillboardGui").Enabled = true
+								for b, subObj in obj:GetChildren() do
+									if subObj:IsA("Decal") then
+										subObj.Transparency = 0
+									end
+									if subObj:IsA("BillboardGui") then
+										subObj.Enabled = true
+									end
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
