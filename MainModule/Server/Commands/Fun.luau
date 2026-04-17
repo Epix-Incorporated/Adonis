@@ -4357,6 +4357,50 @@ return function(Vargs, env)
 			end
 		};
 
+		Highlight = {
+			Prefix = Settings.Prefix;
+			Commands = {"highlight", "glow", "outline"};
+			Args = {"player", "color"};
+			Description = "Adds a highlight outline and fill to the target player(s) with the desired color";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local color = Color3.new(1, 1, 1)
+				if args[2] then
+					local input = args[2]:gsub("(%a)([%w]*)", function(a, b) return a:upper() .. b:lower() end)
+					color = Functions.ParseColor3(args[2]) or Functions.ParseColor3(input) or color
+				end
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.Character then
+						Functions.RemoveParticle(v.Character, "HIGHLIGHT")
+						Functions.NewParticle(v.Character, "Highlight", {
+							Name = "HIGHLIGHT";
+							FillColor = color;
+							OutlineColor = color;
+							FillTransparency = 0.5;
+							OutlineTransparency = 0;
+						})
+					end
+				end
+			end
+		};
+
+		UnHighlight = {
+			Prefix = Settings.Prefix;
+			Commands = {"unhighlight", "unglow", "unoutline", "removehighlight"};
+			Args = {"player"};
+			Description = "Removes the highlight from the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.Character then
+						Functions.RemoveParticle(v.Character, "HIGHLIGHT")
+					end
+				end
+			end
+		};
+
 		Animation = {
 			Prefix = Settings.Prefix;
 			Commands = {"animation", "loadanim", "animate"};
