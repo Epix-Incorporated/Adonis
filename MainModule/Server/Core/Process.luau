@@ -869,7 +869,7 @@ return function(Vargs, GetEnv)
 
 			if Tasks[p.UserId] then
 				for Index, Task in pairs(Tasks[p.UserId]) do
-					if Task then
+					if Task and coroutine.status(Task) ~= "dead" then
 						task.cancel(Task)
 					end
 				end
