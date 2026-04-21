@@ -1,7 +1,10 @@
 return {
-	"Version: 277";
+	"Version: 278";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v278 2026-XX-XX XX:XX UTC] @Maintainer";
+	"(Git/ImFirstPlace) Remove Remnants of Creator Powers (#2102)";
 	"";
 	"[v277 2026-04-16 19:48 UTC] @Dimenpsyonal";
 	"(Git/wilsontulus) Fix :invisible and :visible to query all Decals and BillboardGui in BaseParts (#2087)";
