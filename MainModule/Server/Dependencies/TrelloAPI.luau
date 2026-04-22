@@ -361,7 +361,7 @@ return function(AppKey, Token, HttpService)
 			end;
 
 			UpdateLabelField = function(LabelID, Field, Value)
-				local Request = HttpFunctions.Request(GetUrl(`labels/{LabelID}/{Field}`),"PUT",{},{value = Value})
+				return HttpFunctions.Decode(HttpFunctions.Request(GetUrl(`labels/{LabelID}/{Field}`),"PUT",{},{value = Value}))
 			end;
 
 			CreateLabel = function(BoardID, Name, Color)
@@ -394,7 +394,7 @@ return function(AppKey, Token, HttpService)
 	API.getCard = API.Lists.GetCard
 	API.getComments = API.Cards.GetComments
 	API.delComment = API.Cards.DeleteComment
-	API.makeComment = API.Cards.MakeComment
+	API.makeComment = API.Cards.AddComment
 	API.getCardField = API.Cards.GetCardField
 	API.getBoardField = API.Boards.GetBoardField
 	API.getListField = API.Lists.GetListField

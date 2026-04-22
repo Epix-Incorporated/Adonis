@@ -75,7 +75,7 @@ return function(Vargs, env)
 						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 
 						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
-						Functions.LogAdminAction(plr, "Direct Time Ban", actualName or i, `Duration: {args[2]}, Reason: {reason}`)
+						Functions.LogAdminAction(plr, "Direct Time Ban", if getNameSuccess then actualName else i, `Duration: {args[2]}, Reason: {reason}`)
 						Functions.Hint(
 							`Time-banned {if getNameSuccess then `@{actualName}` else `'{i}'`} for {args[2]}`,
 							{plr}
@@ -500,8 +500,8 @@ return function(Vargs, env)
 									plr:Destroy()
 								end
 							]])
-						n += 1
 						end
+						n += 1
 					end
 
 					if n == 0 then

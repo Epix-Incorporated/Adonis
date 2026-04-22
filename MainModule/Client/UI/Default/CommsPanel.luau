@@ -9,8 +9,6 @@ return function(data, env)
 	local messageObjs = {}
 
 	local function newMessage(Type, Title, Message, Icon, Time, Function)
-		print(Icon)
-
 		local newMsg = commslog:Add("Frame", {
 			Size = UDim2.new(1, 0, 0, 50);
 			BackgroundTransparency = 1;

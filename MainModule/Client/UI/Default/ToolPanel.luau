@@ -343,7 +343,7 @@ return function(data, env)
 				selected = nil
 				inv:ClearAllChildren()
 			end
-			if plrs:FindFirstChild(plr.Name) then inv[plr.Name]:Destroy() end
+			if plrs:FindFirstChild(plr.Name) then plrs[plr.Name]:Destroy() end
 		end)
 	end)
 

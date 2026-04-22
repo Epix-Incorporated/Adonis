@@ -670,8 +670,8 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
+							local ret = {}
 							for _, v in plrs do
-								local ret = {}
 								local char = v.Character
 								if char and char.ClassName == "Model" then
 									char:BreakJoints()
@@ -679,8 +679,8 @@ return function(Vargs, GetEnv)
 								else
 									table.insert(ret, `{service.FormatPlayer(v)} has no character or it's not a model`)
 								end
-								return ret
 							end
+							return ret
 						else
 							return {`No players matching '{args[1]}' found`}
 						end
@@ -700,6 +700,7 @@ return function(Vargs, GetEnv)
 								v:LoadCharacter()
 								table.insert(ret, `Respawned {service.FormatPlayer(v)}`)
 							end
+							return ret
 						else
 							return {`No players matching '{args[1]}' found`}
 						end
@@ -1317,7 +1318,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		StartLoop = function(p: Player, name: string, delay: number | string, funcCode: string)
-			Remote.Send(p, "StartLoop", name, delay, Core.ByteCode(funcCode))
+			Remote.Send(p, "StartLoop", name, delay, Core.Bytecode(funcCode))
 		end;
 
 		StopLoop = function(p: Player, name: string)

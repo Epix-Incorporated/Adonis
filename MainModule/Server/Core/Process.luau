@@ -505,9 +505,9 @@ return function(Vargs, GetEnv)
 				local argString = string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ""
 				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 
-				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
+				local taskName = string.format("Command :: %s : (%s)", if type(p) == "string" then p else p.Name, msg)
 
-				if #args > 0 and not isSystem and command.Filter or opts.Filter then
+				if #args > 0 and not isSystem and (command.Filter or opts.Filter) then
 					for i, arg in args do
 						local cmdArg = cmdArgs[i]
 						if cmdArg then
@@ -857,8 +857,8 @@ return function(Vargs, GetEnv)
 				["PlatformKick"] = "Kicked by Roblox",
 				["CreatorKick"] = "Kicked by Creator"
 			}
-			
-			local reason = reasons[r.Name] or r.Name
+
+			local reason = (r and reasons[r.Name]) or (r and r.Name) or "Left"
 
 			AddLog("Leaves", {
 				Text = service.FormatPlayer(p);
@@ -1171,7 +1171,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		NetworkAdded = function(cli)
-			if cli.ClassName == "ServerReplicator" then
+			if cli:IsA("NetworkReplicator") then
 				task.wait(0.25)
 
 				local p = cli:GetPlayer()
@@ -1195,7 +1195,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		NetworkRemoved = function(cli)
-			if cli.ClassName == "ServerReplicator" then
+			if cli:IsA("NetworkReplicator") then
 				local p = cli:GetPlayer() or Core.Connections[cli]
 
 				Core.Connections[cli] = nil

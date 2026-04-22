@@ -101,8 +101,8 @@ function LinkedList:AddBetweenNodes(data, left, right)
 
 	local newNode = LinkNode.new(data)
 
-	newNode:setnext()
-	newNode:setprev()
+	newNode:setprev(left)
+	newNode:setnext(right)
 	left:setnext(newNode)
 	right:setprev(newNode)
 	self.count += 1

@@ -747,7 +747,7 @@ return function(Vargs, env)
 					return
 				end
 				if Variables.RestoringMap then
-					error("Map has not been backed up",0)
+					error("Map restoration is already in progress",0)
 					return
 				end
 				if Variables.BackingupMap then

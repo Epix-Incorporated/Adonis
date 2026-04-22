@@ -822,7 +822,7 @@ return function(Vargs, env)
 								p:Destroy()
 							elseif p:IsA("BasePart") then
 								if args[2] then
-									local str = BrickColor.new("Institutional white").Color
+									local str = BrickColor.new("Institutional white")
 									local teststr = args[2]
 									if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
 									p.BrickColor = str
@@ -2612,7 +2612,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
+							if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
 								q:Destroy()
 							end
 						end
@@ -3531,9 +3531,9 @@ return function(Vargs, env)
 							Functions.MakeWeld(v.Character.HumanoidRootPart, larm, v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0))
 							rarm.Size = Vector3.new(rarm.Size.X, rarm.Size.Y, tonumber(args[2]) or 0.1)
 							Functions.MakeWeld(v.Character.HumanoidRootPart, rarm, v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0))
-							lleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
+							lleg.Size = Vector3.new(lleg.Size.X, lleg.Size.Y, tonumber(args[2]) or 0.1)
 							Functions.MakeWeld(v.Character.HumanoidRootPart, lleg, v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, -1.5, 0))
-							rleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
+							rleg.Size = Vector3.new(rleg.Size.X, rleg.Size.Y, tonumber(args[2]) or 0.1)
 							Functions.MakeWeld(v.Character.HumanoidRootPart, rleg, v.Character.HumanoidRootPart.CFrame*CFrame.new(1, -1.5, 0))
 							task.wait()
 							for _, v in v.Character:GetChildren() do
@@ -4689,7 +4689,7 @@ return function(Vargs, env)
 
 					for _, v2 in service.GetPlayers(plr, args[2]) do
 						if not v2.Character then continue end
-						local v2hum = v1.Character:FindFirstChildOfClass("Humanoid")
+						local v2hum = v2.Character:FindFirstChildOfClass("Humanoid")
 						local v2desc = v2hum:GetAppliedDescription()
 
 						local v1pos, v2pos = v1.Character:GetPivot(), v2.Character:GetPivot()
@@ -4750,7 +4750,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local angle = 130 or args[2]
+				local angle = tonumber(args[2]) or 180
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, 0, math.rad(angle))

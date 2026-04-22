@@ -1099,7 +1099,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					owned = (currentCache and currentCache.owned) or false;
 					lastUpdated = os.time();
 				}
-				passOwnershipCache[cacheIndex] = cacheTab
+				assetOwnershipCache[cacheIndex] = cacheTab
 
 				local suc,ers = pcall(function()
 					return service.MarketplaceService:PlayerOwnsAsset(player, assetId)
@@ -1208,7 +1208,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			}
 
 			local function kill()
-				tab.Running = true
+				tab.Running = false
 				if RunningLoops[index] == tab then
 					RunningLoops[index] = nil
 				end

@@ -624,6 +624,8 @@ return function(Vargs, GetEnv)
 		end;
 
 		LevelToListName = function(lvl)
+			local lvl = tonumber(lvl)
+			if not lvl then return nil end
 			if lvl > 999 then
 				return "Place Owner"
 			elseif lvl == 0 then
@@ -1102,7 +1104,7 @@ return function(Vargs, GetEnv)
 						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
 							Title = "Error",
-							Message = error,
+							Message = err,
 							Color = Color3.new(1, 0, 0),
 						})
 						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
@@ -1132,7 +1134,7 @@ return function(Vargs, GetEnv)
 						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
 							Title = "",
-							Message = error,
+							Message = err,
 							Color = Color3.new(1, 0, 0),
 						})
 						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)

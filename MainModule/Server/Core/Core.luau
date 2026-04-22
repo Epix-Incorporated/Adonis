@@ -703,7 +703,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		ClearPlayer = function(p)
-			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData(p)
+			Core.PlayerData[tostring(p.UserId)] = Core.DefaultPlayerData(p)
 		end;
 
 		SavePlayerData = function(p, customData)

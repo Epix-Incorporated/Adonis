@@ -291,7 +291,7 @@ return function(data, env)
 						})
 						entry:Add("TextLabel", { -- TODO: Add support for joining
 							Text = friendInfo.locationType or "Offline";
-							ToolTip = friendInfo.placeId and `Playing {friendInfo.placeId} - (friendInfo.lastLocation)` or `Last online {friendInfo.lastOnline:FormatLocalTime("LLLL", service.GetCurrentLocale())}`;
+							ToolTip = friendInfo.placeId and `Playing {friendInfo.placeId} - {friendInfo.lastLocation}` or `Last online {friendInfo.lastOnline:FormatLocalTime("LLLL", service.GetCurrentLocale())}`;
 							BackgroundTransparency = 1;
 							TextColor3 = ACTIVITY_COLOR_CODES[friendInfo.locationType] or Color3.fromRGB(127, 127, 127);
 							Size = UDim2.new(0, 120, 1, 0);

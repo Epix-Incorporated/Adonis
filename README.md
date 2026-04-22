@@ -55,7 +55,7 @@ You may then edit the Settings module to configure Adonis to suit your game. Ins
 <h3 id="debug-mode">🔧 Debug Mode</h3>
 
 #### **PLEASE NOTE THAT THIS FEATURE IS INTENDED FOR DEVELOPMENT/DEBUGGING PURPOSES ONLY, PLEASE CHANGE `ModuleID` FOR CUSTOM MODULES**
-The `DebugModule` feature enables a number of debug features, including but not limited to:
+The `DebugMode` feature enables a number of debug features, including but not limited to:
 
 1. Not protecting the Adonis model (such as parenting it to nil)
 2. Exposes a debugging API

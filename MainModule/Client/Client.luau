@@ -142,7 +142,7 @@ end
 local Folder = script.Parent
 local isStudio = game:GetService("RunService"):IsStudio()
 game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
-	if not isStudio or Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
+	if isStudio or Folder:FindFirstChild("ADONIS_DEBUGMODE_ENABLED") then
 		print("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
 		dumplog()
 	end
@@ -694,7 +694,7 @@ return service.NewProxy({
 			log("Client fired finished loading")
 			if client.Core.Key then
 				--// Push Remote & Anti related functions for Kill
-				Fire, Detected, Kick = client.Remote and client.Remote.Fire, client.Anti and client.Anti.Detected, service.Player.kick
+				Fire, Detected, Kick = client.Remote and client.Remote.Fire, client.Anti and client.Anti.Detected, service.Player.Kick
 
 				--// Run anything from core modules that needs to be done after the client has finished loading
 				log("~! Doing run after loaded")

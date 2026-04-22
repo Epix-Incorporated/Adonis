@@ -48,7 +48,7 @@ return function(Vargs, GetEnv)
 		KickedPlayers = setmetatable({}, {__mode = "k"});
 
 		RemovePlayer = function(p, info)
-			info = tostring(info) or "No Reason Given"
+			info = if info ~= nil then tostring(info) else "No Reason Given"
 			
 			if service.RunService:IsStudio() then
 				warn(`:: Adonis Anti Cheat :: Anticheat triggered for {p.Name}, not kicking because in studio; {info}`)

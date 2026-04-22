@@ -158,7 +158,7 @@ return function(data, env)
 				local timeNow = os.time()
 				if not displays["Server Speed"] or not displays["Server Age"] then break end
 				displays["Server Speed"].Text = math.round(data.ServerSpeed or 0)
-				displays["Server Age"].Text = string.format("%ds (%d min)", string.format(timeNow - data.ServerStartTime, "%.1f"), math.round((timeNow - data.ServerStartTime)/60))
+				displays["Server Age"].Text = string.format("%ds (%d min)", timeNow - data.ServerStartTime, math.round((timeNow - data.ServerStartTime)/60))
 			end
 		end)
 	end

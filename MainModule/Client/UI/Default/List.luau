@@ -129,19 +129,19 @@ return function(data, env)
 			local desc = (isTable and v.Desc) and string.lower(v.Desc)
 			local filter = (isTable and v.Filter) and string.lower(v.Filter)
 	
-			if text == search then
+			if text == query then
 				total += 1
 				table.insert(priorities[1], v)
 			elseif string.find(text, query, 1, true) then
 				total += 1
 				table.insert(priorities[2], v)
-			elseif desc == search then
+			elseif desc == query then
 				total += 1
 				table.insert(priorities[3], v)
 			elseif desc and string.find(desc, query, 1, true) then
 				total += 1
 				table.insert(priorities[4], v)
-			elseif filter == search then
+			elseif filter == query then
 				total += 1
 				table.insert(priorities[5], v)
 			elseif filter and string.find(filter, query, 1, true) then

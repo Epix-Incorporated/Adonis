@@ -731,7 +731,7 @@ return service.NewProxy({
 			task.defer(xpcall, LoadModule, function(reason)
 				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
-				table.insert(server.messages, {
+				table.insert(server.Messages, {
 					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
 					Icon = "maticon://Dangerous",
 					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,
@@ -751,7 +751,7 @@ return service.NewProxy({
 				local code = service.New("StringValue")
 
 				code.Name = service.HttpService:GenerateGUID(false)
-				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua" or server.Core.Bytecode(module))
+				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua" and module or server.Core.Bytecode(module))
 				code.Parent = server.Client.Plugins
 			end
 		end

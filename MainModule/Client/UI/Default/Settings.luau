@@ -231,9 +231,7 @@ return function(data, env)
 					Size = UDim2.new(0, 100, 0, 20);
 					Position = UDim2.new(1, -100, 0, 0);
 					Enabled = v.Value;
-					OnToggle = function(enabled, button)
-						print("Toggled thinger")
-					end
+					OnToggle = v.Function,
 				})
 			end
 		end

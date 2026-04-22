@@ -1728,7 +1728,7 @@ return function(data, env)
 							i -= 1
 							for rank, data in value do
 								i += 1
-								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
+								if string.match(rank, "^%[WebPanel%]") or string.match(rank, "^%[Trello%]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
 									gameTab:Add("TextLabel", {
 										Text = `  {rank}: `;
 										ToolTip = `Permission Level: {data.Level}`;

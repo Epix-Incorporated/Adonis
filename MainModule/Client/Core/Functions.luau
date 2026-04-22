@@ -780,7 +780,7 @@ return function(Vargs, GetEnv)
 				par = service.PlayerGui
 			end
 			for _, obj in par:GetChildren() do
-				if obj.Name == object or obj == obj then
+				if obj.Name == object or obj == object then
 					obj.Parent = newParent
 				end
 			end

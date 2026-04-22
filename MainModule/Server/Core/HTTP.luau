@@ -40,7 +40,7 @@ return function(Vargs, GetEnv)
 				Logs:AddLog("Script", `Pooled HttpEnabled from service as {HTTP.HttpEnabled}`)
 			else
 				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
-				HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
+				HTTP.HttpEnabled = success or not (type(res) == "string" and res:find("Http requests are not enabled."))
 				Logs:AddLog("Script", `Pooled HttpEnabled from request as {HTTP.HttpEnabled}. Status {success}`)
 			end
 		end)

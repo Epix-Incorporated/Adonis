@@ -97,7 +97,7 @@ return function(data, env)
 				Text = service.FormatPlayer(peer);
 				Size = UDim2.new(1, 0, 0, 25);
 				TextScaled = true;
-				TextWarped = true;
+				TextWrapped = true;
 				BackgroundTransparency = 1;
 			})
 
@@ -242,7 +242,7 @@ return function(data, env)
 	end
 
 	window = client.UI.Make("Window", {
-		Name  = `"PrivateChat{SessionName}`;
+		Name  = `PrivateChat{SessionName}`;
 		Title = "Private Chat";
 		Icon = client.MatIcons.Forum;
 		Size  = {500,300};

@@ -39,7 +39,7 @@ return function(Vargs, GetEnv)
 
 			local function grabData(board)
 				local lists: {List} = HTTP.Trello.API.getListsAndCards(board, true)
-				if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
+				if #lists == 0 then error("Trello returned no lists (check token/permissions)") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
 
 				for _, list in lists do
 					local foundOverride = false
@@ -105,7 +105,7 @@ return function(Vargs, GetEnv)
 
 				--// Clear any custom ranks that were not fetched from Trello
 				for rank, info in Settings.Ranks do
-					if rank.IsExternal and not data.Ranks[rank] then
+					if info.IsExternal and not data.Ranks[rank] then
 						Settings.Ranks[rank] = nil
 					end
 				end
@@ -113,7 +113,7 @@ return function(Vargs, GetEnv)
 				for rank, users in data.Ranks do
 					local name = string.format("[Trello] %s", server.Functions.Trim(rank))
 					Settings.Ranks[name] = {
-						Level = Settings.Ranks[rank].Level or 1;
+						Level = (Settings.Ranks[rank] and Settings.Ranks[rank].Level) or 1;
 						Users = users,
 						IsExternal = true,
 						Hidden = Settings.Trello_HideRanks;
@@ -169,7 +169,7 @@ return function(Vargs, GetEnv)
 						Player = p;
 					})
 				else
-					Functions.Hint(`"{listName}" does not exist"`, {p})
+					Functions.Hint(`"{listName}" does not exist`, {p})
 				end
 			end
 		end

@@ -109,14 +109,14 @@ return function(Vargs, GetEnv)
 			local event = remoteParent:WaitForChild(client.RemoteName, 300)
 
 			if not event then
-				Anti.Detected("Kick", "RemoteEvent Not Found");
+				Anti.Detected("kick", "RemoteEvent Not Found");
 			else
 				log("Getting RemoteFunction");
 
 				local rFunc = event:WaitForChild("__FUNCTION", 120);
 
 				if not rFunc then
-					Anti.Detected("Kick", "RemoteFunction Not Found");
+					Anti.Detected("kick", "RemoteFunction Not Found");
 				else
 					local events = {};
 
@@ -273,7 +273,7 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						if exists and exists.noCache ~= true and (not exists.runLimit or (exists.runLimit and exists.Executions <= exists.runLimit)) then
+						if exists and exists.noCache ~= true and (not exists.runLimit or (exists.runLimit and exists.Executions < exists.runLimit)) then
 							exists.Executions = exists.Executions+1
 							return exists.Source, exists.Loadstring
 						end

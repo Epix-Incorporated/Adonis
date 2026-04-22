@@ -192,14 +192,16 @@ return function(Vargs, env)
 			Description = "Generates a number using Lua's math.random";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {any})
-				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
-				assert((not args[2]) or tonumber(args[2]), "Arguments provided must be numbers")
+				local m = tonumber(args[1])
+				local n = tonumber(args[2])
+				assert((not args[1]) or m, "Argument(s) provided must be numbers")
+				assert((not args[2]) or n, "Arguments provided must be numbers")
 
-				if args[2] then
-					assert(args[2] >= args[1], "Second argument n cannot be smaller than first")
-					Functions.Hint(math.random(args[1], args[2]), {plr})
-				elseif args[1] then
-					Functions.Hint(math.random(args[1]), {plr})
+				if n then
+					assert(n >= m, "Second argument n cannot be smaller than first")
+					Functions.Hint(math.random(m, n), {plr})
+				elseif m then
+					Functions.Hint(math.random(m), {plr})
 				else
 					Functions.Hint(math.random(), {plr})
 				end

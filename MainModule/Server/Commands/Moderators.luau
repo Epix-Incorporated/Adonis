@@ -1726,7 +1726,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local amount = tonumber(args[1])
-				local timer = tonumber(args[2])
+				local timer = tonumber(args[2]) or 0.1
 				if timer<=0 then timer=0.1 end
 				if amount>50 then amount=50 end
 				local command = args[3]
@@ -2672,7 +2672,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local Duration, Valid
 				if args[2] then
-					if args[2]:lower() ~= ("inf" or "infinite" or "infinity" or "unlimited") then
+					if not table.find({"inf", "infinite", "infinity", "unlimited"}, args[2]:lower()) then
 						Duration, Valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
 							return if unit == "s" then val
 								elseif unit == "m" then val * 60
@@ -3349,7 +3349,7 @@ return function(Vargs, env)
 								wait(); -- Let it finish loading character contents
 
 								newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
-								newPrimary = newChar.PrimaryPart or (newHumanoid and newHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
+								newPrimary = newChar.PrimaryPart or (newHumanoid and newHumanoid.RootPart) or newChar:FindFirstChild("HumanoidRootPart");
 
 								local forcefield = newChar:FindFirstChildOfClass("ForceField")
 								if forcefield then
@@ -6851,7 +6851,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local Duration, Valid
 				if args[2] then
-					if args[2]:lower() ~= table.find({"inf", "infinite", "infinity", "unlimited"}, string.lower(args[2])) then
+					if not table.find({"inf", "infinite", "infinity", "unlimited"}, args[2]:lower()) then
 						Duration, Valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
 							return if unit == "s" then val
 								elseif unit == "m" then val * 60
