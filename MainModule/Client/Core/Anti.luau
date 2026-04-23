@@ -9,6 +9,9 @@ logError = nil
 
 --// Anti-Exploit
 return function(Vargs, GetEnv)
+	-- Capture a direct reference to debug.info before setfenv alters the environment,
+	-- preserving a reference to the original C function independent of later env changes.
+	local rawDebugInfo = debug.info
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
@@ -45,6 +48,7 @@ return function(Vargs, GetEnv)
 	local Get = client.Remote.Get
 	local NetworkClient = service.NetworkClient
 	local Kill = client.Kill
+	local killSource, killLine, killName = rawDebugInfo(Kill, "sln")
 	local Player = service.Players.LocalPlayer
 	local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 	local Kick = Player.Kick
@@ -78,7 +82,14 @@ return function(Vargs, GetEnv)
 	getfenv().service = nil
 	getfenv().script = nil
 
+	-- Private counter incremented only by the real Detected body when action is "_".
+	-- Used by the tamper loop to verify Detected executes its actual implementation.
+	local _heartbeatSeq = 0
+
 	local Detected = function(action, info, nocrash)
+		if action == "_" then
+			_heartbeatSeq = _heartbeatSeq + 1
+		end
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
@@ -95,16 +106,6 @@ return function(Vargs, GetEnv)
 		return true
 	end;
 
-	local detectFuncName, detectSource, detectLine
-	task.spawn(xpcall, function()
-		detectFuncName, detectSource, detectLine = debug.info(Detected, "nsl")
-	end, function()
-		Detected("crash", "Tamper Protection 0xCCD44")
-		task.wait(1)
-		pcall(Disconnect, "Adonis_0xCCD44")
-		pcall(Kill, "Adonis_0xCCD44")
-		pcall(Kick, Player, "Adonis_0xCCD44")
-	end)
 
 	local function compareTables(t1, t2)
 		if service.CountTable(t1) ~= service.CountTable(t2) then
@@ -213,7 +214,7 @@ return function(Vargs, GetEnv)
 			local firstTime = #callStacks[method] <= 0
 
 			for i = 3, 4 do
-				local func = debug.info(i, "f")
+				local func = rawDebugInfo(i, "f")
 
 				if firstTime then
 					callStacks[method][i] = func
@@ -229,10 +230,10 @@ return function(Vargs, GetEnv)
 			if
 				not metamethod or
 				type(metamethod) ~= "function" or
-				debug.info(metamethod, "s") ~= "[C]" or
-				debug.info(metamethod, "l") ~= -1 or
-				debug.info(metamethod, "n") ~= "" or
-				debug.info(metamethod, "a") ~= 0
+				rawDebugInfo(metamethod, "s") ~= "[C]" or
+				rawDebugInfo(metamethod, "l") ~= -1 or
+				rawDebugInfo(metamethod, "n") ~= "" or
+				rawDebugInfo(metamethod, "a") ~= 0
 			then
 				return false
 			else
@@ -248,7 +249,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = rawGame.____________
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("indexInstance") then
 						callstackInvalid = true
 					end
@@ -279,7 +280,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					rawGame.____________ = 5
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("newindexInstance") then
 						callstackInvalid = true
 					end
@@ -311,7 +312,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = rawGame:____________()
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("namecallInstance") then
 						callstackInvalid = true
 					end
@@ -341,7 +342,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = Enum.HumanoidStateType.____________
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("indexEnum") then
 						callstackInvalid = true
 					end
@@ -372,7 +373,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = Enum.HumanoidStateType:____________()
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("namecallEnum") then
 						callstackInvalid = true
 					end
@@ -414,17 +415,38 @@ return function(Vargs, GetEnv)
 		Routine(function()
 			while true do
 				do
-					local source, line, argN, isVararg, name, closure = debug.info(Detected, "slanf")
-					if
-						source ~= detectSource or
-						line ~= detectLine or
-						name ~= detectFuncName or
-						argN ~= 3 or
-						isVararg or
-						closure ~= Detected or
-						not Detected("_", "_", true)
-					then -- detects the current bypass
-						while true do end
+					-- 1. Detect if the debug.info reference has been swapped since load time.
+					if rawDebugInfo ~= debug.info then
+						Detected("crash", "Tamper Protection 0xDBI01")
+						task.wait(1)
+						pcall(Disconnect, "Adonis_0xDBI01")
+						pcall(Kill, "Adonis_0xDBI01")
+						pcall(Kick, Player, "Adonis_0xDBI01")
+					end
+
+					-- 2. Behavioral heartbeat: verify Detected executes its real body when called.
+					--    A tampered Detected that short-circuits will not increment _heartbeatSeq.
+					--    Disconnect and Kick are called directly as fallbacks in case Detected
+					--    itself has been tampered with.
+					local prevSeq = _heartbeatSeq
+					Detected("_", "_", true)
+					if _heartbeatSeq == prevSeq then
+						Detected("crash", "Tamper Protection 0xHB01")
+						task.wait(1)
+						pcall(Disconnect, "Adonis_0xHB01")
+						pcall(Kill, "Adonis_0xHB01")
+						pcall(Kick, Player, "Adonis_0xHB01")
+					end
+
+					-- 3. Verify Kill integrity via debug metadata captured at load time.
+					--    A tampered Kill function will have different source/line/name values.
+					local ks, kl, kn = rawDebugInfo(Kill, "sln")
+					if ks ~= killSource or kl ~= killLine or kn ~= killName then
+						Detected("crash", "Tamper Protection 0xKIL01")
+						task.wait(1)
+						pcall(Disconnect, "Adonis_0xKIL01")
+						pcall(Kill, "Adonis_0xKIL01")
+						pcall(Kick, Player, "Adonis_0xKIL01")
 					end
 				end
 
