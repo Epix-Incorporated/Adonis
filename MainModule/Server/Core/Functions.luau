@@ -1690,8 +1690,19 @@ return function(Vargs, GetEnv)
 			end)
 
 			return ServerInfo
+		end;
+
+		GetAlphabeticalEnumNames = function(enum: Enum): {string}
+			local enumItems = enum:GetEnumItems()
+			local itemNames = {}
+
+			for _, item in enumItems do
+				table.insert(itemNames, item.Name)
+			end
+
+			table.sort(itemNames)
+
+			return itemNames
 		end
 	}
-
-
 end

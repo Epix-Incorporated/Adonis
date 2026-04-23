@@ -489,19 +489,24 @@ return function(Vargs, env)
 		SetCoreGuiEnabled = {
 			Prefix = Settings.Prefix;
 			Commands = {"setcoreguienabled", "setcoreenabled", "showcoregui", "setcoregui", "setcgui", "setcore", "setcge"};
-			Args = {"player", "All/Backpack/Chat/EmotesMenu/Health/PlayerList", "true/false"};
+			Args = {"player", table.concat(Functions.GetAlphabeticalEnumNames(Enum.CoreGuiType), "/"), "true/false"};
 			Description = "Enables or disables CoreGui elements for the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing player(s) (argument #1)")
+				assert(args[2], "Missing CoreGuiType (argument #2)")
+				-- selene: allow(incorrect_standard_library_use)
+				assert(Enum.CoreGuiType:FromName(args[2]), `Invalid CoreGuiType '{args[2]}' (argument #2)`)
 				assert(args[3], "Missing state (argument #3)")
-				local enable = if args[3]:lower() == "on" or args[3]:lower() == "true" then true elseif args[3]:lower() == "off" or args[3]:lower() == "false" then false else nil
-				assert(enable ~= nil, `Invalid state '{args[3]}'; please supply 'true' or 'false' (argument #3)`)
-				for _,v in service.GetPlayers(plr, args[1]) do
-					if string.lower(args[3]) == "on" or string.lower(args[3]) == "true" then
-						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], true)
-					elseif string.lower(args[3]) == 'off' or string.lower(args[3]) == "false" then
-						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], false)
-					end
+
+				local args3Lowered = args[3]:lower()
+				local enable = if args3Lowered == "true" or args3Lowered == "on" then true
+					elseif args3Lowered == "false" or args3Lowered == "off" then false
+					else nil
+				assert(enable ~= nil, `Invalid state '{args[3]}' (argument #3); expected true/false/on/off`)
+				
+				for _, v in service.GetPlayers(plr, args[1]) do
+    				Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], enable)
 				end
 			end
 		};
