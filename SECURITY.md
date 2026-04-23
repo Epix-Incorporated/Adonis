@@ -6,12 +6,12 @@ Only the *live* (release) version of Adonis is officially supported and given se
 
 [Supported Loader *(use this)*](https://www.roblox.com/library/7510622625) | [Supported MainModule (source)](https://www.roblox.com/library/7510592873)
 
-* Older versions of Adonis are not maintained/updated; hence, we do *not* recommend using those versions as they may contain a larger number of unpatched vulnerabilities (and bugs). 
-* Additionally, we do not offer security patches or updates for forks of Adonis. If you wish to continue to recieve feature and security updates, we reccommend using the supported versions.
+* Older versions of Adonis are not maintained/updated; hence, we do *not* recommend using those versions as they may contain a larger number of unpatched vulnerabilities (and bugs).
+* Additionally, we do not offer security patches or updates for forks of Adonis. If you wish to continue to receive feature and security updates, we recommend using the supported versions.
 
 ## Reporting a Vulnerability in Adonis
 
-👉 **If the vulnerability is *severe* or highly damaging**, join the [Epix Incorporated Discord server](https://discord.gg/H5RvTP3) and DM a *Moderator*, *Developer, or *Maintainer*.
+👉 **If the vulnerability is *severe* or highly damaging**, join the [Epix Incorporated Discord server](https://discord.gg/H5RvTP3) and DM a *Moderator*, *Developer*, or *Maintainer*.
 
 👉 **If the vulnerability is relatively minor and can be safely discussed in public**, create a bug report [on GitHub](https://github.com/Epix-Incorporated/Adonis/issues/new/choose) or in our Discord server.
 
