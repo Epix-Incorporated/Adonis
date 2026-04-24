@@ -197,8 +197,6 @@ else
 	end
 
 	if settingsFolder then
-		local erroredSettingsModules = {}
-
 		for _, module in settingsFolder:GetChildren() do
 			xpcall(function()
 				local requiredModule = require(module)
@@ -213,7 +211,6 @@ else
 					end
 				end
 			end, function(err)
-				table.insert(erroredSettingsModules, {Name = module.Name, Error = err})
 				warn(`[DEVELOPER ERROR] The Settings.{module.Name} module errored while loading; using defaults for this module; Error Message: {err}`)
 				table.insert(data.Messages, {
 					Title = "Warning!";
@@ -222,10 +219,6 @@ else
 					Time = 15;
 				})
 			end)
-		end
-
-		if #erroredSettingsModules > 0 then -- TODO: Investigate what this is actually for, and if it's actually needed?
-			data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults. Does this actually matter?
 		end
 	elseif not data.DebugMode then
 		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
