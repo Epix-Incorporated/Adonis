@@ -205,7 +205,7 @@ else
 
 				for key, value in requiredModule do
 					local tbl = data[data.MergeTableOverrides[key]] or data.Settings[key]
-					local old tbl[key]
+					local old = tbl[key]
 
 					if value ~= old then
 						tbl[key] = (type(old) == "table" and type(value) == "table") or mergeTables(old, value, {}, true) or new
