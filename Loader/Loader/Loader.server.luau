@@ -45,6 +45,41 @@ local function yxpcall(f, callback, ...)
 	end
 end
 
+local function mergeTables(t1, t2, cyclicCheck, metatable)
+	if cyclicCheck then
+		if cyclicCheck[t2] then
+			return t1
+		else
+			cyclicCheck[t2] = true
+		end
+	end
+
+	local oldLen, newLen = t1.n or #t1, t2.n or #t2
+	if newLen > 0 then
+		table.move(t2, 1, newLen, t1, oldLen + 1)
+
+		if t2.n or t1.n then
+			t1.n = oldLen + newLen
+		end
+	end
+
+	for k, v in pairs(t2) do
+		if not (type(k) == "number" and math.floor(k) == k and k > 0) then
+			local current, new = t1[k], t2[k]
+	
+			if current ~= new then
+				t2[k] = (cyclicCheck and type(current) == "table" and type(new) == "table") or mergeTables(current, new, cyclicCheck, metatable) or new
+			end
+		end
+	end
+
+	if metatable and getmetatable(t2) and not getmetatable(t1) then
+		pcall(setmetatable, t1, getmetatable(t2))
+	end
+
+	return t1
+end
+
 local function loadModuleAsset(moduleId: number)
 	local asset = InsertService:LoadAsset(moduleId)
 
@@ -105,6 +140,7 @@ else
 			Descriptions = "Description";
 			Order = "Order";
 			Message = "Messages";
+			MergeTableOverrides = "MergeTableOverrides";
 		} :: {[string]: string};
 
 		ModelParent = model.Parent;
@@ -160,7 +196,7 @@ else
 		end
 	end
 
-	if settingsFolder and settingsFolder:IsA("Folder") then
+	if settingsFolder then
 		local erroredSettingsModules = {}
 
 		for _, module in settingsFolder:GetChildren() do
@@ -168,10 +204,11 @@ else
 				local requiredModule = require(module)
 
 				for key, value in requiredModule do
-					if data.MergeTableOverrides[key] then
-						data.MergeTableOverrides[key] = value -- TODO: Make this merge in to already existing tables (and sub tables?)
-					else
-						data.Settings[key] = value
+					local tbl = data[data.MergeTableOverrides[key]] or data.Settings[key]
+					local old tbl[key]
+
+					if value ~= old then
+						tbl[key] = (type(old) == "table" and type(value) == "table") or mergeTables(old, value, {}, true) or new
 					end
 				end
 			end, function(err)
@@ -186,8 +223,8 @@ else
 			end)
 		end
 
-		if #erroredSettingsModules > 0 then -- TODO: Investigate what this is for, and if it's needed
-			data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults.
+		if #erroredSettingsModules > 0 then -- TODO: Investigate what this is actually for, and if it's actually needed?
+			data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults. Does this actually matter?
 		end
 	elseif not data.DebugMode then
 		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
