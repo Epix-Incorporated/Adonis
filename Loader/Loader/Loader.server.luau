@@ -56,7 +56,7 @@ local function mergeTables(t1, t2, cyclicCheck, metatable)
 
 	local oldLen, newLen = t1.n or #t1, t2.n or #t2
 	if newLen > 0 then
-		table.move(t2, 1, newLen, t1, oldLen + 1)
+		table.move(t2, 1, newLen, oldLen + 1, t1)
 
 		if t2.n or t1.n then
 			t1.n = oldLen + newLen
@@ -66,7 +66,7 @@ local function mergeTables(t1, t2, cyclicCheck, metatable)
 	for k, v in pairs(t2) do
 		if not (type(k) == "number" and math.floor(k) == k and k > 0) then
 			local current, new = t1[k], t2[k]
-	
+
 			if current ~= new then
 				t2[k] = (cyclicCheck and type(current) == "table" and type(new) == "table") or mergeTables(current, new, cyclicCheck, metatable) or new
 			end
@@ -139,7 +139,7 @@ else
 			Settings = "Settings";
 			Descriptions = "Description";
 			Order = "Order";
-			Message = "Messages";
+			Messages = "Messages";
 			MergeTableOverrides = "MergeTableOverrides";
 		} :: {[string]: string};
 
@@ -204,11 +204,12 @@ else
 				local requiredModule = require(module)
 
 				for key, value in requiredModule do
-					local tbl = data[data.MergeTableOverrides[key]] or data.Settings
+					key = data.MergeTableOverrides[key] or key
+					local tbl = data[key] and data or data.Settings
 					local old = tbl[key]
 
 					if value ~= old then
-						tbl[key] = (type(old) == "table" and type(value) == "table") or mergeTables(old, value, {}, true) or value
+						tbl[key] = (type(old) == "table" and type(value) == "table") and mergeTables(old, value, {}, true) or value
 					end
 				end
 			end, function(err)
