@@ -204,11 +204,11 @@ else
 				local requiredModule = require(module)
 
 				for key, value in requiredModule do
-					local tbl = data[data.MergeTableOverrides[key]] or data.Settings[key]
+					local tbl = data[data.MergeTableOverrides[key]] or data.Settings
 					local old = tbl[key]
 
 					if value ~= old then
-						tbl[key] = (type(old) == "table" and type(value) == "table") or mergeTables(old, value, {}, true) or new
+						tbl[key] = (type(old) == "table" and type(value) == "table") or mergeTables(old, value, {}, true) or value
 					end
 				end
 			end, function(err)
