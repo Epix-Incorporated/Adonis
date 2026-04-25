@@ -45,6 +45,41 @@ local function yxpcall(f, callback, ...)
 	end
 end
 
+local function mergeTables(t1, t2, cyclicCheck, metatable)
+	if cyclicCheck then
+		if cyclicCheck[t2] then
+			return t1
+		else
+			cyclicCheck[t2] = true
+		end
+	end
+
+	local oldLen, newLen = t1.n or #t1, t2.n or #t2
+	if newLen > 0 then
+		table.move(t2, 1, newLen, oldLen + 1, t1)
+
+		if t2.n or t1.n then
+			t1.n = oldLen + newLen
+		end
+	end
+
+	for k, v in pairs(t2) do
+		if not (type(k) == "number" and math.floor(k) == k and k > 0) then
+			local current, new = t1[k], t2[k]
+
+			if current ~= new then
+				t2[k] = (cyclicCheck and type(current) == "table" and type(new) == "table") or mergeTables(current, new, cyclicCheck, metatable) or new
+			end
+		end
+	end
+
+	if metatable and getmetatable(t2) and not getmetatable(t1) then
+		pcall(setmetatable, t1, getmetatable(t2))
+	end
+
+	return t1
+end
+
 local function loadModuleAsset(moduleId: number)
 	local asset = InsertService:LoadAsset(moduleId)
 
@@ -89,7 +124,6 @@ else
 	local settingsFolder = configFolder:FindFirstChild("Settings")
 	local pluginsFolder = configFolder.Plugins
 	local themesFolder = configFolder.Themes
-	local inGameSettingsEditorSettingsFolder = configFolder:FindFirstChild("InGameSettingsEditorSettings")
 
 	local backup = model:Clone()
 
@@ -101,6 +135,13 @@ else
 		ClientPlugins = {} :: {ModuleScript|string};
 		Packages = {} :: {Folder};
 		Themes = {} :: {Instance};
+		MergeTableOverrides = {		
+			Settings = "Settings";
+			Descriptions = "Description";
+			Order = "Order";
+			Messages = "Messages";
+			MergeTableOverrides = "MergeTableOverrides";
+		} :: {[string]: string};
 
 		ModelParent = model.Parent;
 		Model = model;
@@ -155,7 +196,31 @@ else
 		end
 	end
 
-	if settingsFolder == nil then
+	if settingsFolder then
+		for _, module in mergeTables(settingsFolder:GetChildren(), { settingsFolder:IsA("ModuleScript") and settingsFolder or nil }) do
+			xpcall(function()
+				local requiredModule = require(module)
+
+				for key, value in requiredModule do
+					key = data.MergeTableOverrides[key] or key
+					local tbl = data[key] and data or data.Settings
+					local old = tbl[key]
+
+					if value ~= old then
+						tbl[key] = (type(old) == "table" and type(value) == "table" and next(old, nil) ~= nil) and mergeTables(old, value, {}, true) or value
+					end
+				end
+			end, function(err)
+				warn(`[DEVELOPER ERROR] The Settings.{module.Name} module errored while loading; using defaults for this module; Error Message: {err}`)
+				table.insert(data.Messages, {
+					Title = "Warning!";
+					Icon = "MatIcon://Dangerous";
+					Message = `The Settings.{module.Name} module errored while loading; using defaults for this module.`;
+					Time = 15;
+				})
+			end)
+		end
+	elseif not data.DebugMode then
 		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
 		table.insert(data.Messages, {
 			Title = "Warning!";
@@ -163,78 +228,6 @@ else
 			Message = "No settings folder or module found; using default settings.";
 			Time = 15;
 		})
-	elseif settingsFolder:IsA("Folder") then
-		local erroredSettingsModules = {}
-
-		for _, module in settingsFolder:GetChildren() do
-			xpcall(function()
-				local requiredModule = require(module)
-
-				for key, value in requiredModule do
-					if key == "Messages" then
-						data.Messages = value
-					end
-
-					data.Settings[key] = value
-				end
-			end, function(err)
-				table.insert(erroredSettingsModules, {Name = module.Name, Error = err})
-			end)
-		end
-
-		for _, erroredSettingModule in erroredSettingsModules do
-			warn(`[DEVELOPER ERROR] The Settings.{erroredSettingModule.Name} module errored while loading; using defaults for this module; Error Message: {erroredSettingModule.Error}`)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = `The Settings.{erroredSettingModule.Name} module errored while loading; using defaults for this module.`;
-				Time = 15;
-			})
-		end
-
-		if #erroredSettingsModules > 0 then
-			data.Settings.Ranks = {} -- This is for security reasons because settings may reset back to unintended defaults.
-		end
-
-		xpcall(function()
-			data.Descriptions = require(inGameSettingsEditorSettingsFolder.Descriptions)
-		end, function(err)
-			warn("[DEVELOPER ERROR] The InGameSettingsEditorSettings.Descriptions module errored while loading; using defaults; Error Message:", err)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = "The InGameSettingsEditorSettings.Descriptions module errored while loading; using defaults.";
-				Time = 15;
-			})
-		end)
-
-		xpcall(function()
-			data.Order = require(inGameSettingsEditorSettingsFolder.Order)
-		end, function(err)
-			warn("[DEVELOPER ERROR] The InGameSettingsEditorSettings.Order module errored while loading; using defaults; Error Message:", err)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = "The InGameSettingsEditorSettings.Order module errored while loading; using defaults.";
-				Time = 15;
-			})
-		end)
-	else -- Account for legacy settings module
-		local success, settingsData = pcall(require, settingsFolder)
-		if success then
-			data.Settings = settingsData.Settings
-			data.Descriptions = settingsData.Description
-			data.Order = settingsData.Order
-			data.Messages = settingsData.Settings.Messages
-		else
-			warn("[DEVELOPER ERROR] Settings module errored while loading; using default settings; Error Message: ", settingsData)
-			table.insert(data.Messages, {
-				Title = "Warning!";
-				Icon = "MatIcon://Dangerous";
-				Message = "Settings module error detected; using default settings.";
-				Time = 15;
-			})
-		end
 	end
 
 	for _, module in pluginsFolder:GetChildren() do
