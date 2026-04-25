@@ -207,7 +207,7 @@ else
 					local old = tbl[key]
 
 					if value ~= old then
-						tbl[key] = (type(old) == "table" and type(value) == "table") and mergeTables(old, value, {}, true) or value
+						tbl[key] = (type(old) == "table" and type(value) == "table" and next(old, nil)) and mergeTables(old, value, {}, true) or value
 					end
 				end
 			end, function(err)
