@@ -695,6 +695,16 @@ return function(data, env)
 	local prefix = settings.Prefix
 	local commands = client.Remote.Get('FormattedCommands') or {}
 
+	client.Variables.ConsoleHistory = client.Variables.ConsoleHistory or {}
+	client.Variables.ConsoleHistoryIndex = client.Variables.ConsoleHistoryIndex or (#client.Variables.ConsoleHistory + 1)
+
+	local history = client.Variables.ConsoleHistory
+	local historyIndex = client.Variables.ConsoleHistoryIndex
+
+	local historyDebounce = false
+
+	local internalChange = false
+
 	local tweenInfo = TweenInfo.new(0.15)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
 	local scrollOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = UDim2.new(1, 0, 0, 140);
@@ -844,6 +854,9 @@ return function(data, env)
 					task.wait(0.5)
 					sound:Destroy()
 				end)
+				table.insert(history, text.Text)
+				historyIndex = #history + 1
+				client.Variables.ConsoleHistoryIndex = historyIndex
 				client.Remote.Send('ProcessCommand',text.Text)
 			end
 			close()
@@ -853,17 +866,30 @@ return function(data, env)
 	end)
 
 	text.Changed:Connect(function(c)
-		if c == 'Text' and text.Text ~= '' and open then
-			if string.sub(text.Text, string.len(text.Text)) == "	" then
+		if internalChange then return end
+		if c == 'Text' and text.Text ~= '' and open and not internalChange then
+			if string.sub(text.Text, -1) == "\t" then
+				local raw = string.sub(text.Text, 1, -2)
+
+				local before, current = raw:match("^(.*"..splitKey..")([^"..splitKey.."]*)$")
+
+				local suggestion
 				if players:FindFirstChild("Entry 0") then
-					text.Text = `{string.sub(text.Text, 1, (string.len(text.Text) - 1))}{players["Entry 0"].Text} `
+					suggestion = players["Entry 0"].Text
 				elseif scroll:FindFirstChild("Entry 0") then
-					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
+					suggestion = string.split(scroll["Entry 0"].Text, "<")[1]
 				else
-					text.Text = text.Text..prefix
+					suggestion = prefix
 				end
-				text.CursorPosition = string.len(text.Text) + 1
-				text.Text = string.gsub(text.Text, "	", "")
+
+				if before then
+					text.Text = before .. suggestion .. " "
+				else
+					text.Text = suggestion .. " "
+				end
+
+				text.CursorPosition = #text.Text + 1
+				return
 			end
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
@@ -875,9 +901,13 @@ return function(data, env)
 			end
 
 			local pNum = 0
-			local pMatch = string.match(nText,`.+{splitKey}(.*)$`)
-			for i,v in service.Players:GetPlayers() do
-				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,`{splitKey}$`) then
+
+			local ok, suggestions = pcall(function()
+				return client.Remote.Get("GetArgSuggestions", nText)
+			end)
+
+			if ok and type(suggestions) == "table" then
+				for _,v in ipairs(suggestions) do
 					local new = entry:Clone()
 					new.Text = tostring(v)
 					new.Name = `Entry {pNum}`
@@ -885,11 +915,22 @@ return function(data, env)
 					new.Visible = true
 					new.Parent = players
 					new.Position = UDim2.new(0,0,0,20*pNum)
+
 					new.MouseButton1Down:Connect(function()
-						text.Text = text.Text..tostring(v)
+						internalChange = true
+
+						local args = string.split(text.Text, splitKey)
+						args[#args] = tostring(v)
+
+						text.Text = table.concat(args, splitKey)
+						text.CursorPosition = #text.Text + 1
 						text:CaptureFocus()
+
+						task.wait()
+						internalChange = false
 					end)
-					pNum = pNum+1
+
+					pNum += 1
 				end
 			end
 
@@ -912,8 +953,12 @@ return function(data, env)
 					b.Name = `Entry {num}`
 					b.Position = UDim2.new(0,0,0,20*num)
 					b.MouseButton1Down:Connect(function()
-						text.Text = b.Text
+						internalChange = true
+						text.Text = b.Text .. " "
+						text.CursorPosition = #text.Text + 1
 						text:CaptureFocus()
+						task.wait()
+						internalChange = false
 					end)
 					num = num+1
 				end
@@ -946,7 +991,41 @@ return function(data, env)
 			service.Events.ToggleConsole:Fire()
 		end
 	end)
+	BindEvent(service.UserInputService.InputBegan, function(input, gp)
+		if not opened or historyDebounce then return end
 
+		local textbox = service.UserInputService:GetFocusedTextBox()
+		if textbox ~= text then return end
+
+		if input.KeyCode == Enum.KeyCode.Up then
+			historyDebounce = true
+
+			historyIndex = math.max(1, historyIndex - 1)
+			client.Variables.ConsoleHistoryIndex = historyIndex
+
+			internalChange = true
+			text.Text = history[historyIndex] or ""
+			text.CursorPosition = #text.Text + 1
+			task.wait()
+			internalChange = false
+
+			historyDebounce = false
+
+		elseif input.KeyCode == Enum.KeyCode.Down then
+			historyDebounce = true
+
+			historyIndex = math.min(#history + 1, historyIndex + 1)
+			client.Variables.ConsoleHistoryIndex = historyIndex
+
+			internalChange = true
+			text.Text = history[historyIndex] or ""
+			text.CursorPosition = #text.Text + 1
+			task.wait()
+			internalChange = false
+
+			historyDebounce = false
+		end
+	end)
 	gTable:Ready()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
