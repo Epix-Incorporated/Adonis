@@ -197,7 +197,7 @@ else
 	end
 
 	if settingsFolder then
-		for _, module in settingsFolder:GetChildren() do
+		for _, module in mergeTables(settingsFolder:GetChildren(), { settingsFolder:IsA("ModuleScript") and settingsFolder or nil }) do
 			xpcall(function()
 				local requiredModule = require(module)
 
@@ -207,7 +207,7 @@ else
 					local old = tbl[key]
 
 					if value ~= old then
-						tbl[key] = (type(old) == "table" and type(value) == "table" and next(old, nil)) and mergeTables(old, value, {}, true) or value
+						tbl[key] = (type(old) == "table" and type(value) == "table" and next(old, nil) ~= nil) and mergeTables(old, value, {}, true) or value
 					end
 				end
 			end, function(err)
