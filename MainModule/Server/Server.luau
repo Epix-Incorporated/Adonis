@@ -49,7 +49,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert =
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert, debug =
 	_G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
@@ -59,7 +59,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end, debug;
 
 local SERVICES_WE_USE = table.freeze {
 	"Workspace";
@@ -87,7 +87,8 @@ local SERVICES_WE_USE = table.freeze {
 }
 
 local unique = {}
-local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
+local origEnv = getfenv()
+setfenv(1, setmetatable({}, { __metatable = unique }))
 local locals = {}
 local server = {}
 local service = {}
@@ -95,9 +96,10 @@ local RbxEvents = {}
 local ErrorLogs = {}
 local HookedEvents = {}
 local ServiceSpecific = {}
-local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
+local oldFromExisting = Instance.fromExisting
+local oldReq = require
 local isModule = function(module)
 	for ind, modu in pairs(server.Modules) do
 		if module == modu then
@@ -358,11 +360,15 @@ BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 task = service.Localize(task)
+debug = service.Localize(debug)
 
 --// Wrap
 Instance = {
 	new = function(obj, parent)
 		return oldInstNew(obj, service.UnWrap(parent))
+	end,
+	fromExisting = function(existingInstance: Instance)
+		return oldFromExisting(service.UnWrap(existingInstance))
 	end
 }
 
