@@ -931,6 +931,17 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Coords")
 			end;
 		};
+		
+		Velocity = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"vel", "velocity"};
+			Args = {};
+			Description = "Shows your current velocity";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "Velocity")
+			end;
+		};
 
 		Wait = {
 			Prefix = Settings.PlayerPrefix;
