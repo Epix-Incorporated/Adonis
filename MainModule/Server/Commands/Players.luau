@@ -1,23 +1,35 @@
 return function(Vargs, env)
-	local server = Vargs.Server;
-	local service = Vargs.Service;
+	local server = Vargs.Server
+	local service = Vargs.Service
 
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
-		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+		server.Functions,
+		server.Commands,
+		server.Admin,
+		server.Anti,
+		server.Core,
+		server.HTTP,
+		server.Logs,
+		server.Remote,
+		server.Process,
+		server.Variables,
+		server.Deps
 
-	if env then setfenv(1, env) end
+	if env then
+		setfenv(1, env)
+	end
 
 	local Routine = env.Routine
 
 	return {
 		ViewCommands = {
-			Prefix = Settings.Prefix;
-			Commands = {"cmds", "commands", "cmdlist"};
-			Args = {};
-			Description = "Lists all available commands";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.Prefix,
+			Commands = { "cmds", "commands", "cmdlist" },
+			Args = {},
+			Description = "Lists all available commands",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local tab = {}
 				local cmdCount = 0
 
@@ -28,7 +40,7 @@ return function(Vargs, env)
 						continue
 					end
 
-					for _,alias in cmd.Commands do
+					for _, alias in cmd.Commands do
 						if #cmdAliases >= 6 and (#cmd.Commands - #cmdAliases) ~= 0 then
 							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)
 							break
@@ -42,8 +54,10 @@ return function(Vargs, env)
 					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
 						Text = Admin.FormatCommand(cmd),
-						Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
-						Filter = permissionDesc
+						Desc = `[{permissionDesc}] {if #cmdAliases >= 1
+							then `\nAliases: {table.concat(cmdAliases, ", ")}`
+							else ""} \n\n{cmd.Description or "(No description provided)"}`,
+						Filter = permissionDesc,
 					})
 					cmdCount += 1
 				end
@@ -52,44 +66,53 @@ return function(Vargs, env)
 					table.insert(tab, {
 						Text = alias,
 						Desc = `[User Alias] {command}`,
-						Filter = command
+						Filter = command,
 					})
 					cmdCount += 1
 				end
 
-				table.sort(tab, function(a, b) return a.Text < b.Text end)
+				table.sort(tab, function(a, b)
+					return a.Text < b.Text
+				end)
 
 				Remote.MakeGui(plr, "List", {
-					Title = "Commands";
-					Table = tab;
+					Title = "Commands",
+					Table = tab,
 					TitleButtons = {
 						{
-							Text = "?";
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`)
-						}
-					};
+							Text = "?",
+							OnClick = Core.Bytecode(
+								`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`
+							),
+						},
+					},
 				})
-			end
-		};
+			end,
+		},
 
 		CommandInfo = {
-			Prefix = Settings.Prefix;
-			Commands = {"cmdinfo", "commandinfo", "cmddetails", "commanddetails"};
-			Args = {"command"};
-			Description = "Shows you information about a specific command";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.Prefix,
+			Commands = { "cmdinfo", "commandinfo", "cmddetails", "commanddetails" },
+			Args = { "command" },
+			Description = "Shows you information about a specific command",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				assert(args[1], "No command provided")
 
 				local cmd, ind
 				for i, v in Admin.SearchCommands(plr, "all") do
 					for _, p in v.Commands do
-						if (if type(v.Prefix) == "table" then v.Prefix[1] else v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
+						if
+							(if type(v.Prefix) == "table" then v.Prefix[1] else v.Prefix or "") .. string.lower(p)
+							== string.lower(args[1])
+						then
 							cmd, ind = v, i
 							break
 						end
 					end
-					if ind then break end
+					if ind then
+						break
+					end
 				end
 				assert(cmd, `Command '{args[1]}' is either not found or beyond your permission level`)
 
@@ -98,123 +121,150 @@ return function(Vargs, env)
 				local cmdArgs = Admin.FormatCommandArguments(cmd)
 
 				local cmdAttribs = {}
-				for _, key in {"Disabled", "Fun", "Hidden", "NoStudio", "NonChattable", "CrossServerDenied", "AllowDonors"} do
+				for _, key in
+					{ "Disabled", "Fun", "Hidden", "NoStudio", "NonChattable", "CrossServerDenied", "AllowDonors" }
+				do
 					if cmd[key] then
 						table.insert(cmdAttribs, key)
 					end
 				end
 
 				Remote.MakeGui(plr, "List", {
-					Title = "Command Info";
-					Icon = server.MatIcons.Info;
+					Title = "Command Info",
+					Icon = server.MatIcons.Info,
 					Table = {
-						{Text = `<b>Prefix:</b> {if type(cmd.Prefix) =="table" then table.concat(cmd.Prefix, ", ") else cmd.Prefix}`, Desc = "Prefix used to run the command"},
-						{Text = `<b>Commands:</b> {SanitizeXML(table.concat(cmd.Commands, ", "))}`, Desc = "Valid default aliases for the command"},
-						{Text = `<b>Arguments:</b> {if cmdArgs == "" then "-" else SanitizeXML(cmdArgs)}`, Desc = "Parameters taken by the command"},
-						{Text = `<b>Admin Level:</b> {Admin.FormatCommandAdminLevel(cmd)}`, Desc = "Rank required to run the command"},
-						{Text = `<b>Description:</b> {SanitizeXML(cmd.Description)}`, Desc = "Command description"},
-						{Text = `<b>Attributes:</b> {if #cmdAttribs == 0 then "-" else table.concat(cmdAttribs, "; ")}`, Desc = "Extra data about the command"},
-						{Text = `<b>Index:</b> {SanitizeXML(tostring(ind))}`, Desc = "The internal command index/identifier"},
-					};
-					RichText = true;
-					Size = {400, 225};
+						{
+							Text = `<b>Prefix:</b> {if type(cmd.Prefix) == "table"
+								then table.concat(cmd.Prefix, ", ")
+								else cmd.Prefix}`,
+							Desc = "Prefix used to run the command",
+						},
+						{
+							Text = `<b>Commands:</b> {SanitizeXML(table.concat(cmd.Commands, ", "))}`,
+							Desc = "Valid default aliases for the command",
+						},
+						{
+							Text = `<b>Arguments:</b> {if cmdArgs == "" then "-" else SanitizeXML(cmdArgs)}`,
+							Desc = "Parameters taken by the command",
+						},
+						{
+							Text = `<b>Admin Level:</b> {Admin.FormatCommandAdminLevel(cmd)}`,
+							Desc = "Rank required to run the command",
+						},
+						{ Text = `<b>Description:</b> {SanitizeXML(cmd.Description)}`, Desc = "Command description" },
+						{
+							Text = `<b>Attributes:</b> {if #cmdAttribs == 0
+								then "-"
+								else table.concat(cmdAttribs, "; ")}`,
+							Desc = "Extra data about the command",
+						},
+						{
+							Text = `<b>Index:</b> {SanitizeXML(tostring(ind))}`,
+							Desc = "The internal command index/identifier",
+						},
+					},
+					RichText = true,
+					Size = { 400, 225 },
 				})
-			end
-		};
+			end,
+		},
 
 		Notepad = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"notepad", "stickynote"};
-			Args = {"text (optional)"};
-			Description = "Opens a textbox window for you to type into";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "Notepad", {Text = args[1]})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "notepad", "stickynote" },
+			Args = { "text (optional)" },
+			Description = "Opens a textbox window for you to type into",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "Notepad", { Text = args[1] })
+			end,
+		},
 
 		Paint = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"paint", "canvas", "draw"};
-			Args = {};
-			Description = "Opens a canvas window for you to draw on";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "paint", "canvas", "draw" },
+			Args = {},
+			Description = "Opens a canvas window for you to draw on",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "Paint", {})
-			end
-		};
+			end,
+		},
 
 		Prefix = {
-			Prefix = "!";
-			Commands = {"example"};
-			Args = {};
-			Description = "Shows you the command prefix using the :cmds command";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Functions.Hint(`{if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix}cmds`, {plr})
-			end
-		};
+			Prefix = "!",
+			Commands = { "example" },
+			Args = {},
+			Description = "Shows you the command prefix using the :cmds command",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Functions.Hint(
+					`{if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix}cmds`,
+					{ plr }
+				)
+			end,
+		},
 
 		NotifyMe = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"notifyme"};
-			Args = {"time (in seconds) or inf", "message"};
-			Hidden = true;
-			Description = "Sends yourself a notification";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "notifyme" },
+			Args = { "time (in seconds) or inf", "message" },
+			Hidden = true,
+			Description = "Sends yourself a notification",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				assert(args[1], "Missing time amount")
 				assert(args[2], "Missing message")
 				Remote.MakeGui(plr, "Notification", {
-					Title = "Notification";
-					Icon = server.MatIcons["Notifications"];
-					Message = args[2];
-					Time = tonumber(args[1]);
+					Title = "Notification",
+					Icon = server.MatIcons["Notifications"],
+					Message = args[2],
+					Time = tonumber(args[1]),
 				})
-			end
-		};
+			end,
+		},
 
 		CommsPanel = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"notifications", "comms", "nc", "commspanel"};
-			Args = {};
-			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "notifications", "comms", "nc", "commspanel" },
+			Args = {},
+			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "CommsPanel")
-			end
-		};
+			end,
+		},
 
 		RandomNum = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"rand", "random", "randnum", "dice"};
-			Args = {"num m", "num n"};
-			Description = "Generates a number using Lua's math.random";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {any})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "rand", "random", "randnum", "dice" },
+			Args = { "num m", "num n" },
+			Description = "Generates a number using Lua's math.random",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { any })
 				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
 				assert((not args[2]) or tonumber(args[2]), "Arguments provided must be numbers")
 
 				if args[2] then
 					assert(args[2] >= args[1], "Second argument n cannot be smaller than first")
-					Functions.Hint(math.random(args[1], args[2]), {plr})
+					Functions.Hint(math.random(args[1], args[2]), { plr })
 				elseif args[1] then
-					Functions.Hint(math.random(args[1]), {plr})
+					Functions.Hint(math.random(args[1]), { plr })
 				else
-					Functions.Hint(math.random(), {plr})
+					Functions.Hint(math.random(), { plr })
 				end
-			end
-		};
+			end,
+		},
 
 		BrickColorList = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"brickcolors", "colors", "colorlist"};
-			Args = {};
-			Description = "Shows you a list of Roblox BrickColors for reference";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "brickcolors", "colors", "colorlist" },
+			Args = {},
+			Description = "Shows you a list of Roblox BrickColors for reference",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local children = {
-					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
+					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]),
 				}
 
 				local brickColorNames = {}
@@ -226,115 +276,130 @@ return function(Vargs, env)
 				for i, bc in brickColorNames do
 					bc = BrickColor.new(bc)
 					table.insert(children, {
-						Class = "TextBox";
-						Size = UDim2.new(1, -10, 0, 30);
-						Position = UDim2.new(0, 5, 0, 30*(i-1));
-						BackgroundTransparency = 1;
-						TextXAlignment = "Left";
-						Text = `  {bc.Name}`;
-						TextEditable = false;
-						ClearTextOnFocus = false;
-						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.r*255, bc.g*255, bc.b*255, bc.Number);
-						ZIndex = 11;
+						Class = "TextBox",
+						Size = UDim2.new(1, -10, 0, 30),
+						Position = UDim2.new(0, 5, 0, 30 * (i - 1)),
+						BackgroundTransparency = 1,
+						TextXAlignment = "Left",
+						Text = `  {bc.Name}`,
+						TextEditable = false,
+						ClearTextOnFocus = false,
+						ToolTip = string.format(
+							"RGB: %d, %d, %d | Num: %d",
+							bc.r * 255,
+							bc.g * 255,
+							bc.b * 255,
+							bc.Number
+						),
+						ZIndex = 11,
 						Children = {
 							{
-								Class = "Frame";
-								BackgroundColor3 = bc.Color;
-								Size = UDim2.new(0, 80, 1, -4);
-								Position = UDim2.new(1, -82, 0, 2);
-								ZIndex = 12;
-							}
-						};
+								Class = "Frame",
+								BackgroundColor3 = bc.Color,
+								Size = UDim2.new(0, 80, 1, -4),
+								Position = UDim2.new(1, -82, 0, 2),
+								ZIndex = 12,
+							},
+						},
 					})
 				end
 
 				Remote.MakeGui(plr, "Window", {
-					Name = "BrickColorList";
-					Title = "BrickColors";
-					Size  = {270, 300};
-					MinSize = {150, 100};
-					Content = children;
-					Ready = true;
+					Name = "BrickColorList",
+					Title = "BrickColors",
+					Size = { 270, 300 },
+					MinSize = { 150, 100 },
+					Content = children,
+					Ready = true,
 				})
-			end
-		};
+			end,
+		},
 
 		MaterialList = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"materials", "materiallist", "mats"};
-			Args = {};
-			Description = "Shows you a list of Roblox materials for reference";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "materials", "materiallist", "mats" },
+			Args = {},
+			Description = "Shows you a list of Roblox materials for reference",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local mats = Enum.Material:GetEnumItems()
 				for i, mat in mats do
-					mats[i] = {Text = mat.Name; Desc = `Enum value: {mat.Value}`}
+					mats[i] = { Text = mat.Name, Desc = `Enum value: {mat.Value}` }
 				end
-				Remote.MakeGui(plr, "List", {Title = "Materials"; Tab = mats; TextSelectable = true;})
-			end
-		};
+				Remote.MakeGui(plr, "List", { Title = "Materials", Tab = mats, TextSelectable = true })
+			end,
+		},
 
 		ClientTab = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"client", "clientsettings", "playersettings"};
-			Args = {};
-			Description = "Opens the client settings panel";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "UserPanel", {Tab = "Client"})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "client", "clientsettings", "playersettings" },
+			Args = {},
+			Description = "Opens the client settings panel",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "UserPanel", { Tab = "Client" })
+			end,
+		},
 
 		Donate = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"donate", "change", "changecape", "donorperks"};
-			Args = {};
-			Description = "Opens the donation panel";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "UserPanel", {Tab = "Donate"})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "donate", "change", "changecape", "donorperks" },
+			Args = {},
+			Description = "Opens the donation panel",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "UserPanel", { Tab = "Donate" })
+			end,
+		},
 
 		GetScript = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"getscript", "getadonis"};
-			Args = {};
-			Description = "Prompts you to take a copy of the script";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "getscript", "getadonis" },
+			Args = {},
+			Description = "Prompts you to take a copy of the script",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				service.MarketPlace:PromptPurchase(plr, Core.LoaderID)
-			end
-		};
+			end,
+		},
 
 		ClientPerfStats = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"cstats", "clientperformance", "clientperformanceststs", "clientstats", "ping", "latency", "fps","framespersecond"};
-			Args = {};
-			Description = "Shows you your client performance stats";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = {
+				"cstats",
+				"clientperformance",
+				"clientperformanceststs",
+				"clientstats",
+				"ping",
+				"latency",
+				"fps",
+				"framespersecond",
+			},
+			Args = {},
+			Description = "Shows you your client performance stats",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "PerfStats")
-			end
-		};
+			end,
+		},
 
 		ServerSpeed = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"serverspeed", "serverping", "serverfps", "serverlag", "tps"};
-			Args = {};
-			Description = "Shows you the FPS (speed) of the server";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Functions.Hint(`The server FPS is {math.round(service.Workspace:GetRealPhysicsFPS())}`, {plr})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "serverspeed", "serverping", "serverfps", "serverlag", "tps" },
+			Args = {},
+			Description = "Shows you the FPS (speed) of the server",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Functions.Hint(`The server FPS is {math.round(service.Workspace:GetRealPhysicsFPS())}`, { plr })
+			end,
+		},
 
 		Donors = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"donors", "donorlist", "donatorlist", "donators"};
-			Args = {"autoupdate? (default: true)"};
-			Description = "Shows a list of Adonis donators who are currently in the server";
-			AdminLevel = "Players";
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "donors", "donorlist", "donatorlist", "donators" },
+			Args = { "autoupdate? (default: true)" },
+			Description = "Shows a list of Adonis donators who are currently in the server",
+			AdminLevel = "Players",
 			ListUpdater = function(plr: Player)
 				local tab = {}
 				for _, v in service.Players:GetPlayers() do
@@ -343,74 +408,78 @@ return function(Vargs, env)
 					end
 				end
 				return tab
-			end;
-			Function = function(plr: Player, args: {string})
+			end,
+			Function = function(plr: Player, args: { string })
 				Remote.RemoveGui(plr, "DonorList")
 				Remote.MakeGui(plr, "List", {
-					Name = "DonorList";
-					Title = "Donors In-Game";
-					Icon = server.MatIcons["People alt"];
-					Tab = Logs.ListUpdaters.Donors(plr);
-					Update = "Donors";
-					AutoUpdate = if not args[1] or string.lower(args[1]) == "true" or string.lower(args[1]) == "yes" then 2 else nil;
+					Name = "DonorList",
+					Title = "Donors In-Game",
+					Icon = server.MatIcons["People alt"],
+					Tab = Logs.ListUpdaters.Donors(plr),
+					Update = "Donors",
+					AutoUpdate = if not args[1]
+							or string.lower(args[1]) == "true"
+							or string.lower(args[1]) == "yes"
+						then 2
+						else nil,
 				})
-			end
-		};
+			end,
+		},
 
 		RequestHelp = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"help", "requesthelp", "gethelp", "lifealert", "sos"};
-			Args = {"reason"};
-			Description = "Calls admins for help";
-			Filter = true;
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "help", "requesthelp", "gethelp", "lifealert", "sos" },
+			Args = { "reason" },
+			Description = "Calls admins for help",
+			Filter = true,
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				if Settings.HelpSystem == true then
 					local num = 0
 					local answered = false
-					local pending = Variables.HelpRequests[plr.Name];
-					local reason = args[1] or "No reason provided";
+					local pending = Variables.HelpRequests[plr.Name]
+					local reason = args[1] or "No reason provided"
 
 					if pending and os.time() - pending.Time < 30 then
-						error("You can only send a help request once every 30 seconds.");
+						error("You can only send a help request once every 30 seconds.")
 					elseif pending and pending.Pending then
 						error("You already have a pending request")
 					else
 						service.TrackTask(`Thread: {plr} Help Request Handler`, function()
-							Functions.Hint("Request sent", {plr})
+							Functions.Hint("Request sent", { plr })
 
 							pending = {
-								Time = os.time();
-								Pending = true;
-								Reason = reason;
+								Time = os.time(),
+								Pending = true,
+								Reason = reason,
 							}
 
-							Variables.HelpRequests[plr.Name] = pending;
+							Variables.HelpRequests[plr.Name] = pending
 
 							for ind, p in service.Players:GetPlayers() do
 								Routine(function()
 									if Admin.CheckAdmin(p) then
 										local ret = Remote.MakeGuiGet(p, "Notification", {
-											Title = "Help Request";
-											Message = `{plr.Name} needs help! Reason: {pending.Reason}`;
-											Icon = server.MatIcons.Mail;
-											Time = 30;
-											OnClick = Core.Bytecode("return true");
-											OnClose = Core.Bytecode("return false");
-											OnIgnore = Core.Bytecode("return false");
+											Title = "Help Request",
+											Message = `{plr.Name} needs help! Reason: {pending.Reason}`,
+											Icon = server.MatIcons.Mail,
+											Time = 30,
+											OnClick = Core.Bytecode("return true"),
+											OnClose = Core.Bytecode("return false"),
+											OnIgnore = Core.Bytecode("return false"),
 										})
 
 										num += 1
 										if ret then
 											if not answered then
 												answered = true
-												Commands.Teleport.Function(plr, {p.Name, `@{plr.Name}`})
+												Commands.Teleport.Function(plr, { p.Name, `@{plr.Name}` })
 											else
 												Remote.MakeGui(p, "Notification", {
-													Title = "Help Request";
-													Message = "Another admin has already responded to this request!";
-													Icon = server.MatIcons.Mail;
-													Time = 5;
+													Title = "Help Request",
+													Message = "Another admin has already responded to this request!",
+													Icon = server.MatIcons.Mail,
+													Time = 5,
 												})
 											end
 										end
@@ -419,344 +488,369 @@ return function(Vargs, env)
 							end
 
 							local w = os.time()
-							repeat task.wait(0.5) until os.time()-w>30 or answered
+							repeat
+								task.wait(0.5)
+							until os.time() - w > 30 or answered
 
-							pending.Pending = false;
+							pending.Pending = false
 
 							if not answered then
-								Functions.Message('HelpSystem', "Help System", "Sorry but no one is available to help you right now", 'MatIcon://Warning', {plr})
+								Functions.Message(
+									"HelpSystem",
+									"Help System",
+									"Sorry but no one is available to help you right now",
+									"MatIcon://Warning",
+									{ plr }
+								)
 							end
 						end)
 					end
 				else
-					Functions.Message('HelpSystem', "Help System", "The help system has been disabled by the place owner.", 'MatIcon://Error', {plr})
+					Functions.Message(
+						"HelpSystem",
+						"Help System",
+						"The help system has been disabled by the place owner.",
+						"MatIcon://Error",
+						{ plr }
+					)
 				end
-			end
-		};
+			end,
+		},
 
 		Rejoin = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"rejoin"};
-			Args = {};
-			Description = "Makes you rejoin the server";
-			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				assert(#(service.Players:GetPlayers()) < service.Players.MaxPlayers or not Variables.DisableRejoinAtMaxPlayers, "Cannot rejoin while server is at max capacity.")
-				service.TeleportService:TeleportAsync(game.PlaceId, {plr}, service.New("TeleportOptions", {
-					ServerInstanceId = game.JobId
-				}))
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "rejoin" },
+			Args = {},
+			Description = "Makes you rejoin the server",
+			NoStudio = true, -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				assert(
+					#(service.Players:GetPlayers()) < service.Players.MaxPlayers
+						or not Variables.DisableRejoinAtMaxPlayers,
+					"Cannot rejoin while server is at max capacity."
+				)
+				service.TeleportService:TeleportAsync(
+					game.PlaceId,
+					{ plr },
+					service.New("TeleportOptions", {
+						ServerInstanceId = game.JobId,
+					})
+				)
+			end,
+		},
 
 		Credits = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"credit", "credits"};
-			Args = {};
-			Description = "Shows you Adonis development credits";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "credit", "credits" },
+			Args = {},
+			Description = "Shows you Adonis development credits",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "Credits")
-			end
-		};
+			end,
+		},
 
 		ChangeLog = {
-			Prefix = Settings.Prefix;
-			Commands = {"changelog", "changes", "updates", "version"};
-			Args = {};
-			Description = "Shows you the script's changelog";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.Prefix,
+			Commands = { "changelog", "changes", "updates", "version" },
+			Args = {},
+			Description = "Shows you the script's changelog",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "List", {
-					Title = "Change Log";
-					Icon = server.MatIcons["Text snippet"];
-					Table = server.FormattedChangelog;
-					RichText = true;
-					Size = {500, 400};
+					Title = "Change Log",
+					Icon = server.MatIcons["Text snippet"],
+					Table = server.FormattedChangelog,
+					RichText = true,
+					Size = { 500, 400 },
 				})
-			end
-		};
+			end,
+		},
 
 		Quote = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"quote", "inspiration", "randomquote"};
-			Args = {};
-			Description = "Shows you a random quote";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "quote", "inspiration", "randomquote" },
+			Args = {},
+			Description = "Shows you a random quote",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local quotes = require(Deps.Assets.Quotes)
-				Functions.Message('Command', "Random Quote", quotes[math.random(1, #quotes)], 'MatIcon://Chat', {plr})
-			end
-		};
+				Functions.Message("Command", "Random Quote", quotes[math.random(1, #quotes)], "MatIcon://Chat", { plr })
+			end,
+		},
 
 		Usage = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"usage", "usermanual"};
-			Args = {};
-			Description = "Shows you how to use some syntax related things";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "usage", "usermanual" },
+			Args = {},
+			Description = "Shows you how to use some syntax related things",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local Prefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix
 				local usage = {
-					"";
-					"Mouse over things in lists to expand them";
-					"You can also resize windows by dragging the edges";
-					"";
-					`Put <b>/e</b> in front to silence commands in chat (<b>/e {Prefix}kill scel</b>) or enable chat command hiding in client settings`;
-					`Player commands can be used by anyone, these commands have <b>{Settings.PlayerPrefix}</b> infront, such as <b>{Settings.PlayerPrefix}info</b> and <b>{Settings.PlayerPrefix}rejoin</b>`;
-					"";
-					`<b>――――― Player Selectors ―――――</b>`;
-					`Usage example: <b>{Prefix}kill {Settings.SpecialPrefix}all</b> (where <b>{Settings.SpecialPrefix}all</b> is the selector)`;
-					`<b>{Settings.SpecialPrefix}me</b> - Yourself`;
-					`<b>{Settings.SpecialPrefix}all</b> - Everyone in the server`;
-					`<b>{Settings.SpecialPrefix}admins</b> - All admins in the server`;
-					`<b>{Settings.SpecialPrefix}nonadmins</b> - Non-admins (normal players) in the server`;
-					`<b>{Settings.SpecialPrefix}others</b> - Everyone except yourself`;
-					`<b>{Settings.SpecialPrefix}random</b> - A random person in the server excluding those removed with -SELECTION`;
-					`<b>@USERNAME</b> - Targets a specific player with that exact username Ex: <b>{Prefix}god @Sceleratis </b> would give a player with the username 'Sceleratis' god powers`;
-					`<b>#NUM</b> - NUM random players in the server <b>{Prefix}ff #5</b> will ff 5 random players excluding those removed with -SELECTION.`;
-					`<b>{Settings.SpecialPrefix}friends</b> - Your friends who are in the server`;
-					`<b>%TEAMNAME</b> - Members of the team TEAMNAME Ex: {Prefix}kill %raiders`;
-					`<b>$GROUPID</b> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)`;
-					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
-					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
-					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
-					"";
-					`<b>――――― Repetition ―――――</b>`;
-					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
-					`Multiple Commands at a time - <b>{Prefix}ff me {Settings.BatchKey} {Prefix}sparkles me {Settings.BatchKey} {Prefix}rocket jim</b>`;
-					`You can add a delay if you want; <b>{Prefix}ff me {Settings.BatchKey} !wait 10 {Settings.BatchKey} {Prefix}m hi we waited 10 seconds</b>`;
-					`<b>{Prefix}repeat 10(how many times to run the cmd) 1(how long in between runs) {Prefix}respawn jim</b>`;
-					"";
-					`<b>――――― Reference Info ―――――</b>`;
-					`<b>{Prefix}cmds</b> for a list of available commands`;
-					`<b>{Prefix}cmdinfo &lt;command&gt;</b> for detailed info about a specific command`;
-					`<b>{Settings.PlayerPrefix}brickcolors</b> for a list of BrickColors`;
-					`<b>{Settings.PlayerPrefix}materials</b> for a list of materials`;
-					"";
-					`<b>{Prefix}capes</b> for a list of preset admin capes`;
-					`<b>{Prefix}musiclist</b> for a list of preset audios`;
-					`<b>{Prefix}insertlist</b> for a list of insertable assets using {Prefix}insert`;
+					"",
+					"Mouse over things in lists to expand them",
+					"You can also resize windows by dragging the edges",
+					"",
+					`Put <b>/e</b> in front to silence commands in chat (<b>/e {Prefix}kill scel</b>) or enable chat command hiding in client settings`,
+					`Player commands can be used by anyone, these commands have <b>{Settings.PlayerPrefix}</b> infront, such as <b>{Settings.PlayerPrefix}info</b> and <b>{Settings.PlayerPrefix}rejoin</b>`,
+					"",
+					`<b>――――― Player Selectors ―――――</b>`,
+					`Usage example: <b>{Prefix}kill {Settings.SpecialPrefix}all</b> (where <b>{Settings.SpecialPrefix}all</b> is the selector)`,
+					`<b>{Settings.SpecialPrefix}me</b> - Yourself`,
+					`<b>{Settings.SpecialPrefix}all</b> - Everyone in the server`,
+					`<b>{Settings.SpecialPrefix}admins</b> - All admins in the server`,
+					`<b>{Settings.SpecialPrefix}nonadmins</b> - Non-admins (normal players) in the server`,
+					`<b>{Settings.SpecialPrefix}others</b> - Everyone except yourself`,
+					`<b>{Settings.SpecialPrefix}random</b> - A random person in the server excluding those removed with -SELECTION`,
+					`<b>@USERNAME</b> - Targets a specific player with that exact username Ex: <b>{Prefix}god @Sceleratis </b> would give a player with the username 'Sceleratis' god powers`,
+					`<b>#NUM</b> - NUM random players in the server <b>{Prefix}ff #5</b> will ff 5 random players excluding those removed with -SELECTION.`,
+					`<b>{Settings.SpecialPrefix}friends</b> - Your friends who are in the server`,
+					`<b>%TEAMNAME</b> - Members of the team TEAMNAME Ex: {Prefix}kill %raiders`,
+					`<b>$GROUPID</b> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)`,
+					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM will kill everyone except players on TEAM`,
+					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`,
+					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`,
+					"",
+					`<b>――――― Repetition ―――――</b>`,
+					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`,
+					`Multiple Commands at a time - <b>{Prefix}ff me {Settings.BatchKey} {Prefix}sparkles me {Settings.BatchKey} {Prefix}rocket jim</b>`,
+					`You can add a delay if you want; <b>{Prefix}ff me {Settings.BatchKey} !wait 10 {Settings.BatchKey} {Prefix}m hi we waited 10 seconds</b>`,
+					`<b>{Prefix}repeat 10(how many times to run the cmd) 1(how long in between runs) {Prefix}respawn jim</b>`,
+					"",
+					`<b>――――― Reference Info ―――――</b>`,
+					`<b>{Prefix}cmds</b> for a list of available commands`,
+					`<b>{Prefix}cmdinfo &lt;command&gt;</b> for detailed info about a specific command`,
+					`<b>{Settings.PlayerPrefix}brickcolors</b> for a list of BrickColors`,
+					`<b>{Settings.PlayerPrefix}materials</b> for a list of materials`,
+					"",
+					`<b>{Prefix}capes</b> for a list of preset admin capes`,
+					`<b>{Prefix}musiclist</b> for a list of preset audios`,
+					`<b>{Prefix}insertlist</b> for a list of insertable assets using {Prefix}insert`,
 				}
 				Remote.MakeGui(plr, "List", {
-					Title = "Usage";
-					Tab = usage;
-					Icon = server.MatIcons["Quick reference"];
-					Size = {300, 250};
-					RichText = true;
+					Title = "Usage",
+					Tab = usage,
+					Icon = server.MatIcons["Quick reference"],
+					Size = { 300, 250 },
+					RichText = true,
 				})
-			end
-		};
+			end,
+		},
 
 		UserPanel = {
-			Prefix = "";
-			Commands = {":userpanel"};
-			Args = {};
-			Hidden = true;
-			Description = "Backup command for opening the userpanel window";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
-			end
-		};
+			Prefix = "",
+			Commands = { ":userpanel" },
+			Args = {},
+			Hidden = true,
+			Description = "Backup command for opening the userpanel window",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "UserPanel", { Tab = "Info" })
+			end,
+		},
 
 		Theme = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"theme", "usertheme"};
-			Args = {"theme name (leave blank to reset to default)"};
-			Hidden = true;
-			Description = "Changes the Adonis client UI theme";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "theme", "usertheme" },
+			Args = { "theme name (leave blank to reset to default)" },
+			Hidden = true,
+			Description = "Changes the Adonis client UI theme",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local playerData = Core.GetPlayer(plr)
 				local data = playerData.Client or {}
 				data.CustomTheme = args[1]
 				playerData.Client = data
 				Core.SavePlayer(plr, playerData)
 				Remote.MakeGui(plr, "Notification", {
-					Title = "Theme Changed";
-					Icon = server.MatIcons.Palette;
-					Message = if args[1] then `UI theme set to '{args[1]}'!` else `UI theme reset to default.`;
-					Time = 5;
+					Title = "Theme Changed",
+					Icon = server.MatIcons.Palette,
+					Message = if args[1] then `UI theme set to '{args[1]}'!` else `UI theme reset to default.`,
+					Time = 5,
 				})
 				Remote.Send(plr, "SetVariables", { CustomTheme = args[1] or false })
-			end
-		};
+			end,
+		},
 
 		ScriptInfo = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"info", "about", "userpanel", "script", "scriptinfo"};
-			Args = {};
-			Description = "Shows info about the admin system (Adonis)";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "info", "about", "userpanel", "script", "scriptinfo" },
+			Args = {},
+			Description = "Shows info about the admin system (Adonis)",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "UserPanel", { Tab = "Info" })
+			end,
+		},
 
 		Aliases = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"aliases", "addalias", "removealias", "newalias"};
-			Args = {};
-			Description = "Opens the alias manager";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "UserPanel", {Tab = "Aliases";})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "aliases", "addalias", "removealias", "newalias" },
+			Args = {},
+			Description = "Opens the alias manager",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "UserPanel", { Tab = "Aliases" })
+			end,
+		},
 
 		Keybinds = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"keybinds", "binds", "bind", "keybind", "clearbinds", "removebind"};
-			Args = {};
-			Description = "Opens the keybind manager";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "UserPanel", {Tab = "KeyBinds";})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "keybinds", "binds", "bind", "keybind", "clearbinds", "removebind" },
+			Args = {},
+			Description = "Opens the keybind manager",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "UserPanel", { Tab = "KeyBinds" })
+			end,
+		},
 
 		Invite = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"invite", "invitefriends"};
-			Args = {};
-			Description = "Invite your friends into the game";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "invite", "invitefriends" },
+			Args = {},
+			Description = "Invite your friends into the game",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				service.SocialService:PromptGameInvite(plr)
-			end
-		};
+			end,
+		},
 
 		OnlineFriends = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"onlinefriends", "friendsonline", "friends"};
-			Args = {};
-			Description = "Shows a list of your friends who are currently online";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "onlinefriends", "friendsonline", "friends" },
+			Args = {},
+			Description = "Shows a list of your friends who are currently online",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "Friends")
-			end
-		};
+			end,
+		},
 
 		BlockedUsers = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"blockedusers", "blockedplayers", "blocklist"};
-			Args = {};
-			Description = "Shows a list of people you've blocked on Roblox";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "blockedusers", "blockedplayers", "blocklist" },
+			Args = {},
+			Description = "Shows a list of people you've blocked on Roblox",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "BlockedUsers")
-			end
-		};
+			end,
+		},
 
 		GetPremium = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"getpremium", "purchasepremium", "robloxpremium"};
-			Args = {};
-			Description = "Prompts you to purchase Roblox Premium";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "getpremium", "purchasepremium", "robloxpremium" },
+			Args = {},
+			Description = "Prompts you to purchase Roblox Premium",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				service.MarketplaceService:PromptPremiumPurchase(plr)
-			end
-		};
+			end,
+		},
 
 		InspectAvatar = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"inspectavatar", "avatarinspect", "viewavatar", "examineavatar"};
-			Args = {"player"};
-			Description = "Opens the Roblox avatar inspect menu for the specified player";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				for _, v: Player in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "inspectavatar", "avatarinspect", "viewavatar", "examineavatar" },
+			Args = { "player" },
+			Description = "Opens the Roblox avatar inspect menu for the specified player",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				for _, v: Player in service.GetPlayers(plr, args[1], { UseFakePlayer = true }) do
 					if v.UserId > 0 then
 						Remote.Send(plr, "Function", "InspectPlayerFromUserId", v.UserId)
 					end
 				end
-			end
-		};
+			end,
+		},
 
 		DevConsole = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"devconsole", "developerconsole", "opendevconsole"};
-			Args = {};
-			Description = "Opens the Roblox developer console";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "devconsole", "developerconsole", "opendevconsole" },
+			Args = {},
+			Description = "Opens the Roblox developer console",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.Send(plr, "Function", "SetCore", "DevConsoleVisible", true)
-			end
-		};
+			end,
+		},
 
 		NumPlayers = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"pnum", "numplayers", "playercount"};
-			Args = {};
-			Description = "Tells you how many players are in the server";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				Functions.Hint(`There are {#service.Players:GetPlayers()} player(s)`, {plr})
-			end
-		};
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "pnum", "numplayers", "playercount" },
+			Args = {},
+			Description = "Tells you how many players are in the server",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Functions.Hint(`There are {#service.Players:GetPlayers()} player(s)`, { plr })
+			end,
+		},
 
 		TimeDate = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"timedate", "date", "time"};
-			Args = {};
-			Description = "Shows the current time and date.";
-			AdminLevel = "Players";
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "timedate", "date", "time" },
+			Args = {},
+			Description = "Shows the current time and date.",
+			AdminLevel = "Players",
 			Function = function(plr: Player)
 				local now = os.time()
 				Remote.MakeGui(plr, "List", {
-					Title = "Time & Date";
+					Title = "Time & Date",
 					Table = {
-						{Text = "Date: " .. os.date("%x", now)},
-						{Text = "Time: " .. os.date("%H:%M", now)},
-						{Text = "Timezone: " .. os.date("%Z", now)},
-					};
-					AutoUpdate = 60;
-					Size = {260, 160};
+						{ Text = "Date: " .. os.date("%x", now) },
+						{ Text = "Time: " .. os.date("%H:%M", now) },
+						{ Text = "Timezone: " .. os.date("%Z", now) },
+					},
+					AutoUpdate = 60,
+					Size = { 260, 160 },
 				})
-			end
-		};
+			end,
+		},
 
 		PersonalCountdown = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"countdown", "timer", "cd"};
-			Args = {"time (in seconds)"};
-			Description = "Makes a countdown on your screen";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "countdown", "timer", "cd" },
+			Args = { "time (in seconds)" },
+			Description = "Makes a countdown on your screen",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
 				assert(num <= 1000, "Countdown cannot be longer than 1000 seconds.")
 				assert(num >= 0, "Countdown cannot be negative.")
 				Remote.MakeGui(plr, "Countdown", {
-					Time = math.round(num);
+					Time = math.round(num),
 				})
-			end
-		};
+			end,
+		},
 
 		PersonalStopwatch = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"stopwatch"};
-			Args = {};
-			Description = "Makes a stopwatch on your screen";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "stopwatch" },
+			Args = {},
+			Description = "Makes a stopwatch on your screen",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "Stopwatch")
-			end
-		};
+			end,
+		},
 
 		ViewProfile = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
-			Args = {"player"};
-			Description = "Shows comphrehensive information about a player";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "profile", "inspect", "playerinfo", "whois", "viewprofile" },
+			Args = { "player" },
+			Description = "Shows comphrehensive information about a player",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local elevated: boolean = Admin.CheckAdmin(plr)
-				local players = service.GetPlayers(plr, args[1], {NoSelectors = not elevated})
+				local players = service.GetPlayers(plr, args[1], { NoSelectors = not elevated })
 
 				if #players > 2 then
-					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})
+					Functions.Hint(
+						string.format("Loading profile data for %d players... [This may take a while]", #players),
+						{ plr }
+					)
 				end
 
 				for _, v: Player in players do
@@ -767,60 +861,81 @@ return function(Vargs, env)
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
 							gameData = {
-								IsMuted = Admin.IsMuted(v);
-								AdminLevel = `[{level}] {rank or "Unknown"}`;
-								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A"
+								IsMuted = Admin.IsMuted(v),
+								AdminLevel = `[{level}] {rank or "Unknown"}`,
+								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A",
 							}
 
 							local inputData = Remote.Get(v, "Function", "GetUserInputServiceData")
 							if type(inputData) == "table" then
 								for k, d in inputData do
-									if type(k) ~= "string" then break end
+									if type(k) ~= "string" then
+										break
+									end
 									gameData[k] = d
 								end
 							end
 						end
 
-						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
-						local hasSafeChat = if policyInfo then
-							type(policyInfo) == "string" and policyInfo or table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes"
+						local policyInfo = elevated
+							and select(
+								2,
+								xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function()
+									return "[Error]"
+								end, service.PolicyService, v)
+							)
+						local hasSafeChat = if policyInfo
+							then type(policyInfo) == "string" and policyInfo or table.find(
+								policyInfo.AllowedExternalLinkReferences,
+								"Discord"
+							) and "No" or "Yes"
 							else "[Redacted]"
 
-						local mailVerif = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
-						local hasVerifiedMail = if elevated then
-							type(mailVerif) == "string" and mailVerif or mailVerif and "Yes" or "No"
+						local mailVerif = select(
+							2,
+							xpcall(service.MarketplaceService.PlayerOwnsAsset, function()
+								return "[Error]"
+							end, service.MarketplaceService, v, 102611803)
+						)
+						local hasVerifiedMail = if elevated
+							then type(mailVerif) == "string" and mailVerif or mailVerif and "Yes" or "No"
 							else "[Redacted]"
 
-						local idVerif = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v))
-						local hasVerifiedId = if elevated then
-							type(idVerif) == "string" and idVerif or idVerif and "Yes" or "No"
+						local idVerif = select(
+							2,
+							xpcall(v.IsVerified, function()
+								return "[Error]"
+							end, v)
+						)
+						local hasVerifiedId = if elevated
+							then type(idVerif) == "string" and idVerif or idVerif and "Yes" or "No"
 							else "[Redacted]"
 
 						Remote.RemoveGui(plr, `Profile_{v.UserId}`)
 						Remote.MakeGui(plr, "Profile", {
-							Target = v;
-							SafeChat = hasSafeChat;
-							CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
-							MailVerified = hasVerifiedMail;
-							IDVerified = hasVerifiedId;
-							IsDonor = Admin.CheckDonor(v);
-							GameData = gameData;
-							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
-							CmdPrefix = Functions.GetMainPrefix();
-							CmdSplitKey = Settings.SplitKey;
-							OnlineFriends = elevated and Remote.Get(v, "Function", "GetFriendsOnline");
+							Target = v,
+							SafeChat = hasSafeChat,
+							CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId)),
+							MailVerified = hasVerifiedMail,
+							IDVerified = hasVerifiedId,
+							IsDonor = Admin.CheckDonor(v),
+							GameData = gameData,
+							IsServerOwner = v.UserId == game.PrivateServerOwnerId,
+							CmdPrefix = Functions.GetMainPrefix(),
+							CmdSplitKey = Settings.SplitKey,
+							OnlineFriends = elevated and Remote.Get(v, "Function", "GetFriendsOnline"),
 						})
 					end)
 				end
-			end
-		};
+			end,
+		},
 
 		ServerDetails = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"serverinfo", "server", "serverdetails", "gameinfo", "gamedetails"};
-			Args = {};
-			Description = "Shows you details about the current server";
-			AdminLevel = "Players";
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "serverinfo", "server", "serverdetails", "gameinfo", "gamedetails" },
+			Args = {},
+			Description = "Shows you details about the current server",
+			AdminLevel = "Players",
 			ListUpdater = function(plr: Player)
 				local donorList = {}
 				for _, v in service.GetPlayers() do
@@ -840,109 +955,133 @@ return function(Vargs, env)
 					end
 					local nilPlayers = 0
 					for _, v in service.NetworkServer:GetChildren() do
-						if v:IsA("NetworkReplicator") and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+						if
+							v:IsA("NetworkReplicator")
+							and v:GetPlayer()
+							and not service.Players:FindFirstChild(v:GetPlayer().Name)
+						then
 							nilPlayers += 1
 						end
 					end
 					workspaceInfo = {
-						ObjectCount = #Variables.Objects;
-						CameraCount = #Variables.Cameras;
-						NilPlayerCount = nilPlayers;
-						HttpEnabled = HTTP.HttpEnabled;
-						LoadstringEnabled = HTTP.LoadstringEnabled;
-						ServerSpeed = workspace:GetRealPhysicsFPS();
+						ObjectCount = #Variables.Objects,
+						CameraCount = #Variables.Cameras,
+						NilPlayerCount = nilPlayers,
+						HttpEnabled = HTTP.HttpEnabled,
+						LoadstringEnabled = HTTP.LoadstringEnabled,
+						ServerSpeed = workspace:GetRealPhysicsFPS(),
 					}
 				end
 
-				return {Admins = adminDictionary; Donors = donorList; WorkspaceInfo = workspaceInfo;}
-			end;
-			Function = function(plr: Player, args: {string})
+				return { Admins = adminDictionary, Donors = donorList, WorkspaceInfo = workspaceInfo }
+			end,
+			Function = function(plr: Player, args: { string })
 				local elevated = Admin.CheckAdmin(plr)
 
-				local serverInfo = select(2, xpcall(function()
-					local res = Variables.IPInfo or Functions.FetchServerInfo()
-					if not Variables.IPInfo then
-						Variables.IPInfo = res
-					end
-					return {
-						country = `{require(server.Dependencies.CountryRegionCodes)[res.country] or "N/A"} ({res.country})`,
-						city = res.city,
-						region = res.region,
-						zipcode = res.postal or "N/A",
-						timezone = "N/A",
-						ip = elevated and res.ip or "[Redacted]",
-						coords = elevated and string.format("LAT: %s, LON: %s", string.match(res.loc, "(.*),(.*)")) or "[Redacted]",
-					}
-				end, function() return end))
+				local serverInfo = select(
+					2,
+					xpcall(function()
+						local res = Variables.IPInfo or Functions.FetchServerInfo()
+						if not Variables.IPInfo then
+							Variables.IPInfo = res
+						end
+						return {
+							country = `{require(server.Dependencies.CountryRegionCodes)[res.country] or "N/A"} ({res.country})`,
+							city = res.city,
+							region = res.region,
+							zipcode = res.postal or "N/A",
+							timezone = "N/A",
+							ip = elevated and res.ip or "[Redacted]",
+							coords = elevated and string.format("LAT: %s, LON: %s", string.match(res.loc, "(.*),(.*)"))
+								or "[Redacted]",
+						}
+					end, function()
+						return
+					end)
+				)
 
 				Remote.MakeGui(plr, "ServerDetails", {
-					CreatorId = game.CreatorId;
-					PrivateServerId = game.PrivateServerId;
-					PrivateServerOwnerId = game.PrivateServerOwnerId;
-					ServerStartTime = server.ServerStartTime;
-					ServerSpeed = workspace:GetRealPhysicsFPS();
-					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
-					ServerInternetInfo = serverInfo;
-					Refreshables = Logs.ListUpdaters.ServerDetails(plr);
+					CreatorId = game.CreatorId,
+					PrivateServerId = game.PrivateServerId,
+					PrivateServerOwnerId = game.PrivateServerOwnerId,
+					ServerStartTime = server.ServerStartTime,
+					ServerSpeed = workspace:GetRealPhysicsFPS(),
+					ServerAge = service.FormatTime(os.time() - server.ServerStartTime),
+					ServerInternetInfo = serverInfo,
+					Refreshables = Logs.ListUpdaters.ServerDetails(plr),
 					CmdPrefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix,
-					CmdPlayerPrefix = Settings.PlayerPrefix;
-					SplitKey = Settings.SplitKey;
+					CmdPlayerPrefix = Settings.PlayerPrefix,
+					SplitKey = Settings.SplitKey,
 				})
-			end
-		};
+			end,
+		},
 
 		AudioPlayer = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
-			Args = {"soundId?"};
-			Description = "Opens the audio player";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "ap", "audioplayer", "mp", "musicplayer" },
+			Args = { "soundId?" },
+			Description = "Opens the audio player",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "Music", {
 					Song = args[1],
-					GlobalPerms = Commands.Music and Admin.CheckComLevel(Admin.GetLevel(plr), Commands.Music.AdminLevel);
+					GlobalPerms = Commands.Music
+						and Admin.CheckComLevel(Admin.GetLevel(plr), Commands.Music.AdminLevel),
 				})
-			end
-		};
+			end,
+		},
 
 		BuyItem = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"buyitem", "buyasset"};
-			Args = {"id"};
-			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "buyitem", "buyasset" },
+			Args = { "id" },
+			Description = "Prompts yourself to buy the asset belonging to the ID supplied",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				local assetId = assert(tonumber(args[1]), "Missing asset ID (argument #1)")
-				local success, assetAlreadyOwned = pcall(service.MarketplaceService.PlayerOwnsAsset, service.MarketplaceService, plr, assetId)
+				local success, assetAlreadyOwned =
+					pcall(service.MarketplaceService.PlayerOwnsAsset, service.MarketplaceService, plr, assetId)
 				assert(not (success and assetAlreadyOwned), "You already own the asset!")
-				local success, assetInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId)
+				local success, assetInfo =
+					pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId)
 				assert(success and not assetInfo.IsLimited, "Cannot buy limited assets!")
 				service.MarketplaceService:PromptPurchase(plr, assetId, false)
-			end
-		};
+			end,
+		},
 
 		Coordinates = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"coordinates", "coords", "position"};
-			Args = {};
-			Description = "Shows your current position in the game world";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "coordinates", "coords", "position" },
+			Args = {},
+			Description = "Shows your current position in the game world",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				Remote.MakeGui(plr, "Coords")
-			end;
-		};
+			end,
+		},
+
+		Velocity = {
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "vel", "velocity" },
+			Args = {},
+			Description = "Shows your current velocity",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
+				Remote.MakeGui(plr, "Velocity")
+			end,
+		},
 
 		Wait = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"wait"};
-			Args = {"time"};
-			Description = "Waits for the desired amount of time in seconds. Only works with batch commands";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.PlayerPrefix,
+			Commands = { "wait" },
+			Args = { "time" },
+			Description = "Waits for the desired amount of time in seconds. Only works with batch commands",
+			AdminLevel = "Players",
+			Function = function(plr: Player, args: { string })
 				task.wait(math.clamp(tonumber(args[1]) or 0, 0, 600))
 
 				return args
-			end
-		};
-	};
+			end,
+		},
+	}
 end
