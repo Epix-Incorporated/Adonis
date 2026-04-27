@@ -328,6 +328,13 @@ return function(Vargs, GetEnv)
 				local list = args[1]
 				local update = Logs.ListUpdaters[list]
 				if update then
+					if not Variables.UpdaterMemory then Variables.UpdaterMemory = {} end
+					local allowedUpdaters = Variables.UpdaterMemory[p]
+					if not allowedUpdaters then
+						return {}
+					elseif not table.find(allowedUpdaters, list) then
+						return {}
+					end
 					return update(p, unpack(args,2))
 				end
 			end;
@@ -1248,6 +1255,34 @@ return function(Vargs, GetEnv)
 			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in themeData do theme[ind] = dat end end
+
+			-- TODO: Hardcoded checks are BAD!
+			if GUI == "ToolPanel" then
+				-- TODO: I shouldn't be using the Variables table for this, but I don't know where else to store temporary data about players that should clear.
+				if not Variables.UpdaterMemory then Variables.UpdaterMemory = {} end
+				local allowedUpdaters = Variables.UpdaterMemory[p]
+				if not allowedUpdaters then
+					Variables.UpdaterMemory[p] = {}
+					allowedUpdaters = Variables.UpdaterMemory[p]
+				end
+				if not table.find(allowedUpdaters, "ToolList") then
+					table.insert(Variables.UpdaterMemory[p], "ToolList")
+				end
+			end
+			if GUI == "List" then
+				if data and data.Update ~= nil then
+					if not Variables.UpdaterMemory then Variables.UpdaterMemory = {} end
+					local allowedUpdaters = Variables.UpdaterMemory[p]
+					if not allowedUpdaters then
+						Variables.UpdaterMemory[p] = {}
+						allowedUpdaters = Variables.UpdaterMemory[p]
+					end
+					if not table.find(allowedUpdaters, data.Update) then
+						table.insert(Variables.UpdaterMemory[p], data.Update)
+					end
+				end
+			end
+
 			Remote.Send(p,"UI",GUI,theme,data or {})
 		end;
 
