@@ -328,12 +328,14 @@ return function(Vargs, GetEnv)
 				local list = args[1]
 				local update = Logs.ListUpdaters[list]
 				if update then
-					if not Variables.UpdaterMemory then Variables.UpdaterMemory = {} end
-					local allowedUpdaters = Variables.UpdaterMemory[p]
-					if not allowedUpdaters then
-						return {}
-					elseif not table.find(allowedUpdaters, list) then
-						return {}
+					if list ~= "ServerDetails" then
+						if not Variables.UpdaterMemory then Variables.UpdaterMemory = {} end
+						local allowedUpdaters = Variables.UpdaterMemory[p]
+						if not allowedUpdaters then
+							return {}
+						elseif not table.find(allowedUpdaters, list) then
+							return {}
+						end
 					end
 					return update(p, unpack(args,2))
 				end
