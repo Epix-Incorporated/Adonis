@@ -22,9 +22,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local num = tonumber(args[2]) or 15
 
-				if num <= 0 then
-					error("Intensity must be above 0")
-				end
+				assert(num > 0, "Intensity must be above 0")
 				
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
@@ -53,9 +51,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local num = tonumber(args[2]) or 150
 
-				if num <= 0 then
-					error("Intensity must be above 0")
-				end
+				assert(num > 0, "Intensity must be above 0")
 
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
@@ -84,9 +80,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local num = tonumber(args[2]) or 0.1
 
-				if num <= 0 then
-					error("Intensity must be above 0")
-				end
+				assert(num > 0, "Intensity must be above 0")
 
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
@@ -2369,11 +2363,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tonumber(args[2]) or 200
-
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character:FindFirstChild("HumanoidRootPart") then
-						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame+Vector3.new(0, num, 0)
+						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame+Vector3.new(0, tonumber(args[2]) or 200, 0)
 					end
 				end
 			end
