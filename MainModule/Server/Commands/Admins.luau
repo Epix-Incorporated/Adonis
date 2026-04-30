@@ -479,7 +479,7 @@ return function(Vargs, env)
 			Commands = {"sm", "systemmessage", "sysmsg"};
 			Args = {"message"};
 			Filter = true;
-			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
+			Description = "Same as the message command, but uses what's set in the 'SystemTitle' setting (default: 'System Message') instead of your name as the title";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(assert(args[1], "Missing message (argument #1)"), plr), service.GetPlayers(), true)
@@ -515,19 +515,6 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr,string.lower(args[1])) do
-					if v.UserId ~= plr.UserId then
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to alert {service.FormatPlayer(v)} due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
-							Functions.Hint(`Unable to alert {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
-							continue
-						end
-					end
-
 					Remote.MakeGui(v, "Alert", {Message = args[2] and service.Filter(args[2],plr, v) or "Wake up; Your attention is required"})
 				end
 			end

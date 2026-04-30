@@ -186,7 +186,6 @@ return function(Vargs, GetEnv)
 
 			["Variables.ScriptBuilder"] = true;
 			["Variables.ScriptEditor"] = true;
-			["Variables.DeveloperWhitelist"] = true;
 			["Variables.UrgentModuleId"] = true;
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!

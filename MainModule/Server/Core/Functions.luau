@@ -1665,6 +1665,32 @@ return function(Vargs, GetEnv)
 		GetMainPrefix = function()
 			if type(Settings.Prefix) == "table" then return Settings.Prefix[1] else return Settings.Prefix end
 		end;
+
+		FetchServerInfo = function()
+			local _, ServerInfo = xpcall(function()
+				local res = service.HttpService:JSONDecode(
+					service.HttpService:GetAsync(Variables.IPInfoUrl, false, {["referer"] = "https://roblox.com"})
+				)
+
+				if res.latitude and res.longitude then
+					res.loc = `{res.latitude},{res.longitude}`
+				end
+
+				return {
+					country = res.country or "N/A",
+					city = res.city or "N/A",
+					region = res.region or "N/A",
+					postal = res.postalCode or "N/A",
+					timezone = "N/A", -- not supported. Keeping it just incase.
+					ip = res.ip or "N/A",
+					loc = res.loc or "N/A",
+				}
+			end, function()
+				return
+			end)
+
+			return ServerInfo
+		end
 	}
 
 

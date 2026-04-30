@@ -4,7 +4,7 @@
 
 <div>&nbsp;</div>
 
-[![Roblox model](https://img.shields.io/static/v1?label=roblox&message=model&color=blue&logo=roblox&logoColor=white)](https://www.roblox.com/library/7510622625/ "The offical Adonis admin model.")
+[![Roblox model](https://img.shields.io/static/v1?label=roblox&message=model&color=blue&logo=roblox&logoColor=white)](https://www.roblox.com/library/7510622625/ "The official Adonis admin model.")
 [![Roblox nightly](https://img.shields.io/badge/roblox-nightly-blueviolet?logo=roblox)](https://www.roblox.com/library/8612978896/ "The beta testing source code modulescript.")
 [![LICENSE](https://img.shields.io/github/license/Epix-Incorporated/Adonis)](https://github.com/Epix-Incorporated/Adonis/blob/master/LICENSE.md "The legal LICENSE governing the usage of the admin system.")
 [![releases](https://img.shields.io/github/v/release/Epix-Incorporated/Adonis?label=version)](https://github.com/Epix-Incorporated/Adonis/releases "Downloadable versions of the admin system.")
@@ -44,7 +44,7 @@ If you get stuck, feel free to ask for assistance on our [Discord server](https:
 
 🔐 **Warning:** By default, loaders compiled from the repository have [`DebugMode`](#debug-mode) enabled.
 
-**⚠️ Method 3 compiles the *bleeding edge* version of Adonis, which may be not fully tested and is highly unstable.**
+**⚠️ Method 3 compiles the *bleeding edge* version of Adonis, which may not be fully tested and is highly unstable.**
 
 <h3 id="configuring-adonis">⚙️ Configuring Adonis</h3>
 
@@ -55,7 +55,7 @@ You may then edit the Settings module to configure Adonis to suit your game. Ins
 <h3 id="debug-mode">🔧 Debug Mode</h3>
 
 #### **PLEASE NOTE THAT THIS FEATURE IS INTENDED FOR DEVELOPMENT/DEBUGGING PURPOSES ONLY, PLEASE CHANGE `ModuleID` FOR CUSTOM MODULES**
-The `DebugModule` feature enables a number of debug features, including but not limited to:
+The `DebugMode` feature enables a number of debug features, including but not limited to:
 
 1. Not protecting the Adonis model (such as parenting it to nil)
 2. Exposes a debugging API
