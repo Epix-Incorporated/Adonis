@@ -1165,6 +1165,19 @@ return function(Vargs, env)
 			end
 		};
 
+		PromptPlusPurchase = {
+			Prefix = Settings.Prefix;
+			Commands = {"promptpluspurchase", "pluspurchaseprompt"};
+			Args = {"player"};
+			Description = "Opens the Roblox Plus purchase prompt for the target player(s)";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					service.MarketplaceService:PromptRobloxSubscriptionPurchase(v)
+				end
+			end
+		};
+
 		PromptPremiumPurchase = {
 			Prefix = Settings.Prefix;
 			Commands = {"promptpremiumpurchase", "premiumpurchaseprompt"};
