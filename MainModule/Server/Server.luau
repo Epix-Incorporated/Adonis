@@ -449,6 +449,7 @@ for ind, loc in pairs({
 	CFrame = CFrame;
 	Ray = Ray;
 	task = task;
+	debug = debug;
 	service = service
 	})
 do
