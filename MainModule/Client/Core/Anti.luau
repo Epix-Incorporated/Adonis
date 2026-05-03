@@ -417,14 +417,26 @@ return function(Vargs, GetEnv)
 			while true do
 				local detectedTampered = false
 				do
-					-- 0. Verify Detected function integrity via debug metadata.
-					--    hookfunction mutates the function object in-place, changing its
-					--    source/line/name. Comparing against the load-time snapshot catches
-					--    any in-place hook on Detected without calling Detected at all.
-					local ds, dl, dn = rawDebugInfo(Detected, "sln")
-					if ds ~= detectedSource or dl ~= detectedLine or dn ~= detectedName then
+					-- 0. Verify Detected function integrity.
+					--    Spawned so that a debug.info yield-hook targeting Detected freezes
+					--    only the sub-coroutine; the main loop detects the freeze via timeout.
+					--    If debug.info is clean but Detected is hooked, the metadata snapshot
+					--    comparison fires instead. Either way detectedTampered is set.
+					local detectedCheckDone = false
+					task.spawn(xpcall, function()
+						local ds, dl, dn = rawDebugInfo(Detected, "sln")
+						if ds ~= detectedSource or dl ~= detectedLine or dn ~= detectedName then
+							detectedTampered = true
+						end
+						detectedCheckDone = true
+					end, function()
 						detectedTampered = true
-						task.wait(0.5)
+					end)
+					task.wait(0.5)
+					if not detectedCheckDone then
+						detectedTampered = true
+					end
+					if detectedTampered then
 						pcall(Disconnect, "Adonis_0xDET01")
 						pcall(Kill, "Adonis_0xDET01")
 						pcall(Kick, Player, "Adonis_0xDET01")
