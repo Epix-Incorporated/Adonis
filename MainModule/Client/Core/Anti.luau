@@ -106,6 +106,7 @@ return function(Vargs, GetEnv)
 		return true
 	end;
 
+	local detectedSource, detectedLine, detectedName = rawDebugInfo(Detected, "sln")
 
 	local function compareTables(t1, t2)
 		if service.CountTable(t1) ~= service.CountTable(t2) then
@@ -414,36 +415,44 @@ return function(Vargs, GetEnv)
 
 		Routine(function()
 			while true do
+				local detectedTampered = false
 				do
+					-- 0. Verify Detected function integrity via debug metadata.
+					--    hookfunction mutates the function object in-place, changing its
+					--    source/line/name. Comparing against the load-time snapshot catches
+					--    any in-place hook on Detected without calling Detected at all.
+					local ds, dl, dn = rawDebugInfo(Detected, "sln")
+					if ds ~= detectedSource or dl ~= detectedLine or dn ~= detectedName then
+						detectedTampered = true
+						task.wait(0.5)
+						pcall(Disconnect, "Adonis_0xDET01")
+						pcall(Kill, "Adonis_0xDET01")
+						pcall(Kick, Player, "Adonis_0xDET01")
+					end
+
 					-- 1. Detect if the debug.info reference has been swapped since load time.
 					if rawDebugInfo ~= debug.info then
-						Detected("crash", "Tamper Protection 0xDBI01")
-						task.wait(1)
+						task.wait(0.5)
 						pcall(Disconnect, "Adonis_0xDBI01")
 						pcall(Kill, "Adonis_0xDBI01")
 						pcall(Kick, Player, "Adonis_0xDBI01")
 					end
 
 					-- 2. Behavioral heartbeat: verify Detected executes its real body when called.
-					--    A tampered Detected that short-circuits will not increment _heartbeatSeq.
-					--    Disconnect and Kick are called directly as fallbacks in case Detected
-					--    itself has been tampered with.
+					--    Catches bypasses that do not call the original for the "_" sentinel.
 					local prevSeq = _heartbeatSeq
 					Detected("_", "_", true)
 					if _heartbeatSeq == prevSeq then
-						Detected("crash", "Tamper Protection 0xHB01")
-						task.wait(1)
+						task.wait(0.5)
 						pcall(Disconnect, "Adonis_0xHB01")
 						pcall(Kill, "Adonis_0xHB01")
 						pcall(Kick, Player, "Adonis_0xHB01")
 					end
 
 					-- 3. Verify Kill integrity via debug metadata captured at load time.
-					--    A tampered Kill function will have different source/line/name values.
 					local ks, kl, kn = rawDebugInfo(Kill, "sln")
 					if ks ~= killSource or kl ~= killLine or kn ~= killName then
-						Detected("crash", "Tamper Protection 0xKIL01")
-						task.wait(1)
+						task.wait(0.5)
 						pcall(Disconnect, "Adonis_0xKIL01")
 						pcall(Kill, "Adonis_0xKIL01")
 						pcall(Kick, Player, "Adonis_0xKIL01")
@@ -462,6 +471,14 @@ return function(Vargs, GetEnv)
 						pcall(Kick, Player, "Adonis_0xDD42F")
 					elseif value then
 						Detected(action, `{method} detector detected`)
+						-- If Detected is tampered (its hook intercepts the call above),
+						-- enforce directly so the bypass cannot swallow this detection.
+						if detectedTampered then
+							task.wait(0.5)
+							pcall(Disconnect, "Adonis_0xDET02")
+							pcall(Kill, "Adonis_0xDET02")
+							pcall(Kick, Player, "Adonis_0xDET02")
+						end
 					end
 				end
 
