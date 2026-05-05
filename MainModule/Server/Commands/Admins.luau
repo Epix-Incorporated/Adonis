@@ -1167,7 +1167,7 @@ return function(Vargs, env)
 
 		PromptPlusPurchase = {
 			Prefix = Settings.Prefix;
-			Commands = {"promptpluspurchase", "pluspurchaseprompt"};
+			Commands = {"promptpluspurchase", "pluspurchaseprompt", "promptpremiumpurchase", "premiumpurchaseprompt"};
 			Args = {"player"};
 			Description = "Opens the Roblox Plus purchase prompt for the target player(s)";
 			AdminLevel = "Admins";
