@@ -649,14 +649,14 @@ return function(Vargs, env)
 			end
 		};
 
-		GetPremium = {
+		GetPlus = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"getpremium", "purchasepremium", "robloxpremium"};
+			Commands = {"getplus", "purchaseplus", "robloxplus"};
 			Args = {};
-			Description = "Prompts you to purchase Roblox Premium";
+			Description = "Prompts you to purchase Roblox Plus";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				service.MarketplaceService:PromptPremiumPurchase(plr)
+				service.MarketplaceService:PromptRobloxSubscriptionPurchase(plr)
 			end
 		};
 
