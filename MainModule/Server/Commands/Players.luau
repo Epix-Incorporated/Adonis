@@ -651,7 +651,7 @@ return function(Vargs, env)
 
 		GetPlus = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"getplus", "purchaseplus", "robloxplus"};
+			Commands = {"getplus", "purchaseplus", "robloxplus", "getpremium", "purchasepremium", "robloxpremium"};
 			Args = {};
 			Description = "Prompts you to purchase Roblox Plus";
 			AdminLevel = "Players";
