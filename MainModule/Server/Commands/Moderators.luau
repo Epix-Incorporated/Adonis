@@ -3398,7 +3398,7 @@ return function(Vargs, env)
 
 		Respawn = {
 			Prefix = Settings.Prefix;
-			Commands = {"respawn", "re", "reset", "res"};
+			Commands = {"respawn", "re", "reset", "res", "load"};
 			Args = {"player"};
 			Description = "Respawns the target player(s)";
 			AdminLevel = "Moderators";
