@@ -660,17 +660,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GetPremium = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"getpremium", "purchasepremium", "robloxpremium"};
-			Args = {};
-			Description = "Prompts you to purchase Roblox Premium";
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				service.MarketplaceService:PromptPremiumPurchase(plr)
-			end
-		};
-
 		InspectAvatar = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"inspectavatar", "avatarinspect", "viewavatar", "examineavatar"};
