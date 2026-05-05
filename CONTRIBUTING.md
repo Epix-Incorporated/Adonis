@@ -107,7 +107,7 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 
 - Accepted contributors may request the "GitHub Contributor" role in the [Discord server](https://discord.com/invite/H5RvTP3) and the "Contributors" rank in the [Roblox group](https://www.roblox.com/groups/886423).
 - To request recognition, post your GitHub, Discord, and Roblox usernames in the [discussion thread](https://github.com/Epix-Incorporated/Adonis/discussions/433).
-- Recognition is **not** granted for non-code contributions (e.g. .github changes, typo fixes), a maintainer will usually let you know if this is the case.
+- Recognition is **not** granted for GitHub changes, nor for non-logical code changes (e.g. typo fixes, command aliases). A maintainer will usually let you know if this is the case.
 
 ## 11. Communication
 
