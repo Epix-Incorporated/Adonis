@@ -1178,19 +1178,6 @@ return function(Vargs, env)
 			end
 		};
 
-		PromptPremiumPurchase = {
-			Prefix = Settings.Prefix;
-			Commands = {"promptpremiumpurchase", "premiumpurchaseprompt"};
-			Args = {"player"};
-			Description = "Opens the Roblox Premium purchase prompt for the target player(s)";
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					service.MarketplaceService:PromptPremiumPurchase(v)
-				end
-			end
-		};
-
 		RobloxNotify = {
 			Prefix = Settings.Prefix;
 			Commands = {"rbxnotify", "robloxnotify", "robloxnotif", "rblxnotify", "rnotif", "rn"};
