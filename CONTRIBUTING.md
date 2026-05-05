@@ -62,12 +62,12 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 
 - The changelog is the record of all notable changes.
 - Each release of Adonis is documented within the changelog. Adonis uses two forms of releases:
-- Full releases: most PRs are released in full releases.
-- Patch releases: denoted by adding a decimal version. Maintainers may choose to include your PR in a patch release if it is related to a non-trivial and/or uncommon bug.
+	- Full releases: most PRs are released in full releases.
+	- Patch releases: denoted by adding a decimal version. Maintainers may choose to include your PR in a patch release if it is related to a non-trivial and/or uncommon bug.
 - Releases are delineated by:
-* the version number,
-* the ISO 8601 date (YYYY–MM–DD) and the time (usually in UTC, some old releases in EST),
-* and the name of the maintainer responsible for that release.
+	- the version number,
+	- the ISO 8601 date (YYYY–MM–DD) and the time (usually in UTC, some old releases in EST),
+	- and the name of the maintainer responsible for that release.
 - The version number uses decimal versioning (e.g. v1.2 is an older version than v1.12), older releases use semantic versioning.
 - Entries should be concise, in the present tense, and reference Adonis commands by their usage name (e.g. `:somecommand`).
 - Maintainers will base the changelog entry off the title of your PR and may copyedit it for clarity.

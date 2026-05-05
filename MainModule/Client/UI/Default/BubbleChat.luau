@@ -13,7 +13,7 @@ return function(data, env)
 	else
 		local window = client.UI.Make("Window",{
 			Name  = "BubbleChat";
-			Title = "Bubble Chat";
+			Title = "Bubble Chat (Only you can see messages)";
 			Icon = client.MatIcons.Chat;
 			Size  = {260,57};
 			Position = UDim2.new(0, 10, 1, -80);
