@@ -1,8 +1,4 @@
-<div align="center">
-
 # 📜 Adonis Contribution Policy
-
-![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png)
 
 Adonis is an ever-expanding, frequently updated, and sometimes complex system.
 To keep Adonis functional and somewhat readable rather than a tangled mess, this document sets out the policies governing contributions to consider before submitting a pull request:
@@ -114,8 +110,4 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 - Questions, discussions, or clarification requests should be directed to the project’s [Discord server](https://discord.com/invite/H5RvTP3).
 - Contributors are encouraged to engage constructively in PR discussions.
 
-<div align="center">
-
 <sub>Adonis Contribution Policy 2025</sub>
-
-</div>
