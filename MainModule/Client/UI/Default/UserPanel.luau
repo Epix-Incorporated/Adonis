@@ -362,6 +362,10 @@ return function(data, env)
 			Text = "Game";
 		})
 
+		-- Fix for GitHub issue #1910 - Game Tab should be deactivated by default, since it requires 
+		-- permissions to be shown, which we don't know at this time.
+		gameTab:Disable() 
+
 		if data.Tab then
 			local Tab = string.lower(data.Tab)
 			if Tab == "donate" then
@@ -1853,10 +1857,8 @@ return function(data, env)
 						})
 					end
 				end
-
 				gameTab:ResizeCanvas(false, true, false, false, 5, 5)
-			else
-				gameTab:Disable()
+				gameTab:Enable()
 			end
 		end
 
