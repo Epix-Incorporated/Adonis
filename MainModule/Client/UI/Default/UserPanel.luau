@@ -63,7 +63,7 @@ return function(data, env)
 		end
 	})
 
-	local function createPurchaseWindow(id)
+	local function createPurchaseWindow(id, isAvatarAsset)
 		local purchaseWindow = UI.Make("Window", {
 			Name = "Purchase window";
 			Title = `Purchase asset`;
@@ -91,16 +91,18 @@ return function(data, env)
 				ClearTextOnFocus = false;
 				TextEditable = false;
 				TextScaled = true;
-				Text = string.format("https://roblox.com/%s/%d/", "library", id)
+				Text = string.format("https://roblox.com/%s/%d/", if isAvatarAsset then "catalog" else "library", id)
 			})
 
 			purchaseWindow:Ready()
+
+			return purchaseWindow
 		end
 	end
 
 	local function promptPurchase(id)
 		if Variables.AllowThirdPartyPurchases == false then
-			createPurchaseWindow(id)
+			createPurchaseWindow(id, false)
 		else
 			local logEvent, finishEvent
 
@@ -131,21 +133,28 @@ return function(data, env)
 				return
 			end
 		end
-		if showSuccess then
-			local finishEvent
-			finishEvent = service.RbxEvent(service.MarketplaceService.PromptBulkPurchaseFinished, function(p, status, items)
-				if status == Enum.MarketplaceBulkPurchasePromptStatus.Completed then
-					if items and items.Items and items.Items[1] and items.Items[1].id == tostring(id) then
-						window:Close()
-						client.UI.Make("UserPanel", {
-							Tab = "Donate"
-						})
-					end
+		local backupWindow, finishEvent
+		finishEvent = service.RbxEvent(service.MarketplaceService.PromptBulkPurchaseFinished, function(p, status, items)
+			if showSuccess and status == Enum.MarketplaceBulkPurchasePromptStatus.Completed then
+				if items and items.Items and items.Items[1] and items.Items[1].id == tostring(id) then
+					window:Close()
+					client.UI.Make("UserPanel", {
+						Tab = "Donate"
+					})
 				end
-				finishEvent:Disconnect()
-			end)
-		end
+			end
+			if backupWindow and status ~= Enum.MarketplaceBulkPurchasePromptStatus.Error then
+				backupWindow:Close()
+			end
+			finishEvent:Disconnect()
+			finishEvent = nil
+		end)
 		Remote.Send("PromptBulkPurchase", {id})
+		task.delay(1, function()
+			if finishEvent then
+				backupWindow = createPurchaseWindow(id, true)
+			end
+		end)
 	end
 
 	local function showTable(tab, setting)
