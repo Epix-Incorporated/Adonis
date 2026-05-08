@@ -362,8 +362,7 @@ return function(data, env)
 			Text = "Game";
 		})
 
-		-- Fix for GitHub issue #1910 - Game Tab should be deactivated by default, since it requires 
-		-- permissions to be shown, which we don't know at this time.
+		-- Disable settings tab until permissions are checked
 		gameTab:Disable() 
 
 		if data.Tab then
