@@ -305,12 +305,6 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Admin Module RunAfterPlugins Finished")
 	end
 
-	service.RbxEvent(service.MarketplaceService.PromptGamePassPurchaseFinished, function(player, id, purchased)
-		if Variables and player.Parent and table.find(Variables.DonorPass, id) and purchased then
-			Variables.CachedDonors[tostring(player.UserId)] = os.time()
-		end
-	end)
-
 	local function stripArgPlaceholders(alias)
 		return service.Trim(string.gsub(alias, "<%S+>", ""))
 	end
@@ -891,10 +885,14 @@ return function(Vargs, GetEnv)
 				return true
 			else
 				local pGroup = Admin.GetPlayerGroup(p, 886423)
+				if pGroup and pGroup.Rank >= 10 then 
+					--// Complimentary donor access is given to Adonis contributors & developers.
+					Variables.CachedDonors[key] = os.time()
+					return true
+				end
+
 				for _, pass in Variables.DonorPass do
-					if p.Parent ~= service.Players then
-						return false
-					end
+					if p.Parent ~= service.Players then break end
 
 					local ran, ret
 					if type(pass) == "number" then
@@ -903,11 +901,13 @@ return function(Vargs, GetEnv)
 						ran, ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
 					end
 
-					if (ran and ret) or (pGroup and pGroup.Rank >= 10) then --// Complimentary donor access is given to Adonis contributors & developers.
+					if ran and ret then
 						Variables.CachedDonors[key] = os.time()
 						return true
 					end
 				end
+
+				return false
 			end
 		end;
 

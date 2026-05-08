@@ -63,67 +63,30 @@ return function(data, env)
 		end
 	})
 
-	local function createPurchaseWindow(isGamepass, id)
-		local purchaseWindow = UI.Make("Window", {
-			Name = "Purchase window";
-			Title = `Purchase {isGamepass and "gamepass" or "asset"}`;
-			Icon = client.MatIcons["Shopping cart"];
-			AllowMultiple = false;
-			Size = {380, 160};
-			SizeLocked = true;
-		})
-
-		if purchaseWindow then
-			purchaseWindow:Add("TextLabel", {
-				Size = UDim2.new(1, -20, 1, -55);
-				Position = UDim2.new(0.5, 0, 0, 10);
-				AnchorPoint = Vector2.new(0.5, 0);
-				ZIndex = 2;
-				TextScaled = true;
-				Text = "This game does not allow third party purchases. If you would like to purchase, please copy the link below and put it in your browser.";
-			})
-
-			purchaseWindow:Add("TextBox", {
-				Size = UDim2.new(1, -20, 0, 30);
-				Position = UDim2.new(0.5, 0, 1, -10);
-				AnchorPoint = Vector2.new(0.5, 1);
-				ZIndex = 2;
-				ClearTextOnFocus = false;
-				TextEditable = false;
-				TextScaled = true;
-				Text = string.format("https://roblox.com/%s/%d/", isGamepass and "game-pass" or "library", id)
-			})
-
-			purchaseWindow:Ready()
-		end
-	end
-
-	local function promptPurchase(isGamepass, id)
-		if Variables.AllowThirdPartyPurchases == false then
-			createPurchaseWindow(isGamepass, id)
-		else
-			local logEvent, finishEvent
-
-			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
-				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
-					Variables.AllowThirdPartyPurchases = false
-
-					createPurchaseWindow(isGamepass, id)
-				end
-			end)
-			finishEvent = service.MarketPlace[isGamepass and "PromptGamePassPurchaseFinished" or "PromptPurchaseFinished"]:Connect(function(plr, aid)
-				if plr == service.Players.LocalPlayer and aid == id then
-					logEvent:Disconnect()
-					finishEvent:Disconnect()
-				end
-			end)
-
-			if isGamepass then
-				service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, id)
-			else
-				service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, id)
+	local function promptPurchase(id: number, showWarning: boolean?, showSuccess: boolean?)
+		if showWarning then
+			if UI.MakeGui("YesNoPrompt", {
+				Title = "Are you sure?",
+				Question = "You already have donor perks. Additional donations provide no extra benefits."
+			}) ~= "Yes" then
+				return
 			end
 		end
+		if showSuccess then
+			local finishEvent
+			finishEvent = service.RbxEvent(service.MarketplaceService.PromptBulkPurchaseFinished, function(p, status, items)
+				if status == Enum.MarketplaceBulkPurchasePromptStatus.Completed then
+					if items and items.Items and items.Items[1] and items.Items[1].id == tostring(id) then
+						window:Close()
+						client.UI.Make("UserPanel", {
+							Tab = "Donate"
+						})
+					end
+				end
+				finishEvent:Disconnect()
+			end)
+		end
+		Remote.Send("PromptBulkPurchase", {id})
 	end
 
 	local function showTable(tab, setting)
@@ -437,7 +400,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						promptPurchase(false, 7510622625)
+						promptPurchase(7510622625)
 					end
 				}
 			}):Add("ImageLabel", {
@@ -455,7 +418,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						promptPurchase(false, 7510592873)
+						promptPurchase(7510592873)
 					end
 				}
 			}):Add("ImageLabel", {
@@ -814,67 +777,75 @@ return function(data, env)
 				Position = UDim2.new(1, -140, 0, 105);
 				BackgroundTransparency = 1;
 			})
-
-			dFrame:Add("TextButton", {
-				Text = "Donate (Perks)";
-				Size = UDim2.new(1, -10, 0, 40);
-				Position = UDim2.new(0, 5, 0, 5);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
-				OnClick = function()
-					promptPurchase(true, 1348327) --497917601)
-				end
-			})
-
+			
 			dFrame:Add("TextLabel", {
-				Text = "Extra (No Perks): ";
+				Text = "Donate (Perks):";
 				TextXAlignment = "Left";
 				Size = UDim2.new(1, 0, 0, 30);
-				Position = UDim2.new(0, 5, 1, -80);
+				Position = UDim2.new(0, 5, 0, 0);
 				BackgroundTransparency = 1;
 			})
 
 			dFrame:Add("TextButton", {
-				Text = "50";
-				Size = UDim2.new(0, 60, 0, 20);
+				Text = ` 300`;
+				Size = UDim2.new(1, -10, 0, 40);
+				Position = UDim2.new(0, 5, 0, 30);
+				BackgroundTransparency = 0.5;
+				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
+				OnClick = function()
+					promptPurchase(6878510605, playerData.isDonor, true)
+				end
+			})
+
+			dFrame:Add("TextButton", {
+				Text = ` 500`;
+				Size = UDim2.new(0, 62, 0, 20);
+				Position = UDim2.new(0, 5, 0, 75);
+				BackgroundTransparency = 0.5;
+				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 0.6);
+				OnClick = function()
+					promptPurchase(82180417686588, playerData.isDonor, true)
+				end
+			})
+
+			dFrame:Add("TextButton", {
+				Text = ` 1000`;
+				Size = UDim2.new(0, 62, 0, 20);
+				Position = UDim2.new(0.5, 3, 0, 75);
+				BackgroundTransparency = 0.5;
+				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 1);
+				OnClick = function()
+					promptPurchase(113285285080347, playerData.isDonor, true)
+				end
+			})
+
+			dFrame:Add("TextLabel", {
+				Text = "Other (No Perks): ";
+				TextXAlignment = "Left";
+				Size = UDim2.new(1, 0, 0, 30);
 				Position = UDim2.new(0, 5, 1, -50);
+				BackgroundTransparency = 1;
+			})
+
+			dFrame:Add("TextButton", {
+				Text = ` 50`;
+				Size = UDim2.new(0, 62, 0, 20);
+				Position = UDim2.new(0, 5, 1, -20);
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
-					promptPurchase(true, 5212076)
+					promptPurchase(86164337425437)
 				end
 			})
 
 			dFrame:Add("TextButton", {
-				Text = "100";
-				Size = UDim2.new(0, 60, 0, 20);
-				Position = UDim2.new(0.5, 5, 1, -50);
+				Text = ` 100`;
+				Size = UDim2.new(0, 62, 0, 20);
+				Position = UDim2.new(0.5, 3, 1, -20);
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
 				OnClick = function()
-					promptPurchase(true, 5212077)
-				end
-			})
-
-			dFrame:Add("TextButton", {
-				Text = "500";
-				Size = UDim2.new(0, 60, 0, 20);
-				Position = UDim2.new(0, 5, 1, -25);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.6);
-				OnClick = function()
-					promptPurchase(true, 5212081)
-				end
-			})
-
-			dFrame:Add("TextButton", {
-				Text = "1000";
-				Size = UDim2.new(0, 60, 0, 20);
-				Position = UDim2.new(0.5, 5, 1, -25);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.9);
-				OnClick = function()
-					promptPurchase(true, 5212082)
+					promptPurchase(75165550059686)
 				end
 			})
 		end
