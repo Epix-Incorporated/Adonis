@@ -63,7 +63,66 @@ return function(data, env)
 		end
 	})
 
-	local function promptPurchase(id: number, showWarning: boolean?, showSuccess: boolean?)
+	local function createPurchaseWindow(id)
+		local purchaseWindow = UI.Make("Window", {
+			Name = "Purchase window";
+			Title = `Purchase asset`;
+			Icon = client.MatIcons["Shopping cart"];
+			AllowMultiple = false;
+			Size = {380, 160};
+			SizeLocked = true;
+		})
+
+		if purchaseWindow then
+			purchaseWindow:Add("TextLabel", {
+				Size = UDim2.new(1, -20, 1, -55);
+				Position = UDim2.new(0.5, 0, 0, 10);
+				AnchorPoint = Vector2.new(0.5, 0);
+				ZIndex = 2;
+				TextScaled = true;
+				Text = "This game does not allow third party purchases. If you would like to purchase, please copy the link below and put it in your browser.";
+			})
+
+			purchaseWindow:Add("TextBox", {
+				Size = UDim2.new(1, -20, 0, 30);
+				Position = UDim2.new(0.5, 0, 1, -10);
+				AnchorPoint = Vector2.new(0.5, 1);
+				ZIndex = 2;
+				ClearTextOnFocus = false;
+				TextEditable = false;
+				TextScaled = true;
+				Text = string.format("https://roblox.com/%s/%d/", "library", id)
+			})
+
+			purchaseWindow:Ready()
+		end
+	end
+
+	local function promptPurchase(id)
+		if Variables.AllowThirdPartyPurchases == false then
+			createPurchaseWindow(id)
+		else
+			local logEvent, finishEvent
+
+			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
+				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
+					Variables.AllowThirdPartyPurchases = false
+
+					createPurchaseWindow(id)
+				end
+			end)
+			finishEvent = service.MarketPlace["PromptPurchaseFinished"]:Connect(function(plr, aid)
+				if plr == service.Players.LocalPlayer and aid == id then
+					logEvent:Disconnect()
+					finishEvent:Disconnect()
+				end
+			end)
+
+			service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, id)
+		end
+	end
+
+	local function promptBulkPurchase(id: number, showWarning: boolean?, showSuccess: boolean?)
 		if showWarning then
 			if UI.MakeGui("YesNoPrompt", {
 				Title = "Are you sure?",
@@ -793,7 +852,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
 				OnClick = function()
-					promptPurchase(6878510605, playerData.isDonor, true)
+					promptBulkPurchase(6878510605, playerData.isDonor, true)
 				end
 			})
 
@@ -804,7 +863,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 0.6);
 				OnClick = function()
-					promptPurchase(82180417686588, playerData.isDonor, true)
+					promptBulkPurchase(82180417686588, playerData.isDonor, true)
 				end
 			})
 
@@ -815,7 +874,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 1);
 				OnClick = function()
-					promptPurchase(113285285080347, playerData.isDonor, true)
+					promptBulkPurchase(113285285080347, playerData.isDonor, true)
 				end
 			})
 
@@ -834,7 +893,7 @@ return function(data, env)
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
-					promptPurchase(86164337425437)
+					promptBulkPurchase(86164337425437)
 				end
 			})
 
@@ -845,7 +904,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
 				OnClick = function()
-					promptPurchase(75165550059686)
+					promptBulkPurchase(75165550059686)
 				end
 			})
 		end
