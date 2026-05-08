@@ -847,8 +847,8 @@ return function(data, env)
 			})
 			
 			dFrame:Add("TextLabel", {
-				Text = "Donate (Perks):";
-				TextXAlignment = "Left";
+				Text = "Donate (Perks)";
+				TextXAlignment = "Center";
 				Size = UDim2.new(1, 0, 0, 30);
 				Position = UDim2.new(0, 5, 0, 0);
 				BackgroundTransparency = 1;
@@ -867,8 +867,8 @@ return function(data, env)
 
 			dFrame:Add("TextButton", {
 				Text = ` 500`;
-				Size = UDim2.new(0, 62, 0, 20);
-				Position = UDim2.new(0, 5, 0, 75);
+				Size = UDim2.new(0, 62, 0, 25);
+				Position = UDim2.new(0, 5, 0, 76);
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 0.6);
 				OnClick = function()
@@ -878,8 +878,8 @@ return function(data, env)
 
 			dFrame:Add("TextButton", {
 				Text = ` 1000`;
-				Size = UDim2.new(0, 62, 0, 20);
-				Position = UDim2.new(0.5, 3, 0, 75);
+				Size = UDim2.new(0, 62, 0, 25);
+				Position = UDim2.new(0.5, 3, 0, 76);
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 1);
 				OnClick = function()
@@ -887,18 +887,25 @@ return function(data, env)
 				end
 			})
 
+			dFrame:Add("Frame", {
+				Size = UDim2.new(1, -10, 0, 1),
+				Position = UDim2.new(0, 5, 1, -55),
+				BackgroundColor3 = Color3.new(1, 1, 1),
+				BackgroundTransparency = 0.5;
+			})
+
 			dFrame:Add("TextLabel", {
-				Text = "Other (No Perks): ";
-				TextXAlignment = "Left";
+				Text = "Other (No Perks)";
+				TextXAlignment = "Center";
 				Size = UDim2.new(1, 0, 0, 30);
-				Position = UDim2.new(0, 5, 1, -50);
+				Position = UDim2.new(0, 5, 1, -55);
 				BackgroundTransparency = 1;
 			})
 
 			dFrame:Add("TextButton", {
 				Text = ` 50`;
-				Size = UDim2.new(0, 62, 0, 20);
-				Position = UDim2.new(0, 5, 1, -20);
+				Size = UDim2.new(0, 62, 0, 25);
+				Position = UDim2.new(0, 5, 1, -25);
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
@@ -908,8 +915,8 @@ return function(data, env)
 
 			dFrame:Add("TextButton", {
 				Text = ` 100`;
-				Size = UDim2.new(0, 62, 0, 20);
-				Position = UDim2.new(0.5, 3, 1, -20);
+				Size = UDim2.new(0, 62, 0, 25);
+				Position = UDim2.new(0.5, 3, 1, -25);
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
 				OnClick = function()
