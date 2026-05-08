@@ -13044,7 +13044,7 @@ local function main()
 		local typeData = prop.ValueType
 		local typeName = typeData.Name
 
-		if typeName == "string" or typeName == "Content" then
+		if typeName == "string" or typeName == "Content" or typeName == "ContentId" then
 			return str
 		elseif Properties.ToNumberTypes[typeName] then
 			return tonumber(str)
@@ -15165,7 +15165,7 @@ local function main()
 		end
 
 
-		if typeName == "string" or typeName == "Content" then
+		if typeName == "string" or typeName == "Content" or typeName == "ContentId" then
 			return str
 		elseif Apps.Properties.ToNumberTypes[typeName] then
 			return tonumber(str)
