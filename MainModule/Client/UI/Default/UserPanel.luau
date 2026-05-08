@@ -362,6 +362,9 @@ return function(data, env)
 			Text = "Game";
 		})
 
+		-- Disable settings tab until permissions are checked
+		gameTab:Disable() 
+
 		if data.Tab then
 			local Tab = string.lower(data.Tab)
 			if Tab == "donate" then
@@ -1853,10 +1856,8 @@ return function(data, env)
 						})
 					end
 				end
-
 				gameTab:ResizeCanvas(false, true, false, false, 5, 5)
-			else
-				gameTab:Disable()
+				gameTab:Enable()
 			end
 		end
 
