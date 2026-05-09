@@ -73,11 +73,13 @@ if mutex then
 		warn("Adonis mutex detected but is not a StringValue! Aborting anyway...; This Location:", script:GetFullName())
 	end
 else
-	mutex = Instance.new("StringValue")
-	mutex.Name = "__Adonis_MUTEX"
-	mutex.Archivable = false
-	mutex.Value = script:GetFullName()
-	mutex.Parent = RunService
+	pcall(function()
+		mutex = Instance.new("StringValue")
+		mutex.Name = "__Adonis_MUTEX"
+		mutex.Archivable = false
+		mutex.Value = script:GetFullName()
+		mutex.Parent = RunService
+	end)
 
 	local model = script.Parent.Parent
 	local configFolder = model.Config
@@ -91,7 +93,7 @@ else
 	local themesFolder = configFolder.Themes
 	local inGameSettingsEditorSettingsFolder = configFolder:FindFirstChild("InGameSettingsEditorSettings")
 
-	local backup = model:Clone()
+	--local backup = model:Clone()
 
 	local data = {
 		Settings = {} :: {[string]: any};
