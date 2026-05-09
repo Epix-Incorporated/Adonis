@@ -2,6 +2,19 @@ local StarterGui = game:GetService("StarterGui")
 
 local SANDBOX_HELP_MESSAGE = [[Adonis has likely]]
 
+local function checkSandbox()
+	local success, value = pcall(function()
+		return (
+			script.Sandboxed or
+			script.Parent.Sandboxed or
+			script.Parent:FindFirstChild("Loader") and script.Parent.Loader.Sandboxed or
+			script.Parent.Parent and script.Parent.Parent.Sandboxed
+		)
+	end)
+
+	return success and value or false
+end
+
 task.wait(10)
 
 xpcall(function()
@@ -10,12 +23,7 @@ xpcall(function()
 	end
 end, warn)
 
-if script:FindFirstChild("__DISPLAY_SANDBOX_MESSAGE") or script:GetAttribute("__DISPLAY_SANDBOX_MESSAGE") or not script.Parent:FindFirstChild("__ADONIS_LOAD_HELP_MUTEX") and (
-	script.Sandboxed or
-	script.Parent.Sandboxed or
-	script.Parent:FindFirstChild("Loader") and script.Parent.Loader.Sandboxed or
-	script.Parent.Parent and script.Parent.Parent.Sandboxed
-) then
+if script:FindFirstChild("__DISPLAY_SANDBOX_MESSAGE") or script:GetAttribute("__DISPLAY_SANDBOX_MESSAGE") or not script.Parent:FindFirstChild("__ADONIS_LOAD_HELP_MUTEX") and checkSandbox() then
 	xpcall(print, warn, SANDBOX_HELP_MESSAGE)
 	xpcall(StarterGui.SetCore, warn, StarterGui, "SendNotification", {
 		Title = "Adonis Notification";
