@@ -7,12 +7,20 @@ local loaderFolder = script.Parent and script.Parent.Parent:FindFirstChild("load
 local debugHelper = loaderFolder:FindFirstChild("LoadDebugHelper")
 local sCopy = nil
 
-if debugHelper and (
-	script.Sandboxed or
-	script.Parent and script.Parent.Sandboxed or
-	loaderFolder:FindFirstChild("Loader") and loaderFolder.Loader.Sandboxed or
-	loaderFolder.Parent and loaderFolder.Parent.Sandboxed
-) then
+local function checkSandbox()
+	local success, value = pcall(function()
+		return (
+			script.Sandboxed or
+			script.Parent and script.Parent.Sandboxed or
+			loaderFolder:FindFirstChild("Loader") and loaderFolder.Loader.Sandboxed or
+			loaderFolder.Parent and loaderFolder.Parent.Sandboxed
+		)
+	end)
+
+	return success and value or false
+end
+
+if debugHelper and checkSandbox() then
 	xpcall(function()
 		sCopy = debugHelper:Clone()
 		sCopy.Enabled = true
