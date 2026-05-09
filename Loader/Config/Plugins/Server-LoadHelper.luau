@@ -3,21 +3,21 @@
 ]]
 
 local StarterGui = game:GetService("StarterGui")
-local loaderFolder = script.Parent and script.Parent.Parent:FindFirstChild("loaderFolder")
-local debugHelper = loaderFolder:FindFirstChild("LoadDebugHelper")
+local loaderFolder = script.Parent and script.Parent.Parent and script.Parent.Parent.Parent:FindFirstChild("Loader")
+local debugHelper = loaderFolder and loaderFolder:FindFirstChild("LoadDebugHelper")
 local sCopy = nil
 
 local function checkSandbox()
 	local success, value = pcall(function()
 		return (
 			script.Sandboxed or
-			script.Parent and script.Parent.Sandboxed or
+			script.Parent and (script.Parent.Sandboxed or script.Parent.Parent and script.Parent.Parent.Sandboxed) or
 			loaderFolder:FindFirstChild("Loader") and loaderFolder.Loader.Sandboxed or
-			loaderFolder.Parent and loaderFolder.Parent.Sandboxed
+			loaderFolder.Sandboxed or loaderFolder.Parent and loaderFolder.Parent.Sandboxed
 		)
 	end)
 
-	return success and value or false
+	return not success or value or false
 end
 
 if debugHelper and checkSandbox() then
@@ -31,9 +31,11 @@ if debugHelper and checkSandbox() then
 		val.Archivable = false
 		val.Parent = sCopy
 	end, function()
-		debugHelper:SetAttribute("__DISPLAY_SANDBOX_MESSAGE", true)
-		debugHelper.Enabled = true
-		debugHelper.Parent = starterGui
+		xpcall(function()
+			debugHelper:SetAttribute("__DISPLAY_SANDBOX_MESSAGE", true)
+			debugHelper.Enabled = true
+			debugHelper.Parent = StarterGui
+		end, warn)
 	end)
 end
 
