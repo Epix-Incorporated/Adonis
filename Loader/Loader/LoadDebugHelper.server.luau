@@ -10,7 +10,7 @@ xpcall(function()
 	end
 end, warn)
 
-if script:FindFirstChild("__DISPLAY_SANDBOX_MESSAGE") or script:GetAttribute("__DISPLAY_SANDBOX_MESSAGE") or not script.Parent:FindFirstChild("__ADONIS_LOAD_HELP_MUTEX") and 
+if script:FindFirstChild("__DISPLAY_SANDBOX_MESSAGE") or script:GetAttribute("__DISPLAY_SANDBOX_MESSAGE") or not script.Parent:FindFirstChild("__ADONIS_LOAD_HELP_MUTEX") and (
 	script.Sandboxed or
 	script.Parent.Sandboxed or
 	script.Parent:FindFirstChild("Loader") and script.Parent.Loader.Sandboxed or
