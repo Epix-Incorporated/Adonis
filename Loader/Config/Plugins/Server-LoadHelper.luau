@@ -7,7 +7,12 @@ local loaderFolder = script.Parent and script.Parent.Parent:FindFirstChild("load
 local debugHelper = loaderFolder:FindFirstChild("LoadDebugHelper")
 local sCopy = nil
 
-if debugHelper then
+if debugHelper and (
+	script.Sandboxed or
+	script.Parent and script.Parent.Sandboxed or
+	loaderFolder:FindFirstChild("Loader") and loaderFolder.Loader.Sandboxed or
+	loaderFolder.Parent and loaderFolder.Parent.Sandboxed
+) then
 	xpcall(function()
 		sCopy = debugHelper:Clone()
 		sCopy.Enabled = true
@@ -27,6 +32,7 @@ end
 return function(Vargs)
 	local server, service = Vargs.Server, Vargs.Service
 
+	local Pcall = server.Pcall
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
