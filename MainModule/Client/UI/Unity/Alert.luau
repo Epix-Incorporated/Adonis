@@ -23,7 +23,7 @@ return function(data, env)
 		AllowMultiple = false;
 		OnClose = function()
 			alarm:Stop()
-			wait()
+			task.wait()
 			alarm:Destroy()
 		end
 	})

@@ -154,7 +154,7 @@ return function(data, env)
 		overviewtab:ResizeCanvas(false, true, false, false, 5, 5)
 
 		task.spawn(function()
-			while wait(0.5) do
+			while task.wait(0.5) do
 				local timeNow = os.time()
 				if not displays["Server Speed"] or not displays["Server Age"] then break end
 				displays["Server Speed"].Text = math.round(data.ServerSpeed or 0)

@@ -87,7 +87,7 @@ return function(data, env)
 		else
 			break
 		end
-		wait(waitTime - timeOff)
+		task.wait(waitTime - timeOff)
 		expectedDelay += waitTime
 		timeOff = os.clock() - startTime - expectedDelay
 	end
@@ -100,12 +100,12 @@ return function(data, env)
 		buzzer:Play()
 		for i = 1, 0, -0.1 do
 			label.TextTransparency = i
-			wait(0.05)
+			task.wait(0.05)
 		end
 
 		for i = 0, 1, 0.1 do
 			label.TextTransparency = i
-			wait(0.05)
+			task.wait(0.05)
 		end
 	end
 

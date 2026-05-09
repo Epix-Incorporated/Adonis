@@ -686,7 +686,7 @@ return function(Vargs, env)
 									ice.Size = Vector3.new(5, ice.Size.Y - i, 5)
 									ice.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -i, 0)
 									plate.Size = Vector3.new(i + 5, 0.2, i + 5)
-									wait()
+									task.wait()
 								end
 								ice:Destroy()
 							end
@@ -696,7 +696,7 @@ return function(Vargs, env)
 									obj.Anchored = false
 								end
 							end
-							wait(3)
+							task.wait(3)
 							pcall(function() plate:Destroy() end)
 						end
 					end)
@@ -718,7 +718,7 @@ return function(Vargs, env)
 						local orig = hum.MaxHealth
 						local tools = service.New("Model")
 						hum.MaxHealth = math.huge
-						wait()
+						task.wait()
 						hum.Health = hum.MaxHealth
 						for k, t in v.Backpack:GetChildren() do
 							t.Parent = tools
@@ -739,7 +739,7 @@ return function(Vargs, env)
 							Admin.RunCommand(`{Functions.GetMainPrefix()}unname`, v.Name)
 							event:Disconnect()
 						end)
-						repeat torso.CFrame = pos wait() until not v or not v.Character or not torso or not running or not torso.Parent
+						repeat torso.CFrame = pos task.wait() until not v or not v.Character or not torso or not running or not torso.Parent
 					end)
 				end
 			end
@@ -1388,7 +1388,7 @@ return function(Vargs, env)
 				end
 				for i = 0.1, 5, 0.1 do
 					if service.CountTable(tab) - 2 >= service.CountTable(players) then break end
-					wait(0.1)
+					task.wait(0.1)
 				end
 				return tab
 			end;
@@ -3346,7 +3346,7 @@ return function(Vargs, env)
 							newChar = p.Character ~= oChar and p.Character or p.CharacterAdded:Wait()
 
 							if newChar then
-								wait(); -- Let it finish loading character contents
+								task.wait(); -- Let it finish loading character contents
 
 								newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
 								newPrimary = newChar.PrimaryPart or (newHumanoid and newHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
@@ -5984,9 +5984,9 @@ return function(Vargs, env)
 						s.SoundId = `http://www.roblox.com/asset/?id={ind.ID}`
 						s.Pitch = ind.Pitch
 						s:Play()
-						wait(0.5)
-						wait(s.TimeLength+1)
-						wait(1)
+						task.wait(0.5)
+						task.wait(s.TimeLength+1)
+						task.wait(1)
 					end)
 
 					s:Stop()
@@ -6086,7 +6086,7 @@ return function(Vargs, env)
 					s.Looped = looped
 					s.Archivable = false
 					s.Parent = service.SoundService
-					wait(0.5)
+					task.wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
 					for i, v in service.SoundService:GetChildren() do

@@ -2014,7 +2014,7 @@ return function(Vargs, env)
 						Admin.RunCommand(`{Settings.Prefix}nograv`, v.Name)
 						Admin.RunCommand(`{Settings.Prefix}smoke`, v.Name, color)
 						Admin.RunCommand(`{Settings.Prefix}spin`, v.Name)
-						repeat hum.PlatformStand = true wait() until not hum or hum == nil or hum.Parent == nil
+						repeat hum.PlatformStand = true task.wait() until not hum or hum == nil or hum.Parent == nil
 					end)
 				end
 			end
@@ -2125,7 +2125,7 @@ return function(Vargs, env)
 
 							task.defer(humanoid.ApplyDescription, humanoid, description, Enum.AssetTypeVerification.Always)
 							local run = true
-							task.spawn(function() wait(10) run = false end)
+							task.spawn(function() task.wait(10) run = false end)
 							repeat
 								task.wait(1)
 								humanoid:TakeDamage(5)

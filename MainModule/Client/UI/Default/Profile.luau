@@ -471,7 +471,7 @@ return function(data, env)
 					self.Active = false
 					self.AutoButtonColor = false
 					client.Remote.Send("ProcessCommand", string.format("%sviewtools%s%s", data.CmdPrefix, data.CmdSplitKey, player.Name))
-					wait(2)
+					task.wait(2)
 					self.AutoButtonColor = true
 					self.Active = true
 				end

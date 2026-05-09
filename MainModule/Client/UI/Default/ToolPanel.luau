@@ -145,7 +145,7 @@ return function(data, env)
 								end
 							end)
 							client.Remote.Send("ProcessCommand", `{data.Prefix}clearaddedtools`)
-							wait(1)
+							task.wait(1)
 							if not refreshed then
 								refreshed = true
 								data = client.Remote.Get("UpdateList", "ToolList")
@@ -243,7 +243,7 @@ return function(data, env)
 							self.AutoButtonColor = false
 							self.Text = ". . ."
 							client.Remote.Send("ProcessCommand", string.format("%sremovetools%s%s%s", data.Prefix, data.SplitKey, data.SpecialPrefix, selected.Name))
-							wait(2)
+							task.wait(2)
 							if self then
 								self.Text = "Remove All Tools"
 								self.AutoButtonColor = true
@@ -386,7 +386,7 @@ return function(data, env)
 						self.AutoButtonColor = false
 						self.Text = ". . ."
 						client.Remote.Send("ProcessCommand", string.format("%sgear%s%sme%s%s", data.Prefix, data.SplitKey, data.SpecialPrefix, data.SplitKey, currentId))
-						wait(2)
+						task.wait(2)
 						if self then
 							self.Text = "Spawn"
 							self.AutoButtonColor = true

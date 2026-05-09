@@ -167,7 +167,7 @@ return function(Vargs)
 				end
 				hasActivated = true
 				Detected("crash", "Tamper Protection 0xC0FA6; "..tostring(message).."; ")
-				wait(1)
+				task.wait(1)
 				pcall(Disconnect, "Adonis_0xC0FA6")
 				pcall(Kill, "Adonis_0xC0FA6")
 				pcall(Kick, Player, "Adonis_0xC0FA6")
@@ -253,7 +253,7 @@ return function(Vargs)
 		--Detected('log','Client-Side Tool Detected')
 
 		HumanoidState = function()
-			wait(1)
+			task.wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
