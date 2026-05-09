@@ -648,6 +648,7 @@ return function(Vargs, env)
 		};
 
 		Rainbowify = {
+			Disabled = true; -- Disabled until command gets fixed, due to cloth-removal (#2090)
 			Prefix = Settings.Prefix;
 			Commands = {"rainbowify", "rainbow"};
 			Args = {"player"};
