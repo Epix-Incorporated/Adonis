@@ -285,7 +285,7 @@ else
 		end)
 	end
 
-	local response = assert(success and module, "FATAL ERROR! Adonis bootstrap function is missing! Please disable script capability sandboxing for Adonis and enable 'Load Third Party Assets' in game settings.")(data)
+	local response = assert(success and module, "FATAL ERROR! Adonis bootstrap function is missing! Possible fix is to disable script sandboxing for Adonis and enable 'Load Third Party Assets' in game settings.")(data)
 
 	if response == "SUCCESS" then
 		if data.Settings and data.Settings.HideScript and not data.DebugMode and not RunService:IsStudio() then
