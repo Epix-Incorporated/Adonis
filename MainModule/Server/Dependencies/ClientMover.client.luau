@@ -142,7 +142,7 @@ local start = time()
 local acliLogs = {}
 
 local function print(...)
-	if DebugMode or player.UserId == 1237666 then
+	if DebugMode then
 		realPrint("ACLI:", ...)
 	end
 	table.insert(acliLogs, select(2, pcall(table.concat, {"ACLI:", ...}, " ")))

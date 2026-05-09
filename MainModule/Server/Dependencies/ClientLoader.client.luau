@@ -58,7 +58,7 @@ local services = {
 }
 
 local function print(...)
-	if DebugMode or player.UserId == 1237666 then
+	if DebugMode then
 		realPrint("ACLI:", ...)
 	end
 end
