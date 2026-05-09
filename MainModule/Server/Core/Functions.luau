@@ -1703,6 +1703,20 @@ return function(Vargs, GetEnv)
 			table.sort(itemNames)
 
 			return itemNames
-		end
+		end;
+
+		RemoveSandbox = function(obj, recursive)
+			for _, child in recursive and { obj, table.unpack(obj:GetDescendants()) } or { obj } do
+				for _, v in Enum.SecurityCapability and Enum.SecurityCapability:GetEnumItems() or {} do
+					Pcall(function()
+						child.Capabilities = obj.Capabilities:Add(v)
+					end)
+				end
+			
+				Pcall(function()
+					child.Sandboxed = false
+				end)
+			end
+		end;
 	}
 end
