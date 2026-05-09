@@ -4385,7 +4385,7 @@ return function(Vargs, env)
 
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Functions.PlayAnimation(v , args[2], args[3], isLooped)
+					Functions.PlayAnimation(v , args[2], tonumber(args[3]), isLooped)
 				end
 			end
 		};
