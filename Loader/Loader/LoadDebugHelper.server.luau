@@ -16,7 +16,7 @@ if script:FindFirstChild("__DISPLAY_SANDBOX_MESSAGE") or script:GetAttribute("__
 	script.Parent:FindFirstChild("Loader") and script.Parent.Loader.Sandboxed or
 	script.Parent.Parent and script.Parent.Parent.Sandboxed
 ) then
-	xpcall(print, warn, HELP_MESSAGE)
+	xpcall(print, warn, SANDBOX_HELP_MESSAGE)
 	xpcall(StarterGui.SetCore, warn, StarterGui, "SendNotification", {
 		Title = "Adonis Notification";
 		Text = SANDBOX_HELP_MESSAGE;
