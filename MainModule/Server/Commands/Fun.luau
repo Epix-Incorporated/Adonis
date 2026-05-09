@@ -4360,17 +4360,32 @@ return function(Vargs, env)
 		Animation = {
 			Prefix = Settings.Prefix;
 			Commands = {"animation", "loadanim", "animate"};
-			Args = {"player", "animationID"};
-			Description = "Load the animation onto the target";
+			Args = {"player", "animationID", "speed (default: 1)", "isLooped? (default: false)"};
+			Description = "Plays the specified animation on a target";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+				-- Command got ran without a target
+				if args[1] and not args[2] then 
+					args[2] = args[1] 
+					args[1] = nil 
+				end
 
-				assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID`)
+				assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID!`)
+				if args[3] then
+					assert(tonumber(args[3]), `{tostring(args[3])} is not a valid speed!`)
+				end
+
+				local isLooped = false
+
+				-- TODO Possibly add a helper function for parsing string into bool?
+				if args[4] == "true" or args[4] == "1" then
+					isLooped = true
+				end
+
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Functions.PlayAnimation(v , args[2])
+					Functions.PlayAnimation(v , args[2], args[3], isLooped)
 				end
 			end
 		};
