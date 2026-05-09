@@ -8,6 +8,27 @@ return function(Vargs, GetEnv)
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
+	Functions.InternalSandboxError = function()
+		-- TODO: Add notice to users to disable sandbox For Adonis loader
+	end
+
+	-- // Handle errors cause by sandboxing
+	if not Variables.FFLAG_NoHandleSandbox then
+		for _, v in server.Folder and server.Folder:GetDescendants() do -- TODO: Maybe assert/fail if folder is missing??? It should never be ¯\_(ツ)_/¯
+			if Functions.RemoveSandbox then
+				Pcall(Functions.RemoveSandbox, v)
+			end
+		end
+
+		for _, v in pairs({ server.Loader, server.Runner, server.Model, table.unpack(server.Model and server.Model:GetDescendants() or {}) }) do
+			if not Variables.HasSandboxErrored then
+				Functions.InternalSandboxError()
+			end
+
+			Pcall(Functions.RemoveSandbox, v)
+		end
+	end
+
 	--// AutoClean
 	if Settings.AutoClean then
 		service.StartLoop("AUTO_CLEAN", Settings.AutoCleanDelay, Functions.CleanWorkspace, true)
