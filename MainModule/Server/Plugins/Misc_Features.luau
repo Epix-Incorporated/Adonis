@@ -36,15 +36,18 @@ return function(Vargs, GetEnv)
 				Pcall(Functions.RemoveSandbox, v)
 			end
 		end
+		Logs:AddLog("Script", "Removed sandboxing from MainModule")
 
 		for _, v in pairs({ server.Loader, server.Runner, server.Model, table.unpack(server.Model and server.Model:GetDescendants() or {}) }) do
 			if v.Sandboxed and not Variables.HasSandboxErrored then
 				Functions.InternalSandboxError()
 				Variables.HasSandboxErrored = true
+				Logs:AddLog("Script", "Created warning help message for loader sandbox")
 			end
 
 			Pcall(Functions.RemoveSandbox, v)
 		end
+		Logs:AddLog("Script", "Removed sandboxing from Loader")
 	end
 
 	--// AutoClean
