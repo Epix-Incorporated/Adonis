@@ -9,7 +9,24 @@ return function(Vargs, GetEnv)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	Functions.InternalSandboxError = function()
-		-- TODO: Add notice to users to disable sandbox For Adonis loader
+		table.insert(server.Messages, {
+			Title = "Potential loader issue!";
+			Message = "Adonis Loader's has script sandboxing on may break functionality. For help disabling, click to see more...";
+			Time = 15;
+			Icon = "MatIcon://Description";
+			onClick = (server.Data and server.Data.NightlyMode) and Core.Bytecode([[
+				local window = client.UI.Make("Window", {
+					Title = "How to disable loader sandboxing";
+					Size = {700, 300};
+					Icon = "MatIcon://Help";
+				})
+
+				window:Add("ImageLabel", {
+					Image = "rbxassetid://111103486118064"; -- TODO: Upload a helpful image for this
+				})
+
+				window:Ready()
+		]]) or nil})
 	end
 
 	-- // Handle errors cause by sandboxing
@@ -21,8 +38,9 @@ return function(Vargs, GetEnv)
 		end
 
 		for _, v in pairs({ server.Loader, server.Runner, server.Model, table.unpack(server.Model and server.Model:GetDescendants() or {}) }) do
-			if not Variables.HasSandboxErrored then
+			if v.Sandboxed and not Variables.HasSandboxErrored then
 				Functions.InternalSandboxError()
+				Variables.HasSandboxErrored = true
 			end
 
 			Pcall(Functions.RemoveSandbox, v)
