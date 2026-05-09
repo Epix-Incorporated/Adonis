@@ -1,6 +1,14 @@
 local StarterGui = game:GetService("StarterGui")
 
-local SANDBOX_HELP_MESSAGE = [[Adonis has likely]]
+local SANDBOX_HELP_MESSAGE = [[Adonis has likely failed to load due to Sandboxing restrictions. To fix this disable the `.Sandboxed` property of all Adonis loader scripts and enable `Allow Loading Third Party Assets` in the game settings.]]
+
+local warn = function(...)
+	warn(":: Adonis ::", ...)
+end
+
+local print = function(...)
+	print(":: Adonis ::", ...)
+end
 
 local function checkSandbox()
 	local success, value = pcall(function()
@@ -12,7 +20,7 @@ local function checkSandbox()
 		)
 	end)
 
-	return success and value or false
+	return not success or value or false
 end
 
 task.wait(10)
