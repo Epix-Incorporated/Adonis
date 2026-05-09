@@ -16,7 +16,7 @@
 	---------------------
 
 	- It's recommend you store Adonis_Loader in 'ServerScriptService'.
-	- Make sure the .Sandboxed property is disabled for the loader and enable 'Load Third Party Assets' ...
+	- Make sure the .Sandboxed property is disabled for the loader and enable 'Allow Loading Third Party Assets' ...
 	- ^^ in the game settings is enabled, otherwise Adonis may fail to load.
 	- Configure Ranks in Config -> Settings -> Ranks module.
 	- Configure general settings like prefixes, command settings, etc in Config -> Settings -> General module.
