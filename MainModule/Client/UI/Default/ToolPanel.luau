@@ -161,7 +161,7 @@ return function(data, env)
 		generateAdded()
 	end
 
-	spawn(function()
+	task.spawn(function()
 		local tab = tabFrame:NewTab("Inventories", {
 			Text = "Inventory Monitor";
 		})
@@ -347,7 +347,7 @@ return function(data, env)
 		end)
 	end)
 
-	spawn(function()
+	task.spawn(function()
 		local tab = tabFrame:NewTab("Gear", {
 			Text = "Insert Gear"
 		})
