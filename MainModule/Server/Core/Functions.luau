@@ -1718,6 +1718,8 @@ return function(Vargs, GetEnv)
 					child.Sandboxed = false
 				end)
 			end
+
+			return obj
 		end;
 	}
 end
