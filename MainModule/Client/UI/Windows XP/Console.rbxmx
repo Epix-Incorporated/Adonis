@@ -534,6 +534,10 @@ return function(data, env)
 	local prefix = settings.Prefix
 	local commands = client.Remote.Get('FormattedCommands') or {}
 
+	client.Variables.ConsoleHistory = client.Variables.ConsoleHistory or {}
+	local history = client.Variables.ConsoleHistory
+	local historyIndex = #history + 1
+
 	local scrollOpenSize = UDim2.new(0.36, 0, 0, 200)
 	local scrollCloseSize = UDim2.new(0.36, 0, 0, 47)
 
@@ -618,7 +622,12 @@ return function(data, env)
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text ~= '' and string.len(text.Text) > 1 then
-				client.Remote.Send('ProcessCommand', text.Text)
+				local cmd = text.Text
+				if cmd ~= "" then
+					table.insert(history, cmd)
+					historyIndex = #history + 1
+				end
+				client.Remote.Send('ProcessCommand', cmd)
 			end
 			close()
 		elseif not isInConsoleBounds(player:GetMouse()) then
@@ -629,14 +638,25 @@ return function(data, env)
 	text.Changed:Connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			if string.sub(text.Text, string.len(text.Text)) == "	" then
+				local base = string.sub(text.Text, 1, string.len(text.Text) - 1)
+
+				local suggestion
 				if players:FindFirstChild("Entry 0") then
-					text.Text = `{string.sub(text.Text, 1, (string.len(text.Text) - 1))}{players["Entry 0"].Text} `
+					suggestion = players["Entry 0"].Text
 				elseif scroll:FindFirstChild("Entry 0") then
-					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
-				else
-					text.Text = text.Text..prefix
+					suggestion = string.split(scroll["Entry 0"].Text, "<")[1]
 				end
-				text.CursorPosition = string.len(text.Text) + 1
+
+				if suggestion then
+					local match = string.match(base, `^(.*{splitKey})[^ {splitKey}]*$`)
+					if match then
+						text.Text = match .. suggestion .. " "
+					else
+						text.Text = suggestion .. " "
+					end
+				end
+
+				text.CursorPosition = #text.Text + 1
 				text.Text = string.gsub(text.Text, "	", "")
 			end
 			scroll:ClearAllChildren()
@@ -647,24 +667,38 @@ return function(data, env)
 				nText = string.match(nText,`.*{batchKey}([^']+)`)
 				nText = string.match(nText,"^%s*(.-)%s*$")
 			end
-
+			local provided = string.match(nText, `.+{splitKey}(.*)$`) or ""
+			local suggestions = {}
+			local ok, res = pcall(function()
+				return client.Remote.Get("GetArgSuggestions", nText, provided)
+			end)
+			if ok and type(res) == "table" then
+				suggestions = res
+			end
 			local pNum = 0
-			local pMatch = string.match(nText,`.+{splitKey}(.*)$`)
-			for i,v in next,service.Players:GetPlayers() do
-				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,`{splitKey}$`) then
-					local new = entry:Clone()
-					new.Text = tostring(v)
-					new.Name = `Entry {pNum}`
-					new.TextXAlignment = "Right"
-					new.Visible = true
-					new.Parent = players
-					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:Connect(function()
-						text.Text = text.Text..tostring(v)
-						text:CaptureFocus()
-					end)
-					pNum = pNum+1
-				end
+			for _,v in ipairs(suggestions) do
+				local new = entry:Clone()
+				new.Text = tostring(v)
+				new.Name = `Entry {pNum}`
+				new.TextXAlignment = "Right"
+				new.Visible = true
+				new.Parent = players
+				new.Position = UDim2.new(0,0,0,20*pNum)
+
+				new.MouseButton1Down:Connect(function()
+					local before = text.Text
+					local match = string.match(before, `^(.*{splitKey})[^ {splitKey}]*$`)
+
+					if match then
+						text.Text = match .. tostring(v) .. " "
+					else
+						text.Text = tostring(v) .. " "
+					end
+
+					text.CursorPosition = #text.Text + 1
+					text:CaptureFocus()
+				end)
+				pNum += 1
 			end
 
 			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
@@ -727,6 +761,29 @@ return function(data, env)
 		end
 	end)
 
+	BindEvent(service.UserInputService.InputBegan, function(input, gp)
+		if not opened then return end
+
+		local box = service.UserInputService:GetFocusedTextBox()
+		if box ~= text then return end
+
+		if input.KeyCode == Enum.KeyCode.Up then
+			if historyIndex > 1 then
+				historyIndex -= 1
+				text.Text = history[historyIndex] or ""
+				text.CursorPosition = #text.Text + 1
+			end
+		elseif input.KeyCode == Enum.KeyCode.Down then
+			if historyIndex < #history then
+				historyIndex += 1
+				text.Text = history[historyIndex] or ""
+			else
+				historyIndex = #history + 1
+				text.Text = ""
+			end
+			text.CursorPosition = #text.Text + 1
+		end
+	end)
 	gTable:Ready()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>

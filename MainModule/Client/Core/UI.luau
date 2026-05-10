@@ -554,22 +554,6 @@ return function(Vargs, GetEnv)
 
 			return gTable,gIndex
 		end;
-
-		Autocomplete = function(provided: string, arg: string)
-			local matches = {}
-			if not provided or not arg then
-				return matches
-			end
-
-			for _, player in service.Players:GetPlayers() do
-				local name = player.Name
-				if provided == "$" or TruncatedCompare(string.lower(name), string.lower(provided)) then
-					table.insert(matches, name)
-				end
-			end
-
-			return matches
-		end;
 	}
 
 	client.UI.RegisterGui = client.UI.Register

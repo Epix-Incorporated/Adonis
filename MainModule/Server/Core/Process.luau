@@ -32,6 +32,11 @@ return function(Vargs, GetEnv)
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
 
+		Remote.Returnables = Remote.Returnables or {}
+		Remote.Returnables.GetArgSuggestions = function(p, fullMsg, provided)
+			return server.Process.GetSuggestions(p, fullMsg, provided)
+		end
+
 		--// NetworkServer Events
 		if service.NetworkServer then
 			service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
@@ -1223,5 +1228,72 @@ return function(Vargs, GetEnv)
 
 		end;
 		]]
+		GetSuggestions = function(p, fullMsg)
+			local suggestions = {}
+
+			if type(fullMsg) == "table" then
+				fullMsg = tostring(fullMsg[1])
+			end
+
+			if type(fullMsg) ~= "string" then
+				return suggestions
+			end
+
+			fullMsg = fullMsg:gsub("^%s+", "")
+			if fullMsg == "" then
+				return suggestions
+			end
+
+			local splitKey = Settings.SplitKey or " "
+
+			local index, command = Admin.GetCommand(fullMsg)
+			if not command then
+				return suggestions
+			end
+			local parts = Functions.Split(fullMsg, splitKey)
+
+			table.remove(parts, 1)
+
+			local endsWithSpace = string.sub(fullMsg, -1) == splitKey
+
+			local argIndex
+			local provided
+
+			if endsWithSpace then
+				argIndex = #parts + 1
+				provided = ""
+			else
+				argIndex = #parts
+				provided = parts[#parts] or ""
+			end
+
+			provided = string.lower(provided)
+
+			local provider = command.Suggestions and command.Suggestions[argIndex]
+
+			if not command.Suggestions or provider == nil then
+				for _,plr in ipairs(service.GetPlayers()) do
+					local name = plr.Name
+					if provided == "" or string.find(string.lower(name), provided, 1, true) then
+						table.insert(suggestions, name)
+					end
+				end
+				return suggestions
+			end
+
+			local ok, res = pcall(function()
+				return provider(p, provided, parts)
+			end)
+
+			if not ok or type(res) ~= "table" then
+				return {}
+			end
+
+			for i=1, math.min(#res, 25) do
+				suggestions[i] = tostring(res[i])
+			end
+
+			return suggestions
+		end;
 	};
 end
