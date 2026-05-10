@@ -46,7 +46,7 @@ return function(Vargs)
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	loaderFolder, debugHelper, starterGui, sCopy = server.Model and server.Model:FindFirstChild("Loader") or service.Wrap(loaderFolder), service.Wrap(debugHelper), service.StarterGui, sCopy and service.Wrap(sCopy) or nil
+	loaderFolder, debugHelper, StarterGui, sCopy = server.Model and server.Model:FindFirstChild("Loader") or service.Wrap(loaderFolder), service.Wrap(debugHelper), service.StarterGui, sCopy and service.Wrap(sCopy) or nil
 
 	service.New("BoolValue", {
 		Parent = loaderFolder;
