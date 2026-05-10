@@ -1709,12 +1709,12 @@ return function(Vargs, GetEnv)
 		RemoveSandbox = function(obj, recursive)
 			for _, child in recursive and { obj, table.unpack(obj:GetDescendants()) } or { obj } do
 				for _, v in Enum.SecurityCapability and Enum.SecurityCapability:GetEnumItems() or {} do
-					Pcall(function()
+					pcall(function()
 						child.Capabilities = obj.Capabilities:Add(v)
 					end)
 				end
 			
-				Pcall(function()
+				pcall(function()
 					child.Sandboxed = false
 				end)
 			end
