@@ -3,8 +3,16 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v278 2026-XX-XX XX:XX UTC] @Maintainer";
+	"[v278 2026-05-09 00:40 UTC] @joritochip";
+	"(Git/joritochip) Fix Modern theme window (#2121)";
+	"(Git/ImFirstPlace) Improve :setcore command (#2104)";
+	"(Git/AidenJamesYt) Add :promptpluspurchase and !getplus commands (#2116)";
+	"(Git/krampuszc) Updated the Dex icons (#2118)";
+	"(Git/joritochip) Modify donation buttons (#2120)";
+	"(Git/thatgato) Fix Game tab in user panel permission check (#2122)";
 	"(Git/ImFirstPlace) Remove Remnants of Creator Powers (#2102)";
+	"(Git/fxeP1) Push missing globals to environment (#2113)";
+	"(Git/ccuser44) Update typechecker to be up-to-date with upstream (#2082)";
 	"";
 	"[v277 2026-04-16 19:48 UTC] @Dimenpsyonal";
 	"(Git/wilsontulus) Fix :invisible and :visible to query all Decals and BillboardGui in BaseParts (#2087)";
