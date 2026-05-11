@@ -856,7 +856,6 @@ return function(data, env)
 		if c == 'Text' and text.Text ~= '' and open then
 			if string.sub(text.Text, string.len(text.Text)) == "	" then
 				if players:FindFirstChild("Entry 0") then
-
 					local args = string.split(text.Text, splitKey)
 					args[#args] = nil
 					local textWithoutLastArg = table.concat(args, splitKey)
@@ -866,7 +865,6 @@ return function(data, env)
 					end
 
 					text.Text = textWithoutLastArg .. players["Entry 0"].Text .. " "
-
 				elseif scroll:FindFirstChild("Entry 0") then
 					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
 				else
