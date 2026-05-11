@@ -6,6 +6,7 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server
 	local service = Vargs.Service
 
+	local Pcall = server.Pcall
 	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
@@ -1703,6 +1704,22 @@ return function(Vargs, GetEnv)
 			table.sort(itemNames)
 
 			return itemNames
-		end
+		end;
+
+		RemoveSandbox = function(obj, recursive)
+			for _, child in recursive and { obj, table.unpack(obj:GetDescendants()) } or { obj } do
+				for _, v in Enum.SecurityCapability and Enum.SecurityCapability:GetEnumItems() or {} do
+					pcall(function()
+						child.Capabilities = obj.Capabilities:Add(v)
+					end)
+				end
+			
+				pcall(function()
+					child.Sandboxed = false
+				end)
+			end
+
+			return obj
+		end;
 	}
 end

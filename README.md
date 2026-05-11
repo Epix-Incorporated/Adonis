@@ -27,6 +27,8 @@ If you get stuck, feel free to ask for assistance on our [Discord server](https:
 
 1. [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library.
 2. Insert the model into Studio using the Toolbox, and place it under `ServerScriptService`. (Do not leave it in the `Workspace`!)
+3. Adonis may fail to load due if script restrictions are enabled for the loader. If this happens disable the `.Sandboxed` property for all the Adonis loader assets and enable `Allow Loading Third Party Assets` in the Game Settings.
+    - You can easily disable the sandbox for Adonis by running the following code in the studio command bar: `local o=game.Selection:Get()[1];if not o then warn("Select Adonis loader in Explorer first!")end;o.Sandboxed=false;for _,v in loader:GetDescendants()do v.Sandboxed=false end;warn("Disabled sandboxing on selected model!")`
 
 ### Method 2: GitHub Releases
 
