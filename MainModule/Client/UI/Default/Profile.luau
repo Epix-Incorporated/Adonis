@@ -110,7 +110,7 @@ return function(data, env)
 		end
 
 		for i, v in ipairs({
-			{"Membership", player.HasRobloxSubscription, "Does the player have Roblox Plus?"},
+			{"Membership", boolToStr(player.HasRobloxSubscription), "Does the player have Roblox Plus?"},
 			{"Can Chat", data.CanChatGet[1] and boolToStr(data.CanChatGet[2]) or "[Error]", "Does the player's account settings allow them to chat?"},
 			{"Mail Verified", data.MailVerified, "[Admins Only] Does the player have verified their mail?"},
 			{"Phone/ID Verified", data.IDVerified, "[Admins Only] Does the player have verified their non-VoIP phone / ID?"},
