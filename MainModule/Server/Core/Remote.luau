@@ -550,6 +550,63 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end;
+
+			RankLevels = function(p)
+				local levels = {}
+				for name, data in Settings.Ranks do
+					table.insert(levels, {
+						Rank = name;
+						Level = data.Level;
+					})
+				end
+				return levels
+			end;
+
+			RankPurchasables = function(p)
+				local purchasables = {}
+
+				if server.Settings.DonorCommands then
+					table.insert(purchasables, {
+						Rank = "Donor";
+						Type = Enum.InfoType.Asset;
+						Id = 6878510605;
+					})
+				end
+
+				for name, data in server.Settings.Ranks do
+					for _, user in data.Users do
+						if typeof(user) ~= "string" then continue end
+
+						local id, idType
+
+						if string.sub(user, 1, 5) == "Item:" then
+							id = tonumber(string.sub(user, 6))
+							idType = Enum.InfoType.Asset
+						elseif string.sub(user, 1, 9) == "GamePass:" then
+							id = tonumber(string.sub(user, 10))
+							idType = Enum.InfoType.GamePass
+						elseif string.sub(user, 1, 13) == "Subscription:" then
+							id = tonumber(string.sub(user, 14))
+							idType = Enum.InfoType.Subscription
+						else
+							continue
+						end
+
+						local info = if idType == Enum.InfoType.Subscription then service.GetSubscriptionInfo(id) else service.GetProductInfo(id, idType)
+						if not info or not info.Created then continue end
+						if not info.IsForSale then continue end
+						if idType == Enum.InfoType.GamePass and (not info.CanBeSoldInThisGame) then continue end
+
+						table.insert(purchasables, {
+							Rank = name;
+							Id = id;
+							Type = idType;
+						})
+					end
+				end
+
+				return purchasables
+			end;
 		};
 
 		Terminal = {

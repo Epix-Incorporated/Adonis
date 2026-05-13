@@ -18,57 +18,7 @@ return function(Vargs, env)
 			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local tab = {}
-				local cmdCount = 0
-
-				for _, cmd in Admin.SearchCommands(plr, "all") do
-					local cmdAliases = table.create(#cmd.Commands)
-
-					if cmd.Hidden or cmd.Disabled then
-						continue
-					end
-
-					for _,alias in cmd.Commands do
-						if #cmdAliases >= 6 and (#cmd.Commands - #cmdAliases) ~= 0 then
-							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)
-							break
-						end
-
-						table.insert(cmdAliases, alias)
-					end
-
-					table.remove(cmdAliases, 1)
-
-					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
-					table.insert(tab, {
-						Text = Admin.FormatCommand(cmd),
-						Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
-						Filter = permissionDesc
-					})
-					cmdCount += 1
-				end
-
-				for alias, command in Core.GetPlayer(plr).Aliases or {} do
-					table.insert(tab, {
-						Text = alias,
-						Desc = `[User Alias] {command}`,
-						Filter = command
-					})
-					cmdCount += 1
-				end
-
-				table.sort(tab, function(a, b) return a.Text < b.Text end)
-
-				Remote.MakeGui(plr, "List", {
-					Title = "Commands";
-					Table = tab;
-					TitleButtons = {
-						{
-							Text = "?";
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`)
-						}
-					};
-				})
+				Remote.MakeGui(plr, "CommandList")
 			end
 		};
 
