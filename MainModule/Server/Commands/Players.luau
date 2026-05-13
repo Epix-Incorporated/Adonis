@@ -780,6 +780,13 @@ return function(Vargs, env)
 								end
 							end
 						end
+						
+						local membershipDisplay = "None"
+						if v:HasRobloxSubscription() then
+    						membershipDisplay = "Plus"
+						elseif v.MembershipType == Enum.MembershipType.Premium then
+    						membershipDisplay = "Premium"
+						end
 
 						local mailVerif = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
 						local hasVerifiedMail = if elevated then
@@ -803,6 +810,7 @@ return function(Vargs, env)
 							CmdPrefix = Functions.GetMainPrefix();
 							CmdSplitKey = Settings.SplitKey;
 							OnlineFriends = elevated and Remote.Get(v, "Function", "GetFriendsOnline");
+							MembershipStatus = membershipDisplay;
 						})
 					end)
 				end
