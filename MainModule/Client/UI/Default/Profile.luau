@@ -110,7 +110,6 @@ return function(data, env)
 		end
 
 		for i, v in ipairs({
-			-- Line 112 in your Profile UI script
 			{"Membership", data.MembershipStatus or "None", "The player's Roblox membership type. (Plus/Premium)"},
 			{"Can Chat", data.CanChatGet[1] and boolToStr(data.CanChatGet[2]) or "[Error]", "Does the player's account settings allow them to chat?"},
 			{"Mail Verified", data.MailVerified, "[Admins Only] Does the player have verified their mail?"},
