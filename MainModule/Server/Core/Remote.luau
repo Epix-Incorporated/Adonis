@@ -1030,6 +1030,18 @@ return function(Vargs, GetEnv)
 					end)
 				end
 			end,
+
+			PromptBulkPurchase = function(p: Player, args: {{number}})
+				local ids = args[1]
+				local lineItems = {}
+				for _, id in ids do
+					table.insert(lineItems, {
+						Type = Enum.MarketplaceProductType.AvatarAsset,
+						Id = tostring(id)
+					})
+				end
+				service.MarketplaceService:PromptBulkPurchase(p, lineItems, {})
+			end;
 		};
 
 		NewSession = function(sessionType: string)

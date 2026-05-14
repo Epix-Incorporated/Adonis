@@ -1,8 +1,4 @@
-<div align="center">
-
 # 📜 Adonis Contribution Policy
-
-![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png)
 
 Adonis is an ever-expanding, frequently updated, and sometimes complex system.
 To keep Adonis functional and somewhat readable rather than a tangled mess, this document sets out the policies governing contributions to consider before submitting a pull request:
@@ -107,15 +103,11 @@ To keep Adonis functional and somewhat readable rather than a tangled mess, this
 
 - Accepted contributors may request the "GitHub Contributor" role in the [Discord server](https://discord.com/invite/H5RvTP3) and the "Contributors" rank in the [Roblox group](https://www.roblox.com/groups/886423).
 - To request recognition, post your GitHub, Discord, and Roblox usernames in the [discussion thread](https://github.com/Epix-Incorporated/Adonis/discussions/433).
-- Recognition is **not** granted for non-code contributions (e.g. .github changes, typo fixes), a maintainer will usually let you know if this is the case.
+- Recognition is **not** granted for GitHub changes, nor for non-logical code changes (e.g. typo fixes, command aliases). A maintainer will usually let you know if this is the case.
 
 ## 11. Communication
 
 - Questions, discussions, or clarification requests should be directed to the project’s [Discord server](https://discord.com/invite/H5RvTP3).
 - Contributors are encouraged to engage constructively in PR discussions.
 
-<div align="center">
-
 <sub>Adonis Contribution Policy 2025</sub>
-
-</div>
