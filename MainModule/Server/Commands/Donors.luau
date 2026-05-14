@@ -58,7 +58,7 @@ return function(Vargs, env)
 		DonorNeon = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"neon", "donorneon"};
-			Args = {"color"};
+			Args = {"brickColor?"};
 			Description = "Changes your body material to neon and makes you the (optional) color of your choosing.";
 			Donors = true;
 			AdminLevel = "Donors";
@@ -79,7 +79,7 @@ return function(Vargs, env)
 		DonorFire = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"fire", "donorfire"};
-			Args = {"color (optional)"};
+			Args = {"brickColor?"};
 			Description = "Gives you fire with the specified color (if you specify one)";
 			Donors = true;
 			AdminLevel = "Donors";
@@ -120,7 +120,7 @@ return function(Vargs, env)
 		DonorSparkles = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"sparkles", "donorsparkles"};
-			Args = {"color (optional)"};
+			Args = {"brickColor?"};
 			Description = "Gives you sparkles with the specified color (if you specify one)";
 			Donors = true;
 			AdminLevel = "Donors";
@@ -159,7 +159,7 @@ return function(Vargs, env)
 		DonorLight = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"light", "donorlight"};
-			Args = {"color (optional)"};
+			Args = {"brickColor?"};
 			Description = "Gives you a PointLight with the specified color (if you specify one)";
 			Donors = true;
 			AdminLevel = "Donors";
@@ -192,7 +192,7 @@ return function(Vargs, env)
 		DonorParticle = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"particle", "donorparticle"};
-			Args = {"textureid", "startColor3", "endColor3"};
+			Args = {"textureId", "startColor3?", "endColor3?"};
 			Description = "Put a custom particle emitter on your character";
 			Donors = true;
 			AdminLevel = "Donors";
@@ -308,7 +308,7 @@ return function(Vargs, env)
 		DonorAvatarItem = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"avataritem", "accessory", "hat", "donorhat", "shirt", "donorshirt", "tshirt", "donortshirt", "givetshirt", "shirt", "donorshirt", "giveshirt", "pants", "donorpants", "givepants", "face", "donorface", "animation", "anim"};
-			Args = {"ID"};
+			Args = {"itemId"};
 			Description = "Gives yourself the avatar item that belongs to <ID>";
 			Donors = true;
 			AdminLevel = "Donors";

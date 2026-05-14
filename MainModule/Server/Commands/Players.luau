@@ -75,7 +75,7 @@ return function(Vargs, env)
 		Notepad = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notepad", "stickynote"};
-			Args = {"text (optional)"};
+			Args = {"text?"};
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -108,7 +108,7 @@ return function(Vargs, env)
 		NotifyMe = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifyme"};
-			Args = {"time (in seconds) or inf", "message"};
+			Args = {"seconds/inf", "text"};
 			Hidden = true;
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
@@ -138,7 +138,7 @@ return function(Vargs, env)
 		RandomNum = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"rand", "random", "randnum", "dice"};
-			Args = {"num m", "num n"};
+			Args = {"min", "max"};
 			Description = "Generates a number using Lua's math.random";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {any})
@@ -282,7 +282,7 @@ return function(Vargs, env)
 		Donors = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"donors", "donorlist", "donatorlist", "donators"};
-			Args = {"autoupdate? (default: true)"};
+			Args = {"autoupdate?"};
 			Description = "Shows a list of Adonis donators who are currently in the server";
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
@@ -513,7 +513,7 @@ return function(Vargs, env)
 		Theme = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"theme", "usertheme"};
-			Args = {"theme name (leave blank to reset to default)"};
+			Args = {"name?"};
 			Hidden = true;
 			Description = "Changes the Adonis client UI theme";
 			AdminLevel = "Players";
@@ -671,7 +671,7 @@ return function(Vargs, env)
 		PersonalCountdown = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"countdown", "timer", "cd"};
-			Args = {"time (in seconds)"};
+			Args = {"seconds"};
 			Description = "Makes a countdown on your screen";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -858,7 +858,7 @@ return function(Vargs, env)
 		BuyItem = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"buyitem", "buyasset"};
-			Args = {"id"};
+			Args = {"itemId"};
 			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -885,7 +885,7 @@ return function(Vargs, env)
 		Wait = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"wait"};
-			Args = {"time"};
+			Args = {"seconds"};
 			Description = "Waits for the desired amount of time in seconds. Only works with batch commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})

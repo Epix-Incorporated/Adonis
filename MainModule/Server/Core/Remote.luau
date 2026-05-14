@@ -551,29 +551,20 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			RankLevels = function(p)
-				local levels = {}
+			CommandListData = function(p)
+				local ranks = {}
+				local commands = {}
+
+				local pDat = {
+					Player = p;
+					Level = Admin.GetLevel(p);
+					isDonor = Admin.CheckDonor(p);
+				}
+
+				local maxDisplayLevel = pDat.Level
+
 				for name, data in Settings.Ranks do
-					table.insert(levels, {
-						Rank = name;
-						Level = data.Level;
-					})
-				end
-				return levels
-			end;
-
-			RankPurchasables = function(p)
-				local purchasables = {}
-
-				if server.Settings.DonorCommands then
-					table.insert(purchasables, {
-						Rank = "Donor";
-						Type = Enum.InfoType.Asset;
-						Id = 6878510605;
-					})
-				end
-
-				for name, data in server.Settings.Ranks do
+					local purchasables = {}
 					for _, user in data.Users do
 						if typeof(user) ~= "string" then continue end
 
@@ -586,26 +577,76 @@ return function(Vargs, GetEnv)
 							id = tonumber(string.sub(user, 10))
 							idType = Enum.InfoType.GamePass
 						elseif string.sub(user, 1, 13) == "Subscription:" then
-							id = tonumber(string.sub(user, 14))
-							idType = Enum.InfoType.Subscription
+							id = string.sub(user, 14)
+							table.insert(purchasables, {
+								Id = id;
+								Type = Enum.InfoType.Subscription;
+							})
+							continue
 						else
 							continue
 						end
 
-						local info = if idType == Enum.InfoType.Subscription then service.GetSubscriptionInfo(id) else service.GetProductInfo(id, idType)
+						local info = service.GetProductInfo(id, idType)
 						if not info or not info.Created then continue end
 						if not info.IsForSale then continue end
-						if idType == Enum.InfoType.GamePass and (not info.CanBeSoldInThisGame) then continue end
+						--if idType == Enum.InfoType.GamePass and (not info.CanBeSoldInThisGame) then continue end
 
 						table.insert(purchasables, {
-							Rank = name;
 							Id = id;
 							Type = idType;
 						})
 					end
+
+					table.insert(ranks, {
+						Rank = name;
+						Level = data.Level;
+						Purchasables = purchasables;
+					})
+
+					if #purchasables > 0 then
+						maxDisplayLevel = math.max(data.Level, maxDisplayLevel)
+					end
 				end
 
-				return purchasables
+				for i = #ranks, 1, -1 do
+					if ranks[i].Level > maxDisplayLevel then
+						table.remove(ranks, i)
+					end
+				end
+
+				table.insert(ranks, {
+					Rank = "Players";
+					Level = 0;
+					Purchasables = {};
+				})
+
+				if Settings.DonorCommands then
+					table.insert(ranks, {
+						Rank = "Donors";
+						Level = "Donors";
+						Purchasables = {
+							{ Type = Enum.InfoType.Asset; Id = 6878510605; }
+						}
+					})
+				end
+
+				for key, command in Commands do
+					local hasPerm, err = Admin.CheckPermission(pDat, command, true)
+					if err then continue end
+
+					if hasPerm == true or (hasPerm == false and ((Settings.DonorCommands and command.Donors) or Admin.CheckComLevel(maxDisplayLevel, command.AdminLevel))) then
+						local newCommand = table.clone(command)
+						newCommand.HasPermission = hasPerm
+						commands[key] = newCommand
+					end
+				end
+
+				return {
+					PlayerData = pDat,
+					Ranks = ranks,
+					Commands = commands
+				}
 			end;
 		};
 

@@ -1050,10 +1050,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return table.clone(cacheTab.results)
 		end;
 
-		GetSubscriptionInfo = function(subscriptionId: number)
-			subscriptionId = tonumber(subscriptionId) or 0
+		GetSubscriptionInfo = function(subscriptionId: string)
+			if server then error("Cannot get subscription info on server") end
 
-			if subscriptionId <= 0 then return end
+			if not subscriptionId then return end
 
 			local cacheIndex = `{subscriptionId}-{Enum.InfoType.Subscription.Value}`
 			local currentCache = assetInfoCache[cacheIndex]
