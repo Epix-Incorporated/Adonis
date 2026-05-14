@@ -548,7 +548,7 @@ return function(Vargs, env)
 
 		Davey = {
 			Prefix = Settings.Prefix;
-			Commands = {"Davey_Bones", "davey"};
+			Commands = {"davey_bones", "davey"};
 			Args = {"player"};
 			Description = "Turns you into me <3";
 			Fun = true;
