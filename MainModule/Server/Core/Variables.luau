@@ -169,6 +169,10 @@ return function(Vargs, GetEnv)
 
 		HelpRequests = {};
 
+		OnNextJoin = {};
+
+		OnNextSpawn = {};
+
 		Objects = {};
 
 		InsertedObjects = {};

@@ -3412,6 +3412,86 @@ return function(Vargs, env)
 			end
 		};
 
+		OnNextJoin = {
+			Prefix = Settings.Prefix;
+			Commands = {"onnextjoin", "nextjoin"};
+			Args = {"player", "command"};
+			Description = "Runs a command the next time the target player joins";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing target player (argument #1)")
+				local command = assert(args[2], "Missing command (argument #2)")
+				local prefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix
+
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
+					local queuedCommand = if Admin.GetCommand(command) then command else `{prefix}{command}`
+					local entry = {UserId = v.UserId, Command = queuedCommand}
+
+					for index = #Variables.OnNextJoin, 1, -1 do
+						local existing = Variables.OnNextJoin[index]
+						if type(existing) == "table" and existing.UserId == v.UserId then
+							table.remove(Variables.OnNextJoin, index)
+							Core.DoSave({
+								Type = "TableRemove";
+								Table = {"Variables", "OnNextJoin"};
+								Value = existing;
+								LaxCheck = true;
+							})
+						end
+					end
+
+					table.insert(Variables.OnNextJoin, entry)
+					Core.DoSave({
+						Type = "TableAdd";
+						Table = {"Variables", "OnNextJoin"};
+						Value = entry;
+						LaxCheck = true;
+					})
+					Functions.Hint(`Queued next join command for {service.FormatPlayer(v, true)}`, {plr})
+				end
+			end
+		};
+
+		OnNextSpawn = {
+			Prefix = Settings.Prefix;
+			Commands = {"onnextspawn", "nextspawn"};
+			Args = {"player", "command"};
+			Description = "Runs a command the next time the target player spawns";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing target player (argument #1)")
+				local command = assert(args[2], "Missing command (argument #2)")
+				local prefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix
+
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
+					local queuedCommand = if Admin.GetCommand(command) then command else `{prefix}{command}`
+					local entry = {UserId = v.UserId, Command = queuedCommand}
+
+					for index = #Variables.OnNextSpawn, 1, -1 do
+						local existing = Variables.OnNextSpawn[index]
+						if type(existing) == "table" and existing.UserId == v.UserId then
+							table.remove(Variables.OnNextSpawn, index)
+							Core.DoSave({
+								Type = "TableRemove";
+								Table = {"Variables", "OnNextSpawn"};
+								Value = existing;
+								LaxCheck = true;
+							})
+						end
+					end
+
+					table.insert(Variables.OnNextSpawn, entry)
+					Core.DoSave({
+						Type = "TableAdd";
+						Table = {"Variables", "OnNextSpawn"};
+						Value = entry;
+						LaxCheck = true;
+					})
+					Functions.Hint(`Queued next spawn command for {service.FormatPlayer(v, true)}`, {plr})
+				end
+			end
+		};
+
 		R6 = {
 			Prefix = Settings.Prefix;
 			Commands = {"r6", "classicrig"};

@@ -10,6 +10,27 @@ return function(Vargs, GetEnv)
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local logError = env.logError
 	local Routine = env.Routine
+
+	local function RunQueuedCommand(queue, player, label)
+		for index, entry in queue do
+			if type(entry) == "table" and entry.UserId == player.UserId then
+				table.remove(queue, index)
+				Core.DoSave({
+					Type = "TableRemove";
+					Table = {"Variables", label};
+					Value = entry;
+					LaxCheck = true;
+				})
+				TrackTask(`Thread: {label}_Cmd: {entry.Command}`, Admin.RunCommandAsPlayer, false, entry.Command, player)
+				AddLog("Script", {
+					Text = `{label}: Executed {entry.Command}`;
+					Desc = `Executed {label} command; {entry.Command}`;
+				})
+				break
+			end
+		end
+	end
+
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -930,6 +951,8 @@ return function(Vargs, GetEnv)
 				Desc = "Client finished loading";
 			})
 
+			RunQueuedCommand(Variables.OnNextJoin, key, p, "OnNextJoin")
+
 			--// Run OnJoin commands
 			for i,v in Settings.OnJoin do
 				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
@@ -1134,6 +1157,8 @@ return function(Vargs, GetEnv)
 
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p, char, ...)
+
+				RunQueuedCommand(Variables.OnNextSpawn, key, p, "OnNextSpawn")
 
 				--// Run OnSpawn commands
 				for _, v in Settings.OnSpawn do
