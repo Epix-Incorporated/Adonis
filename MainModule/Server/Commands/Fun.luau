@@ -660,7 +660,7 @@ return function(Vargs, env)
 						"Command cannot be because code execution is off",
 						"This command cannot be run because code execution is off. Enable Settings.CodeExecution to be able to use this command.",
 						{plr},
-						"MatIcon://",
+						"MatIcon://Info",
 						15,
 						Core.Bytecode('client.UI.Make("UserPanel", {Tab = "Game"})')
 					)
@@ -1685,7 +1685,7 @@ return function(Vargs, env)
 						"Command cannot be because code execution is off",
 						"This command cannot be run because code execution is off. Enable Settings.CodeExecution to be able to use this command.",
 						{plr},
-						"MatIcon://",
+						"MatIcon://Info",
 						15,
 						Core.Bytecode('client.UI.Make("UserPanel", {Tab = "Game"})')
 					)
