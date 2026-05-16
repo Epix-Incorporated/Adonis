@@ -220,7 +220,7 @@ else
 				})
 			end)
 		end
-	elseif not data.DebugMode then
+	else
 		warn("[DEVELOPER ERROR] No settings folder or module found; using default settings.")
 		table.insert(data.Messages, {
 			Title = "Warning!";
