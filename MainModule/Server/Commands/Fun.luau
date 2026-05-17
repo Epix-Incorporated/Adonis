@@ -4371,21 +4371,13 @@ return function(Vargs, env)
 					args[1] = nil 
 				end
 
-				assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID!`)
-				if args[3] then
-					assert(tonumber(args[3]), `{tostring(args[3])} is not a valid speed!`)
-				end
+				local id = assert(tonumber(args[2]), `{tostring(args[2])} is not a valid ID!`)
+				local speed = args[3] and assert(tonumber(args[3]), `{tostring(args[3])} is not a valid speed!`) or nil
 
-				local isLooped = false
-
-				-- TODO Possibly add a helper function for parsing string into bool?
-				if args[4] == "true" or args[4] == "1" then
-					isLooped = true
-				end
-
+				local isLooped = args[4] == "true" or args[4] == "1"or false -- TODO Possibly add a helper function for parsing string into bool?
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Functions.PlayAnimation(v , args[2], tonumber(args[3]), isLooped)
+					Functions.PlayAnimation(v , id, speed, isLooped)
 				end
 			end
 		};
