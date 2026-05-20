@@ -1014,7 +1014,9 @@ return function(Vargs, GetEnv)
 			})
 			local track = animator:LoadAnimation(anim)
 
-			track.Looped = isLooped or false
+			if isLooped ~= nil then
+				track.Looped = isLooped
+			end
 
 			track:Play(nil, nil, animSpeed or 1)
 		end;
