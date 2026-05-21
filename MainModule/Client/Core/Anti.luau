@@ -9,6 +9,9 @@ logError = nil
 
 --// Anti-Exploit
 return function(Vargs, GetEnv)
+	-- Capture a direct reference to debug.info before setfenv alters the environment,
+	-- preserving a reference to the original C function independent of later env changes.
+	local rawDebugInfo = debug.info
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
@@ -45,6 +48,7 @@ return function(Vargs, GetEnv)
 	local Get = client.Remote.Get
 	local NetworkClient = service.NetworkClient
 	local Kill = client.Kill
+	local killSource, killLine, killName = rawDebugInfo(Kill, "sln")
 	local Player = service.Players.LocalPlayer
 	local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 	local Kick = Player.Kick
@@ -78,7 +82,14 @@ return function(Vargs, GetEnv)
 	getfenv().service = nil
 	getfenv().script = nil
 
+	-- Private counter incremented only by the real Detected body when action is "_".
+	-- Used by the tamper loop to verify Detected executes its actual implementation.
+	local _heartbeatSeq = 0
+
 	local Detected = function(action, info, nocrash)
+		if action == "_" then
+			_heartbeatSeq = _heartbeatSeq + 1
+		end
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
@@ -95,16 +106,7 @@ return function(Vargs, GetEnv)
 		return true
 	end;
 
-	local detectFuncName, detectSource, detectLine
-	task.spawn(xpcall, function()
-		detectFuncName, detectSource, detectLine = debug.info(Detected, "nsl")
-	end, function()
-		Detected("crash", "Tamper Protection 0xCCD44")
-		task.wait(1)
-		pcall(Disconnect, "Adonis_0xCCD44")
-		pcall(Kill, "Adonis_0xCCD44")
-		pcall(Kick, Player, "Adonis_0xCCD44")
-	end)
+	local detectedSource, detectedLine, detectedName = rawDebugInfo(Detected, "sln")
 
 	local function compareTables(t1, t2)
 		if service.CountTable(t1) ~= service.CountTable(t2) then
@@ -213,7 +215,7 @@ return function(Vargs, GetEnv)
 			local firstTime = #callStacks[method] <= 0
 
 			for i = 3, 4 do
-				local func = debug.info(i, "f")
+				local func = rawDebugInfo(i, "f")
 
 				if firstTime then
 					callStacks[method][i] = func
@@ -229,10 +231,10 @@ return function(Vargs, GetEnv)
 			if
 				not metamethod or
 				type(metamethod) ~= "function" or
-				debug.info(metamethod, "s") ~= "[C]" or
-				debug.info(metamethod, "l") ~= -1 or
-				debug.info(metamethod, "n") ~= "" or
-				debug.info(metamethod, "a") ~= 0
+				rawDebugInfo(metamethod, "s") ~= "[C]" or
+				rawDebugInfo(metamethod, "l") ~= -1 or
+				rawDebugInfo(metamethod, "n") ~= "" or
+				rawDebugInfo(metamethod, "a") ~= 0
 			then
 				return false
 			else
@@ -248,7 +250,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = rawGame.____________
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("indexInstance") then
 						callstackInvalid = true
 					end
@@ -279,7 +281,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					rawGame.____________ = 5
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("newindexInstance") then
 						callstackInvalid = true
 					end
@@ -311,7 +313,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = rawGame:____________()
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("namecallInstance") then
 						callstackInvalid = true
 					end
@@ -341,7 +343,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = Enum.HumanoidStateType.____________
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("indexEnum") then
 						callstackInvalid = true
 					end
@@ -372,7 +374,7 @@ return function(Vargs, GetEnv)
 				local success, err = xpcall(function()
 					local c = Enum.HumanoidStateType:____________()
 				end, function()
-					metamethod = debug.info(2, "f")
+					metamethod = rawDebugInfo(2, "f")
 					if callstackInvalid or checkStack("namecallEnum") then
 						callstackInvalid = true
 					end
@@ -413,18 +415,59 @@ return function(Vargs, GetEnv)
 
 		Routine(function()
 			while true do
+				local detectedTampered = false
 				do
-					local source, line, argN, isVararg, name, closure = debug.info(Detected, "slanf")
-					if
-						source ~= detectSource or
-						line ~= detectLine or
-						name ~= detectFuncName or
-						argN ~= 3 or
-						isVararg or
-						closure ~= Detected or
-						not Detected("_", "_", true)
-					then -- detects the current bypass
-						while true do end
+					-- 0. Verify Detected function integrity.
+					--    Spawned so that a debug.info yield-hook targeting Detected freezes
+					--    only the sub-coroutine; the main loop detects the freeze via timeout.
+					--    If debug.info is clean but Detected is hooked, the metadata snapshot
+					--    comparison fires instead. Either way detectedTampered is set.
+					local detectedCheckDone = false
+					task.spawn(xpcall, function()
+						local ds, dl, dn = rawDebugInfo(Detected, "sln")
+						if ds ~= detectedSource or dl ~= detectedLine or dn ~= detectedName then
+							detectedTampered = true
+						end
+						detectedCheckDone = true
+					end, function()
+						detectedTampered = true
+					end)
+					task.wait(0.5)
+					if not detectedCheckDone then
+						detectedTampered = true
+					end
+					if detectedTampered then
+						pcall(Disconnect, "Adonis_0xDET01")
+						pcall(Kill, "Adonis_0xDET01")
+						pcall(Kick, Player, "Adonis_0xDET01")
+					end
+
+					-- 1. Detect if the debug.info reference has been swapped since load time.
+					if rawDebugInfo ~= debug.info then
+						task.wait(0.5)
+						pcall(Disconnect, "Adonis_0xDBI01")
+						pcall(Kill, "Adonis_0xDBI01")
+						pcall(Kick, Player, "Adonis_0xDBI01")
+					end
+
+					-- 2. Behavioral heartbeat: verify Detected executes its real body when called.
+					--    Catches bypasses that do not call the original for the "_" sentinel.
+					local prevSeq = _heartbeatSeq
+					Detected("_", "_", true)
+					if _heartbeatSeq == prevSeq then
+						task.wait(0.5)
+						pcall(Disconnect, "Adonis_0xHB01")
+						pcall(Kill, "Adonis_0xHB01")
+						pcall(Kick, Player, "Adonis_0xHB01")
+					end
+
+					-- 3. Verify Kill integrity via debug metadata captured at load time.
+					local ks, kl, kn = rawDebugInfo(Kill, "sln")
+					if ks ~= killSource or kl ~= killLine or kn ~= killName then
+						task.wait(0.5)
+						pcall(Disconnect, "Adonis_0xKIL01")
+						pcall(Kill, "Adonis_0xKIL01")
+						pcall(Kick, Player, "Adonis_0xKIL01")
 					end
 				end
 
@@ -440,6 +483,14 @@ return function(Vargs, GetEnv)
 						pcall(Kick, Player, "Adonis_0xDD42F")
 					elseif value then
 						Detected(action, `{method} detector detected`)
+						-- If Detected is tampered (its hook intercepts the call above),
+						-- enforce directly so the bypass cannot swallow this detection.
+						if detectedTampered then
+							task.wait(0.5)
+							pcall(Disconnect, "Adonis_0xDET02")
+							pcall(Kill, "Adonis_0xDET02")
+							pcall(Kick, Player, "Adonis_0xDET02")
+						end
 					end
 				end
 
