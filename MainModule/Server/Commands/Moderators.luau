@@ -727,8 +727,7 @@ return function(Vargs, env)
 						local torso = v.Character.HumanoidRootPart
 						local pos = torso.CFrame
 						local running=true
-						local event
-						event = v.Character.Humanoid.Jumping:Connect(function()
+						v.Character.Humanoid.Jumping:Once(function()
 							running = false
 							ff:Destroy()
 							hum.Health = orig
@@ -737,7 +736,6 @@ return function(Vargs, env)
 								t.Parent = v.Backpack
 							end
 							Admin.RunCommand(`{Functions.GetMainPrefix()}unname`, v.Name)
-							event:Disconnect()
 						end)
 						repeat torso.CFrame = pos wait() until not v or not v.Character or not torso or not running or not torso.Parent
 					end)
