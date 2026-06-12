@@ -4,7 +4,7 @@
 -- ORDER INGAMESETTINGSEDITOR SETTINGS --
 -----------------------------------------
 
-return {
+return { Order = {
 	"HideScript";
 	"DataStore";
 	"DataStoreKey";
@@ -115,4 +115,4 @@ return {
 	"AntiSpeed";
 	"AntiBuildingTools";
 	"AntiAntiIdle";
-};
+} };

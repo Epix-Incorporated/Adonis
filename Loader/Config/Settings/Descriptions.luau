@@ -4,7 +4,7 @@
 -- DESCRIPTIONS INGAMESETTINGSEDITOR SETTINGS --
 ------------------------------------------------
 
-return {
+return { Descriptions = {
 	HideScript = [[ Disable if your game saves; When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module ]];
 	DataStore = [[ DataStore the script will use for saving data; Changing this will lose any saved data ]];
 	DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]];
@@ -94,8 +94,7 @@ return {
 
 	AutoClean = [[ Will auto clean workspace of things like hats and tools ]];
 	AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]];
-	AutoCleanDelay = [[ Time between auto cleans ]]
-;
+	AutoCleanDelay = [[ Time between auto cleans ]];
 	PlayerList = [[ Custom playerlist ]];
 
 	Console = [[ Command console ]];
@@ -123,4 +122,4 @@ return {
 	AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]];
 	AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]];
 	AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games ]];
-};
+} };
