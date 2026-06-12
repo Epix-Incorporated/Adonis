@@ -402,19 +402,24 @@ return function(Vargs, GetEnv)
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
 				CharacterAppearanceId = options.UserId or 0;
+				CanLoadCharacterAppearence = service.StarterPlayer.LoadPlayerAppearance;
 				FollowUserId = 0;
-				GameplayPaused = false;
+				ReplicationFocus = nil;
+				Team = nil;
+				TeamColor = nil;
+				RespawnLocation = nil;
 				Parent = service.Players;
-				Character = service.New("Model", {Name = options.Name or "Fake_Player"});
-				Backpack = service.New("Backpack", {Name = "FakeBackpack"});
-				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"});
-				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"});
+				Character = service.New("Model", {Name = options.Name or "Fake_Player"; Parent = fakePlayer});
+				Backpack = service.New("Backpack", {Name = "FakeBackpack"; Parent = fakePlayer});
+				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"; Parent = fakePlayer});
+				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"; Parent = fakePlayer});
 				GetJoinData = function() return {} end;
 				GetFriendsOnline = function() return {} end;
-				GetRankInGroup = function() return 0 end;
-				GetRoleInGroup = function() return "Guest" end;
-				IsFriendsWith = function() return false end;
-				Kick = function() fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
+				GetRankInGroupAsync = function() return 0 end; GetRankInGroup = function() return 0 end;
+				GetRoleInGroupAsync = function() return "Guest" end; GetRoleInGroup = function() return "Guest" end;
+				IsInGroupAsync = function() return false end;
+				IsFriendsWithAsync = function() return false end; IsFriendsWith = function() return false end;
+				Kick = function() end fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
 				IsA = function(_, className) return className == "Player" or className == "Instance" end;
 			}
 
