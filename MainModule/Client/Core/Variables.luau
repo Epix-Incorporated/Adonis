@@ -45,6 +45,7 @@ return function(Vargs, GetEnv)
 		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
+		Variables.GuiClasses.Cache = service.Lookupify(Variables.GuiClasses)
 
 		Variables.Init = nil;
 	end
@@ -55,7 +56,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-			Variables.RunLast = nil;
+		Variables.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -113,5 +114,56 @@ return function(Vargs, GetEnv)
 		};
 		KeycodeNames = require(client.Shared.KeycodeNames);
 		HelpButtonAction = "Info",
+		GuiClasses = {
+			"AdGui", "BillboardGui", "CanvasGroup",
+			"DockWidgetPluginGui", "Frame", "GuiBase",
+			"GuiBase2d", "GuiButton", "GuiLabel",
+			"GuiMain", "GuiObject", "ImageButton",
+			"ImageLabel", "LayerCollector", "PluginGui",
+			"QWidgetPluginGui", "RelativeGui", "ScreenGui",
+			"ScrollingFrame", "SurfaceGui", "SurfaceGuiBase",
+			"TextBox", "TextButton", "TextLabel",
+			"UIAspectRatioConstraint", "UIBase", "UIComponent",
+			"UIConstraint", "UICorner", "UIDragDetector",
+			"UIFlexItem", "UIGradient", "UIGridLayout",
+			"UIGridStyleLayout", "UILayout", "UIListLayout",
+			"UIPadding", "UIPageLayout", "UIScale",
+			"UIShadow", "UISizeConstraint", "UIStroke",
+			"UITableLayout", "UITextSizeConstraint", "VideoDisplay",
+			"VideoFrame", "ViewportFrame"
+		};
+		GuiProperties = {
+			"ActivatedCursorIcon", "ActivatedCursorIconContent", "Adornee",
+			"AdShape", "AlwaysOnTop", "BackgroundColor", "BlurRadius",
+			"BorderColor", "BorderMode", "BorderOffset", "BorderStrokePosition",
+			"BottomImageContent", "BottomLeftRadius", "BottomRightRadius", "BoundingBehavior",
+			"BoundingUI", "Brightness", "ClearTextOnFocus", "ClipToDeviceSafeArea",
+			"CursorIcon", "CursorIconContent", "CursorPosition", "DistanceLowerLimit",
+			"DistanceStep", "DistanceUpperLimit", "DragAxis", "DragRelativity",
+			"DragRotation", "DragSpace", "DragStyle", "DragUDim2",
+			"EnableVideoAds", "ExtentsOffset", "ExtentsOffsetWorldSpace", "Face",
+			"FallbackImage", "FallbackImageContent", "FillDirectionMaxCells", "FillEmptySpaceRows",
+			"FlexMode", "FontFace", "FontSize", "GrowRatio",
+			"HorizontalFlex", "HorizontalScrollBarInset", "HoverHapticEffect", "HoverImage",
+			"HoverImageContent", "IgnoreGuiInset", "ImageContent", "InputSink",
+			"Interactable", "InternalVideoUsage", "ItemLineAlignment", "LightInfluence",
+			"LineHeight", "Localize", "MaxDistance", "MaxDragAngle",
+			"MaxDragTranslation", "MaximumResolution", "MaxVisibleGraphemes", "MidImageContent",
+			"MinDragAngle", "MinDragTranslation", "MultiLine", "OpenTypeFeatures",
+			"PixelsPerStud", "PlayerToHideFrom", "PressedImage", "PressedImageContent",
+			"PressHapticEffect", "ReferenceUIInstance", "ResampleMode", "ResetOnSpawn",
+			"ResponseStyle", "RollOffMaxDistance", "RollOffMinDistance", "RollOffMode",
+			"SafeAreaCompatibility", "ScreenInsets", "ScrollBarImageColor3", "Selected",
+			"SelectionBehaviorDown", "SelectionBehaviorLeft", "SelectionBehaviorRight", "SelectionBehaviorUp",
+			"SelectionGroup", "SelectionModeDragSpeed", "SelectionModeRotateSpeed", "SelectionOrder",
+			"SelectionStart", "ShowNativeInput", "ShrinkRatio", "SizeOffset",
+			"SizingMode", "SliceScale", "Spread", "StartCorner",
+			"StrokeSizingMode", "StudsOffset", "StudsOffsetWorldSpace", "TextColor",
+			"TextEditable", "TextTruncate", "TextWrap", "TileSize",
+			"Title", "ToolPunchThroughDistance", "TopImageContent", "TopLeftRadius",
+			"TopRightRadius", "UIDragSpeedAxisMapping", "VerticalFlex", "VideoColor3",
+			"VideoContent", "VideoRectOffset", "VideoRectSize", "VideoTransparency",
+			"Wraps", "ZIndexBehavior", "ZOffset",
+		};
 	};
 end
