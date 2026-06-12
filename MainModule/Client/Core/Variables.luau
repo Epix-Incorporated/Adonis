@@ -116,21 +116,17 @@ return function(Vargs, GetEnv)
 		HelpButtonAction = "Info",
 		GuiClasses = {
 			"AdGui", "BillboardGui", "CanvasGroup",
-			"DockWidgetPluginGui", "Frame", "GuiBase",
-			"GuiBase2d", "GuiButton", "GuiLabel",
-			"GuiMain", "GuiObject", "ImageButton",
-			"ImageLabel", "LayerCollector", "PluginGui",
-			"QWidgetPluginGui", "RelativeGui", "ScreenGui",
-			"ScrollingFrame", "SurfaceGui", "SurfaceGuiBase",
-			"TextBox", "TextButton", "TextLabel",
-			"UIAspectRatioConstraint", "UIBase", "UIComponent",
-			"UIConstraint", "UICorner", "UIDragDetector",
-			"UIFlexItem", "UIGradient", "UIGridLayout",
-			"UIGridStyleLayout", "UILayout", "UIListLayout",
-			"UIPadding", "UIPageLayout", "UIScale",
-			"UIShadow", "UISizeConstraint", "UIStroke",
-			"UITableLayout", "UITextSizeConstraint", "VideoDisplay",
-			"VideoFrame", "ViewportFrame"
+			"DockWidgetPluginGui", "Frame", "GuiBase", "GuiBase2d",
+			"GuiButton", "GuiLabel", "GuiMain", "GuiObject",
+			"ImageButton", "ImageLabel", "LayerCollector", "PluginGui",
+			"QWidgetPluginGui", "RelativeGui", "ScreenGui", "ScrollingFrame",
+			"SurfaceGui", "SurfaceGuiBase", "TextBox", "TextButton",
+			"TextLabel", "UIAspectRatioConstraint", "UIBase", "UIComponent",
+			"UIConstraint", "UICorner", "UIDragDetector", "UIFlexItem",
+			"UIGradient", "UIGridLayout", "UIGridStyleLayout", "UILayout",
+			"UIListLayout", "UIPadding", "UIPageLayout", "UIScale",
+			"UIShadow", "UISizeConstraint", "UIStroke", "UITableLayout",
+			"UITextSizeConstraint", "VideoDisplay", "VideoFrame", "ViewportFrame"
 		};
 		GuiProperties = {
 			"ActivatedCursorIcon", "ActivatedCursorIconContent", "Adornee",
@@ -163,7 +159,7 @@ return function(Vargs, GetEnv)
 			"Title", "ToolPunchThroughDistance", "TopImageContent", "TopLeftRadius",
 			"TopRightRadius", "UIDragSpeedAxisMapping", "VerticalFlex", "VideoColor3",
 			"VideoContent", "VideoRectOffset", "VideoRectSize", "VideoTransparency",
-			"Wraps", "ZIndexBehavior", "ZOffset",
+			"Wraps", "ZIndexBehavior", "ZOffset"
 		};
 	};
 end
