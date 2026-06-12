@@ -23,16 +23,18 @@ local DEPENDENCIES = {
 	"VirtualEnv";
 }
 
-for _, v in ipairs(DEPENDENCIES) do 
-	script:WaitForChild(v)
+if script then
+	for _, v in ipairs(DEPENDENCIES) do 
+		script:WaitForChild(v)
+	end
 end
 
-local luaX = require(script.LuaX)
-local luaY = require(script.LuaY)
-local luaZ = require(script.LuaZ)
-local luaU = require(script.LuaU)
-local fiOne = require(script.FiOne)
-local getvenv = require(script.VirtualEnv)
+local luaX = require(script and script.LuaX or "LuaX")
+local luaY = require(script and script.LuaY or "LuaY")
+local luaZ = require(script and script.LuaZ or "LuaZ")
+local luaU = require(script and script.LuaU or "LuaU")
+local fiOne = require(script and script.FiOne or "FiOne")
+local getvenv = require(script and script.VirtualEnv or "VirtualEnv")
 
 local function to1BasedIndex(tbl)
 	local tbl = table.move(tbl, 0, #tbl + (tbl[0] and 1 or 0), 1)
