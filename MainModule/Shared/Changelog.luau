@@ -1,7 +1,12 @@
 return {
-	"Version: 278";
+	"Version: 279";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v279 2026-06-12 11:50 UTC] @Dimenpsyonal";
+	"(Git/thatgato) QoL Enhancement for !ping (#2136)";
+	"(Git/thatgato) Fix username autocomplete";
+	"(Git/AidenJamesYt) Fix profile and Remove Logic (#2133)";
 	"";
 	"[v278 2026-05-09 00:40 UTC] @joritochip";
 	"(Git/joritochip) Fix Modern theme window (#2121)";

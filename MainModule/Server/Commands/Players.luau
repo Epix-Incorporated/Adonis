@@ -780,12 +780,7 @@ return function(Vargs, env)
 								end
 							end
 						end
-
-						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
-						local hasSafeChat = if policyInfo then
-							type(policyInfo) == "string" and policyInfo or table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes"
-							else "[Redacted]"
-
+						
 						local mailVerif = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
 						local hasVerifiedMail = if elevated then
 							type(mailVerif) == "string" and mailVerif or mailVerif and "Yes" or "No"
@@ -799,7 +794,6 @@ return function(Vargs, env)
 						Remote.RemoveGui(plr, `Profile_{v.UserId}`)
 						Remote.MakeGui(plr, "Profile", {
 							Target = v;
-							SafeChat = hasSafeChat;
 							CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
 							MailVerified = hasVerifiedMail;
 							IDVerified = hasVerifiedId;
@@ -809,6 +803,7 @@ return function(Vargs, env)
 							CmdPrefix = Functions.GetMainPrefix();
 							CmdSplitKey = Settings.SplitKey;
 							OnlineFriends = elevated and Remote.Get(v, "Function", "GetFriendsOnline");
+							MembershipStatus = if v.HasRobloxSubscription then "Plus" else v.MembershipType.Name;
 						})
 					end)
 				end
