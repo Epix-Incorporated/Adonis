@@ -401,161 +401,6 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetGuiData = function(args)
-			local props = {
-				"AbsolutePosition";
-				"AutomaticCanvasSize";
-				"BottomImage";
-				"AbsoluteSize";
-				"AnchorPoint";
-				"CornerRadius";
-				"CanvasSize";
-				"CanvasPosition";
-				"ClassName";
-				"ElasticBehavior";
-				"Name";
-				"Parent";
-				"Archivable";
-				"DisplayOrder";
-				"SelectionImageObject";
-				"Active";
-				"BackgroundColor3";
-				"BackgroundTransparency";
-				"BorderColor3";
-				"BorderSizePixel";
-				"Position";
-				"Rotation";
-				"RichText";
-				"Selectable";
-				"HorizontalScrollBarPosition";
-				"Size";
-				"Enabled";
-				"Active";
-				"SizeConstraint";
-				"Style";
-				"ScrollBarThickness";
-				"ScrollBarImageTransparency";
-				"ScrollingEnabled";
-				"ScrollingDirection";
-				"ScrollBarImageColor";
-				"Visible";
-				"ZIndex";
-				"ClipsDescendants";
-				"Draggable";
-				"NextSelectionDown";
-				"NextSelectionLeft";
-				"NextSelectionRight";
-				"NextSelectionUp";
-				"PlaceholderColor3";
-				"PlaceholderText";
-				"AutoButtonColor";
-				"Modal";
-				"MidImage";
-				"Image";
-				"ImageColor3";
-				"ImageRectOffset";
-				"ImageRectSize";
-				"ImageTransparency";
-				"ScaleType";
-				"SliceCenter";
-				"Text";
-				"TopImage";
-				"TextColor3";
-				"TextDirection";
-				"Font";
-				"TextScaled";
-				"TextSize";
-				"TextStrokeColor3";
-				"TextStrokeTransparency";
-				"TextTransparency";
-				"TextTuncate";
-				"TextWrapped";
-				"TextXAlignment";
-				"TextYAlignment";
-				"VerticalScrollBarInset";
-				"VerticalScrollBarPosition";
-				"AspectRatio";
-				"AspectType";
-				"DominantAxis";
-				"Offset";
-				"Transparency";
-				"CellPadding";
-				"CellSize";
-				"Padding";
-				"PaddingBottom";
-				"PaddingLeft";
-				"PaddingRight";
-				"PaddingTop";
-				"Animated";
-				"Circular";
-				"EasingDirection";
-				"EasingStyle";
-				"TweenTime";
-				"FillDirection";
-				"SortOrder";
-				"VerticalAlignment";
-				"GamepadInputEnabled";
-				"ScrollWheelInputEnabled";
-				"TouchInputEnabled";
-				"Scale";
-				"MaxSize";
-				"MinSize";
-				"ApplyStrokeMode";
-				"Color";
-				"LineJoinMode";
-				"Thickness";
-				"FillEmptySpaceColumns";
-				"FillEmptySpaceRow";
-				"MajorAxis";
-				"HorizontalAlignment";
-				"MaxTextSize";
-				"MinTextSize";
-				"GroupColor3";
-				"GroupTransparency";
-				"SelectionImageObject";
-				"Looped";
-				"Playing";
-				"TimePosition";
-				"Video";
-				"Volume";
-				"LayoutOrder";
-				"Ambient";
-				"LightColor";
-				"LightDirection";
-				"CurrentCamera";
-				"AutomaticSize";
-				"AutoLocalize";
-				"RootLocalizationTable";
-			};
-
-			local classes = {
-				"ScreenGui";
-				"GuiMain";
-				"Frame";
-				"CanvasGroup";
-				"TextButton";
-				"TextLabel";
-				"ImageButton";
-				"ImageLabel";
-				"ScrollingFrame";
-				"TextBox";
-				"BillboardGui";
-				"SurfaceGui";
-				"UICorner";
-				"UIAspectRatioConstraint";
-				"UIGradient";
-				"UIGridLayout";
-				"UIListLayout";
-				"UIPadding";
-				"UIPageLayout";
-				"UIScale";
-				"UISizeConstraint";
-				"UIStroke";
-				"UITableLayout";
-				"UITextSizeConstraint";
-				"VideoFrame";
-				"ViewportFrame"
-			}
-
 			local guis = {
 				Properties = {
 					Name = "ViewGuis";
@@ -564,12 +409,14 @@ return function(Vargs, GetEnv)
 				Children = {};
 			}
 
-			local add; add = function(tab,child)
-				local good = false
+			local add; add = function(tab, child)
+				local good = Variables.GuiClasses.Cache[child.ClassName]
 
-				for _, v in classes do
-					if child:IsA(v) then
-						good = true
+				if not good then
+					for _, v in Variables.GuiClasses do
+						if child:IsA(v) then
+							good = true
+						end
 					end
 				end
 
@@ -579,7 +426,7 @@ return function(Vargs, GetEnv)
 						Children = {};
 					}
 
-					for _, v in props do
+					for _, v in variables.GuiProperties do
 						pcall(function()
 							new.Properties[v] = child[v]
 						end)
