@@ -18,57 +18,7 @@ return function(Vargs, env)
 			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local tab = {}
-				local cmdCount = 0
-
-				for _, cmd in Admin.SearchCommands(plr, "all") do
-					local cmdAliases = table.create(#cmd.Commands)
-
-					if cmd.Hidden or cmd.Disabled then
-						continue
-					end
-
-					for _,alias in cmd.Commands do
-						if #cmdAliases >= 6 and (#cmd.Commands - #cmdAliases) ~= 0 then
-							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)
-							break
-						end
-
-						table.insert(cmdAliases, alias)
-					end
-
-					table.remove(cmdAliases, 1)
-
-					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
-					table.insert(tab, {
-						Text = Admin.FormatCommand(cmd),
-						Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
-						Filter = permissionDesc
-					})
-					cmdCount += 1
-				end
-
-				for alias, command in Core.GetPlayer(plr).Aliases or {} do
-					table.insert(tab, {
-						Text = alias,
-						Desc = `[User Alias] {command}`,
-						Filter = command
-					})
-					cmdCount += 1
-				end
-
-				table.sort(tab, function(a, b) return a.Text < b.Text end)
-
-				Remote.MakeGui(plr, "List", {
-					Title = "Commands";
-					Table = tab;
-					TitleButtons = {
-						{
-							Text = "?";
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`)
-						}
-					};
-				})
+				Remote.MakeGui(plr, "CommandList")
 			end
 		};
 
@@ -125,7 +75,7 @@ return function(Vargs, env)
 		Notepad = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notepad", "stickynote"};
-			Args = {"text (optional)"};
+			Args = {"text?"};
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -158,7 +108,7 @@ return function(Vargs, env)
 		NotifyMe = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifyme"};
-			Args = {"time (in seconds) or inf", "message"};
+			Args = {"seconds/inf", "text"};
 			Hidden = true;
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
@@ -188,7 +138,7 @@ return function(Vargs, env)
 		RandomNum = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"rand", "random", "randnum", "dice"};
-			Args = {"num m", "num n"};
+			Args = {"min", "max"};
 			Description = "Generates a number using Lua's math.random";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {any})
@@ -332,7 +282,7 @@ return function(Vargs, env)
 		Donors = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"donors", "donorlist", "donatorlist", "donators"};
-			Args = {"autoupdate? (default: true)"};
+			Args = {"autoupdate?"};
 			Description = "Shows a list of Adonis donators who are currently in the server";
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
@@ -563,7 +513,7 @@ return function(Vargs, env)
 		Theme = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"theme", "usertheme"};
-			Args = {"theme name (leave blank to reset to default)"};
+			Args = {"name?"};
 			Hidden = true;
 			Description = "Changes the Adonis client UI theme";
 			AdminLevel = "Players";
@@ -721,7 +671,7 @@ return function(Vargs, env)
 		PersonalCountdown = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"countdown", "timer", "cd"};
-			Args = {"time (in seconds)"};
+			Args = {"seconds"};
 			Description = "Makes a countdown on your screen";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -903,7 +853,7 @@ return function(Vargs, env)
 		BuyItem = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"buyitem", "buyasset"};
-			Args = {"id"};
+			Args = {"itemId"};
 			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -930,7 +880,7 @@ return function(Vargs, env)
 		Wait = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"wait"};
-			Args = {"time"};
+			Args = {"seconds"};
 			Description = "Waits for the desired amount of time in seconds. Only works with batch commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})

@@ -550,6 +550,104 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end;
+
+			CommandListData = function(p)
+				local ranks = {}
+				local commands = {}
+
+				local pDat = {
+					Player = p;
+					Level = Admin.GetLevel(p);
+					isDonor = Admin.CheckDonor(p);
+				}
+
+				local maxDisplayLevel = pDat.Level
+
+				for name, data in Settings.Ranks do
+					local purchasables = {}
+					for _, user in data.Users do
+						if typeof(user) ~= "string" then continue end
+
+						local id, idType
+
+						if string.sub(user, 1, 5) == "Item:" then
+							id = tonumber(string.sub(user, 6))
+							idType = Enum.InfoType.Asset
+						elseif string.sub(user, 1, 9) == "GamePass:" then
+							id = tonumber(string.sub(user, 10))
+							idType = Enum.InfoType.GamePass
+						elseif string.sub(user, 1, 13) == "Subscription:" then
+							id = string.sub(user, 14)
+							table.insert(purchasables, {
+								Id = id;
+								Type = Enum.InfoType.Subscription;
+							})
+							continue
+						else
+							continue
+						end
+
+						local info = service.GetProductInfo(id, idType)
+						if not info or not info.Created then continue end
+						if not info.IsForSale then continue end
+						--if idType == Enum.InfoType.GamePass and (not info.CanBeSoldInThisGame) then continue end
+
+						table.insert(purchasables, {
+							Id = id;
+							Type = idType;
+						})
+					end
+
+					table.insert(ranks, {
+						Rank = name;
+						Level = data.Level;
+						Purchasables = purchasables;
+					})
+
+					if #purchasables > 0 then
+						maxDisplayLevel = math.max(data.Level, maxDisplayLevel)
+					end
+				end
+
+				for i = #ranks, 1, -1 do
+					if ranks[i].Level > maxDisplayLevel then
+						table.remove(ranks, i)
+					end
+				end
+
+				table.insert(ranks, {
+					Rank = "Players";
+					Level = 0;
+					Purchasables = {};
+				})
+
+				if Settings.DonorCommands then
+					table.insert(ranks, {
+						Rank = "Donors";
+						Level = "Donors";
+						Purchasables = {
+							{ Type = Enum.InfoType.Asset; Id = 6878510605; }
+						}
+					})
+				end
+
+				for key, command in Commands do
+					local hasPerm, err = Admin.CheckPermission(pDat, command, true)
+					if err then continue end
+
+					if hasPerm == true or (hasPerm == false and ((Settings.DonorCommands and command.Donors) or Admin.CheckComLevel(maxDisplayLevel, command.AdminLevel))) then
+						local newCommand = table.clone(command)
+						newCommand.HasPermission = hasPerm
+						commands[key] = newCommand
+					end
+				end
+
+				return {
+					PlayerData = pDat,
+					Ranks = ranks,
+					Commands = commands
+				}
+			end;
 		};
 
 		Terminal = {
