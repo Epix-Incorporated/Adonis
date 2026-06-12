@@ -1462,6 +1462,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Localize = function(obj, readOnly) local Localize = service.Localize local ReadOnly = service.ReadOnly if type(obj) == "table" then local newTab = {} for i in obj do newTab[i] = Localize(obj[i], readOnly) end return (readOnly and ReadOnly(newTab)) or newTab else return obj end end;
 		RawEqual = function(obj1, obj2) return service.UnWrap(obj1) == service.UnWrap(obj2) end;
 		CheckProperty = function(obj, prop) return pcall(function() return obj[prop] end) end;
+		Lookupify = function(t, dest) local t2 = dest or {} for i = 1, #tbl do t2[t[i]] = true end return t2 end;
 		NewWaiter = function() local event = service.New("BindableEvent") return {Wait = event.wait; Finish = event.Fire} end; -- TODO: Remove and replace with goodsignal
 	}, {
 		__index = function(tab, index)
