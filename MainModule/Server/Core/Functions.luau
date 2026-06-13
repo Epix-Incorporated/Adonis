@@ -1250,7 +1250,7 @@ return function(Vargs, GetEnv)
 					Damage = damage;
 					Health = health;
 					WalkSpeed = speed;
-					SpecialKey = key;
+					SpecialKey = tostring(key);
 					AttackBots = not player.TeamColor and not friendly;
 				})
 				task.defer(task.defer, event.Fire, event, "Init")
