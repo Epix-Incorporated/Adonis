@@ -1685,42 +1685,41 @@ return function(Vargs, env)
 					local cl = Core.NewScript("Script",[[
 						local Pcall=function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print('Error: '..error) end end
 						local parts = {}
-						local main=script.Parent
-						main.Anchored=true
-						main.CanCollide=false
-						main.Transparency=1
-						local smoke=Instance.new("Smoke", main)
-						local sound=Instance.new("Sound", main)
-						smoke.RiseVelocity=25
-						smoke.Size=25
-						smoke.Color=Color3.new(170/255, 85/255, 0)
-						smoke.Opacity=1
-						sound.SoundId="rbxassetid://142840797"
-						sound.Looped=true
+						local main = script.Parent
+						main.Anchored = true
+						main.CanCollide = false
+						main.Transparency = 1
+						local smoke = Instance.new("Smoke", main)
+						local sound = Instance.new("Sound", main)
+						smoke.RiseVelocity = 25
+						smoke.Size = 25
+						smoke.Color = Color3.new(170/255, 85/255, 0)
+						smoke.Opacity = 1
+						sound.SoundId = "rbxassetid://134811453767381"
+						sound.Looped = true
 						sound:Play()
-						sound.Volume=1
-						sound.Pitch=0.8
-						local light=Instance
+						sound.Volume = 0.8
+						sound.PlaybackSpeed = 0.8
 
 						function fling(part)
 							part:BreakJoints()
-							part.Anchored=false
+							part.Anchored = false
 							local attachment = Instance.new("Attachment", part)
-							local pos=Instance.new("AlignPosition", part)
+							local pos = Instance.new("AlignPosition", part)
 							pos.MaxForce = math.huge
 							pos.Position = part.Position
 							pos.Attachment0 = attachment
-							local i=1
-							local run=true
-							while main and wait() and run do
+							local i = 1
+							local run = true
+							while main and task.wait() and run do
 								if part.Position.Y>=main.Position.Y+50 then
 									run=false
 								end
-								pos.Position=Vector3.new(50*math.cos(i), part.Position.Y+5, 50*math.sin(i))+main.Position
-								i=i+1
+								pos.Position = Vector3.new(50 * math.cos(i), part.Position.Y + 5, 50 * math.sin(i)) + main.Position
+								i += 1
 							end
-							pos.MaxForce = Vector3.new(500, 500, 500)
-							pos.Position=Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
+							pos.MaxForce = 500
+							pos.Position = Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
 							pos:Destroy()
 						end
 
