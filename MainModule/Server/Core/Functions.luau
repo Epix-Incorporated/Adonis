@@ -1191,6 +1191,7 @@ return function(Vargs, GetEnv)
 
 		makeRobot = function(player, num, health, speed, damage, walk, attack, friendly)
 			local Deps = server.Deps
+			local key = friendly and (Variables.BotKeys[player.Team or player]) or service.HttpService:GenerateGUID(false)
 
 			local char = player.Character
 			local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
@@ -1221,6 +1222,10 @@ return function(Vargs, GetEnv)
 				hum.Health = health
 
 				if oldAnim then
+					anim:ClearAllChildren()
+					for _, v in oldAnim:GetChildren() do
+						v.Parent = anim
+					end
 					oldAnim:Destroy()
 				end
 
@@ -1245,12 +1250,10 @@ return function(Vargs, GetEnv)
 					Damage = damage;
 					Health = health;
 					WalkSpeed = speed;
-					SpecialKey = service.HttpService:GenerateGUID(false);
+					SpecialKey = key;
+					AttackBots = not player.TeamColor and not friendly;
 				})
-
-				if walk then
-					task.defer(task.defer, event.Fire, event, "Init")
-				end
+				task.defer(task.defer, event.Fire, event, "Init")
 
 				table.insert(Variables.Objects, new)
 			end
