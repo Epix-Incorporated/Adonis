@@ -15,7 +15,7 @@ local rleg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightLower
 
 local clone
 local getPath, validTarget
-local path, blockedPath = {}, {}
+local path, blockedPath = { Points= {}, Parts = {} }, {}
 local current
 local currentInd = 0
 local lastHealth = hum.Health
@@ -263,7 +263,7 @@ getPath = function()
 	if targetPos and not props.isDead and not props.Computing then
 		if canSee(targetPos, 32) then
 			props.AutoCompute = true
-			path = {{Position = getCFrame().Position}, {Position = targetPos.Position, Action = Enum.PathWaypointAction.Custom, Label = "_targetObj"}, Parts = {_targetObj = targetPart}}
+			path = {Points = {{Position = getCFrame().Position}, {Position = targetPos.Position, Action = Enum.PathWaypointAction.Custom, Label = "_targetObj"}}, Parts = {_targetObj = targetPart}}
 			props.LastCompute = os.clock()
 			current = nil
 			currentInd = 2
@@ -287,16 +287,16 @@ getPath = function()
 				if mustCompute then
 					local pos = getCFrame().Position
 					local offset = (targetPos.Position - pos).Unit
-					path, blockedPath = {{Position = pos}, Parts = {_targetObj = targetPart}}, {}
+					path, blockedPath = { Points = {{Position = pos}}, Parts = {_targetObj = targetPart}}, {}
 
 					for i = 1, 20 do -- Fill waypoints with auxiliary positions
 						local newPos = pos + Vector3.new(math.random(-20, 20), 0, math.random(-20, 20)) + offset * 5
 						local _, hit = canSee(CFrame.new(newPos), 16, pos)
 						pos = hit and pos:Lerp(hit, 0.9) or newPos
-						table.insert(path, {Position = pos})
+						table.insert(path.Points, {Position = pos})
 					end
 
-					table.insert(path, {Position = targetPos.Position, Action = Enum.PathWaypointAction.Custom, Label = "_targetObj"})
+					table.insert(path.Points, {Position = targetPos.Position, Action = Enum.PathWaypointAction.Custom, Label = "_targetObj"})
 					props.LastCompute = os.clock()
 					current = nil
 					currentInd = 2
@@ -306,8 +306,7 @@ getPath = function()
 				return
 			end
 
-			path, blockedPath = {}, {}
-			path = pathf:GetWaypoints()
+			path, blockedPath = { Points = pathf:GetWaypoints(), Parts = {} }, {}
 			props.LastCompute = os.clock()
 			props.Computing = false
 			current = nil
@@ -319,13 +318,13 @@ end
 local function walkPath()
 	local myPos = getCFrame().Position
 
-	local coord = path[currentInd]
+	local coord = path.Points[currentInd]
 	if coord then
 		current = coord.Position
 		currentInd += 1
 
 		if hum ~= nil and hum:IsA("Humanoid") then
-			hum:MoveTo(current, path.Parts and path.Parts[coord.Label] or nil)
+			hum:MoveTo(current, path.Parts[coord.Label] or nil)
 
 			jumpCheck()
 			if coord.Action and coord.Action.Name == "Jump" or current.Y - getCFrame().Position.Y > 2.5 then
@@ -334,21 +333,21 @@ local function walkPath()
 				hum:MoveTo(current + Vector3.new(2, 0, 2))
 			end
 
-			if #path > 2 then
+			if #path.Points > 2 then
 				local attempt, target = false, os.clock() + (getCFrame().Position - current).Magnitude / hum.WalkSpeed * 2
 
 				repeat
 					if attempt then
-						hum:MoveTo(current, path.Parts and path.Parts[coord.Label] or nil)
+						hum:MoveTo(current, path.Parts[coord.Label] or nil)
 						hum.Jump = true
 					end
 					hum.MoveToFinished:Wait()
 					attempt = true
-				until path[currentInd] ~= coord or checkHeightNormalized(getCFrame(), current, 2.5) or os.clock() < target
+				until path.Points[currentInd] ~= coord or checkHeightNormalized(getCFrame(), current, 2.5) or os.clock() < target
 			end
 		end
 
-		if currentInd == #path then
+		if currentInd == #path.Points then
 			props.AutoCompute = true
 		end
 	else
@@ -483,13 +482,13 @@ end)
 if pathf and pathf.Blocked and pathf.Unblocked then
 	pathf.Blocked:Connect(function(i)
 		if i >= currentInd and path[i] then
-			blockedPath[i], path[i] = path[i], nil
+			blockedPath[i], path.Points[i] = path.Points[i], nil
 		end
 	end)
 
 	pathf.Unblocked:Connect(function(i)
 		if i >= currentInd and blockedPath[i] then
-			path[i], blockedPath[i] = blockedPath[i], nil
+			path.Points[i], blockedPath[i] = blockedPath[i], nil
 		end
 	end)
 end
