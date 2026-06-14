@@ -159,11 +159,6 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			if Variables.GuiViewFolder then
-				Variables.GuiViewFolder:Destroy()
-				Variables.GuiViewFolder = nil
-			end
-
 			if Variables.ChatEnabled then
 				service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
 			end
