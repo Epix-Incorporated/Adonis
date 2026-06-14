@@ -1341,8 +1341,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local img = tostring(args[2])
-				if not img then error(`{args[2]} is not a valid ID`) end
+				local img = assert(tonumber(args[2]), `{args[2]} is not a valid ID`)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "ScreenImage";
@@ -1360,8 +1359,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local img = tostring(args[2])
-				if not img then error(`{args[2]} is not a valid ID`) end
+				local img = assert(tostring(args[2]), `{args[2]} is not a valid ID`)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; Video = args[2];})
 				end
@@ -3273,16 +3271,13 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if not args[2] then error("Missing texture") end
 				local startColor = {}
 				local endColor = {}
 				local startc = Color3.new(1, 1, 1)
 				local endc = Color3.new(1, 1, 1)
 
-				if args[3] then
-					for s in args[3]:gmatch("[%d]+")do
-						table.insert(startColor, tonumber(s))
-					end
+				for s in assert(args[3], "Missing texture"):gmatch("[%d]+")do
+					table.insert(startColor, tonumber(s))
 				end
 
 				if args[4] then--276138620 :)
@@ -4445,8 +4440,7 @@ return function(Vargs, env)
 				if args[5] and args[5]:match("(.*),(.*),(.*)") then
 					r, g, b = args[5]:match("(.*),(.*),(.*)")
 				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				r, g, b = assert(tonumber(r), "Invalid red"), assert(tonumber(g), "Invalid green"), assert(tonumber(b), "Invalid blue")
 				for _, p in service.GetPlayers(plr, args[1]) do
 					Remote.NewLocal(p, "ColorCorrectionEffect", {
 						Name = "WINDOW_COLORCORRECTION",
@@ -4472,8 +4466,7 @@ return function(Vargs, env)
 				if args[1] and args[1]:match("(.*),(.*),(.*)") then
 					r, g, b = args[1]:match("(.*),(.*),(.*)")
 				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				r, g, b = assert(tonumber(r), "Invalid red"), assert(tonumber(g), "Invalid green"), assert(tonumber(b), "Invalid blue")
 				local num1, num2, num3 = r, g, b
 				num1 = `-{num1}00000`
 				num2 = `-{num2}00000`
@@ -4528,20 +4521,16 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
 				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear."=
+				local gear = service.Insert(gearID)
 
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-
-					if gear:IsA("BackpackItem") then
-						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
-							if v:FindFirstChild("StarterGear") then
-								gear:Clone().Parent = v.StarterGear
-							end
+				if gear:IsA("BackpackItem") then
+					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+					for i, v in service.GetPlayers(plr, args[1]) do
+						if v:FindFirstChild("StarterGear") then
+							gear:Clone().Parent = v.StarterGear
 						end
 					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
 			end
 		};
@@ -4556,20 +4545,16 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
 				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear.")
+				local gear = service.Insert(gearID)
 
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-
-					if gear:IsA("BackpackItem") then
-						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
-							if v:FindFirstChild("Backpack") then
-								gear:Clone().Parent = v.Backpack
-							end
+				if gear:IsA("BackpackItem") then
+					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+					for i, v in service.GetPlayers(plr, args[1]) do
+						if v:FindFirstChild("Backpack") then
+							gear:Clone().Parent = v.Backpack
 						end
 					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
 			end
 		};
