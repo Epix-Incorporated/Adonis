@@ -4,6 +4,7 @@ Routine = nil
 GetEnv = nil
 origEnv = nil
 logError = nil
+Pcall = nil
 
 --// Admin
 return function(Vargs, GetEnv)
