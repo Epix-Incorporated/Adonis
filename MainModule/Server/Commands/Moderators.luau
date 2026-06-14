@@ -3540,273 +3540,108 @@ return function(Vargs, env)
 			Args = {"player", "part names", "% value (0-1)"};
 			Description = "Set the transparency of the target's character's parts, including accessories; supports a comma-separated list of part names";
 			AdminLevel = "Moderators";
+			Vars = {
+				TypeInput = { All = "Instance", Accessories = "Accoutrement" };
+				ParentDir = { Accessories = "Accoutrement" }
+				GroupPartInputs = {
+					LeftArm = { "Left Arm", "LeftArm", "LeftUpperArm", "LeftLowerArm", "LeftHand" };
+					RightArm = { "Right Arm", "RightArm", "RightUpperArm", "RightLowerArm", "RightHand" };
+					LeftLeg = { "Left Leg", "LeftLeg", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot" };
+					RightLeg = { "Right Leg", "RightLeg", "RightUpperLeg", "RightLowerLeg", "RightFoot" };
+					Torso = { "Torso", "UpperTorso", "LowerTorso" };
+				};
+				PartInputs = {"Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot"};
+				UsageText = {
+					"Possible inputs are:",
+					"R6: Head, LeftArm, RightArm, RightLeg, LeftLeg, Torso",
+					"R15: Head, UpperTorso, LowerTorso, LeftUpperArm, LeftLowerArm, LeftHand, RightUpperArm, RightLowerArm, RightHand, LeftUpperLeg, LeftLowerLeg, LeftFoot, RightUpperLeg, RightLowerLeg, RightFoot",
+					"",
+					"If the input is 'LeftArm' on a R15 rig, it will select the entire Left Arm for R15.",
+					"Special Inputs: all, accessories",
+					"all: All limbs including accessories. If this is specified it will ignore all other specified parts.",
+					"limbs: Changes the transparency of all limbs",
+					"face: Changes the transparency of the face",
+					"accessories: Changes transparency of accessories"
+				};
+			};
 			Function = function(plr: Player, args: {string})
-				for i, player in service.GetPlayers(plr, args[1]) do
-					if player.Character then
-						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-						if humanoid then
-							local rigType =  humanoid.RigType
-							local GroupPartInputs = {"LeftArm", "RightArm", "RightLeg", "LeftLeg", "Torso"}
-							local PartInputs = {"Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot"}
-
-							local usageText = {
-								"Possible inputs are:",
-								"R6: Head, LeftArm, RightArm, RightLeg, LeftLeg, Torso",
-								"R15: Head, UpperTorso, LowerTorso, LeftUpperArm, LeftLowerArm, LeftHand, RightUpperArm, RightLowerArm, RightHand, LeftUpperLeg, LeftLowerLeg, LeftFoot, RightUpperLeg, RightLowerLeg, RightFoot",
-								"",
-								"If the input is 'LeftArm' on a R15 rig, it will select the entire Left Arm for R15.",
-								"Special Inputs: all, accessories",
-								"all: All limbs including accessories. If this is specified it will ignore all other specified parts.",
-								"limbs: Changes the transparency of all limbs",
-								"face: Changes the transparency of the face",
-								"accessories: Changes transparency of accessories"
-							}
-
-							if not (args[2]) then
-								--assert(args[2], "No parts specified. See developer console for possible inputs.")
-								local tab = table.create(#usageText)
-								for _,v in usageText do
-									table.insert(tab, {
-										Text = v;
-										Desc = v;
-									})
-								end
-								--// Generate the UI for this player
-								server.Remote.MakeGui(plr, "List", {
-									Tab = tab;
-									Title = "Command Usage";
-								})
-								return
+				local value = assert(tonumber(args[3]), "")
+				local self = Commands.TransparentPart
+				local TypeInput, ParentDir, GroupPartInputs, PartInputs = self.Vars.TypeInput, self.Vars.ParentDir, self.Vars.GroupPartInputs, self.Vars.PartInputs
+		
+				if not args[2] then
+					--// Generate the UI for this player
+					server.Remote.MakeGui(plr, "List", {
+						Tab = self.Vars.UsageText;
+						Title = "Command Usage";
+					})
+					return
+				elseif not self.Vars._converted then
+					for _, t in ipairs({ TypeInput, ParentDir, GroupPartInputs }) do
+						for k, v in ipairs(t) do
+							t[string.lower(k)] = v
+						end
+					end
+		
+					for _, v in ipairs(PartInputs) do
+						PartInputs[string.lower(v)], PartInputs[v] = v, v
+					end
+		
+					self.Vars._converted = true
+				end
+		
+				for _, player in service.GetPlayers(plr, args[1]) do
+					local character = player.Character
+		
+					if character then
+						local partInput = {}
+						local parts = {}
+		
+						for _, v in ipairs(string.split(args[2], ",")) do
+							if v == "all" then
+								partInput = {"all"}
+								break
+							elseif self.TypeInput[string.lower(v)] then
+								table.insert(partInput, v)
 							end
-
-							local partInput = {}
-							local inputs = string.split(args[2], ",")
-
-							for _, v in inputs do
-								if v ~= "" then
-									if v == "all" then
-										partInput = "all"
-										break -- break if "all" is found.
-									end
-
-									-- Validate inputs
-									if v == "limbs" or v == "face" or v == "accessories" then
-										table.insert(partInput, v)
-									else
-										local found = false
-										while found ~= true do
-											for _,v2 in GroupPartInputs do
-												if v == v2 then
-													table.insert(partInput, v)
-													found = true
-													break
-												end
-											end
-
-											for _,v2 in PartInputs do
-												if v == v2 then
-													table.insert(partInput, v)
-													found = true
-													break
-												end
-											end
-
-											if not (found) then
-												assert(nil, `'{v}' is not a valid input. Run command with no arguments to see possible inputs.`)
-											end
-										end
-									end
-								else
-									assert(nil, "Part argument contains empty value.")
+		
+							local group = self.GroupPartInputs[string.lower(v)]
+		
+							if group then
+								for _, name in ipairs(group) do
+									table.insert(partInput, name)
+								end
+							else
+								local name = self.PartInputs[string.lower(v)]
+		
+								if name then
+									table.insert(partInput, name)
 								end
 							end
-
-
-							-- Check if partInput is a table
-							if type(partInput) == "table" then
-								local hash = {}
-
-								-- Check for duplicates
-								for i,v in partInput do
-									if not (hash[v]) then
-										hash[v] = i -- Store into table to check for duplicates.
-									else
-										assert(nil, `Duplicate '{v}' found in input. Specify each input once only.`)
+						end
+		
+						for _, v in ipairs(partInput) do
+							local class = self.TypeInput[string.lower(v)]
+							local parent = self.ParentDir[string.lower(v)] and character:FindFirstChild(self.ParentDir[string.lower(v)]) or character
+		
+							if class then
+								for _, obj in ipairs(parent:GetChildren()) do
+									if v:IsA(class) then
+										table.insert(parts, v)
 									end
 								end
-
-
-								-- Clean up the parts we don't need, depending on rigType, to allow this command to be more dynamic
-
-								if rigType == Enum.HumanoidRigType.R15 then
-									for i = #partInput, 1, -1 do
-										if partInput[i] == "RightArm" then
-											local foundKeys = {}
-											for k2, v2 in partInput do
-												if v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand" then
-													table.insert(foundKeys, k2)
-												end
-											end
-											-- If not all keys were found just remove all keys and add them manually
-											if #foundKeys ~= 3 then
-												for _, foundKey in foundKeys do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "RightUpperArm")
-												table.insert(partInput, "RightLowerArm")
-												table.insert(partInput, "RightHand")
-											end
-											table.remove(partInput, i) -- Remove the group part input
-
-										elseif partInput[i] == "LeftArm" then
-											local foundKeys = {}
-											for k2, v2 in partInput do
-												if v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand" then
-													table.insert(foundKeys, k2)
-												end
-											end
-
-											if #foundKeys ~= 3 then
-												for _, foundKey in foundKeys do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "LeftUpperArm")
-												table.insert(partInput, "LeftLowerArm")
-												table.insert(partInput, "LeftHand")
-											end
-											table.remove(partInput, i)
-										elseif partInput[i] == "RightLeg" then
-											local foundKeys = {}
-											for i = #partInput, 1, -1 do
-												if partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
-													table.insert(foundKeys, partInput[i])
-												end
-											end
-											if #foundKeys ~= 3 then
-												for _, foundKey in foundKeys do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "RightUpperLeg")
-												table.insert(partInput, "RightLowerLeg")
-												table.insert(partInput, "RightFoot")
-											end
-											table.remove(partInput, i)
-										elseif partInput[i] == "LeftLeg" then
-											local foundKeys = {}
-											for k2, v2 in partInput do
-												if v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot" then
-													table.insert(foundKeys, k2)
-												end
-											end
-
-											if #foundKeys ~= 3 then
-												for _, foundKey in foundKeys do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "LeftUpperLeg")
-												table.insert(partInput, "LeftLowerLeg")
-												table.insert(partInput, "LeftFoot")
-											end
-											table.remove(partInput, i)
-										elseif partInput[i] == "Torso" then
-											local foundKeys = {}
-											for k2, v2 in partInput do
-												if v2 == "UpperTorso" or v2 == "LowerTorso" then
-													table.insert(foundKeys, k2)
-												end
-											end
-											if #foundKeys ~= 2 then
-												for _, foundKey in foundKeys do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "UpperTorso")
-												table.insert(partInput, "LowerTorso")
-											end
-											table.remove(partInput, i)
-										end
-									end
+							else
+								local found = parent:FindFirstChild(v)
+		
+								if found then
+									table.insert(parts, found)
 								end
-
-								if rigType == Enum.HumanoidRigType.R6 then
-									local partsToRemove = {
-										["RightUpperArm"] = true,
-										["RightLowerArm"] = true,
-										["RightHand"] = true,
-										["LeftUpperArm"] = true,
-										["LeftLowerArm"] = true,
-										["LeftHand"] = true,
-										["RightUpperLeg"] = true,
-										["RightLowerLeg"] = true,
-										["RightFoot"] = true,
-										["LeftUpperLeg"] = true,
-										["LeftLowerLeg"] = true,
-										["LeftFoot"] = true,
-										["UpperTorso"] = true,
-										["LowerTorso"] = true
-									}
-
-									for i = #partInput, 1, -1 do
-										if partsToRemove[partInput[i]] then
-											table.remove(partInput, i)
-										end
-									end
-								end
-
-								-- Make chosen parts transparent
-								for k, v in partInput do
-									if not (v == "limbs" or v == "face" or v == "accessories") then
-										local part = player.Character:FindFirstChild(v)
-										if part ~= nil and part:IsA("BasePart") then
-											part.Transparency = args[3]
-										end
-
-									elseif v == "limbs" then
-										for key, part in player.Character:GetChildren() do
-											if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-												part.Transparency = args[3]
-											end
-										end
-
-									elseif v == "face" then
-										local headPart = player.Character:FindFirstChild("Head")
-										for _, v2 in headPart:GetChildren() do
-											if v2:IsA("Decal") then
-												v2.Transparency = args[3]
-											end
-										end
-
-									elseif v == "accessories" then
-										for key, part in player.Character:GetChildren() do
-											if part:IsA("Accessory") then
-												for _, v2 in part:GetChildren() do
-													if v2:IsA("BasePart") then
-														v2.Transparency = args[3]
-													end
-												end
-											end
-										end
-									end
-								end
-
-							elseif partInput == "all" then
-								for k, p in player.Character:GetChildren() do
-									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
-										p.Transparency = args[3]
-										if p.Name == "Head" then
-											for _, v2 in p:GetChildren() do
-												if v2:IsA("Decal") then
-													v2.Transparency = args[3]
-												end
-											end
-										end
-									elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
-										for _, v2 in p:GetChildren() do
-											if v2:IsA("BasePart") then
-												v2.Transparency = args[3]
-											end
-										end
-									end
-								end
+							end
+						end
+		
+						for _, v in ipairs(parts) do
+							if v:IsA("BasePart") or v:IsA("Decal") do
+								v.Transparency = value
 							end
 						end
 					end
