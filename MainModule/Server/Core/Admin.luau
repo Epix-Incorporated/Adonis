@@ -468,7 +468,25 @@ return function(Vargs, GetEnv)
 
 				for _, group in groups do
 					if group.Id == groupId then
-						return group.Rank
+						local success, roles = Pcall(function()
+							return (Admin.GroupsCache[uid] and Admin.GroupsCache[uid][groupId]) and Admin.GroupsCache[uid][groupId].Roles or service.GroupService:GetRolesInGroupAsync(uid, groupId)
+						end)
+
+						if success and roles then
+							if not Admin.GroupsCache[uid] then
+								Admin.GroupsCache[uid] = {
+									[groupId] = {
+										Roles = roles
+									}
+								}
+							elseif not Admin.GroupsCache[uid][groupId] then
+								Admin.GroupsCache[uid][groupId] = { Roles = roles }
+							else
+								Admin.GroupsCache[uid][groupId].Roles = roles
+							end
+						end
+
+						return group.Rank, success and roles.Roles
 					end
 				end
 			end
@@ -556,13 +574,20 @@ return function(Vargs, GetEnv)
 				if filterName == "group" then
 					local groupId = tonumber((string.match(filterData, "^%d+")))
 					if groupId then
-						local plrRank = Admin.GetGroupLevel(plr.UserId, groupId)
-						local requiredRank,noRank = tonumber((string.match(filterData, "^%d+:(.+)$"))), string.match(filterData,"^%d+$")
+						local plrRank, plrRoles = Admin.GetGroupLevel(plr.UserId, groupId)
+						local specifier = string.match(filterData, "^%d+:(.+)$")
+						local requiredRank, noRank = tonumber(specifier), string.match(filterData,"^%d+$")
 						if requiredRank then
 							if requiredRank < 0 then
 								return plrRank >= math.abs(requiredRank)
 							else
 								return plrRank == requiredRank
+							end
+						elseif specifier and plrRoles then
+							for _, v in ipairs(plrRoles) do
+								if service.Trim(string.lower(v.Name)) == service.Trim(string.lower(specifier)) then
+									return true
+								end
 							end
 						elseif noRank then
 							return plrRank > 0
