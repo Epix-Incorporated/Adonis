@@ -3542,7 +3542,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Vars = {
 				TypeInput = { All = "Instance", Accessories = "Accoutrement" };
-				ParentDir = { Accessories = "Accoutrement" }
+				ParentDir = { Accessories = "Accoutrement" };
 				GroupPartInputs = {
 					LeftArm = { "Left Arm", "LeftArm", "LeftUpperArm", "LeftLowerArm", "LeftHand" };
 					RightArm = { "Right Arm", "RightArm", "RightUpperArm", "RightLowerArm", "RightHand" };
@@ -3640,7 +3640,7 @@ return function(Vargs, env)
 						end
 		
 						for _, v in ipairs(parts) do
-							if v:IsA("BasePart") or v:IsA("Decal") do
+							if v:IsA("BasePart") or v:IsA("Decal") then
 								v.Transparency = value
 							end
 						end

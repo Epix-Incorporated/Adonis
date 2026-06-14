@@ -419,7 +419,7 @@ return function(Vargs, GetEnv)
 				GetRoleInGroupAsync = function() return "Guest" end; GetRoleInGroup = function() return "Guest" end;
 				IsInGroupAsync = function() return false end;
 				IsFriendsWithAsync = function() return false end; IsFriendsWith = function() return false end;
-				Kick = function() end fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
+				Kick = function() fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
 				IsA = function(_, className) return className == "Player" or className == "Instance" end;
 			}
 

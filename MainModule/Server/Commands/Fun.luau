@@ -4521,7 +4521,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
 				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
-				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear."=
+				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear.")
 				local gear = service.Insert(gearID)
 
 				if gear:IsA("BackpackItem") then

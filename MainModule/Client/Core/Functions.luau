@@ -426,7 +426,7 @@ return function(Vargs, GetEnv)
 						Children = {};
 					}
 
-					for _, v in variables.GuiProperties do
+					for _, v in Variables.GuiProperties do
 						pcall(function()
 							new.Properties[v] = child[v]
 						end)
