@@ -1,7 +1,10 @@
 return {
-	"Version: 279";
+	"Version: 280";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v280 2026-xx-xx xx:xx UTC] @Maintainer";
+	"(Git/ostrichman1) Community ownership changes (#2148)";
 	"";
 	"[v279 2026-06-12 11:50 UTC] @Dimenpsyonal";
 	"(Git/thatgato) QoL Enhancement for !ping (#2136)";
