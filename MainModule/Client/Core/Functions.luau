@@ -1504,6 +1504,32 @@ return function(Vargs, GetEnv)
 		end;
 
 		TextToSpeech = function(str)
+			local ttsInstance = service.New("AudioTextToSpeech", service.LocalContainer())
+			ttsInstance.Text = str
+			ttsInstance.VoiceId = ({"1", "2", "9"})[math.random(1, 3)]
+
+			local output = service.New("AudioDeviceOutput", service.LocalContainer())
+			local wire = service.New("Wire", service.LocalContainer())
+			wire.SourceInstance = ttsInstance
+			wire.TargetInstance = output
+
+			ttsInstance.Ended:Connect(function()
+				output:Destroy()
+				wire:Destroy()
+				ttsInstance:Destroy()
+			end)
+
+			if xpcall(function()
+					local status = ttsInstance:LoadAsync()
+					assert(status == Enum.AssetFetchStatus.Success, "Text to speech audio failed to load. Status is: "..tostring(status))
+				end, warn) then
+				ttsInstance:Play()
+				return
+			else
+				output:Destroy()
+				wire:Destroy()
+				ttsInstance:Destroy()
+			end
 			local audioId = 296333956
 
 			local audio = Instance.new("Sound",service.LocalContainer())
