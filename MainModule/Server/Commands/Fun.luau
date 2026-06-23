@@ -5078,7 +5078,7 @@ return function(Vargs, env)
 					end
 
 					if head:IsA("MeshPart") and table.find(Variables.AnimatedFaces, tonumber(string.match(head.MeshId, "%d%d%d+"))) then
-						head.TextureID = ""
+						head.TextureID, head.TextureContent = "", Content.none
 						if head:FindFirstChildOfClass("SurfaceAppearance") then
 							head:FindFirstChildOfClass("SurfaceAppearance"):Destroy()
 						end
