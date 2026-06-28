@@ -12,7 +12,7 @@
 			Ranks = {
 				["Moderators"] = {
 					Level = 100;
-					Hidden = false; -- This would make the rank hidden from the AdminList, useful for hiding admin ranks.
+					Hidden = false; -- This would make the rank hidden from the AdminList, useful for hiding default ranks.
 					Users = {
 						"Username"; -- Example: "roblox"
 						"Username:UserId"; -- Example: "roblox:1"
