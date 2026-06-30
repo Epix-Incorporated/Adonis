@@ -422,6 +422,8 @@ return function(Vargs, GetEnv)
 				data[k] = v
 			end
 
+			data.UserId = tonumber(data.UserId) or 0
+
 			if data.UserId > 0 then
 				local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, data.UserId)
 				if success then
