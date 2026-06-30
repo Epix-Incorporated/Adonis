@@ -73,11 +73,13 @@ if mutex then
 		warn("Adonis mutex detected but is not a StringValue! Aborting anyway...; This Location:", script:GetFullName())
 	end
 else
-	mutex = Instance.new("StringValue")
-	mutex.Name = "__Adonis_MUTEX"
-	mutex.Archivable = false
-	mutex.Value = script:GetFullName()
-	mutex.Parent = RunService
+	pcall(function()
+		mutex = Instance.new("StringValue")
+		mutex.Name = "__Adonis_MUTEX"
+		mutex.Archivable = false
+		mutex.Value = script:GetFullName()
+		mutex.Parent = RunService
+	end)
 
 	local model = script.Parent.Parent
 	local configFolder = model.Config
@@ -91,7 +93,7 @@ else
 	local themesFolder = configFolder.Themes
 	local inGameSettingsEditorSettingsFolder = configFolder:FindFirstChild("InGameSettingsEditorSettings")
 
-	local backup = model:Clone()
+	--local backup = model:Clone()
 
 	local data = {
 		Settings = {} :: {[string]: any};
@@ -285,7 +287,7 @@ else
 		end)
 	end
 
-	local response = assert(success and module, "FATAL ERROR! Adonis bootstrap function is missing!")(data)
+	local response = assert(success and module, "FATAL ERROR! Adonis bootstrap function is missing! Possible fix is to disable script sandboxing for Adonis and enable 'Allow Loading Third Party Assets' in game settings.")(data)
 
 	if response == "SUCCESS" then
 		if data.Settings and data.Settings.HideScript and not data.DebugMode and not RunService:IsStudio() then

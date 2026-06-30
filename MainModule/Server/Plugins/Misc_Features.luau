@@ -4,9 +4,52 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
+	local Pcall = server.Pcall
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+
+	Functions.InternalSandboxError = function()
+		table.insert(server.Messages, {
+			Title = "Potential loader issue!";
+			Message = "Adonis Loader's has script sandboxing on may break functionality. For help disabling, click to see more...";
+			Time = 15;
+			Icon = "MatIcon://Description";
+			onClick = (server.Data and server.Data.NightlyMode) and Core.Bytecode([[
+				local window = client.UI.Make("Window", {
+					Title = "How to disable loader sandboxing";
+					Size = {700, 300};
+					Icon = "MatIcon://Help";
+				})
+
+				window:Add("ImageLabel", {
+					Image = "rbxassetid://111103486118064"; -- TODO: Upload a helpful image for this
+				})
+
+				window:Ready()
+		]]) or nil})
+	end
+
+	-- // Handle errors cause by sandboxing
+	if not Variables.FFLAG_NoHandleSandbox then
+		for _, v in server.Folder and server.Folder:GetDescendants() do -- TODO: Maybe assert/fail if folder is missing??? It should never be ¯\_(ツ)_/¯
+			if Functions.RemoveSandbox then
+				Pcall(Functions.RemoveSandbox, v)
+			end
+		end
+		Logs:AddLog("Script", "Removed sandboxing from MainModule")
+
+		for _, v in pairs({ server.Loader, server.Runner, server.Model, table.unpack(server.Model and server.Model:GetDescendants() or {}) }) do
+			if v.Sandboxed and not Variables.HasSandboxErrored then
+				Functions.InternalSandboxError()
+				Variables.HasSandboxErrored = true
+				Logs:AddLog("Script", "Created warning help message for loader sandbox")
+			end
+
+			Pcall(Functions.RemoveSandbox, v)
+		end
+		Logs:AddLog("Script", "Removed sandboxing from Loader")
+	end
 
 	--// AutoClean
 	if Settings.AutoClean then
