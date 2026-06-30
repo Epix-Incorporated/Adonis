@@ -1341,8 +1341,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local img = tostring(args[2])
-				if not img then error(`{args[2]} is not a valid ID`) end
+				local img = assert(tonumber(args[2]), `{args[2]} is not a valid ID`)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "ScreenImage";
@@ -1360,8 +1359,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local img = tostring(args[2])
-				if not img then error(`{args[2]} is not a valid ID`) end
+				local img = assert(tostring(args[2]), `{args[2]} is not a valid ID`)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; Video = args[2];})
 				end
@@ -1685,42 +1683,41 @@ return function(Vargs, env)
 					local cl = Core.NewScript("Script",[[
 						local Pcall=function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print('Error: '..error) end end
 						local parts = {}
-						local main=script.Parent
-						main.Anchored=true
-						main.CanCollide=false
-						main.Transparency=1
-						local smoke=Instance.new("Smoke", main)
-						local sound=Instance.new("Sound", main)
-						smoke.RiseVelocity=25
-						smoke.Size=25
-						smoke.Color=Color3.new(170/255, 85/255, 0)
-						smoke.Opacity=1
-						sound.SoundId="rbxassetid://142840797"
-						sound.Looped=true
+						local main = script.Parent
+						main.Anchored = true
+						main.CanCollide = false
+						main.Transparency = 1
+						local smoke = Instance.new("Smoke", main)
+						local sound = Instance.new("Sound", main)
+						smoke.RiseVelocity = 25
+						smoke.Size = 25
+						smoke.Color = Color3.new(170/255, 85/255, 0)
+						smoke.Opacity = 1
+						sound.SoundId = "rbxassetid://134811453767381"
+						sound.Looped = true
 						sound:Play()
-						sound.Volume=1
-						sound.Pitch=0.8
-						local light=Instance
+						sound.Volume = 0.8
+						sound.PlaybackSpeed = 0.8
 
 						function fling(part)
 							part:BreakJoints()
-							part.Anchored=false
+							part.Anchored = false
 							local attachment = Instance.new("Attachment", part)
-							local pos=Instance.new("AlignPosition", part)
+							local pos = Instance.new("AlignPosition", part)
 							pos.MaxForce = math.huge
 							pos.Position = part.Position
 							pos.Attachment0 = attachment
-							local i=1
-							local run=true
-							while main and wait() and run do
+							local i = 1
+							local run = true
+							while main and task.wait() and run do
 								if part.Position.Y>=main.Position.Y+50 then
 									run=false
 								end
-								pos.Position=Vector3.new(50*math.cos(i), part.Position.Y+5, 50*math.sin(i))+main.Position
-								i=i+1
+								pos.Position = Vector3.new(50 * math.cos(i), part.Position.Y + 5, 50 * math.sin(i)) + main.Position
+								i += 1
 							end
-							pos.MaxForce = Vector3.new(500, 500, 500)
-							pos.Position=Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
+							pos.MaxForce = 500
+							pos.Position = Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
 							pos:Destroy()
 						end
 
@@ -3274,16 +3271,13 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if not args[2] then error("Missing texture") end
 				local startColor = {}
 				local endColor = {}
 				local startc = Color3.new(1, 1, 1)
 				local endc = Color3.new(1, 1, 1)
 
-				if args[3] then
-					for s in args[3]:gmatch("[%d]+")do
-						table.insert(startColor, tonumber(s))
-					end
+				for s in assert(args[3], "Missing texture"):gmatch("[%d]+")do
+					table.insert(startColor, tonumber(s))
 				end
 
 				if args[4] then--276138620 :)
@@ -4446,8 +4440,7 @@ return function(Vargs, env)
 				if args[5] and args[5]:match("(.*),(.*),(.*)") then
 					r, g, b = args[5]:match("(.*),(.*),(.*)")
 				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				r, g, b = assert(tonumber(r), "Invalid red"), assert(tonumber(g), "Invalid green"), assert(tonumber(b), "Invalid blue")
 				for _, p in service.GetPlayers(plr, args[1]) do
 					Remote.NewLocal(p, "ColorCorrectionEffect", {
 						Name = "WINDOW_COLORCORRECTION",
@@ -4473,8 +4466,7 @@ return function(Vargs, env)
 				if args[1] and args[1]:match("(.*),(.*),(.*)") then
 					r, g, b = args[1]:match("(.*),(.*),(.*)")
 				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				r, g, b = assert(tonumber(r), "Invalid red"), assert(tonumber(g), "Invalid green"), assert(tonumber(b), "Invalid blue")
 				local num1, num2, num3 = r, g, b
 				num1 = `-{num1}00000`
 				num2 = `-{num2}00000`
@@ -4529,20 +4521,16 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
 				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear.")
+				local gear = service.Insert(gearID)
 
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-
-					if gear:IsA("BackpackItem") then
-						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
-							if v:FindFirstChild("StarterGear") then
-								gear:Clone().Parent = v.StarterGear
-							end
+				if gear:IsA("BackpackItem") then
+					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+					for i, v in service.GetPlayers(plr, args[1]) do
+						if v:FindFirstChild("StarterGear") then
+							gear:Clone().Parent = v.StarterGear
 						end
 					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
 			end
 		};
@@ -4557,20 +4545,16 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
 				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear.")
+				local gear = service.Insert(gearID)
 
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-
-					if gear:IsA("BackpackItem") then
-						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
-							if v:FindFirstChild("Backpack") then
-								gear:Clone().Parent = v.Backpack
-							end
+				if gear:IsA("BackpackItem") then
+					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+					for i, v in service.GetPlayers(plr, args[1]) do
+						if v:FindFirstChild("Backpack") then
+							gear:Clone().Parent = v.Backpack
 						end
 					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
 			end
 		};

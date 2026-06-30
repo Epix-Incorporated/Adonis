@@ -402,18 +402,23 @@ return function(Vargs, GetEnv)
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
 				CharacterAppearanceId = options.UserId or 0;
+				CanLoadCharacterAppearence = service.StarterPlayer.LoadPlayerAppearance;
 				FollowUserId = 0;
-				GameplayPaused = false;
+				ReplicationFocus = nil;
+				Team = nil;
+				TeamColor = nil;
+				RespawnLocation = nil;
 				Parent = service.Players;
-				Character = service.New("Model", {Name = options.Name or "Fake_Player"});
-				Backpack = service.New("Backpack", {Name = "FakeBackpack"});
-				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"});
-				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"});
+				Character = service.New("Model", {Name = options.Name or "Fake_Player"; Parent = fakePlayer});
+				Backpack = service.New("Backpack", {Name = "FakeBackpack"; Parent = fakePlayer});
+				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"; Parent = fakePlayer});
+				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"; Parent = fakePlayer});
 				GetJoinData = function() return {} end;
 				GetFriendsOnline = function() return {} end;
-				GetRankInGroup = function() return 0 end;
-				GetRoleInGroup = function() return "Guest" end;
-				IsFriendsWith = function() return false end;
+				GetRankInGroupAsync = function() return 0 end; GetRankInGroup = function() return 0 end;
+				GetRoleInGroupAsync = function() return "Guest" end; GetRoleInGroup = function() return "Guest" end;
+				IsInGroupAsync = function() return false end;
+				IsFriendsWithAsync = function() return false end; IsFriendsWith = function() return false end;
 				Kick = function() fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
 				IsA = function(_, className) return className == "Player" or className == "Instance" end;
 			}
@@ -1186,6 +1191,7 @@ return function(Vargs, GetEnv)
 
 		makeRobot = function(player, num, health, speed, damage, walk, attack, friendly)
 			local Deps = server.Deps
+			local key = friendly and (Variables.BotKeys[player.Team or player]) or service.HttpService:GenerateGUID(false)
 
 			local char = player.Character
 			local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
@@ -1216,6 +1222,10 @@ return function(Vargs, GetEnv)
 				hum.Health = health
 
 				if oldAnim then
+					anim:ClearAllChildren()
+					for _, v in oldAnim:GetChildren() do
+						v.Parent = anim
+					end
 					oldAnim:Destroy()
 				end
 
@@ -1240,12 +1250,10 @@ return function(Vargs, GetEnv)
 					Damage = damage;
 					Health = health;
 					WalkSpeed = speed;
-					SpecialKey = service.HttpService:GenerateGUID(false);
+					SpecialKey = tostring(key);
+					AttackBots = not player.TeamColor and not friendly;
 				})
-
-				if walk then
-					task.defer(task.defer, event.Fire, event, "Init")
-				end
+				task.defer(task.defer, event.Fire, event, "Init")
 
 				table.insert(Variables.Objects, new)
 			end
