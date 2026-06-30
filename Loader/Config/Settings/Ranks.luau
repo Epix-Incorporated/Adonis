@@ -12,6 +12,7 @@
 			Ranks = {
 				["Moderators"] = {
 					Level = 100;
+					Hidden = false; -- This would make the rank hidden from the AdminList, useful for hiding default ranks.
 					Users = {
 						"Username"; -- Example: "roblox"
 						"Username:UserId"; -- Example: "roblox:1"
@@ -27,6 +28,7 @@
 
 		If you use custom ranks, existing custom ranks will be imported with a level of 1.
 		Add all new CustomRanks to the table below with the respective level you want them to be.
+		The Hidden property is not a required to be present on every rank.
 
 	NOTE: Changing the level of built-in ranks (Moderators, Admins, HeadAdmins, Creators)
 	will also change the permission level for any built-in commands associated with that rank.
