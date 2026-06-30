@@ -430,7 +430,7 @@ return function(data, env)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						Remote.Send("ProcessCommand", `{commandPrefix}cmds`)
+						client.UI.Make("CommandList")
 					end
 				}
 			})

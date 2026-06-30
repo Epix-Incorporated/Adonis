@@ -1009,7 +1009,7 @@ return function(Vargs, GetEnv)
 				if level > 0 then
 					if Settings.Notification then
 						task.wait(1)
-						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}cmds")`))
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.UI.Make("CommandList")`))
 
 						if #server.Messages > 0 then
 							for _, message in server.Messages do
