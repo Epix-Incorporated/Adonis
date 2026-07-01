@@ -986,6 +986,12 @@ return function(Vargs, GetEnv)
 					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
 				end
 			end
+			
+			if Settings.AntiLeak and Settings.AllowClientAntiExploit then
+				Remote.Send(p, "LaunchAnti", "AntiLeak", {
+					Enabled = (Settings.AntiLeak ~= false)
+				})
+			end
 
 			--// Finish things up
 			if Remote.Clients[key] then
