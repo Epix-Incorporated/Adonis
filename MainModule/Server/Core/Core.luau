@@ -67,6 +67,8 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Core Module Initialized")
 	end;
 
+	local Connections = {}
+
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
 		Core.MakeEvent()
@@ -474,27 +476,59 @@ return function(Vargs, GetEnv)
 				folder.Name = depsName--"Adonis_Client"
 				folder.Parent = container
 
-				--// Event only fires AFTER the client is alive and well
-				local event; event = service.Events.ClientLoaded:Connect(function(plr)
-					if p == plr and container.Parent == parentObj then
+				local event
 
-						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
-						container.Parent = nil
-						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
-							task.wait()
-							if p.Parent == nil then
-								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
-								pcall(function()
-									container:Destroy()
-								end)
-							end
-						end)
+				local Cleanup = function(player, loaded)
+					if player ~= p then
+						return
+					end
 
-						leaveEvent:Disconnect()
-						leaveEvent = nil
+					if event then
 						event:Disconnect()
 						event = nil
 					end
+
+					if Connections["HookClient_" .. p.UserId] then
+						Connections["HookClient_" .. p.UserId]:Disconnect()
+						Connections["HookClient_" .. p.UserId] = nil
+					end
+
+					if keys then
+						keys.Module = nil
+						keys.EventName = nil
+					end
+
+					if loaded then
+						if container then
+							container.Parent = nil
+						end
+					else
+						if container then
+							pcall(function()
+								container:Destroy()
+							end)
+						end
+
+						if folder then
+							pcall(function()
+								folder:Destroy()
+							end)
+						end
+					end
+
+					container = nil
+					folder = nil
+				end
+
+				--// Event only fires AFTER the client is alive and well
+				event = service.Events.ClientLoaded:Connect(function(plr)
+					if p == plr and container and container.Parent == parentObj then
+						Cleanup(plr, true)
+					end
+				end)
+
+				Connections["HookClient_" .. p.UserId] = game.Players.PlayerRemoving:Connect(function(Player)
+					Cleanup(Player, false)
 				end)
 
 				local ok, err = pcall(function()
