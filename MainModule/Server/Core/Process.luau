@@ -916,6 +916,21 @@ return function(Vargs, GetEnv)
 			end
 
 			Variables.IncognitoPlayers[p] = nil
+
+			for name: string, players: {Player} in Variables.Tags do
+				local index = table.find(players, p);
+				if not index then continue end;
+
+				table.remove(players, index);
+				if #players == 0 then
+					Variables.Tags[name] = nil;
+					
+					AddLog("Script", {
+						Text = `Tag "{name}" was removed because the last player who was in it left`;
+						Desc = `Tag "{name}" was removed`;
+					})
+				end
+			end
 		end;
 
 		FinishLoading = function(p)
