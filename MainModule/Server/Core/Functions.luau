@@ -395,7 +395,7 @@ return function(Vargs, GetEnv)
 						matched = matched:lower();
 						local tag = Variables.Tags[matched];
 						if not tag then
-							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a tag!"})
+							Remote.MakeGui(plr, "Output", {Title = "Invalid argument"; Message = "Argument supplied is not a tag!"})
 							return;
 						end
 
@@ -427,7 +427,7 @@ return function(Vargs, GetEnv)
 								elseif value:IsA("NumberValue") or value:IsA("IntValue") then
 									local min, max = tonumber(raw_min), tonumber(raw_max);
 									if not min then
-										Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
+										Remote.MakeGui(plr, "Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
 										return;
 									end
 									
