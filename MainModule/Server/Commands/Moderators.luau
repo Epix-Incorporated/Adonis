@@ -7483,6 +7483,30 @@ return function(Vargs, env)
 
 				local name = Functions.Trim(args[2]:lower():gsub(" ", "_"));
 				local players = service.GetPlayers(plr, args[1]);
+
+				if name == "all" then
+					if Functions.CountTags() == 0 then
+						error("There are no tags on this server.");
+					end
+
+					for tagName: string, taggedPlayers: {Player} in Variables.Tags do
+						local added = 0;
+
+						for _, player in players do
+							if table.find(taggedPlayers, player) then
+								continue
+							end;
+
+							table.insert(taggedPlayers, player);
+							added += 1;
+						end
+
+						Functions.Hint(`Tagged {added} player(s) as "{tagName}"`, {plr});
+					end
+
+					return;
+				end
+
 				local tag = Variables.Tags[name];
 
 				if not tag then
@@ -7491,12 +7515,15 @@ return function(Vargs, env)
 					return;
 				end
 
+				local added = 0;
 				for _, player: Player in players do
 					if table.find(tag, player) then continue end;
+				
 					table.insert(tag, player);
+					added += 1;
 				end
 
-				Functions.Hint(`Tagged {#players} player(s) as "{name}"`, {plr});
+				Functions.Hint(`Tagged {added} player(s) as "{name}"`, {plr});
 			end
 		};
 
@@ -7511,10 +7538,38 @@ return function(Vargs, env)
 				assert(args[2], "Argument 2 is required!");
 
 				local name = Functions.Trim(args[2]:lower():gsub(" ", "_"));
+				local players = service.GetPlayers(plr, args[1]);
+
+				if name == "all" then
+					if Functions.CountTags() == 0 then
+						error("There are no tags on this server.");
+					end
+
+					for tagName: string, taggedPlayers: {Player} in Variables.Tags do
+						local removed = 0;
+
+						for _, player in players do
+							local index = table.find(taggedPlayers, player)
+							if not index then continue end;
+
+							table.remove(taggedPlayers, index);
+							removed += 1;
+						end
+
+						Functions.Hint(`{removed} player(s) {removed == 1 and "was" or "were"} removed from the tag "{tagName}"`, {plr});
+
+						if #taggedPlayers == 0 then
+							Variables.Tags[tagName] = nil;
+							Functions.Hint(`Tag "{tagName}" was removed because it was empty`, {plr});
+						end
+					end
+
+					return;
+				end
+
 				local tag = Variables.Tags[name];
 				assert(tag, `Tag "{name}" doesn't exist`);
 
-				local players = service.GetPlayers(plr, args[1]);
 				local removed = 0;
 				for _, player: Player in players do
 					local index = table.find(tag, player);
@@ -7541,7 +7596,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
 				local tab = {
-					`# Tags: {#Variables.Tags}`,
+					`# Tags: {Functions.CountTags()}`,
 					"―――――――――――――――――――――――"
 				};
 

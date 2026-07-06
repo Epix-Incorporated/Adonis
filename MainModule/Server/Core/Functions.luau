@@ -1765,6 +1765,14 @@ return function(Vargs, GetEnv)
 			table.sort(itemNames)
 
 			return itemNames
-		end
+		end;
+
+		CountTags = function(): number
+			local count = 0
+			for _ in Variables.Tags do
+    			count += 1
+			end
+			return count;
+		end;
 	}
 end
