@@ -392,6 +392,7 @@ return function(Vargs, GetEnv)
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
 					local matched = string.match(msg, "t%-(.*)");
 					if matched then
+						matched = matched:lower();
 						local tag = Variables.Tags[matched];
 						if not tag then
 							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a tag!"})
@@ -401,6 +402,48 @@ return function(Vargs, GetEnv)
 						for _, player: Player in tag do
 							table.insert(players, player);
 							plus();
+						end
+					end
+				end
+			};
+
+			["stat"] = {
+				Match = "stat/";
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
+					local stat, raw_min, raw_max = string.match(msg, "stat/([^/]+)/([^/]+)/?([^/]*)");
+					if stat then
+						for _, player: Player in service.Players:GetPlayers() do
+							local leaderstats = player:FindFirstChild("leaderstats");
+							if not leaderstats then continue end;
+
+							for _, value in leaderstats:GetChildren() do
+								if value.Name:lower() ~= stat:lower() then continue end;
+
+								if value:IsA("StringValue") then
+									if value.Value ~= raw_min then continue end;
+
+									table.insert(players, player);
+									plus();
+								elseif value:IsA("NumberValue") or value:IsA("IntValue") then
+									local min, max = tonumber(raw_min), tonumber(raw_max);
+									if not min then
+										Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
+										return;
+									end
+									
+									if not max then
+										if value.Value >= min then
+											table.insert(players, player);
+											plus();
+										end
+									else
+										if value.Value >= min and value.Value <= max then
+											table.insert(players, player);
+											plus();
+										end
+									end
+								end
+							end
 						end
 					end
 				end

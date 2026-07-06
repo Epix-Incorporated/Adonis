@@ -520,8 +520,14 @@ return function(Vargs, env)
 					`<b>$GROUPID</b> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)`;
 					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
 					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
-					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
-					`<b>t-TAG_NAME</b> -- Anyone who is tagged with TAG_NAME. {Prefix}fly t-TAG_NAME will give flight to anyone who is tagged with TAG_NAME.`;
+					`<b>radius-NUM</b> - Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
+					`<b>t-TAG_NAME</b> - Anyone who is tagged with TAG_NAME. {Prefix}fly t-TAG_NAME will give flight to anyone who is tagged with TAG_NAME.`;
+					`	• <b>Note:</b> <u>Tags cannot contain spaces</u>, any spaces that are used within a tag will automatically be converted to "_": "hello world" -> "hello_world"!`;
+					`<b>stat/NAME/MIN/MAX</b> - Players whose leaderboard stat NAME matches the given value.`;
+					`	• <b>NAME</b> - The (case insensitive) name of the leaderboard stat, ex. {Prefix}fly stat/<b>wins</b>/5/8`;
+					`	• <b>MIN</b> - The minimum <u>inclusive</u> value of the leaderboard stat, ex. {Prefix}fly stat/wins/<b>5</b>/8`;
+					`	• <b>MAX</b> - The (optional) maximum <u>inclusive</u> value of the leaderboard stat, ex. {Prefix}fly stat/wins/5/<b>8</b>`;
+					`	• The stat selector is also able to match string leaderboard stats (case sensitive), ex. {Prefix}fly stat/class/<b>Mage</b>`;
 					"";
 					`<b>――――― Repetition ―――――</b>`;
 					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
