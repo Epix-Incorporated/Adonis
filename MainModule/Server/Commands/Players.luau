@@ -521,6 +521,7 @@ return function(Vargs, env)
 					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
 					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
 					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
+					`<b>t-TAG_NAME</b> -- Anyone who is tagged with TAG_NAME. {Prefix}fly t-TAG_NAME will give flight to anyone who is tagged with TAG_NAME.`;
 					"";
 					`<b>――――― Repetition ―――――</b>`;
 					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;

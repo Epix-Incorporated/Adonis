@@ -267,6 +267,8 @@ return function(Vargs, GetEnv)
 		Starter = {
 			Health = {};
 			Speed = {};
-		}
+		};
+
+		Tags = {};
 	}
 end

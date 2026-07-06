@@ -386,6 +386,25 @@ return function(Vargs, GetEnv)
 					end
 				end;
 			};
+
+			["t-tag"] = {
+				Match = "t-";
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
+					local matched = string.match(msg, "t%-(.*)");
+					if matched then
+						local tag = Variables.Tags[matched];
+						if not tag then
+							Remote.MakeGui(plr,"Output", {Title = "Invalid argument"; Message = "Argument supplied is not a tag!"})
+							return;
+						end
+
+						for _, player: Player in tag do
+							table.insert(players, player);
+							plus();
+						end
+					end
+				end
+			};
 		};
 
 		GetFakePlayer = function(options)
