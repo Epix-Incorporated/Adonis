@@ -7474,7 +7474,7 @@ return function(Vargs, env)
 		Tag = {
 			Prefix = Settings.Prefix;
 			Commands = {"tag", "addtag"};
-			Args = {"player", "tag name"};
+			Args = {"player", "tag name (or \"all\")"};
 			Description = `Add specific players to a tag, you can then use a player selector to select only people in that specific tag: {Settings.Prefix}count t-TAG_NAME`;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -7530,7 +7530,7 @@ return function(Vargs, env)
 		Untag = {
 			Prefix = Settings.Prefix;
 			Commands = {"untag", "removetag"};
-			Args = {"player", "tag name"};
+			Args = {"player", "tag name (or \"all\")"};
 			Description = "Remove specific players from a tag";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
