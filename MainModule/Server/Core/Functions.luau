@@ -1118,13 +1118,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		PlayAnimation = function(player, animId)
+		PlayAnimation = function(player: Player, animId: number, animSpeed: number?, isLooped: boolean?)
 			if player.Character and tonumber(animId) then
 				local human = player.Character:FindFirstChildOfClass("Humanoid")
 				if human and not human:FindFirstChildOfClass("Animator") then
 					service.New("Animator", human)
 				end
-				Remote.Send(player,"Function","PlayAnimation",animId)
+				Remote.Send(player, "Function", "PlayAnimation", animId, animSpeed or 1, isLooped or false)
 			end
 		end;
 
