@@ -3910,7 +3910,7 @@ return function(Vargs, env)
 		PlayerColor = {
 			Prefix = Settings.Prefix;
 			Commands = {"color", "playercolor", "bodycolor"};
-			Args = {"player", "brickcolor or RGB"};
+			Args = {"player", "color"};
 			Description = "Recolors the target character(s) with the given color, or random if none is given";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
