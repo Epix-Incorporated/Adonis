@@ -810,23 +810,20 @@ return function(Vargs, env)
 		Neon = {
 			Prefix = Settings.Prefix;
 			Commands = {"neon", "neonify"};
-			Args = {"player", "(optional)color"};
+			Args = {"player", "color"};
 			Description = "Make the target neon";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local color = Functions.ParseColor3(args[2]) or BrickColor.new("Institutional white").Color
+
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
 						for _, p in v.Character:GetChildren() do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
 							elseif p:IsA("BasePart") then
-								if args[2] then
-									local str = BrickColor.new("Institutional white").Color
-									local teststr = args[2]
-									if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-									p.BrickColor = str
-								end
+								p.Color = color
 								p.Material = "Neon"
 								if p.Name == "Head" then
 									local mesh = p:FindFirstChild("Mesh")
