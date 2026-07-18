@@ -4176,20 +4176,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local color = Color3.new(1, 1, 1)
-				local secondary = Color3.new(1, 0, 0)
-
-				if args[2] then
-					local str = BrickColor.new("Bright orange").Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-					secondary = str
-				end
+				local color = Functions.ParseColor3(args[2]) or Color3.new(1, 1, 1)
+				local secondary = Functions.ParseColor3(args[2]) or Color3.new(1, 0, 0)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
