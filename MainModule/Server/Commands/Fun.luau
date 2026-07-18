@@ -3274,31 +3274,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if not args[2] then error("Missing texture") end
-				local startColor = {}
-				local endColor = {}
-				local startc = Color3.new(1, 1, 1)
-				local endc = Color3.new(1, 1, 1)
-
-				if args[3] then
-					for s in args[3]:gmatch("[%d]+")do
-						table.insert(startColor, tonumber(s))
-					end
-				end
-
-				if args[4] then--276138620 :)
-					for s in args[4]:gmatch("[%d]+")do
-						table.insert(endColor, tonumber(s))
-					end
-				end
-
-				if #startColor == 3 then
-					startc = Color3.new(startColor[1], startColor[2], startColor[3])
-				end
-
-				if #endColor == 3 then
-					endc = Color3.new(endColor[1], endColor[2], endColor[3])
-				end
+				assert(args[2], "Missing texture")
+				local startc = Functions.ParseColor3(args[3]) or Color3.new(1, 1, 1)
+				local endc = Functions.ParseColor3(args[4]) or startc
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
