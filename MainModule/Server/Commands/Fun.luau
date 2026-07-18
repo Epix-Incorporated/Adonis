@@ -4416,19 +4416,15 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local r, g, b = 1, 1, 1
-				if args[5] and args[5]:match("(.*),(.*),(.*)") then
-					r, g, b = args[5]:match("(.*),(.*),(.*)")
-				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				local tintColor = Functions.ParseColor3(args[5]) or Color3.new(1,1,1)
+
 				for _, p in service.GetPlayers(plr, args[1]) do
 					Remote.NewLocal(p, "ColorCorrectionEffect", {
 						Name = "WINDOW_COLORCORRECTION",
 						Brightness = tonumber(args[2]) or 0,
 						Contrast = tonumber(args[3]) or 0,
 						Saturation = tonumber(args[4]) or 0,
-						TintColor = Color3.new(r, g, b),
+						TintColor = tintColor,
 						Enabled = true,
 					}, "Camera")
 				end
