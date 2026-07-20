@@ -2312,7 +2312,22 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"insclear", "clearinserted", "clrins", "insclr"};
 			Args = {};
-			Description = "Removes inserted objects";
+			Description = "Removes your inserted objects";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, v in Variables.InsertedObjects do
+					if not v:GetAttribute("ADONIS_InsertedBy") or v:GetAttribute("ADONIS_InsertedBy") ~= plr.Name then continue end
+					v:Destroy()
+					table.remove(Variables.InsertedObjects, i)
+				end
+			end
+		};
+
+		InsertClearAll = {
+			Prefix = Settings.Prefix;
+			Commands = {"insclearall", "clearallinserted", "clrallins", "insclrall"};
+			Args = {};
+			Description = "Removes all inserted objects";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in Variables.InsertedObjects do
