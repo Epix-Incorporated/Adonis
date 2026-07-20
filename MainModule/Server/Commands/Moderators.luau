@@ -2315,10 +2315,15 @@ return function(Vargs, env)
 			Description = "Removes your inserted objects";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in Variables.InsertedObjects do
-					if not v:GetAttribute("ADONIS_InsertedBy") or v:GetAttribute("ADONIS_InsertedBy") ~= plr.Name then continue end
-					v:Destroy()
-					table.remove(Variables.InsertedObjects, i)
+				for i = #Variables.InsertedObjects, 1, -1 do
+					local v = Variables.InsertedObjects[i]
+					
+					if v and v:GetAttribute("ADONIS_InsertedBy") == plr.Name then
+						if v.Parent then 
+							v:Destroy() 
+						end
+						table.remove(Variables.InsertedObjects, i)
+					end
 				end
 			end
 		};
@@ -2330,10 +2335,13 @@ return function(Vargs, env)
 			Description = "Removes all inserted objects";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in Variables.InsertedObjects do
-					v:Destroy()
-					table.remove(Variables.InsertedObjects, i)
+				for i = #Variables.InsertedObjects, 1, -1 do
+					local v = Variables.InsertedObjects[i]
+					if v and v.Parent then
+						v:Destroy()
+					end
 				end
+				table.clear(Variables.InsertedObjects) 
 			end
 		};
 
