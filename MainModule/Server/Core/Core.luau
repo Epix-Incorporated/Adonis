@@ -480,18 +480,17 @@ return function(Vargs, GetEnv)
 
 						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
 						container.Parent = nil
-						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
-							task.wait()
-							if p.Parent == nil then
+						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function(child, parent)
+							if child == p and parent == nil then
 								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
-								pcall(function()
-									container:Destroy()
-								end)
+								pcall(container.Destroy, container)
+								container = nil
+
+								leaveEvent:Disconnect()
+								leaveEvent = nil
 							end
 						end)
 
-						leaveEvent:Disconnect()
-						leaveEvent = nil
 						event:Disconnect()
 						event = nil
 					end
