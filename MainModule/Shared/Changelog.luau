@@ -5,6 +5,9 @@ return {
 	"";
 	"[v280 2026-xx-xx xx:xx UTC] @Maintainer";
 	"(Git/ostrichman1) Community ownership changes (#2148)";
+	"(Git/thatgato) Add speed and looping control to :animation (#2128)";
+	"(Git/kaiserandaxl) Document the Hidden property in ranks (#2150)";
+	"(Git/fxeP1) Fix memory leak from lingering containers (#2158)";
 	"";
 	"[v279 2026-06-12 11:50 UTC] @Dimenpsyonal";
 	"(Git/thatgato) QoL Enhancement for !ping (#2136)";
