@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our repository*";
 	"";
 	"[v280 2026-xx-xx xx:xx UTC] @Maintainer";
+	"Fix Windows XP theme dropdown colours for readability";
 	"(Git/ostrichman1) Community ownership changes (#2148)";
 	"(Git/thatgato) Add speed and looping control to :animation (#2128)";
 	"(Git/kaiserandaxl) Document the Hidden property in ranks (#2150)";
@@ -18,7 +19,7 @@ return {
 	"(Git/joritochip) Fix Modern theme window (#2121)";
 	"(Git/ImFirstPlace) Improve :setcore command (#2104)";
 	"(Git/AidenJamesYt) Add :promptpluspurchase and !getplus commands (#2116)";
-	"(Git/krampuszc) Updated the Dex icons (#2118)";
+	"(Git/krampuszc) Update the Dex icons (#2118)";
 	"(Git/joritochip) Modify donation buttons (#2120)";
 	"(Git/thatgato) Fix Game tab in user panel permission check (#2122)";
 	"(Git/ImFirstPlace) Remove Remnants of Creator Powers (#2102)";
