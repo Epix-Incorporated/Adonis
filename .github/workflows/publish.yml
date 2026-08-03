@@ -11,7 +11,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.1  # Using the latest version
+      - uses: actions/checkout@v7.0.1  # Using the latest version
         with:
           ref: refs/heads/release
           
@@ -57,7 +57,7 @@ jobs:
       - name: Build Standalone
         run: rojo build -o ${{ steps.naming.outputs.output_name }}.rbxm .github/build.project.json
      
-      - uses: actions/upload-artifact@v6.0.0
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ steps.naming.outputs.output_name }}
           path: ${{ steps.naming.outputs.output_name }}.rbxm
