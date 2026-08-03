@@ -7470,5 +7470,156 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		Tag = {
+			Prefix = Settings.Prefix;
+			Commands = {"tag", "addtag"};
+			Args = {"player", "tag name (or \"all\")"};
+			Description = `Add specific players to a tag, you can then use a player selector to select only people in that specific tag: {Settings.Prefix}count t-TAG_NAME`;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1], "Argument 1 is required!");
+				assert(args[2], "Argument 2 is required!");
+
+				local name = Functions.Trim(args[2]:lower():gsub(" ", "_"));
+				local players = service.GetPlayers(plr, args[1]);
+
+				if name == "all" then
+					if Functions.CountTags() == 0 then
+						error("There are no tags on this server.");
+					end
+
+					for tagName: string, taggedPlayers: {Player} in Variables.Tags do
+						local added = 0;
+
+						for _, player in players do
+							if table.find(taggedPlayers, player) then
+								continue
+							end;
+
+							table.insert(taggedPlayers, player);
+							added += 1;
+						end
+
+						Functions.Hint(`Tagged {added} player(s) as "{tagName}"`, {plr});
+					end
+
+					return;
+				end
+
+				local tag = Variables.Tags[name];
+
+				if not tag then
+					Variables.Tags[name] = players;
+					Functions.Hint(`Created tag "{name}" and added {#players} player(s) to it`, {plr});
+					return;
+				end
+
+				local added = 0;
+				for _, player: Player in players do
+					if table.find(tag, player) then continue end;
+				
+					table.insert(tag, player);
+					added += 1;
+				end
+
+				Functions.Hint(`Tagged {added} player(s) as "{name}"`, {plr});
+			end
+		};
+
+		Untag = {
+			Prefix = Settings.Prefix;
+			Commands = {"untag", "removetag"};
+			Args = {"player", "tag name (or \"all\")"};
+			Description = "Remove specific players from a tag";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1], "Argument 1 is required!");
+				assert(args[2], "Argument 2 is required!");
+
+				local name = Functions.Trim(args[2]:lower():gsub(" ", "_"));
+				local players = service.GetPlayers(plr, args[1]);
+
+				if name == "all" then
+					if Functions.CountTags() == 0 then
+						error("There are no tags on this server.");
+					end
+
+					for tagName: string, taggedPlayers: {Player} in Variables.Tags do
+						local removed = 0;
+
+						for _, player in players do
+							local index = table.find(taggedPlayers, player)
+							if not index then continue end;
+
+							table.remove(taggedPlayers, index);
+							removed += 1;
+						end
+
+						Functions.Hint(`{removed} player(s) {removed == 1 and "was" or "were"} removed from the tag "{tagName}"`, {plr});
+
+						if #taggedPlayers == 0 then
+							Variables.Tags[tagName] = nil;
+							Functions.Hint(`Tag "{tagName}" was removed because it was empty`, {plr});
+						end
+					end
+
+					return;
+				end
+
+				local tag = Variables.Tags[name];
+				assert(tag, `Tag "{name}" doesn't exist`);
+
+				local removed = 0;
+				for _, player: Player in players do
+					local index = table.find(tag, player);
+					if not index then continue end;
+
+					table.remove(tag, index);
+					removed += 1;
+				end
+
+				Functions.Hint(`{removed} player(s) {removed == 1 and "was" or "were"} removed from the tag "{name}"`, {plr});
+
+				if #tag == 0 then
+					Variables.Tags[name] = nil;
+					Functions.Hint(`Tag "{name}" was removed because it was empty`, {plr});
+				end;				
+			end
+		};
+
+		ListTags = {
+			Prefix = Settings.Prefix;
+			Commands = {"listtags", "tags"};
+			Args = {"autoupdate? (default: false)"};
+			Description = "desc";
+			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player)
+				local tab = {
+					`# Tags: {Functions.CountTags()}`,
+					"―――――――――――――――――――――――"
+				};
+
+				for name: string, players: {Player} in Variables.Tags do
+					table.insert(tab, {
+						Text = `{name} [{#players} player(s)]`,
+						Desc = `Use "{Settings.Prefix}count t-{name}" to view all tagged players`
+					})
+				end
+
+				return tab;
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Tags",
+					Icon = server.MatIcons.People;
+					Tab = Logs.ListUpdaters.ListTags(plr);
+					Size = {300, 240};
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
+					Update = "ListTags";
+					TextSelectable = true;
+				})
+			end
+		};
 	}
 end
