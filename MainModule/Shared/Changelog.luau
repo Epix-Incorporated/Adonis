@@ -3,12 +3,14 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v280 2026-xx-xx xx:xx UTC] @Maintainer";
+	"[v280 2026-08-xx xx:xx UTC] @Maintainer";
 	"Fix Windows XP theme dropdown colours for readability";
 	"(Git/ostrichman1) Community ownership changes (#2148)";
 	"(Git/thatgato) Add speed and looping control to :animation (#2128)";
 	"(Git/kaiserandaxl) Document the Hidden property in ranks (#2150)";
 	"(Git/fxeP1) Fix memory leak from lingering containers (#2158)";
+	"(Git/watameln) Small patch for lazy newcclosure (#2089)";
+	"(Git/ostrichman1) Fixes and modifcations to several fun commands (#2106)";
 	"";
 	"[v279 2026-06-12 11:50 UTC] @Dimenpsyonal";
 	"(Git/thatgato) QoL Enhancement for !ping (#2136)";
