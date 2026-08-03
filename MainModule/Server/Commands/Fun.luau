@@ -810,23 +810,20 @@ return function(Vargs, env)
 		Neon = {
 			Prefix = Settings.Prefix;
 			Commands = {"neon", "neonify"};
-			Args = {"player", "(optional)color"};
+			Args = {"player", "color"};
 			Description = "Make the target neon";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local color = Functions.ParseColor3(args[2]) or BrickColor.new("Institutional white").Color
+
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
 						for _, p in v.Character:GetChildren() do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
 							elseif p:IsA("BasePart") then
-								if args[2] then
-									local str = BrickColor.new("Institutional white").Color
-									local teststr = args[2]
-									if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-									p.BrickColor = str
-								end
+								p.Color = color
 								p.Material = "Neon"
 								if p.Name == "Head" then
 									local mesh = p:FindFirstChild("Mesh")
@@ -3274,31 +3271,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if not args[2] then error("Missing texture") end
-				local startColor = {}
-				local endColor = {}
-				local startc = Color3.new(1, 1, 1)
-				local endc = Color3.new(1, 1, 1)
-
-				if args[3] then
-					for s in args[3]:gmatch("[%d]+")do
-						table.insert(startColor, tonumber(s))
-					end
-				end
-
-				if args[4] then--276138620 :)
-					for s in args[4]:gmatch("[%d]+")do
-						table.insert(endColor, tonumber(s))
-					end
-				end
-
-				if #startColor == 3 then
-					startc = Color3.new(startColor[1], startColor[2], startColor[3])
-				end
-
-				if #endColor == 3 then
-					endc = Color3.new(endColor[1], endColor[2], endColor[3])
-				end
+				assert(args[2], "Missing texture")
+				local startc = Functions.ParseColor3(args[3]) or Color3.new(1, 1, 1)
+				local endc = Functions.ParseColor3(args[4]) or startc
 
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -4198,20 +4173,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local color = Color3.new(1, 1, 1)
-				local secondary = Color3.new(1, 0, 0)
-
-				if args[2] then
-					local str = BrickColor.new("Bright orange").Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-					secondary = str
-				end
+				local color = Functions.ParseColor3(args[2]) or Color3.new(1, 1, 1)
+				local secondary = Functions.ParseColor3(args[2]) or Color3.new(1, 0, 0)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -4258,18 +4221,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local color = Color3.new(1, 1, 1)
-
-				if args[2] then
-					local str = BrickColor.new("White").Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-				end
+				local color = Functions.ParseColor3(args[2]) or Color3.new(1, 1, 1)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -4308,18 +4260,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local color = Color3.new(1, 1, 1)
-
-				if args[2] then
-					local str = BrickColor.new("Cyan").Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-				end
+				local color = Functions.ParseColor3(args[2]) or Color3.new(1, 1, 1)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -4450,19 +4391,15 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local r, g, b = 1, 1, 1
-				if args[5] and args[5]:match("(.*),(.*),(.*)") then
-					r, g, b = args[5]:match("(.*),(.*),(.*)")
-				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				local tintColor = Functions.ParseColor3(args[5]) or Color3.new(1,1,1)
+
 				for _, p in service.GetPlayers(plr, args[1]) do
 					Remote.NewLocal(p, "ColorCorrectionEffect", {
 						Name = "WINDOW_COLORCORRECTION",
 						Brightness = tonumber(args[2]) or 0,
 						Contrast = tonumber(args[3]) or 0,
 						Saturation = tonumber(args[4]) or 0,
-						TintColor = Color3.new(r, g, b),
+						TintColor = tintColor,
 						Enabled = true,
 					}, "Camera")
 				end

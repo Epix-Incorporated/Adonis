@@ -1620,6 +1620,18 @@ return function(Vargs, GetEnv)
 				return Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
 			end
 
+			if str:sub(1,1) == "#" then
+				local hex = string.match(str:lower(), "[%d|abcdef]+")
+				if hex then
+					local hexColor = Color3.fromHex(hex)
+					if hexColor then
+						return hexColor
+					end
+				end
+	
+				return
+			end
+	
 			local color = {}
 			for s in string.gmatch(str, "[%d]+") do
 				table.insert(color, tonumber(s))

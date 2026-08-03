@@ -39,11 +39,12 @@ return function(Vargs, env)
 		ESP = {
 			Prefix = Settings.Prefix;
 			Commands = {"esp", "xray"};
-			Args = {"target (optional)", "brickcolor (optional)"};
+			Args = {"target", "color"};
 			Filter = true;
 			Description = "Allows you to see <target> (or all humanoids if no target is supplied) through walls";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
+				local color = Functions.ParseColor3(args[2])
 				Remote.Send(plr, "Function", "CharacterESP", false)
 
 				if args[1] then
@@ -52,7 +53,7 @@ return function(Vargs, env)
 							continue
 						end
 
-						Remote.Send(plr, "Function", "CharacterESP", true, v2.Character, args[2] and BrickColor.new(args[2]).Color)
+						Remote.Send(plr, "Function", "CharacterESP", true, v2.Character, color)
 					end
 				else
 					Remote.Send(plr, "Function", "CharacterESP", true)
@@ -3910,7 +3911,7 @@ return function(Vargs, env)
 		PlayerColor = {
 			Prefix = Settings.Prefix;
 			Commands = {"color", "playercolor", "bodycolor"};
-			Args = {"player", "brickcolor or RGB"};
+			Args = {"player", "color"};
 			Description = "Recolors the target character(s) with the given color, or random if none is given";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
