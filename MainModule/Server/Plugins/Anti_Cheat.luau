@@ -122,15 +122,7 @@ return function(Vargs, GetEnv)
 			end)
 
 			if service.Players.CharacterAutoLoads and Settings.AntiGod == true then
-				local connection
-
-				connection = humanoid.Died:Connect(function()
-					if not connection.Connected then
-						return
-					end
-
-					connection:Disconnect()
-
+				humanoid.Died:Once(function()
 					if service.Players.RespawnTime == math.huge then return end
 					
 					task.wait(service.Players.RespawnTime + 1.5)

@@ -472,7 +472,7 @@ return service.NewProxy({
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
 				connection1 = m:GetPropertyChangedSignal("Parent"):Connect(function()
-					if not m or m.Parent ~= service.RunService then
+					if not m or m.Parent ~= service.RunService and server.Running then
 						connection1:Disconnect()
 						connection2:Disconnect()
 						--warn("Adonis module mutex removed; Regenerating...")
@@ -484,7 +484,7 @@ return service.NewProxy({
 				end)
 				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
 					pcall(function()
-						if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+						if m and m.Name ~= "__Adonis_MODULE_MUTEX" and server.Running then
 							m.Name = "__Adonis_MODULE_MUTEX"
 						end
 					end)
