@@ -998,12 +998,13 @@ return function(Vargs, GetEnv)
 			table.clear(objects)
 		end;
 
-		PlayAnimation = function(animId)
+		PlayAnimation = function(animId: number, animSpeed: number?, isLooped: boolean?)
 			if animId == 0 then return end
 
 			local char = service.Player.Character
 			local human = char and char:FindFirstChildOfClass("Humanoid")
 			local animator = human and human:FindFirstChildOfClass("Animator") or human and human:WaitForChild("Animator", 9e9)
+
 			if not animator then return end
 
 			for _, v in animator:GetPlayingAnimationTracks() do v:Stop() end
@@ -1012,7 +1013,12 @@ return function(Vargs, GetEnv)
 				Name = "ADONIS_Animation"
 			})
 			local track = animator:LoadAnimation(anim)
-			track:Play()
+
+			if isLooped ~= nil then
+				track.Looped = isLooped
+			end
+
+			track:Play(nil, nil, animSpeed or 1)
 		end;
 
 		StopAnimation = function()

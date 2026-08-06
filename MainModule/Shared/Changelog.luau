@@ -1,7 +1,16 @@
 return {
-	"Version: 279";
+	"Version: 280";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v280 2026-08-06 11:40 UTC] @Dimenpsyonal";
+	"Fix Windows XP theme dropdown colours for readability";
+	"(Git/ostrichman1) Community ownership changes (#2148)";
+	"(Git/thatgato) Add speed and looping control to :animation (#2128)";
+	"(Git/kaiserandaxl) Document the Hidden property in ranks (#2150)";
+	"(Git/fxeP1) Fix memory leak from lingering containers (#2158)";
+	"(Git/watameln) Small patch for lazy newcclosure (#2089)";
+	"(Git/ostrichman1) Fixes and modifcations to several fun commands (#2106)";
 	"";
 	"[v279 2026-06-12 11:50 UTC] @Dimenpsyonal";
 	"(Git/thatgato) QoL Enhancement for !ping (#2136)";
@@ -12,7 +21,7 @@ return {
 	"(Git/joritochip) Fix Modern theme window (#2121)";
 	"(Git/ImFirstPlace) Improve :setcore command (#2104)";
 	"(Git/AidenJamesYt) Add :promptpluspurchase and !getplus commands (#2116)";
-	"(Git/krampuszc) Updated the Dex icons (#2118)";
+	"(Git/krampuszc) Update the Dex icons (#2118)";
 	"(Git/joritochip) Modify donation buttons (#2120)";
 	"(Git/thatgato) Fix Game tab in user panel permission check (#2122)";
 	"(Git/ImFirstPlace) Remove Remnants of Creator Powers (#2102)";
