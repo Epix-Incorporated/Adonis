@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v280 2026-08-xx xx:xx UTC] @Maintainer";
+	"[v280 2026-08-06 11:40 UTC] @Dimenpsyonal";
 	"Fix Windows XP theme dropdown colours for readability";
 	"(Git/ostrichman1) Community ownership changes (#2148)";
 	"(Git/thatgato) Add speed and looping control to :animation (#2128)";
