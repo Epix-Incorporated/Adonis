@@ -931,6 +931,8 @@ return function(Vargs, GetEnv)
 					})
 				end
 			end
+			
+			Variables.PersistedItems[tostring(p.UserId)] = nil
 		end;
 
 		FinishLoading = function(p)
@@ -1181,6 +1183,14 @@ return function(Vargs, GetEnv)
 				local Speed = Variables.Starter.Speed[tostring(p.UserId)]
 				if Speed then
 					Hum.WalkSpeed = Speed
+				end
+				
+				local Items = Variables.PersistedItems[tostring(p.UserId)]
+				if Items then
+					
+					for _,item in Items do
+						server.Commands.AvatarItem.Function(p, {"me", tostring(item)})
+					end
 				end
 			end
 		end;
