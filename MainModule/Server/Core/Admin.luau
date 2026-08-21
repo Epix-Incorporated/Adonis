@@ -654,11 +654,19 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
-			if Settings.Console and type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
-				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
-					task.defer(Remote.RefreshGui, p, "Console")
-				else
-					task.defer(Remote.RemoveGui, p, "Console")
+			if type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
+				service.Events.PlayerAdminChanged:Fire(
+					p,
+					{ Level = level, Rank = rank },
+					{ Level = oLevel, Rank = oRank }
+				)
+
+				if Settings.Console then
+					if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
+						task.defer(Remote.RefreshGui, p, "Console")
+					else
+						task.defer(Remote.RemoveGui, p, "Console")
+					end
 				end
 			end
 
