@@ -9,6 +9,7 @@ return {
 	SplitKey = " ";				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 	BatchKey = "|";				-- :kill me | :ff bob | :explode scel
 	ConsoleKeyCode = "Quote";	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+	FlyKeyCode = "F2";			-- Keybind to toggle fly; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 	HideScript = true;	-- When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module; Disable if your game uses AssetService:SavePlaceAsync()
 
