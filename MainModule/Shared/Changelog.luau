@@ -5,6 +5,7 @@ return {
 	"";
 	"[v281 2026-xx-xx xx:xx UTC] @Maintainer";
 	"(Git/realdint) Fix GetFakePlayer UserId comparisson bug by converting UserId to number (#2140)";
+	"(Git/fxeP1) Allow admins command to show table Group (#2173)";
 	"";
 	"[v280 2026-08-06 11:40 UTC] @Dimenpsyonal";
 	"Fix Windows XP theme dropdown colours for readability";
