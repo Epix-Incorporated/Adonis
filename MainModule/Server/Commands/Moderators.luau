@@ -6309,7 +6309,7 @@ return function(Vargs, env)
 		DisplayName = {
 			Prefix = Settings.Prefix;
 			Commands = {"displayname", "dname"};
-			Args = {"player", "name/hide"};
+			Args = {"player", "name/'hide'"};
 			Filter = true;
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			AdminLevel = "Moderators";
