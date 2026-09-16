@@ -61,10 +61,6 @@ return {
 	CapeList = {};		-- List of capes		Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
 	InsertList = {}; 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'		Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
 
-	OnStartup = {};		-- List of commands ran at server start		Format: {":notif TestNotif"}
-	OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
-	OnSpawn = {};		-- List of commands ran as player on spawn (ignores adminlevel)		Format: {"!fire Really red",":ff me"}
-
 	FunCommands = true;					-- Are fun commands enabled?
 	PlayerCommands = true;				-- Are player-level utility commands enabled?
 	AgeRestrictedCommands = true;		-- Are age restricted commands enabled?
