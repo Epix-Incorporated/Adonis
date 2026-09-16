@@ -152,6 +152,11 @@ return function(Vargs, GetEnv)
 			CrossServerCommands = true;
 			RemoteExecutionConfirmed = true;
 
+			Messages = true;
+			Logs = true;
+			ClientPlugins = true;
+			ServerPlugins = true;
+
 			Creators = true;
 			Permissions = true;
 
@@ -169,10 +174,6 @@ return function(Vargs, GetEnv)
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
 
-			OnStartup = true;
-			OnSpawn = true;
-			OnJoin = true;
-
 			CustomRanks = true;
 			Ranks = true;
 			Commands = true;
@@ -186,10 +187,10 @@ return function(Vargs, GetEnv)
 
 			["Variables.ScriptBuilder"] = true;
 			["Variables.ScriptEditor"] = true;
-			["Variables.UrgentModuleId"] = true;
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
+			Data = true;
 		};
 
 		--// Prevent certain keys from loading from the DataStore

@@ -1966,7 +1966,7 @@ return function(Vargs, env)
 				table.insert(temptable, "<b><font color='rgb(180, 60, 0)'>All Admins:</font></b>")
 
 				for rank, data in Settings.Ranks do
-					if not data.Hidden then
+					if type(rank) == "string" and type(data) == "table" and tonumber(data.Level) and not data.Hidden then
 						table.insert(unsorted, {
 							Text = string.format(RANK_RICHTEXT, rank, data.Level);
 							Desc = "";
@@ -1993,6 +1993,11 @@ return function(Vargs, env)
 					table.insert(temptable, v)
 
 					for _, user in Users do
+						--// { Group: number, Rank: number }
+						if type(user) == "table" then
+							user = `Group:{user.Group}:{user.Rank} [table]`
+						end
+
 						table.insert(temptable, {
 							Text = `  {user}`;
 							Desc = string.format(RANK_DESCRIPTION_FORMAT, Rank, Level);

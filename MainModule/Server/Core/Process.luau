@@ -945,15 +945,6 @@ return function(Vargs, GetEnv)
 				Desc = "Client finished loading";
 			})
 
-			--// Run OnJoin commands
-			for i,v in Settings.OnJoin do
-				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
-				AddLog("Script", {
-					Text = `OnJoin: Executed {v}`;
-					Desc = `Executed OnJoin command; {v}`
-				})
-			end
-
 			--// Start keybind listener
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
 
@@ -1149,15 +1140,6 @@ return function(Vargs, GetEnv)
 
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p, char, ...)
-
-				--// Run OnSpawn commands
-				for _, v in Settings.OnSpawn do
-					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
-					AddLog("Script", {
-						Text = `OnSpawn: Executed {v}`;
-						Desc = `Executed OnSpawn command; {v}`;
-					})
-				end
 
 				if
 					server.Commands.Track

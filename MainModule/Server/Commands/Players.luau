@@ -787,23 +787,34 @@ return function(Vargs, env)
 								end
 							end
 						end
-						
-						local mailVerif = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
-						local hasVerifiedMail = if elevated then
-							type(mailVerif) == "string" and mailVerif or mailVerif and "Yes" or "No"
+
+						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
+						local hasAdsAllowed = if policyInfo then
+							type(policyInfo) == "string" and policyInfo or policyInfo.AreAdsAllowed and "Yes" or "No"
 							else "[Redacted]"
 
-						local idVerif = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v))
-						local hasVerifiedId = if elevated then
-							type(idVerif) == "string" and idVerif or idVerif and "Yes" or "No"
+						local hasMailAccessory = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
+							or v.UserId < 50000000 and select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 1567446))
+
+						local hasVerifiedMail = if elevated then
+							type(hasMailAccessory) == "string" and hasMailAccessory or hasMailAccessory and "Yes" or "No"
+							else "[Redacted]"
+
+						local verifLevelLow = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v, Enum.VerifiedLevel.Low))
+						local verifLevelHigh = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v, Enum.VerifiedLevel.High))
+
+						local determinedVerifLevel = if elevated then
+							(type(verifLevelHigh) == "string" and verifLevelHigh or verifLevelHigh and "High")
+							or (type(verifLevelLow) == "string" and verifLevelLow or verifLevelLow and "Low") or "None"
 							else "[Redacted]"
 
 						Remote.RemoveGui(plr, `Profile_{v.UserId}`)
 						Remote.MakeGui(plr, "Profile", {
 							Target = v;
-							CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
+							AdsAllowed = hasAdsAllowed;
+							CanChatGet = table.pack(pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId));
 							MailVerified = hasVerifiedMail;
-							IDVerified = hasVerifiedId;
+							VerificationLevel = determinedVerifLevel;
 							IsDonor = Admin.CheckDonor(v);
 							GameData = gameData;
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;

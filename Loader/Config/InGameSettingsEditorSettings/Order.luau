@@ -34,10 +34,6 @@ return {
 	"Waypoints";
 	"CustomRanks";
 	" ";
-	"OnStartup";
-	"OnJoin";
-	"OnSpawn";
-	" ";
 	"SaveAdmins";
 	"WhitelistEnabled";
 	" ";
