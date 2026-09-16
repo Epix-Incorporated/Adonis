@@ -664,6 +664,17 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				if not Settings.CodeExecution then
+					Functions.Notification(
+						"Command cannot be because code execution is off",
+						"This command cannot be run because code execution is off. Enable Settings.CodeExecution to be able to use this command.",
+						{plr},
+						"MatIcon://Info",
+						15,
+						Core.Bytecode('client.UI.Make("UserPanel", {Tab = "Game"})')
+					)
+				end
+
 				local scr = Core.NewScript("ClientScript", [[
 					local restore = {}
 					local tween = game:GetService("TweenService")
@@ -1675,6 +1686,17 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
+				if not Settings.CodeExecution then
+					Functions.Notification(
+						"Command cannot be because code execution is off",
+						"This command cannot be run because code execution is off. Enable Settings.CodeExecution to be able to use this command.",
+						{plr},
+						"MatIcon://Info",
+						15,
+						Core.Bytecode('client.UI.Make("UserPanel", {Tab = "Game"})')
+					)
+				end
+
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local p = service.New("Part", workspace)
 					table.insert(Variables.Objects, p)
