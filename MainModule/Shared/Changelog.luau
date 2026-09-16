@@ -3,8 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v281 2026-xx-xx xx:xx UTC] @Maintainer";
+	"[v281 2026-09-16 19:38 UTC] @Dimenpsyonal";
 	"Remove settings.OnStartup, settings.OnJoin, and settings.OnSpawn";
+	"Improvement to server core data loading";
 	"(Git/realdint) Fix GetFakePlayer UserId comparisson bug by converting UserId to number (#2140)";
 	"(Git/fxeP1) Allow admins command to show table Group (#2173)";
 	"";
