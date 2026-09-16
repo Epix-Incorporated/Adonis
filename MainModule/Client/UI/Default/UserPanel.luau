@@ -15,10 +15,6 @@ local canEditTables = {
 	CapeList = false;
 	CustomRanks = false;
 
-	OnStartup = true;
-	OnJoin = true;
-	OnSpawn = true;
-
 	Allowed_API_Calls = false;
 	HideScript = false;
 }
