@@ -169,10 +169,6 @@ return function(Vargs, GetEnv)
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
 
-			OnStartup = true;
-			OnSpawn = true;
-			OnJoin = true;
-
 			CustomRanks = true;
 			Ranks = true;
 			Commands = true;
