@@ -1265,7 +1265,13 @@ return function(Vargs, GetEnv)
 		end;
 
 		KeyCodeToName = function(keyVal)
-			local keyCode = Enum.KeyCode:FromValue(tonumber(keyVal))
+			local keyCode: Enum.KeyCode? = nil
+
+			if typeof(keyVal) == "Enum" then
+				keyCode = Enum.KeyCode:FromName(keyVal.Name)
+			elseif tonumber(keyVal) then
+				keyCode = Enum.KeyCode:FromValue(tonumber(keyVal))
+			end
 
 			if keyCode then
 				local name = service.UserInputService:GetStringForKeyCode(keyCode)

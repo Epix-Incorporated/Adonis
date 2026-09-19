@@ -390,7 +390,7 @@ return function(data, env)
 		})
 
 		-- Disable settings tab until permissions are checked
-		gameTab:Disable() 
+		gameTab:Disable()
 
 		if data.Tab then
 			local Tab = string.lower(data.Tab)
@@ -844,7 +844,7 @@ return function(data, env)
 				Position = UDim2.new(1, -140, 0, 105);
 				BackgroundTransparency = 1;
 			})
-			
+
 			dFrame:Add("TextLabel", {
 				Text = "Donate (Perks)";
 				TextXAlignment = "Center";
@@ -1563,7 +1563,7 @@ return function(data, env)
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
 					Entry = "Keybind";
-					Value = Functions.KeyCodeToName(Enum.KeyCode[Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode") or "Unknown"].Value);
+					Value = Functions.KeyCodeToName(Enum.KeyCode:FromName(Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode") or "None"));
 					Function = function(toggle)
 						service.Debounce("CliSettingKeybinder", function()
 							local gotKey, visualName
