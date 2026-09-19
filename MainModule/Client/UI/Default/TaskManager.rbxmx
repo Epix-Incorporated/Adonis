@@ -2676,7 +2676,7 @@ return function(data, env)
 		for index,task in pairs(clientTasks) do
 			local new = Entry:Clone()
 			local frame = new.Frame
-			local status = task:Status()
+			local status = task.R_Status or task.Status
 			new.Parent = cFrame
 			new.Visible = true
 			new.Desc.Value = task.Name
