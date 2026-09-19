@@ -5582,7 +5582,7 @@ return function(Vargs, env)
 
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
+			Commands = {"avataritem", "giveavataritem", "giveavtritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
 				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head", "walkanimation", "walkanim", "runanimation", "runanim", "jumpanimation",
 				"jumpanim", "fallanimation", "fallanim"}; -- Legacy aliases from old commands
 			Args = {"player", "ID"};
@@ -5661,6 +5661,76 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		PersistAvatarItem = {
+			Prefix = Settings.Prefix,
+			Commands = {"persistavataritem", "persistcatalogitem", "persistaccessory", "persisthat", "persisttshirt", "persistshirt", "persistpants", "persistface", "persistanim",
+				"persistjumpanim", "persistfallanimation", "persistfallanim"};
+			Args = {"player", "id", "apply (optional boolean? to instantly apply the item)"};
+			Description = "Persistently save an avatar item to the target player(s)";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string}, data: {})
+				local itemId = tonumber(args[2])
+				if not itemId then
+					error("Invalid asset ID")
+				end
+				local apply = args[3]
+				local shouldApply = apply == "true" or apply == "yes" or apply == "1" or apply == "apply"
+				
+				
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if not Variables.PersistedItems[tostring(v.UserId)] then
+						Variables.PersistedItems[tostring(v.UserId)] = {itemId}
+						continue
+					end
+					
+					if table.find(Variables.PersistedItems[tostring(v.UserId)], itemId) then
+						continue
+					end
+					table.insert(Variables.PersistedItems[tostring(v.UserId)], itemId)
+				end
+				
+				if shouldApply then
+					server.Commands.AvatarItem.Function(plr, args)
+				end
+			end
+		},
+		
+		UnPersistAvatarItem = {
+			Prefix = Settings.Prefix,
+			Commands = {"unpersistavataritem", "unpersistcatalogitem", "unpersistaccessory", "unpersisthat", "unpersisttshirt", "unpersistshirt", "unpersistpants", "unpersistface", "unpersistanim",
+				"unpersistjumpanim", "unpersistfallanimation", "unpersistfallanim"};
+			Args = {"player", "id (or 'all')"};
+			Description = "UnPersist an avatar item from the target player(s)";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				
+				
+				
+				local itemName = args[2]:lower()
+				local itemId = tonumber(itemName)
+				if not itemId and itemName ~= "all"then
+					error("Invalid asset ID")
+				end
+				
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if not Variables.PersistedItems[tostring(v.UserId)] then
+						continue
+					end
+					if itemName == "all" then
+						table.clear(Variables.PersistedItems[tostring(v.UserId)])
+						continue
+					end
+					local index = table.find(Variables.PersistedItems[tostring(v.UserId)], itemId)
+					if not index then
+						continue
+					end
+					table.remove(Variables.PersistedItems[tostring(v.UserId)], index)
+				end
+				
+				
+			end
+		},
 
 		RemoveTShirt = {
 			Prefix = Settings.Prefix;

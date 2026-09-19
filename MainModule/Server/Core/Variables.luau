@@ -268,6 +268,8 @@ return function(Vargs, GetEnv)
 			Health = {};
 			Speed = {};
 		};
+		
+		PersistedItems = {};
 
 		Tags = {};
 	}
