@@ -73,6 +73,7 @@ return {
 	ChatCreateRobloxCommands = false;	-- Whether "/" commands for Roblox should get created in new Chat
 
 	CodeExecution = false;	-- Enables the use of code execution in Adonis. Scripting related (such as :s) and a few other commands require this
+	CodeExecutionUnprompted = false;    -- Allows you to use :s command without yes/no prompt (default is disabled and it will pop up yes/no prompt every time on a new server)
 
 	Notification = true;	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	SongHint = true;		-- Display a hint with the current song name and ID when a song is played via :music
