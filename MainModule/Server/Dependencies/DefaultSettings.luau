@@ -241,6 +241,7 @@ settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (
 settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 settings.BatchKey = "|"				-- :kill me | :ff bob | :explode scel
 settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+settings.FlyKeyCode = "E"			-- Keybind to toggle fly; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 --// Easily add new custom commands below (without needing to create a plugin module)
 --// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)

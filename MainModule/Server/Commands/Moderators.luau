@@ -6057,6 +6057,11 @@ return function(Vargs, env)
 					Value = not args[3] or (args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes"));
 					Parent = scr;
 				})
+				local fKey = service.New("StringValue", {
+					Name = "FlyKey";
+					Value = Settings.FlyKeyCode;
+					Parent = scr;
+				})
 
 				scr.Name = "ADONIS_FLIGHT"
 
@@ -6106,7 +6111,7 @@ return function(Vargs, env)
 				end
                 scr:Destroy()
 
-				Functions.Hint("You are now flying - press E to toggle flight", service.GetPlayers(plr, args[1], {DontError = true}), 10)
+				Functions.Hint("You are now flying - press " .. Settings.FlyKeyCode .. " to toggle flight", service.GetPlayers(plr, args[1], {DontError = true}), 10)
 			end
 		};
 
