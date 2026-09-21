@@ -286,16 +286,6 @@ return function(Vargs, GetEnv)
 			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, false, `{Settings.Prefix}backupmap`)
 		end
 
-		--// Run OnStartup Commands
-		for i,v in Settings.OnStartup do
-			print(`Running startup command {v}`)
-			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, false, v)
-			AddLog("Script", {
-				Text = `Startup: Executed {v}`;
-				Desc = `Executed startup command; {v}`;
-			})
-		end
-
 		--// Check if Shutdownlogs is set and if not then set it
 		if Core.DataStore and not Core.GetData("ShutdownLogs") then
 			Core.SetData("ShutdownLogs", {})
@@ -654,11 +644,19 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
-			if Settings.Console and type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
-				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
-					task.defer(Remote.RefreshGui, p, "Console")
-				else
-					task.defer(Remote.RemoveGui, p, "Console")
+			if type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
+				service.Events.PlayerAdminChanged:Fire(
+					p,
+					{ Level = level, Rank = rank },
+					{ Level = oLevel, Rank = oRank }
+				)
+
+				if Settings.Console then
+					if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
+						task.defer(Remote.RefreshGui, p, "Console")
+					else
+						task.defer(Remote.RemoveGui, p, "Console")
+					end
 				end
 			end
 

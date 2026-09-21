@@ -931,6 +931,8 @@ return function(Vargs, GetEnv)
 					})
 				end
 			end
+			
+			Variables.PersistedItems[tostring(p.UserId)] = nil
 		end;
 
 		FinishLoading = function(p)
@@ -944,15 +946,6 @@ return function(Vargs, GetEnv)
 				Text = string.format("%s finished loading", p.Name);
 				Desc = "Client finished loading";
 			})
-
-			--// Run OnJoin commands
-			for i,v in Settings.OnJoin do
-				TrackTask(`Thread: OnJoin_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
-				AddLog("Script", {
-					Text = `OnJoin: Executed {v}`;
-					Desc = `Executed OnJoin command; {v}`
-				})
-			end
 
 			--// Start keybind listener
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
@@ -1150,15 +1143,6 @@ return function(Vargs, GetEnv)
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p, char, ...)
 
-				--// Run OnSpawn commands
-				for _, v in Settings.OnSpawn do
-					TrackTask(`Thread: OnSpawn_Cmd: {v}`, Admin.RunCommandAsPlayer, false, v, p)
-					AddLog("Script", {
-						Text = `OnSpawn: Executed {v}`;
-						Desc = `Executed OnSpawn command; {v}`;
-					})
-				end
-
 				if
 					server.Commands.Track
 					and char:WaitForChild("Head", 5)
@@ -1181,6 +1165,14 @@ return function(Vargs, GetEnv)
 				local Speed = Variables.Starter.Speed[tostring(p.UserId)]
 				if Speed then
 					Hum.WalkSpeed = Speed
+				end
+				
+				local Items = Variables.PersistedItems[tostring(p.UserId)]
+				if Items then
+					
+					for _,item in Items do
+						server.Commands.AvatarItem.Function(p, {"me", tostring(item)})
+					end
 				end
 			end
 		end;

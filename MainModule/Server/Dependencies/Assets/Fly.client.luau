@@ -181,7 +181,7 @@ function HandleInput(input, isGame, bool)
 				dir.Down = bool
 			elseif input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.DPadUp then
 				dir.Up = bool
-			elseif input.KeyCode == Enum.KeyCode[flyKey.Value] or input.KeyCode == Enum.KeyCode.ButtonL3 then
+			elseif bool and input.KeyCode == Enum.KeyCode[flyKey.Value] or input.KeyCode == Enum.KeyCode.ButtonL3 then
 				Toggle()
 			end
 		end

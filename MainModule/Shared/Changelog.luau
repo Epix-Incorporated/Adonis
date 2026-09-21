@@ -1,10 +1,23 @@
 return {
-	"Version: 281";
+	"Version: 282";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v281 2026-xx-xx xx:xx UTC] @Maintainer";
+	"[v282 2026-xx-xx xx:xx UTC] @Dimenpsyonal";
+	"(Git/TbeyazT) Fix dex (#2160)";
+	"(Git/ffrostfall) Add :velocity command (#2114)";
+	"(Git/SuperCater) Add :persistavataritem command (#2163)";
+	"(Git/wilsontulus) Fix UI errors while parsing invalid KeyCode settings (#2164)";
+	"(Git/tavishadows) Add admin rank changed event (#2167)";
+	"(Git/loadstring1) Fix flight changing once you end sentence with e on textchatservice (#2170)";
+	"(Git/Kanuin) Fix argument syntax for displayname command (#2177)";
+	"(Git/ccuser44) Bugfix + improvements & optimization pack (#2144)";
+	"";
+	"[v281 2026-09-16 19:38 UTC] @Dimenpsyonal";
+	"Remove settings.OnStartup, settings.OnJoin, and settings.OnSpawn";
+	"Improvement to server core data loading";
 	"(Git/realdint) Fix GetFakePlayer UserId comparisson bug by converting UserId to number (#2140)";
+	"(Git/fxeP1) Allow admins command to show table Group (#2173)";
 	"";
 	"[v280 2026-08-06 11:40 UTC] @Dimenpsyonal";
 	"Fix Windows XP theme dropdown colours for readability";
