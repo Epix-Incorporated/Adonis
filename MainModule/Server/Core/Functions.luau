@@ -1522,11 +1522,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		Donor = function(plr)
-			if Admin.CheckDonor(plr) and Settings.DonorCapes then
+			if Settings.DonorCapes then
 				local PlayerData = Core.GetPlayer(plr) or {Donor = {}}
 				local donor = PlayerData.Donor or {}
 
-				if donor and donor.Enabled then
+				if donor and donor.Enabled and Admin.CheckDonor(plr) then
 					local img, color, material
 					if donor and donor.Cape then
 						img, color, material = donor.Cape.Image, donor.Cape.Color, donor.Cape.Material

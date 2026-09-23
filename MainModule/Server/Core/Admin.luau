@@ -363,6 +363,11 @@ return function(Vargs, GetEnv)
 		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
 		AdminLevelCacheTimeout = 30;
 
+		--// How long a negative donor check result will be cached (unless cleared by an in-game purchase)
+		DonorCheckCacheTimeout = 600;
+		NonDonorCache = {};
+		PendingDonorChecks = {};
+
 		CheckSlowMode = function(p: Player)
 			if Admin.SlowMode and Admin.SlowCache[p] and os.time() - Admin.SlowCache[p] < Admin.SlowMode then
 				return true
@@ -889,8 +894,27 @@ return function(Vargs, GetEnv)
 					return true
 				end
 
+				local lastNegative = Admin.NonDonorCache[key]
+				if lastNegative and os.time() - lastNegative < Admin.DonorCheckCacheTimeout then
+					return false
+				end
+
+				--// Wait on an in-progress check instead of querying every product again
+				local waiting = Admin.PendingDonorChecks[key]
+				if waiting then
+					table.insert(waiting, coroutine.running())
+					return coroutine.yield()
+				end
+
+				waiting = {}
+				Admin.PendingDonorChecks[key] = waiting
+
+				local isDonor, reliable = false, true
 				for _, pass in Variables.DonorPass do
-					if p.Parent ~= service.Players then break end
+					if p.Parent ~= service.Players then
+						reliable = false
+						break
+					end
 
 					local ran, ret
 					if type(pass) == "number" then
@@ -900,13 +924,30 @@ return function(Vargs, GetEnv)
 					end
 
 					if ran and ret then
-						Variables.CachedDonors[key] = os.time()
-						return true
+						isDonor = true
+						break
+					elseif ran == false then
+						reliable = false
 					end
 				end
 
-				return false
+				if isDonor then
+					Variables.CachedDonors[key] = os.time()
+				elseif reliable then
+					Admin.NonDonorCache[key] = os.time()
+				end
+
+				Admin.PendingDonorChecks[key] = nil
+				for _, thread in waiting do
+					task.spawn(thread, isDonor)
+				end
+
+				return isDonor
 			end
+		end;
+
+		ClearDonorCheckCache = function(p)
+			Admin.NonDonorCache[tostring(p.UserId)] = nil
 		end;
 
 		CheckBan = function(p)
