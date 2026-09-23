@@ -1112,7 +1112,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		KeyCodeToName = function(keyVal)
-			local keyCode: Enum.KeyCode? = nil
+			local keyCode: Enum.KeyCode? = keyVal
 
 			if typeof(keyVal) == "Enum" then
 				keyCode = Enum.KeyCode:FromName(keyVal.Name)
