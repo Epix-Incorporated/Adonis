@@ -641,6 +641,7 @@ return function(Vargs, env)
 
 				local obj: Model? = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
+					obj:SetAttribute("ADONIS_InsertedBy", plr.Name)
 					table.insert(Variables.InsertedObjects, obj)
 					pcall(obj.MakeJoints, obj)
 					obj:PivotTo(plr.Character:GetPivot())
