@@ -29,7 +29,6 @@ return {
 
 	Theme = "Default";			-- UI theme
 	MobileTheme = "Mobilius";	-- Theme to use on mobile devices; Some UI elements are disabled
-	DefaultTheme = "Default";	-- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 	HiddenThemes = {};			-- Hide themes from the theme selector tab inside the userpanel. Each theme name must be the specific name such as "Mobilius"
 
 	BanMessage = "Banned";				-- Message shown to banned users upon kick
@@ -72,6 +71,7 @@ return {
 	SilentCommandDenials = false;		-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 	OverrideChatCallbacks = true;		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
 	ChatCreateRobloxCommands = false;	-- Whether "/" commands for Roblox should get created in new Chat
+	DefaultTheme = "Default";			-- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 
 	CodeExecution = false;	-- Enables the use of code execution in Adonis. Scripting related (such as :s) and a few other commands require this
 
