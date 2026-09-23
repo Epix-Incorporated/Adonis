@@ -63,7 +63,16 @@ return function(data, env)
 		end
 	})
 
-	local function createPurchaseWindow(id, isAvatarAsset)
+	local function createWarningPrompt()
+		return UI.MakeGui("YesNoPrompt", {
+			Title = "Are you sure?",
+			Question = "You already have donor perks. Additional donations provide no extra benefits."
+		}) == "Yes"
+	end
+
+	local function createPurchaseWindow(id, isAvatarAsset, showWarning)
+		if showWarning and not createWarningPrompt() then return end
+
 		local purchaseWindow = UI.Make("Window", {
 			Name = "Purchase window";
 			Title = `Purchase asset`;
@@ -80,10 +89,10 @@ return function(data, env)
 				AnchorPoint = Vector2.new(0.5, 0);
 				ZIndex = 2;
 				TextScaled = true;
-				Text = "This game does not allow third party purchases. If you would like to purchase, please copy the link below and put it in your browser.";
+				Text = "If you would like to purchase, please copy the link below and put it in your browser.";
 			})
 
-			purchaseWindow:Add("TextBox", {
+			local box = purchaseWindow:Add("TextBox", {
 				Size = UDim2.new(1, -20, 0, 30);
 				Position = UDim2.new(0.5, 0, 1, -10);
 				AnchorPoint = Vector2.new(0.5, 1);
@@ -93,6 +102,24 @@ return function(data, env)
 				TextScaled = true;
 				Text = string.format("https://roblox.com/%s/%d/", if isAvatarAsset then "catalog" else "library", id)
 			})
+
+			local isFocused = false
+
+			box.Focused:Connect(function()
+				isFocused = true
+				box.SelectionStart = 1
+				box.CursorPosition = #box.Text + 1
+			end)
+
+			box.FocusLost:Connect(function()
+				isFocused = false
+			end)
+
+			box:GetPropertyChangedSignal("CursorPosition"):Connect(function()
+				if not isFocused or box.CursorPosition == -1 then return end
+				box.SelectionStart = 1
+				box.CursorPosition = #box.Text + 1
+			end)
 
 			purchaseWindow:Ready()
 
@@ -125,14 +152,8 @@ return function(data, env)
 	end
 
 	local function promptBulkPurchase(id: number, showWarning: boolean?, showSuccess: boolean?)
-		if showWarning then
-			if UI.MakeGui("YesNoPrompt", {
-				Title = "Are you sure?",
-				Question = "You already have donor perks. Additional donations provide no extra benefits."
-			}) ~= "Yes" then
-				return
-			end
-		end
+		if showWarning and not createWarningPrompt() then return end
+
 		local backupWindow, finishEvent
 		finishEvent = service.RbxEvent(service.MarketplaceService.PromptBulkPurchaseFinished, function(p, status, items)
 			if showSuccess and status == Enum.MarketplaceBulkPurchasePromptStatus.Completed then
@@ -153,6 +174,17 @@ return function(data, env)
 		task.delay(1, function()
 			if finishEvent then
 				backupWindow = createPurchaseWindow(id, true)
+			end
+		end)
+	end
+
+	local function setLocalPrice(button, id: number)
+		if not button then return end
+
+		task.spawn(function()
+			local info = service.GetProductInfo(id, Enum.InfoType.Asset)
+			if info and type(info.PriceInRobux) == "number" then
+				button.Text = ` {info.PriceInRobux}`
 			end
 		end)
 	end
@@ -564,7 +596,7 @@ return function(data, env)
 
 			local dStatus = donorTab:Add("TextLabel", {
 				Text = " Donor Status: ";
-				Size = UDim2.new(1, -10, 0, 20);
+				Size = UDim2.new(1, -145, 0, 20);
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 0.25;
 				TextXAlignment = "Left";
@@ -604,7 +636,7 @@ return function(data, env)
 
 			donorTab:Add("TextLabel", {
 				Text = " Donor Cape: ";
-				Size = UDim2.new(1, -10, 0, 20);
+				Size = UDim2.new(1, -145, 0, 20);
 				Position = UDim2.new(0, 5, 0, 25);
 				BackgroundTransparency = 0.8;
 				TextXAlignment = "Left";
@@ -629,7 +661,7 @@ return function(data, env)
 
 			donorTab:Add("TextLabel", {
 				Text = " Cape Color: ";
-				Size = UDim2.new(1, -10, 0, 20);
+				Size = UDim2.new(1, -145, 0, 20);
 				Position = UDim2.new(0, 5, 0, 45);
 				BackgroundTransparency = 0.25;
 				TextXAlignment = "Left";
@@ -662,7 +694,7 @@ return function(data, env)
 
 			donorTab:Add("TextLabel", {
 				Text = " Cape Material: ";
-				Size = UDim2.new(1, -10, 0, 20);
+				Size = UDim2.new(1, -145, 0, 20);
 				Position = UDim2.new(0, 5, 0, 65);
 				BackgroundTransparency = 0.8;
 				TextXAlignment = "Left";
@@ -716,7 +748,7 @@ return function(data, env)
 
 			donorTab:Add("TextLabel", {
 				Text = " Cape Texture: ";
-				Size = UDim2.new(1, -10, 0, 20);
+				Size = UDim2.new(1, -145, 0, 20);
 				Position = UDim2.new(0, 5, 0, 85);
 				BackgroundTransparency = 0.25;
 				TextXAlignment = "Left";
@@ -843,56 +875,126 @@ return function(data, env)
 				TextXAlignment = "Left";
 			})
 
-			local dFrame = donorTab:Add("Frame", {
-				Size = UDim2.new(0, 140, 1, -110);
-				Position = UDim2.new(1, -140, 0, 105);
+			local dFrame = donorTab:Add("ScrollingFrame", {
+				Size = UDim2.new(0, 140, 1, -10);
+				Position = UDim2.new(1, -140, 0, 5);
 				BackgroundTransparency = 1;
+				AutomaticCanvasSize = Enum.AutomaticSize.Y;
 			})
 			
 			dFrame:Add("TextLabel", {
 				Text = "Donate (Perks)";
 				TextXAlignment = "Center";
-				Size = UDim2.new(1, 0, 0, 30);
+				Size = UDim2.new(1, -10, 0, 25);
 				Position = UDim2.new(0, 5, 0, 0);
 				BackgroundTransparency = 1;
+				Font = Enum.Font.SourceSansBold;
 			})
 
-			dFrame:Add("TextButton", {
-				Text = ` 300`;
-				Size = UDim2.new(1, -10, 0, 40);
-				Position = UDim2.new(0, 5, 0, 30);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
-				OnClick = function()
-					promptBulkPurchase(6878510605, playerData.isDonor, true)
-				end
+			dFrame:Add("TextLabel", {
+				Text = "All donations grant the same perks";
+				TextXAlignment = "Center";
+				Size = UDim2.new(1, -10, 0, 30);
+				TextSize = 14;
+				TextWrapped = true;
+				Position = UDim2.new(0, 5, 0, 20);
+				BackgroundTransparency = 1;
+				Font = Enum.Font.SourceSans;
+			})
+			
+			local catalogFrame = dFrame:Add("TextLabel", {
+				Text = "Purchase for less in the Roblox catalog";
+				Size = UDim2.new(1, -10, 0, 70);
+				Position = UDim2.new(0, 5, 0, 55);
+				BackgroundTransparency = 0.25;
+				TextXAlignment = "Center";
+				TextYAlignment = "Top";
+				TextWrapped = true;
+				Children = {
+					{
+						Class = "UIPadding";
+						PaddingTop = UDim.new(0, 5);
+						PaddingLeft = UDim.new(0, 5);
+						PaddingRight = UDim.new(0, 5);
+					},
+					{
+						Class = "TextButton";
+						Name = "Tier1";
+						Text = " 300";
+						Size = UDim2.new(0.5, -2, 0, 25);
+						Position = UDim2.new(0, 0, 0, 35);
+						BackgroundTransparency = 0.5;
+						BackgroundColor3 = Color3.fromRGB(231, 6, 141);
+						OnClick = function()
+							createPurchaseWindow(6878510605, true, playerData.isDonor)
+						end
+					},
+					{
+						Class = "TextButton";
+						Name = "Tier2";
+						Text = " 450";
+						Size = UDim2.new(0.5, -2, 0, 25);
+						Position = UDim2.new(0.5, 2, 0, 35);
+						BackgroundTransparency = 0.5;
+						BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 0.33);
+						OnClick = function()
+							createPurchaseWindow(120289654999943, true, playerData.isDonor)
+						end
+					}
+				}
 			})
 
-			dFrame:Add("TextButton", {
-				Text = ` 500`;
-				Size = UDim2.new(0, 62, 0, 25);
-				Position = UDim2.new(0, 5, 0, 76);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 0.6);
-				OnClick = function()
-					promptBulkPurchase(82180417686588, playerData.isDonor, true)
-				end
+			setLocalPrice(catalogFrame:FindFirstChild("Tier1"), 6878510605)
+			setLocalPrice(catalogFrame:FindFirstChild("Tier2"), 120289654999943)
+			
+			local inGameFrame = dFrame:Add("TextLabel", {
+				Text = "Purchase in-game, get perks instantly";
+				Size = UDim2.new(1, -10, 0, 70);
+				Position = UDim2.new(0, 5, 0, 130);
+				BackgroundTransparency = 0.25;
+				TextXAlignment = "Center";
+				TextYAlignment = "Top";
+				TextWrapped = true;
+				Children = {
+					{
+						Class = "UIPadding";
+						PaddingTop = UDim.new(0, 5);
+						PaddingLeft = UDim.new(0, 5);
+						PaddingRight = UDim.new(0, 5);
+					},
+					{
+						Class = "TextButton";
+						Name = "Tier1";
+						Text = " 600";
+						Size = UDim2.new(0.5, -2, 0, 25);
+						Position = UDim2.new(0, 0, 0, 35);
+						BackgroundTransparency = 0.5;
+						BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 0.66);
+						OnClick = function()
+							promptBulkPurchase(82180417686588, playerData.isDonor, true)
+						end
+					},
+					{
+						Class = "TextButton";
+						Name = "Tier2";
+						Text = " 1000";
+						Size = UDim2.new(0.5, -2, 0, 25);
+						Position = UDim2.new(0.5, 2, 0, 35);
+						BackgroundTransparency = 0.5;
+						BackgroundColor3 = Color3.new(1,0,0);
+						OnClick = function()
+							promptBulkPurchase(113285285080347, playerData.isDonor, true)
+						end
+					}
+				}
 			})
 
-			dFrame:Add("TextButton", {
-				Text = ` 1000`;
-				Size = UDim2.new(0, 62, 0, 25);
-				Position = UDim2.new(0.5, 3, 0, 76);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.fromRGB(231, 6, 141):lerp(Color3.new(1,0,0), 1);
-				OnClick = function()
-					promptBulkPurchase(113285285080347, playerData.isDonor, true)
-				end
-			})
+			setLocalPrice(inGameFrame:FindFirstChild("Tier1"), 82180417686588)
+			setLocalPrice(inGameFrame:FindFirstChild("Tier2"), 113285285080347)
 
 			dFrame:Add("Frame", {
 				Size = UDim2.new(1, -10, 0, 1),
-				Position = UDim2.new(0, 5, 1, -55),
+				Position = UDim2.new(0, 5, 0, 205),
 				BackgroundColor3 = Color3.new(1, 1, 1),
 				BackgroundTransparency = 0.5;
 			})
@@ -900,15 +1002,16 @@ return function(data, env)
 			dFrame:Add("TextLabel", {
 				Text = "Other (No Perks)";
 				TextXAlignment = "Center";
-				Size = UDim2.new(1, 0, 0, 30);
-				Position = UDim2.new(0, 5, 1, -55);
+				Size = UDim2.new(1, -10, 0, 30);
+				Position = UDim2.new(0, 5, 0, 210);
 				BackgroundTransparency = 1;
+				Font = Enum.Font.SourceSansBold;
 			})
 
-			dFrame:Add("TextButton", {
-				Text = ` 50`;
+			local noPerks1 = dFrame:Add("TextButton", {
+				Text = ` 75`;
 				Size = UDim2.new(0, 62, 0, 25);
-				Position = UDim2.new(0, 5, 1, -25);
+				Position = UDim2.new(0, 5, 0, 240);
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
@@ -916,16 +1019,19 @@ return function(data, env)
 				end
 			})
 
-			dFrame:Add("TextButton", {
-				Text = ` 100`;
+			local noPerks2 = dFrame:Add("TextButton", {
+				Text = ` 150`;
 				Size = UDim2.new(0, 62, 0, 25);
-				Position = UDim2.new(0.5, 3, 1, -25);
+				Position = UDim2.new(0.5, 3, 0, 240);
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
 				OnClick = function()
 					promptBulkPurchase(75165550059686)
 				end
 			})
+
+			setLocalPrice(noPerks1, 86164337425437)
+			setLocalPrice(noPerks2, 75165550059686)
 		end
 
 
