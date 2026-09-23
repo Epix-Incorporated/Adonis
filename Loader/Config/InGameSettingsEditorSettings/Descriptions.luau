@@ -105,6 +105,8 @@ return {
 	HelpButton = [[ Shows a little help button in the bottom right corner ]];
 	HelpButtonImage = [[ Change this to change the help button's image ]];
 
+	LegacyCommandList = [[ If true, :cmds will show the old plain command list instead of the modern command list UI ]];
+
 	AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionality ]];
 	Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]];
 	CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]];

@@ -9,6 +9,7 @@ return {
 	SplitKey = " ";				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 	BatchKey = "|";				-- :kill me | :ff bob | :explode scel
 	ConsoleKeyCode = "Quote";	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+	FlyKeyCode = "E";			-- Keybind to toggle fly; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 	HideScript = true;	-- When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module; Disable if your game uses AssetService:SavePlaceAsync()
 
@@ -89,6 +90,8 @@ return {
 	HelpSystem = true;	-- Allows players to call admins for help using !help
 	HelpButton = true;	-- Shows a little help button in the bottom right corner.
 	HelpButtonImage = "rbxassetid://357249130";	-- Sets the image used for the Adonis help button above.
+
+	LegacyCommandList = false;	-- If true, :cmds will show the old plain command list instead of the modern command list UI
 
 	HttpWait = 60;	-- How long things that use the HttpService will wait before updating again
 };

@@ -479,7 +479,7 @@ return function(Vargs, GetEnv)
 				local pDat = {
 					Player = opts.Player or p;
 					Level = opts.AdminLevel or Admin.GetLevel(p);
-					isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+					isDonor = opts.IsDonor or ((Settings.DonorCommands or command.AllowDonors) and Admin.CheckDonor(p));
 				}
 
 				if opts.isSystem or p == "SYSTEM" then
@@ -843,6 +843,7 @@ return function(Vargs, GetEnv)
 			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
+					Admin.ClearDonorCheckCache(p)
 				end
 			end)
 
@@ -931,6 +932,8 @@ return function(Vargs, GetEnv)
 					})
 				end
 			end
+			
+			Variables.PersistedItems[tostring(p.UserId)] = nil
 		end;
 
 		FinishLoading = function(p)
@@ -1015,7 +1018,7 @@ return function(Vargs, GetEnv)
 				if level > 0 then
 					if Settings.Notification then
 						task.wait(1)
-						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}cmds")`))
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.UI.Make("CommandList")`))
 
 						if #server.Messages > 0 then
 							for _, message in server.Messages do
@@ -1163,6 +1166,14 @@ return function(Vargs, GetEnv)
 				local Speed = Variables.Starter.Speed[tostring(p.UserId)]
 				if Speed then
 					Hum.WalkSpeed = Speed
+				end
+				
+				local Items = Variables.PersistedItems[tostring(p.UserId)]
+				if Items then
+					
+					for _,item in Items do
+						server.Commands.AvatarItem.Function(p, {"me", tostring(item)})
+					end
 				end
 			end
 		end;

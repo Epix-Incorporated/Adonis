@@ -22,6 +22,7 @@ return function(Vargs, GetEnv)
 			Commands = {"rebootadonis", "reloadadonis"};
 			Args = {};
 			Description = "Attempts to force Adonis to reload";
+			Category = "Developer";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local rebootHandler = server.Deps.RebootHandler:Clone();
@@ -48,6 +49,7 @@ return function(Vargs, GetEnv)
 		Commands = {"debugusage"};
 		Args = {};
 		Description = "Shows you how to use some syntax related things";
+		Category = "Developer";
 		Hidden = true;
 		AdminLevel = "Players";
 		Function = function(plr: Player, args: {string})
@@ -77,6 +79,7 @@ return function(Vargs, GetEnv)
 		Commands = {"debugcmds", "debugcommands", "debugcmdlist"};
 		Args = {};
 		Description = "Lists all available debug commands regardless of hidden status";
+		Category = "Developer";
 		Hidden = true;
 		AdminLevel = "Players";
 		Function = function(plr: Player, args: {string})
@@ -119,6 +122,7 @@ return function(Vargs, GetEnv)
 		NoFilter = true;
 		Debug = true;
 		Description = "Test out Roblox's text filtering on a player";
+		Category = "Developer";
 		AdminLevel = "Moderators";
 		Function = function(plr: Player, args: {string})
 			assert(args[1], "Missing player name")
@@ -143,6 +147,7 @@ return function(Vargs, GetEnv)
 		Commands = {"debugadonisenvscript"};
 		Args = {};
 		Description = "Provides a script in a notepad to you to copy and paste into the studio command bar or developer console to access the Adonis Env";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
@@ -245,6 +250,7 @@ local service = wrappedEnv.Service
 		Commands = {"debugtesterror"};
 		Args = {"optional type (error/assert)", "optional message"};
 		Description = "Test Error";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
@@ -268,6 +274,7 @@ local service = wrappedEnv.Service
 		Commands = {"debugtestbiglist"};
 		Args = {};
 		Description = "Test Big List";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		AdminLevel = "Admins";
@@ -309,6 +316,7 @@ local service = wrappedEnv.Service
 		Commands = {"debugtestget"};
 		Args = {};
 		Description = "Remote Test";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		AdminLevel = "Creators";
@@ -372,6 +380,7 @@ local service = wrappedEnv.Service
 		Commands = {"debugloadstring"};
 		Args = {"code";};
 		Description = "DEBUG LOADSTRING";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
@@ -401,6 +410,7 @@ local service = wrappedEnv.Service
 		Commands = {"debuganti", "debuganticheat", "debugcheat", "debugantiexploit", "debugexploit", "debugantihack", "debughack"};
 		Args = {"player", "action", "info"};
 		Description = "Allows you to make a mock anti cheat detection";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
@@ -417,6 +427,7 @@ local service = wrappedEnv.Service
 		Commands = {"debugdonor", "debugadddonor", "debugsetdonor", "debuggetdoor"};
 		Args = {"player", "useids"};
 		Description = "Allows you to temporarily add donors";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
@@ -435,6 +446,7 @@ local service = wrappedEnv.Service
 		Commands = {"debugremovedonor", "debugdeletedonor", "debugunsetdonor", "debugantidonor"};
 		Args = {"player", "useids"};
 		Description = "Allows you to temporarily remove donors";
+		Category = "Developer";
 		Hidden = true;
 		Debug = true;
 		NoFilter = true;
@@ -443,7 +455,9 @@ local service = wrappedEnv.Service
 			local useIds = args[2] and string.lower(args[2]) == "true"
 
 			for _, v in useIds and string.split(args[1], ",") or service.GetPlayers(plr, args[1]) do
-				Variables.CachedDonors[tostring(not useIds and v.UserId or tonumber(v))] = nil
+				local key = tostring(not useIds and v.UserId or tonumber(v))
+				Variables.CachedDonors[key] = nil
+				Admin.NonDonorCache[key] = nil
 			end
 		end
 	};

@@ -241,6 +241,7 @@ settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (
 settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 settings.BatchKey = "|"				-- :kill me | :ff bob | :explode scel
 settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+settings.FlyKeyCode = "E"			-- Keybind to toggle fly; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 --// Easily add new custom commands below (without needing to create a plugin module)
 --// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)
@@ -315,6 +316,8 @@ settings.Console_AdminsOnly = false -- If true, only admins will be able to acce
 settings.HelpSystem = true		-- Allows players to call admins for help using !help
 settings.HelpButton = true		-- Shows a little help button in the bottom right corner.
 settings.HelpButtonImage = "rbxassetid://357249130" -- Sets the image used for the Adonis help button above.
+
+settings.LegacyCommandList = false -- If true, :cmds will show the old plain command list instead of the new command list UI
 
 
 --------------------
@@ -492,6 +495,8 @@ descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
 descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
+descs.LegacyCommandList = [[ If true, :cmds will show the old plain command list instead of the new command list UI ]]
+
 descs.AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionality ]]
 descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
 descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
@@ -595,6 +600,8 @@ order = {
 	"HelpSystem";
 	"HelpButton";
 	"HelpButtonImage";
+	" ";
+	"LegacyCommandList";
 	" ";
 	"DonorCommands";
 	"DonorCapes";
