@@ -3,7 +3,8 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v282 2026-xx-xx xx:xx UTC] @Dimenpsyonal";
+	"[v282 2026-09-23 12:08 UTC] @Dimenpsyonal";
+	"(Git/joritochip) Revamp command list (#2134)";
 	"(Git/joritochip) Modify donation panel (#2179)";
 	"(Git/TbeyazT) Fix dex (#2160)";
 	"(Git/ffrostfall) Add :velocity command (#2114)";
