@@ -22,28 +22,6 @@ return function(Vargs, GetEnv)
 		end
 	end
 
-	-- // Grant donor status on in-game purchases without re-querying MarketplaceService
-	service.RbxEvent(service.MarketplaceService.PromptBulkPurchaseFinished, function(p, status, results)
-		if status ~= Enum.MarketplaceBulkPurchasePromptStatus.Completed then return end
-
-		if results and results.Items then
-			for _, item in results.Items do
-				if table.find(Variables.DonorPass, tostring(item.id)) then
-					Variables.CachedDonors[tostring(p.UserId)] = os.time()
-					break
-				end
-			end
-		end
-		Admin.ClearDonorCheckCache(p)
-	end)
-
-	service.RbxEvent(service.MarketplaceService.PromptGamePassPurchaseFinished, function(p, gamepassId, wasPurchased)
-		if wasPurchased and table.find(Variables.DonorPass, gamepassId) then
-			Variables.CachedDonors[tostring(p.UserId)] = os.time()
-			Admin.ClearDonorCheckCache(p)
-		end
-	end)
-
 	-- // Backwards compatibility
 	local Pcall = server.Pcall
 	local function cPcall(func, ...)

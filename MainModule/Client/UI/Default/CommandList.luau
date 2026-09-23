@@ -100,7 +100,11 @@ return function(data, env)
 	end
 
 	local function escapeRichText(str)
-		return (string.gsub(str, "[&<>]", {["&"] = "&amp;", ["<"] = "&lt;", [">"] = "&gt;"}))
+		return string.gsub(str, "[&<>]", {
+			["&"] = "&amp;",
+			["<"] = "&lt;",
+			[">"] = "&gt;",
+		})
 	end
 
 	local function renderCommandDetailsRow(parent, label, value)
@@ -436,12 +440,11 @@ return function(data, env)
 					end
 				end
 			end
-
 			for i, command in group do
 				local str = escapeRichText(command.PrimaryAlias)
-				local argStr = "";
-				for _,v in (command.Args or command.Arguments) do
-					argStr ..= `  &lt;{v}&gt;`
+				local argStr = ""
+				for _, v in (command.Args or command.Arguments) do
+					argStr ..= `  {escapeRichText("<" .. v .. ">")}`
 				end
 				str ..= `<font color="rgb(150,150,150)">{argStr}</font>`
 				local commandLabel = frame:Add("TextButton", {

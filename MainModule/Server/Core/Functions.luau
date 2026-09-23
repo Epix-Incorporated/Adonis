@@ -464,7 +464,6 @@ return function(Vargs, GetEnv)
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
 				CharacterAppearanceId = options.UserId or 0;
-				CanLoadCharacterAppearence = service.StarterPlayer.LoadPlayerAppearance;
 				FollowUserId = 0;
 				ReplicationFocus = nil;
 				Team = nil;

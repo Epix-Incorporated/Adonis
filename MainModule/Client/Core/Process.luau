@@ -62,6 +62,7 @@ return function(Vargs, GetEnv)
 		service.Player.CharacterAdded:Connect(service.Threads.NewEventTask("Event: CharacterAdded", Process.CharacterAdded))
 		service.LogService.MessageOut:Connect(Process.LogService) --service.Threads.NewEventTask("EVENT:MessageOut",client.Process.LogService,60))
 		service.ScriptContext.Error:Connect(Process.ErrorMessage) --service.Threads.NewEventTask("EVENT:ErrorMessage",client.Process.ErrorMessage,60))
+		service.MarketplaceService.PromptBulkPurchaseFinished:Connect(service.EventTask("Event: BulkPurchaseFinished", Process.BulkPurchaseFinished))
 
 		--// Get RateLimits
 		Process.RateLimits = Remote.Get("RateLimits") or Process.RateLimits;
@@ -173,6 +174,12 @@ return function(Vargs, GetEnv)
 			end
 
 			service.Events.CharacterRemoving:Fire()
+		end;
+
+		BulkPurchaseFinished = function(p, status)
+			if status == Enum.MarketplaceBulkPurchasePromptStatus.Completed then
+				Remote.Send("BulkPurchaseFinished")
+			end
 		end;
 
 		HandleTextChatCommands = function()

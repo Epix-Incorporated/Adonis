@@ -95,6 +95,7 @@ return function(Vargs, GetEnv)
 		--// Events
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
+		service.RbxEvent(service.MarketplaceService.PromptGamePassPurchaseFinished, service.EventTask("GamePassPurchaseFinished", Process.GamePassPurchaseFinished))
 
 		task.spawn(function()
 			local oldVer = tonumber(Core.GetData("VersionNumber"))
@@ -1226,10 +1227,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		--[[
-		PlayerTeleported = function(p,data)
-
+		GamePassPurchaseFinished = function(p, gamepassId, wasPurchased)
+			if wasPurchased and table.find(Variables.DonorPass, gamepassId) then
+				Variables.CachedDonors[tostring(p.UserId)] = os.time()
+				Admin.ClearDonorCheckCache(p)
+			end
 		end;
-		]]
 	};
 end

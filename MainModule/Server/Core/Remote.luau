@@ -1182,6 +1182,10 @@ return function(Vargs, GetEnv)
 				end
 				service.MarketplaceService:PromptBulkPurchase(p, lineItems, {})
 			end;
+
+			BulkPurchaseFinished = function(p: Player, args: {[number]: any})
+				Admin.ClearDonorCheckCache(p)
+			end;
 		};
 
 		NewSession = function(sessionType: string)
