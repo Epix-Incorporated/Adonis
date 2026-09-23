@@ -212,6 +212,7 @@
 		Commands = {"dexnew";"dexnewexplorer";"newdex";"dex";"dexexplorer"};
 		Args = {};	--// kept for backwards compatibility
 		Description = "Lets you explore the game using new Dex [Credits to LorekeeperZinnia]";
+		Category = "Developer";
 		AdminLevel = 300;
 		Function = function(plr, args)
 			ServerNewDex.Authorized[plr] = {

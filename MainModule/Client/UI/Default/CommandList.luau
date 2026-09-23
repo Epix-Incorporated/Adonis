@@ -19,6 +19,12 @@ return function(data, env)
 
 	local aliasGroup = {}
 
+	local CategoryOrder = {
+		"General", "Information", "Moderation", "Ranks", "Messages", "Teleportation",
+		"Character", "Appearance", "Fun", "Screen Effects", "Tools", "Teams & Stats",
+		"World", "Audio", "Camera & Spectating", "Server", "Logs", "Developer"
+	}
+
 	local cmdData = Remote.Get("CommandListData")
 	if not cmdData then
 		error("Failed to get command list data")
@@ -271,6 +277,13 @@ return function(data, env)
 				local av = if a.Key == "Donors" then 0.5 else a.Key
 				local bv = if b.Key == "Donors" then 0.5 else b.Key
 				return av < bv
+			end
+			if groupBy == "Category" then
+				local ai = table.find(CategoryOrder, a.Key) or math.huge
+				local bi = table.find(CategoryOrder, b.Key) or math.huge
+				if ai ~= bi then
+					return ai < bi
+				end
 			end
 			return tostring(a.Key) < tostring(b.Key)
 		end)
