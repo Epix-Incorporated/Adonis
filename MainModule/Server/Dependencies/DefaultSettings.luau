@@ -317,6 +317,8 @@ settings.HelpSystem = true		-- Allows players to call admins for help using !hel
 settings.HelpButton = true		-- Shows a little help button in the bottom right corner.
 settings.HelpButtonImage = "rbxassetid://357249130" -- Sets the image used for the Adonis help button above.
 
+settings.LegacyCommandList = false -- If true, :cmds will show the old plain command list instead of the new command list UI
+
 
 --------------------
 -- DONOR SETTINGS --
@@ -493,6 +495,8 @@ descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
 descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
+descs.LegacyCommandList = [[ If true, :cmds will show the old plain command list instead of the new command list UI ]]
+
 descs.AllowClientAntiExploit = [[ Enables client-sided anti-exploit functionality ]]
 descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
 descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
@@ -596,6 +600,8 @@ order = {
 	"HelpSystem";
 	"HelpButton";
 	"HelpButtonImage";
+	" ";
+	"LegacyCommandList";
 	" ";
 	"DonorCommands";
 	"DonorCapes";

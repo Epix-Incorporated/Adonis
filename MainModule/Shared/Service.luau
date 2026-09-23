@@ -1019,38 +1019,65 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return `{num < 0 and "-" or ""}{table.concat(newInt):reverse()}{dec and `.{dec}` or ""}`
 		end;
 
-		GetProductInfo = function(assetId, infoType)
+		GetProductInfo = function(assetId: number, infoType: Enum.InfoType?)
 			assetId = tonumber(assetId) or 0
 			infoType = infoType or Enum.InfoType.Asset
 
-			if assetId > 0 then
-				local cache = assetInfoCache[`{assetId}-{infoType}`]
+			if assetId <= 0 then return end
 
-				if not cache then
-					cache = {
-						results = {
-							Created = false;
-						};
-						lastUpdated = -math.huge;
-					}
-					assetInfoCache[`{assetId}-{infoType}`] = cache
-				end
+			local cacheIndex = `{assetId}-{infoType.Value}`
+			local currentCache = assetInfoCache[cacheIndex]
 
-				local canUpdateCache = not cache.lastUpdated or os.clock()-cache.lastUpdated > 120
-
-				if canUpdateCache then
-					local suc,info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId, infoType)
-
-					if suc and type(info) == "table" then
-						info.Created = true
-						cache.results = info
-					else
-						cache.results.Created = false
-					end
-				end
-
-				return table.clone(cache.results)
+			if currentCache and os.clock() - currentCache.lastUpdated < 120 then 
+				return table.clone(assetInfoCache[cacheIndex].results)
 			end
+
+			local cacheTab = {
+				results = {
+					Created = false;
+				};
+				lastUpdated = os.clock();
+			}
+
+			local suc, info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId, infoType)
+
+			if suc and type(info) == "table" then
+				info.Created = true
+				cacheTab.results = info
+				assetInfoCache[cacheIndex] = cacheTab
+			end
+
+			return table.clone(cacheTab.results)
+		end;
+
+		GetSubscriptionInfo = function(subscriptionId: string)
+			if server then error("Cannot get subscription info on server") end
+
+			if not subscriptionId then return end
+
+			local cacheIndex = `{subscriptionId}-{Enum.InfoType.Subscription.Value}`
+			local currentCache = assetInfoCache[cacheIndex]
+
+			if currentCache and os.clock() - currentCache.lastUpdated < 120 then 
+				return table.clone(assetInfoCache[cacheIndex].results)
+			end
+
+			local cacheTab = {
+				results = {
+					Created = false;
+				};
+				lastUpdated = os.clock();
+			}
+
+			local suc, info = pcall(service.MarketplaceService.GetSubscriptionProductInfoAsync, service.MarketplaceService, subscriptionId)
+
+			if suc and type(info) == "table" then
+				info.Created = true
+				cacheTab.results = info
+				assetInfoCache[cacheIndex] = cacheTab
+			end
+
+			return table.clone(cacheTab.results)
 		end;
 
 		CheckPassOwnership = function(userId, gamepassId)

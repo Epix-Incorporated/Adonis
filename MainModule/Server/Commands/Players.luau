@@ -16,59 +16,10 @@ return function(Vargs, env)
 			Commands = {"cmds", "commands", "cmdlist"};
 			Args = {};
 			Description = "Lists all available commands";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local tab = {}
-				local cmdCount = 0
-
-				for _, cmd in Admin.SearchCommands(plr, "all") do
-					local cmdAliases = table.create(#cmd.Commands)
-
-					if cmd.Hidden or cmd.Disabled then
-						continue
-					end
-
-					for _,alias in cmd.Commands do
-						if #cmdAliases >= 6 and (#cmd.Commands - #cmdAliases) ~= 0 then
-							table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)
-							break
-						end
-
-						table.insert(cmdAliases, alias)
-					end
-
-					table.remove(cmdAliases, 1)
-
-					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
-					table.insert(tab, {
-						Text = Admin.FormatCommand(cmd),
-						Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
-						Filter = permissionDesc
-					})
-					cmdCount += 1
-				end
-
-				for alias, command in Core.GetPlayer(plr).Aliases or {} do
-					table.insert(tab, {
-						Text = alias,
-						Desc = `[User Alias] {command}`,
-						Filter = command
-					})
-					cmdCount += 1
-				end
-
-				table.sort(tab, function(a, b) return a.Text < b.Text end)
-
-				Remote.MakeGui(plr, "List", {
-					Title = "Commands";
-					Table = tab;
-					TitleButtons = {
-						{
-							Text = "?";
-							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`)
-						}
-					};
-				})
+				Remote.MakeGui(plr, "CommandList")
 			end
 		};
 
@@ -77,6 +28,7 @@ return function(Vargs, env)
 			Commands = {"cmdinfo", "commandinfo", "cmddetails", "commanddetails"};
 			Args = {"command"};
 			Description = "Shows you information about a specific command";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "No command provided")
@@ -125,8 +77,9 @@ return function(Vargs, env)
 		Notepad = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notepad", "stickynote"};
-			Args = {"text (optional)"};
+			Args = {"text?"};
 			Description = "Opens a textbox window for you to type into";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Notepad", {Text = args[1]})
@@ -138,6 +91,7 @@ return function(Vargs, env)
 			Commands = {"paint", "canvas", "draw"};
 			Args = {};
 			Description = "Opens a canvas window for you to draw on";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Paint", {})
@@ -149,6 +103,7 @@ return function(Vargs, env)
 			Commands = {"example"};
 			Args = {};
 			Description = "Shows you the command prefix using the :cmds command";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Functions.Hint(`{if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix}cmds`, {plr})
@@ -158,9 +113,10 @@ return function(Vargs, env)
 		NotifyMe = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifyme"};
-			Args = {"time (in seconds) or inf", "message"};
+			Args = {"seconds/inf", "text"};
 			Hidden = true;
 			Description = "Sends yourself a notification";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing time amount")
@@ -179,6 +135,7 @@ return function(Vargs, env)
 			Commands = {"notifications", "comms", "nc", "commspanel"};
 			Args = {};
 			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CommsPanel")
@@ -188,8 +145,9 @@ return function(Vargs, env)
 		RandomNum = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"rand", "random", "randnum", "dice"};
-			Args = {"num m", "num n"};
+			Args = {"min", "max"};
 			Description = "Generates a number using Lua's math.random";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {any})
 				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
@@ -211,6 +169,7 @@ return function(Vargs, env)
 			Commands = {"brickcolors", "colors", "colorlist"};
 			Args = {};
 			Description = "Shows you a list of Roblox BrickColors for reference";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local children = {
@@ -264,6 +223,7 @@ return function(Vargs, env)
 			Commands = {"materials", "materiallist", "mats"};
 			Args = {};
 			Description = "Shows you a list of Roblox materials for reference";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local mats = Enum.Material:GetEnumItems()
@@ -279,6 +239,7 @@ return function(Vargs, env)
 			Commands = {"client", "clientsettings", "playersettings"};
 			Args = {};
 			Description = "Opens the client settings panel";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Client"})
@@ -290,6 +251,7 @@ return function(Vargs, env)
 			Commands = {"donate", "change", "changecape", "donorperks"};
 			Args = {};
 			Description = "Opens the donation panel";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Donate"})
@@ -301,6 +263,7 @@ return function(Vargs, env)
 			Commands = {"getscript", "getadonis"};
 			Args = {};
 			Description = "Prompts you to take a copy of the script";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				service.MarketPlace:PromptPurchase(plr, Core.LoaderID)
@@ -312,6 +275,7 @@ return function(Vargs, env)
 			Commands = {"cstats", "clientperformance", "clientperformanceststs", "clientstats", "ping", "latency", "fps","framespersecond"};
 			Args = {};
 			Description = "Shows you your client performance stats";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "PerfStats")
@@ -323,6 +287,7 @@ return function(Vargs, env)
 			Commands = {"serverspeed", "serverping", "serverfps", "serverlag", "tps"};
 			Args = {};
 			Description = "Shows you the FPS (speed) of the server";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Functions.Hint(`The server FPS is {math.round(service.Workspace:GetRealPhysicsFPS())}`, {plr})
@@ -332,8 +297,9 @@ return function(Vargs, env)
 		Donors = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"donors", "donorlist", "donatorlist", "donators"};
-			Args = {"autoupdate? (default: true)"};
+			Args = {"autoupdate?"};
 			Description = "Shows a list of Adonis donators who are currently in the server";
+			Category = "Information";
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
 				local tab = {}
@@ -362,6 +328,7 @@ return function(Vargs, env)
 			Commands = {"help", "requesthelp", "gethelp", "lifealert", "sos"};
 			Args = {"reason"};
 			Description = "Calls admins for help";
+			Category = "General";
 			Filter = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -439,6 +406,7 @@ return function(Vargs, env)
 			Commands = {"rejoin"};
 			Args = {};
 			Description = "Makes you rejoin the server";
+			Category = "General";
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -454,6 +422,7 @@ return function(Vargs, env)
 			Commands = {"credit", "credits"};
 			Args = {};
 			Description = "Shows you Adonis development credits";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Credits")
@@ -465,6 +434,7 @@ return function(Vargs, env)
 			Commands = {"changelog", "changes", "updates", "version"};
 			Args = {};
 			Description = "Shows you the script's changelog";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
@@ -482,6 +452,7 @@ return function(Vargs, env)
 			Commands = {"quote", "inspiration", "randomquote"};
 			Args = {};
 			Description = "Shows you a random quote";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local quotes = require(Deps.Assets.Quotes)
@@ -494,6 +465,7 @@ return function(Vargs, env)
 			Commands = {"usage", "usermanual"};
 			Args = {};
 			Description = "Shows you how to use some syntax related things";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local Prefix = if type(Settings.Prefix) == "table" then Settings.Prefix[1] else Settings.Prefix
@@ -561,6 +533,7 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = true;
 			Description = "Backup command for opening the userpanel window";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
@@ -570,9 +543,10 @@ return function(Vargs, env)
 		Theme = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"theme", "usertheme"};
-			Args = {"theme name (leave blank to reset to default)"};
+			Args = {"name?"};
 			Hidden = true;
 			Description = "Changes the Adonis client UI theme";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local playerData = Core.GetPlayer(plr)
@@ -595,6 +569,7 @@ return function(Vargs, env)
 			Commands = {"info", "about", "userpanel", "script", "scriptinfo"};
 			Args = {};
 			Description = "Shows info about the admin system (Adonis)";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
@@ -606,6 +581,7 @@ return function(Vargs, env)
 			Commands = {"aliases", "addalias", "removealias", "newalias"};
 			Args = {};
 			Description = "Opens the alias manager";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Aliases";})
@@ -617,6 +593,7 @@ return function(Vargs, env)
 			Commands = {"keybinds", "binds", "bind", "keybind", "clearbinds", "removebind"};
 			Args = {};
 			Description = "Opens the keybind manager";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "KeyBinds";})
@@ -628,6 +605,7 @@ return function(Vargs, env)
 			Commands = {"invite", "invitefriends"};
 			Args = {};
 			Description = "Invite your friends into the game";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				service.SocialService:PromptGameInvite(plr)
@@ -639,6 +617,7 @@ return function(Vargs, env)
 			Commands = {"onlinefriends", "friendsonline", "friends"};
 			Args = {};
 			Description = "Shows a list of your friends who are currently online";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Friends")
@@ -650,6 +629,7 @@ return function(Vargs, env)
 			Commands = {"blockedusers", "blockedplayers", "blocklist"};
 			Args = {};
 			Description = "Shows a list of people you've blocked on Roblox";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "BlockedUsers")
@@ -661,6 +641,7 @@ return function(Vargs, env)
 			Commands = {"getplus", "purchaseplus", "robloxplus", "getpremium", "purchasepremium", "robloxpremium"};
 			Args = {};
 			Description = "Prompts you to purchase Roblox Plus";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				service.MarketplaceService:PromptRobloxSubscriptionPurchase(plr)
@@ -672,6 +653,7 @@ return function(Vargs, env)
 			Commands = {"inspectavatar", "avatarinspect", "viewavatar", "examineavatar"};
 			Args = {"player"};
 			Description = "Opens the Roblox avatar inspect menu for the specified player";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
@@ -687,6 +669,7 @@ return function(Vargs, env)
 			Commands = {"devconsole", "developerconsole", "opendevconsole"};
 			Args = {};
 			Description = "Opens the Roblox developer console";
+			Category = "Developer";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.Send(plr, "Function", "SetCore", "DevConsoleVisible", true)
@@ -698,6 +681,7 @@ return function(Vargs, env)
 			Commands = {"pnum", "numplayers", "playercount"};
 			Args = {};
 			Description = "Tells you how many players are in the server";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Functions.Hint(`There are {#service.Players:GetPlayers()} player(s)`, {plr})
@@ -709,6 +693,7 @@ return function(Vargs, env)
 			Commands = {"timedate", "date", "time"};
 			Args = {};
 			Description = "Shows the current time and date.";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player)
 				local now = os.time()
@@ -728,8 +713,9 @@ return function(Vargs, env)
 		PersonalCountdown = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"countdown", "timer", "cd"};
-			Args = {"time (in seconds)"};
+			Args = {"seconds"};
 			Description = "Makes a countdown on your screen";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
@@ -746,6 +732,7 @@ return function(Vargs, env)
 			Commands = {"stopwatch"};
 			Args = {};
 			Description = "Makes a stopwatch on your screen";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Stopwatch")
@@ -757,6 +744,7 @@ return function(Vargs, env)
 			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
 			Args = {"player"};
 			Description = "Shows comphrehensive information about a player";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
@@ -833,6 +821,7 @@ return function(Vargs, env)
 			Commands = {"serverinfo", "server", "serverdetails", "gameinfo", "gamedetails"};
 			Args = {};
 			Description = "Shows you details about the current server";
+			Category = "Information";
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
 				local donorList = {}
@@ -909,6 +898,7 @@ return function(Vargs, env)
 			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
 			Args = {"soundId?"};
 			Description = "Opens the audio player";
+			Category = "Audio";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Music", {
@@ -921,8 +911,9 @@ return function(Vargs, env)
 		BuyItem = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"buyitem", "buyasset"};
-			Args = {"id"};
+			Args = {"itemId"};
 			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local assetId = assert(tonumber(args[1]), "Missing asset ID (argument #1)")
@@ -939,6 +930,7 @@ return function(Vargs, env)
 			Commands = {"coordinates", "coords", "position"};
 			Args = {};
 			Description = "Shows your current position in the game world";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Coords")
@@ -950,6 +942,7 @@ return function(Vargs, env)
 			Commands = {"vel", "velocity"};
 			Args = {};
 			Description = "Shows your current velocity";
+			Category = "Information";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Velocity")
@@ -959,8 +952,9 @@ return function(Vargs, env)
 		Wait = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"wait"};
-			Args = {"time"};
+			Args = {"seconds"};
 			Description = "Waits for the desired amount of time in seconds. Only works with batch commands";
+			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				task.wait(math.clamp(tonumber(args[1]) or 0, 0, 600))

@@ -181,6 +181,7 @@ return function(Vargs, GetEnv)
 		Commands = {"trellobans", "trellobanlist", "syncedtrellobans", "showtrellobans"};
 		Args = {};
 		Description = "Shows bans synced from Trello.";
+		Category = "Moderation";
 		TrelloRequired = true;
 		AdminLevel = "Moderators";
 		ListUpdater = function(plr: Player)
@@ -216,6 +217,7 @@ return function(Vargs, GetEnv)
 		Commands = {"trelloban"};
 		Args = {"player/user", "reason"};
 		Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
+		Category = "Moderation";
 		Filter = true;
 		CrossServerDenied = true;
 		TrelloRequired = true;
@@ -261,6 +263,7 @@ return function(Vargs, GetEnv)
 		Commands = {"makelist", "newlist", "newtrellolist", "maketrellolist"};
 		Args = {"name"};
 		Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
+		Category = "Developer";
 		TrelloRequired = true;
 		AdminLevel = "HeadAdmins";
 		Function = function(plr: Player, args: {string})
@@ -277,6 +280,7 @@ return function(Vargs, GetEnv)
 		Commands = {"viewtrellolist", "viewlist"};
 		Args = {"name"};
 		Description = "Views the specified Trello list from the primary board set in Settings.";
+		Category = "Developer";
 		TrelloRequired = true;
 		AdminLevel = "HeadAdmins";
 		Function = function(plr: Player, args: {string})
@@ -298,6 +302,7 @@ return function(Vargs, GetEnv)
 		Commands = {"makecard", "maketrellocard", "createcard"};
 		Args = {};
 		Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
+		Category = "Developer";
 		TrelloRequired = true;
 		AdminLevel = "HeadAdmins";
 		Function = function(plr: Player, args: {string})

@@ -14,6 +14,7 @@ return function(Vargs, env)
 			Commands = {"uncape", "removedonorcape"};
 			Args = {};
 			Description = "Remove donor cape";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -26,6 +27,7 @@ return function(Vargs, env)
 			Commands = {"cape", "donorcape"};
 			Args = {};
 			Description = `Get donor cape (remove using {Settings.PlayerPrefix}uncape)`;
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -38,6 +40,7 @@ return function(Vargs, env)
 			Commands = {"removetshirt", "untshirt", "notshirt"};
 			Args = {};
 			Description = "Remove the t-shirt you are wearing, if any";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {[number]:string})
@@ -58,8 +61,9 @@ return function(Vargs, env)
 		DonorNeon = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"neon", "donorneon"};
-			Args = {"color"};
+			Args = {"brickColor?"};
 			Description = "Changes your body material to neon and makes you the (optional) color of your choosing.";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -79,8 +83,9 @@ return function(Vargs, env)
 		DonorFire = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"fire", "donorfire"};
-			Args = {"color (optional)"};
+			Args = {"brickColor?"};
 			Description = "Gives you fire with the specified color (if you specify one)";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -120,8 +125,9 @@ return function(Vargs, env)
 		DonorSparkles = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"sparkles", "donorsparkles"};
-			Args = {"color (optional)"};
+			Args = {"brickColor?"};
 			Description = "Gives you sparkles with the specified color (if you specify one)";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -159,8 +165,9 @@ return function(Vargs, env)
 		DonorLight = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"light", "donorlight"};
-			Args = {"color (optional)"};
+			Args = {"brickColor?"};
 			Description = "Gives you a PointLight with the specified color (if you specify one)";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -192,8 +199,9 @@ return function(Vargs, env)
 		DonorParticle = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"particle", "donorparticle"};
-			Args = {"textureid", "startColor3", "endColor3"};
+			Args = {"textureId", "startColor3?", "endColor3?"};
 			Description = "Put a custom particle emitter on your character";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -256,6 +264,7 @@ return function(Vargs, env)
 			Commands = {"unparticle", "removeparticles", "undonorparticle"};
 			Args = {};
 			Description = "Removes donor particles on you";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -269,6 +278,7 @@ return function(Vargs, env)
 			Commands = {"unfire", "undonorfire"};
 			Args = {};
 			Description = "Removes donor fire on you";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -283,6 +293,7 @@ return function(Vargs, env)
 			Commands = {"unsparkles", "undonorsparkles"};
 			Args = {};
 			Description = "Removes donor sparkles on you";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -297,6 +308,7 @@ return function(Vargs, env)
 			Commands = {"unlight", "undonorlight"};
 			Args = {};
 			Description = "Removes donor light on you";
+			Category = "Fun";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -308,8 +320,9 @@ return function(Vargs, env)
 		DonorAvatarItem = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"avataritem", "accessory", "hat", "donorhat", "shirt", "donorshirt", "tshirt", "donortshirt", "givetshirt", "shirt", "donorshirt", "giveshirt", "pants", "donorpants", "givepants", "face", "donorface", "animation", "anim"};
-			Args = {"ID"};
+			Args = {"itemId"};
 			Description = "Gives yourself the avatar item that belongs to <ID>";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {[number]:string}, data: {})
@@ -322,6 +335,7 @@ return function(Vargs, env)
 			Commands = {"saveoutfit", "savefit"};
 			Args = {};
 			Description = "Saves your current character's appearance when respawning";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player)
@@ -334,6 +348,7 @@ return function(Vargs, env)
 			Commands = {"removesavedoutfit", "removeoutfit", "removefit", "defaultavatar"};
 			Args = {};
 			Description = "Removes any currently saved outfits and reverts your character to its original look";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player)
@@ -346,6 +361,7 @@ return function(Vargs, env)
 			Commands = {"myhats", "hatlist", "hats", "donorhats"};
 			Args = {};
 			Description = "Shows you a list of hats you are currently wearing";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -360,6 +376,7 @@ return function(Vargs, env)
 			Commands = {"removehat", "removedonorhat"};
 			Args = {"name"};
 			Description = "Removes a specific accessory you are currently wearing";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
@@ -379,6 +396,7 @@ return function(Vargs, env)
 			Commands = {"removehats", "nohats", "nodonorhats", "clearhats"};
 			Args = {};
 			Description = "Removes any hats you are currently wearing";
+			Category = "Appearance";
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})

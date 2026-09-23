@@ -114,6 +114,7 @@ return function(Vargs, GetEnv)
 		};
 		KeycodeNames = require(client.Shared.KeycodeNames);
 		HelpButtonAction = "Info",
+		CommandListGroupBy = "Rank",
 		GuiClasses = {
 			"AdGui", "BillboardGui", "CanvasGroup",
 			"DockWidgetPluginGui", "Frame", "GuiBase", "GuiBase2d",
