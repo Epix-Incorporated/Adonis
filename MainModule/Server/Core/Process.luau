@@ -479,7 +479,7 @@ return function(Vargs, GetEnv)
 				local pDat = {
 					Player = opts.Player or p;
 					Level = opts.AdminLevel or Admin.GetLevel(p);
-					isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+					isDonor = opts.IsDonor or ((Settings.DonorCommands or command.AllowDonors) and Admin.CheckDonor(p));
 				}
 
 				if opts.isSystem or p == "SYSTEM" then
@@ -843,6 +843,7 @@ return function(Vargs, GetEnv)
 			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
+					Admin.ClearDonorCheckCache(p)
 				end
 			end)
 

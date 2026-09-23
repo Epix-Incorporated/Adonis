@@ -443,7 +443,9 @@ local service = wrappedEnv.Service
 			local useIds = args[2] and string.lower(args[2]) == "true"
 
 			for _, v in useIds and string.split(args[1], ",") or service.GetPlayers(plr, args[1]) do
-				Variables.CachedDonors[tostring(not useIds and v.UserId or tonumber(v))] = nil
+				local key = tostring(not useIds and v.UserId or tonumber(v))
+				Variables.CachedDonors[key] = nil
+				Admin.NonDonorCache[key] = nil
 			end
 		end
 	};
