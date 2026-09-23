@@ -97,6 +97,8 @@ return {
 	"HelpButton";
 	"HelpButtonImage";
 	" ";
+	"LegacyCommandList";
+	" ";
 	"DonorCommands";
 	"DonorCapes";
 	"LocalCapes";

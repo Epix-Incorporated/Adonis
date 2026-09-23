@@ -552,6 +552,54 @@ return function(Vargs, GetEnv)
 			end;
 
 			CommandListData = function(p)
+				local playerAliases = table.clone(Core.GetPlayer(p).Aliases or {})
+
+				if Settings.LegacyCommandList then
+					local tab = {}
+
+					for _, cmd in Admin.SearchCommands(p, "all") do
+						local cmdAliases = table.create(#cmd.Commands)
+
+						if cmd.Hidden or cmd.Disabled then
+							continue
+						end
+
+						for _, alias in cmd.Commands do
+							if #cmdAliases >= 6 and (#cmd.Commands - #cmdAliases) ~= 0 then
+								table.insert(cmdAliases, `and {#cmd.Commands - #cmdAliases} more...`)
+								break
+							end
+
+							table.insert(cmdAliases, alias)
+						end
+
+						table.remove(cmdAliases, 1)
+
+						local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
+						table.insert(tab, {
+							Text = Admin.FormatCommand(cmd),
+							Desc = `[{permissionDesc}] {if #cmdAliases >= 1 then `\nAliases: {table.concat(cmdAliases, ", ")}` else ""} \n\n{cmd.Description or "(No description provided)"}`,
+							Filter = permissionDesc
+						})
+					end
+
+					for alias, command in playerAliases do
+						table.insert(tab, {
+							Text = alias,
+							Desc = `[User Alias] {command}`,
+							Filter = command
+						})
+					end
+
+					table.sort(tab, function(a, b) return a.Text < b.Text end)
+
+					return {
+						Legacy = true,
+						Table = tab,
+						PlayerPrefix = Settings.PlayerPrefix
+					}
+				end
+
 				local ranks = {}
 				local commands = {}
 
@@ -625,9 +673,7 @@ return function(Vargs, GetEnv)
 					table.insert(ranks, {
 						Rank = "Donors";
 						Level = "Donors";
-						Purchasables = {
-							{ Type = Enum.InfoType.Asset; Id = 6878510605; }
-						}
+						Purchasables = {};
 					})
 				end
 
@@ -645,7 +691,8 @@ return function(Vargs, GetEnv)
 				return {
 					PlayerData = pDat,
 					Ranks = ranks,
-					Commands = commands
+					Commands = commands,
+					PlayerAliases = playerAliases
 				}
 			end;
 		};

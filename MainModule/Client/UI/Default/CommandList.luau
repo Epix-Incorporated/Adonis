@@ -17,6 +17,29 @@ return function(data, env)
 		78, 79, 88, 89, 90 -- Other
 	}
 
+	local aliasGroup = {}
+
+	local cmdData = Remote.Get("CommandListData")
+	if not cmdData then
+		error("Failed to get command list data")
+	end
+
+	if cmdData.Legacy then
+		UI.Make("List", {
+			Title = "Commands",
+			Table = cmdData.Table,
+			TitleButtons = {
+				{
+					Text = "?",
+					OnClick = function()
+						Remote.Send("ProcessCommand", `{cmdData.PlayerPrefix}usage`)
+					end
+				}
+			}
+		})
+		return
+	end
+
 	local window = UI.Make("Window", {
 		Name = "Commands",
 		Title = "Commands",
@@ -28,13 +51,9 @@ return function(data, env)
 		return
 	end
 
-	local cmdData = Remote.Get("CommandListData")
-	if not cmdData then
-		error("Failed to get command list data")
-	end
-
 	local searchTerm = ""
-	local groupBy = "Rank"
+	local groupByOptions = { "Rank", "Category", "None" }
+	local groupBy = if table.find(groupByOptions, client.Variables.CommandListGroupBy) then client.Variables.CommandListGroupBy else "Rank"
 	
 	local scroll = window:Add("ScrollingFrame", {
 		Name = "CommandList",
@@ -61,6 +80,21 @@ return function(data, env)
 				table.insert(command.Aliases, prefix)
 			end
 		end
+	end
+
+	local userAliases = {}
+	for alias, command in cmdData.PlayerAliases or {} do
+		table.insert(userAliases, {
+			IsUserAlias = true,
+			Aliases = {alias},
+			Args = {},
+			Command = command,
+			HasPermission = true,
+		})
+	end
+
+	local function escapeRichText(str)
+		return (string.gsub(str, "[&<>]", {["&"] = "&amp;", ["<"] = "&lt;", [">"] = "&gt;"}))
 	end
 
 	local function renderCommandDetailsRow(parent, label, value)
@@ -111,6 +145,10 @@ return function(data, env)
 			SortOrder = Enum.SortOrder.Name,
 			Padding = UDim.new(0, 3)
 		})
+		if command.IsUserAlias then
+			renderCommandDetailsRow(container, "Runs", command.Command)
+			return container
+		end
 		local cmdRank
 		for _, rank in cmdData.Ranks do
 			if rank.Level == command.AdminLevel then
@@ -164,8 +202,8 @@ return function(data, env)
 		local groups = {}
 		local groupsInfo = {}
 
-		for _, command in cmdData.Commands do
-			if command.Hidden then continue end
+		local function addCommand(command)
+			if command.Hidden then return end
 
 			if searchTerm and #searchTerm > 0 then
 				local found = false
@@ -176,23 +214,27 @@ return function(data, env)
 						break
 					end
 				end
-				if not found then continue end
+				if not found then return end
 			else
 				command.PrimaryAlias = command.Aliases[1]
 			end
 
 			local groupKey
-			if groupBy == "Rank" then
+			if groupBy == "None" then
+				groupKey = "All Commands"
+			elseif command.IsUserAlias then
+				groupKey = aliasGroup
+			elseif groupBy == "Rank" then
 				groupKey = command.AdminLevel or 0
 			elseif groupBy == "Category" then
 				groupKey = command.Category or "Uncategorized"
-			else
-				groupKey = "All Commands"
 			end
 
 			if not groups[groupKey] then
 				local name = tostring(groupKey)
-				if groupBy == "Rank" then
+				if groupKey == aliasGroup then
+					name = "Aliases"
+				elseif groupBy == "Rank" then
 					if groupKey == 0 then
 						name = "Players"
 					else
@@ -214,15 +256,24 @@ return function(data, env)
 			table.insert(groups[groupKey], command)
 		end
 
-		if groupBy == "Rank" then
-			table.sort(groupsInfo, function(a, b) 
+		for _, command in cmdData.Commands do
+			addCommand(command)
+		end
+		for _, alias in userAliases do
+			addCommand(alias)
+		end
+
+		table.sort(groupsInfo, function(a, b)
+			if a.Key == aliasGroup or b.Key == aliasGroup then
+				return a.Key == aliasGroup and b.Key ~= aliasGroup
+			end
+			if groupBy == "Rank" then
 				local av = if a.Key == "Donors" then 0.5 else a.Key
 				local bv = if b.Key == "Donors" then 0.5 else b.Key
 				return av < bv
-			end)
-		else
-			table.sort(groupsInfo, function(a, b) return tostring(a.Key) < tostring(b.Key) end)
-		end
+			end
+			return tostring(a.Key) < tostring(b.Key)
+		end)
 
 		for _, commands in groups do
 			table.sort(commands, function(a, b) return a.Aliases[1] < b.Aliases[1] end)
@@ -289,7 +340,13 @@ return function(data, env)
 						break
 					end
 				end
-				if rank and ((rank.Rank == "Donors" and not cmdData.PlayerData.isDonor) or (typeof(rank.Level) == "number" and cmdData.PlayerData.Level < rank.Level)) then
+				if rank and rank.Rank == "Donors" and not cmdData.PlayerData.isDonor then
+					local _, donateButton = renderRankPurchase(frame, `Unlock by donating`, `Donate`, -1)
+					donateButton.Activated:Connect(function()
+						UI.Remove("UserPanel")
+						UI.Make("UserPanel", {Tab = "Donate"})
+					end)
+				elseif rank and typeof(rank.Level) == "number" and cmdData.PlayerData.Level < rank.Level then
 					local hasOneTime, hasSubscription = false, false
 					local cheapestOneTime, cheapestSubscription = nil, nil
 					local oneTimeRow, subscriptionRow = nil, nil
@@ -368,7 +425,7 @@ return function(data, env)
 			end
 
 			for i, command in group do
-				local str = `{command.PrimaryAlias}`
+				local str = escapeRichText(command.PrimaryAlias)
 				local argStr = "";
 				for _,v in (command.Args or command.Arguments) do
 					argStr ..= `  &lt;{v}&gt;`
@@ -432,10 +489,13 @@ return function(data, env)
 		Name = "GroupBy",
 		Position = UDim2.new(1, -85, 0, 5),
 		Size = UDim2.fromOffset(80, 25),
-		Options = { "Rank", "Category", "None" },
+		Options = groupByOptions,
 		Selected = groupBy,
 		OnSelect = function(option)
+			if option == groupBy then return end
 			groupBy = option
+			client.Variables.CommandListGroupBy = option
+			task.spawn(Remote.Get, "UpdateClient", "CommandListGroupBy", option)
 			renderCommands()
 		end
 	})

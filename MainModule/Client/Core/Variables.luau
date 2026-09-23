@@ -113,5 +113,6 @@ return function(Vargs, GetEnv)
 		};
 		KeycodeNames = require(client.Shared.KeycodeNames);
 		HelpButtonAction = "Info",
+		CommandListGroupBy = "Rank",
 	};
 end

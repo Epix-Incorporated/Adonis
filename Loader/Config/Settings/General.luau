@@ -94,5 +94,7 @@ return {
 	HelpButton = true;	-- Shows a little help button in the bottom right corner.
 	HelpButtonImage = "rbxassetid://357249130";	-- Sets the image used for the Adonis help button above.
 
+	LegacyCommandList = false;	-- If true, :cmds will show the old plain command list instead of the modern command list UI
+
 	HttpWait = 60;	-- How long things that use the HttpService will wait before updating again
 };
