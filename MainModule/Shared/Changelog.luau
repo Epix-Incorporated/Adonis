@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our repository*";
 	"";
 	"[v282 2026-xx-xx xx:xx UTC] @Dimenpsyonal";
+	"(Git/joritochip) Modify donation panel (#2179)";
 	"(Git/TbeyazT) Fix dex (#2160)";
 	"(Git/ffrostfall) Add :velocity command (#2114)";
 	"(Git/SuperCater) Add :persistavataritem command (#2163)";
