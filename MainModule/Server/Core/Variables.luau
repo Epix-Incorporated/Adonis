@@ -78,6 +78,7 @@ return function(Vargs, GetEnv)
 		CachedDonors = {},
 		Aliases = {},
 		ReturnPoints = {},
+		BotKeys = {},
 		BanMessage = "Banned",
 		PlayerJoinFilters = {};
 		LockMessage = "Not Whitelisted",
@@ -267,6 +268,10 @@ return function(Vargs, GetEnv)
 		Starter = {
 			Health = {};
 			Speed = {};
-		}
+		};
+		
+		PersistedItems = {};
+
+		Tags = {};
 	}
 end

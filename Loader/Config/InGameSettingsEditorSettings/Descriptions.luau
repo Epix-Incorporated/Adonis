@@ -38,10 +38,6 @@ return {
 	Waypoints = [[ List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)} ]];
 	CustomRanks = [[ List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} ]];
 
-	OnStartup = [[ List of commands ran at server start								Format: {":notif TestNotif"} ]];
-	OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"} ]];
-	OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]];
-
 	SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]];
 	LoadAdminsFromDS = [[ If false, any admins saved in your DataStores will not load ]];
 	WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]];

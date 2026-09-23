@@ -231,10 +231,6 @@ settings.CapeList = {}		-- List of capes							  Format: {{Name = "somecape", Ma
 settings.InsertList = {} 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
 settings.Waypoints = {}     -- List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)}
 
-settings.OnStartup = {}		-- List of commands ran at server start								Format: {":notif TestNotif"}
-settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
-settings.OnSpawn = {}		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
-
 settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
 settings.LoadAdminsFromDS = true  -- If false, any admins saved in your DataStores will not load
 settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
@@ -245,6 +241,7 @@ settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (
 settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 settings.BatchKey = "|"				-- :kill me | :ff bob | :explode scel
 settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+settings.FlyKeyCode = "E"			-- Keybind to toggle fly; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 --// Easily add new custom commands below (without needing to create a plugin module)
 --// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)
@@ -431,10 +428,6 @@ descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "
 descs.Waypoints = [[ List of waypoints you can teleport via ':to wp-WAYPOINTNAME' or ':teleport PLAYER tp.WAYPOINTNAME' Format {YOURNAME1 = Vector3.new(1,2,3), YOURNAME2 = Vector(231,666,999)} ]]
 descs.CustomRanks = [[ List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} ]]
 
-descs.OnStartup = [[ List of commands ran at server start								Format: {":notif TestNotif"} ]]
-descs.OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"} ]]
-descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]]
-
 descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]]
 descs.LoadAdminsFromDS = [[ If false, any admins saved in your DataStores will not load ]]
 descs.WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]]
@@ -548,10 +541,6 @@ order = {
 	"InsertList";
 	"Waypoints";
 	"CustomRanks";
-	" ";
-	"OnStartup";
-	"OnJoin";
-	"OnSpawn";
 	" ";
 	"SaveAdmins";
 	"WhitelistEnabled";

@@ -386,6 +386,68 @@ return function(Vargs, GetEnv)
 					end
 				end;
 			};
+
+			["t-tag"] = {
+				Match = "t-";
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
+					local matched = string.match(msg, "t%-(.*)");
+					if matched then
+						matched = matched:lower();
+						local tag = Variables.Tags[matched];
+						if not tag then
+							Remote.MakeGui(plr, "Output", {Title = "Invalid argument"; Message = "Argument supplied is not a tag!"})
+							return;
+						end
+
+						for _, player: Player in tag do
+							table.insert(players, player);
+							plus();
+						end
+					end
+				end
+			};
+
+			["stat"] = {
+				Match = "stat/";
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
+					local stat, raw_min, raw_max = string.match(msg, "stat/([^/]+)/([^/]+)/?([^/]*)");
+					if stat then
+						for _, player: Player in service.Players:GetPlayers() do
+							local leaderstats = player:FindFirstChild("leaderstats");
+							if not leaderstats then continue end;
+
+							for _, value in leaderstats:GetChildren() do
+								if value.Name:lower() ~= stat:lower() then continue end;
+
+								if value:IsA("StringValue") then
+									if value.Value ~= raw_min then continue end;
+
+									table.insert(players, player);
+									plus();
+								elseif value:IsA("NumberValue") or value:IsA("IntValue") then
+									local min, max = tonumber(raw_min), tonumber(raw_max);
+									if not min then
+										Remote.MakeGui(plr, "Output", {Title = "Invalid argument"; Message = "Argument supplied is not a number!"})
+										return;
+									end
+									
+									if not max then
+										if value.Value >= min then
+											table.insert(players, player);
+											plus();
+										end
+									else
+										if value.Value >= min and value.Value <= max then
+											table.insert(players, player);
+											plus();
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			};
 		};
 
 		GetFakePlayer = function(options)
@@ -402,18 +464,23 @@ return function(Vargs, GetEnv)
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
 				CharacterAppearanceId = options.UserId or 0;
+				CanLoadCharacterAppearence = service.StarterPlayer.LoadPlayerAppearance;
 				FollowUserId = 0;
-				GameplayPaused = false;
+				ReplicationFocus = nil;
+				Team = nil;
+				TeamColor = nil;
+				RespawnLocation = nil;
 				Parent = service.Players;
-				Character = service.New("Model", {Name = options.Name or "Fake_Player"});
-				Backpack = service.New("Backpack", {Name = "FakeBackpack"});
-				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"});
-				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"});
+				Character = service.New("Model", {Name = options.Name or "Fake_Player"; Parent = fakePlayer});
+				Backpack = service.New("Backpack", {Name = "FakeBackpack"; Parent = fakePlayer});
+				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"; Parent = fakePlayer});
+				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"; Parent = fakePlayer});
 				GetJoinData = function() return {} end;
 				GetFriendsOnline = function() return {} end;
-				GetRankInGroup = function() return 0 end;
-				GetRoleInGroup = function() return "Guest" end;
-				IsFriendsWith = function() return false end;
+				GetRankInGroupAsync = function() return 0 end; GetRankInGroup = function() return 0 end;
+				GetRoleInGroupAsync = function() return "Guest" end; GetRoleInGroup = function() return "Guest" end;
+				IsInGroupAsync = function() return false end;
+				IsFriendsWithAsync = function() return false end; IsFriendsWith = function() return false end;
 				Kick = function() fakePlayer:SetSpecial("Parent", nil) fakePlayer:Destroy() end;
 				IsA = function(_, className) return className == "Player" or className == "Instance" end;
 			}
@@ -421,6 +488,8 @@ return function(Vargs, GetEnv)
 			for k, v in options do
 				data[k] = v
 			end
+
+			data.UserId = tonumber(data.UserId) or 0
 
 			if data.UserId > 0 then
 				local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, data.UserId)
@@ -1118,13 +1187,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		PlayAnimation = function(player, animId)
+		PlayAnimation = function(player: Player, animId: number, animSpeed: number?, isLooped: boolean?)
 			if player.Character and tonumber(animId) then
 				local human = player.Character:FindFirstChildOfClass("Humanoid")
 				if human and not human:FindFirstChildOfClass("Animator") then
 					service.New("Animator", human)
 				end
-				Remote.Send(player,"Function","PlayAnimation",animId)
+				Remote.Send(player, "Function", "PlayAnimation", animId, animSpeed or 1, isLooped or false)
 			end
 		end;
 
@@ -1186,6 +1255,7 @@ return function(Vargs, GetEnv)
 
 		makeRobot = function(player, num, health, speed, damage, walk, attack, friendly)
 			local Deps = server.Deps
+			local key = friendly and (Variables.BotKeys[player.Team or player]) or service.HttpService:GenerateGUID(false)
 
 			local char = player.Character
 			local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
@@ -1216,6 +1286,10 @@ return function(Vargs, GetEnv)
 				hum.Health = health
 
 				if oldAnim then
+					anim:ClearAllChildren()
+					for _, v in oldAnim:GetChildren() do
+						v.Parent = anim
+					end
 					oldAnim:Destroy()
 				end
 
@@ -1240,12 +1314,10 @@ return function(Vargs, GetEnv)
 					Damage = damage;
 					Health = health;
 					WalkSpeed = speed;
-					SpecialKey = service.HttpService:GenerateGUID(false);
+					SpecialKey = tostring(key);
+					AttackBots = not player.TeamColor and not friendly;
 				})
-
-				if walk then
-					task.defer(task.defer, event.Fire, event, "Init")
-				end
+				task.defer(task.defer, event.Fire, event, "Init")
 
 				table.insert(Variables.Objects, new)
 			end
@@ -1703,6 +1775,14 @@ return function(Vargs, GetEnv)
 			table.sort(itemNames)
 
 			return itemNames
-		end
+		end;
+
+		CountTags = function(): number
+			local count = 0
+			for _ in Variables.Tags do
+    			count += 1
+			end
+			return count;
+		end;
 	}
 end

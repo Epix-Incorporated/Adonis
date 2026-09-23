@@ -9,6 +9,7 @@ return {
 	SplitKey = " ";				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 	BatchKey = "|";				-- :kill me | :ff bob | :explode scel
 	ConsoleKeyCode = "Quote";	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+	FlyKeyCode = "E";			-- Keybind to toggle fly; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 	HideScript = true;	-- When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module; Disable if your game uses AssetService:SavePlaceAsync()
 
@@ -60,10 +61,6 @@ return {
 	MusicList = {}; 	-- List of songs to appear in the :musiclist		Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
 	CapeList = {};		-- List of capes		Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
 	InsertList = {}; 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'		Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
-
-	OnStartup = {};		-- List of commands ran at server start		Format: {":notif TestNotif"}
-	OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
-	OnSpawn = {};		-- List of commands ran as player on spawn (ignores adminlevel)		Format: {"!fire Really red",":ff me"}
 
 	FunCommands = true;					-- Are fun commands enabled?
 	PlayerCommands = true;				-- Are player-level utility commands enabled?

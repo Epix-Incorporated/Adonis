@@ -468,12 +468,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		Ping = function()
-			local t = time()
+			local t = os.clock()
 			local ping = Remote.Get("Ping")
 			if not ping then return false end
-			local t2 = time()
-			local mult = 10^3
-			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*1000)
+			local t2 = os.clock()
+			local ms = math.round( (t2 - t) * 1000 )
 			return ms
 		end;
 

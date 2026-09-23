@@ -10,6 +10,7 @@ exclude = ["MainModule/Client/UI/Modern/Components/Packages/**"]
 
 global_usage = "allow"
 multiple_statements = "allow"
+roblox_manual_fromscale_or_fromoffset = "allow"
 shadowing = "allow"
 unscoped_variables = "allow"
 unused_variable = "allow"

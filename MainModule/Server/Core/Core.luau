@@ -152,6 +152,11 @@ return function(Vargs, GetEnv)
 			CrossServerCommands = true;
 			RemoteExecutionConfirmed = true;
 
+			Messages = true;
+			Logs = true;
+			ClientPlugins = true;
+			ServerPlugins = true;
+
 			Creators = true;
 			Permissions = true;
 
@@ -169,10 +174,6 @@ return function(Vargs, GetEnv)
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
 
-			OnStartup = true;
-			OnSpawn = true;
-			OnJoin = true;
-
 			CustomRanks = true;
 			Ranks = true;
 			Commands = true;
@@ -186,10 +187,10 @@ return function(Vargs, GetEnv)
 
 			["Variables.ScriptBuilder"] = true;
 			["Variables.ScriptEditor"] = true;
-			["Variables.UrgentModuleId"] = true;
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
+			Data = true;
 		};
 
 		--// Prevent certain keys from loading from the DataStore
@@ -480,18 +481,17 @@ return function(Vargs, GetEnv)
 
 						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
 						container.Parent = nil
-						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
-							task.wait()
-							if p.Parent == nil then
+						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function(child, parent)
+							if child == p and parent == nil then
 								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
-								pcall(function()
-									container:Destroy()
-								end)
+								pcall(container.Destroy, container)
+								container = nil
+
+								leaveEvent:Disconnect()
+								leaveEvent = nil
 							end
 						end)
 
-						leaveEvent:Disconnect()
-						leaveEvent = nil
 						event:Disconnect()
 						event = nil
 					end

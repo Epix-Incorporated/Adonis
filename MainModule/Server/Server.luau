@@ -472,7 +472,7 @@ return service.NewProxy({
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
 				connection1 = m:GetPropertyChangedSignal("Parent"):Connect(function()
-					if not m or m.Parent ~= service.RunService then
+					if not m or m.Parent ~= service.RunService and server.Running then
 						connection1:Disconnect()
 						connection2:Disconnect()
 						--warn("Adonis module mutex removed; Regenerating...")
@@ -484,7 +484,7 @@ return service.NewProxy({
 				end)
 				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
 					pcall(function()
-						if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+						if m and m.Name ~= "__Adonis_MODULE_MUTEX" and server.Running then
 							m.Name = "__Adonis_MODULE_MUTEX"
 						end
 					end)
@@ -738,7 +738,7 @@ return service.NewProxy({
 			task.defer(xpcall, LoadModule, function(reason)
 				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
-				table.insert(server.messages, {
+				table.insert(server.Messages, {
 					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
 					Icon = "maticon://Dangerous",
 					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,

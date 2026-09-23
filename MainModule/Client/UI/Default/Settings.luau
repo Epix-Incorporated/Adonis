@@ -109,7 +109,7 @@ return function(data, env)
 			Text = "Console Key: ";
 			Desc = "Key used to open the console";
 			Entry = "Button";
-			Value = Functions.KeyCodeToName(Enum.KeyCode[Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode") or "Unknown"].Value);
+			Value = Functions.KeyCodeToName(Enum.KeyCode:FromName(Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode") or "None"));
 			Function = function(toggle)
 				local gotKey, visualName
 				toggle.Text = "Waiting..."

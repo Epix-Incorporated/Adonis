@@ -492,7 +492,14 @@ return function(Vargs, env)
 					`<b>$GROUPID</b> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)`;
 					`<b>-SELECTION</b> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM will kill everyone except players on TEAM`;
 					`<b>+SELECTION</b> - Readds the selection, ie. will readd SELECTION from list of players to run command on. {Prefix}kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics`;
-					`<b>radius-NUM</b> -- Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
+					`<b>radius-NUM</b> - Anyone within a NUM-stud radius of you. {Prefix}ff radius-5 will ff anyone within a 5-stud radius of you.`;
+					`<b>t-TAG_NAME</b> - Anyone who is tagged with TAG_NAME. {Prefix}fly t-TAG_NAME will give flight to anyone who is tagged with TAG_NAME.`;
+					`	• <b>Note:</b> <u>Tags cannot contain spaces</u>, any spaces that are used within a tag will automatically be converted to "_": "hello world" -> "hello_world"!`;
+					`<b>stat/NAME/MIN/MAX</b> - Players whose leaderboard stat NAME matches the given value.`;
+					`	• <b>NAME</b> - The (case insensitive) name of the leaderboard stat, ex. {Prefix}fly stat/<b>wins</b>/5/8`;
+					`	• <b>MIN</b> - The minimum <u>inclusive</u> value of the leaderboard stat, ex. {Prefix}fly stat/wins/<b>5</b>/8`;
+					`	• <b>MAX</b> - The (optional) maximum <u>inclusive</u> value of the leaderboard stat, ex. {Prefix}fly stat/wins/5/<b>8</b>`;
+					`	• The stat selector is also able to match string leaderboard stats (case sensitive), ex. {Prefix}fly stat/class/<b>Mage</b>`;
 					"";
 					`<b>――――― Repetition ―――――</b>`;
 					`Multiple player selections - <b>{Prefix}kill me,noob1,noob2,{Settings.SpecialPrefix}random,%raiders,$123456,{Settings.SpecialPrefix}nonadmins,-scel</b>`;
@@ -770,33 +777,39 @@ return function(Vargs, env)
 						end
 
 						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
-						local hasSafeChat = if policyInfo then
-							type(policyInfo) == "string" and policyInfo or table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes"
+						local hasAdsAllowed = if policyInfo then
+							type(policyInfo) == "string" and policyInfo or policyInfo.AreAdsAllowed and "Yes" or "No"
 							else "[Redacted]"
 
-						local mailVerif = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
+						local hasMailAccessory = select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 102611803))
+							or v.UserId < 50000000 and select(2, xpcall(service.MarketplaceService.PlayerOwnsAsset, function() return "[Error]" end, service.MarketplaceService, v, 1567446))
+
 						local hasVerifiedMail = if elevated then
-							type(mailVerif) == "string" and mailVerif or mailVerif and "Yes" or "No"
+							type(hasMailAccessory) == "string" and hasMailAccessory or hasMailAccessory and "Yes" or "No"
 							else "[Redacted]"
 
-						local idVerif = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v))
-						local hasVerifiedId = if elevated then
-							type(idVerif) == "string" and idVerif or idVerif and "Yes" or "No"
+						local verifLevelLow = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v, Enum.VerifiedLevel.Low))
+						local verifLevelHigh = select(2, xpcall(v.IsVerified, function() return "[Error]" end, v, Enum.VerifiedLevel.High))
+
+						local determinedVerifLevel = if elevated then
+							(type(verifLevelHigh) == "string" and verifLevelHigh or verifLevelHigh and "High")
+							or (type(verifLevelLow) == "string" and verifLevelLow or verifLevelLow and "Low") or "None"
 							else "[Redacted]"
 
 						Remote.RemoveGui(plr, `Profile_{v.UserId}`)
 						Remote.MakeGui(plr, "Profile", {
 							Target = v;
-							SafeChat = hasSafeChat;
-							CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
+							AdsAllowed = hasAdsAllowed;
+							CanChatGet = table.pack(pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId));
 							MailVerified = hasVerifiedMail;
-							IDVerified = hasVerifiedId;
+							VerificationLevel = determinedVerifLevel;
 							IsDonor = Admin.CheckDonor(v);
 							GameData = gameData;
 							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 							CmdPrefix = Functions.GetMainPrefix();
 							CmdSplitKey = Settings.SplitKey;
 							OnlineFriends = elevated and Remote.Get(v, "Function", "GetFriendsOnline");
+							MembershipStatus = if v.HasRobloxSubscription then "Plus" else v.MembershipType.Name;
 						})
 					end)
 				end
@@ -921,6 +934,18 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Coords")
+			end;
+		};
+		
+		Velocity = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"vel", "velocity"};
+			Args = {};
+			Description = "Shows your current velocity";
+			Category = "Information";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "Velocity")
 			end;
 		};
 

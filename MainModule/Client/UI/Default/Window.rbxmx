@@ -919,11 +919,11 @@
 
 local dZIndex 	 = 2
 local dScrollBar = 4
-local dBackground 	= Color3.new(31/255, 31/255, 31/255)
+local dBackground 	= Color3.fromRGB(31, 31, 31)
 local dSecondaryBackground = dBackground:lerp(Color3.new(1,1,1), 0.1);
 local dTransparency = 0
 local dPixelSize 	= 0
-local dBorder 		= Color3.new(27/255,42/255,53/255)
+local dBorder 		= Color3.fromRGB(27,42,53)
 local dPosition 	= UDim2.new(0,5,0,5)
 local dCanvasSize 	= UDim2.new(0, 0, 0, 0)
 local dScrollImage 	= "http://roblox.com/asset?id=158348114"
