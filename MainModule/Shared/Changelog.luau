@@ -3,6 +3,12 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
+	"[Patch v282.1 2026-09-23 xx:xx UTC] @Dimenpsyonal";
+	"Fix commands relying on FakeCharacter";
+	"Fix Miscallaneous functions module";
+	"Small fix to commandlist sanitising";
+	"Refactor KeyCodeToName function initialisation";
+	"";
 	"[v282 2026-09-23 12:08 UTC] @Dimenpsyonal";
 	"(Git/joritochip) Revamp command list (#2134)";
 	"(Git/joritochip) Modify donation panel (#2179)";
