@@ -238,18 +238,13 @@ return function(Vargs, GetEnv)
 			UsingNewIAS = function()
 				local playerScripts = service.Player.PlayerScripts
 				local starterPlayer = service.StarterPlayer
-
 				local playerScriptsModule = playerScripts:FindFirstChild("PlayerModule")
 				local starterPlayerModule = starterPlayer:FindFirstChild("PlayerModule")
-
 				if playerScriptsModule and not starterPlayerModule then
 					return false
-
 				elseif starterPlayerModule and not playerScriptsModule then
 					return true
-
-				else
-					-- ??
+				else -- ???
 					return false
 				end
 			end;
