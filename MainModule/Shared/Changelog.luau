@@ -3,9 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[Patch v282.1 2026-09-23 20:30 UTC] @Dimenpsyonal";
+	"[Patch v282.1 2026-09-23 20:34 UTC] @Dimenpsyonal";
 	"Fix commands relying on GetFakePlayer";
-	"Fix Miscallaneous functions module";
+	"Fix miscellaneous functions module";
 	"Small fix to commandlist sanitising";
 	"Refactor KeyCodeToName function initialisation";
 	"";
