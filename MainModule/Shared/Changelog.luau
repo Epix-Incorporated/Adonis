@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
+	"[Patch v282.2 2026-09-23 21:42 UTC] @joritochip";
+	"Fix cmd list comparison issue";
+	"";
 	"[Patch v282.1 2026-09-23 20:34 UTC] @Dimenpsyonal";
 	"Fix commands relying on GetFakePlayer";
 	"Fix miscellaneous functions module";
