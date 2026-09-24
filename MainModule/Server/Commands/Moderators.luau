@@ -7099,17 +7099,16 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
-
 					if not plrgui or plrgui:FindFirstChild("Freecam") then
 						continue
 					end
-
+					
 					local freecam = Deps.Assets.Freecam:Clone()
+					freecam.Freecam.Enabled = true -- enable script
 					freecam.Enabled = true
 					freecam.ResetOnSpawn = false
-					freecam.Freecam.Disabled = false
 					freecam.Parent = plrgui
-					Functions.Notification("Notification", "Freecam has been enabled. Press Shift+P, F, or DPadLeft to toggle freecam on or off.", {v}, 15)
+					Functions.Notification("Notification", "Freecam has been enabled. Press Shift+P or DPadLeft to toggle freecam on or off.", {v}, 15)
 				end
 			end
 		};
@@ -7130,6 +7129,9 @@ return function(Vargs, env)
 							local remote: RemoteFunction? = freecam:FindFirstChildOfClass("RemoteFunction")
 							if remote then
 								pcall(remote.InvokeClient, remote, v, "End")
+							else -- Player has Roblox freecam (he's a dev); can't remove freecam
+								Functions.Hint(`You cannot remove {service.FormatPlayer(v)}'s freecam.`, {plr})
+								return
 							end
 
 							Remote.Send(v, "Function", "SetView", "reset")
