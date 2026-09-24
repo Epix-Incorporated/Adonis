@@ -130,11 +130,9 @@ return function(Vargs, GetEnv)
 						local tempConnection;
 						tempConnection = gui.AncestryChanged:Connect(function(obj, parent)
 							if obj == gui and parent == nil then
-								if Variables.ESPObjects[gui] then
-									tempConnection:Disconnect()
-									Debris:AddItem(gui,0)
-									Variables.ESPObjects[gui] = nil;
-								end
+								tempConnection:Disconnect()
+								Debris:AddItem(gui,0)
+								Variables.ESPObjects[gui] = nil;
 							end
 						end)
 
