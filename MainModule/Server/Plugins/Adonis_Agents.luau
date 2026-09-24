@@ -17,6 +17,7 @@ return function(Vargs, GetEnv)
 		Args = {};
 		Hidden = true;
 		Description = "Shows a list of Trello agents pulled from the configured boards";
+		Category = "Information";
 		Fun = false;
 		AdminLevel = "Players";
 		Function = function(plr,args)

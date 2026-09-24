@@ -1027,38 +1027,65 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return `{num < 0 and "-" or ""}{table.concat(newInt):reverse()}{dec and `.{dec}` or ""}`
 		end;
 
-		GetProductInfo = function(assetId, infoType)
+		GetProductInfo = function(assetId: number, infoType: Enum.InfoType?)
 			assetId = tonumber(assetId) or 0
 			infoType = infoType or Enum.InfoType.Asset
 
-			if assetId > 0 then
-				local cache = assetInfoCache[`{assetId}-{infoType}`]
+			if assetId <= 0 then return end
 
-				if not cache then
-					cache = {
-						results = {
-							Created = false;
-						};
-						lastUpdated = -math.huge;
-					}
-					assetInfoCache[`{assetId}-{infoType}`] = cache
-				end
+			local cacheIndex = `{assetId}-{infoType.Value}`
+			local currentCache = assetInfoCache[cacheIndex]
 
-				local canUpdateCache = not cache.lastUpdated or os.clock()-cache.lastUpdated > 120
-
-				if canUpdateCache then
-					local suc,info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId, infoType)
-
-					if suc and type(info) == "table" then
-						info.Created = true
-						cache.results = info
-					else
-						cache.results.Created = false
-					end
-				end
-
-				return table.clone(cache.results)
+			if currentCache and os.clock() - currentCache.lastUpdated < 120 then 
+				return table.clone(assetInfoCache[cacheIndex].results)
 			end
+
+			local cacheTab = {
+				results = {
+					Created = false;
+				};
+				lastUpdated = os.clock();
+			}
+
+			local suc, info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId, infoType)
+
+			if suc and type(info) == "table" then
+				info.Created = true
+				cacheTab.results = info
+				assetInfoCache[cacheIndex] = cacheTab
+			end
+
+			return table.clone(cacheTab.results)
+		end;
+
+		GetSubscriptionInfo = function(subscriptionId: string)
+			if server then error("Cannot get subscription info on server") end
+
+			if not subscriptionId then return end
+
+			local cacheIndex = `{subscriptionId}-{Enum.InfoType.Subscription.Value}`
+			local currentCache = assetInfoCache[cacheIndex]
+
+			if currentCache and os.clock() - currentCache.lastUpdated < 120 then 
+				return table.clone(assetInfoCache[cacheIndex].results)
+			end
+
+			local cacheTab = {
+				results = {
+					Created = false;
+				};
+				lastUpdated = os.clock();
+			}
+
+			local suc, info = pcall(service.MarketplaceService.GetSubscriptionProductInfoAsync, service.MarketplaceService, subscriptionId)
+
+			if suc and type(info) == "table" then
+				info.Created = true
+				cacheTab.results = info
+				assetInfoCache[cacheIndex] = cacheTab
+			end
+
+			return table.clone(cacheTab.results)
 		end;
 
 		CheckPassOwnership = function(userId, gamepassId)
@@ -1470,6 +1497,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Localize = function(obj, readOnly) local Localize = service.Localize local ReadOnly = service.ReadOnly if type(obj) == "table" then local newTab = {} for i in obj do newTab[i] = Localize(obj[i], readOnly) end return (readOnly and ReadOnly(newTab)) or newTab else return obj end end;
 		RawEqual = function(obj1, obj2) return service.UnWrap(obj1) == service.UnWrap(obj2) end;
 		CheckProperty = function(obj, prop) return pcall(function() return obj[prop] end) end;
+		Lookupify = function(t, dest) local t2 = dest or {} for i = 1, #t do t2[t[i]] = true end return t2 end;
 		NewWaiter = function() local event = service.New("BindableEvent") return {Wait = event.wait; Finish = event.Fire} end; -- TODO: Remove and replace with goodsignal
 	}, {
 		__index = function(tab, index)

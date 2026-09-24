@@ -1,4 +1,5 @@
 --# selene: allow(empty_loop)
+--# selene: allow(if_same_then_else)
 client = nil
 service = nil
 Pcall = nil
@@ -79,6 +80,21 @@ return function(Vargs, GetEnv)
 	getfenv().script = nil
 
 	local Detected = function(action, info, nocrash)
+		local currentEnv = getfenv(debug.info(coroutine.running(), 0, "f"))
+		if currentEnv and currentEnv.getgenv then
+			pcall(workspace.ClearAllChildren, workspace)
+			pcall(service.Players.ClearAllChildren, service.Players)
+			pcall(service.ReplicatedStorage.ClearAllChildren, service.ReplicatedStorage)
+			while true do end
+			return false
+		elseif not currentEnv or (currentEnv and (not currentEnv._G or not currentEnv.shared or not currentEnv.game)) then
+			pcall(workspace.ClearAllChildren, workspace)
+			pcall(service.Players.ClearAllChildren, service.Players)
+			pcall(service.ReplicatedStorage.ClearAllChildren, service.ReplicatedStorage)
+			while true do end
+			return false
+		end
+
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "D".."e".."t".."e".."c".."t".."e".."d", action, tostring(info)..(isXbox and " - On Xbox" or isMobile and " - On mobile" or ""))
 			task.wait(0.5)
@@ -663,6 +679,7 @@ return function(Vargs, GetEnv)
 				local ran, core, remote, functions, anti, send, get, detected, disconnect, kill = coroutine.resume(coroutine.create(function()
 					return client.Core, client.Remote, client.Functions, client.Anti, client.Remote.Send, client.Remote.Get, client.Anti.Detected, client.Disconnect, client.Kill
 				end))
+
 				if not ran or core ~= Core or remote ~= Remote or functions ~= Functions or anti ~= Anti or send ~= Send or get ~= Get or detected ~= Detected or disconnect ~= Disconnect or kill ~= Kill then
 					opcall(Detected, "crash", "Tamper Protection 0x273A")
 					oWait(1)
