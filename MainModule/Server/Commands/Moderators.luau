@@ -7103,17 +7103,8 @@ return function(Vargs, env)
 						continue
 					end
 					
-					local usingNewIAS = Remote.Get(plr, "UsingNewIAS")
-					local freecam = Deps.Assets.Freecam:Clone()					
-					local legacyScript = freecam:FindFirstChild("FreecamLegacy")
-					local newScript = freecam:FindFirstChild("Freecam")
-					
-					if usingNewIAS then
-						newScript.Enabled = true
-					else
-						legacyScript.Enabled = true
-					end
-					
+					local freecam = Deps.Assets.Freecam:Clone()
+					freecam.Freecam.Enabled = true -- enable script
 					freecam.Enabled = true
 					freecam.ResetOnSpawn = false
 					freecam.Parent = plrgui
