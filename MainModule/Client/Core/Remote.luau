@@ -233,21 +233,6 @@ return function(Vargs, GetEnv)
 				end
 				return service.FormatTime(unpack(args))
 			end;
-
-			-- Temporary function until roblox fully rolls out PlayerScriptsUseNewInputActionSystem
-			UsingNewIAS = function()
-				local playerScripts = service.Player.PlayerScripts
-				local starterPlayer = service.StarterPlayer
-				local playerScriptsModule = playerScripts:FindFirstChild("PlayerModule")
-				local starterPlayerModule = starterPlayer:FindFirstChild("PlayerModule")
-				if playerScriptsModule and not starterPlayerModule then
-					return false
-				elseif starterPlayerModule and not playerScriptsModule then
-					return true
-				else -- ???
-					return false
-				end
-			end;
 		};
 
 		Commands = {
