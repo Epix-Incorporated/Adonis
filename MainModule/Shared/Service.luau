@@ -435,22 +435,30 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return object
 			end
 		end;
-		Wrap = function(object, fullWrap)
+		Wrap = function(object, fullWrap, seenTables)
+			seenTables = seenTables or {}
+
 			fullWrap = fullWrap or (fullWrap == nil and client ~= nil) --// Everything clientside should be getting wrapped anyway
 			if getmetatable(object) == "Ignore" or getmetatable(object) == "ReadOnly_Table" then
 				return object
 			elseif Wrappers[object] then
 				return Wrappers[object]
-			elseif type(object) == "table" then
+			elseif seenTables[object] then
+    			return seenTables[object]
+			elseif type(object) == "table" then				
 				local Wrap = service.Wrap
 				local tab = setmetatable({}, {
 					__eq = function(tab,val)
 						return object
 					end
 				})
+				
+				seenTables[object] = tab
+				
 				for i,v in object do
-					tab[i] = Wrap(v, fullWrap)
+					tab[i] = Wrap(v, fullWrap, seenTables)
 				end
+
 				return tab
 			--[[elseif type(object) == "function" then
 				return function(...)
