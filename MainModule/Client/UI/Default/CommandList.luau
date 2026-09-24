@@ -107,6 +107,37 @@ return function(data, env)
 		})
 	end
 
+	-- coalesce different AdminLevel types into numbers
+	local function resolveLevel(level)
+		if type(level) == "table" then
+			local lowest
+			for _, v in level do
+				local resolved = resolveLevel(v)
+				if type(resolved) == "number" and (not lowest or resolved < lowest) then
+					lowest = resolved
+				end
+			end
+			return lowest or 0
+		elseif type(level) == "string" and level ~= "Donors" then
+			for _, rank in cmdData.Ranks do
+				if rank.Rank == level then
+					return rank.Level
+				end
+			end
+			return tonumber(level) or level
+		end
+		return level or 0
+	end
+
+	local function levelSortValue(level)
+		if type(level) == "number" then
+			return level
+		elseif level == "Donors" then
+			return 0.5
+		end
+		return math.huge
+	end
+
 	local function renderCommandDetailsRow(parent, label, value)
 		local row = parent:Add("Frame", {
 			Size = UDim2.new(1, 0, 0, 16),
@@ -159,14 +190,15 @@ return function(data, env)
 			renderCommandDetailsRow(container, "Runs", command.Command)
 			return container
 		end
+		local level = resolveLevel(command.AdminLevel)
 		local cmdRank
 		for _, rank in cmdData.Ranks do
-			if rank.Level == command.AdminLevel then
+			if rank.Level == level then
 				cmdRank = rank
 				break
 			end
 		end
-		renderCommandDetailsRow(container, "Rank", if cmdRank then `{cmdRank.Rank} ({cmdRank.Level})` else command.AdminLevel)
+		renderCommandDetailsRow(container, "Rank", if cmdRank then `{cmdRank.Rank} ({cmdRank.Level})` else tostring(level))
 		if #command.Aliases > 1 then
 			local str = ``
 			for _, alias in command.Aliases do
@@ -235,7 +267,7 @@ return function(data, env)
 			elseif command.IsUserAlias then
 				groupKey = aliasGroup
 			elseif groupBy == "Rank" then
-				groupKey = command.AdminLevel or 0
+				groupKey = resolveLevel(command.AdminLevel)
 			elseif groupBy == "Category" then
 				groupKey = command.Category or "Uncategorized"
 			end
@@ -249,7 +281,7 @@ return function(data, env)
 						name = "Players"
 					else
 						for _, rank in cmdData.Ranks do
-							if rank.Level == command.AdminLevel then
+							if rank.Level == groupKey then
 								name = rank.Rank
 								break
 							end
@@ -278,9 +310,10 @@ return function(data, env)
 				return a.Key == aliasGroup and b.Key ~= aliasGroup
 			end
 			if groupBy == "Rank" then
-				local av = if a.Key == "Donors" then 0.5 else a.Key
-				local bv = if b.Key == "Donors" then 0.5 else b.Key
-				return av < bv
+				local av, bv = levelSortValue(a.Key), levelSortValue(b.Key)
+				if av ~= bv then
+					return av < bv
+				end
 			end
 			if groupBy == "Category" then
 				local ai = table.find(CategoryOrder, a.Key) or math.huge
