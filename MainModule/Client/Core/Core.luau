@@ -297,7 +297,7 @@ return function(Vargs, GetEnv)
 							end
 							return data.Source, module
 						end
-					end, true, { t.instanceOf("LocalScript"), t.string });
+					end, true, { t.instanceIsA("LuaSourceContainer"), t.string });
 				}, nil, nil, true);
 			}
 
