@@ -776,7 +776,7 @@ return function(Vargs, env)
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
 				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
 
-				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
+				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] and Settings.CodeExecutionUnprompted==false then
 					local ans = Remote.GetGui(plr, "YesNoPrompt", {
 						Icon = server.MatIcons.Warning;
 						Question = "Are you sure you want to load this script onto the server? (Once confirmed, you will not be asked again)";
@@ -873,7 +873,7 @@ return function(Vargs, env)
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
 
-				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
+				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] and Settings.CodeExecutionUnprompted==false then
 					local ans = Remote.GetGui(plr, "YesNoPrompt", {
 						Icon = server.MatIcons.Warning;
 						Question = "Are you sure you want to use the starterscript command? (Once confirmed, you will not be asked again)";

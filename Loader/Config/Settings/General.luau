@@ -74,6 +74,7 @@ return {
 	DefaultTheme = "Default";			-- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 
 	CodeExecution = false;	-- Enables the use of code execution in Adonis. Scripting related (such as :s) and a few other commands require this
+	CodeExecutionUnprompted = false;    -- Allows you to use :s command without yes/no prompt (default is disabled and it will pop up yes/no prompt every time on a new server)
 
 	Notification = true;	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	SongHint = true;		-- Display a hint with the current song name and ID when a song is played via :music
