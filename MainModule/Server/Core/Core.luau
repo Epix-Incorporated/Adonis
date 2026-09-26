@@ -477,22 +477,17 @@ return function(Vargs, GetEnv)
 				folder.Name = depsName--"Adonis_Client"
 				folder.Parent = container
 
-				local event
+				local clientLoadedEvent
 
 				local Cleanup = function(player, loaded)
 					if player ~= p then
 						return
 					end
 
-					-- Cleanup events calling cleanup
-					if event then
-						event:Disconnect()
-						event = nil
-					end
-
-					if Connections["HookClient_" .. p.UserId] then
-						Connections["HookClient_" .. p.UserId]:Disconnect()
-						Connections["HookClient_" .. p.UserId] = nil
+					--// Cleanup load event
+					if clientLoadedEvent then
+						clientLoadedEvent:Disconnect()
+						clientLoadedEvent = nil
 					end
 
 					if keys then
@@ -500,47 +495,37 @@ return function(Vargs, GetEnv)
 						keys.EventName = nil
 					end
 
-					if loaded then
+					if loaded then --// Player loaded
 						if container then
 							container.Parent = nil
-
-							local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function(child, parent)
-								if child == p and parent == nil then
-									-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
-									pcall(container.Destroy, container)
-									container = nil
-
-									leaveEvent:Disconnect()
-									leaveEvent = nil
-								end
-							end)
 						end
-					else
+					else --// Player left
+						if Connections["HookClient_" .. key] then
+							Connections["HookClient_" .. key]:Disconnect()
+							Connections["HookClient_" .. key] = nil
+						end
+						
 						if container then
-							pcall(function()
-								container:Destroy()
-							end)
+							pcall(container.Destroy, container)
+							container = nil
 						end
 
 						if folder then
-							pcall(function()
-								folder:Destroy()
-							end)
+							pcall(folder.Destroy, folder)
+							folder = nil
 						end
-
-						container = nil
-						folder = nil
 					end
 				end
 
 				--// Event only fires AFTER the client is alive and well
-				event = service.Events.ClientLoaded:Connect(function(plr)
+				clientLoadedEvent = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container and container.Parent == parentObj then
 						Cleanup(plr, true)
 					end
 				end)
 
-				Connections["HookClient_" .. p.UserId] = game.Players.PlayerRemoving:Connect(function(Player)
+				--// Cleanup 
+				Connections["HookClient_" .. key] = game.Players.PlayerRemoving:Connect(function(Player)
 					Cleanup(Player, false)
 				end)
 
