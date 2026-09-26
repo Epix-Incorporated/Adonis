@@ -26,72 +26,26 @@ local CORE_LOADING_ORDER = table.freeze({
 })
 
 --// Loccalllsssss
-local _G, game, script, getfenv, setfenv, workspace, getmetatable, setmetatable, loadstring, coroutine, rawequal, typeof, print, math, warn, error, pcall, xpcall, select, rawset, rawget, ipairs, pairs, next, Rect, Axes, os, time, Faces, unpack, string, Color3, newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, NumberSequenceKeypoint, PhysicalProperties, Region3int16, Vector3int16, require, table, type, wait, Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick, assert =
-	_G,
-game,
-script,
-getfenv,
-setfenv,
-workspace,
-getmetatable,
-setmetatable,
-loadstring,
-coroutine,
-rawequal,
-typeof,
-print,
-math,
-warn,
-error,
-pcall,
-xpcall,
-select,
-rawset,
-rawget,
-ipairs,
-pairs,
-next,
-Rect,
-Axes,
-os,
-time,
-Faces,
-table.unpack,
-string,
-Color3,
-newproxy,
-tostring,
-tonumber,
-Instance,
-TweenInfo,
-BrickColor,
-NumberRange,
-ColorSequence,
-NumberSequence,
-ColorSequenceKeypoint,
-NumberSequenceKeypoint,
-PhysicalProperties,
-Region3int16,
-Vector3int16,
-require,
-table,
-type,
-task.wait,
-Enum,
-UDim,
-UDim2,
-Vector2,
-Vector3,
-Region3,
-CFrame,
-Ray,
-task.delay,
-task.defer,
-task,
-tick,
-function(cond, errMsg)
-	return cond or error(errMsg or "assertion failed!", 2)
-end
+local _G, game, script, getfenv, setfenv, workspace,
+getmetatable, setmetatable, loadstring, coroutine,
+rawequal, typeof, print, math, warn, error,  pcall,
+xpcall, select, rawset, rawget, ipairs, pairs,
+next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+Vector3int16, require, table, type, wait,
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert, debug, tick =
+	_G, game, script, getfenv, setfenv, workspace,
+getmetatable, setmetatable, loadstring, coroutine,
+rawequal, typeof, print, math, warn, error,  pcall,
+xpcall, select, rawset, rawget, ipairs, pairs,
+next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
+newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+Vector3int16, require, table, type, task.wait,
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end, debug, tick;
 
 local SERVICES_WE_USE = table.freeze({
 	"Workspace",
@@ -153,6 +107,7 @@ local origEnv = getfenv()
 setfenv(1, setmetatable({}, { __metatable = unique }))
 local startTime = time()
 local oldInstNew = Instance.new
+local oldFromExisting = Instance.fromExisting
 local oldReq = require
 local locals = {}
 local client = {}
@@ -421,6 +376,7 @@ BrickColor = Localize(BrickColor)
 TweenInfo = Localize(TweenInfo)
 Axes = Localize(Axes)
 task = Localize(task)
+debug = Localize(debug)
 
 --// Wrap
 log("Wrap")
@@ -447,6 +403,9 @@ Instance = {
 	new = function(obj, parent)
 		return service_Wrap(oldInstNew(obj, service_UnWrap(parent)), true)
 	end,
+	fromExisting = function(existingInstance: Instance)
+		return service_Wrap(oldFromExisting(service_UnWrap(existingInstance)))
+	end
 }
 require = function(obj, noWrap: boolean?)
 	return if noWrap == true then oldReq(service_UnWrap(obj)) else service_Wrap(oldReq(service_UnWrap(obj)), true)
@@ -522,6 +481,7 @@ for ind, loc in
 		Ray = Ray,
 		task = task,
 		tick = tick,
+		debug = debug,
 		service = service,
 	}
 do

@@ -78,12 +78,12 @@ return function(Vargs, GetEnv)
 		CachedDonors = {},
 		Aliases = {},
 		ReturnPoints = {},
+		BotKeys = {},
 		BanMessage = "Banned",
 		PlayerJoinFilters = {};
 		LockMessage = "Not Whitelisted",
-		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605", 5212082, 5212081}, --// Strings are items; numbers are gamepasses
+		DonorPass = {"6878510605", "82180417686588", "113285285080347", "120289654999943", 1348327, 1990427, 1911740, 167686, 98593, 5212082, 5212081 }, --// Strings are items; numbers are gamepasses
 		WebPanel_Initiated = false,
-		DeveloperWhitelist = {1237666, 76328606, 698712377},
 		HTTPCheckUrl = "https://www.google.com/humans.txt",
 		IPInfoUrl = "https://speed.cloudflare.com/meta",
 		SizeLimit = 20,
@@ -268,6 +268,10 @@ return function(Vargs, GetEnv)
 		Starter = {
 			Health = {};
 			Speed = {};
-		}
+		};
+		
+		PersistedItems = {};
+
+		Tags = {};
 	}
 end

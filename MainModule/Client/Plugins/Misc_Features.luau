@@ -4,7 +4,6 @@ return function(Vargs, GetEnv)
 	local client = Vargs.Client;
 	local service = Vargs.Service;
 
-	local Settings = client.Settings
 	local Functions, Anti, Core, Logs, Remote, Process, Variables = client.Functions, client.Anti, client.Core, client.Logs, client.Remote, client.Process, client.Variables
 
 	-- // Backwards compatibility
@@ -35,7 +34,6 @@ return function(Vargs, GetEnv)
 		__newindex = function(_, ind, val)
 			warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands. Replace `Remote.Unencrypted` with `Remote.Commands`!")
 			Remote.Commands[ind] = val
-			Logs:AddLog("Script", `Attempted to add {ind} to legacy Remote.Unencrypted. Moving to Remote.Commands`)
 		end
 	})
 	client.Folder:SetSpecial("Shared", client.Shared)
@@ -53,6 +51,4 @@ return function(Vargs, GetEnv)
 	-- TODO: Remove \\/
 	service.OwnsAsset = service.CheckAssetOwnership
 	Functions.CatchError = client.Pcall
-
-	Logs:AddLog("Script", "Misc Features Module Loaded")
 end

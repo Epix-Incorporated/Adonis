@@ -9,6 +9,7 @@ return {
 	SplitKey = " ";				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 	BatchKey = "|";				-- :kill me | :ff bob | :explode scel
 	ConsoleKeyCode = "Quote";	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+	FlyKeyCode = "E";			-- Keybind to toggle fly; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 	HideScript = true;	-- When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module; Disable if your game uses AssetService:SavePlaceAsync()
 
@@ -28,7 +29,6 @@ return {
 
 	Theme = "Default";			-- UI theme
 	MobileTheme = "Mobilius";	-- Theme to use on mobile devices; Some UI elements are disabled
-	DefaultTheme = "Default";	-- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 	HiddenThemes = {};			-- Hide themes from the theme selector tab inside the userpanel. Each theme name must be the specific name such as "Mobilius"
 
 	BanMessage = "Banned";				-- Message shown to banned users upon kick
@@ -61,10 +61,6 @@ return {
 	CapeList = {};		-- List of capes		Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
 	InsertList = {}; 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'		Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
 
-	OnStartup = {};		-- List of commands ran at server start		Format: {":notif TestNotif"}
-	OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
-	OnSpawn = {};		-- List of commands ran as player on spawn (ignores adminlevel)		Format: {"!fire Really red",":ff me"}
-
 	FunCommands = true;					-- Are fun commands enabled?
 	PlayerCommands = true;				-- Are player-level utility commands enabled?
 	AgeRestrictedCommands = true;		-- Are age restricted commands enabled?
@@ -75,6 +71,7 @@ return {
 	SilentCommandDenials = false;		-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 	OverrideChatCallbacks = true;		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
 	ChatCreateRobloxCommands = false;	-- Whether "/" commands for Roblox should get created in new Chat
+	DefaultTheme = "Default";			-- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 
 	CodeExecution = false;	-- Enables the use of code execution in Adonis. Scripting related (such as :s) and a few other commands require this
 
@@ -93,6 +90,8 @@ return {
 	HelpSystem = true;	-- Allows players to call admins for help using !help
 	HelpButton = true;	-- Shows a little help button in the bottom right corner.
 	HelpButtonImage = "rbxassetid://357249130";	-- Sets the image used for the Adonis help button above.
+
+	LegacyCommandList = false;	-- If true, :cmds will show the old plain command list instead of the modern command list UI
 
 	HttpWait = 60;	-- How long things that use the HttpService will wait before updating again
 };

@@ -34,10 +34,6 @@ return {
 	"Waypoints";
 	"CustomRanks";
 	" ";
-	"OnStartup";
-	"OnJoin";
-	"OnSpawn";
-	" ";
 	"SaveAdmins";
 	"WhitelistEnabled";
 	" ";
@@ -96,6 +92,8 @@ return {
 	"HelpSystem";
 	"HelpButton";
 	"HelpButtonImage";
+	" ";
+	"LegacyCommandList";
 	" ";
 	"DonorCommands";
 	"DonorCapes";

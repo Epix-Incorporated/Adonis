@@ -286,16 +286,6 @@ return function(Vargs, GetEnv)
 			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, false, `{Settings.Prefix}backupmap`)
 		end
 
-		--// Run OnStartup Commands
-		for i,v in Settings.OnStartup do
-			print(`Running startup command {v}`)
-			TrackTask(`Thread: Startup_Cmd: {v}`, Admin.RunCommand, false, v)
-			AddLog("Script", {
-				Text = `Startup: Executed {v}`;
-				Desc = `Executed startup command; {v}`;
-			})
-		end
-
 		--// Check if Shutdownlogs is set and if not then set it
 		if Core.DataStore and not Core.GetData("ShutdownLogs") then
 			Core.SetData("ShutdownLogs", {})
@@ -304,12 +294,6 @@ return function(Vargs, GetEnv)
 		Admin.RunAfterPlugins = nil;
 		AddLog("Script", "Admin Module RunAfterPlugins Finished")
 	end
-
-	service.RbxEvent(service.MarketplaceService.PromptGamePassPurchaseFinished, function(player, id, purchased)
-		if Variables and player.Parent and table.find(Variables.DonorPass, id) and purchased then
-			Variables.CachedDonors[tostring(player.UserId)] = os.time()
-		end
-	end)
 
 	local function stripArgPlaceholders(alias)
 		return service.Trim(string.gsub(alias, "<%S+>", ""))
@@ -378,6 +362,11 @@ return function(Vargs, GetEnv)
 
 		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
 		AdminLevelCacheTimeout = 30;
+
+		--// How long a negative donor check result will be cached (unless cleared by an in-game purchase)
+		DonorCheckCacheTimeout = 600;
+		NonDonorCache = {};
+		PendingDonorChecks = {};
 
 		CheckSlowMode = function(p: Player)
 			if Admin.SlowMode and Admin.SlowCache[p] and os.time() - Admin.SlowCache[p] < Admin.SlowMode then
@@ -660,11 +649,19 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
-			if Settings.Console and type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
-				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
-					task.defer(Remote.RefreshGui, p, "Console")
-				else
-					task.defer(Remote.RemoveGui, p, "Console")
+			if type(p) == "userdata" and p:IsA("Player") and (oLevel ~= level or oRank ~= rank) then
+				service.Events.PlayerAdminChanged:Fire(
+					p,
+					{ Level = level, Rank = rank },
+					{ Level = oLevel, Rank = oRank }
+				)
+
+				if Settings.Console then
+					if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
+						task.defer(Remote.RefreshGui, p, "Console")
+					else
+						task.defer(Remote.RemoveGui, p, "Console")
+					end
 				end
 			end
 
@@ -891,9 +888,32 @@ return function(Vargs, GetEnv)
 				return true
 			else
 				local pGroup = Admin.GetPlayerGroup(p, 886423)
+				if pGroup and pGroup.Rank >= 10 then 
+					--// Complimentary donor access is given to Adonis contributors & developers.
+					Variables.CachedDonors[key] = os.time()
+					return true
+				end
+
+				local lastNegative = Admin.NonDonorCache[key]
+				if lastNegative and os.time() - lastNegative < Admin.DonorCheckCacheTimeout then
+					return false
+				end
+
+				--// Wait on an in-progress check instead of querying every product again
+				local waiting = Admin.PendingDonorChecks[key]
+				if waiting then
+					table.insert(waiting, coroutine.running())
+					return coroutine.yield()
+				end
+
+				waiting = {}
+				Admin.PendingDonorChecks[key] = waiting
+
+				local isDonor, reliable = false, true
 				for _, pass in Variables.DonorPass do
 					if p.Parent ~= service.Players then
-						return false
+						reliable = false
+						break
 					end
 
 					local ran, ret
@@ -903,12 +923,31 @@ return function(Vargs, GetEnv)
 						ran, ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
 					end
 
-					if (ran and ret) or (pGroup and pGroup.Rank >= 10) then --// Complimentary donor access is given to Adonis contributors & developers.
-						Variables.CachedDonors[key] = os.time()
-						return true
+					if ran and ret then
+						isDonor = true
+						break
+					elseif ran == false then
+						reliable = false
 					end
 				end
+
+				if isDonor then
+					Variables.CachedDonors[key] = os.time()
+				elseif reliable then
+					Admin.NonDonorCache[key] = os.time()
+				end
+
+				Admin.PendingDonorChecks[key] = nil
+				for _, thread in waiting do
+					task.spawn(thread, isDonor)
+				end
+
+				return isDonor
 			end
+		end;
+
+		ClearDonorCheckCache = function(p)
+			Admin.NonDonorCache[tostring(p.UserId)] = nil
 		end;
 
 		CheckBan = function(p)

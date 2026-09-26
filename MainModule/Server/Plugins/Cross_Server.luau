@@ -178,6 +178,7 @@ return function(Vargs, GetEnv)
 		Commands = {"crossserver", "cross"};
 		Args = {"command"};
 		Description = "Runs the specified command string on all servers";
+		Category = "Server";
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
 		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
@@ -202,6 +203,7 @@ return function(Vargs, GetEnv)
 		Commands = {"serverlist", "gameservers", "crossserverlist", "listservers"};
 		Args = {"autoupdate? (default: true)"};
 		Description = "Attempts to list all active servers (at the time the command was ran)";
+		Category = "Server";
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
 		IsCrossServer = true;
@@ -276,6 +278,7 @@ return function(Vargs, GetEnv)
 		Args = {"answer1,answer2,etc (NO SPACES)", "question"};
 		Filter = true;
 		Description = "Lets you ask players in all servers a question with a list of answers and get the results";
+		Category = "Messages";
 		AdminLevel = "Moderators";
 		CrossServerDenied = true;
 		IsCrossServer = true;

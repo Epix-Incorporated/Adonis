@@ -49,7 +49,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert =
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert, debug =
 	_G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
@@ -59,7 +59,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end, debug;
 
 local SERVICES_WE_USE = table.freeze {
 	"Workspace";
@@ -87,7 +87,8 @@ local SERVICES_WE_USE = table.freeze {
 }
 
 local unique = {}
-local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
+local origEnv = getfenv()
+setfenv(1, setmetatable({}, { __metatable = unique }))
 local locals = {}
 local server = {}
 local service = {}
@@ -95,9 +96,10 @@ local RbxEvents = {}
 local ErrorLogs = {}
 local HookedEvents = {}
 local ServiceSpecific = {}
-local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
+local oldFromExisting = Instance.fromExisting
+local oldReq = require
 local isModule = function(module)
 	for ind, modu in pairs(server.Modules) do
 		if module == modu then
@@ -358,11 +360,15 @@ BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 task = service.Localize(task)
+debug = service.Localize(debug)
 
 --// Wrap
 Instance = {
 	new = function(obj, parent)
 		return oldInstNew(obj, service.UnWrap(parent))
+	end,
+	fromExisting = function(existingInstance: Instance)
+		return oldFromExisting(service.UnWrap(existingInstance))
 	end
 }
 
@@ -443,6 +449,7 @@ for ind, loc in pairs({
 	CFrame = CFrame;
 	Ray = Ray;
 	task = task;
+	debug = debug;
 	service = service
 	})
 do
@@ -465,7 +472,7 @@ return service.NewProxy({
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
 				connection1 = m:GetPropertyChangedSignal("Parent"):Connect(function()
-					if not m or m.Parent ~= service.RunService then
+					if not m or m.Parent ~= service.RunService and server.Running then
 						connection1:Disconnect()
 						connection2:Disconnect()
 						--warn("Adonis module mutex removed; Regenerating...")
@@ -477,7 +484,7 @@ return service.NewProxy({
 				end)
 				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
 					pcall(function()
-						if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+						if m and m.Name ~= "__Adonis_MODULE_MUTEX" and server.Running then
 							m.Name = "__Adonis_MODULE_MUTEX"
 						end
 					end)
@@ -731,7 +738,7 @@ return service.NewProxy({
 			task.defer(xpcall, LoadModule, function(reason)
 				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
-				table.insert(server.messages, {
+				table.insert(server.Messages, {
 					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
 					Icon = "maticon://Dangerous",
 					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,
