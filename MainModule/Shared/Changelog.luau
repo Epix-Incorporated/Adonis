@@ -1,7 +1,10 @@
 return {
-	"Version: 282";
+	"Version: 283";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v283 2026-xx-xx xx:xx UTC] @Maintainer";
+	"(Git/Kanuin) Update :freecam with the new Enhanced Freecam Capabilities (#2182)";
 	"";
 	"[Patch v282.2 2026-09-23 21:42 UTC] @joritochip";
 	"Fix cmd list comparison issue";
