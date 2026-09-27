@@ -132,12 +132,7 @@ return function(Vargs, GetEnv)
 							if obj == gui and parent == nil then
 								tempConnection:Disconnect()
 								Debris:AddItem(gui,0)
-								for i,v in Variables.ESPObjects do
-									if v == gui then
-										table.remove(Variables.ESPObjects, i)
-										break;
-									end
-								end
+								Variables.ESPObjects[gui] = nil;
 							end
 						end)
 
