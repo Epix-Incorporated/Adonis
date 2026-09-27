@@ -67,8 +67,6 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Core Module Initialized")
 	end;
 
-	local Connections = {}
-
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
 		Core.MakeEvent()
@@ -477,7 +475,7 @@ return function(Vargs, GetEnv)
 				folder.Name = depsName--"Adonis_Client"
 				folder.Parent = container
 
-				local clientLoadedEvent
+				local clientLoadedEvent, playerRemovingEvent
 
 				local Cleanup = function(player, loaded)
 					if player ~= p then
@@ -500,9 +498,9 @@ return function(Vargs, GetEnv)
 							container.Parent = nil
 						end
 					else --// Player left
-						if Connections["HookClient_" .. key] then
-							Connections["HookClient_" .. key]:Disconnect()
-							Connections["HookClient_" .. key] = nil
+						if playerRemovingEvent then
+							playerRemovingEvent:Disconnect()
+							playerRemovingEvent = nil
 						end
 						
 						if container then
@@ -525,7 +523,7 @@ return function(Vargs, GetEnv)
 				end)
 
 				--// Cleanup 
-				Connections["HookClient_" .. key] = game.Players.PlayerRemoving:Connect(function(Player)
+				playerRemovingEvent = service.Players.PlayerRemoving:Connect(function(Player)
 					Cleanup(Player, false)
 				end)
 

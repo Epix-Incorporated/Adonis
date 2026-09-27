@@ -722,10 +722,6 @@ return function(Vargs, GetEnv)
 			Core.PlayerData[key] = nil
 			Remote.Clients[key] = keyData
 
-			Connections[p.UserId] = {}
-			Tasks[p.UserId] = {}
-				
-
 			local ran, err = Pcall(function()
 				task.spawn(function()
 					if Anti.UserSpoofCheck(p) then
@@ -811,8 +807,13 @@ return function(Vargs, GetEnv)
 					Player = p;
 				})
 
+				if not p.Parent then return end
+
+				Connections[p] = {}
+				Tasks[p] = {}
+
 				--// Get chats
-				Connections[p.UserId].Chatted = p.Chatted:Connect(function(msg)
+				Connections[p].Chatted = p.Chatted:Connect(function(msg)
 					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, false, p, msg)
 					if not ran then
 						logError(err);
@@ -821,7 +822,7 @@ return function(Vargs, GetEnv)
 
 				--// Character added
 				--// well bro you never disconencted these
-				Connections[p.UserId].CharacterAdded = p.CharacterAdded:Connect(function(...)
+				Connections[p].CharacterAdded =p.CharacterAdded:Connect(function(...)
 					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, false, p, ...)
 					if not ran then
 						logError(err);
@@ -829,7 +830,7 @@ return function(Vargs, GetEnv)
 				end)
 
 				--// cleans it up incase player leaves during loading
-				Tasks[p.UserId].LoadTimeout = task.delay(600, function()
+				Tasks[p].LoadTimeout =task.delay(600, function()
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						AddLog("Script", {
 							Text = `{p.Name} Failed to Load`,
@@ -862,22 +863,20 @@ return function(Vargs, GetEnv)
 				end
 			end)
 
-			if Connections[p.UserId] then
-				for Index, Connection in pairs(Connections[p.UserId]) do
-					if Connection and Connection.Disconnect then
-						Connection:Disconnect()
-					end
+			if Connections[p] then
+				for _, connection in Connections[p] do
+					connection:Disconnect()
 				end
-				Connections[p.UserId] = nil
+				Connections[p] = nil
 			end
 
-			if Tasks[p.UserId] then
-				for Index, Task in pairs(Tasks[p.UserId]) do
-					if Task and coroutine.status(Task) ~= "dead" then
-						task.cancel(Task)
+			if Tasks[p] then
+				for _, thread in Tasks[p] do
+					if coroutine.status(thread) ~= "dead" then
+						task.cancel(thread)
 					end
 				end
-				Tasks[p.UserId] = nil
+				Tasks[p] = nil
 			end
 
 			AddLog("Script", {
