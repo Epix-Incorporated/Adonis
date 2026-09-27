@@ -5,6 +5,12 @@ return {
 	"";
 	"[v283 2026-xx-xx xx:xx UTC] @Maintainer";
 	"(Git/Kanuin) Update :freecam with the new Enhanced Freecam Capabilities (#2182)";
+	"(Git/popeeyy) Fix server memory leaks (#2187)";
+	"(Git/mahmoud34abc) Avoid recursive wrapping of tables and fix ESP cleanup (#2185)";
+	"(Git/root0055) Add user-based insert clear command; fix an index shifting bug (#2155)";
+	"(Git/ccuser44) Re-add panic mode (#1905)";
+	"(Git/ccuser44) Add more robustness to Adonis loader boot sequence module loading (#2018)";
+	"(Git/ccuser44) Fix sing command not removing animated face (#2093)";
 	"";
 	"[Patch v282.2 2026-09-23 21:42 UTC] @joritochip";
 	"Fix cmd list comparison issue";
