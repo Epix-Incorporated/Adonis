@@ -72,9 +72,9 @@
 
 --requires luaP, luaX, luaK
 local luaY = {}
-local luaX = require(script.Parent.LuaX)
-local luaK = require(script.Parent.LuaK)(luaY)
-local luaP = require(script.Parent.LuaP)
+local luaX = require(script and script.Parent.LuaX or "LuaX")
+local luaK = require(script and script.Parent.LuaK or "LuaK")(luaY)
+local luaP = require(script and script.Parent.LuaP or "LuaP")
 
 --[[--------------------------------------------------------------------
 -- Expression descriptor

@@ -14,6 +14,7 @@ return function(Vargs, env)
 			Commands = {"directban"};
 			Args = {"username(s)", "reason"};
 			Description = "Adds the specified user(s) to the global ban list; saves";
+			Category = "Moderation";
 			AdminLevel = "Creators";
 			Filter = true;
 			Hidden = true;
@@ -51,6 +52,7 @@ return function(Vargs, env)
 			Commands = {"directunban", "undirectban"};
 			Args = {"username(s)"};
 			Description = "Removes the specified user(s) from the global ban list; saves";
+			Category = "Moderation";
 			AdminLevel = "Creators";
 			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {any})
@@ -85,6 +87,7 @@ return function(Vargs, env)
 			Commands = {"globalplace", "gplace", "globalforceplace"};
 			Args = {"placeId"};
 			Description = "Force all game-players to teleport to a desired place";
+			Category = "Teleportation";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
 			IsCrossServer = true;
@@ -112,6 +115,7 @@ return function(Vargs, env)
 			Commands = {"forceplace"};
 			Args = {"player", "placeId/serverName"};
 			Description = "Force the target player(s) to teleport to the desired place";
+			Category = "Teleportation";
 			NoStudio = true;
 			CrossServerDenied = true;
 			AdminLevel = "Creators";
@@ -141,6 +145,7 @@ return function(Vargs, env)
 			Commands = {":adonissettings", `{Settings.Prefix}settings`, `{Settings.Prefix}adonissettings`};
 			Args = {};
 			Description = "Opens the Adonis settings management interface";
+			Category = "Developer";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Settings"})
@@ -152,6 +157,7 @@ return function(Vargs, env)
 			Commands = {"headadmin", "owner", "hadmin", "oa"};
 			Args = {"player"};
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
+			Category = "Ranks";
 			AdminLevel = "Creators";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
@@ -174,6 +180,7 @@ return function(Vargs, env)
 			Commands = {"tempheadadmin", "tempowner", "toa", "thadmin"};
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
+			Category = "Ranks";
 			AdminLevel = "Creators";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: {any})
@@ -196,6 +203,7 @@ return function(Vargs, env)
 			Commands = {"sudo"};
 			Args = {"player", "command"};
 			Description = "Runs a command as the target player(s)";
+			Category = "Developer";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
@@ -212,6 +220,7 @@ return function(Vargs, env)
 			Commands = {"clearplayerdata", "clrplrdata", "clearplrdata", "clrplayerdata"};
 			Args = {"UserId"};
 			Description = "Clears PlayerData linked to the specified UserId";
+			Category = "Developer";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				local id = assert(tonumber(args[1]), "Must supply a valid UserId (argument #1)")
@@ -239,6 +248,7 @@ return function(Vargs, env)
 			Prefix = "";
 			Commands = {`{Settings.Prefix}terminal`, `{Settings.Prefix}console`, ":terminal", ":console"};
 			Description = "Opens the debug terminal";
+			Category = "Developer";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Terminal")
@@ -250,6 +260,7 @@ return function(Vargs, env)
 			Commands = {"scripteditor", "se"};
 			Args = {"new/edit/delete/run","name"};
 			Description = "Opens Script editor";
+			Category = "Developer";
 			CrossServerDenied = true;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
@@ -332,6 +343,7 @@ return function(Vargs, env)
 			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
 			Args = {"name", "code"};
 			Description = "Executes the given code on everyone's client upon respawn";
+			Category = "Developer";
 			AdminLevel = "Creators";
 			NoFilter = true;
 			CrossServerDenied = true;
@@ -372,6 +384,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"clearoldlogs","flusholdlogs"};
 			Description = "Clears old logs";
+			Category = "Logs";
 			AdminLevel = "Creators";
 			Function = function(plr: Player)
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
@@ -394,6 +407,7 @@ return function(Vargs, env)
 			Commands = {"taskmgr", "taskmanager"};
 			Args = {};
 			Description = "Task manager";
+			Category = "Server";
 			Hidden = true;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})

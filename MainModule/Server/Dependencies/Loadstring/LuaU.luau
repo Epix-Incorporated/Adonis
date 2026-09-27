@@ -59,7 +59,7 @@
 
 --requires luaP
 local luaU = {}
-local luaP = require(script.Parent.LuaP)
+local luaP = require(script and script.Parent.LuaP or "LuaP")
 
 -- mark for precompiled code ('<esc>Lua') (from lua.h)
 luaU.LUA_SIGNATURE = "\27Lua"
@@ -104,10 +104,9 @@ end
 -- * if a nil is passed, then writer should close the open file
 ------------------------------------------------------------------------
 
---[[
 function luaU:make_setF(filename)
   local buff = {}
-        buff.h = io.open(filename, "wb")
+        buff.h =  type(filename) == "string" and io.open(filename, "wb") or filename
   if not buff.h then return nil end
   local writer =
     function(s, buff)  -- chunk writer
@@ -120,7 +119,7 @@ function luaU:make_setF(filename)
       return 1
     end
   return writer, buff
-end--]]
+end
 
 ------------------------------------------------------------------------
 -- works like the lobject.h version except that TObject used in these

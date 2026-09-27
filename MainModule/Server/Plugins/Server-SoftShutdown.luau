@@ -146,6 +146,7 @@ return function(Vargs, GetEnv)
 		Commands = {"softshutdown", "restart", "sshutdown", "restartserver"};
 		Args = {"reason"};
 		Description = "Restarts the server";
+		Category = "Server";
 		Filter = true;
 		NoStudio = true; --// TeleportService does not work in Studio
 		AdminLevel = "Admins";
@@ -207,6 +208,7 @@ return function(Vargs, GetEnv)
 		Commands = {"globalsoftshutdown", "globalrestart", "globalsshutdown", "grestart"};
 		Args = {"reason (default: none)", "time<s,m> (default: instant)", "abortable (default: true)"};
 		Description = "Performs a global restart on all servers after set time. (Abortable specifies whether VIP server owners can abort the restart on their own servers.)";
+		Category = "Server";
 		Filter = true;
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true;
@@ -241,6 +243,7 @@ return function(Vargs, GetEnv)
 		Commands = {"abortglobalsoftshutdown", "abortglobalrestart", "abortglobalsshutdown", "abortgrestart"};
 		Args = {};
 		Description = "Aborts a global shutdown on all servers.";
+		Category = "Server";
 		Filter = true;
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true;
@@ -256,6 +259,7 @@ return function(Vargs, GetEnv)
 		Commands = {"abortrestart"};
 		Args = {};
 		Description = "Aborts a global server restart";
+		Category = "Server";
 		NoStudio = true;
 		AdminLevel = "Players";
 		Disabled = game.PrivateServerOwnerId == 0; -- enabled only on VIP servers.
