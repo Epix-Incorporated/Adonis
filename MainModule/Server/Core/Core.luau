@@ -475,26 +475,56 @@ return function(Vargs, GetEnv)
 				folder.Name = depsName--"Adonis_Client"
 				folder.Parent = container
 
-				--// Event only fires AFTER the client is alive and well
-				local event; event = service.Events.ClientLoaded:Connect(function(plr)
-					if p == plr and container.Parent == parentObj then
+				local clientLoadedEvent, playerRemovingEvent
 
-						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
-						container.Parent = nil
-						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function(child, parent)
-							if child == p and parent == nil then
-								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
-								pcall(container.Destroy, container)
-								container = nil
-
-								leaveEvent:Disconnect()
-								leaveEvent = nil
-							end
-						end)
-
-						event:Disconnect()
-						event = nil
+				local Cleanup = function(player, loaded)
+					if player ~= p then
+						return
 					end
+
+					--// Cleanup load event
+					if clientLoadedEvent then
+						clientLoadedEvent:Disconnect()
+						clientLoadedEvent = nil
+					end
+
+					if keys then
+						keys.Module = nil
+						keys.EventName = nil
+					end
+
+					if loaded then --// Player loaded
+						if container then
+							container.Parent = nil
+						end
+					else --// Player left
+						if playerRemovingEvent then
+							playerRemovingEvent:Disconnect()
+							playerRemovingEvent = nil
+						end
+						
+						if container then
+							pcall(container.Destroy, container)
+							container = nil
+						end
+
+						if folder then
+							pcall(folder.Destroy, folder)
+							folder = nil
+						end
+					end
+				end
+
+				--// Event only fires AFTER the client is alive and well
+				clientLoadedEvent = service.Events.ClientLoaded:Connect(function(plr)
+					if p == plr and container and container.Parent == parentObj then
+						Cleanup(plr, true)
+					end
+				end)
+
+				--// Cleanup 
+				playerRemovingEvent = service.Players.PlayerRemoving:Connect(function(Player)
+					Cleanup(Player, false)
 				end)
 
 				local ok, err = pcall(function()

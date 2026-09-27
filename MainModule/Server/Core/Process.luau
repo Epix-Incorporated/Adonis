@@ -89,6 +89,9 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Processing Module Initialized")
 	end;
 
+	local Connections = {}
+	local Tasks = {}
+
 	local function RunAfterPlugins(data)
 		local existingPlayers = service.Players:GetPlayers()
 
@@ -804,8 +807,13 @@ return function(Vargs, GetEnv)
 					Player = p;
 				})
 
+				if not p.Parent then return end
+
+				Connections[p] = {}
+				Tasks[p] = {}
+
 				--// Get chats
-				p.Chatted:Connect(function(msg)
+				Connections[p].Chatted = p.Chatted:Connect(function(msg)
 					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, false, p, msg)
 					if not ran then
 						logError(err);
@@ -813,14 +821,16 @@ return function(Vargs, GetEnv)
 				end)
 
 				--// Character added
-				p.CharacterAdded:Connect(function(...)
+				--// well bro you never disconencted these
+				Connections[p].CharacterAdded =p.CharacterAdded:Connect(function(...)
 					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, false, p, ...)
 					if not ran then
 						logError(err);
 					end
 				end)
 
-				task.delay(600, function()
+				--// cleans it up incase player leaves during loading
+				Tasks[p].LoadTimeout =task.delay(600, function()
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						AddLog("Script", {
 							Text = `{p.Name} Failed to Load`,
@@ -844,9 +854,30 @@ return function(Vargs, GetEnv)
 			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
+					
+					if Remote.Clients[key] then
+						Remote.Clients[key] = nil
+			        end
+
 					Admin.ClearDonorCheckCache(p)
 				end
 			end)
+
+			if Connections[p] then
+				for _, connection in Connections[p] do
+					connection:Disconnect()
+				end
+				Connections[p] = nil
+			end
+
+			if Tasks[p] then
+				for _, thread in Tasks[p] do
+					if coroutine.status(thread) ~= "dead" then
+						task.cancel(thread)
+					end
+				end
+				Tasks[p] = nil
+			end
 
 			AddLog("Script", {
 				Text = string.format("Triggered PlayerRemoving for %s", p.Name);
