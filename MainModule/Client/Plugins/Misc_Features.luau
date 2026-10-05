@@ -23,7 +23,7 @@ return function(Vargs, GetEnv)
 		end
 	end
 
-	GetEnv({}).log("Fomratting chatlogs")
+	GetEnv({}).log("Formatting chatlogs")
 	client.FormattedChangelog = table.create(#client.Changelog)
 	for i, line in ipairs(client.Changelog) do
 		client.FormattedChangelog[i] = applyColour(line)
@@ -39,9 +39,6 @@ return function(Vargs, GetEnv)
 	client.cPcall, service.cPcall = cPcall, cPcall
 	service.CloneTable = function(tbl)
 		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
-	end
-	service.AltUnpack = function(args, shift) -- TODO: Remove. This is not used in Adonis at all and is easily replicatable so you can safely remove it withour fear
-		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
 	end
 	service.GoodSignal = service.Signal
 	service.Yield = function()
