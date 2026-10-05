@@ -3,7 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v283 2026-xx-xx xx:xx UTC] @Maintainer";
+	"[v283 2026-10-xx xx:xx UTC] @Maintainer";
+	"Add additional check for 'http' in Anti_Cheat";
+	"Remove unused function";
 	"(Git/Kanuin) Update :freecam with the new Enhanced Freecam Capabilities (#2182)";
 	"(Git/popeeyy) Fix server memory leaks (#2187)";
 	"(Git/mahmoud34abc) Avoid recursive wrapping of tables and fix ESP cleanup (#2185)";
@@ -22,8 +24,8 @@ return {
 	"Refactor KeyCodeToName function initialisation";
 	"";
 	"[v282 2026-09-23 12:08 UTC] @Dimenpsyonal";
-	"(Git/joritochip) Revamp command list (#2134)";
-	"(Git/joritochip) Modify donation panel (#2179)";
+	"Revamp command list";
+	"Modify donation panel";
 	"(Git/TbeyazT) Fix dex (#2160)";
 	"(Git/ffrostfall) Add :velocity command (#2114)";
 	"(Git/SuperCater) Add :persistavataritem command (#2163)";
