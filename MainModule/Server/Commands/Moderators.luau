@@ -2396,10 +2396,33 @@ return function(Vargs, env)
 			Category = "Tools";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in Variables.InsertedObjects do
-					v:Destroy()
-					table.remove(Variables.InsertedObjects, i)
+				for i = #Variables.InsertedObjects, 1, -1 do
+					local v = Variables.InsertedObjects[i]
+					
+					if v and v:GetAttribute("ADONIS_InsertedBy") == plr.Name then
+						if v.Parent then 
+							v:Destroy() 
+						end
+						table.remove(Variables.InsertedObjects, i)
+					end
 				end
+			end
+		};
+
+		InsertClearAll = {
+			Prefix = Settings.Prefix;
+			Commands = {"insclearall", "clearallinserted", "clrallins", "insclrall"};
+			Args = {};
+			Description = "Removes all inserted objects";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i = #Variables.InsertedObjects, 1, -1 do
+					local v = Variables.InsertedObjects[i]
+					if v and v.Parent then
+						v:Destroy()
+					end
+				end
+				table.clear(Variables.InsertedObjects) 
 			end
 		};
 
@@ -7099,17 +7122,16 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
-
 					if not plrgui or plrgui:FindFirstChild("Freecam") then
 						continue
 					end
-
+					
 					local freecam = Deps.Assets.Freecam:Clone()
+					freecam.Freecam.Enabled = true -- enable script
 					freecam.Enabled = true
 					freecam.ResetOnSpawn = false
-					freecam.Freecam.Disabled = false
 					freecam.Parent = plrgui
-					Functions.Notification("Notification", "Freecam has been enabled. Press Shift+P, F, or DPadLeft to toggle freecam on or off.", {v}, 15)
+					Functions.Notification("Notification", "Freecam has been enabled. Press Shift+P or DPadLeft to toggle freecam on or off.", {v}, 15)
 				end
 			end
 		};
@@ -7130,6 +7152,9 @@ return function(Vargs, env)
 							local remote: RemoteFunction? = freecam:FindFirstChildOfClass("RemoteFunction")
 							if remote then
 								pcall(remote.InvokeClient, remote, v, "End")
+							else -- Player has Roblox freecam (he's a dev); can't remove freecam
+								Functions.Hint(`You cannot remove {service.FormatPlayer(v)}'s freecam.`, {plr})
+								return
 							end
 
 							Remote.Send(v, "Function", "SetView", "reset")

@@ -421,7 +421,8 @@ return function(Vargs)
 				if
 					string.find(string.lower(Message), "failed to load", 1, true) or
 					string.find(string.lower(Message), "meshcontentprovider failed to process", 1, true) or
-					string.find(string.lower(Message), "unknown 'active' animation:", 1, true)
+					string.find(string.lower(Message), "unknown 'active' animation:", 1, true) or
+					string.find(string.lower(Message), "http=", 1, true)
 				then return false end
 
 				for _, v in lookFor do

@@ -20,6 +20,19 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "AntiExploit Plugin Module Initialized")
 	end
 
+	local Connections = {}
+
+	local function disconnectAll(connections)
+		for key, connection in connections do
+			if type(connection) == "table" then
+				disconnectAll(connection)
+			else
+				connection:Disconnect()
+				connections[key] = nil
+			end
+		end
+	end
+
 	local function RunAfterPlugins(data)
 		local function onPlayerAdded(player)
 			if not player.Character then
@@ -53,7 +66,14 @@ return function(Vargs, GetEnv)
 	end
 
 	server.Anti.CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
+		if not player.Parent then return end
+
 		local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
+
+		local characterConnections = {}
+		Connections[player] = {
+			Character = characterConnections
+		}
 
 		local function Detected(player, action, reason)
 			if charGood then
@@ -80,12 +100,14 @@ return function(Vargs, GetEnv)
 
 		local function onCharacterRemoving(character)
 			charGood = false
+			disconnectAll(characterConnections)
 		end
 
 		local function onCharacterAdded(character)
 			charGood = true
+			disconnectAll(characterConnections)
 
-			character.ChildAdded:Connect(function(child)
+			table.insert(characterConnections, character.ChildAdded:Connect(function(child)
 				if child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
 					local count = 0
 
@@ -105,11 +127,13 @@ return function(Vargs, GetEnv)
 						end
 					end)
 				end
-			end)
+			end))
 
 			local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
 
-			humanoid.StateChanged:Connect(function(last, state)
+			if not player.Parent or player.Character ~= character then return end
+
+			table.insert(characterConnections, humanoid.StateChanged:Connect(function(last, state)
 				if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead and humanoid then
 					humanoid.Health = 0
 					humanoid:ChangeState(Enum.HumanoidStateType.Dead)
@@ -119,7 +143,7 @@ return function(Vargs, GetEnv)
 						Player = player;
 					})
 				end
-			end)
+			end))
 
 			if service.Players.CharacterAutoLoads and Settings.AntiGod == true then
 				humanoid.Died:Once(function()
@@ -160,10 +184,13 @@ return function(Vargs, GetEnv)
 				end)
 
 				table.insert(connections, connection)
+				table.insert(characterConnections, connection)
 			end
 
 			local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 			local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
+
+			if not player.Parent or player.Character ~= character then return end
 
 			if Settings.AntiRootJointDeletion or Settings.AntiParanoid --[[and game.PlaceId < 13308063561]] then -- // Enable workspace.RejectCharacterDeletions instead
 				makeConnection(rootJoint.AncestryChanged)
@@ -178,9 +205,18 @@ return function(Vargs, GetEnv)
 			task.spawn(onCharacterAdded, player.Character)
 		end
 
-		player.CharacterRemoving:Connect(onCharacterRemoving)
-		player.CharacterAdded:Connect(onCharacterAdded)
+		--// Roblox never disconnects these connections when player leaves the game
+		Connections[player].CharacterRemoving = player.CharacterRemoving:Connect(onCharacterRemoving)
+		Connections[player].CharacterAdded = player.CharacterAdded:Connect(onCharacterAdded)
 	end;
+
+	service.Players.PlayerRemoving:Connect(function(player)
+		local playerConnections = Connections[player]
+		if playerConnections then
+			Connections[player] = nil
+			disconnectAll(playerConnections)
+		end
+	end)
 
 	Init();
 	task.wait()

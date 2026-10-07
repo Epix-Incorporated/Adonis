@@ -1,7 +1,18 @@
 return {
-	"Version: 282";
+	"Version: 283";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v283 2026-10-07 13:31 UTC] @Dimenpsyonal";
+	"Add additional check for 'http' in Anti_Cheat";
+	"Remove unused function";
+	"(Git/Kanuin) Update :freecam with the new Enhanced Freecam Capabilities (#2182)";
+	"(Git/popeeyy) Fix server memory leaks (#2187)";
+	"(Git/mahmoud34abc) Avoid recursive wrapping of tables and fix ESP cleanup (#2185)";
+	"(Git/root0055) Add user-based insert clear command; fix an index shifting bug (#2155)";
+	"(Git/ccuser44) Re-add panic mode (#1905)";
+	"(Git/ccuser44) Add more robustness to Adonis loader boot sequence module loading (#2018)";
+	"(Git/ccuser44) Fix sing command not removing animated face (#2093)";
 	"";
 	"[Patch v282.2 2026-09-23 21:42 UTC] @joritochip";
 	"Fix cmd list comparison issue";
@@ -13,8 +24,8 @@ return {
 	"Refactor KeyCodeToName function initialisation";
 	"";
 	"[v282 2026-09-23 12:08 UTC] @Dimenpsyonal";
-	"(Git/joritochip) Revamp command list (#2134)";
-	"(Git/joritochip) Modify donation panel (#2179)";
+	"Revamp command list";
+	"Modify donation panel";
 	"(Git/TbeyazT) Fix dex (#2160)";
 	"(Git/ffrostfall) Add :velocity command (#2114)";
 	"(Git/SuperCater) Add :persistavataritem command (#2163)";
