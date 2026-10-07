@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
+	"[Patch v283.1 2026-10-07 14:42 UTC] @Dimenpsyonal";
+	"Revert #2182 freecam update until game EFC use can be verified";
+	"";
 	"[v283 2026-10-07 13:31 UTC] @Dimenpsyonal";
 	"Add additional check for 'http' in Anti_Cheat";
 	"Remove unused function";
