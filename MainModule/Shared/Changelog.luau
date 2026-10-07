@@ -3,7 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v283 2026-10-xx xx:xx UTC] @Maintainer";
+	"[v283 2026-10-07 13:31 UTC] @Dimenpsyonal";
 	"Add additional check for 'http' in Anti_Cheat";
 	"Remove unused function";
 	"(Git/Kanuin) Update :freecam with the new Enhanced Freecam Capabilities (#2182)";
