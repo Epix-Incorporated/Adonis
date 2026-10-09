@@ -1,7 +1,14 @@
 return {
-	"Version: 283";
+	"Version: 284";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v284 2026-xx-xx xx:xx UTC] @Maintainer";
+	"(Git/jestemjaworr) Fix CustomRanks handling (#2194)";
+	"(Git/tmm619) Fix :nuke lasting indefinitely and repeatedly killing with large sizes (#2190)";
+	"(Git/rex-rbx) Open use a completely different crash method to wreck settimeout & execution timeout (#2159)";
+	"(Git/melismau) Add hex color code support to Functions.ParseColor3 (#2154)";
+	"(Git/NeonDeveloper-byte) Added Anti-Saveinstance (#2100)";
 	"";
 	"[Patch v283.1 2026-10-07 14:42 UTC] @Dimenpsyonal";
 	"Revert #2182 freecam update until game EFC use can be verified";
