@@ -6,6 +6,29 @@ return function(Vargs, GetEnv)
 
 	local Functions, Anti, Core, Logs, Remote, Process, Variables = client.Functions, client.Anti, client.Core, client.Logs, client.Remote, client.Process, client.Variables
 
+	--// Create formatted changelog from standard changelog
+	local function applyColour(line)
+		local prefix = line:sub(1, 2)
+
+		if prefix == "[v" or prefix == "[1" or prefix == "[0" or prefix == "1." or line:sub(1, 1) == "v" then
+			return `<font color='#8FAEFF'>{line}</font>`
+		elseif line:sub(1, 6) == "[Patch" then
+			return `<font color='#F0B654'>{line}</font>`
+		elseif line:sub(1, 9) == "Version: " then
+			return `<b>{line}</b>`
+		elseif line:sub(1,2) == "# " then
+			return `<b>{string.sub(line, 3)}</b>`
+		else
+			return line
+		end
+	end
+
+	GetEnv({}).log("Formatting chatlogs")
+	client.FormattedChangelog = table.create(#client.Changelog)
+	for i, line in ipairs(client.Changelog) do
+		client.FormattedChangelog[i] = applyColour(line)
+	end
+
 	-- // Backwards compatibility
 	local Pcall = client.Pcall
 	local function cPcall(func, ...)
@@ -16,9 +39,6 @@ return function(Vargs, GetEnv)
 	client.cPcall, service.cPcall = cPcall, cPcall
 	service.CloneTable = function(tbl)
 		return (getmetatable(tbl) and not pcall(setmetatable(tbl, getmetatable(tbl)))) and setmetatable({}, {__index = function(_, k) return tbl[k] end}) or table.clone(tbl)
-	end
-	service.AltUnpack = function(args, shift) -- TODO: Remove. This is not used in Adonis at all and is easily replicatable so you can safely remove it withour fear
-		return table.unpack(args, 1 + (shift and shift - 1 or 0), 10 + (shift and shift - 1 or 0))
 	end
 	service.GoodSignal = service.Signal
 	service.Yield = function()

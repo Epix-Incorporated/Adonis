@@ -8,6 +8,28 @@ return function(Vargs, GetEnv)
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
+	--// Create formatted changelog from standard changelog
+	local function applyColour(line)
+		local prefix = line:sub(1, 2)
+
+		if prefix == "[v" or prefix == "[1" or prefix == "[0" or prefix == "1." or line:sub(1, 1) == "v" then
+			return `<font color='#8FAEFF'>{line}</font>`
+		elseif line:sub(1, 6) == "[Patch" then
+			return `<font color='#F0B654'>{line}</font>`
+		elseif line:sub(1, 9) == "Version: " then
+			return `<b>{line}</b>`
+		elseif line:sub(1,2) == "# " then
+			return `<b>{string.sub(line, 3)}</b>`
+		else
+			return line
+		end
+	end
+
+	server.FormattedChangelog = table.create(#server.Changelog)
+	for i, line in ipairs(server.Changelog) do
+		server.FormattedChangelog[i] = applyColour(line)
+	end
+
 	--// AutoClean
 	if Settings.AutoClean then
 		service.StartLoop("AUTO_CLEAN", Settings.AutoCleanDelay, Functions.CleanWorkspace, true)
@@ -72,7 +94,7 @@ return function(Vargs, GetEnv)
 	end
 	--// Old settings/plugins backwards compatibility. Do not remove this because many games use old loader ranks!
 	for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
-		if Settings[rank] and not Settings.CustomRanks[rank] then
+		if Settings[rank] and not (Settings.CustomRanks and Settings.CustomRanks[rank]) then
 			Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
 		end
 	end

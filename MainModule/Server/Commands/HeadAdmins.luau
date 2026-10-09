@@ -13,6 +13,7 @@ return function(Vargs, env)
 			Commands = {"timeban", "tempban", "tban", "temporaryban"};
 			Args = {"player", "number<s/m/h/d>", "reason"};
 			Description = `Bans the target player(s) from the game for the supplied amount of time; data-persistent; undo using {Settings.Prefix}untimeban`;
+			Category = "Moderation";
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
@@ -48,6 +49,7 @@ return function(Vargs, env)
 			Commands = {"directtimeban", "directtimedban", "directtempban", "directtban", "directtemporaryban"};
 			Args = {"username(s)", "number<s/m/h/d>", "reason"};
 			Description = `Bans the target user(s) from the game for the supplied amount of time; data-persistent; undo using {Settings.Prefix}untimeban`;
+			Category = "Moderation";
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
@@ -92,6 +94,7 @@ return function(Vargs, env)
 			Commands = {"untimeban", "untimedban", "untban", "untempban", "untemporaryban"};
 			Args = {"user"};
 			Description = "Removes the target user(s) from the timebans list";
+			Category = "Moderation";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string})
@@ -116,6 +119,7 @@ return function(Vargs, env)
 			Commands = {"globalban", "permban", "permanentban", "pban", "gameban", "gban"};
 			Args = {"player/user", "reason"};
 			Description = "Bans the target player(s) from the game permanently; if they join a different server they will be banned there too";
+			Category = "Moderation";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
 			Filter = true;
@@ -143,6 +147,7 @@ return function(Vargs, env)
 			Commands = {"unglobalban", "unpermban", "unpermanentban", "unpban", "ungameban", "ungban"};
 			Args = {"user"};
 			Description = "Unbans the target user(s) from the game; saves";
+			Category = "Moderation";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string})
@@ -167,6 +172,7 @@ return function(Vargs, env)
 			Commands = {"tempadmin", "tadmin"};
 			Args = {"player"};
 			Description = "Makes the target player(s) a temporary admin; does not save";
+			Category = "Ranks";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: any)
@@ -190,6 +196,7 @@ return function(Vargs, env)
 			Commands = {"permadmin", "padmin", "admin"};
 			Args = {"player/user"};
 			Description = "Makes the target player(s) an admin; saves";
+			Category = "Ranks";
 			AdminLevel = "HeadAdmins";
 			Dangerous = true;
 			Function = function(plr: Player, args: {string}, data: any)
@@ -216,6 +223,7 @@ return function(Vargs, env)
 			Commands = {"globalmessage", "gm", "globalannounce"};
 			Args = {"message"};
 			Description = "Sends a global message to all servers";
+			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
@@ -232,6 +240,7 @@ return function(Vargs, env)
 			Commands = {"gtm", "globaltimedmessage", "globaltimemessage", "globaltimem"};
 			Args = {"time", "message"};
 			Description = "Sends a global message to all servers and makes it stay on the screen for the amount of time (in seconds) you supply";
+			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
@@ -248,6 +257,7 @@ return function(Vargs, env)
 			Commands = {"fullclear", "clearinstances", "fullclr"};
 			Args = {};
 			Description = "Removes any instance created server-side by Adonis; May break things";
+			Category = "Server";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				local objects = service.GetAdonisObjects()
@@ -267,6 +277,7 @@ return function(Vargs, env)
 			Commands = {"backupmap", "mapbackup", "bmap"};
 			Args = {};
 			Description = "Changes the backup for the restore map command to the map's current state";
+			Category = "World";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				local plr_name = if plr then service.FormatPlayer(plr) else "%SYSTEM%"
@@ -354,6 +365,7 @@ return function(Vargs, env)
 			Commands = {"explore", "explorer"};
 			Args = {};
 			Description = `Lets you explore the game, kinda like a file browser (alternative to {Settings.Prefix}dex)`;
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Explorer")
@@ -365,6 +377,7 @@ return function(Vargs, env)
 			Commands = {"promptinvite", "inviteprompt", "forceinvite"};
 			Args = {"player"};
 			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
+			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -378,6 +391,7 @@ return function(Vargs, env)
 			Commands = {"forcerejoin"};
 			Args = {"player"};
 			Description = `Forces target player(s) to rejoin the server; same as them running {Settings.PlayerPrefix}rejoin`;
+			Category = "Teleportation";
 			NoStudio = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
@@ -394,6 +408,7 @@ return function(Vargs, env)
 			Commands = {"fullshutdown", "globalshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
+			Category = "Server";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
@@ -428,6 +443,7 @@ return function(Vargs, env)
 			Commands = {"incognito"};
 			Args = {"player", "hideFromNonAdmins(default true)", "hideCharacter(default true)"};
 			Description = "Removes the target player from other clients' perspectives (persists until rejoin). Allows to set whether to hide only from nonadmins or from everyone.";
+			Category = "Server";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				local hidefromEveryone = false
@@ -520,6 +536,7 @@ return function(Vargs, env)
 			Commands = {"awardbadge", "badge", "givebadge"};
 			Args = {"player", "badgeId"};
 			Description = "Awards the badge of the specified ID to the target player(s)";
+			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				if not Variables.BadgeInfoCache then
@@ -566,6 +583,7 @@ return function(Vargs, env)
 			Commands = {"scriptbuilder", "scriptb", "sb"};
 			Args = {"create/remove/edit/close/clear/append/run/stop/list", "localscript/script", "scriptName", "data"};
 			Description = "[Deprecated] Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
 			NoFilter = true;
@@ -750,6 +768,7 @@ return function(Vargs, env)
 			Commands = {"s", "ss", "serverscript", "sscript", "script", "makescript"};
 			Args = {"code"};
 			Description = "Executes the given Lua code on the server";
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			CrossServerDenied = true;
@@ -787,6 +806,7 @@ return function(Vargs, env)
 			Commands = {"ls", "localscript", "lscript"};
 			Args = {"code"};
 			Description = "Executes the given code on your client";
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			CrossServerDenied = true;
@@ -802,6 +822,7 @@ return function(Vargs, env)
 			Commands = {"cs", "cscript", "clientscript"};
 			Args = {"player", "code"};
 			Description = "Executes the given code on the client of the target player(s)";
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			CrossServerDenied = true;
@@ -844,6 +865,7 @@ return function(Vargs, env)
 			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
 			Args = {"name", "code"};
 			Description = "Executes the given code on everyone's client upon respawn";
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			CrossServerDenied = true;
@@ -885,6 +907,7 @@ return function(Vargs, env)
 			Commands = {"starterscripts", "clientstarterscripts", "starterclientscripts"};
 			Args = {};
 			Description = "Show existing starterscripts";
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
@@ -908,6 +931,7 @@ return function(Vargs, env)
 			Commands = {"removestarterscript", "removeclientstarterscripts", "removestarterclientscripts", "unstarterscript"};
 			Args = {"name"};
 			Description = "Remove a starterscript";
+			Category = "Developer";
 			AdminLevel = "HeadAdmins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})

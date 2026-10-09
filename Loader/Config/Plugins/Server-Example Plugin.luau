@@ -26,6 +26,7 @@ return function(Vargs)
 		Commands = {"example"};	-- Commands
 		Args = {"arg1"};	-- Command arguments
 		Description = "Example command";	-- Command Description
+		Category = "General";	-- Category to group the command under in the command list
 		Hidden = true; -- Is it hidden from the command list?
 		Fun = false;	-- Is it fun?
 		AdminLevel = "Players";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")

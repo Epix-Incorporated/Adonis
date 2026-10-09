@@ -98,6 +98,18 @@ return {
 		{Text = "@jcydienz", 		Desc = "Open Source Contributor"};
 		{Text = "@AidenJamesYt",	Desc = "Open Source Contributor"};
 		{Text = "@thatgato", 		Desc = "Open Source Contributor"};
+		{Text = "@root0055", 		Desc = "Open Source Contributor"};
+		{Text = "@TbeyazT", 		Desc = "Open Source Contributor"};
+		{Text = "@ffrostfall", 		Desc = "Open Source Contributor"};
+		{Text = "@tavishadows", 	Desc = "Open Source Contributor"};
+		{Text = "@loadstring1", 	Desc = "Open Source Contributor"};
+		{Text = "@Kanuin", 		    Desc = "Open Source Contributor"};
+		{Text = "@redmax2500", 		Desc = "Open Source Contributor"};
+		{Text = "@realdint", 		Desc = "Open Source Contributor"};
+		{Text = "@jcydienz", 		Desc = "Open Source Contributor"};
+		{Text = "@YellowCreativity",Desc = "Open Source Contributor"};
+		{Text = "@popeeyy",			Desc = "Open Source Contributor"};
+		{Text = "@mahmoud34abc",	Desc = "Open Source Contributor"};
 	};
 
 	Misc = {

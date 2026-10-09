@@ -17,10 +17,14 @@ return function(Vargs, env)
 			Commands = {"glitch", "glitchdisorient", "glitch1", "glitchy"};
 			Args = {"player", "intensity"};
 			Description = "Makes the target player(s)'s character teleport back and forth rapidly, quite trippy, makes bricks appear to move as the player turns their character";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tostring(args[2] or 15)
+				local num = tonumber(args[2]) or 15
+
+				assert(num > 0, "Intensity must be above 0")
+				
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "trippy"
@@ -43,10 +47,14 @@ return function(Vargs, env)
 			Commands = {"ghostglitch", "glitch2", "glitchghost"};
 			Args = {"player", "intensity"};
 			Description = "The same as gd but less trippy, teleports the target player(s) back and forth in the same direction, making two ghost like images of the game";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tostring(args[2] or 150)
+				local num = tonumber(args[2]) or 150
+
+				assert(num > 0, "Intensity must be above 0")
+
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "ghost"
@@ -69,10 +77,14 @@ return function(Vargs, env)
 			Commands = {"vibrate", "glitchvibrate"};
 			Args = {"player", "intensity"};
 			Description = "Kinda like gd, but teleports the player to four points instead of two";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tostring(args[2] or 0.1)
+				local num = tonumber(args[2]) or 0.1
+
+				assert(num > 0, "Intensity must be above 0")
+
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "vibrate"
@@ -97,6 +109,7 @@ return function(Vargs, env)
 			Commands = {"unglitch", "unglitchghost", "ungd", "ungg", "ungv", "unvibrate"};
 			Args = {"player"};
 			Description = "UnGlitchs the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -117,6 +130,7 @@ return function(Vargs, env)
 			Commands = {"setfps"};
 			Args = {"player", "fps"};
 			Description = "Sets the target players's FPS";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -132,6 +146,7 @@ return function(Vargs, env)
 			Commands = {"restorefps", "revertfps", "unsetfps"};
 			Args = {"player"};
 			Description = "Restores the target players's FPS";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -146,6 +161,7 @@ return function(Vargs, env)
 			Commands = {"gerald"};
 			Args = {"player"};
 			Description = "A massive Gerald AloeVera hat.";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -177,6 +193,7 @@ return function(Vargs, env)
 			Commands = {"ungerald"};
 			Args = {"player"};
 			Description = "De-Geraldification";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -197,6 +214,7 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = true;
 			Description = "???";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -213,6 +231,7 @@ return function(Vargs, env)
 			Fun = true;
 			Hidden = true;
 			Description = "You've Been Trolled You've Been Trolled Yes You've Probably Been Told...";
+			Category = "Fun";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Effect", {Mode = "trolling";})
@@ -225,6 +244,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Fun = true;
 			Description = "Makes the target player really angry";
+			Category = "Fun";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
@@ -278,6 +298,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Fun = true;
 			Description = "You're going to 🇧🇷.";
+			Category = "Fun";
 			Function = function (plr, args)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local root = v.Character:FindFirstChild("HumanoidRootPart")
@@ -318,6 +339,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Description = "Gives you a doll of a player";
+			Category = "Fun";
 			Function = function(plr: Player, args: {string})
 				local plrChar = assert(plr.Character, "You don't have a character")
 				local cfr = assert(plrChar:FindFirstChild("RightHand") or plrChar:FindFirstChild("Right Arm"), "You don't have a right hand/arm").CFrame
@@ -395,6 +417,7 @@ return function(Vargs, env)
 			Commands = {"lowres", "pixelrender", "pixel", "pixelize"};
 			Args = {"player", "pixelSize", "renderDist"};
 			Description = "Pixelizes the player's view";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -418,6 +441,7 @@ return function(Vargs, env)
 			Args = {};
 			Fun = true;
 			Description = "Freezes everything but the player running the command";
+			Category = "Fun";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local doPause; doPause = function(obj)
@@ -478,6 +502,7 @@ return function(Vargs, env)
 			Args = {};
 			Fun = true;
 			Description = "Stops zawarudo";
+			Category = "Fun";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				if not Variables.ZaWarudoDebounce and Variables.ZaWarudo then
@@ -522,6 +547,7 @@ return function(Vargs, env)
 			Commands = {"dizzy"};
 			Args = {"player", "speed"};
 			Description = "Causes motion sickness";
+			Category = "Screen Effects";
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
@@ -537,6 +563,7 @@ return function(Vargs, env)
 			Commands = {"undizzy"};
 			Args = {"player"};
 			Description = "UnDizzy";
+			Category = "Screen Effects";
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
@@ -548,9 +575,10 @@ return function(Vargs, env)
 
 		Davey = {
 			Prefix = Settings.Prefix;
-			Commands = {"Davey_Bones", "davey"};
+			Commands = {"davey_bones", "davey"};
 			Args = {"player"};
 			Description = "Turns you into me <3";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -565,6 +593,7 @@ return function(Vargs, env)
 			Commands = {"boombox"};
 			Args = {"player"};
 			Description = "Gives the target player(s) a boombox";
+			Category = "Tools";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -585,6 +614,7 @@ return function(Vargs, env)
 			Commands = {"infect", "zombify"};
 			Args = {"player"};
 			Description = "Turn the target player(s) into a suit zombie";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -652,6 +682,7 @@ return function(Vargs, env)
 			Commands = {"rainbowify", "rainbow"};
 			Args = {"player"};
 			Description = "Make the target player(s)'s character flash rainbow colors";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -704,6 +735,7 @@ return function(Vargs, env)
 			Commands = {"unrainbowify", "unrainbow"};
 			Args = {"player"};
 			Description = "Removes the rainbow effect from the player(s) specified";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -720,6 +752,7 @@ return function(Vargs, env)
 			Commands = {"noobify", "noob"};
 			Args = {"player"};
 			Description = "Make the target player(s) look like a noob";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -755,6 +788,7 @@ return function(Vargs, env)
 			Commands = {"material", "mat"};
 			Args = {"player", "material"};
 			Description = "Make the target the material you choose";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -785,12 +819,12 @@ return function(Vargs, env)
 				local chosenMat = args[2] or "Plastic"
 
 				if not args[2] then
-					Functions.Hint("Material wasn't supplied; Plastic was chosen instead")
+					Functions.Hint("Material wasn't supplied; Plastic was chosen instead", {plr})
 				elseif tonumber(args[2]) then
 					chosenMat = table.find(mats, tonumber(args[2]))
 				end
 
-				if not chosenMat then
+				if not chosenMat or not Enum.Material:FromName(chosenMat) then
 					Remote.MakeGui(plr, "Output", {Title = "Error"; Message = "Invalid material choice";})
 					return
 				end
@@ -812,6 +846,7 @@ return function(Vargs, env)
 			Commands = {"neon", "neonify"};
 			Args = {"player", "color"};
 			Description = "Make the target neon";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -841,6 +876,7 @@ return function(Vargs, env)
 			Commands = {"ghostify", "ghost"};
 			Args = {"player"};
 			Description = "Turn the target player(s) into a ghost";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -876,6 +912,7 @@ return function(Vargs, env)
 			Commands = {"goldify", "gold"};
 			Args = {"player"};
 			Description = "Make the target player(s) look like gold";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -906,6 +943,7 @@ return function(Vargs, env)
 			Commands = {"shiney", "shineify", "shine"};
 			Args = {"player"};
 			Description = "Make the target player(s)'s character shiney";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -934,6 +972,7 @@ return function(Vargs, env)
 			Commands = {"spook"};
 			Args = {"player"};
 			Description = "Makes the target player(s)'s screen 2spooky4them";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -948,6 +987,7 @@ return function(Vargs, env)
 			Commands = {"thanos", "thanossnap", "balancetheserver", "snap"};
 			Args = {"player"};
 			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
@@ -1068,6 +1108,7 @@ return function(Vargs, env)
 			Commands = {"sword", "givesword"};
 			Args = {"player", "allow teamkill (default: true)", "base dmg (default: 5)", "slash dmg (default: 10)", "lunge dmg (default: 30)"};
 			Description = "Gives the target player(s) a sword";
+			Category = "Tools";
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
@@ -1096,6 +1137,7 @@ return function(Vargs, env)
 			Fun = true;
 			Hidden = true;
 			Description = "I love you. You are mine. Do not fear; I will always be near.";
+			Category = "Fun";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Effect", {Mode = "lifeoftheparty";})
@@ -1107,6 +1149,7 @@ return function(Vargs, env)
 			Commands = {"theycome", "fromanotherworld", "ufo", "abduct", "space", "newmexico", "area51", "rockwell"};
 			Args = {"player"};
 			Description = "A world unlike our own.";
+			Category = "Fun";
 			Fun = true;
 			Hidden = true;
 			AdminLevel = "Admins";
@@ -1321,6 +1364,7 @@ return function(Vargs, env)
 			Commands = {"blind"};
 			Args = {"player"};
 			Description = "Blinds the target player(s)";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -1335,11 +1379,11 @@ return function(Vargs, env)
 			Commands = {"screenimage", "scrimage", "image"};
 			Args = {"player", "textureid"};
 			Description = "Places the desired image on the target's screen";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local img = tostring(args[2])
-				if not img then error(`{args[2]} is not a valid ID`) end
+				local img = assert(tonumber(args[2]), `{args[2]} is not a valid ID`)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "ScreenImage";
@@ -1354,11 +1398,11 @@ return function(Vargs, env)
 			Commands = {"screenvideo", "scrvid", "video"};
 			Args = {"player", "videoid"};
 			Description = "Places the desired video on the target's screen";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local img = tostring(args[2])
-				if not img then error(`{args[2]} is not a valid ID`) end
+				local img = assert(tostring(args[2]), `{args[2]} is not a valid ID`)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; Video = args[2];})
 				end
@@ -1370,6 +1414,7 @@ return function(Vargs, env)
 			Commands = {"uneffect", "unimage", "uneffectgui", "unspook", "unblind", "unstrobe", "untrippy", "unpixelize", "unlowres", "unpixel", "undance", "unflashify", "guifix", "fixgui"};
 			Args = {"player"};
 			Description = "Removes any effect GUIs on the target player(s)";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -1385,6 +1430,7 @@ return function(Vargs, env)
 			Commands = {"forest", "sendtotheforest", "intothewoods"};
 			Args = {"player"};
 			Description = "Sends player to The Forest for a timeout";
+			Category = "Fun";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
@@ -1393,6 +1439,7 @@ return function(Vargs, env)
 				for i, p in players do
 					if not Admin.CheckAuthority(plr, p, "timeout") then
 						table.remove(players, i)
+						Functions.Hint(`Unable to send {service.FormatPlayer(p)} to The Forest (insufficient permission level)`, {plr})
 					end
 				end
 				service.TeleportService:TeleportAsync(209424751, players)
@@ -1404,6 +1451,7 @@ return function(Vargs, env)
 			Commands = {"maze", "sendtothemaze", "mazerunner"};
 			Args = {"player"};
 			Description = "Sends player to The Maze for a timeout";
+			Category = "Fun";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
@@ -1420,6 +1468,7 @@ return function(Vargs, env)
 		};
 
 		ClownYoink = {
+			Category = "Fun";
 			Prefix = Settings.Prefix; 								-- Someone's always watching me
 			Commands = {"clown", "yoink", "youloveme", "van"};   	-- Someone's always there
 			Args = {"player"}; 										-- When I'm sleeping he just waits
@@ -1591,11 +1640,7 @@ return function(Vargs, env)
 							Position = UDim2.fromScale(0, 0);
 						})
 						if p and p.Parent == service.Players then
-							if service.RunService:IsStudio() then
-								p:Kick("You were saved by the Studio environment.")
-							else
-								service.TeleportService:Teleport(527443962, p, nil, bg)
-							end
+							p:Kick("You were taken...")
 						end
 						task.wait(0.5)
 						pcall(function() van:Destroy() end)
@@ -1610,6 +1655,7 @@ return function(Vargs, env)
 			Commands = {"chik3n", "zelith", "z3lith"};
 			Args = {};
 			Description = "Call on the KFC dark prophet powers of chicken";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr, args)
@@ -1663,6 +1709,7 @@ return function(Vargs, env)
 			Commands = {"tornado", "twister"};
 			Args = {"player", "optional time"};
 			Description = "Makes a tornado on the target player(s)";
+			Category = "Fun";
 			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
@@ -1682,42 +1729,41 @@ return function(Vargs, env)
 					local cl = Core.NewScript("Script",[[
 						local Pcall=function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print('Error: '..error) end end
 						local parts = {}
-						local main=script.Parent
-						main.Anchored=true
-						main.CanCollide=false
-						main.Transparency=1
-						local smoke=Instance.new("Smoke", main)
-						local sound=Instance.new("Sound", main)
-						smoke.RiseVelocity=25
-						smoke.Size=25
-						smoke.Color=Color3.new(170/255, 85/255, 0)
-						smoke.Opacity=1
-						sound.SoundId="rbxassetid://142840797"
-						sound.Looped=true
+						local main = script.Parent
+						main.Anchored = true
+						main.CanCollide = false
+						main.Transparency = 1
+						local smoke = Instance.new("Smoke", main)
+						local sound = Instance.new("Sound", main)
+						smoke.RiseVelocity = 25
+						smoke.Size = 25
+						smoke.Color = Color3.new(170/255, 85/255, 0)
+						smoke.Opacity = 1
+						sound.SoundId = "rbxassetid://134811453767381"
+						sound.Looped = true
 						sound:Play()
-						sound.Volume=1
-						sound.Pitch=0.8
-						local light=Instance
+						sound.Volume = 0.8
+						sound.PlaybackSpeed = 0.8
 
 						function fling(part)
 							part:BreakJoints()
-							part.Anchored=false
+							part.Anchored = false
 							local attachment = Instance.new("Attachment", part)
-							local pos=Instance.new("AlignPosition", part)
+							local pos = Instance.new("AlignPosition", part)
 							pos.MaxForce = math.huge
 							pos.Position = part.Position
 							pos.Attachment0 = attachment
-							local i=1
-							local run=true
-							while main and wait() and run do
+							local i = 1
+							local run = true
+							while main and task.wait() and run do
 								if part.Position.Y>=main.Position.Y+50 then
 									run=false
 								end
-								pos.Position=Vector3.new(50*math.cos(i), part.Position.Y+5, 50*math.sin(i))+main.Position
-								i=i+1
+								pos.Position = Vector3.new(50 * math.cos(i), part.Position.Y + 5, 50 * math.sin(i)) + main.Position
+								i += 1
 							end
-							pos.MaxForce = Vector3.new(500, 500, 500)
-							pos.Position=Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
+							pos.MaxForce = 500
+							pos.Position = Vector3.new(main.Position.X+math.random(-100, 100), main.Position.Y+100, main.Position.Z+math.random(-100, 100))
 							pos:Destroy()
 						end
 
@@ -1765,6 +1811,7 @@ return function(Vargs, env)
 			Commands = {"nuke"};
 			Args = {"player", "size"};
 			Description = "Nuke the target player(s)";
+			Category = "Fun";
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
@@ -1783,6 +1830,7 @@ return function(Vargs, env)
 			Commands = {"stopwildfire", "removewildfire", "unwildfire"};
 			Args = {};
 			Description = "Stops :wildfire from spreading further";
+			Category = "Fun";
 			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
@@ -1795,6 +1843,7 @@ return function(Vargs, env)
 			Commands = {"wildfire"};
 			Args = {"player"};
 			Description = "Starts a fire at the target player(s); Ignores locked parts and parts named 'BasePlate' or 'Baseplate'";
+			Category = "Fun";
 			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
@@ -1878,6 +1927,7 @@ return function(Vargs, env)
 			Commands = {"swagify", "swagger"};
 			Args = {"player"};
 			Description = "Swag the target player(s) up";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -1898,14 +1948,17 @@ return function(Vargs, env)
 			Commands = {"shrek", "shrekify", "shrekislife", "swamp"};
 			Args = {"player"};
 			Description = "Shrekify the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-							Admin.RunCommand(`{Settings.Prefix}pants`, v.Name, "233373970")
-							Admin.RunCommand(`{Settings.Prefix}shirt`, v.Name, "133078195")
+							for _, v in v.Character:GetChildren() do
+								if v.Name == "Shirt" then local cl = v:Clone() cl.Parent = v.Parent cl.ShirtTemplate = "http://www.roblox.com/asset/?id=133078195" v:Destroy() end
+								if v.Name == "Pants" then local cl = v:Clone() cl.Parent = v.Parent cl.PantsTemplate = "http://www.roblox.com/asset/?id=233373970" v:Destroy() end
+							end
 
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Accoutrement") or v:IsA("CharacterMesh") then
@@ -1930,6 +1983,7 @@ return function(Vargs, env)
 			Commands = {"rocket", "firework"};
 			Args = {"player"};
 			Description = "Send the target player(s) to the moon!";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -1979,6 +2033,7 @@ return function(Vargs, env)
 			Commands = {"dance"};
 			Args = {"player"};
 			Description = "Make the target player(s) dance";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -1997,6 +2052,7 @@ return function(Vargs, env)
 			Commands = {"breakdance", "fundance", "lolwut"};
 			Args = {"player"};
 			Description = "Make the target player(s) break dance";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2022,6 +2078,7 @@ return function(Vargs, env)
 			Commands = {"puke", "barf", "throwup", "vomit"};
 			Args = {"player"};
 			Description = "Make the target player(s) puke";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2094,6 +2151,7 @@ return function(Vargs, env)
 			Commands = {"poison"};
 			Args = {"player"};
 			Description = "Slowly kills the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2146,6 +2204,7 @@ return function(Vargs, env)
 			Commands = {"hatpets"};
 			Args = {"player", "number[50 MAX]/destroy"};
 			Description = `Gives the target player(s) hat pets, controlled using the {Settings.PlayerPrefix}pets command.`;
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2214,6 +2273,7 @@ return function(Vargs, env)
 			Commands = {"pets"};
 			Args = {"follow/float/swarm/attack", "player"};
 			Description = "Makes your hat pets do the specified command (follow/float/swarm/attack)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -2247,6 +2307,7 @@ return function(Vargs, env)
 			Commands = {"grav", "bringtoearth"};
 			Args = {"player"};
 			Description = "Makes the target player(s)'s gravity normal";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2267,6 +2328,7 @@ return function(Vargs, env)
 			Commands = {"setgrav", "gravity", "setgravity"};
 			Args = {"player", "number"};
 			Description = "Set the target player(s)'s gravity";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2301,6 +2363,7 @@ return function(Vargs, env)
 			Commands = {"nograv", "nogravity", "superjump"};
 			Args = {"player"};
 			Description = "NoGrav the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2336,6 +2399,7 @@ return function(Vargs, env)
 			Commands = {"bunnyhop", "bhop"};
 			Args = {"player"};
 			Description = "Makes the player jump, and jump... and jump. Just like the rabbit noobs you find in sf games ;)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2356,6 +2420,7 @@ return function(Vargs, env)
 			Commands = {"unbunnyhop"};
 			Args = {"player"};
 			Description = "Stops the forced hippity hoppening";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2374,12 +2439,13 @@ return function(Vargs, env)
 			Commands = {"freefall", "skydive"};
 			Args = {"player", "height"};
 			Description = "Teleport the target player(s) up by <height> studs";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in service.GetPlayers(plr, args[1]) do
 					if v.Character:FindFirstChild("HumanoidRootPart") then
-						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame+Vector3.new(0, tonumber(args[2]), 0)
+						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame+Vector3.new(0, tonumber(args[2]) or 200, 0)
 					end
 				end
 			end
@@ -2390,28 +2456,72 @@ return function(Vargs, env)
 			Commands = {"stickify", "stick", "stickman"};
 			Args = {"player"};
 			Description = "Turns the target player(s) into a stick figure";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for kay, player in service.GetPlayers(plr, args[1]) do
 					local m = player.Character
+					local r6 = m:FindFirstChild("Torso") ~= nil
+
+					if r6 then
+						if m.Head:FindFirstChild("Mesh") then
+							m.Head.Mesh:Destroy()
+						end
+
+						local b = service.New("SpecialMesh")
+						b.Parent = m.Head
+						b.MeshType = "Sphere"
+						b.Scale = Vector3.new(0.5, 1, 1)
+
+						m.Head.Transparency = 0
+						m.Head.BrickColor = BrickColor.new(0, 0, 0)
+					else
+						local w = service.New("WeldConstraint")
+						local s = service.New("Part")
+						s.Anchored = false
+						s.Shape = Enum.PartType.Ball
+						s.Size = Vector3.new(1, 1, 1)
+						s.BrickColor = BrickColor.new(0, 0, 0)
+						s.Material = Enum.Material.SmoothPlastic
+
+						w.Part0 = s
+						w.Part1 = m.Head
+						w.Parent = s
+
+						s.CFrame = m.Head.CFrame
+						s.Parent = m.Head
+
+						local f = service.New("Decal")
+						f.Parent = s
+						f.Texture = "rbxasset://textures/face.png"
+
+						m.Head.Transparency = 1
+					end
+
+					local whitelistedLimbs = {
+						"Head",
+						"LeftUpperArm",
+						"RightUpperArm",
+						"LeftLowerLeg",
+						"RightLowerLeg"
+					}
+					
 					for i, v in m:GetChildren() do
-						if v:IsA("Part") then
+						if v:IsA("BasePart") then
+							if v.Name ~= "Head" then
+								v.Transparency = 1
+							end
+
+							if not r6 and not table.find(whitelistedLimbs, v.Name) then
+								continue
+							end
+
 							local s = service.New("SelectionPartLasso")
 							s.Parent = m.HumanoidRootPart
 							s.Part = v
 							s.Humanoid = m.Humanoid
 							s.Color = BrickColor.new(0, 0, 0)
-							v.Transparency = 1
-							m.Head.Transparency = 0
-							if m.Head:FindFirstChild("Mesh") then
-								m.Head.Mesh:Destroy()
-							end
-							local b = service.New("SpecialMesh")
-							b.Parent = m.Head
-							b.MeshType = "Sphere"
-							b.Scale = Vector3.new(0.5, 1, 1)
-							m.Head.BrickColor = BrickColor.new("Black")
 						end
 					end
 				end
@@ -2423,6 +2533,7 @@ return function(Vargs, env)
 			Commands = {"hole", "sparta"};
 			Args = {"player"};
 			Description = "Sends the target player(s) down a hole";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2459,6 +2570,7 @@ return function(Vargs, env)
 			Commands = {"lightning", "smite"};
 			Args = {"player"};
 			Description = "Zeus strikes down the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2547,6 +2659,7 @@ return function(Vargs, env)
 			Commands = {"disco"};
 			Args = {};
 			Description = "Turns the place into a disco party";
+			Category = "World";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2565,6 +2678,7 @@ return function(Vargs, env)
 			Commands = {"spin"};
 			Args = {"player"};
 			Description = "Makes the target player(s) spin";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2603,6 +2717,7 @@ return function(Vargs, env)
 			Commands = {"unspin"};
 			Args = {"player"};
 			Description = "Makes the target player(s) stop spinning";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2623,6 +2738,7 @@ return function(Vargs, env)
 			Commands = {"dog", "dogify", "cow", "cowify"};
 			Args = {"player"};
 			Description = "Turn the target player(s) into a dog";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(p, args)
@@ -2643,13 +2759,12 @@ return function(Vargs, env)
 								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
 							end
 							local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("UpperTorso"), CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
-							local head = char:FindFirstChild("Head")
 
 							torso.Transparency = 1
 
 							for _, v in torso:GetChildren() do
 								if v:IsA("Motor6D") then
-									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
+									service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
 								end
 							end
 
@@ -2667,7 +2782,7 @@ return function(Vargs, env)
 							})
 
 							local attachment = service.New("Attachment", {Parent = st})
-							local bf = service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
+							service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
 
 							st.CFrame = torso.CFrame
 							st.Parent = char
@@ -2680,6 +2795,31 @@ return function(Vargs, env)
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
+							local bypass = {}
+
+							for _, animType in plr.Character.Animate:GetChildren() do
+								if not animType:IsA("StringValue") then
+									continue
+								end
+
+								for _, anim in animType:GetChildren() do
+									local allowed = {"run", "walk"}
+
+									if table.find(allowed, animType.Name) then
+										table.insert(bypass, anim.AnimationId)
+										continue
+									end
+
+									anim.AnimationId = "rbxassetid://0"
+								end
+							end
+							
+							for _, anim in plr.Character.Humanoid.Animator:GetPlayingAnimationTracks() do
+								if not table.find(bypass, anim.Animation.AnimationId) then
+									anim:Stop()
+								end
+							end
+
 							if plr.Character:FindFirstChild("Shirt") then
 								plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
 							end
@@ -2691,25 +2831,12 @@ return function(Vargs, env)
 
 							uppertorso.Transparency = 1
 							lowertorso.Transparency = 1
+							head.NeckRigAttachment.CFrame = CFrame.new(0, 1, 2) * CFrame.Angles(0, 0, 0)
 
-							for _, v in uppertorso:GetChildren() do
-								if v:IsA("Motor6D") then
-									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
-								end
-							end
-
-							for _, v in lowertorso:GetChildren() do
-								if v:IsA("Motor6D") then
-									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
-								end
-							end
-
-							head.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(0, 0, 0)
-
-							char.RightUpperArm["RightShoulder"].C0 = CFrame.new(.5, -1, -1.5) * ca1
-							char.LeftUpperArm["LeftShoulder"].C0 = CFrame.new(-.5, -1, -1.5) * ca2
-							char.RightUpperLeg["RightHip"].C0 = CFrame.new(1, -0.3, 1.5) * ca1
-							char.LeftUpperLeg["LeftHip"].C0 = CFrame.new(-1, -0.3, 1.5) * ca2
+							char.UpperTorso.RightShoulderRigAttachment.CFrame = CFrame.new(.5, -1, -1.5) * ca1
+							char.UpperTorso.LeftShoulderRigAttachment.CFrame = CFrame.new(-.5, -1, -1.5) * ca2
+							char.LowerTorso.RightHipRigAttachment.CFrame = CFrame.new(1, 0.2, 1.5) * ca1
+							char.LowerTorso.LeftHipRigAttachment.CFrame = CFrame.new(-1, 0.2, 1.5) * ca2
 							local st = service.New("Seat", {
 								Name = "Adonis_Torso",
 								TopSurface = 0,
@@ -2718,7 +2845,7 @@ return function(Vargs, env)
 							})
 
 							local attachment = service.New("Attachment", {Parent = st})
-							local bf = service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
+							service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
 
 							st.CFrame = uppertorso.CFrame
 							st.Parent = char
@@ -2741,6 +2868,7 @@ return function(Vargs, env)
 			Commands = {"dogg", "snoop", "snoopify", "dodoubleg"};
 			Args = {"player"};
 			Description = "Turns the target into the one and only D O Double G";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2809,6 +2937,7 @@ return function(Vargs, env)
 			Commands = {"sp00ky", "spooky", "spookyscaryskeleton"};
 			Args = {"player"};
 			Description = "Sends shivers down ur spine";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2877,6 +3006,7 @@ return function(Vargs, env)
 			Commands = {"k1tty", "cut3", "hellokitty"};
 			Args = {"player"};
 			Description = "2 cute 4 u";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2944,6 +3074,7 @@ return function(Vargs, env)
 			Commands = {"nyan", "p0ptart", "nyancat"};
 			Args = {"player"};
 			Description = "Poptart kitty";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3020,6 +3151,7 @@ return function(Vargs, env)
 			Commands = {"fr0g", "fr0ggy", "mlgfr0g", "mlgfrog"};
 			Args = {"player"};
 			Description = "MLG fr0g";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3090,6 +3222,7 @@ return function(Vargs, env)
 			Commands = {"sh1a", "lab00f", "sh1alab00f", "shia"};
 			Args = {"player"};
 			Description = "Sh1a LaB00f";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3164,6 +3297,7 @@ return function(Vargs, env)
 			Commands = {"stopadonisanimation", "unsh1a", "unlab00f", "unsh1alab00f", "unshia", "unfr0g", "unfr0ggy", "unmlgfr0g", "unmlgfrog", "unnyan", "unp0ptart", "unk1tty", "uncut3", "unsp00ky", "unspooky", "unspookyscaryskeleton", "undogg", "unsnoop", "unsnoopify"};
 			Args = {"player"};
 			Description = "Stop any decal/sound avatar animations";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3195,6 +3329,7 @@ return function(Vargs, env)
 			Commands = {"trail", "trails"};
 			Args = {"player", "textureid", "color"};
 			Description = "Adds trails to the target's character's parts";
+			Category = "Fun";
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr, args)
@@ -3251,6 +3386,7 @@ return function(Vargs, env)
 			Commands = {"unparticle", "removeparticles"};
 			Args = {"player"};
 			Description = "Removes particle emitters from target";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3268,6 +3404,7 @@ return function(Vargs, env)
 			Commands = {"particle"};
 			Args = {"player", "textureid", "startColor3", "endColor3"};
 			Description = "Put custom particle emitter on target";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3308,8 +3445,9 @@ return function(Vargs, env)
 		Flatten = {
 			Prefix = Settings.Prefix;
 			Commands = {"flatten", "2d", "flat"};
-			Args = {"player", "optional num"};
+			Args = {"player", "num"};
 			Description = "Flatten.";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3430,8 +3568,9 @@ return function(Vargs, env)
 		OldFlatten = {
 			Prefix = Settings.Prefix;
 			Commands = {"oldflatten", "o2d", "oflat"};
-			Args = {"player", "optional num"};
+			Args = {"player", "num"};
 			Description = "Old Flatten. Went lazy on this one.";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3461,6 +3600,7 @@ return function(Vargs, env)
 			Commands = {"sticky"};
 			Args = {"player"};
 			Description = "Sticky";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3483,6 +3623,7 @@ return function(Vargs, env)
 			Commands = {"break"};
 			Args = {"player", "optional num"};
 			Description = "Break the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3525,6 +3666,7 @@ return function(Vargs, env)
 			Commands = {"skeleton"};
 			Args = {"player"};
 			Description = "Turn the target player(s) into a skeleton";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3555,6 +3697,7 @@ return function(Vargs, env)
 			Commands = {"creeper", "creeperify"};
 			Args = {"player"};
 			Description = "Turn the target player(s) into a creeper";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3610,6 +3753,7 @@ return function(Vargs, env)
 			Commands = {"bighead"};
 			Args = {"player", "num"};
 			Description = "Give the target player(s) a larger ego";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3639,6 +3783,7 @@ return function(Vargs, env)
 			Commands = {"smallhead", "minihead"};
 			Args = {"player", "num"};
 			Description = "Give the target player(s) a small head";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3668,6 +3813,7 @@ return function(Vargs, env)
 			Commands = {"resize", "size", "scale"};
 			Args = {"player", "mult"};
 			Description = "Resize the target player(s)'s character by <mult>";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3760,6 +3906,7 @@ return function(Vargs, env)
 			Commands = {"seizure", "seize"};
 			Args = {"player"};
 			Description = "Make the target player(s)'s character spazz out on the floor";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3781,6 +3928,7 @@ return function(Vargs, env)
 			Commands = {"unseizure", "unseize"};
 			Args = {"player"};
 			Description = "Removes the effects of the seizure command";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3799,6 +3947,7 @@ return function(Vargs, env)
 			Commands = {"removelimbs", "delimb"};
 			Args = {"player"};
 			Description = "Remove the target player(s)'s arms and legs";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3819,6 +3968,7 @@ return function(Vargs, env)
 			Commands = {"loopfling"};
 			Args = {"player"};
 			Description = "Loop flings the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3835,6 +3985,7 @@ return function(Vargs, env)
 			Commands = {"unloopfling"};
 			Args = {"player"};
 			Description = "UnLoop Fling";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3849,6 +4000,7 @@ return function(Vargs, env)
 			Commands = {"deadlands", "farlands", "renderingcyanide"};
 			Args = {"player", "mult"};
 			Description = "The edge of Roblox math; WARNING CAPES CAN CAUSE LAG";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3871,6 +4023,7 @@ return function(Vargs, env)
 			Commands = {"undeadlands", "unfarlands", "unrenderingcyanide"};
 			Args = {"player"};
 			Description = "Clips the player and teleports them to you";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3895,6 +4048,7 @@ return function(Vargs, env)
 			Commands = {"rope", "chain"};
 			Args = {"player1", "player2", "length"};
 			Description = "Connects players using a rope constraint";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3927,6 +4081,7 @@ return function(Vargs, env)
 			Commands = {"unrope", "unchain"};
 			Args = {"player"};
 			Description = "UnRope";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3948,6 +4103,7 @@ return function(Vargs, env)
 			Commands = {"headlian", "beautiful"};
 			Args = {"player"};
 			Description = "hot";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4125,6 +4281,7 @@ return function(Vargs, env)
 			Filter = true;
 			Fun = true;
 			Description = "Makes a dialog bubble appear over the target player(s) head with the desired message";
+			Category = "Messages";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local message = args[2]
@@ -4139,6 +4296,7 @@ return function(Vargs, env)
 			Commands = {"ice", "iceage", "icefreeze", "funfreeze"};
 			Args = {"player"};
 			Description = "Freezes the target player(s) in a block of ice";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4170,6 +4328,7 @@ return function(Vargs, env)
 			Commands = {"fire", "makefire", "givefire"};
 			Args = {"player", "color"};
 			Description = "Sets the target player(s) on fire, coloring the fire based on what you server";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4200,6 +4359,7 @@ return function(Vargs, env)
 			Commands = {"unfire", "removefire", "extinguish"};
 			Args = {"player"};
 			Description = "Puts out the flames on the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4218,6 +4378,7 @@ return function(Vargs, env)
 			Commands = {"smoke", "givesmoke"};
 			Args = {"player", "color"};
 			Description = "Makes smoke come from the target player(s) with the desired color";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4240,6 +4401,7 @@ return function(Vargs, env)
 			Commands = {"unsmoke"};
 			Args = {"player"};
 			Description = "Removes smoke from the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4257,6 +4419,7 @@ return function(Vargs, env)
 			Commands = {"sparkles"};
 			Args = {"player", "color"};
 			Description = "Puts sparkles on the target player(s) with the desired color";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4285,6 +4448,7 @@ return function(Vargs, env)
 			Commands = {"unsparkles"};
 			Args = {"player"};
 			Description = "Removes sparkles from the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4303,6 +4467,7 @@ return function(Vargs, env)
 			Commands = {"animation", "loadanim", "animate"};
 			Args = {"player", "animationID", "speed (default: 1)", "isLooped? (default: decided by the animation)"};
 			Description = "Plays the specified animation on a target";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4329,6 +4494,7 @@ return function(Vargs, env)
 			Commands = {"blur", "screenblur", "blureffect"};
 			Args = {"player", "blur size"};
 			Description = "Blur the target player's screen";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4349,6 +4515,7 @@ return function(Vargs, env)
 			Commands = {"bloom", "screenbloom", "bloomeffect"};
 			Args = {"player", "intensity", "size", "threshold"};
 			Description = "Give the player's screen the bloom lighting effect";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4369,6 +4536,7 @@ return function(Vargs, env)
 			Commands = {"sunrays", "screensunrays", "sunrayseffect"};
 			Args = {"player", "intensity", "spread"};
 			Description = "Give the player's screen the sunrays lighting effect";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4388,11 +4556,11 @@ return function(Vargs, env)
 			Commands = {"colorcorrect", "colorcorrection", "correctioneffect", "correction", "cce"};
 			Args = {"player", "brightness", "contrast", "saturation", "tint"};
 			Description = "Give the player's screen the sunrays lighting effect";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				local tintColor = Functions.ParseColor3(args[5]) or Color3.new(1,1,1)
-
 				for _, p in service.GetPlayers(plr, args[1]) do
 					Remote.NewLocal(p, "ColorCorrectionEffect", {
 						Name = "WINDOW_COLORCORRECTION",
@@ -4411,6 +4579,7 @@ return function(Vargs, env)
 			Commands = {"freaky"};
 			Args = {"0-600,0-600,0-600", "optional player"};
 			Description = "Does freaky stuff to lighting. Like a messed up ambient.";
+			Category = "World";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4418,8 +4587,7 @@ return function(Vargs, env)
 				if args[1] and args[1]:match("(.*),(.*),(.*)") then
 					r, g, b = args[1]:match("(.*),(.*),(.*)")
 				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				r, g, b = assert(tonumber(r), "Invalid red"), assert(tonumber(g), "Invalid green"), assert(tonumber(b), "Invalid blue")
 				local num1, num2, num3 = r, g, b
 				num1 = `-{num1}00000`
 				num2 = `-{num2}00000`
@@ -4441,6 +4609,7 @@ return function(Vargs, env)
 			Commands = {"loadsky", "skybox"};
 			Args = {"front", "back", "left", "right", "up", "down", "celestialBodies? (default: true)", "starCount (default: 3000)"};
 			Description = "Change the skybox front with the provided image IDs";
+			Category = "World";
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -4469,25 +4638,22 @@ return function(Vargs, env)
 			Commands = {"startergear", "givestartergear"};
 			Args = {"player", "id"};
 			Description = "Inserts the desired gear into the target player(s)'s starter gear";
+			Category = "Tools";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
 				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear.")
+				local gear = service.Insert(gearID)
 
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-
-					if gear:IsA("BackpackItem") then
-						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
-							if v:FindFirstChild("StarterGear") then
-								gear:Clone().Parent = v.StarterGear
-							end
+				if gear:IsA("BackpackItem") then
+					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+					for i, v in service.GetPlayers(plr, args[1]) do
+						if v:FindFirstChild("StarterGear") then
+							gear:Clone().Parent = v.StarterGear
 						end
 					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
 			end
 		};
@@ -4497,25 +4663,22 @@ return function(Vargs, env)
 			Commands = {"gear", "givegear"};
 			Args = {"player", "id"};
 			Description = "Gives the target player(s) a gear from the catalog based on the ID you supply";
+			Category = "Tools";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
 				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+				assert(AssetIdType == 19, "Invalid ID provided, Not AssetType Gear.")
+				local gear = service.Insert(gearID)
 
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-
-					if gear:IsA("BackpackItem") then
-						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
-							if v:FindFirstChild("Backpack") then
-								gear:Clone().Parent = v.Backpack
-							end
+				if gear:IsA("BackpackItem") then
+					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+					for i, v in service.GetPlayers(plr, args[1]) do
+						if v:FindFirstChild("Backpack") then
+							gear:Clone().Parent = v.Backpack
 						end
 					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
 			end
 		};
@@ -4525,6 +4688,7 @@ return function(Vargs, env)
 			Commands = {"slippery", "iceskate", "icewalk", "slide"};
 			Args = {"player"};
 			Description = "Makes the target player(s) slide when they walk";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4554,6 +4718,7 @@ return function(Vargs, env)
 			Commands = {"unslippery", "uniceskate", "unslide"};
 			Args = {"player"};
 			Description = "Get sum friction all up in yo step";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4573,6 +4738,7 @@ return function(Vargs, env)
 			Commands = {"oldbodyswap", "oldbodysteal"};
 			Args = {"player1", "player2"};
 			Description = "[Old] Swaps player1's and player2's bodies and tools";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4624,6 +4790,7 @@ return function(Vargs, env)
 			Commands = {"bodyswap", "bodysteal", "bswap"};
 			Args = {"player1", "player2"};
 			Description = "Swaps player1's and player2's avatars, bodies and tools";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4669,6 +4836,7 @@ return function(Vargs, env)
 			Commands = {"explode", "boom", "boomboom"};
 			Args = {"player", "radius (default: 20 studs)", "blast pressure (default: 500,000)", "visible? (default: true)"};
 			Description = "Explodes the target player(s)";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4692,6 +4860,7 @@ return function(Vargs, env)
 			Commands = {"trip"};
 			Args = {"player", "angle"};
 			Description = "Rotates the target player(s) by 180 degrees or a custom angle";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4709,6 +4878,7 @@ return function(Vargs, env)
 			Commands = {"oddliest"};
 			Args = {"player"};
 			Description = "Turns you into the one and only Oddliest";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4723,6 +4893,7 @@ return function(Vargs, env)
 			Commands = {"sceleratis"};
 			Args = {"player"};
 			Description = "Turns you into me <3";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4737,6 +4908,7 @@ return function(Vargs, env)
 			Commands = {"thermal", "thermalvision", "heatvision"};
 			Args = {"player"};
 			Description = "Looks like heat vision";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4763,6 +4935,7 @@ return function(Vargs, env)
 			Commands = {"unthermal", "unthermalvision"};
 			Args = {"player"};
 			Description = "Removes the thermal effect from the target player's screen";
+			Category = "Screen Effects";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4777,6 +4950,7 @@ return function(Vargs, env)
 			Commands = {"ggrav", "gamegrav", "workspacegrav"};
 			Args = {"number or fix"};
 			Description = "Sets Workspace.Gravity";
+			Category = "World";
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -4789,6 +4963,7 @@ return function(Vargs, env)
 			Commands = {"createsoundpart", "createspart"};
 			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "noloop (default: false)", "volume (default: 1)", "clicktotoggle (default: false)", "share type (default: everyone)"};
 			Description = "Creates a sound part";
+			Category = "Audio";
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -4949,6 +5124,7 @@ return function(Vargs, env)
 			Commands = {"pipe"};
 			Args = {"player"};
 			Description = "Drops a metal pipe on the target player(s).";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4986,6 +5162,7 @@ return function(Vargs, env)
 			Commands = {"sing";};
 			Args = {"player","soundid"};
 			Description = "Sings the song";
+			Category = "Fun";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -5023,7 +5200,7 @@ return function(Vargs, env)
 					end
 
 					if head:IsA("MeshPart") and table.find(Variables.AnimatedFaces, tonumber(string.match(head.MeshId, "%d%d%d+"))) then
-						head.TextureID = ""
+						head.TextureID, head.TextureContent = "", Content.none
 						if head:FindFirstChildOfClass("SurfaceAppearance") then
 							head:FindFirstChildOfClass("SurfaceAppearance"):Destroy()
 						end
