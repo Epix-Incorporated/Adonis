@@ -9,27 +9,9 @@ local onClick = script:FindFirstChild("OnClick") and script.OnClick.Value
 local callback = Instance.new("BindableFunction")
 
 local function makeChat(message)
-	local chatBar = Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
-
-	for _, v in ipairs({"Chat", "Frame", "ChatBarParentFrame", "Frame", "BoxFrame", "Frame", "ChatBar"}) do
-		if chatBar then
-			chatBar = chatBar:FindFirstChild(v)
-		else
-			break
-		end
-	end
-
-	if chatBar then
-		chatBar:CaptureFocus()
-		task.defer(function()
-			chatBar.Text = message
-			task.defer(chatBar.ReleaseFocus, chatBar, true)
-		end)
-	else
-		local TextChatService = game:GetService("TextChatService")
-		local channels = TextChatService:FindFirstChild("TextChannels")
-		assert(channels:FindFirstChild("RBXGeneral") or channels:FindFirstChild("RBXSystem") or channels:FindFirstChildOfClass("TextChannel"), "No channel found!"):SendAsync(message)
-	end
+	local TextChatService = game:GetService("TextChatService")
+	local channels = TextChatService:FindFirstChild("TextChannels")
+	assert(channels:FindFirstChild("RBXGeneral") or channels:FindFirstChild("RBXSystem") or channels:FindFirstChildOfClass("TextChannel"), "No channel found!"):SendAsync(message)
 end
 
 local function sendNotification(message)
