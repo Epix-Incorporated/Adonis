@@ -266,7 +266,7 @@ local function tagHumanoid(humanoid, attacker)
 	creatorTag.Parent = humanoid
 end
 
-local function destruction(position, radius, attacker)
+local function destruction(position, radius, attacker, knockbackPower)
 	for _, v in ipairs(workspace:GetPartBoundsInRadius(position, radius, explosionParams)) do
 		if v.ClassName ~= "Terrain" and v.Anchored == false then
 			if attacker then
@@ -279,7 +279,7 @@ local function destruction(position, radius, attacker)
 
 			v:BreakJoints()
 			v.Material = Enum.Material.CorrodedMetal
-			v.AssemblyLinearVelocity = CFrame.new(v.Position, position):VectorToWorldSpace(Vector3.new(math.random(-5, 5), 5, 1000))
+			v.AssemblyLinearVelocity = CFrame.new(v.Position, position):VectorToWorldSpace(Vector3.new(math.random(-5, 5), 5, knockbackPower))
 		end
 	end
 end
@@ -318,7 +318,9 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 	task.spawn(function()
 		local maxSize = explosionSize * 3
 		local smallSize = explosionSize / 2.5
-		local nukeDuration = (maxSize - smallSize) / 2 * (1 / 60)
+		local sizeDiff = maxSize - smallSize
+		local nukeDuration = math.clamp(math.log(sizeDiff + 1) * 2 * (1 / 60), 0.8, 11)
+		local knockbackPower = math.clamp(explosionSize * 8, 400, 2800)
 		local transforms = {
 			{innerSphere, Vector3.new(-6.5 * maxSize, -6.5 * maxSize, -6.5 * maxSize)},
 			{outterSphere, Vector3.new(6.5 * maxSize, 6.5 * maxSize, 6.5 * maxSize)},
@@ -348,7 +350,8 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 				destruction(
 					position,
 					(((os.clock() - startclock) / nukeDuration) * expGrow + expStat) * 2,
-					attacker
+					attacker,
+					knockbackPower
 				)
 				task.wait(1/25)
 			until (os.clock() - startclock) > nukeDuration
