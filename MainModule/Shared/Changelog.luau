@@ -3,10 +3,11 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v284 2026-xx-xx xx:xx UTC] @Maintainer";
+	"[v284 2026-10-09 17:43 UTC] @Dimenpsyonal";
 	"(Git/jestemjaworr) Fix CustomRanks handling (#2194)";
 	"(Git/tmm619) Fix :nuke lasting indefinitely and repeatedly killing with large sizes (#2190)";
 	"(Git/melismau) Add hex color code support to Functions.ParseColor3 (#2154)";
+	"(Git/P3tray) Get rid of legacy chat from BackupNotification (#2195)";
 	"";
 	"[Patch v283.1 2026-10-07 14:42 UTC] @Dimenpsyonal";
 	"Revert #2182 freecam update until game EFC use can be verified";
