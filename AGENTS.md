@@ -22,6 +22,7 @@ Adonis is a Roblox server moderation and administration system written in Luau. 
 | UI | `MainModule/Client/UI/` contains theme code and Roblox models. `MainModule/Client/Core/UI.luau` manages UI creation, registration, and cleanup. |
 | Shared facilities | `MainModule/Shared/Service.luau` implements the service abstraction; other shared modules provide utilities used across the runtime. |
 | Settings defaults | `MainModule/Server/Dependencies/DefaultSettings.luau` provides fallback settings, descriptions, and editor order. |
+| Release history | `MainModule/Shared/Changelog.luau` contains the in-game changelog; `Loader/Version.model.json` records the loader version. See the changelog guidance below before editing either. |
 | Build and lint | `aftman.toml`, `selene.toml`, `default.project.json`, `.github/build.project.json`, and `.github/workflows/{lint,build}.yml`. |
 
 ## Editing conventions
@@ -35,6 +36,16 @@ Adonis is a Roblox server moderation and administration system written in Luau. 
 - Trace both ends of remote changes through server/client `Core/Remote.luau` and `Core/Process.luau`. Preserve server-side input validation and authorization; client UI restrictions alone do not authorize an action.
 - For UI changes, inspect the selected theme and its fallback as well as `Client/Core/UI.luau`. Preserve registration and cleanup conventions; inspect `.rbxmx`, `.model.json`, and `.meta.json` companions before renaming or moving modules.
 - `MainModule/Client/UI/Modern/Components/Packages/` contains vendored dependencies and is excluded by `selene.toml`. Avoid incidental edits there, retain upstream notices in dependencies, and do not add unrelated reformatting or generated models to a patch.
+
+## Maintaining the changelog
+
+- Follow [CONTRIBUTING.md, Changelog Policy](CONTRIBUTING.md#5-changelog-policy). For notable behavior changes, include proposed release-note wording in the handoff or PR description; maintainers assemble release entries from contribution titles. Do not insert unreleased work into an existing released section or bump versions during an ordinary feature/fix task.
+- The authoritative changelog is `MainModule/Shared/Changelog.luau`, a returned Luau table of strings displayed in-game. `MainModule/Server/Server.luau` also derives `server.Version` from its first string. Preserve the leading `Version: ...` entry, display hints, quoted-string syntax, separators, and historical entries.
+- Write concise, present-tense entries describing the user-visible behavior: for example, `Fix :nuke lasting indefinitely with large sizes`. Use actual command usage names such as `:nuke`, not internal identifiers. Include contributor attribution and PR numbers only when verified; avoid task-specific commentary and unsupported claims of testing.
+- When release preparation is requested, add the new section above previous releases, below the display preamble, with a blank-string separator. Follow the existing header format: `[v<version> YYYY-MM-DD HH:MM UTC] @<maintainer>` or `[Patch v<version> YYYY-MM-DD HH:MM UTC] @<maintainer>`. Use the agreed release version, actual release timestamp, and responsible maintainer; do not invent them or introduce a different versioning scheme.
+- For an authorized release version change, keep the first changelog string, new release header, and numeric `Properties.Value` in `Loader/Version.model.json` consistent. Release preparation does not authorize tagging, publishing, or deployment.
+- `genchangelog.sh` and its Windows wrapper `genchangelog.bat` are release helpers, not routine checks. The shell script derives notes and a version from local Git history/tags and normally rewrites both version files. Its current insertion marker does not match the changelog's report-issues banner, and its custom-note pipeline contains `sed sed`; inspect and resolve those problems before relying on generated output. Even `--to-stdout`/`-O` writes and deletes temporary files, so it is not a read-only preview.
+- After a changelog edit, inspect the exact diff for misplaced entries, damaged history, invented metadata, and version mismatches. Run `selene MainModule/Shared/Changelog.luau`; if the loader version changed, parse `Loader/Version.model.json` as JSON as well. Apply the relevant build/Studio checks below if runtime formatting or consumption changes; report unavailable checks explicitly.
 
 ## Tool setup and local checks
 
@@ -86,4 +97,4 @@ A successful Rojo build verifies packaging, and Selene verifies lint rules. Neit
 - Inspect the final diff and `git status --short`, including new files; run `git diff --check`.
 - Have an independent review/self-evaluation agent inspect the final output against the request and exact source. Fix supported findings within scope and recheck affected work. If independent review is unavailable, state that limitation.
 - Report what changed, checks actually run and their results, and material unverified behavior. Do not describe source inspection, a lint pass, or a build as a successful playtest.
-- Follow the existing PR template when a PR is explicitly requested; provide Studio proof for substantive behavior changes as required by `CONTRIBUTING.md`. Leave release versions, generated changelogs, and publication workflows alone unless the task requires them.
+- Follow the existing PR template when a PR is explicitly requested; provide Studio proof for substantive behavior changes as required by `CONTRIBUTING.md`. Apply the changelog guidance above and leave release versions and publication workflows alone unless the task requires them.
