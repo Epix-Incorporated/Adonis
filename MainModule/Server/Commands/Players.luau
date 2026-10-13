@@ -744,6 +744,7 @@ return function(Vargs, env)
 			Description = "Shows comphrehensive information about a player";
 			Category = "Information";
 			AdminLevel = "Players";
+			-- Combines server-owned profile facts with a bounded technical schema for client telemetry.
 			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
 				local players = service.GetPlayers(plr, args[1], {NoSelectors = not elevated})
@@ -762,14 +763,29 @@ return function(Vargs, env)
 							gameData = {
 								IsMuted = Admin.IsMuted(v);
 								AdminLevel = `[{level}] {rank or "Unknown"}`;
-								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A"
+								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+								MouseDeltaSensitivity = "Unknown";
+								Resolution = "Unknown";
 							}
 
 							local inputData = Remote.Get(v, "Function", "GetUserInputServiceData")
 							if type(inputData) == "table" then
-								for k, d in inputData do
-									if type(k) ~= "string" then break end
-									gameData[k] = d
+								for _, property in {"AccelerometerEnabled", "GamepadEnabled", "GyroscopeEnabled", "KeyboardEnabled", "MouseEnabled", "OnScreenKeyboardVisible", "TouchEnabled", "VREnabled"} do
+									local value = rawget(inputData, property)
+									if type(value) == "boolean" then gameData[property] = value end
+								end
+								local sensitivity = rawget(inputData, "MouseDeltaSensitivity")
+								if type(sensitivity) == "number" and sensitivity >= 0 and sensitivity <= 10 then
+									gameData.MouseDeltaSensitivity = sensitivity
+								end
+								-- Rebuild the existing viewport format from bounded integers instead of relaying client text.
+								local resolution = rawget(inputData, "Resolution")
+								if type(resolution) == "string" and #resolution <= 13 then
+									local widthText, heightText = resolution:match("^(%d+) x (%d+)$")
+									local width, height = tonumber(widthText), tonumber(heightText)
+									if width and height and width <= 65535 and height <= 65535 then
+										gameData.Resolution = `{width} x {height}`
+									end
 								end
 							end
 						end

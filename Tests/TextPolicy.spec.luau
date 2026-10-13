@@ -543,4 +543,89 @@ check("filtered tag collisions merge membership and preserve edit admission", fu
 	service.TextService.FilterStringAsync = originalFilter
 end)
 
+check("actual removal controls ignore case while near-matches remain filtered public edits", function()
+	local humanoid = {DisplayName = "original"}
+	local target = {Character = {FindFirstChildOfClass = function() return humanoid end}}
+	local commandEnv = table.clone(env)
+	commandEnv.server, commandEnv.Settings, commandEnv.Variables = server, {Prefix = ":"}, {}
+	commandEnv.service = table.clone(service)
+	commandEnv.service.GetPlayers = function() return {target} end
+	commandEnv.Remote = {MakeGui = function() end, RemoveGui = function() end}
+	local commands = {}
+	for key, path in {Name = "MainModule/Server/Commands/Moderators.luau", Notif = "MainModule/Server/Commands/Admins.luau"} do
+		local definition = assert(fs.readFile(path):match("\n\t\t" .. key .. " = {(.-)\n\t\t};"), "Missing removal-control command")
+		commands[key] = luau.load("return {" .. definition .. "}", {environment = commandEnv})()
+		policy.WrapCommand(commands[key], key)
+	end
+	now = 1000
+	assert(policy.TryPublicEdit(author), "The fixture must reserve the public edit allowance")
+	local before = calls
+	for _, control in {"hide", "HIDE", "HiDe"} do
+		humanoid.DisplayName = "original"
+		commands.Name.Function(author, {"target", control})
+		assert(humanoid.DisplayName == " ", "Every exempt hide spelling must remove the display name")
+	end
+	for _, control in {"off", "OFF", "OfF", "false", "FALSE", "FaLsE"} do
+		commandEnv.Variables.NotifMessage = "original"
+		commands.Notif.Function(author, {control})
+		assert(commandEnv.Variables.NotifMessage == nil, "Every exempt off/false spelling must remove the persistent message")
+	end
+	assert(calls == before, "Removal controls must not filter or reserve another edit")
+	for _, ordinary in {"hider", "hide ", "hide\n"} do
+		assert(not pcall(commands.Name.Function, author, {"target", ordinary}), "Near-match display names must obey the shared cooldown")
+	end
+	for _, ordinary in {"offset", "off ", " false"} do
+		assert(not pcall(commands.Notif.Function, author, {ordinary}), "Near-match persistent messages must obey the shared cooldown")
+	end
+	assert(humanoid.DisplayName == " " and commandEnv.Variables.NotifMessage == nil and calls == before, "Rejected near-matches must not change displayed text")
+	now = 1060
+	commands.Name.Function(author, {"target", "hide "})
+	assert(humanoid.DisplayName == "public:hide " and calls == before + 1, "An admitted near-match name must be filtered as text")
+	now = 1120
+	commands.Notif.Function(author, {"OFFice"})
+	assert(commandEnv.Variables.NotifMessage == "public:OFFice" and calls == before + 2, "An admitted near-match message must be filtered as text")
+	assert(not policy.TryPublicEdit(author), "An admitted near-match must consume the shared allowance")
+end)
+
+check("actual debug filter diagnostics keep raw input with its originating author", function()
+	local displayed, pending, diagnosticCalls = {}, {}, 0
+	local commandEnv = table.clone(env)
+	commandEnv.server, commandEnv.Settings = server, {Prefix = ":"}
+	commandEnv.service = table.clone(service)
+	commandEnv.service.GetPlayers = function() return {recipient} end
+	commandEnv.service.RunService = {IsStudio = function() return false end}
+	commandEnv.service.TextService = {FilterStringAsync = function()
+		diagnosticCalls += 1
+		return {
+			GetChatForUserAsync = function() return "FILTERED" end,
+			GetNonChatStringForBroadcastAsync = function() return "FILTERED" end,
+			GetNonChatStringForUserAsync = function() return "FILTERED" end,
+		}
+	end}
+	commandEnv.Remote = {MakeGui = function(player, gui, data) table.insert(displayed, {Player = player, Gui = gui, Data = data}) end}
+	local definition = assert(fs.readFile("MainModule/Server/Plugins/Debug_Specific.luau"):match("\n\tCommands.TestFilter = {(.-)\n\t};"), "Missing debug filtering command")
+	local command = luau.load("return {" .. definition .. "}", {environment = commandEnv})()
+	policy.WrapCommand(command, "TestFilter")
+	local sudoEnv = table.clone(commandEnv)
+	sudoEnv.task = {defer = function(callback, ...) table.insert(pending, {Callback = callback, Args = table.pack(...)}) end}
+	sudoEnv.Process = {Command = function(actor, _, options) command.Function(actor, {"recipient", "PRIVATE_DIAGNOSTIC"}, {Options = options}) end}
+	local sudoDefinition = assert(fs.readFile("MainModule/Server/Commands/Creators.luau"):match("\n\t\tSudo = {(.-)\n\t\t};"), "Missing sudo command")
+	local sudoImplementation = assert(sudoDefinition:match("Function = (function.-\n\t\t\tend)"), "Missing sudo handler")
+	local sudo = {Function = luau.load("return " .. sudoImplementation, {environment = sudoEnv})()}
+	policy.WrapCommand(sudo, "Sudo")
+	local origin = server.ChatTransport.NewOrigin(author, ":sudo recipient :testfilter recipient PRIVATE_DIAGNOSTIC")
+	sudo.Function(author, {"recipient", ":testfilter recipient PRIVATE_DIAGNOSTIC"}, {Options = {UserCommandOrigin = origin}})
+	assert(#pending == 1, "The actual sudo handler must defer one target invocation")
+	pending[1].Callback(table.unpack(pending[1].Args, 1, pending[1].Args.n))
+	local rejected = displayed[1]
+	assert(rejected.Player == recipient and rejected.Gui == "Output" and rejected.Data.Tab == nil and not rejected.Data.Message:find("PRIVATE_DIAGNOSTIC", 1, true), "Sudo must not redirect raw filtering diagnostics to another viewer")
+	assert(diagnosticCalls == 0, "Rejected diagnostics must not run filtering as another player")
+	command.Function(recipient, {"recipient", "PRIVATE_DIAGNOSTIC"}, {Options = {isSystem = true}})
+	assert(displayed[2].Gui == "Output" and diagnosticCalls == 0, "Unattributed system diagnostics must not expose raw input")
+	command.Function(author, {"recipient", "PRIVATE_DIAGNOSTIC"})
+	local own = displayed[3]
+	assert(own.Player == author and own.Gui == "List" and own.Data.Tab[1].Desc == "PRIVATE_DIAGNOSTIC", "Self-run diagnostics must preserve the author's original input")
+	assert(diagnosticCalls == 3 and #own.Data.Tab == 5, "Self-run diagnostics must retain all filtering results")
+end)
+
 print(`TextPolicy: {count} assertion groups passed`)

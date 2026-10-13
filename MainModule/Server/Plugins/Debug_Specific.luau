@@ -124,7 +124,12 @@ return function(Vargs, GetEnv)
 		Description = "Test out Roblox's text filtering on a player";
 		Category = "Developer";
 		AdminLevel = "Moderators";
+		-- Keeps unfiltered diagnostic input visible only to the user who submitted it.
 		Function = function(plr: Player, args: {string})
+			if service.UnWrap(server.TextPolicy.GetCommandAuthor(plr)) ~= service.UnWrap(plr) then
+				Remote.MakeGui(plr, "Output", {Message = "Run filtering diagnostics yourself to provide their text."})
+				return
+			end
 			assert(args[1], "Missing player name")
 			assert(args[2], "Missing text to filter")
 			local temp = {{Text=`Original: {args[2]}`, Desc = args[2]}}

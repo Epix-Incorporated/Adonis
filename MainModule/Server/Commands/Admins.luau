@@ -448,8 +448,11 @@ return function(Vargs, env)
 			Description = "Sets a small hint message at the top of the screen";
 			Category = "Messages";
 			AdminLevel = "Admins";
+			-- Removes case-insensitive control words without publishing them as persistent text.
 			Function = function(plr: Player, args: {string})
-				local message = not (args[1] == "off" or args[1] == "false") and assert(args[1], "Missing message (or enter 'off' to disable)") or nil
+				local text = assert(args[1], "Missing message (or enter 'off' to disable)")
+				local control = text:lower()
+				local message = if control == "off" or control == "false" then nil else text
 
 				if server.PanicMode and server._tempBackupHint then
 					server._tempBackupHint.Text = `~= Adonis PanicMode Enabled{message and " - " or ""}{message or ""} =~`

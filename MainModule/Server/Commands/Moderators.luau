@@ -6270,8 +6270,10 @@ return function(Vargs, env)
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			Category = "Appearance";
 			AdminLevel = "Moderators";
+			-- Keeps every exempt hide spelling a removal while retaining prepared display names.
 			Function = function(plr: Player, args: {string})
-				local name = args[2] == "hide" and " " or args[2]
+				local name = args[2]
+				if type(name) == "string" and name:lower() == "hide" then name = " " end
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")

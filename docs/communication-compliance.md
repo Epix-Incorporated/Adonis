@@ -62,6 +62,8 @@ Commands declare `UserText = {Kind, Args, Audience}`. `Args` contains displayed 
 
 The command-function wrapper enforces declarations for normal dispatch, direct calls, and registered built-in plugins. Dynamic text producers also enforce admission and filtering at their publication boundary. Numeric-looking display strings are still text. Numeric operations, author-only preferences, fixed system messages, and viewing an accepted value do not consume this admission. No rank bypass exists. Admission is reserved before yielding, shared across target selections and aliases, and retained across same-server reconnects. A failed filtering attempt consumes its reserved admission. Cooldown state is server-scoped.
 
+Removal controls are case-insensitive: `hide` for character names and `off`/`false` for persistent notices remove the existing content without another admission. Other text, including control words with extra characters or whitespace, still requires filtering and admission.
+
 ### Helper contracts for plugins
 
 | Helper | Result and responsibility |
@@ -127,8 +129,9 @@ These entries describe source coverage. The release matrix below distinguishes a
 | `chatlogs` | Local history of messages delivered to the viewing client; no server-wide transcript. |
 | Settings `SetSetting`, `SaveSetSetting`, `SaveTableAdd`, shared lists/whitelist | Input validation, shared admission for string edits, provenance, safe labels, caller-bound removal handles, persistence and synchronization checks. |
 | Admin/rank lists, command lists, insert/music catalogs | Trusted developer baselines or safe projections; unknown external labels are unavailable. |
-| Welcome/startup notices and test/debug/error echoes | Safe rank fallback, immutable approved startup snapshots, fixed exceptions, safe console projection. |
+| Welcome/startup notices and test/debug/error echoes | Safe rank fallback, immutable approved startup snapshots, fixed exceptions, safe console projection; raw filtering diagnostics remain visible only to their actual author, including under `sudo`. |
 | Player-data response | An explicit UI allowlist includes supported caller preferences and permission metadata; moderation records and unknown plugin fields are excluded. |
+| Player profile device information | Only validated technical fields from the inspected client are displayed; client replies cannot overwrite server-owned rank, mute, or source-place information. |
 | Author-only aliases/keybinds/preferences/playlists; fixed system messages | Remain author-only or developer-authored; are not repurposed into shared text without the appropriate publication boundary. |
 
 ## Verification and release gate
@@ -142,7 +145,7 @@ Before release, record account eligibility, relevant experience settings, result
 | Acceptance area | Automated/source evidence | Required engine/account evidence |
 | --- | --- | --- |
 | PM/replies/multiple recipients | Pair reuse, author binding, deduplication, recipient-only rendering, capacity/lifecycle contracts | Two eligible accounts exchange/reply; multi-target sends remain separate; restricted recipients see no content. |
-| Groups/help | Actual group controls, owner closure, revoked members, competing help acceptance, expiry | Join/remove/leave during live delivery; first help acceptance teleports exactly once; unavailable reason delivery leaves fixed notice usable. |
+| Groups/help | Actual group controls, owner closure, revoked members, competing help acceptance, expiry; Default/Unity/Aero manual closure, registry destruction, and cleanup during an animated close | Join/remove/leave during live delivery; first help acceptance teleports exactly once; unavailable reason delivery leaves fixed notice usable. |
 | Command inputs | Actual alias/batch parser, generated/sudo rejection, native alias registration, disabled sinks | Command bar, native chat, aliases, batches, and keybinds produce one send per explicit body and no public private-body echo. |
 | Command interception | Exact/mixed-case aliases, arguments, near-matches, managed channel guard, host collisions | Repeat using native UI and host commands; verify denied/hidden commands still consume private input. |
 | Failure/lifecycle | Readiness timeout, hung send, late receipt, replayed controls, forged membership, pending/channel bounds | Disconnect/reconnect, real send failures, delayed source replication, idle expiry, and no raw fallback. |

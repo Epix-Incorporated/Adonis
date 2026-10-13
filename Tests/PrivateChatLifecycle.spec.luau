@@ -49,7 +49,7 @@ local function node(properties)
 end
 
 -- Uses the shipped theme close callbacks and UI registry cleanup with inert animation substitutes.
-local function installThemeClose(themeName, window, data, registered)
+local function installThemeClose(themeName, window, data, registered, options)
 	local theme = fs.readFile(`MainModule/Client/UI/{themeName}/Window.rbxmx`)
 	local ui = fs.readFile("MainModule/Client/Core/UI.luau")
 	local closeBody = assert(theme:match("\tfunction doClose%(%)\n(.-)\n\tfunction isVisible"), "Missing theme close implementation")
@@ -63,7 +63,7 @@ local function installThemeClose(themeName, window, data, registered)
 		Main = {TweenSize = function() end}, Mouse = {},
 		UDim2 = {new = function() return {} end},
 		Enum = {EasingDirection = {Out = "Out"}, EasingStyle = {Quad = "Quad"}},
-		task = {wait = function() end},
+		task = {wait = function() if options.DuringAnimation then options.DuringAnimation() end end},
 	}, {__index = getfenv()})
 	window.Close = luau.load("local isClosed = false\n"
 		.. "gTable.ClearEvents = function()\n" .. clearEventsBody .. "\n"
@@ -73,7 +73,8 @@ local function installThemeClose(themeName, window, data, registered)
 end
 
 -- Loads the real UI against a registered-window store and observable channel lifecycle.
-local function fixture(themeName)
+local function fixture(themeName, options)
+	options = options or {}
 	local windows, registered, remoteSends, drafts = {}, {}, {}, {}
 	local messages, sessionData = signal(), signal()
 	local transport = {
@@ -90,12 +91,21 @@ local function fixture(themeName)
 	local client = {
 		ChatTransport = transport,
 		MatIcons = {Forum = "Forum"},
-		Remote = {Send = function(...) table.insert(remoteSends, {...}) end},
+		Remote = {Send = function(...)
+			local args = {...}
+			table.insert(remoteSends, args)
+			if options.FailLeave and args[3] == "LeaveSession" then error("fixture remote unavailable") end
+		end},
 		UI = {
 			Get = function(name) return registered[name] or false end,
 			Make = function(kind, data)
 				assert(kind == "Window", "Unexpected UI presentation")
 				local window = node(data)
+				-- Observes listener state at native GUI destruction, before registry cleanup.
+				window.Destroy = function(self)
+					if options.BeforeDestroy then options.BeforeDestroy() end
+					self.Destroyed = true
+				end
 				window.gTable = {Name = data.Name, Object = window, Events = {}}
 				window.Ready = function() end
 				-- Matches Window's synchronous close callback and UI registry cleanup.
@@ -105,7 +115,7 @@ local function fixture(themeName)
 					if data.OnClose then data.OnClose() end
 					registered[data.Name] = nil
 				end
-				if themeName then installThemeClose(themeName, window, data, registered) end
+				if themeName then installThemeClose(themeName, window, data, registered, options) end
 				registered[data.Name] = window.gTable
 				table.insert(windows, window)
 				return window
@@ -113,6 +123,7 @@ local function fixture(themeName)
 		},
 	}
 	local service = {
+		UnWrap = function(value) return value end,
 		Players = {LocalPlayer = {UserId = 2}, GetPlayerByUserId = function() return nil end},
 		Events = {SessionData = sessionData},
 		New = function(_, props) return node(props) end,
@@ -179,4 +190,46 @@ for _, themeName in {"Unity", "Aero"} do
 		assert(#themed.RemoteSends == cycle and themed.RemoteSends[cycle][3] == "GetPeerList", `{themeName} server removal must not send LeaveSession`)
 	end
 end
-print("Private chat lifecycle passed: removal, rejoin, message delivery, replies, Default manual leave and Unity/Aero listener cleanup")
+for _, themeName in {"Default", "Unity", "Aero"} do
+	local options = {}
+	local manual = fixture(themeName, options)
+	options.BeforeDestroy = function()
+		assert(manual.Messages.Count() == 0 and manual.SessionData.Count() == 0, `{themeName} must disconnect listeners before destroying the GUI`)
+	end
+	for cycle = 1, 2 do
+		manual.Open()
+		local window = manual.Windows[cycle]
+		window:Close()
+		window:Close()
+		assert(window.Destroyed and not next(manual.Registered), `{themeName} manual close must release registration`)
+		assert(manual.Messages.Count() == 0 and manual.SessionData.Count() == 0, `{themeName} manual close must release listeners`)
+		assert(#manual.RemoteSends == cycle * 2 and manual.RemoteSends[cycle * 2][3] == "LeaveSession", `{themeName} manual close must leave exactly once across rejoin`)
+		manual.Messages:Fire("Message", {SenderUserId = 1, SenderName = "Sender", Text = "After closure"})
+		assert(#window.Children[1].Children == 0, `{themeName} destroyed windows must not receive later messages`)
+	end
+	manual.Open()
+	manual.Windows[3].gTable:Destroy()
+	manual.Windows[3].gTable:Destroy()
+	assert(#manual.RemoteSends == 6 and manual.RemoteSends[6][3] == "LeaveSession", `{themeName} direct registry destruction must leave exactly once`)
+end
+
+local animationOptions = {}
+local animation = fixture("Aero", animationOptions)
+animation.Open()
+animationOptions.DuringAnimation = function()
+	assert(not animation.Windows[1].Destroyed, "The removal must arrive during the close animation")
+	animation.CloseChannel()
+end
+animation.Windows[1]:Close()
+assert(animation.Windows[1].Destroyed and not next(animation.Registered), "Removal during an animated close must release the window")
+assert(animation.Messages.Count() == 0 and animation.SessionData.Count() == 0, "Removal during animated closure must release listeners")
+assert(#animation.RemoteSends == 1 and animation.RemoteSends[1][3] == "GetPeerList", "Server removal during animated closure must not send LeaveSession")
+
+local unavailable = fixture("Unity", {FailLeave = true})
+unavailable.Open()
+unavailable.Windows[1]:Close()
+unavailable.Windows[1]:Close()
+assert(unavailable.Windows[1].Destroyed and not next(unavailable.Registered), "A failed leave submission must not prevent GUI destruction")
+assert(unavailable.Messages.Count() == 0 and unavailable.SessionData.Count() == 0, "A failed leave submission must not retain listeners")
+assert(#unavailable.RemoteSends == 2, "A failed leave submission must not be retried by theme destruction")
+print("Private chat lifecycle passed: removal, rejoin, message delivery, replies, Default/Unity/Aero manual and registry closure, and animated removal")

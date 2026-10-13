@@ -30,6 +30,15 @@ return function(data, env)
 		end
 	end
 
+	-- Leaves a manually closed conversation once, after releasing its message listeners.
+	local function closeConversation()
+		cleanup()
+		if not closed then
+			closed = true
+			client.Remote.Send("Session", SessionKey, "LeaveSession")
+		end
+	end
+
 	-- Sends a local draft through Roblox, retaining it when submission is unsuccessful.
 	local function sendIt()
 		if debounce or closed then return end
@@ -273,14 +282,7 @@ return function(data, env)
 		Title = "Private Chat";
 		Icon = client.MatIcons.Forum;
 		Size  = {500,300};
-		-- Cleans up manual closure and leaves the session at most once.
-		OnClose = function()
-			cleanup()
-			if not closed then
-				closed = true
-				client.Remote.Send("Session", SessionKey, "LeaveSession")
-			end
-		end;
+		OnClose = closeConversation;
 	})
 
 	chatlog = window:Add("ScrollingFrame", {
@@ -402,5 +404,16 @@ return function(data, env)
 
 	client.Remote.Send("Session", SessionKey, "GetPeerList")
 	gTable = window.gTable
+	local destroyWindow = gTable.CustomDestroy
+	-- Theme close buttons always destroy the registered GUI, even when they skip OnClose.
+	gTable.CustomDestroy = function()
+		-- A failed leave submission must not prevent the theme from destroying its GUI.
+		pcall(closeConversation)
+		if destroyWindow then
+			destroyWindow()
+		else
+			service.UnWrap(gTable.Object):Destroy()
+		end
+	end
 	window:Ready()
 end
