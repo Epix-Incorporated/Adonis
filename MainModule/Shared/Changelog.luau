@@ -3,7 +3,10 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v284 2026-10-09 17:43 UTC] @Dimenpsyonal";
+	"[v284 2026-10-xx xx:xx UTC] @Maintainer";
+	"Hotfix/implement textchannel restrictions where required";
+	"Add filtering to announcement commands per Roblox requirements";
+	"Axe cross-server messaging for now";
 	"(Git/jestemjaworr) Fix CustomRanks handling (#2194)";
 	"(Git/tmm619) Fix :nuke lasting indefinitely and repeatedly killing with large sizes (#2190)";
 	"(Git/melismau) Add hex color code support to Functions.ParseColor3 (#2154)";
