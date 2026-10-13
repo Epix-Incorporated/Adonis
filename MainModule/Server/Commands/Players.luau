@@ -81,7 +81,12 @@ return function(Vargs, env)
 			Description = "Opens a textbox window for you to type into";
 			Category = "General";
 			AdminLevel = "Players";
+			-- Personal draft text is visible only to its actual author, including under sudo.
 			Function = function(plr: Player, args: {string})
+				if args[1] and service.UnWrap(server.TextPolicy.GetCommandAuthor(plr)) ~= service.UnWrap(plr) then
+					Remote.MakeGui(plr, "Output", {Message = "Run this personal command yourself to provide its text."})
+					return
+				end
 				Remote.MakeGui(plr, "Notepad", {Text = args[1]})
 			end
 		};
@@ -118,9 +123,14 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			Category = "General";
 			AdminLevel = "Players";
+			-- Self-notification text cannot be redirected to a different execution identity.
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing time amount")
 				assert(args[2], "Missing message")
+				if service.UnWrap(server.TextPolicy.GetCommandAuthor(plr)) ~= service.UnWrap(plr) then
+					Remote.MakeGui(plr, "Output", {Message = "Run this personal command yourself to provide its text."})
+					return
+				end
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Notification";
 					Icon = server.MatIcons["Notifications"];
@@ -327,76 +337,59 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"help", "requesthelp", "gethelp", "lifealert", "sos"};
 			Args = {"reason"};
+			UserText = {Kind = "Chat", Args = {1}, Audience = "Admins"};
 			Description = "Calls admins for help";
 			Category = "General";
-			Filter = true;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				if Settings.HelpSystem == true then
-					local num = 0
-					local answered = false
-					local pending = Variables.HelpRequests[plr.Name];
-					local reason = args[1] or "No reason provided";
+			-- Offers fixed request notices independently from eligible chat delivery.
+			Function = function(plr: Player, args: {string}, data: {})
+				if not Settings.HelpSystem then
+					Functions.Message("HelpSystem", "Help System", "The help system has been disabled by the place owner.", "MatIcon://Error", {plr})
+					return
+				end
+				local previous = Variables.HelpRequests[plr.Name]
+				assert(not previous or os.time() - previous.Time >= 30, "You can only send a help request once every 30 seconds.")
+				local request = {Time = os.time(), Pending = true, Answered = false}
+				Variables.HelpRequests[plr.Name] = request
+				local channelId
 
-					if pending and os.time() - pending.Time < 30 then
-						error("You can only send a help request once every 30 seconds.");
-					elseif pending and pending.Pending then
-						error("You already have a pending request")
-					else
-						service.TrackTask(`Thread: {plr} Help Request Handler`, function()
-							Functions.Hint("Request sent", {plr})
+				-- Claims the request before yielding so only one authorized admin teleports.
+				local function accept(admin)
+					if not request.Pending or request.Answered or os.time() - request.Time >= 30
+						or not service.Players:FindFirstChild(plr.Name) or not service.Players:FindFirstChild(admin.Name)
+						or not Admin.CheckAdmin(admin) then return false end
+					request.Answered = true
+					request.Pending = false
+					if channelId then server.ChatTransport.Close(channelId, "Answered") end
+					Commands.Teleport.Function(plr, {admin.Name, "@" .. plr.Name})
+					return true
+				end
 
-							pending = {
-								Time = os.time();
-								Pending = true;
-								Reason = reason;
-							}
-
-							Variables.HelpRequests[plr.Name] = pending;
-
-							for ind, p in service.Players:GetPlayers() do
-								Routine(function()
-									if Admin.CheckAdmin(p) then
-										local ret = Remote.MakeGuiGet(p, "Notification", {
-											Title = "Help Request";
-											Message = `{plr.Name} needs help! Reason: {pending.Reason}`;
-											Icon = server.MatIcons.Mail;
-											Time = 30;
-											OnClick = Core.Bytecode("return true");
-											OnClose = Core.Bytecode("return false");
-											OnIgnore = Core.Bytecode("return false");
-										})
-
-										num += 1
-										if ret then
-											if not answered then
-												answered = true
-												Commands.Teleport.Function(plr, {p.Name, `@{plr.Name}`})
-											else
-												Remote.MakeGui(p, "Notification", {
-													Title = "Help Request";
-													Message = "Another admin has already responded to this request!";
-													Icon = server.MatIcons.Mail;
-													Time = 5;
-												})
-											end
-										end
-									end
-								end)
-							end
-
-							local w = os.time()
-							repeat task.wait(0.5) until os.time()-w>30 or answered
-
-							pending.Pending = false;
-
-							if not answered then
-								Functions.Message('HelpSystem', "Help System", "Sorry but no one is available to help you right now", 'MatIcon://Warning', {plr})
-							end
+				local admins = {}
+				for _, admin in service.Players:GetPlayers() do
+					if Admin.CheckAdmin(admin) then
+						table.insert(admins, admin)
+						task.spawn(function()
+							local clicked = Remote.MakeGuiGet(admin, "Notification", {
+								Title = "Help Request", Message = plr.Name .. " needs help!", Icon = server.MatIcons.Mail,
+								Time = 30, OnClick = Core.Bytecode("return true"), OnClose = Core.Bytecode("return false"),
+								OnIgnore = Core.Bytecode("return false"),
+							})
+							if clicked == true then accept(admin) end
 						end)
 					end
-				else
-					Functions.Message('HelpSystem', "Help System", "The help system has been disabled by the place owner.", 'MatIcon://Error', {plr})
+				end
+				Functions.Hint("Request sent", {plr})
+				task.delay(30, function()
+					request.Pending = false
+					if channelId then server.ChatTransport.Close(channelId, "Expired") end
+					if not request.Answered and plr.Parent == service.Players then
+						Functions.Message("HelpSystem", "Help System", "Sorry but no one is available to help you right now", "MatIcon://Warning", {plr})
+					end
+				end)
+				if args[1] and #admins > 0 then
+					channelId = server.ChatTransport.SubmitCommand(plr, admins, args[1], data and data.ChatInput, "Help", nil, {OnAccept = accept})
+					if request.Answered and channelId then server.ChatTransport.Close(channelId, "Answered") end
 				end
 			end
 		};
@@ -548,7 +541,12 @@ return function(Vargs, env)
 			Description = "Changes the Adonis client UI theme";
 			Category = "General";
 			AdminLevel = "Players";
+			-- Personal theme labels are accepted only from the player who will see them.
 			Function = function(plr: Player, args: {string})
+				if args[1] and service.UnWrap(server.TextPolicy.GetCommandAuthor(plr)) ~= service.UnWrap(plr) then
+					Remote.MakeGui(plr, "Output", {Message = "Run this personal command yourself to provide its text."})
+					return
+				end
 				local playerData = Core.GetPlayer(plr)
 				local data = playerData.Client or {}
 				data.CustomTheme = args[1]

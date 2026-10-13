@@ -945,20 +945,28 @@ return function(data)
 	local ReplyBox = gui.Frame.Frame.ReplyBox
 	local Message = gui.Frame.Frame.Message
 	local Title = gui.Frame.Title
-	local Remote = client.Remote
-	local replyTicket = data.replyTicket
+	local transport = client.ChatTransport
+	local channelId = data.ChannelId
 	local player = data.Player
 	local message = data.Message
 	local title = data.Title
 	
 	local replying = false
+	local sending = false
+	local closed = false
 	
+	-- Submits a reply through Roblox and preserves the draft on failure.
 	local function send()
+		if sending or closed then return end
 		if ReplyBox.Text~='Enter text then hit enter or "reply"' and #ReplyBox.Text>0 then 
-			gui:Destroy()
-			Remote.Send('PrivateMessage', replyTicket, player, ReplyBox.Text)
-		--	client.Remote.Send('PrivateMessage','Reply from '..localplayer.Name,player,localplayer,service.Filter(ReplyBox.Text,localplayer,player))
-			client.UI.Make("Hint", {Message = "Reply sent"})
+			sending = true
+			local sent, status = transport.Send(channelId, ReplyBox.Text)
+			sending = false
+			if sent then
+				gTable:Destroy()
+			else
+				client.UI.Make("Hint", {Message = transport.StatusText(status)})
+			end
 		else
 			ReplyBox.Text='Enter text then hit enter or "reply"'
 		end
@@ -970,7 +978,17 @@ return function(data)
 	Reply.Visible = true
 	
 	Message.Text = message
+	Message.RichText = false
 	Title.Text = title
+	local unsubscribe = transport.Subscribe(channelId, function(eventName)
+		if eventName == "Closed" then
+			closed = true
+			ReplyBox.TextEditable = false
+			ReplyBox.PlaceholderText = "This conversation has ended"
+			Reply.Active = false
+		end
+	end)
+	gui.Destroying:Connect(unsubscribe)
 	
 	ReplyBox.FocusLost:connect(function(enterPressed)
 		if enterPressed then

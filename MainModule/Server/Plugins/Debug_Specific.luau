@@ -321,7 +321,8 @@ local service = wrappedEnv.Service
 		Debug = true;
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
-			print(Remote.Get(plr,"Test"))
+			Remote.Get(plr, "Test")
+			print("Client test request completed")
 
 			local tab = {
 				{
@@ -336,9 +337,9 @@ local service = wrappedEnv.Service
 
 			local FuncTime = os.clock();
 
-			local _, ret = Remote.Get(plr, "Test", tab)
+			Remote.Get(plr, "Test", tab)
 
-			print(`Remote.Get RETURN:`, ret)
+			print("Client test response received")
 
 			warn(`Remote.Get TOOK: {os.clock() - FuncTime}`)
 
@@ -350,18 +351,19 @@ local service = wrappedEnv.Service
 
 			local RemoteTime;
 
-			local testColor = Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
-			print(testColor)
+			Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
+			print("Color picker response received")
 
-			local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
+			Remote.GetGui(plr, "YesNoPrompt", {
 				Icon = server.MatIcons["Bug report"];
 				Question = "Is this a test question?";
-			}), Remote.NewPlayerEvent(plr, "TestEvent", function(...)
-				print("RemoteEvent Return:", ...)
+			})
+			Remote.NewPlayerEvent(plr, "TestEvent", function()
+				print("Client test event received")
 				warn(`Remote.Send TOOK: {os.clock() - RemoteTime}`)
 				print("THAT'D BE ALL")
 			end)
-			print(`PLAYER ANSWER: {ans}`)
+			print("Prompt response received")
 
 			task.wait(0.5)
 

@@ -131,10 +131,7 @@ return function(Vargs, GetEnv)
 						end
 						--// will change how this works later
 						local LogTable = Logs[cmd.ListUpdater]
-						if LogTable and LogTable.__meta == "DLL" then
-							return LogTable:GetAsTable()
-						end
-						return LogTable
+						return Logs.Project(LogTable, cmd.ListUpdater)
 					end
 				end
 			end
@@ -145,6 +142,10 @@ return function(Vargs, GetEnv)
 				Commands[ind] = nil
 			end
 
+			-- Enforce declared user-text policy for dispatchers and direct command function callers.
+			if isValid and server.TextPolicy then
+				server.TextPolicy.WrapCommand(cmd, ind)
+			end
 			rawset(Commands, ind, cmd)
 		end
 

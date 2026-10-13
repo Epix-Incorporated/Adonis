@@ -282,6 +282,8 @@ return function(Vargs, env)
 		};
 
 		Broadcast = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"broadcast", "bc"};
 			Args = {"Message"};
@@ -298,10 +300,10 @@ return function(Vargs, env)
 						end
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
-							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, Settings.SystemTitle, service.Filter(TextToUse), plr, v)
+							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, service.SanitizeXML(Core.GetSettingText("SystemTitle")), TextToUse)
 							}`)
 					else
-						Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+						Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Core.GetSettingText("SystemTitle"), args[1]), Color3.fromRGB(255,64,77))
 					end
 				end
 			end
@@ -318,10 +320,10 @@ return function(Vargs, env)
 				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab = {}
 				for i, v in logs do
-					if v.Restart then v.Time ..= " [RESTART]" end
+					local authorId = tonumber(v.UserId) or (type(v.ReasonRecord) == "table" and tonumber(v.ReasonRecord.AuthorUserId))
 					tab[i] = {
-						Text = `{v.Time}: {v.User}`;
-						Desc = `Reason: {v.Reason}`;
+						Text = `{tonumber(v.Time) or 0}{if v.Restart then " [RESTART]" else ""}: {if authorId then `User {authorId}` else "Server"}`;
+						Desc = `Reason: {server.TextPolicy.GetRecordText(v.ReasonRecord) or "Reason unavailable"}`;
 					}
 				end
 				return tab
@@ -420,6 +422,8 @@ return function(Vargs, env)
 		};
 
 		SystemNotify = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"sn", "systemnotify", "sysnotif", "sysnotify", "systemsmallmessage", "snmessage", "snmsg", "ssmsg", "ssmessage"};
 			Args = {"message"};
@@ -431,12 +435,14 @@ return function(Vargs, env)
 				assert(args[1], "Missing message")
 				for _, v in service.GetPlayers() do
 					Remote.RemoveGui(v, "Notify")
-					Functions.Notify(Settings.SystemTitle, service.Filter(args[1], plr, v), {v})
+					Functions.Notify(Core.GetSettingText("SystemTitle"), args[1], {v})
 				end
 			end
 		};
 
 		Notif = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}, ExemptValues = {[1] = {off = true, ["false"] = true}}};
 			Prefix = Settings.Prefix;
 			Commands = {"setmessage", "notif", "setmsg", "permhint"};
 			Args = {"message OR off"};
@@ -464,6 +470,8 @@ return function(Vargs, env)
 		};
 
 		SetBanMessage = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"setbanmessage", "setbmsg"};
 			Args = {"message"};
@@ -471,12 +479,16 @@ return function(Vargs, env)
 			Description = "Sets the ban message banned players see";
 			Category = "Moderation";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			-- Retains the safe-only author record for later moderation notices.
+			Function = function(plr: Player, args: {string}, data)
 				Variables.BanMessage = assert(args[1], "Missing message (argument #1)")
+				Core.RegisterVariableText("BanMessage", args[1], data and data.UserTextRecords and data.UserTextRecords[1])
 			end
 		};
 
 		SetLockMessage = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"setlockmessage", "slockmsg", "setlmsg"};
 			Args = {"message"};
@@ -484,12 +496,16 @@ return function(Vargs, env)
 			Description = "Sets the lock message unwhitelisted players see if :whitelist or :slock is on";
 			Category = "Server";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			-- Retains the safe-only author record for later moderation notices.
+			Function = function(plr: Player, args: {string}, data)
 				Variables.LockMessage = assert(args[1], "Missing message (argument #1)")
+				Core.RegisterVariableText("LockMessage", args[1], data and data.UserTextRecords and data.UserTextRecords[1])
 			end
 		};
 
 		SystemMessage = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"sm", "systemmessage", "sysmsg"};
 			Args = {"message"};
@@ -498,7 +514,7 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(assert(args[1], "Missing message (argument #1)"), plr), service.GetPlayers(), true)
+				Functions.Message(Core.GetSettingText("SystemTitle"), assert(args[1], "Missing message (argument #1)"), service.GetPlayers(), true)
 			end
 		};
 
@@ -532,13 +548,20 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"alert", "alarm", "annoy"};
 			Args = {"player", "message"};
-			Filter = true;
+			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
 			Description = "Get someone's attention";
 			Category = "Messages";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr,string.lower(args[1])) do
-					Remote.MakeGui(v, "Alert", {Message = args[2] and service.Filter(args[2],plr, v) or "Wake up; Your attention is required"})
+			-- Sends custom attention text through the author's native chat channel.
+			Function = function(plr: Player, args: {string}, data: {})
+				assert(args[1], "Missing player name")
+				local recipients = service.GetPlayers(plr, args[1])
+				if args[2] then
+					server.ChatTransport.SubmitCommand(plr, recipients, args[2], data and data.ChatInput, "Notification", "Alert")
+				else
+					for _, player in recipients do
+						Remote.MakeGui(player, "Alert", {Message = "Wake up; Your attention is required"})
+					end
 				end
 			end
 		};
@@ -673,6 +696,8 @@ return function(Vargs, env)
 		};
 
 		SaveTool = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"addtool", "savetool", "maketool"};
 			Args = {"optional player", "optional new tool name"};
@@ -714,6 +739,8 @@ return function(Vargs, env)
 		};
 
 		NewTeam = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"newteam", "createteam", "maketeam"};
 			Args = {"name", "BrickColor"};
@@ -829,6 +856,8 @@ return function(Vargs, env)
 		};
 
 		Note = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"note", "writenote", "makenote"};
 			Args = {"player", "note"};
@@ -836,12 +865,12 @@ return function(Vargs, env)
 			Description = "Makes a note on the target player(s) that says <note>";
 			Category = "Moderation";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[2], "Missing note (argument #2)")
 				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
 					local PlayerData = Core.GetPlayer(v)
 					if not PlayerData.AdminNotes then PlayerData.AdminNotes = {} end
-					table.insert(PlayerData.AdminNotes, args[2])
+					table.insert(PlayerData.AdminNotes, data.UserTextRecords[2])
 					Functions.Hint(`Added {service.FormatPlayer(v)} Note {args[2]}`, {plr})
 					Core.SavePlayer(v, PlayerData)
 				end
@@ -851,7 +880,7 @@ return function(Vargs, env)
 		DeleteNote = {
 			Prefix = Settings.Prefix;
 			Commands = {"removenote", "remnote", "deletenote", "clearnote"};
-			Args = {"player", "note (specify 'all' to delete all notes)"};
+			Args = {"player", "note index, matching text, or all"};
 			Description = "Removes a note on the target player(s)";
 			Category = "Moderation";
 			AdminLevel = "Admins";
@@ -863,9 +892,10 @@ return function(Vargs, env)
 						if string.lower(args[2]) == "all" then
 							PlayerData.AdminNotes = {}
 						else
-							for k, m in PlayerData.AdminNotes do
-								if string.sub(string.lower(m), 1, #args[2]) == string.lower(args[2]) then
-									Functions.Hint(`Removed {service.FormatPlayer(v)} Note {m}`, {plr})
+							for k = #PlayerData.AdminNotes, 1, -1 do
+								local note = server.TextPolicy.GetRecordText(PlayerData.AdminNotes[k])
+								if tonumber(args[2]) == k or (note and string.sub(string.lower(note), 1, #args[2]) == string.lower(args[2])) then
+									Functions.Hint(`Removed note {k} for {service.FormatPlayer(v)}`, {plr})
 									table.remove(PlayerData.AdminNotes, k)
 								end
 							end
@@ -891,7 +921,11 @@ return function(Vargs, env)
 						Functions.Hint(`No notes found on {service.FormatPlayer(v)}`, {plr})
 						continue
 					end
-					Remote.MakeGui(plr, "List", {Title = service.FormatPlayer(v), Table = notes})
+					local displayed = {}
+					for index, note in notes do
+						displayed[index] = `{index}: {server.TextPolicy.GetRecordText(note) or "Text unavailable"}`
+					end
+					Remote.MakeGui(plr, "List", {Title = service.FormatPlayer(v), Table = displayed})
 				end
 			end
 		};
@@ -1032,6 +1066,8 @@ return function(Vargs, env)
 		};
 
 		CustomKick = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2, 3}};
 			Prefix = Settings.Prefix;
 			Commands = {"ckick", "customkick", "customcrash"};
 			Args = {"player", "title", "message"};
@@ -1041,11 +1077,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[3], "Argument(s) missing or nil")
 
-				local title = service.BroadcastFilter(args[2], plr)
-				assert(title == args[2], "Title was filtered: "..title)
-
-				local msg = service.BroadcastFilter(args[3], plr)
-				assert(msg == args[3], "Message was filtered: "..msg)
+				local title = args[2]
+				local msg = args[3]
 
 				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
 					if not Admin.CheckAuthority(plr, v, "custom-kick") then
@@ -1078,6 +1111,8 @@ return function(Vargs, env)
 		};
 
 		Shutdown = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"shutdown"};
 			Args = {"reason"};
@@ -1085,13 +1120,15 @@ return function(Vargs, env)
 			Category = "Server";
 			Filter = true;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {})
 				if Core.DataStore then
 					Core.UpdateData("ShutdownLogs", function(logs)
 						table.insert(logs, 1, {
 							User = plr and plr.Name or "[Server]",
+							UserId = plr and plr.UserId or nil,
 							Time = os.time(),
-							Reason = args[1] or "N/A"
+							Reason = args[1] or "N/A",
+							ReasonRecord = data.UserTextRecords[1],
 						})
 
 						local nlogs = #logs
@@ -1108,6 +1145,8 @@ return function(Vargs, env)
 		};
 
 		ServerBan = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"serverban", "ban"};
 			Args = {"player/user", "reason"};
@@ -1123,7 +1162,7 @@ return function(Vargs, env)
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "server-ban", false) then
-						Admin.AddBan(v, reason, false, plr, "Server")
+						Admin.AddBan(v, reason, false, plr, "Server", data.UserTextRecords[2])
 						Functions.LogAdminAction(plr, "Server Ban", v.Name, `Reason: {reason}`)
 						Functions.Hint(`Server-banned {service.FormatPlayer(v, true)}`, {plr})
 					end
@@ -1172,6 +1211,8 @@ return function(Vargs, env)
 		};
 
 		CustomMessage = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1, 2}};
 			Prefix = Settings.Prefix;
 			Commands = {"cm", "custommessage"};
 			Args = {"Upper message", "message"};
@@ -1234,22 +1275,29 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"rbxnotify", "robloxnotify", "robloxnotif", "rblxnotify", "rnotif", "rn"};
 			Args = {"player", "duration (seconds)", "text"};
-			Filter = true;
+			UserText = {Kind = "Chat", Args = {3}, Audience = "SelectedPlayers"};
 			Description = "Sends a Roblox-styled notification for the target player(s)";
 			Category = "Messages";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "SetCore", "SendNotification", {
-						Title = "Notification";
-						Text = args[3] or "Hello, from Adonis!";
-						Duration = tonumber(args[2]) or 5;
-					})
+			-- Sends custom attention text through the author's native chat channel.
+			Function = function(plr: Player, args: {string}, data: {})
+				assert(args[1], "Missing player name")
+				local recipients = service.GetPlayers(plr, args[1])
+				if args[3] then
+					server.ChatTransport.SubmitCommand(plr, recipients, args[3], data and data.ChatInput, "Notification", "RobloxNotification", {Duration = tonumber(args[2])})
+				else
+					for _, player in recipients do
+						Remote.Send(player, "Function", "SetCore", "SendNotification", {
+							Title = "Notification", Text = "Hello, from Adonis!", Duration = math.clamp(tonumber(args[2]) or 5, 1, 30),
+						})
+					end
 				end
 			end
 		};
 
 		Disguise = {
+			-- Resolves account identity before admitting the shared display-name edit once.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {}, RequiresLocalAuthor = true};
 			Prefix = Settings.Prefix;
 			Commands = {"disguise", "masquerade"};
 			Args = {"player", "username"};
@@ -1261,18 +1309,24 @@ return function(Vargs, env)
 				local userId = Functions.GetUserIdFromNameAsync(args[2])
 				assert(userId, "Invalid username supplied/user not found")
 
-				local username = select(2, xpcall(function()
-					return service.Players:GetNameFromUserIdAsync(userId)
-				end, function() return args[2] end))
+				local resolved, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+				assert(resolved, "Account name could not be resolved")
 
 				if service.Players:GetPlayerByUserId(userId) then
 					error("You cannot disguise as this player (currently in server)")
 				end
 
+				local _, records = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), {username}, {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}})
+				local record = records[1]
+				-- Respawns reuse the same admitted snapshot and never impersonate the target as its author.
+				local function applyName(character)
+					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+					if humanoid then humanoid.DisplayName = server.TextPolicy.GetRecordText(record) or "" end
+				end
 				Commands.Char.Function(plr, args)
-				Commands.DisplayName.Function(plr, {args[1], username})
 
 				for _, v in service.GetPlayers(plr, args[1]) do
+					applyName(v.Character)
 					if Variables.DisguiseBindings[v.UserId] then
 						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
 						Variables.DisguiseBindings[v.UserId].Rename = nil
@@ -1281,7 +1335,7 @@ return function(Vargs, env)
 					Variables.DisguiseBindings[v.UserId] = {
 						TargetUsername = username;
 						Rename = v.CharacterAppearanceLoaded:Connect(function(char)
-							Commands.DisplayName.Function(v, {v.Name, username})
+							applyName(char)
 						end);
 					}
 				end

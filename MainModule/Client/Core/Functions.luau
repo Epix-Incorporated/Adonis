@@ -1359,7 +1359,8 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		TextToSpeech = function(str)
+		-- Plays local phoneme audio; optional callbacks allow recipient cancellation and cleanup.
+		TextToSpeech = function(str, shouldContinue, registerSound)
 			local audioId = 296333956
 
 			local audio = Instance.new("Sound",service.LocalContainer())
@@ -1369,6 +1370,10 @@ return function(Vargs, GetEnv)
 			local audio2 = Instance.new("Sound",service.LocalContainer())
 			audio2.SoundId = `rbxassetid://{audioId}`
 			audio2.Volume = 1
+			if registerSound then
+				registerSound(audio)
+				registerSound(audio2)
+			end
 
 			local phonemes = {
 				{
@@ -1735,11 +1740,13 @@ return function(Vargs, GetEnv)
 			audio:Play()
 			audio2:Play()
 			for _, v in phos do
+				if shouldContinue and not shouldContinue() then break end
 				--print(i,v.str)
 				if type(v.func)=="string" then--v.func=="wait" then
 					task.wait(0.5)
 				elseif type(v)=="table" then
 					for _, p in v.func do
+						if shouldContinue and not shouldContinue() then break end
 						--[[--]]
 						if swap then
 							swap=false
@@ -1758,6 +1765,8 @@ return function(Vargs, GetEnv)
 			task.wait(0.5)
 			audio:Stop()
 			audio2:Stop()
+			audio:Destroy()
+			audio2:Destroy()
 		end;
 
 		IsValidTexture = function(id)
