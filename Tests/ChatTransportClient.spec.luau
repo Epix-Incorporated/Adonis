@@ -438,8 +438,10 @@ test("conversation replies cannot invoke registered native commands", function()
 		IsA = function(_, class) return class == "TextChatCommand" end,
 		Enabled = true, PrimaryAlias = "/native", SecondaryAlias = "",
 	})
-	local sent, status = f.Transport.Send("one", "/NATIVE argument")
-	expect(not sent and status == "CommandText" and #f.NativeSends == 0)
+	for _, delimiter in {" ", "\n", "\t", "\r\n"} do
+		local sent, status = f.Transport.Send("one", "/NATIVE" .. delimiter .. "argument")
+		expect(not sent and status == "CommandText" and #f.NativeSends == 0)
+	end
 	expect(f.Transport.Send("one", "/nativeword is ordinary text"))
 end)
 
@@ -495,6 +497,72 @@ test("small directed messages preserve the Notify presentation", function()
 	}})
 	f.Receive(channel, "notify", "FILTERED NOTICE")
 	expect(#f.UI == 1 and f.UI[1].Name == "Notify" and f.UI[1].Data.Message == "FILTERED NOTICE")
+	expect(f.UI[1].Data.Time == 10)
+end)
+
+test("announcement presentations render only successful recipient text", function()
+	for _, presentation in {"Message", "Notify", "Hint"} do
+		local f = fixture()
+		local channel = f.Channel("announcement", false)
+		f.Client.Remote.Commands.ChatChannelOpened({{
+			ChannelId = "announcement", ChannelName = "announcement", Kind = "Notification", Presentation = presentation,
+			RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, Duration = 75,
+		}})
+		expect(#f.UI == 0)
+		f.Receive(channel, "denied", "unavailable draft", "TextFilterFailed")
+		f.Receive(channel, "empty", "")
+		expect(#f.UI == 0)
+		f.Receive(channel, "accepted", "DELIVERED TEXT")
+		expect(#f.UI == 1 and f.UI[1].Name == presentation)
+		expect(f.UI[1].Data.Message == (if presentation == "Hint" then "Sender: DELIVERED TEXT" else "DELIVERED TEXT"))
+		expect(f.UI[1].Data.Time == 75)
+	end
+end)
+
+test("custom titles and multiline bodies are derived only from native receipts", function()
+	local f = fixture()
+	local channel = f.Channel("custom", false)
+	f.Client.Remote.Commands.ChatChannelOpened({{
+		ChannelId = "custom", ChannelName = "custom", Kind = "Notification", Presentation = "Message",
+		RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, TitleMode = "Custom",
+		Title = "UNTRUSTED CONTROL TITLE",
+	}})
+	expect(#f.UI == 0)
+	f.Receive(channel, "custom", "FILTERED TITLE\nFILTERED BODY\nSECOND LINE")
+	expect(#f.UI == 1 and f.UI[1].Data.Title == "FILTERED TITLE")
+	expect(f.UI[1].Data.Message == "FILTERED BODY\nSECOND LINE")
+	for index, text in {"FILTERED WITHOUT BOUNDARY", "\nFILTERED BODY", "FILTERED TITLE\n"} do
+		f.Receive(channel, `malformed-{index}`, text)
+		expect(f.UI[index + 1].Data.Title == "Message from Sender" and f.UI[index + 1].Data.Message == text)
+	end
+end)
+
+test("broadcast chat-window presentation follows native receipt and escapes rendered markup", function()
+	local f = fixture()
+	local channel = f.Channel("broadcast", false)
+	local systemChannel = f.Channel("RBXSystem")
+	local displayed = {}
+	systemChannel.DisplaySystemMessage = function(_, text) table.insert(displayed, text) end
+	f.Client.Remote.Commands.ChatChannelOpened({{
+		ChannelId = "broadcast", ChannelName = "broadcast", Kind = "Notification", Presentation = "ChatMessage",
+		RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, TitleMode = "Broadcast",
+	}})
+	f.Receive(channel, "failed", "unavailable draft", "TextFilterFailed")
+	expect(#displayed == 0)
+	f.Receive(channel, "accepted", "FILTERED <b>TEXT</b>")
+	expect(#displayed == 1 and displayed[1] == "Broadcast from Sender: FILTERED &lt;b&gt;TEXT&lt;/b&gt;")
+end)
+
+test("fixed broadcast titles and automatic timing never read user text from descriptors", function()
+	local f = fixture()
+	local channel = f.Channel("broadcast", false)
+	f.Client.Remote.Commands.ChatChannelOpened({{
+		ChannelId = "broadcast", ChannelName = "broadcast", Kind = "Notification", Presentation = "Message",
+		RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, TitleMode = "Broadcast", Duration = 0 / 0, AutoDuration = true,
+	}})
+	f.Receive(channel, "broadcast", "FILTERED")
+	expect(f.UI[1].Data.Title == "Broadcast")
+	expect(f.UI[1].Data.Time == #"FILTERED" / 19 + 2.5)
 end)
 
 print(`{successes} client transport contracts passed`)

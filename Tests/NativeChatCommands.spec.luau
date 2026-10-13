@@ -220,24 +220,17 @@ rateAllowed = false
 find(":restricted").Trigger(nativeSource, ":restricted")
 assert(#executions == 2 and commandRateChecks == 7, "Native ingress must retain command rate limiting")
 
--- Exercises filtered broadcast presentation through native and command-bar ingress.
+-- Exercises literal broadcast submission through native and command-bar ingress.
 local broadcastSource = fs.readFile("MainModule/Server/Commands/Admins.luau")
 local broadcast = luau.load("return {" .. declaration(broadcastSource, "\t\tBroadcast = {", "\t\tShutdownLogs = {") .. "}", {environment = env})().Broadcast
 broadcast.AdminLevel = 100
 -- Supplies the connected audience for the real broadcast handler.
 service.GetPlayers = function() return {player} end
--- Provides the system title used by the rich-text presentation template.
-core.GetSettingText = function() return "System" end
-local sharedSource = fs.readFile("MainModule/Shared/Service.luau")
-service.SanitizeXML = luau.load("return {" .. declaration(sharedSource, "\t\tSanitizeXML = function", "\t\tSanitizePattern = function") .. "}", {environment = env})().SanitizeXML
 local broadcastInput = [[<b>source</b> &lt; & "quoted" 'single']]
-local filteredBroadcast = [[<b>approved</b> &lt; & "quoted" 'single']]
-local filteredCalls, broadcasts = 0, {}
--- Substitutes a successful filtering response while verifying the authored input boundary.
-service.TryFilter = function(text, author, recipient, forBroadcast)
-	assert(text == broadcastInput and author == player and recipient == nil and forBroadcast == true, "Broadcast filtering must receive the literal input and its author")
-	filteredCalls += 1
-	return filteredBroadcast
+local broadcasts = {}
+-- Rejects the former non-chat filtering and remote-body delivery paths.
+service.TryFilter = function()
+	error("Broadcast user messages must use native chat filtering")
 end
 local policyLoader = luau.load(fs.readFile("MainModule/Server/Core/TextPolicy.luau"), {environment = env})()
 policyLoader({Server = server, Service = service}, function() return env end)
@@ -247,21 +240,34 @@ env.Commands.Broadcast = broadcast
 admin.GetCommand = function(text)
 	if text:match("^(%S+)") == ":broadcast" then return "Broadcast", broadcast, ":broadcast" end
 end
--- Captures the exact rich-text payload passed to the client display function.
-env.Remote.Send = function(recipient, kind, name, channel, message)
-	assert(recipient == player and kind == "Function" and name == "DisplaySystemMessageInTextChat" and channel == nil, "Broadcasts must use the expected system-message sink")
-	table.insert(broadcasts, message)
+-- Captures the actual parser-produced author capability at the transport boundary.
+server.ChatTransport.SubmitCommand = function(actor, recipients, text, input, kind, presentation, options)
+	assert(actor == player and recipients[1] == player and text == broadcastInput, "Broadcasts must preserve their literal input and actor")
+	assert(type(input) == "table" and kind == "Notification" and presentation == "ChatMessage" and options.TitleMode == "Broadcast", "Broadcasts need an authenticated native send and selected presentation")
+	table.insert(broadcasts, input)
+end
+env.Remote.Send = function()
+	error("Broadcasts cannot relay message bodies through display remotes")
 end
 rateAllowed = true
 rebuild()
 find(":broadcast").Trigger(nativeSource, ":broadcast " .. broadcastInput)
 find("/:broadcast").Trigger(nativeSource, "/:broadcast " .. broadcastInput)
 env.Remote.Commands.ProcessCommand(player, {":broadcast " .. broadcastInput})
-assert(#broadcasts == 3 and filteredCalls == 3, "Native, slash-prefixed and command-bar broadcasts must all filter and deliver")
-local expectedBroadcast = [[<font color="rgb(255, 64, 77)"><b>[System]</b></font> <font color="rgb(235, 99, 108)">&lt;b&gt;approved&lt;/b&gt; &amp;lt; &amp; &quot;quoted&quot; &apos;single&apos;</font>]]
-for _, message in broadcasts do
-	assert(message == expectedBroadcast, "Broadcast bodies must escape filtered markup and entities exactly once for every ingress")
+assert(#broadcasts == 3 and broadcasts[1] ~= broadcasts[2] and broadcasts[2] ~= broadcasts[3], "Every explicit ingress must receive its own native send capability")
+
+-- Canonical cross-server operations must not expand aliases from the receiving server.
+local receivedCrossArgs
+local operation = {Prefix = ":", Commands = {"operation"}, Args = {"value"}, AdminLevel = 100,
+	Function = function(_, args) receivedCrossArgs = args end,
+}
+aliases[":operation"] = ":broadcast injected text"
+admin.GetCommand = function(text)
+	if text == ":operation" then return "Operation", operation, ":operation" end
+	if text:match("^(%S+)") == ":broadcast" then return "Broadcast", broadcast, ":broadcast" end
 end
+process.Command(player, ":operation", {CrossServer = true, Args = {"validated operation"}, AdminLevel = 100})
+assert(receivedCrossArgs and receivedCrossArgs[1] == "validated operation" and #broadcasts == 3, "Destination aliases changed a validated cross-server operation")
 
 -- Exercises actual plugin registration, including the loader's removal of startup hooks before Init.
 local registrationAdmin = {
@@ -343,4 +349,4 @@ assert(#registrationErrors == 1 and rawget(registrationServer.Commands, "Invalid
 assert(#deferred == 0, "Rejected registrations must not schedule a native refresh")
 registrationAdmin.CacheNativeChatCommands(true)
 assert(not find(":invalidplugin") and find(":lateplugin"), "Rejected definitions must never acquire native interception")
-print("Native chat registry contracts passed: aliases, lifecycle, provenance, permissions, rate limiting, broadcast escaping and late plugin registration")
+print("Native chat registry contracts passed: aliases, lifecycle, provenance, permissions, rate limiting, native broadcasts, cross-server canonical dispatch and late plugin registration")

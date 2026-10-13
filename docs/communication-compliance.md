@@ -1,6 +1,6 @@
 # Communication and authored text
 
-Adonis uses Roblox TextChannels for conversational text and explicit non-chat filtering for announcements, moderation records, and editable shared content. This document describes the first-party implementation, extension contracts, compatibility changes, and required release checks. It does not certify platform compliance or replace testing with real accounts.
+Adonis uses Roblox TextChannels for user-to-user messages, including admin announcements, and explicit non-chat filtering for moderation records and editable shared content. This document describes the first-party implementation, extension contracts, compatibility changes, and required release checks. It does not certify platform compliance or replace testing with real accounts.
 
 ## Policy basis
 
@@ -10,7 +10,7 @@ Adonis uses Roblox TextChannels for conversational text and explicit non-chat fi
 - [Non-chat and stored-text filtering](https://create.roblox.com/docs/ui/text-filtering)
 - [Rate limiting public text inputs](https://create.roblox.com/docs/chat/examples/rate-limit-public-text-inputs)
 
-Ordinary admin announcements continue to use broadcast filtering and existing command spam controls. The additional shared 60-second admission applies to editable shared content, including persistent notices. Treating ordinary announcements separately is an interpretation of the published guidance; Roblox has not explicitly confirmed a cooldown exemption for Adonis announcements.
+Admin-written announcements use the same native delivery restrictions as other user messages. The shared 60-second admission applies to editable shared content, including persistent notices, names, and poll fields. Fixed system status and moderation actions remain available when user chat is unavailable; they never substitute a custom message body for a denied native delivery.
 
 ## Conversational delivery
 
@@ -28,12 +28,17 @@ Control remotes contain identifiers and server-selected metadata. They do not re
 | `privatechat` | Native group delivery with existing membership controls. New members receive subsequent messages; the server does not replay a transcript. Owner departure or closure ends the group. |
 | `help` | Fixed request notifications remain available to admins. An optional reason uses a temporary requester channel with receive-only admins. The first authorized acceptance claims the request before teleporting. |
 | `mpm`, `npm`, `notify`, `chatnotify`, `rbxnotify`, custom `alert` text and aliases | Native delivery followed by the existing Adonis presentation style. |
+| `m`, `n`, `h`, `bc`, `cm`, `cn`, `sm`, `sn`, timed variants and aliases | Native delivery supplies announcements, hints, chat-window broadcasts, and both fields of custom titles/messages. System-style aliases attribute text to its actual sender. |
+| `warn` | Records the authorized warning and a separately filtered moderation reason. The target receives fixed warning status; custom reason delivery uses native chat and can fail independently. |
 | `talk` / `maketalk` | The selector chooses viewers; the bubble appears over the actual sender. |
 | `tell` / `tts` | An attributed caption and local narration use the recipient's delivered text. Stop, session mute, replacement, closure, and cleanup cancel playback. |
 | `bchat` | Existing self-only preview. |
 | Terminal message | Native conversational transport with the terminal caller as author. |
+| `gm`, `gtm`, global-message aliases, cross-server player messages | Unavailable until a native cross-server delivery contract exists; no messaging-bus body fallback. |
 
 The setup timeout is 10 seconds, initial-send authorization expires 30 seconds after the original command submission, and transient/help channels last 30 seconds. PM channels expire after 15 minutes of inactivity. Pending sends are capped at 32 per player and managed channels at 1,024 per server. Local conversation history retains at most 200 delivered messages per channel; the local chat-history view retains at most 500 delivered messages across channels. Closing a channel removes its listeners and pending operations. Roblox's default chat UI may also display native channel messages; Adonis does not replace host chat configuration to hide them.
+
+Custom titles and bodies are sent together as plain channel text. Title line breaks are normalized to spaces after checking the original submission; recipients split their delivered text at its first newline. If filtering removes that framing, the full delivered text appears under a fixed author title. Control metadata carries only the title mode, never the title's text. Timed announcement display accepts finite positive durations capped at 3,600 seconds; automatic duration uses the delivered body length. Presentation duration does not extend channel membership or authorize additional sends.
 
 ### Native command compatibility
 
@@ -56,7 +61,7 @@ Commands declare `UserText = {Kind, Args, Audience}`. `Args` contains displayed 
 | Kind | Contract |
 | --- | --- |
 | `Chat` | Native TextChannel delivery; no non-chat filtering fallback. |
-| `Announcement` | Broadcast filtering; existing command spam controls. |
+| `Announcement` | Retired command declaration; rejected before publication. Use `Chat` for user messages. Existing record compatibility is not permission to relay a message. |
 | `PublicEdit` | One shared admission per actual author per 60 seconds, then broadcast filtering. |
 | `Moderation` | Broadcast filtering; on failure, perform the authorized action with a fixed unavailable-reason message. |
 
@@ -79,7 +84,7 @@ Removal controls are case-insensitive: `hide` for character names and `off`/`fal
 | `TextPolicy.FormatPublishedRecord(record, presentation)` | During an authorized published command, derives fixed numeric author attribution or an attributed hint from that invocation's trusted record. Other records and arbitrary formats are rejected. |
 | `TextPolicy.GetCommandAuthor(actor)` | Resolves the actual author for a new non-chat submission inside a command, including `sudo`. Do not use the viewing admin to reattribute a stored record. |
 | `ChatTransport.SubmitCommand(author, recipients, text, input, kind, presentation, options)` | Consumes the opaque `data.ChatInput` from explicit command processing, resolves native eligibility, and authorizes the submitting client to send. A direct/generated call without that input is rejected. |
-| `Functions.Message`, `Hint`, `Notify`, `Notification` | Filter displayed titles/bodies using command author context or an explicit author/record. Preserve existing call signatures. |
+| `Functions.Message`, `Hint`, `Notify`, `Notification` | Non-chat UI helpers for system status, approved moderation displays, and shared editable content. They filter titles/bodies and preserve existing call signatures; they are not user-message transports. |
 | `Logs.AddAudit(category, eventId, actor, metadata)` | Records approved canonical identifiers, numeric actor/target data, fixed outcomes, and optional separately filtered non-chat detail records. |
 | `Logs.Project` / `ProjectConsole` | Produce safe outbound rows, including descriptions. Raw chat/PM/remote/plugin/error text is unavailable. |
 | `Core.ProjectSetting`, `GetSettingText`, `GetVariableText` | Read display-safe configuration or runtime overrides without publishing operational raw strings. |
@@ -103,7 +108,9 @@ end;
 
 ### Cross-server and persisted text
 
-The originating server filters announcements, poll fields, and moderation reasons using the real author. Authenticated cross-server handlers accept versioned server-created publication envelopes, validate record shapes, and deduplicate publication IDs for five minutes. They reject legacy raw-text publication. Published-command authorization is private, single-use, and bound to the exact command, actor, and arguments. Forwarding does not create a fresh edit allowance. Published announcement titles and attributed hints use the record's numeric author ID so presentation does not require filtering with a fabricated local player.
+The originating server filters poll fields and moderation reasons using the real author. Authenticated cross-server handlers accept versioned server-created publication envelopes for public edits and moderation, validate record shapes, and deduplicate publication IDs for five minutes. They reject announcement publications and legacy raw-text message delivery. Published-command authorization is private, single-use, and bound to the exact command, actor, and arguments. Forwarding does not create a fresh edit allowance. Restart progress announcements contain fixed status and numeric timing; the supplied reason remains part of the moderation action.
+
+Operational cross-server commands use a validated canonical command and separate arguments. Unknown commands, aliases, batches, and command loops are rejected before transport; the receiving server does not expand local aliases over an accepted command. Older running servers may ignore the separate arguments, so restart servers onto the same version before relying on cross-server operations. The legacy `Message` and `ServerChat` bus routes are disabled in both directions.
 
 Dynamic `cross change`, `cross tag`, and `cross disguise` are rejected because their destination-dependent text cannot be prepared reliably at the origin. This includes numeric `cross change`; use an appropriate local operation until an explicit cross-server contract exists. Arbitrary cross-server conversational chat relays are disabled.
 
@@ -119,12 +126,12 @@ These entries describe source coverage. The release matrix below distinguishes a
 | --- | --- |
 | PM, group conversations, help reasons, directed notifications, custom alerts | Server/client `ChatTransport`; default and embedded TransBlack/Steampunk PM implementations; no legacy reply tickets or server transcript replay. |
 | Talk bubbles and speech | Actual-author native message source; recipient delivery drives caption/bubble/audio. |
-| Announcements, hints, broadcasts, custom titles, global messages | `Announcement` metadata and publication helpers; broadcast filtering without the additional public-edit admission. |
+| Announcements, hints, broadcasts, custom titles | `Chat` metadata; actual-author native delivery supplies every displayed user field. Global-message relays are disabled. |
 | Persistent notices, ban/lock labels, notes | `PublicEdit` metadata; records and projected retrieval. |
 | Names/display names, tags, string stats, team/tool names | Shared admission and filtering at static or dynamic command boundaries; numeric stat changes stay numeric. |
 | Camera, waypoint, reserved server, starter-script labels | Shared admission, safe labels, authored reserved-server records. |
 | Poll questions, answers, descriptions, cross-server results | Origin-filtered public-edit records and versioned publication envelopes. |
-| Kick/warn/ban/time-ban/shutdown reasons | Actual-author moderation records; failure preserves the action with fixed text; retrieval uses safe projection. |
+| Kick/warn/ban/time-ban/shutdown reasons | Actual-author moderation records; failure preserves the action with fixed text; retrieval uses safe projection. Warning messages additionally require native chat delivery; restart broadcasts carry fixed progress only. |
 | Command, remote, PM, chat, task, error and console logs | Approved metadata producers and outbound projections; raw bodies, hidden descriptions, unknown plugin text, and raw remote arguments are suppressed. |
 | `chatlogs` | Local history of messages delivered to the viewing client; no server-wide transcript. |
 | Settings `SetSetting`, `SaveSetSetting`, `SaveTableAdd`, shared lists/whitelist | Input validation, shared admission for string edits, provenance, safe labels, caller-bound removal handles, persistence and synchronization checks. |
@@ -138,7 +145,7 @@ These entries describe source coverage. The release matrix below distinguishes a
 
 Run the focused source-executing fixtures and repository checks in [Tests/README.md](../Tests/README.md). They substitute engine services, including filter output and privacy eligibility; they cannot establish Roblox's actual recipient filtering, account restrictions, native UI, or moderation permissions.
 
-The local Studio feasibility probe used an unpublished place, the local `MainModule`, mock storage, disabled persistence, and isolated integrations. An explicit Adonis command-bar PM submission reached one native client send. Separate engine probes confirmed both `:pm` and `/:pm` native command interception. The single-client probe did not establish a successful recipient delivery. No place publication or real-account privacy test is included in this change.
+Local Studio probes used unpublished places, the local `MainModule`, mock storage, disabled persistence, and isolated integrations. An explicit Adonis command-bar PM submission reached one native client send. Separate engine probes confirmed both `:pm` and `/:pm` native command interception. A production-mode announcement smoke test submitted `m/n/h/bc/cm` through the client command ingress and observed one native send attempt per submission, zero received messages, and no premature body display. The single-client probes did not establish successful recipient delivery. No place publication or real-account privacy test is included in this change.
 
 Before release, record account eligibility, relevant experience settings, results, and engine version for every unchecked row:
 
@@ -146,10 +153,11 @@ Before release, record account eligibility, relevant experience settings, result
 | --- | --- | --- |
 | PM/replies/multiple recipients | Pair reuse, author binding, deduplication, recipient-only rendering, capacity/lifecycle contracts | Two eligible accounts exchange/reply; multi-target sends remain separate; restricted recipients see no content. |
 | Groups/help | Actual group controls, owner closure, revoked members, competing help acceptance, expiry; Default/Unity/Aero manual closure, registry destruction, and cleanup during an animated close | Join/remove/leave during live delivery; first help acceptance teleports exactly once; unavailable reason delivery leaves fixed notice usable. |
+| Announcements/warnings | Actual command handlers, styles, native-send authority, custom-title framing, fixed warning status and moderation persistence, retired global relays | Eligible and restricted accounts receive only permitted text through every announcement style; custom title filtering and warning delivery fail safely. |
 | Command inputs | Actual alias/batch parser, generated/sudo rejection, native alias registration, disabled sinks | Command bar, native chat, aliases, batches, and keybinds produce one send per explicit body and no public private-body echo. |
 | Command interception | Exact/mixed-case aliases, arguments, near-matches, managed channel guard, host collisions | Repeat using native UI and host commands; verify denied/hidden commands still consume private input. |
 | Failure/lifecycle | Readiness timeout, hung send, late receipt, replayed controls, forged membership, pending/channel bounds | Disconnect/reconnect, real send failures, delayed source replication, idle expiry, and no raw fallback. |
-| Filtering/cooldown | Both filter stages fail, invalid UTF-8, numeric-looking text, concurrent admission, 60-second boundary, alias/direct-call/context checks | Actual platform filtering and displayed multi-line text for distinct recipients; announcement behavior unchanged. |
+| Filtering/cooldown | Both filter stages fail, invalid UTF-8, numeric-looking text, concurrent admission, 60-second boundary, alias/direct-call/context checks | Actual platform filtering and displayed multi-line text for distinct recipients; shared edits remain unavailable before 60 seconds. |
 | Presentation/privacy | Delivery-driven bubbles/captions/audio, base send permission under mute, theme paths | Real restricted accounts, mute/unmute, recipient-specific results, Default/TransBlack/Steampunk, native UI coexistence, speech stop/mute. |
 | Logs/settings | Complete safe projections, hidden fields, legacy/offline records, different viewer handles, reload-shaped records, duplicate envelopes | Inspect real outbound payloads as two admins; isolated persistence reload and two-server synchronization. |
 | Build/runtime | Pinned lint/builds, focused fixtures, isolated local startup/send | Real-account privacy delivery remains a release gate even after all automated checks pass. |

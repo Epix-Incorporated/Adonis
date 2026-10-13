@@ -225,44 +225,38 @@ return function(Vargs, env)
 		};
 
 		GlobalMessage = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
+			-- Retains native command interception without relaying conversation through server messaging.
+			UserText = {Kind = "Chat", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"globalmessage", "gm", "globalannounce"};
 			Args = {"message"};
-			Description = "Sends a global message to all servers";
+			Description = "Unavailable: player messages can only be sent within the current server";
 			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
 			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing message")
-				local publication = assert(server.TextPolicy.CreatePublication({Message = data.UserTextRecords[1]}))
-				if not Core.CrossServer("Message", plr.Name, publication) then
-					error("CrossServer handler not ready; please try again later")
-				end
+			-- Reports the missing native cross-server transport without publishing any submitted text.
+			Function = function()
+				error("Cross-server player messages are not supported; send the message in the current server.", 0)
 			end;
 		};
 
 		GlobalTimeMessage = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {2}};
+			-- Retains native command interception without relaying conversation through server messaging.
+			UserText = {Kind = "Chat", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"gtm", "globaltimedmessage", "globaltimemessage", "globaltimem"};
 			Args = {"time", "message"};
-			Description = "Sends a global message to all servers and makes it stay on the screen for the amount of time (in seconds) you supply";
+			Description = "Unavailable: timed player messages can only be sent within the current server";
 			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
 			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[2], "Missing message")
-				local publication = assert(server.TextPolicy.CreatePublication({Message = data.UserTextRecords[2]}))
-				if not Core.CrossServer("Message", plr.Name, publication, assert(tonumber(args[1]), "Missing time amount")) then
-					error("CrossServer handler not ready; please try again later")
-				end
+			-- Reports the missing native cross-server transport without publishing any submitted text.
+			Function = function()
+				error("Cross-server player messages are not supported; send the message in the current server.", 0)
 			end;
 		};
 
