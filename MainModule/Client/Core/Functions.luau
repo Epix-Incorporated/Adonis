@@ -200,27 +200,54 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		AddAlias = function(alias, command)
-			Variables.Aliases[string.lower(alias)] = command;
-			Remote.Get("UpdateAliases", Variables.Aliases)
+		-- Saves an alias map before exposing it locally, retaining rejected edits for retry.
+		SaveAliases = function(aliases)
+			local ok, response = pcall(Remote.Get, "UpdateAliases", aliases)
+			if not ok or type(response) ~= "table" or response.Success ~= true then
+				task.defer(UI.MakeGui, "Notification", {
+					Time = 5; Icon = client.MatIcons.Help; Title = "Aliases";
+					Message = if ok and type(response) == "table" and type(response.Message) == "string" then response.Message else "Aliases could not be saved. Please try again later.";
+				})
+				return false
+			end
+			Variables.Aliases = aliases
+			if response.CommandBarOnly then
+				task.defer(UI.MakeGui, "Notification", {
+					Time = 6; Icon = client.MatIcons.Help; Title = "Aliases";
+					Message = "Some aliases are available only in the command bar or keybinds. See the Aliases tab for native chat requirements.";
+				})
+			end
+			return true
+		end;
+
+		-- Adds or renames an alias in a single server-approved update.
+		AddAlias = function(alias, command, oldAlias)
+			local aliases = table.clone(Variables.Aliases)
+			if oldAlias then aliases[string.lower(oldAlias)] = nil end
+			aliases[string.lower(alias)] = command
+			if not Functions.SaveAliases(aliases) then return false end
 			task.defer(UI.MakeGui, "Notification", {
 				Time = 4;
 				Icon = client.MatIcons["Add circle"];
 				Title = "Notification";
 				Message = string.format('Alias "%s" added', string.lower(alias));
 			})
+			return true
 		end;
 
+		-- Removes an alias only after the server accepts the complete replacement map.
 		RemoveAlias = function(alias)
 			if Variables.Aliases[string.lower(alias)] then
-				Variables.Aliases[string.lower(alias)] = nil;
-				Remote.Get("UpdateAliases", Variables.Aliases)
+				local aliases = table.clone(Variables.Aliases)
+				aliases[string.lower(alias)] = nil
+				if not Functions.SaveAliases(aliases) then return false end
 				task.defer(UI.MakeGui, "Notification", {
 					Time = 4;
 					Icon = client.MatIcons.Delete;
 					Title = "Notification";
 					Message = string.format('Alias "%s" removed', string.lower(alias));
 				})
+				return true
 			else
 				task.defer(UI.MakeGui, "Notification", {
 					Time = 3;
@@ -228,6 +255,7 @@ return function(Vargs, GetEnv)
 					Title = "Error";
 					Message = string.format('Alias "%s" not found', string.lower(alias));
 				})
+				return false
 			end
 		end;
 

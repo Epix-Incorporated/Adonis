@@ -1323,9 +1323,15 @@ return function(data, env)
 				TextStrokeTransparency = 1;
 			})
 
+			aliasTab:Add("TextLabel", {
+				Text = "Native chat: configured prefix + letters, numbers, _ or -, up to 64 bytes; full alias 128 bytes; command 4096 bytes. Other aliases and saved lists over 64 entries require the command bar or keybinds.";
+				TextWrapped = true; TextSize = 12; BackgroundTransparency = 1;
+				Size = UDim2.new(1, -10, 0, 45); Position = UDim2.new(0, 5, 0, 30);
+			})
+
 			local aliases = aliasTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -60);
-				Position = UDim2.new(0, 5, 0, 30);
+				Size = UDim2.new(1, -10, 1, -110);
+				Position = UDim2.new(0, 5, 0, 80);
 				BackgroundTransparency = 0.5;
 			})
 
@@ -1427,12 +1433,12 @@ return function(data, env)
 							if alias ~= "" and commandBox.Text ~= "" then
 								aliasBox.Text = "Saving..."
 
-								if editOldAlias then
-									Functions.RemoveAlias(editOldAlias)
-									editOldAlias = nil
+								if not Functions.AddAlias(alias, commandBox.Text, editOldAlias) then
+									aliasBox.Text = alias
+									inputBlock = false
+									return
 								end
-
-								Functions.AddAlias(alias, commandBox.Text)
+								editOldAlias = nil
 								currentAlias = nil
 							end
 

@@ -17,6 +17,8 @@ return function(Vargs, GetEnv)
 	local AddLog, TrackTask, Defaults
 	-- Coalesces native alias rebuilds caused by command and player-data updates.
 	local nativeChatRefreshQueued = false
+	-- Failed or unfinished refreshes must be retried before an alias save reports readiness.
+	local nativeChatReady = false
 	-- Retains unchanged native interceptors across bounded personal-alias updates.
 	local nativeChatRegistry, nativeChatSequence = {}, 0
 	local CreatorId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GetGroupCreatorId(game.CreatorId)
@@ -1264,14 +1266,16 @@ return function(Vargs, GetEnv)
 
 		-- Registers native sinks for command names and currently loaded executable aliases.
 		-- Personal aliases without a configured prefix remain command-bar/keybind inputs.
-		CacheNativeChatCommands = function(immediate)
+		CacheNativeChatCommands = function(immediate, onlyPending)
+			if onlyPending and not nativeChatRefreshQueued and nativeChatReady then return end
 			if nativeChatRefreshQueued and not immediate then return end
 			nativeChatRefreshQueued = true
 			-- Applies accepted aliases before their save response and reuses unchanged objects.
 			local function refresh()
 				if not nativeChatRefreshQueued then return end
 				nativeChatRefreshQueued = false
-				if service.TextChatService.ChatVersion ~= Enum.ChatVersion.TextChatService then return end
+				nativeChatReady = false
+				if service.TextChatService.ChatVersion ~= Enum.ChatVersion.TextChatService then nativeChatReady = true; return end
 				local container = service.TextChatService:FindFirstChild("TextChatCommands") or service.TextChatService
 				local occupied, retained, keptInstances = {}, {}, {}
 				for _, command in service.TextChatService:GetDescendants() do
@@ -1298,26 +1302,26 @@ return function(Vargs, GetEnv)
 					if not command then
 						nativeChatSequence += 1
 						command = service.New("TextChatCommand", {
-						Name = "Adonis_Native_" .. tostring(nativeChatSequence),
-						PrimaryAlias = variants[1], SecondaryAlias = variants[2] or "",
-						AutocompleteVisible = visible, Archivable = false,
-					})
-					command.Triggered:Connect(function(source, text)
-						if not source.Parent or source.Parent:GetAttribute("AdonisChannelId") then return end
-						local player = service.Players:GetPlayerByUserId(source.UserId)
-						if player and type(text) == "string" then
-							if not Settings.ChatCommands then
-								Remote.MakeGui(player, "Output", {Message = "Chat commands are disabled. Use the command bar."})
-								return
+							Name = "Adonis_Native_" .. tostring(nativeChatSequence),
+							PrimaryAlias = variants[1], SecondaryAlias = variants[2] or "",
+							AutocompleteVisible = visible, Archivable = false,
+						})
+						command.Triggered:Connect(function(source, text)
+							if not source.Parent or source.Parent:GetAttribute("AdonisChannelId") then return end
+							local player = service.Players:GetPlayerByUserId(source.UserId)
+							if player and type(text) == "string" then
+								if not Settings.ChatCommands then
+									Remote.MakeGui(player, "Output", {Message = "Chat commands are disabled. Use the command bar."})
+									return
+								end
+								local submitted = if string.sub(text, 1, #slash):lower() == slash:lower() and slash ~= plain then string.sub(text, 2) else text
+								Remote.Commands.ProcessCommand(player, {submitted})
 							end
-							local submitted = if string.sub(text, 1, #slash):lower() == slash:lower() and slash ~= plain then string.sub(text, 2) else text
-							Remote.Commands.ProcessCommand(player, {submitted})
-						end
-					end)
-					command.Parent = container
+						end)
 					end
 					command.AutocompleteVisible = visible
 					command:SetAttribute("AdminLevel", if type(level) == "number" or type(level) == "string" then level else nil)
+					command.Parent = container
 					retained[key], keptInstances[command] = command, true
 				end
 				for _, definition in Commands do
@@ -1333,13 +1337,20 @@ return function(Vargs, GetEnv)
 				end
 				-- Only prefixed personal aliases may intercept text typed into public chat.
 				local function registerAliases(aliases, personal)
-					local examined = 0
+					if personal then
+						local bounded, count = {}, 0
+						for alias, expansion in aliases or {} do
+							count += 1
+							-- Oversized legacy maps remain wholly command-bar-only, avoiding arbitrary subsets.
+							if count > 64 then return end
+							bounded[alias] = expansion
+						end
+						aliases = bounded
+					end
 					for alias, expansion in aliases or {} do
-						examined += 1
-						if personal and examined > 64 then break end
 						if type(alias) ~= "string" or type(expansion) ~= "string" then continue end
 						if personal then
-							if #expansion <= 4096 then
+							if #expansion > 0 and #expansion <= 4096 then
 								local token = Admin.GetNativeAliasToken(alias)
 								if token then register(token, nil, false) end
 							end
@@ -1360,6 +1371,7 @@ return function(Vargs, GetEnv)
 					if child:IsA("TextChatCommand") and string.sub(child.Name, 1, 7) == "Adonis_" and not keptInstances[child] then child:Destroy() end
 				end
 				nativeChatRegistry = retained
+				nativeChatReady = true
 			end
 			if immediate then refresh() else task.defer(refresh) end
 		end;

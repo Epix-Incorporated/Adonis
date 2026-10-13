@@ -3,9 +3,10 @@
 local fs = require("@lune/fs")
 local luau = require("@lune/luau")
 local source = fs.readFile("MainModule/Server/Core/Admin.luau")
-local first = assert(source:find("\t\tCacheNativeChatCommands = function", 1, true))
+local first = assert(source:find("\t\tGetNativeAliasToken = function", 1, true))
 local following = assert(source:find("\t\tGetCommand = function", first, true))
 local children, sent, deferred, notices = {}, {}, {}, {}
+local failNextCreation = false
 local settings = {ChatCommands = true, Prefix = {":", ";"}, PlayerPrefix = "!"}
 local player = {UserId = 1}
 local core = {PlayerData = {['1'] = {Aliases = {[":secret <text>"] = ":pm 2 <text>", ["hello <text>"] = ":pm 2 <text>"}}}}
@@ -30,8 +31,9 @@ local service = {
 	Players = {GetPlayers = function() return {player} end, GetPlayerByUserId = function(_, id) return id == 1 and player end},
 	-- Creates a native command whose trigger can be invoked without copying registry logic.
 	New = function(_, properties)
+		if failNextCreation then failNextCreation = false; error("fixture creation failure") end
 		properties.IsA = function(_, class) return class == "TextChatCommand" end
-		properties.Destroy = function(self) self.Destroyed = true end
+		properties.Destroy = function(self) self.Destroyed = true; self.Parent = nil end
 		properties.SetAttribute = function(self, key, value)
 			assert(type(value) ~= "table", "Native attributes cannot contain permission tables")
 			self[key] = value
@@ -56,7 +58,9 @@ local env = setmetatable({
 	task = {defer = function(callback) table.insert(deferred, callback) end},
 	stripArgPlaceholders = function(alias) return alias:gsub("<%S+>", ""):match("^%s*(.-)%s*$") end,
 }, {__index = getfenv()})
-admin.CacheNativeChatCommands = luau.load("local nativeChatRefreshQueued = false\nreturn {" .. source:sub(first, following - 1) .. "}", {environment = env})().CacheNativeChatCommands
+local implementation = luau.load("local nativeChatRefreshQueued, nativeChatReady = false, false\nlocal nativeChatRegistry, nativeChatSequence = {}, 0\nreturn {" .. source:sub(first, following - 1) .. "}", {environment = env})()
+admin.GetNativeAliasToken = implementation.GetNativeAliasToken
+admin.CacheNativeChatCommands = implementation.CacheNativeChatCommands
 
 -- Rebuilds on the deferred boundary used by player load and alias edit hooks.
 local function rebuild()
@@ -86,9 +90,39 @@ assert(#sent == 1 and sent[1].Actor == player and sent[1].Text == ":pm 2 literal
 nativeSource.Parent.GetAttribute = function() return "managed-channel" end
 find("/:pm").Trigger(nativeSource, "/:pm 2 forbidden")
 assert(#sent == 1, "Managed conversation messages must not execute commands")
+local retainedPM, previousAllocations = find("/:pm"), #children
 core.PlayerData['1'].Aliases = {["!new <text>"] = ":pm 2 <text>"}
 rebuild()
 assert(not find(":secret") and find("!new"), "Alias edits must remove stale sinks and register replacements")
+assert(find("/:pm") == retainedPM and #children == previousAllocations + 1, "An alias edit must reuse unrelated native instances")
+previousAllocations = #children
+admin.CacheNativeChatCommands(true)
+assert(#children == previousAllocations, "An unchanged registry must allocate no new instances")
+admin.CacheNativeChatCommands()
+core.PlayerData['1'].Aliases = {[":ready <text>"] = ":pm 2 <text>"}
+admin.CacheNativeChatCommands(true, true)
+assert(find(":ready") and not find("!new"), "An immediate refresh must install aliases before returning")
+previousAllocations = #children
+table.remove(deferred, 1)()
+assert(#children == previousAllocations, "A superseded deferred refresh must be a no-op")
+admin.CacheNativeChatCommands(true, true)
+assert(#children == previousAllocations, "Flushing an already-ready registry must remain a no-op")
+core.PlayerData['1'].Aliases = {[":recover <text>"] = ":pm 2 <text>"}
+failNextCreation = true
+admin.CacheNativeChatCommands()
+assert(not pcall(table.remove(deferred, 1)) and not find(":recover"), "The fixture must fail during deferred native registration")
+admin.CacheNativeChatCommands(true, true)
+assert(find(":recover"), "An identical save must recover a failed refresh before reporting ready")
+local legacy = {}
+for index = 1, 64 do legacy[":legacy" .. index .. " <text>"] = ":pm 2 <text>" end
+core.PlayerData['1'].Aliases = legacy
+rebuild()
+for index = 1, 64 do assert(find(":legacy" .. index), "Every admitted technical alias needs a native sink") end
+legacy[":legacy65"] = ":pm 2 <text>"
+rebuild()
+for index = 1, 65 do assert(not find(":legacy" .. index), "Oversized legacy maps must be wholly command-bar-only") end
+assert(not admin.GetNativeAliasToken(":bad! <text>") and not admin.GetNativeAliasToken(":" .. string.rep("x", 64)), "Native technical tokens must enforce syntax and byte limits")
+assert(admin.GetNativeAliasToken(":valid-name_2 <text>") == ":valid-name_2", "Supported native identifiers must remain usable")
 variables.ChatCreateRobloxCommands = false
 rebuild()
 assert(find(":multi") and not find(":multi").AutocompleteVisible, "Disabled autocomplete must retain ordinary native command execution")

@@ -39,6 +39,7 @@ local function fixture()
 	local textChatService = {
 		MessageReceived = signal(),
 		DescendantAdded = signal(),
+		DescendantRemoving = signal(),
 		ChatVersion = enum.ChatVersion.TextChatService,
 		Commands = {},
 		GetDescendants = function(self) return self.Commands end,

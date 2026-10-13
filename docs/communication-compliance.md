@@ -43,7 +43,11 @@ Registered command-like text is rejected before a conversational send, including
 
 `ChatCreateRobloxCommands` now controls native autocomplete visibility. Native command interception remains registered when autocomplete is hidden or the viewer lacks command permission. With `ChatCommands=false`, conversational aliases and configured aliases remain intercepted and return a fixed disabled message without execution. Use the command bar in this mode.
 
-Global aliases and personal aliases beginning with configured command prefixes participate in native interception. A personal alias is still expanded using the actual caller's configuration. Unprefixed personal aliases are supported through the command bar and keybinds. Native batches must begin with a registered alias followed by its argument boundary: use `:fly | :pm player message`, or use the command bar for `:fly|:pm player message`.
+Global aliases and eligible personal aliases beginning with configured command prefixes participate in native interception. A personal alias is still expanded using the actual caller's configuration. Unprefixed personal aliases are supported through the command bar and keybinds. Native batches must begin with a registered alias followed by its argument boundary: use `:fly | :pm player message`, or use the command bar for `:fly|:pm player message`.
+
+Personal alias updates are atomic and limited to one attempt per second, 64 entries, 128-byte names, and 4,096-byte command expansions. A native personal alias token must be at most 64 bytes and use a configured prefix followed by ASCII letters, digits, underscores, or hyphens. Other accepted aliases are command-bar/keybind inputs. Successful saves install native interception before acknowledging the update; rejected saves preserve the previous configuration and client state. Unchanged native handlers are reused. These internal resource limits are separate from the shared editable-text cooldown.
+
+An existing saved map with more than 64 aliases is preserved but is wholly command-bar/keybind-only until replaced with a map within the limits. The Aliases editor displays the native-chat requirements; unsupported aliases must not be entered through public chat. No partial subset of an oversized legacy map is registered.
 
 ## Non-chat filtering and publication
 

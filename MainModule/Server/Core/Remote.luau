@@ -500,14 +500,12 @@ return function(Vargs, GetEnv)
 				if unchanged then
 					for key in previous do if aliases[key] == nil then unchanged = false; break end end
 				end
-				if not unchanged then
-					data.Aliases = aliases
-					local ok = pcall(Admin.CacheNativeChatCommands, true)
-					if not ok then
-						data.Aliases = previous
-						pcall(Admin.CacheNativeChatCommands, true)
-						return {Success = false, Message = "Aliases could not be installed. Please try again later."}
-					end
+				if not unchanged then data.Aliases = aliases end
+				local ok = pcall(Admin.CacheNativeChatCommands, true, unchanged)
+				if not ok then
+					data.Aliases = previous
+					pcall(Admin.CacheNativeChatCommands, true)
+					return {Success = false, Message = "Aliases could not be installed. Please try again later."}
 				end
 				return {Success = true, CommandBarOnly = commandBarOnly}
 			end;

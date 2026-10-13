@@ -23,6 +23,7 @@ If the Roblox standard library has not been generated locally, run the pinned `s
 | `ChatTransportClient.spec.luau` | Real client transport: ready/send, no raw recipient relay, successful delivered text only, deduplication, histories, timeout/late receipt, UI presentation and speech cancellation, command preflight. |
 | `CommandProvenance.spec.luau` | Actual command parser and alias formatting: literal arguments, generated templates, batches, overrides, actual actor, expiry, admission/completion/failure audit timing and persistence exclusions. |
 | `NativeChatCommands.spec.luau` | Actual native registry: prefixes/synonyms, host collisions, personal aliases, refresh/cleanup, managed-channel guard, hidden/disabled command interception. |
+| `AliasUpdates.spec.luau` | Actual alias-save endpoint, client helpers and rename callback: bounded atomic updates, throttling, synchronous registration, rollback, accepted client state, and one-request edits. |
 | `TextPolicy.spec.luau` | Actual filtering and command wrapper: both filter stages, audience/author checks, shared admission, records, cross-server publications, helper context and direct calls. |
 | `Logging.spec.luau` | Entire projected rows, including descriptions and unknown fields; canonical metadata and non-chat detail provenance. |
 | `Settings.spec.luau` | Mutation validation, text admission, operational/display separation, persistence-shaped records, different viewer handles, ranks/catalogs and legacy redaction. |
