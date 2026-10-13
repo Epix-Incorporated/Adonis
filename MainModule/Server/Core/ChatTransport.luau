@@ -12,6 +12,7 @@ return function(Vargs, GetEnv)
 	local count = 0
 	local kinds = {PrivateMessage = true, PrivateChat = true, Help = true, Notification = true, Bubble = true, Speech = true}
 	local presentations = {Message = true, Notify = true, Hint = true, Notification = true, RobloxNotification = true, ChatMessage = true, Alert = true}
+	local titleModes = {Author = true, Broadcast = true, Custom = true}
 
 	-- Returns a current server player, without accepting client-shaped tables.
 	local function livePlayer(player)
@@ -64,7 +65,7 @@ return function(Vargs, GetEnv)
 			end
 		end
 		local input = {}
-		inputs[input] = {Player = player, Text = table.concat(fields, "\n"), Expires = origin.Expires, InvocationId = origin.InvocationId}
+		inputs[input] = {Player = player, Text = table.concat(fields, "\n"), Fields = fields, Expires = origin.Expires, InvocationId = origin.InvocationId}
 		return input
 	end
 
@@ -78,7 +79,8 @@ return function(Vargs, GetEnv)
 						alias = string.lower(alias)
 						local withSlash = string.sub(alias, 1, 1) == "/" and alias or "/" .. alias
 						for _, candidate in {alias, withSlash} do
-							if lower == candidate or string.sub(lower, 1, #candidate + 1) == candidate .. " " then return true end
+							if lower == candidate or (string.sub(lower, 1, #candidate) == candidate
+								and string.match(string.sub(lower, #candidate + 1, #candidate + 1), "%s")) then return true end
 						end
 					end
 				end
@@ -105,7 +107,16 @@ return function(Vargs, GetEnv)
 			CanManageUsers = player == record.Owner or server.Admin.CheckAdmin(player),
 			PresentToSender = record.PresentToSender,
 			Duration = record.Duration,
+			TitleMode = record.TitleMode, AutoDuration = record.AutoDuration,
 		}
+	end
+
+	-- Bounds display timing without putting any user-authored content in control metadata.
+	local function displayDuration(value, presentation)
+		local duration = tonumber(value)
+		if presentation == "RobloxNotification" then return duration and duration == duration and math.clamp(duration, 1, 30) or 5 end
+		if not duration or duration ~= duration or duration <= 0 or duration == math.huge then duration = nil end
+		return duration and math.clamp(duration, 1, 3600)
 	end
 
 	-- Announces membership after the client transport has installed its listeners.
@@ -182,7 +193,7 @@ return function(Vargs, GetEnv)
 		local record = {Id = id, Channel = channel, Owner = owner, Kind = kind, Presentation = presentation,
 			Members = {}, Joining = {}, LastActivity = os.clock(), Created = os.clock(), PresentToSender = options.PresentToSender == true,
 			Session = options.Session, OnAccept = options.OnAccept, OnClose = options.OnClose,
-			Duration = math.clamp(tonumber(options.Duration) or 5, 1, 30)}
+			Duration = displayDuration(options.Duration, presentation), TitleMode = options.TitleMode or "Author", AutoDuration = options.AutoDuration == true}
 		channels[id] = record
 		count += 1
 		task.delay(10, function()
@@ -266,11 +277,17 @@ return function(Vargs, GetEnv)
 	-- Starts an authorized command conversation without relaying text to recipients.
 	function transport.SubmitCommand(author, recipients, text, input, kind, presentation, options)
 		options = options or {}
-		assert(livePlayer(author) and kinds[kind] and (presentation == nil or presentations[presentation]), "Chat is unavailable.")
+		assert(livePlayer(author) and kinds[kind] and (presentation == nil or presentations[presentation])
+			and (options.TitleMode == nil or titleModes[options.TitleMode]), "Chat is unavailable.")
 		local submitted = inputs[input]
 		assert(submitted and submitted.Player == author and submitted.Expires >= os.clock()
 			and submitted.Text == (text or ""), "Enter chat text yourself; generated commands cannot send messages.")
 		inputs[input] = nil
+		if options.TitleMode == "Custom" then
+			assert(kind == "Notification" and #submitted.Fields == 2, "A custom message requires an authored title and body.")
+			-- Only title whitespace is normalized; both fields remain inside the native message.
+			text = string.gsub(submitted.Fields[1], "[\r\n]+", " ") .. "\n" .. submitted.Fields[2]
+		end
 		assert(not transport.IsCommandText(text or ""), "This message matches a chat command. Change its opening text before sending.")
 		local selected, seen = {}, {}
 		for _, player in recipients do

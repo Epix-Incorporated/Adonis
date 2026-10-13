@@ -49,11 +49,31 @@ local function installThemeClose(theme, ui, window, data, options)
 		.. "local function doClose()\n" .. closeBody .. "\nreturn doClose", {environment = environment})()
 end
 
+-- Uses Default Notify's yielding fade-out to exercise overlapping presentation cleanup.
+local function installNotifyCleanup(call, source)
+	local fadeOut = assert(source:match("\tlocal function fadeOut%(%)\n(.-)\n\tgTable.CustomDestroy"), "Missing Default Notify cleanup")
+	local env = setmetatable({
+		msg = {TextTransparency = 0, TextStrokeTransparency = 0},
+		ttl = {TextTransparency = 0, TextStrokeTransparency = 0},
+		frame = {BackgroundTransparency = 0}, frame2 = {},
+		fadeSteps = 10, textStep = 0.1, strokeStep = 0.1, frameStep = 0.1,
+		gui = {Destroy = function() call.Destroyed = true end},
+		service = {UnWrap = function(value) return value end, Wait = coroutine.yield},
+	}, {__index = getfenv()})
+	local destroy = luau.load("local gone = false\nlocal function fadeOut()\n" .. fadeOut .. "\nreturn fadeOut", {environment = env})()
+	-- Mirrors registry removal after its custom destruction callback returns.
+	call.Destroy = function()
+		destroy()
+		call.Destroyed = true
+	end
+end
+
 -- Creates an isolated client with controllable engine events and optional real theme cleanup.
 local function fixture(options)
 	options = options or {}
 	local theme = options.Theme and fs.readFile(`MainModule/Client/UI/{options.Theme}/Window.rbxmx`)
 	local ui = theme and fs.readFile("MainModule/Client/Core/UI.luau")
+	local notifySource = options.NotifyCleanup and fs.readFile("MainModule/Client/UI/Default/Notify.rbxmx")
 	local now = 0
 	local enum = {TextChatMessageStatus = {}, ChatVersion = {TextChatService = "TextChatService"}}
 	for _, name in {"Success", "Sending", "TextFilterFailed"} do
@@ -64,6 +84,8 @@ local function fixture(options)
 		[2] = {UserId = 2, Name = "Sender", DisplayName = "Sender", Character = {}},
 	}
 	local channels, remotes, uiCalls, nativeSends, bubbles, speechCalls = {}, {}, {}, {}, {}, {}
+	local uiRemovals = {}
+	local threads = {}
 	local textChatService = {
 		MessageReceived = signal(),
 		DescendantAdded = signal(),
@@ -91,7 +113,11 @@ local function fixture(options)
 		},
 		UI = {Make = function(name, data)
 			local call = {Name = name, Data = data, Children = {}}
+			-- Models a registered GUI's destruction without discarding its observed presentation.
+			call.Destroy = function() call.Destroyed = true end
 			table.insert(uiCalls, call)
+			if notifySource and name == "Notify" then installNotifyCleanup(call, notifySource) end
+			if options.AfterMake then options.AfterMake(call) end
 			if name == "Window" then
 				local window = {
 					Add = function(_, class, properties) table.insert(call.Children, {Class = class, Data = properties}) end,
@@ -114,6 +140,22 @@ local function fixture(options)
 			if options.ActiveSpeech then coroutine.yield() end
 		end},
 	}
+	-- Runs the shipped removal method against the fixture's registered presentations.
+	local removeBody = assert(fs.readFile("MainModule/Client/Core/UI.luau"):match("\t\tRemove = function%(name, ignore%)\n(.-)\n\t\tend;"), "Missing UI removal implementation")
+	local removeGui = luau.load("return function(name, ignore)\n" .. removeBody .. "\nend", {environment = {UI = client.UI}})()
+	-- Returns only live presentations with the requested registered GUI name.
+	client.UI.Get = function(name)
+		local found = {}
+		for _, call in uiCalls do
+			if call.Name == name and not call.Destroyed then table.insert(found, call) end
+		end
+		return found
+	end
+	-- Records replacement attempts before applying the real registry removal behavior.
+	client.UI.Remove = function(name, ignore)
+		table.insert(uiRemovals, name)
+		removeGui(name, ignore)
+	end
 	local env = setmetatable({
 		typeof = function(value) return type(value) == "table" and value.Native and "Instance" or typeof(value) end,
 		Enum = enum,
@@ -122,6 +164,7 @@ local function fixture(options)
 		task = {
 			spawn = function(callback, ...)
 				local thread = coroutine.create(callback)
+				table.insert(threads, thread)
 				local ok, err = coroutine.resume(thread, ...)
 				assert(ok, tostring(err))
 				return thread
@@ -183,9 +226,25 @@ local function fixture(options)
 	end
 	return {
 		Client = client, Transport = client.ChatTransport, Channel = channel, Open = open, Receive = receive,
-		Remotes = remotes, UI = uiCalls, NativeSends = nativeSends, Chat = textChatService, Enum = enum,
-		Players = players, Bubbles = bubbles, SpeechCalls = speechCalls,
+		Remotes = remotes, UI = uiCalls, UIRemovals = uiRemovals, NativeSends = nativeSends, Chat = textChatService, Enum = enum,
+		Players = players, Bubbles = bubbles, SpeechCalls = speechCalls, Threads = threads,
 	}
+end
+
+-- Advances deliberately suspended fixture animations until all presentation tasks finish.
+local function finishPresentations(f)
+	for _ = 1, 30 do
+		local resumed = false
+		for _, thread in f.Threads do
+			if coroutine.status(thread) == "suspended" then
+				local ok, err = coroutine.resume(thread)
+				assert(ok, tostring(err))
+				resumed = true
+			end
+		end
+		if not resumed then return end
+	end
+	error("Presentation tasks did not finish")
 end
 
 -- Reports each independent contract so failures identify the boundary under test.
@@ -438,8 +497,10 @@ test("conversation replies cannot invoke registered native commands", function()
 		IsA = function(_, class) return class == "TextChatCommand" end,
 		Enabled = true, PrimaryAlias = "/native", SecondaryAlias = "",
 	})
-	local sent, status = f.Transport.Send("one", "/NATIVE argument")
-	expect(not sent and status == "CommandText" and #f.NativeSends == 0)
+	for _, delimiter in {" ", "\n", "\t", "\r\n"} do
+		local sent, status = f.Transport.Send("one", "/NATIVE" .. delimiter .. "argument")
+		expect(not sent and status == "CommandText" and #f.NativeSends == 0)
+	end
 	expect(f.Transport.Send("one", "/nativeword is ordinary text"))
 end)
 
@@ -495,6 +556,145 @@ test("small directed messages preserve the Notify presentation", function()
 	}})
 	f.Receive(channel, "notify", "FILTERED NOTICE")
 	expect(#f.UI == 1 and f.UI[1].Name == "Notify" and f.UI[1].Data.Message == "FILTERED NOTICE")
+	expect(f.UI[1].Data.Time == 10)
+end)
+
+test("announcement presentations render only successful recipient text", function()
+	for _, presentation in {"Message", "Notify", "Hint"} do
+		local f = fixture()
+		local channel = f.Channel("announcement", false)
+		f.Client.Remote.Commands.ChatChannelOpened({{
+			ChannelId = "announcement", ChannelName = "announcement", Kind = "Notification", Presentation = presentation,
+			RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, Duration = 75,
+		}})
+		expect(#f.UI == 0)
+		f.Receive(channel, "denied", "unavailable draft", "TextFilterFailed")
+		f.Receive(channel, "empty", "")
+		expect(#f.UI == 0)
+		f.Receive(channel, "accepted", "DELIVERED TEXT")
+		expect(#f.UI == 1 and f.UI[1].Name == presentation)
+		expect(f.UI[1].Data.Message == (if presentation == "Hint" then "Sender: DELIVERED TEXT" else "DELIVERED TEXT"))
+		expect(f.UI[1].Data.Time == 75)
+	end
+end)
+
+test("announcements replace only their own presentation after a new successful receipt", function()
+	for _, presentation in {"Message", "Notify"} do
+		local f = fixture()
+		local otherPresentation = if presentation == "Message" then "Notify" else "Message"
+		f.Client.UI.Make(otherPresentation, {Message = "KEEP OTHER ANNOUNCEMENT"})
+		f.Client.UI.Make("Notification", {Message = "KEEP NOTIFICATION"})
+		local first = f.Channel("first", false)
+		local second = f.Channel("second", false)
+		for _, id in {"first", "second"} do
+			f.Client.Remote.Commands.ChatChannelOpened({{
+				ChannelId = id, ChannelName = id, Kind = "Notification", Presentation = presentation,
+				RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, Duration = 60,
+			}})
+		end
+		expect(#f.UIRemovals == 0)
+		-- Arrival order owns replacement even when a later-opened channel delivers first.
+		f.Receive(second, "second-receipt", "FIRST DELIVERED")
+		expect(#f.UIRemovals == 1 and f.UIRemovals[1] == presentation and not f.UI[3].Destroyed)
+		f.Receive(first, "failed", "DRAFT", "TextFilterFailed")
+		f.Receive(first, "pending", "DRAFT", "Sending")
+		f.Receive(first, "empty", "")
+		f.Receive(second, "second-receipt", "FIRST DELIVERED")
+		expect(#f.UIRemovals == 1 and #f.UI == 3 and not f.UI[3].Destroyed)
+		f.Receive(first, "first-receipt", "LAST DELIVERED")
+		expect(#f.UIRemovals == 2 and f.UIRemovals[2] == presentation)
+		expect(f.UI[3].Destroyed and not f.UI[4].Destroyed and f.UI[4].Data.Message == "LAST DELIVERED")
+		expect(not f.UI[1].Destroyed and not f.UI[2].Destroyed)
+		f.Receive(second, "second-receipt", "FIRST DELIVERED")
+		expect(#f.UIRemovals == 2 and #f.UI == 4 and not f.UI[4].Destroyed)
+	end
+end)
+
+test("stacking presentations never remove earlier announcements or peers", function()
+	for _, presentation in {"Hint", "Notification", "Alert"} do
+		local f = fixture()
+		f.Client.UI.Make("Message", {Message = "KEEP MESSAGE"})
+		f.Client.UI.Make("Notify", {Message = "KEEP NOTIFY"})
+		local channel = f.Channel("stacking", false)
+		f.Client.Remote.Commands.ChatChannelOpened({{
+			ChannelId = "stacking", ChannelName = "stacking", Kind = "Notification", Presentation = presentation,
+			RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false,
+		}})
+		f.Receive(channel, "first", "FIRST")
+		f.Receive(channel, "second", "SECOND")
+		expect(#f.UI == 4 and #f.UIRemovals == 0)
+		for _, call in f.UI do expect(not call.Destroyed) end
+	end
+end)
+
+test("newest receipt wins while Default Notify cleanup and presentation yield", function()
+	local f = fixture({NotifyCleanup = true, AfterMake = function(call)
+		-- Default Notify registers before its fade-in and display-duration waits.
+		if call.Name == "Notify" then coroutine.yield() end
+	end})
+	local channels = {}
+	for _, id in {"old", "replaced", "latest"} do
+		channels[id] = f.Channel(id, false)
+		f.Client.Remote.Commands.ChatChannelOpened({{
+			ChannelId = id, ChannelName = id, Kind = "Notification", Presentation = "Notify",
+			RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, Duration = 60,
+		}})
+	end
+	f.Receive(channels.old, "old", "OLD")
+	expect(#f.UI == 1 and not f.UI[1].Destroyed)
+	f.Receive(channels.replaced, "replaced", "REPLACED")
+	expect(#f.UI == 1 and not f.UI[1].Destroyed)
+	f.Receive(channels.latest, "latest", "LATEST")
+	expect(#f.UI == 2 and f.UI[1].Destroyed and f.UI[2].Data.Message == "LATEST")
+	finishPresentations(f)
+	expect(#f.UI == 2 and not f.UI[2].Destroyed)
+	expect(#f.Client.UI.Get("Notify") == 1 and f.Client.UI.Get("Notify")[1].Data.Message == "LATEST")
+end)
+
+test("custom titles and multiline bodies are derived only from native receipts", function()
+	local f = fixture()
+	local channel = f.Channel("custom", false)
+	f.Client.Remote.Commands.ChatChannelOpened({{
+		ChannelId = "custom", ChannelName = "custom", Kind = "Notification", Presentation = "Message",
+		RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, TitleMode = "Custom",
+		Title = "UNTRUSTED CONTROL TITLE",
+	}})
+	expect(#f.UI == 0)
+	f.Receive(channel, "custom", "FILTERED TITLE\nFILTERED BODY\nSECOND LINE")
+	expect(#f.UI == 1 and f.UI[1].Data.Title == "FILTERED TITLE")
+	expect(f.UI[1].Data.Message == "FILTERED BODY\nSECOND LINE")
+	for index, text in {"FILTERED WITHOUT BOUNDARY", "\nFILTERED BODY", "FILTERED TITLE\n"} do
+		f.Receive(channel, `malformed-{index}`, text)
+		expect(f.UI[index + 1].Data.Title == "Message from Sender" and f.UI[index + 1].Data.Message == text)
+	end
+end)
+
+test("broadcast chat-window presentation follows native receipt and escapes rendered markup", function()
+	local f = fixture()
+	local channel = f.Channel("broadcast", false)
+	local systemChannel = f.Channel("RBXSystem")
+	local displayed = {}
+	systemChannel.DisplaySystemMessage = function(_, text) table.insert(displayed, text) end
+	f.Client.Remote.Commands.ChatChannelOpened({{
+		ChannelId = "broadcast", ChannelName = "broadcast", Kind = "Notification", Presentation = "ChatMessage",
+		RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, TitleMode = "Broadcast",
+	}})
+	f.Receive(channel, "failed", "unavailable draft", "TextFilterFailed")
+	expect(#displayed == 0)
+	f.Receive(channel, "accepted", "FILTERED <b>TEXT</b>")
+	expect(#displayed == 1 and displayed[1] == "Broadcast from Sender: FILTERED &lt;b&gt;TEXT&lt;/b&gt;")
+end)
+
+test("fixed broadcast titles and automatic timing never read user text from descriptors", function()
+	local f = fixture()
+	local channel = f.Channel("broadcast", false)
+	f.Client.Remote.Commands.ChatChannelOpened({{
+		ChannelId = "broadcast", ChannelName = "broadcast", Kind = "Notification", Presentation = "Message",
+		RequesterUserId = 2, ParticipantUserIds = {1, 2}, CanSend = false, TitleMode = "Broadcast", Duration = 0 / 0, AutoDuration = true,
+	}})
+	f.Receive(channel, "broadcast", "FILTERED")
+	expect(f.UI[1].Data.Title == "Broadcast")
+	expect(f.UI[1].Data.Time == #"FILTERED" / 19 + 2.5)
 end)
 
 print(`{successes} client transport contracts passed`)

@@ -251,36 +251,31 @@ return function(Vargs, env)
 		};
 
 		TimeMessage = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {2}};
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"tm", "timem", "timedmessage", "timemessage"};
 			Args = {"time", "message"};
-			Filter = true;
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Preserves the accepted announcement and its attribution when the author is in another server.
+			-- Delivers the author's literal message through native chat before timed presentation.
 			Function = function(plr: Player, args: {string}, data: {})
-				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[2], "AnnouncementTitle")
-				Functions.Message(nil, `Message from {service.FormatPlayer(plr)}`, assert(args[2], "Missing message"), nil, service.GetPlayers(), true, assert(tonumber(args[1]), "Invalid time amount (must be number)"), nil, titleRecord)
+				local duration = assert(tonumber(args[1]), "Invalid time amount (must be number)")
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[2], "Missing message"), data and data.ChatInput, "Notification", "Message", {Duration = duration})
 			end
 		};
 
 		Message = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"m", "message"};
 			Args = {"message"};
-			Filter = true;
 			Description = "Makes a message";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Preserves the accepted announcement and its attribution when the author is in another server.
+			-- Presents only the author's message delivered through each recipient's native chat channel.
 			Function = function(plr: Player, args: {string}, data: {})
-				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "AnnouncementTitle")
-				Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, assert(args[1], "Missing message"), nil, service.GetPlayers(), true, nil, nil, titleRecord)
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "Message", {AutoDuration = true})
 			end
 		};
 
@@ -301,34 +296,31 @@ return function(Vargs, env)
 		};
 
 		Notify = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"n", "smallmessage", "nmessage", "nmsg", "smsg", "smessage"};
 			Args = {"message"};
-			Filter = true;
 			Description = "Makes a small message";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Preserves the accepted announcement and its attribution when the author is in another server.
+			-- Uses the small-message layout only after native chat delivers the author's text.
 			Function = function(plr: Player, args: {string}, data: {})
-				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "AnnouncementTitle")
-				Functions.Notify(`Message from @{plr.Name}`, assert(args[1], "Missing message"), service.GetPlayers(), nil, plr, nil, titleRecord)
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "Notify", {AutoDuration = true})
 			end
 		};
 
 		CustomNotify = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1, 2}};
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1, 2}};
 			Prefix = Settings.Prefix;
 			Commands = {"cn", "customsmallmessage", "cnmessage"};
 			Args = {"title", "message"};
-			Filter = true;
 			Description = `Same as {Functions.GetMainPrefix()}n but says whatever you want the title to be instead of your name.`;
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				Functions.Notify(assert(args[1], "Missing title"), assert(args[2], "Missing message"), service.GetPlayers())
+			-- Sends title and body together so both are derived from the recipient's filtered receipt.
+			Function = function(plr: Player, args: {string}, data: {})
+				local text = assert(args[1], "Missing title") .. "\n" .. assert(args[2], "Missing message")
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), text, data and data.ChatInput, "Notification", "Notify", {TitleMode = "Custom", AutoDuration = true})
 			end
 		};
 
@@ -349,55 +341,51 @@ return function(Vargs, env)
 		};
 
 		Hint = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"h", "hint"};
 			Args = {"message"};
-			Filter = true;
 			Description = "Makes a hint";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Composes published hints from accepted text so themes without titles retain safe attribution.
+			-- Preserves the hint layout while native delivery supplies the text and sender attribution.
 			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing message")
-				local bodyRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "Hint")
-				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "Author")
-				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), args[1]), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`, bodyRecord, titleRecord)
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "Hint", {AutoDuration = true})
 			end
 		};
 
 		TimeHint = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {2}};
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"th", "timehint", "thint"};
 			Args = {"time", "message"};
-			Filter = true;
 			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Preserves accepted timed hints and safe author attribution across servers.
+			-- Applies the requested duration to a hint built from native chat delivery.
 			Function = function(plr: Player, args: {string}, data: {})
-				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[2], "Author")
-				Functions.Hint(assert(args[2], "Missing message"), service.GetPlayers(), assert(tonumber(args[1]), "Invalid time amount (must be a number)"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`, nil, titleRecord)
+				local duration = assert(tonumber(args[1]), "Invalid time amount (must be a number)")
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[2], "Missing message"), data and data.ChatInput, "Notification", "Hint", {Duration = duration})
 			end
 		};
 
 		Warn = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2}};
+			UserText = {Kind = "Chat", Audience = "SelectedPlayers", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"warn", "warning"};
 			Args = {"player/user", "reason"};
-			Filter = true;
 			Dangerous = true;
 			Description = "Warns players";
 			Category = "Moderation";
 			AdminLevel = "Moderators";
+			-- Records moderation independently of chat; only native delivery may display its custom reason.
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target player(s) (argument #1)")
-				local reason = assert(args[2], "Missing reason (argument #2)")
+				local submittedReason = assert(args[2], "Missing reason (argument #2)")
+				local author = server.TextPolicy.GetCommandAuthor(plr)
+				local reasonRecord = server.TextPolicy.CreateRecord(submittedReason, author, "Moderation")
+				local reason = reasonRecord and reasonRecord.Text or "Reason unavailable"
+				local recipients, targetIds = {}, {}
 
 				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
@@ -411,20 +399,33 @@ return function(Vargs, env)
 						table.insert(playerData.Warnings, {
 							From = plr.Name;
 							Message = reason;
-							ReasonRecord = data.UserTextRecords[2];
+							ReasonRecord = reasonRecord;
 							Time = os.time();
 						})
 						Functions.LogAdminAction(plr, "Warned", v.Name, reason)
-						service.Events.WarningAdded:Fire(v, args[2], plr)
+						service.Events.WarningAdded:Fire(v, reason, plr)
+						table.insert(targetIds, v.UserId)
 
 						--// Check if its a fake player, this should allow it to save.
 						if service.Wrapped(v) then
 							task.defer(Core.SavePlayerData, v, playerData)
 						end
 
-						Remote.RemoveGui(v, "Notify")
-						Functions.Notify(`Warning from {service.FormatPlayer(plr)}`, reason, {v})
+						local target = service.UnWrap(v)
+						if typeof(target) == "Instance" and target:IsA("Player") and service.UnWrap(service.Players:GetPlayerByUserId(target.UserId)) == target then
+							table.insert(recipients, v)
+							Functions.Notify("Warning", "A moderator recorded a warning for your account.", {v})
+						end
 						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
+					end
+				end
+				if #targetIds > 0 and not (data and data.Options and data.Options.DontLog) then
+					Logs.AddAudit("Commands", "Command", author, {CommandKey = "Warn", TargetUserIds = targetIds, Outcome = "Completed", DetailRecord = reasonRecord})
+				end
+				if #recipients > 0 then
+					local ok, channelId = pcall(server.ChatTransport.SubmitCommand, plr, recipients, submittedReason, data and data.ChatInput, "Notification", "Notify")
+					if not ok or not channelId then
+						Remote.MakeGui(plr, "Output", {Message = "Warning recorded; its chat message could not be submitted."})
 					end
 				end
 			end

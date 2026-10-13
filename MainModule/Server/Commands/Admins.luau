@@ -282,28 +282,17 @@ return function(Vargs, env)
 		};
 
 		Broadcast = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
+			-- Delivers explicitly submitted broadcast text through each recipient's native chat channel.
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"broadcast", "bc"};
 			Args = {"Message"};
-			Filter = true;
 			Description = "Makes a message in the chat window";
 			Category = "Messages";
 			AdminLevel = "Admins";
-			-- Displays a filtered announcement, escaping its body before rich-text rendering.
+			-- The native receipt supplies the text used by the local chat-window presentation.
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers() do
-					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-						local TextToUse = service.SanitizeXML(args[1] or "Hello world!")
-						Remote.Send(
-							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
-							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, service.SanitizeXML(Core.GetSettingText("SystemTitle")), TextToUse)
-							}`)
-					else
-						Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Core.GetSettingText("SystemTitle"), args[1]), Color3.fromRGB(255,64,77))
-					end
-				end
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "ChatMessage", {TitleMode = "Broadcast"})
 			end
 		};
 
@@ -420,21 +409,17 @@ return function(Vargs, env)
 		};
 
 		SystemNotify = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
+			-- Keeps the small-message style while attributing user text through native chat.
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"sn", "systemnotify", "sysnotif", "sysnotify", "systemsmallmessage", "snmessage", "snmsg", "ssmsg", "ssmessage"};
 			Args = {"message"};
-			Filter = true;
-			Description = "Makes a system small message";
+			Description = "Makes an attributed small message for players who can receive your chat";
 			Category = "Messages";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message")
-				for _, v in service.GetPlayers() do
-					Remote.RemoveGui(v, "Notify")
-					Functions.Notify(Core.GetSettingText("SystemTitle"), args[1], {v})
-				end
+			-- Leaves recipient delivery and filtering to the author's TextChannel.
+			Function = function(plr: Player, args: {string}, data: {})
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "Notify", {AutoDuration = true})
 			end
 		};
 
@@ -505,17 +490,17 @@ return function(Vargs, env)
 		};
 
 		SystemMessage = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}};
+			-- User-written system-style messages retain their actual native chat author.
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"sm", "systemmessage", "sysmsg"};
 			Args = {"message"};
-			Filter = true;
-			Description = "Same as the message command, but uses what's set in the 'SystemTitle' setting (default: 'System Message') instead of your name as the title";
+			Description = "Makes an attributed message for players who can receive your chat";
 			Category = "Messages";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				Functions.Message(Core.GetSettingText("SystemTitle"), assert(args[1], "Missing message (argument #1)"), service.GetPlayers(), true)
+			-- Starts one native send from the caller's explicit submission.
+			Function = function(plr: Player, args: {string}, data: {})
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message (argument #1)"), data and data.ChatInput, "Notification", "Message", {AutoDuration = true})
 			end
 		};
 
@@ -1212,27 +1197,19 @@ return function(Vargs, env)
 		};
 
 		CustomMessage = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1, 2}};
+			-- Both displayed fields travel in one authenticated native chat submission.
+			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1, 2}};
 			Prefix = Settings.Prefix;
 			Commands = {"cm", "custommessage"};
 			Args = {"Upper message", "message"};
-			Filter = true;
 			Description = "Same as message but says whatever you want upper message to be instead of your name.";
 			Category = "Messages";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			-- Recipients reconstruct the custom title only from their delivered channel text.
+			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing message title (argument #1)")
 				assert(args[2], "Missing message (argument #2)")
-				for _, v in service.Players:GetPlayers() do
-					Remote.RemoveGui(v, "Message")
-					Remote.MakeGui(v, "Message", {
-						Title = args[1];
-						Message = args[2];
-						Time = (#tostring(args[1]) / 19) + 2.5;
-						--service.Filter(args[1],plr, v);
-					})
-				end
+				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), args[1] .. "\n" .. args[2], data and data.ChatInput, "Notification", "Message", {TitleMode = "Custom", AutoDuration = true})
 			end
 		};
 

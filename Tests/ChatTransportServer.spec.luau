@@ -429,5 +429,77 @@ test("channel capacity is bounded and cleanup releases capacity", function()
 	expect(#f.Channels == 1025)
 end)
 
+test("custom announcements keep authenticated title and body inside the originating native send", function()
+	local f = fixture()
+	local title, body = "Original\r\nTitle", "Private body\ncontinued"
+	local origin = f.Transport.NewOrigin(f.Players[1], `:cm {title} {body}`)
+	local input = f.Transport.CommandInput(f.Players[1], {UserText = {Args = {1, 2}}}, {title, body}, {UserCommandOrigin = origin})
+	f.Transport.SubmitCommand(f.Players[1], {f.Players[2]}, title .. "\n" .. body, input, "Notification", "Message", {TitleMode = "Custom", Duration = 75})
+	expect(#f.Channels == 1 and f.Channels[1].Requester == f.Players[1])
+	expect(f.Channels[1].Sources[2].CanSend == false)
+	local sends = f.Sends()
+	expect(#sends == 1 and sends[1].Player == f.Players[1] and sends[1].Args[3] == "Original Title\nPrivate body\ncontinued")
+	for _, event in f.Sent do
+		if event.Command == "ChatChannelOpened" then
+			local descriptor = event.Args[1]
+			expect(descriptor.TitleMode == "Custom" and descriptor.Duration == 75)
+			for _, value in descriptor do
+				expect(value ~= title and value ~= body and value ~= title .. "\n" .. body)
+			end
+		end
+	end
+end)
+
+test("custom announcement framing requires exactly two authenticated fields", function()
+	local f = fixture()
+	local token = f.Input(f.Players[1], "title\nbody")
+	expect(not pcall(f.Transport.SubmitCommand, f.Players[1], {f.Players[2]}, "title\nbody", token,
+		"Notification", "Message", {TitleMode = "Custom"}))
+	expect(#f.Channels == 0 and #f.Sends() == 0)
+	local invalidMode = f.Input(f.Players[1], "body")
+	expect(not pcall(f.Transport.SubmitCommand, f.Players[1], {f.Players[2]}, "body", invalidMode,
+		"Notification", "Message", {TitleMode = "untrusted title"}))
+	expect(#f.Channels == 0)
+end)
+
+test("denied announcement recipients never receive body-bearing fallback controls", function()
+	for _, presentation in {"Message", "Notify", "Hint"} do
+		local f = fixture()
+		f.Denied[2] = true
+		f.Transport.SubmitCommand(f.Players[1], {f.Players[2]}, "private announcement", f.Input(f.Players[1], "private announcement"),
+			"Notification", presentation, {Duration = math.huge})
+		expect(#f.Sends() == 0 and f.Channels[1].Destroyed)
+		for _, event in f.Sent do expect(event.Player ~= f.Players[2]) end
+		for _, output in f.Outputs do expect(output[1] == f.Players[1]) end
+	end
+end)
+
+test("normalized custom titles cannot turn native payloads into registered commands", function()
+	for _, title in {":pm\r\nrecipient", ":pm", ":pm\trecipient"} do
+		local f = fixture()
+		table.insert(f.Chat.Commands, {Enabled = true, PrimaryAlias = ":pm", SecondaryAlias = "", IsA = function(_, name) return name == "TextChatCommand" end})
+		local body = "secret"
+		local origin = f.Transport.NewOrigin(f.Players[1], `:cm {title} {body}`)
+		local input = f.Transport.CommandInput(f.Players[1], {UserText = {Args = {1, 2}}}, {title, body}, {UserCommandOrigin = origin})
+		expect(not pcall(f.Transport.SubmitCommand, f.Players[1], {f.Players[2]}, title .. "\n" .. body, input,
+			"Notification", "Message", {TitleMode = "Custom"}))
+		expect(#f.Channels == 0 and #f.Sends() == 0)
+	end
+end)
+
+test("announcement timing metadata is bounded while Roblox notifications retain their range", function()
+	for _, case in {{"Message", 9000, 3600}, {"Message", math.huge, nil}, {"Message", 0 / 0, nil},
+		{"Message", -1, nil}, {"RobloxNotification", 9000, 30}, {"RobloxNotification", -1, 1}, {"RobloxNotification", nil, 5}} do
+		local f = fixture()
+		f.Transport.SubmitCommand(f.Players[1], {f.Players[2]}, "body", f.Input(f.Players[1], "body"),
+			"Notification", case[1], {Duration = case[2], AutoDuration = true})
+		for _, event in f.Sent do
+			if event.Command == "ChatChannelOpened" then
+				expect(event.Args[1].Duration == case[3] and event.Args[1].AutoDuration == true)
+			end
+		end
+	end
+end)
+
 print(`{passed} server transport contracts passed; {failed} failed`)
 assert(failed == 0, "Server transport contract failures require review")
