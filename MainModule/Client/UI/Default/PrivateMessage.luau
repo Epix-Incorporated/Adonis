@@ -6,18 +6,22 @@ return function(data, env)
 	end
 	
 	local UI = client.UI
-	local Remote = client.Remote
-
-	local replyTicket = data.replyTicket
+	local transport = client.ChatTransport
+	local channelId = data.ChannelId
 	local player = data.Player
 
 	local gTable
 	local debounce = false
+	local unsubscribe
+	local closed = false
 
 	local window = UI.Make("Window",{
 		Name  = "PrivateMessage";
 		Title = tostring(player);
 		Size  = {300, 150};
+		OnClose = function()
+			if unsubscribe then unsubscribe() end
+		end;
 	})
 
 	local label = window:Add("TextLabel",{
@@ -26,6 +30,7 @@ return function(data, env)
 		BackgroundTransparency = 1;
 		TextScaled = true;
 		TextWrapped = true;
+		RichText = false;
 	})
 
 	local reply = window:Add("TextBox", {
@@ -37,8 +42,9 @@ return function(data, env)
 		TextScaled = true;
 	})
 
+	-- Submits the reply through the participant's native TextChannel.
 	local function sendIt(enter)
-		if not debounce then
+		if not debounce and not closed then
 			debounce = true
 			if enter then
 				if reply:IsFocused() then
@@ -53,11 +59,12 @@ return function(data, env)
 					return
 				end
 
-				window:Close()
-				Remote.Send("PrivateMessage", replyTicket, player, reply.Text)
-				UI.Make("Hint", {
-					Message = "Reply sent"
-				})
+				local sent, status = transport.Send(channelId, reply.Text)
+				if sent then
+					window:Close()
+				else
+					UI.Make("Hint", {Message = transport.StatusText(status)})
+				end
 			end
 			debounce = false
 		end
@@ -74,6 +81,14 @@ return function(data, env)
 
 	send.BackgroundColor3 = send.BackgroundColor3:lerp(Color3.new(0,0,0), 0.1)
 	reply.FocusLost:Connect(sendIt)
+	unsubscribe = transport.Subscribe(channelId, function(eventName)
+		if eventName == "Closed" then
+			closed = true
+			reply.TextEditable = false
+			reply.PlaceholderText = "This conversation has ended"
+			send.Active = false
+		end
+	end)
 
 	gTable = window.gTable
 	UI.Make("Notification", {
@@ -82,7 +97,7 @@ return function(data, env)
 		Icon = player.UserId > 0 and `rbxthumb://type=AvatarHeadShot&id={player.UserId}&w=48&h=48` or client.MatIcons.Mail;
 		Time = false;
 		OnClick = function() window:Ready() end;
-		OnClose = function() window:Destroy() end;
-		OnIgnore = function() window:Destroy() end;
+		OnClose = function() if unsubscribe then unsubscribe() end window:Destroy() end;
+		OnIgnore = function() if unsubscribe then unsubscribe() end window:Destroy() end;
 	})
 end

@@ -19,18 +19,6 @@ local canEditTables = {
 	HideScript = false;
 }
 
-local function tabToString(tab)
-	if type(tab) == "table" then
-		local str = table.create(#tab)
-		for i, v in tab do
-			table.insert(str, `{i}: {v}`)
-		end
-		return table.concat(str, "; ")
-	else
-		return tostring(tab)
-	end
-end
-
 return function(data, env)
 	if env then
 		setfenv(1, env)
@@ -185,7 +173,9 @@ return function(data, env)
 		end)
 	end
 
+	-- Displays server-projected values; opaque entry handles preserve exact removal semantics.
 	local function showTable(tab, setting)
+		tab = Remote.Get("SettingsTable", setting) or {}
 		local tabPath = type(setting) == "table" and setting
 		local setting = tabPath and tabPath[#tabPath-1] or setting
 		local name = tabPath and table.concat(tabPath, ".") or setting
@@ -232,7 +222,7 @@ return function(data, env)
 					for i = 1, #tab do
 						local Value = tab[i]
 						items:Add("TextButton", {
-							Text = tabToString(Value);
+							Text = Value.Text;
 							Size = listSize;
 							Position = fromOffset(0, num*25);
 							Visible = true;
@@ -245,7 +235,7 @@ return function(data, env)
 								button.BackgroundTransparency = 0.5
 								selected = {
 									Index = i;
-									Value = Value;
+									Id = Value.Id;
 									Button = button;
 								}
 							end
@@ -308,8 +298,12 @@ return function(data, env)
 								if not inputBlock then
 									inputBlock = true
 									if #entryText.Text > 0 then
-										Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
-										table.insert(tab, entryText.Text)
+										local success, result = pcall(Remote.Get, "EditSettingsTable", "Add", tabPath or setting, entryText.Text)
+										if success and result and result.Success then
+											tab = result.Entries
+										else
+											UI.Make("Notification", {Title = "Settings", Message = if success and result then result.Message else "Settings could not be updated"})
+										end
 									end
 									task.wait(0.5)
 									entryBox.Visible = false
@@ -354,8 +348,12 @@ return function(data, env)
 					OnClicked = function(button)
 						if selected and not inputBlock then
 							inputBlock = true
-							Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
-							table.remove(tab, selected.Index)
+							local success, result = pcall(Remote.Get, "EditSettingsTable", "Remove", tabPath or setting, selected.Id)
+							if success and result and result.Success then
+								tab = result.Entries
+							else
+								UI.Make("Notification", {Title = "Settings", Message = if success and result then result.Message else "Settings could not be updated"})
+							end
 							showItems()
 							task.wait(0.5)
 							inputBlock = false
@@ -1325,9 +1323,15 @@ return function(data, env)
 				TextStrokeTransparency = 1;
 			})
 
+			aliasTab:Add("TextLabel", {
+				Text = "Native chat: configured prefix + letters, numbers, _ or -, up to 64 bytes; full alias 128 bytes; command 4096 bytes. Other aliases and saved lists over 64 entries require the command bar or keybinds.";
+				TextWrapped = true; TextSize = 12; BackgroundTransparency = 1;
+				Size = UDim2.new(1, -10, 0, 45); Position = UDim2.new(0, 5, 0, 30);
+			})
+
 			local aliases = aliasTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -60);
-				Position = UDim2.new(0, 5, 0, 30);
+				Size = UDim2.new(1, -10, 1, -110);
+				Position = UDim2.new(0, 5, 0, 80);
 				BackgroundTransparency = 0.5;
 			})
 
@@ -1429,12 +1433,12 @@ return function(data, env)
 							if alias ~= "" and commandBox.Text ~= "" then
 								aliasBox.Text = "Saving..."
 
-								if editOldAlias then
-									Functions.RemoveAlias(editOldAlias)
-									editOldAlias = nil
+								if not Functions.AddAlias(alias, commandBox.Text, editOldAlias) then
+									aliasBox.Text = alias
+									inputBlock = false
+									return
 								end
-
-								Functions.AddAlias(alias, commandBox.Text)
+								editOldAlias = nil
 								currentAlias = nil
 							end
 
@@ -1994,7 +1998,7 @@ return function(data, env)
 									Position = UDim2.new(1, -100, 0, 0);
 									BackgroundTransparency = 1;
 									TextChanged = function(text, enter, new)
-										if enter then
+										if enter and text ~= tostring(value) and text ~= "[Text unavailable: source cannot be verified]" then
 											--warn(`Setting {setting}: {text}`)
 											Remote.Send("SaveSetSetting", setting, text)
 										end
