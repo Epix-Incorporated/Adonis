@@ -262,4 +262,85 @@ local expectedBroadcast = [[<font color="rgb(255, 64, 77)"><b>[System]</b></font
 for _, message in broadcasts do
 	assert(message == expectedBroadcast, "Broadcast bodies must escape filtered markup and entities exactly once for every ingress")
 end
-print("Native chat registry contracts passed: aliases, lifecycle, ingress provenance, NonChattable permissions, rate limiting and broadcast escaping")
+
+-- Exercises actual plugin registration, including the loader's removal of startup hooks before Init.
+local registrationAdmin = {
+	PrefixCache = {}, CommandCache = {},
+	CheckAliasBlacklist = admin.CheckAliasBlacklist,
+	StringToComLevel = admin.StringToComLevel,
+}
+local registrationErrors, registrationSubmissions = {}, {}
+local registrationServer = {
+	Settings = {Prefix = ":", PlayerPrefix = "!", ChatCommands = true},
+	Admin = registrationAdmin,
+	Core = {PlayerData = {}},
+	Variables = {Aliases = {}, ChatCreateRobloxCommands = true},
+	Logs = {AddLog = function() end, ListUpdaters = {}},
+	Typechecker = luau.load(fs.readFile("MainModule/Shared/Typechecker.luau"))(),
+	Remote = {Commands = {
+		-- Records the submitted text and chat provenance supplied by the native handler.
+		ProcessCommand = function(actor, args, fromChat)
+			table.insert(registrationSubmissions, {Actor = actor, Text = args[1], FromChat = fromChat})
+		end,
+	}},
+}
+local registrationEnv = setmetatable({
+	script = {}, Enum = env.Enum, task = env.task,
+	stripArgPlaceholders = env.stripArgPlaceholders,
+	-- Collects validation failures without concealing unexpected runtime errors.
+	logError = function(...) table.insert(registrationErrors, {...}) end,
+}, {__index = getfenv()})
+local registryLoader = luau.load(fs.readFile("MainModule/Server/Core/Commands.luau"), {environment = registrationEnv})()
+registryLoader({Server = registrationServer, Service = service}, function() return registrationEnv end)
+registrationEnv.Admin, registrationEnv.Commands = registrationAdmin, registrationServer.Commands
+registrationEnv.Settings, registrationEnv.Variables = registrationServer.Settings, registrationServer.Variables
+registrationEnv.Core, registrationEnv.Remote = registrationServer.Core, registrationServer.Remote
+registrationEnv.service = service
+-- The module clears exported globals before returning its loader, as in the real server environment.
+registrationEnv.logError = function(...) table.insert(registrationErrors, {...}) end
+local cacheFirst = assert(source:find("\t\tCacheCommands = function", 1, true))
+local registrationCache = luau.load("local nativeChatRefreshQueued, nativeChatReady = false, false\nlocal nativeChatRegistry, nativeChatSequence = {}, 0\nreturn {"
+	.. source:sub(cacheFirst, following - 1) .. "}", {environment = registrationEnv})()
+for key, value in registrationCache do registrationAdmin[key] = value end
+local afterPlugins = registrationServer.Commands.RunAfterPlugins
+rawset(registrationServer.Commands, "RunAfterPlugins", nil)
+registrationServer.Commands.Init()
+
+-- Produces a valid plugin definition while leaving default filling and validation to the registry.
+local function pluginCommand(alias)
+	return {Prefix = ":", Commands = {alias}, Args = {}, Description = "Plugin command", AdminLevel = 100, Function = function() end}
+end
+
+registrationServer.Commands.StartupPlugin = pluginCommand("startupplugin")
+registrationServer.Settings.Commands = {SettingsPlugin = pluginCommand("settingsplugin")}
+assert(#deferred == 0, "Startup registrations must not queue per-command native refreshes")
+afterPlugins()
+assert(#deferred == 1, "Startup must coalesce its final native interception refresh")
+table.remove(deferred, 1)()
+assert(find(":startupplugin") and find(":settingsplugin"), "Startup interception must include both plugin loading paths")
+local retainedStartup = find(":startupplugin")
+
+registrationServer.Commands.LatePlugin = pluginCommand("lateplugin")
+registrationServer.Commands.AnotherLatePlugin = pluginCommand("anotherlateplugin")
+assert(registrationAdmin.CommandCache[":lateplugin"] == "LatePlugin", "Late registration must update the internal dispatcher")
+assert(#deferred == 1 and not find(":lateplugin"), "Late plugin additions must queue one native refresh")
+table.remove(deferred, 1)()
+assert(find(":lateplugin") and find("/:lateplugin") and find(":anotherlateplugin"), "Late plugin aliases need both native spellings")
+assert(find(":startupplugin") == retainedStartup, "Late registration must retain unchanged native handlers")
+find(":lateplugin").Trigger(nativeSource, ":lateplugin literal")
+find("/:lateplugin").Trigger(nativeSource, "/:lateplugin literal")
+assert(#registrationSubmissions == 2, "Both native spellings must dispatch the late plugin command")
+for _, submission in registrationSubmissions do
+	assert(submission.Actor == player and submission.Text == ":lateplugin literal" and submission.FromChat,
+		"Late command interception must preserve its caller, literal text and chat provenance")
+end
+
+local invalidPlugin = pluginCommand("invalidplugin")
+invalidPlugin.Function = "invalid"
+registrationServer.Commands.InvalidPlugin = invalidPlugin
+assert(#registrationErrors == 1 and rawget(registrationServer.Commands, "InvalidPlugin") == nil,
+	"Invalid definitions must not remain in the command registry")
+assert(#deferred == 0, "Rejected registrations must not schedule a native refresh")
+registrationAdmin.CacheNativeChatCommands(true)
+assert(not find(":invalidplugin") and find(":lateplugin"), "Rejected definitions must never acquire native interception")
+print("Native chat registry contracts passed: aliases, lifecycle, provenance, permissions, rate limiting, broadcast escaping and late plugin registration")

@@ -2,6 +2,8 @@
 -- Mocks verify client transport contracts; they do not simulate Roblox delivery policy.
 local loadTransport = require("../MainModule/Client/Core/ChatTransport")
 local loadProcess = require("../MainModule/Client/Core/Process")
+local fs = require("@lune/fs")
+local luau = require("@lune/luau")
 local successes = 0
 local currentTest = "client transport"
 
@@ -24,8 +26,34 @@ local function signal()
 	}
 end
 
--- Creates an isolated client with a controllable engine clock, channels and UI recorder.
-local function fixture()
+-- Installs shipped theme close and registry destruction code with inert animation substitutes.
+local function installThemeClose(theme, ui, window, data, options)
+	local closeBody = assert(theme:match("\tfunction doClose%(%)\n(.-)\n\tfunction isVisible"), "Missing theme close implementation")
+	local customDestroyBody = assert(theme:match("\tgTable.CustomDestroy = function%(%)\n(.-)\n\tfor i,child"), "Missing theme destruction implementation")
+	local destroyBody = assert(ui:match("\t\t\t\tDestroy = function%(%)\n(.-)\n\t\t\t\tUnRegister"), "Missing UI destruction implementation"):gsub(",%s*$", "")
+	local clearEventsBody = assert(ui:match("\t\t\t\tClearEvents = function%(%)\n(.-)\n\t\t\t\tDestroy"), "Missing UI cleanup implementation"):gsub(",%s*$", "")
+	local environment = setmetatable({
+		gTable = window.gTable, gIndex = data.Name, GUI = window.gTable.Object, onClose = data.OnClose,
+		client = {Variables = {}, GUIs = {[data.Name] = window.gTable}},
+		service = {UnWrap = function(value) return value end}, Mouse = {},
+		Drag = {GetChildren = function() return {} end, TweenSize = function() end},
+		Main = {TweenSize = function() end},
+		UDim2 = {new = function() return {} end},
+		Enum = {EasingDirection = {Out = "Out"}, EasingStyle = {Quad = "Quad"}},
+		task = {wait = function() if options.DuringAnimation then options.DuringAnimation() end end},
+	}, {__index = getfenv()})
+	window.Close = luau.load("local isClosed = false\n"
+		.. "gTable.ClearEvents = function()\n" .. clearEventsBody .. "\n"
+		.. "gTable.Destroy = function()\n" .. destroyBody .. "\n"
+		.. "gTable.CustomDestroy = function()\n" .. customDestroyBody .. "\n"
+		.. "local function doClose()\n" .. closeBody .. "\nreturn doClose", {environment = environment})()
+end
+
+-- Creates an isolated client with controllable engine events and optional real theme cleanup.
+local function fixture(options)
+	options = options or {}
+	local theme = options.Theme and fs.readFile(`MainModule/Client/UI/{options.Theme}/Window.rbxmx`)
+	local ui = theme and fs.readFile("MainModule/Client/Core/UI.luau")
 	local now = 0
 	local enum = {TextChatMessageStatus = {}, ChatVersion = {TextChatService = "TextChatService"}}
 	for _, name in {"Success", "Sending", "TextFilterFailed"} do
@@ -65,17 +93,25 @@ local function fixture()
 			local call = {Name = name, Data = data, Children = {}}
 			table.insert(uiCalls, call)
 			if name == "Window" then
-				return {
+				local window = {
 					Add = function(_, class, properties) table.insert(call.Children, {Class = class, Data = properties}) end,
 					Ready = function() end,
 					Close = function() if data.OnClose then data.OnClose() end end,
 				}
+				window.gTable = {Events = {}, Object = {Destroy = function()
+					if options.BeforeDestroy then options.BeforeDestroy() end
+					call.Destroyed = true
+				end}}
+				if theme then installThemeClose(theme, ui, window, data, options) end
+				call.Window = window
+				return window
 			end
 		end},
 		Functions = {TextToSpeech = function(text, shouldContinue, registerSound)
-			local call = {Text = text, ShouldContinue = shouldContinue, Stopped = false}
+			local call = {Text = text, ShouldContinue = shouldContinue, Stopped = false, StopCount = 0}
 			table.insert(speechCalls, call)
-			registerSound({Stop = function() call.Stopped = true end, Destroy = function() end})
+			registerSound({Stop = function() call.Stopped = true; call.StopCount += 1 end, Destroy = function() end})
+			if options.ActiveSpeech then coroutine.yield() end
 		end},
 	}
 	local env = setmetatable({
@@ -321,6 +357,77 @@ test("speech uses filtered captions, replaces playback, and honors session mute"
 	expect(f.SpeechCalls[2].Stopped and not f.SpeechCalls[2].ShouldContinue())
 	f.Receive(channel, "third", "FILTERED THIRD")
 	expect(#f.SpeechCalls == 2 and #f.UI == 2)
+end)
+
+-- Starts a pending utterance so real window destruction can be checked before playback finishes.
+local function speechFixture(themeName, options)
+	options = options or {}
+	options.Theme = themeName
+	options.ActiveSpeech = true
+	local f = fixture(options)
+	local channel = f.Channel("speech")
+	f.Open("speech", "Speech")
+	f.Receive(channel, "first", "FILTERED FIRST")
+	expect(f.SpeechCalls[1].ShouldContinue())
+	return f, channel
+end
+
+for _, themeName in {"Default", "Unity", "Aero"} do
+	test(`{themeName} manual and registry speech closure cancel playback once`, function()
+		for _, closeViaRegistry in {false, true} do
+			local options = {}
+			local f = speechFixture(themeName, options)
+			local speech = f.SpeechCalls[1]
+			options.BeforeDestroy = function()
+				expect(not speech.ShouldContinue() and speech.Stopped)
+			end
+			local window = f.UI[1].Window
+			if closeViaRegistry then window.gTable:Destroy() else window:Close() end
+			window:Close()
+			window.gTable:Destroy()
+			expect(f.UI[1].Destroyed and window.gTable.Destroyed)
+			expect(not speech.ShouldContinue() and speech.StopCount == 1)
+		end
+	end)
+
+	test(`{themeName} replacement and stop preserve the current speech lifecycle`, function()
+		local f, channel = speechFixture(themeName)
+		f.Receive(channel, "second", "FILTERED SECOND")
+		expect(f.UI[1].Destroyed and f.SpeechCalls[1].StopCount == 1)
+		expect(f.SpeechCalls[2].ShouldContinue())
+		f.UI[1].Window.gTable:Destroy()
+		expect(f.SpeechCalls[2].ShouldContinue())
+		f.UI[2].Children[2].Data.OnClick()
+		f.UI[2].Window.gTable:Destroy()
+		expect(f.UI[2].Destroyed and not f.SpeechCalls[2].ShouldContinue())
+		expect(f.SpeechCalls[2].StopCount == 1)
+	end)
+
+	test(`{themeName} channel expiry and mute close speech without recursive destruction`, function()
+		local expired = speechFixture(themeName)
+		expired.Client.Remote.Commands.ChatChannelClosed({"speech", "Expired"})
+		expired.UI[1].Window.gTable:Destroy()
+		expect(expired.UI[1].Destroyed and expired.SpeechCalls[1].StopCount == 1)
+		expect(not expired.SpeechCalls[1].ShouldContinue())
+		local muted, channel = speechFixture(themeName)
+		muted.UI[1].Children[3].Data.OnClick()
+		muted.UI[1].Window.gTable:Destroy()
+		muted.Receive(channel, "muted", "FILTERED MUTED")
+		expect(muted.UI[1].Destroyed and muted.SpeechCalls[1].StopCount == 1)
+		expect(not muted.SpeechCalls[1].ShouldContinue() and #muted.SpeechCalls == 1)
+	end)
+end
+
+test("channel expiry during Aero's close animation cancels the pending utterance", function()
+	local options = {}
+	local f = speechFixture("Aero", options)
+	options.DuringAnimation = function()
+		expect(not f.UI[1].Destroyed)
+		f.Client.Remote.Commands.ChatChannelClosed({"speech", "Expired"})
+	end
+	f.UI[1].Window:Close()
+	expect(f.UI[1].Destroyed and f.SpeechCalls[1].StopCount == 1)
+	expect(not f.SpeechCalls[1].ShouldContinue())
 end)
 
 test("conversation replies cannot invoke registered native commands", function()

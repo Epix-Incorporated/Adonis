@@ -9,6 +9,7 @@ local saved = {SavedSettings = {}, SavedTables = {}}
 local server = {
 	Settings = {SystemTitle = "System", Banned = {}, Ranks = {Creators = {Level = 900}, Moderators = {Users = {}}}, DataStoreEnabled = true},
 	OriginalSettings = {SystemTitle = "System", Banned = {}, Ranks = {Creators = {Level = 900}, Moderators = {Users = {}}}},
+	Defaults = {Settings = {Ranks = {Moderators = {Level = 100, Users = {}}}}},
 	Remote = {BlockedSettings = {}}, Logs = {AddLog = function() end}, Client = {UI = {GetChildren = function() return {} end}},
 	Deps = {DataStoreService = "MockDatastore"}, Functions = {},
 }
@@ -79,6 +80,25 @@ server.Settings.Ranks[secret] = {Level = 200, Users = {secret, "UnverifiedName:1
 local rank = core.ProjectRank(secret)
 assert(rank.Name == "Custom rank" and rank.Level == 200, "Dynamic rank label bypassed projection")
 assert(not serde.encode("json", rank):find(secret, 1, true) and rank.Users[2] == "User ID: 123", "Rank users lost safe identifiers or exposed unattributed labels")
+
+-- Legacy loaders omit Ranks until server defaults and compatibility mappings populate live settings.
+local configuredRanks = server.OriginalSettings.Ranks
+server.OriginalSettings.Ranks = nil
+server.Settings.Ranks.Moderators = {Level = 100, Users = {"LegacyAdmin:17", secret}}
+server.Defaults.Settings.Ranks[secret] = server.Settings.Ranks[secret]
+server.Defaults.Settings.Ranks.Moderators.Users = {secret}
+local legacyRank = core.ProjectRank("Moderators")
+assert(legacyRank.Name == "Moderators" and legacyRank.Level == 100, "Legacy ranks lost their trusted default labels")
+assert(legacyRank.Users[1] == "User ID: 17" and not serde.encode("json", legacyRank):find(secret, 1, true), "Fallback defaults trusted mutable runtime users")
+assert(core.ProjectRank(secret).Name == "Custom rank", "A runtime addition changed the trusted fallback rank names")
+assert(core.ProjectRank("Missing") == nil, "An unknown legacy rank became a configured rank")
+local legacyPath = {"Settings", "Ranks", "Moderators", "Users"}
+local legacyEntries = core.GetSettingsTableEntries(player, legacyPath)
+assert(#legacyEntries == 2 and not serde.encode("json", legacyEntries):find(secret, 1, true), "Legacy rank editor exposed unverified labels")
+local legacyTable, legacyIndex, legacyValue = core.ResolveSettingsEntry(player, legacyPath, legacyEntries[1].Id)
+assert(legacyTable == server.Settings.Ranks.Moderators.Users and legacyIndex == 1 and legacyValue == "LegacyAdmin:17", "Legacy rank projection lost exact removal handles")
+server.OriginalSettings.Ranks = configuredRanks
+
 local catalog = {{Name = "Developer catalog item", ID = 42}}
 core.RegisterStaticSettingValue("MusicList", catalog)
 table.insert(catalog, {Name = secret, ID = 84})

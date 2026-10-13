@@ -30,6 +30,14 @@ return function(Vargs, GetEnv)
 	local settingsRecordKey = "__AdonisTextRecords"
 	local unavailableText = "[Text unavailable: source cannot be verified]"
 	local editableTables = {Admins = true, HeadAdmins = true, Moderators = true, Banned = true, Muted = true, Blacklist = true, Whitelist = true}
+	-- Defaults can share live rank tables, so retain their trusted baseline before plugins mutate them.
+	local defaultRanks = service.DeepCopy(server.Defaults and server.Defaults.Settings and server.Defaults.Settings.Ranks or {}, true)
+
+	-- Resolves the loader-owned rank baseline, including default definitions omitted by legacy loaders.
+	local function getOriginalRank(name)
+		local ranks = server.OriginalSettings.Ranks
+		return if type(ranks) == "table" then ranks[name] else defaultRanks[name]
+	end
 
 	-- Distinguishes registered UI/command identifiers from freely authored display text.
 	local function technicalSetting(setting, value)
@@ -209,11 +217,11 @@ return function(Vargs, GetEnv)
 			return unavailableText
 		end;
 
-		-- Projects rank labels and access selectors without exposing unverified saved names.
+		-- Projects rank labels and access selectors against trusted loader or legacy fallback definitions.
 		ProjectRank = function(name)
 			local rank = Settings.Ranks[name]
 			if type(rank) ~= "table" then return nil end
-			local original = server.OriginalSettings.Ranks[name]
+			local original = getOriginalRank(name)
 			local display = {Name = if original then name else "Custom rank", Level = tonumber(rank.Level) or 0, Users = {}}
 			if display.Level ~= display.Level or math.abs(display.Level) == math.huge then display.Level = 0 end
 			local originals = original and original.Users or {}
@@ -277,7 +285,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Issues bounded per-viewer entry handles so removal never requires returning raw strings.
+		-- Issues bounded per-viewer entry handles with loader/default rank labels and no raw removal values.
 		GetSettingsTableEntries = function(player, path)
 			local tab = Core.GetEditableSettingsTable(path)
 			if not tab then return {} end
@@ -294,7 +302,7 @@ return function(Vargs, GetEnv)
 				local id = service.HttpService:GenerateGUID(false)
 				handles[id] = {Table = tab, Value = value, Expires = os.clock() + 600}
 				local record = tableRecords[tab] and tableRecords[tab][value]
-				local originalRank = type(path) == "table" and server.OriginalSettings.Ranks[path[3]]
+				local originalRank = type(path) == "table" and getOriginalRank(path[3])
 				local original = if type(path) == "string" then server.OriginalSettings[path] else originalRank and originalRank.Users
 				local static = type(original) == "table" and table.find(original, value) and value
 				local display = projectSetting(value, static, record, 0)

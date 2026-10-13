@@ -757,14 +757,27 @@ return function(Vargs, env)
 		};
 
 		AFK = {
+			-- Generated character labels share one public-edit admission for the selected players.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {}, RequiresLocalAuthor = true};
 			Prefix = Settings.Prefix;
 			Commands = {"afk"};
 			Args = {"player"};
 			Description = "FFs, Gods, Names, Freezes, and removes the target player's tools until they jump.";
 			Category = "Moderation";
 			AdminLevel = "Moderators";
+			-- Prepares every label under the originating author before asynchronous AFK effects begin.
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				local players = service.GetPlayers(plr, args[1])
+				local labels, labelArgs = {}, {}
+				for index, player in players do
+					labels[index] = `-AFK-_{service.FormatPlayer(player)}_-AFK-`
+					labelArgs[index] = index
+				end
+				local filteredLabels = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), labels, {
+					Kind = "PublicEdit", Audience = "Broadcast", Args = labelArgs,
+				})
+				for index, v in players do
+					local label = filteredLabels[index]
 					Routine(function()
 						local ff = service.New("ForceField", v.Character)
 						local hum = v.Character.Humanoid
@@ -776,7 +789,7 @@ return function(Vargs, env)
 						for k, t in v.Backpack:GetChildren() do
 							t.Parent = tools
 						end
-						Admin.RunCommand(`{Functions.GetMainPrefix()}name`, v.Name, `-AFK-_{service.FormatPlayer(v)}_-AFK-`)
+						hum.DisplayName = label
 						local torso = v.Character.HumanoidRootPart
 						local pos = torso.CFrame
 						local running=true

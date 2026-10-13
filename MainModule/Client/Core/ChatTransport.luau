@@ -75,7 +75,7 @@ return function(Vargs, GetEnv)
 		end
 	end
 
-	-- Stops local speech immediately and frees its temporary audio objects.
+	-- Cancels the current utterance once, releasing audio before closing its window.
 	local function stopSpeech()
 		local speech = activeSpeech
 		if speech then
@@ -87,8 +87,10 @@ return function(Vargs, GetEnv)
 					sound:Destroy()
 				end)
 			end
-			if speech.Window then
-				speech.Window:Close()
+			local window = speech.Window
+			speech.Window = nil
+			if window then
+				window:Close()
 			end
 		end
 	end
@@ -101,22 +103,35 @@ return function(Vargs, GetEnv)
 		end
 		local speech = {Cancelled = false, Sounds = {}, ChannelId = record.Descriptor.ChannelId}
 		activeSpeech = speech
+		-- Detaches a closing window before cancellation so destruction cannot close it recursively.
+		local function cancelWindowSpeech()
+			speech.Window = nil
+			if activeSpeech == speech then
+				stopSpeech()
+			end
+		end
 		local window = client.UI.Make("Window", {
 			Name = "ChatSpeech",
 			Title = `Speech from {entry.SenderName}`,
 			Size = {360, 160},
-			OnClose = function()
-				if activeSpeech == speech then
-					speech.Window = nil
-					stopSpeech()
-				end
-			end,
+			OnClose = cancelWindowSpeech,
 		})
 		if not window then
 			stopSpeech()
 			return
 		end
 		speech.Window = window
+		local gTable = window.gTable
+		local destroyWindow = gTable.CustomDestroy
+		-- Cancels playback for every registered-window destruction path, including theme close buttons.
+		gTable.CustomDestroy = function()
+			cancelWindowSpeech()
+			if destroyWindow then
+				destroyWindow()
+			else
+				service.UnWrap(gTable.Object):Destroy()
+			end
+		end
 		window:Add("TextLabel", {
 			Text = entry.Text,
 			RichText = false,
