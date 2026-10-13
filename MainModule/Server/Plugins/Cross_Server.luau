@@ -26,11 +26,11 @@ return function(Vargs, GetEnv)
 			and not command.CrossServerDenied and not metadata.RequiresLocalAuthor
 	end
 
-	-- Resolves one native command before transport so aliases and nested commands cannot carry chat bodies.
+	-- Resolves one native command and retains its original argument spelling for legacy receivers.
 	local function resolveCommand(text, suppliedArgs)
 		if type(text) ~= "string" or string.match(text, Settings.BatchKey) then return nil, unsupportedCommand end
 		text = Functions.Trim(text)
-		local name, command = Admin.GetCommand(text)
+		local name, command, matched = Admin.GetCommand(text)
 		if not command then return nil, unsupportedCommand end
 		if command.UserText and (command.UserText.Kind == "Chat" or command.UserText.Kind == "Announcement") then
 			return nil, unsupportedMessage
@@ -51,7 +51,24 @@ return function(Vargs, GetEnv)
 			copy[index] = value
 		end
 		local prefix = if type(command.Prefix) == "table" then command.Prefix[1] else command.Prefix
-		return name, command, `{prefix}{command.Commands[1]}`, copy
+		local canonical = `{prefix}{command.Commands[1]}`
+		return name, command, canonical, copy, canonical .. string.sub(text, #matched + 1)
+	end
+
+	-- Encodes a complete legacy command only when reparsing preserves every structured argument.
+	local function legacyCommandText(name, canonical, args, originalText)
+		local count = 0
+		for _ in args do count += 1 end
+		for index = 1, count do
+			if args[index] == nil then return nil end
+		end
+		local text = originalText or (canonical .. (if count > 0 then Settings.SplitKey .. table.concat(args, Settings.SplitKey) else ""))
+		local parsedName, _, _, parsedArgs = resolveCommand(text)
+		if parsedName ~= name or #parsedArgs ~= count then return nil end
+		for index, value in args do
+			if parsedArgs[index] ~= value then return nil end
+		end
+		return text
 	end
 
 	local secondsFormatted = {
@@ -242,7 +259,7 @@ return function(Vargs, GetEnv)
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
 		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
 		Function = function(plr: Player, args: {string})
-			local commandName, command, canonical, commandArgs = resolveCommand(args[1])
+			local commandName, command, _, commandArgs = resolveCommand(args[1])
 			assert(commandName, command)
 			if command.UserText then
 				assert(canPublishCommand(command), unsupportedCommand)
@@ -263,7 +280,7 @@ return function(Vargs, GetEnv)
 					--MembershipType = plr.MembershipType; -- MessagingService doesn't accept Enums
 					FollowUserId = plr.FollowUserId;
 					AdminLevel = Admin.GetLevel(plr);
-				}, canonical, commandArgs)
+				}, args[1])
 			then
 				error("CrossServer handler not ready (try again later)")
 			end
@@ -444,15 +461,17 @@ return function(Vargs, GetEnv)
 		end
 	};
 
-	-- Validates communication routes before queueing and separates command identity from operational arguments.
+	-- Preserves the legacy command string while supplying validated structured arguments to newer receivers.
 	Core.CrossServer = function(command, ...)
 		local args = table.pack(...)
 		if command == "Message" or command == "ServerChat" then return false, unsupportedMessage end
 		if command == "NewRunCommand" then
-			local name, definition, canonical, parsedArgs = resolveCommand(args[2], args[3])
+			local name, definition, canonical, parsedArgs, originalText = resolveCommand(args[2], args[3])
 			if not name then return false, definition end
 			if definition.UserText then return false, unsupportedCommand end
-			args[2], args[3], args.n = canonical, parsedArgs, 3
+			local text = legacyCommandText(name, canonical, parsedArgs, if args[3] == nil then originalText else nil)
+			if not text then return false, unsupportedCommand end
+			args[2], args[3], args.n = text, parsedArgs, 3
 		elseif command == "RunPublishedCommand" then
 			if type(args[2]) ~= "string" or not canPublishCommand(rawget(Commands, args[2])) then return false, unsupportedCommand end
 		end

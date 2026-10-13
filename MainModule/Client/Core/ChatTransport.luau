@@ -9,6 +9,7 @@ return function(Vargs, GetEnv)
 	local channels = {}
 	local operations = {}
 	local operationOrder = {}
+	local presentationVersions = {}
 	local history = {}
 	local historyIds = {}
 	local transport
@@ -167,7 +168,7 @@ return function(Vargs, GetEnv)
 		end)
 	end
 
-	-- Presents only the text received by this participant, using a fixed UI mode.
+	-- Presents received text; the newest Message or Notify receipt owns replacement across yielding cleanup.
 	local function present(record, entry)
 		local descriptor = record.Descriptor
 		local sender = service.Players:GetPlayerByUserId(entry.SenderUserId)
@@ -232,6 +233,12 @@ return function(Vargs, GetEnv)
 				end
 			elseif presentations[presentation] then
 				if presentation == "Hint" then body = `{entry.SenderName}: {body}` end
+				if presentation == "Message" or presentation == "Notify" then
+					local version = {}
+					presentationVersions[presentation] = version
+					client.UI.Remove(presentation)
+					if presentationVersions[presentation] ~= version then return end
+				end
 				client.UI.Make(presentation, {Title = title, Message = body, Time = duration})
 			end
 		end

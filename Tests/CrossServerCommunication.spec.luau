@@ -27,21 +27,13 @@ local commands, core, admin = {}, {CrossServerCommands = {}, SubEvent = true, Da
 local functions = {
 	GetFakePlayer = function(value) return table.clone(value) end,
 	Trim = function(value) return value:match("^%s*(.-)%s*$") end,
-	-- Matches the positional argument contract while preserving the final argument's spaces.
-	Split = function(value, separator, limit)
-		local values, cursor = {}, 1
-		while #values < limit - 1 do
-			local first, last = value:find(separator, cursor, true)
-			if not first then break end
-			table.insert(values, value:sub(cursor, first - 1))
-			cursor = last + 1
-		end
-		if cursor <= #value and limit > 0 then table.insert(values, value:sub(cursor)) end
-		return values
-	end,
 	Message = function(...) table.insert(displays, {...}) end,
 	Hint = function(text) table.insert(displays, {Name = "Hint", Text = text}) end,
+	LogAdminAction = function() end,
 }
+-- Uses the production parser so compatibility checks include quotation and final-argument behavior.
+local splitSource = assert(fs.readFile("MainModule/Server/Core/Functions.luau"):match("\n\t\tSplit = (function.-\n\t\tend);"))
+functions.Split = luau.load(`return {splitSource}`)()
 admin.GetLevel = function() return 900 end
 admin.RunCommand = function(command, reason) table.insert(executions, {Text = command, Reason = reason}) end
 admin.GetCommand = function(value)
@@ -86,6 +78,22 @@ luau.load(fs.readFile("MainModule/Server/Plugins/Cross_Server.luau"), {environme
 local handlers = core.CrossServerCommands
 local count = 0
 
+-- Models older receivers that dispatch only the command string and ignore extra packet arguments.
+local function legacyReceive(jobId, plrData, comString)
+	local _, command = admin.GetCommand(comString)
+	if command and command.UserText then return end
+	server.Process.Command(functions.GetFakePlayer(plrData), comString, {
+		AdminLevel = plrData.AdminLevel,
+		CrossServer = true,
+	})
+end
+
+-- Executes the real lock command with the same argument selection used by Process.Command.
+local lockSource = assert(fs.readFile("MainModule/Server/Commands/Admins.luau"):match("\n\t\tServerLock = ({.-\n\t\t});"))
+commands.ServerLock = luau.load(`return {lockSource}`, {environment = setmetatable({
+	Settings = settings, Variables = server.Variables, Functions = functions, service = service,
+}, {__index = env})})()
+
 -- Reports each independent boundary assertion without swallowing the original failure.
 local function check(name, callback)
 	table.clear(packets); table.clear(executions); table.clear(displays)
@@ -128,16 +136,56 @@ check("chat, legacy announcements, aliases, batches and nested repeats cannot be
 	assert(#packets == 0 and #executions == 0, "Unsupported command content reached the bus or executor")
 end)
 
-check("operational commands use canonical tokens and separate arguments", function()
+check("operational packets retain arguments for legacy and structured receivers", function()
 	commands.CrossServer.Function(actor, {"  :ws all 24  "})
 	assert(#packets == 1, "Operational commands should still publish")
 	local data = packets[1].Data
-	assert(data[2] == "NewRunCommand" and data[4] == ":speed", "Only the canonical command token should be sent")
+	assert(data[2] == "NewRunCommand" and data[4] == ":speed all 24", "Legacy receivers need the complete canonical command")
 	assert(data[5][1] == "all" and data[5][2] == "24", "Positional operational arguments were lost")
 	handlers.NewRunCommand("remote", data[3], data[4], data[5])
 	assert(executions[1].Text == ":speed" and executions[1].Options.Args[2] == "24", "Destination must execute the parsed arguments without reparsing text")
+	legacyReceive(data[1], table.unpack(data, 3))
+	assert(executions[2].Text == ":speed all 24" and executions[2].Options.Args == nil, "Legacy dispatch lost positional arguments")
 	assert(core.CrossServer("NewRunCommand", actor, ":forceplace all 123"), "GlobalPlace's existing caller must remain supported")
-	assert(packets[2].Data[4] == ":forceplace" and packets[2].Data[5][2] == "123", "GlobalPlace must use the same canonical transport")
+	assert(packets[2].Data[4] == ":forceplace all 123" and packets[2].Data[5][2] == "123", "Raw operational callers must use the same compatible transport")
+end)
+
+check("unlock commands keep their meaning in mixed-version servers", function()
+	commands.CrossServer.Function(actor, {":slock off"})
+	local data = packets[1].Data
+	for _, receiver in {legacyReceive, handlers.NewRunCommand} do
+		table.clear(executions)
+		receiver("remote", data[3], data[4], data[5])
+		local dispatched = assert(executions[1], "The receiver did not dispatch the command")
+		local argumentString = dispatched.Text:match(`^.-{settings.SplitKey}(.+)`) or ""
+		local args = dispatched.Options.Args or functions.Split(argumentString, settings.SplitKey, #commands.ServerLock.Args)
+		for _, initiallyLocked in {false, true} do
+			server.Variables.ServerLock = initiallyLocked
+			commands.ServerLock.Function(actor, args)
+			assert(server.Variables.ServerLock == false, "An unlock command became a toggle on a legacy receiver")
+		end
+	end
+	-- Incoming legacy strings and earlier structured packets remain accepted by updated receivers.
+	handlers.NewRunCommand("old-server", actor, ":serverlock off")
+	assert(executions[#executions].Text == ":slock" and executions[#executions].Options.Args[1] == "off", "Incoming legacy commands lost their arguments")
+	handlers.NewRunCommand("structured-server", actor, ":slock", {"off"})
+	assert(executions[#executions].Text == ":slock" and executions[#executions].Options.Args[1] == "off", "Earlier structured packets no longer dispatch correctly")
+end)
+
+check("compatible serialization preserves parsed text and rejects changed arguments", function()
+	for _, text in {":ws all 24", ":ws all value with spaces", ':ws "all players" 24', ":slock"} do
+		commands.CrossServer.Function(actor, {text})
+		local packet = packets[#packets].Data
+		local _, definition = admin.GetCommand(packet[4])
+		local legacyArgs = functions.Split(packet[4]:match(`^.-{settings.SplitKey}(.+)`) or "", settings.SplitKey, #definition.Args)
+		assert(serde.encode("json", legacyArgs) == serde.encode("json", packet[5]), "Legacy parsing changed submitted arguments")
+	end
+	assert(core.CrossServer("NewRunCommand", actor, ":speed", {"all", "24"}), "Representable structured arguments should still publish")
+	local publishedCount = #packets
+	for _, args in {{[2] = "off"}, {"", "24"}, {"all players", "24"}, {"all", "24 "}, {"all", "24|:m injected"}, {'"all"', "24"}} do
+		assert(not core.CrossServer("NewRunCommand", actor, ":speed", args), "Lossy or executable argument serialization must be rejected")
+	end
+	assert(#packets == publishedCount, "Rejected arguments reached the messaging bus")
 end)
 
 check("published commands allow public edits and moderation but never announcements", function()
