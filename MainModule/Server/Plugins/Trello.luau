@@ -121,9 +121,9 @@ return function(Vargs, GetEnv)
 				end
 
 				for _, v in service.GetPlayers() do
-					local isBanned, Reason = Admin.CheckBan(v)
+					local isBanned = Admin.CheckBan(v)
 					if isBanned then
-						v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
+						v:Kick(Core.GetVariableText("BanMessage"))
 						continue
 					end
 
@@ -190,8 +190,8 @@ return function(Vargs, GetEnv)
 			tab[2] = "―――――――――――――――――――――――"
 			for _, banData in HTTP.Trello.Bans do
 				table.insert(tab, {
-					Text = banData.Name,
-					Desc = banData.Reason or "No reason specified",
+					Text = type(banData.UserId) == "number" and `User {banData.UserId}` or "External ban entry",
+					Desc = "Reason unavailable",
 				})
 			end
 			return tab
@@ -316,7 +316,7 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", `Trello update loop has been started to run every {Settings.HttpWait} seconds.`)
 
 		if not Settings.Trello_AppKey or Settings.Trello_AppKey == "" then
-			table.insert(server.Messages, {
+			server.AddSystemMessage({
 				Level = 301;
 				Title = "Potential Trello issue!";
 				Message = "You have enabled Trello without having an AppKey and thus Trello will likely not work! It is adviced also add a Trello Token. Click to see more";

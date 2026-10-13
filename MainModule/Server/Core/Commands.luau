@@ -18,7 +18,10 @@ return function(Vargs, GetEnv)
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps, t
 
 	local RegisterCommandDefinition
+	-- Defers native refresh requests until startup definitions and permissions are finalized.
+	local nativeRegistrationReady = false
 
+	-- Installs command validation and the registry used by modules and plugins.
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -53,6 +56,7 @@ return function(Vargs, GetEnv)
 			ListUpdater = t.optional(t.union(t.string, t.callback))
 		})
 
+		-- Registers a validated command and schedules native interception for later plugin additions.
 		function RegisterCommandDefinition(ind, cmd)
 			if type(ind) ~= "string" then
 				logError("Non-string command index:", typeof(ind), ind)
@@ -131,10 +135,7 @@ return function(Vargs, GetEnv)
 						end
 						--// will change how this works later
 						local LogTable = Logs[cmd.ListUpdater]
-						if LogTable and LogTable.__meta == "DLL" then
-							return LogTable:GetAsTable()
-						end
-						return LogTable
+						return Logs.Project(LogTable, cmd.ListUpdater)
 					end
 				end
 			end
@@ -142,10 +143,16 @@ return function(Vargs, GetEnv)
 			local isValid, fault = ValidateCommandDefinition(cmd)
 			if not isValid then
 				logError(`The command {ind} is not formatted correctly:`, fault)
-				Commands[ind] = nil
+				rawset(Commands, ind, nil)
+				return
 			end
 
+			-- Enforce declared user-text policy for dispatchers and direct command function callers.
+			if server.TextPolicy then
+				server.TextPolicy.WrapCommand(cmd, ind)
+			end
 			rawset(Commands, ind, cmd)
+			if nativeRegistrationReady then Admin.CacheNativeChatCommands() end
 		end
 
 		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
@@ -200,6 +207,7 @@ return function(Vargs, GetEnv)
 		Logs.AddLog("Script", "Commands Module Initialized")
 	end
 
+	-- Finalizes startup commands before enabling coalesced native refreshes for later registrations.
 	local function RunAfterPlugins()
 		--// Load custom user-supplied commands in settings.Commands
 
@@ -239,6 +247,8 @@ return function(Vargs, GetEnv)
 		end
 
 		rawset(Commands, "RunAfterPlugins", nil)
+		nativeRegistrationReady = true
+		Admin.CacheNativeChatCommands()
 	end
 
 	server.Commands = {

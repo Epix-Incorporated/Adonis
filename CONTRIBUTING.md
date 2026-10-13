@@ -4,6 +4,8 @@ Adonis is an ever-expanding, frequently updated, and sometimes complex system.
 To keep Adonis functional and somewhat readable rather than a tangled mess, this document sets out the policies governing contributions to consider before submitting a pull request:
 (A very abridged version is available [here](https://github.com/Epix-Incorporated/Adonis/blob/master/.github/pull_request_template.md))
 
+For AI-assisted development, see [AGENTS.md](AGENTS.md) for the repository map, editing conventions, local checks, and Roblox Studio validation workflow.
+
 ## 1. Governance
 
 - Pull requests (PRs) are reviewed and approved by [@Sceleratis](https://github.com/Sceleratis) or any of the appointed community maintainers:  

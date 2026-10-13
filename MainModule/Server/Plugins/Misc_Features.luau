@@ -94,7 +94,7 @@ return function(Vargs, GetEnv)
 	end
 	--// Old settings/plugins backwards compatibility. Do not remove this because many games use old loader ranks!
 	for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
-		if Settings[rank] and not Settings.CustomRanks[rank] then
+		if Settings[rank] and not (Settings.CustomRanks and Settings.CustomRanks[rank]) then
 			Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
 		end
 	end

@@ -9,6 +9,8 @@ return function(Vargs, env)
 
 	return {
 		TimeBan = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {3}};
 			Prefix = Settings.Prefix;
 			Commands = {"timeban", "tempban", "tban", "temporaryban"};
 			Args = {"player", "number<s/m/h/d>", "reason"};
@@ -36,7 +38,7 @@ return function(Vargs, env)
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "time-ban", false) then
-						Admin.AddTimeBan(v, duration, reason, plr)
+						Admin.AddTimeBan(v, duration, reason, plr, data.UserTextRecords[3])
 						Functions.LogAdminAction(plr, "Time Ban", v.Name, `Duration: {args[2]}, Reason: {reason}`)
 						Functions.Hint(`Time-banned {service.FormatPlayer(v, true)} for {args[2]}`, {plr})
 					end
@@ -45,6 +47,8 @@ return function(Vargs, env)
 		};
 
 		DirectTimeBan = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {3}};
 			Prefix = Settings.Prefix;
 			Commands = {"directtimeban", "directtimedban", "directtempban", "directtban", "directtemporaryban"};
 			Args = {"username(s)", "number<s/m/h/d>", "reason"};
@@ -76,7 +80,7 @@ return function(Vargs, env)
 
 						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 
-						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
+						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr, data.UserTextRecords[3])
 						Functions.LogAdminAction(plr, "Direct Time Ban", actualName or i, `Duration: {args[2]}, Reason: {reason}`)
 						Functions.Hint(
 							`Time-banned {if getNameSuccess then `@{actualName}` else `'{i}'`} for {args[2]}`,
@@ -115,6 +119,8 @@ return function(Vargs, env)
 		};
 
 		PermanentBan = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"globalban", "permban", "permanentban", "pban", "gameban", "gban"};
 			Args = {"player/user", "reason"};
@@ -132,7 +138,7 @@ return function(Vargs, env)
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "game-ban", false) then
-						Admin.AddBan(v, reason, true, plr, "Global")
+						Admin.AddBan(v, reason, true, plr, "Global", data.UserTextRecords[2])
 						Functions.LogAdminAction(plr, "Permanent Ban", v.Name, reason)
 						Functions.Hint(`Game-banned {service.FormatPlayer(v, true)}`, {plr})
 					else
@@ -219,36 +225,38 @@ return function(Vargs, env)
 		};
 
 		GlobalMessage = {
+			-- Retains native command interception without relaying conversation through server messaging.
+			UserText = {Kind = "Chat", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"globalmessage", "gm", "globalannounce"};
 			Args = {"message"};
-			Description = "Sends a global message to all servers";
+			Description = "Unavailable: player messages can only be sent within the current server";
 			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
 			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string})
-				if not Core.CrossServer("Message", plr.Name, assert(args[1], "Missing message")) then
-					error("CrossServer handler not ready; please try again later")
-				end
+			-- Reports the missing native cross-server transport without publishing any submitted text.
+			Function = function()
+				error("Cross-server player messages are not supported; send the message in the current server.", 0)
 			end;
 		};
 
 		GlobalTimeMessage = {
+			-- Retains native command interception without relaying conversation through server messaging.
+			UserText = {Kind = "Chat", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"gtm", "globaltimedmessage", "globaltimemessage", "globaltimem"};
 			Args = {"time", "message"};
-			Description = "Sends a global message to all servers and makes it stay on the screen for the amount of time (in seconds) you supply";
+			Description = "Unavailable: timed player messages can only be sent within the current server";
 			Category = "Messages";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
 			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string})
-				if not Core.CrossServer("Message", plr.Name, assert(args[2], "Missing message"), assert(args[1], "Missing time amount")) then
-					error("CrossServer handler not ready; please try again later")
-				end
+			-- Reports the missing native cross-server transport without publishing any submitted text.
+			Function = function()
+				error("Cross-server player messages are not supported; send the message in the current server.", 0)
 			end;
 		};
 
@@ -404,6 +412,8 @@ return function(Vargs, env)
 		};
 
 		FullShutdown = {
+			-- Declares user-authored display arguments for filtering and public edit admission.
+			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"fullshutdown", "globalshutdown"};
 			Args = {"reason"};
@@ -413,7 +423,7 @@ return function(Vargs, env)
 			Filter = true;
 			IsCrossServer = true;
 			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Reason (argument #1) must be supplied for this command!")
 
 				if
@@ -424,13 +434,15 @@ return function(Vargs, env)
 				then
 					assert(
 						Core.CrossServer(
-							"NewRunCommand",
+							"RunPublishedCommand",
 							{
 								Name = plr.Name,
 								UserId = plr.UserId,
 								AdminLevel = Admin.GetLevel(plr)
 							},
-							`{Settings.Prefix}shutdown {args[1]}\n\n\n[GLOBAL SHUTDOWN]`
+							"Shutdown",
+							{args[1]},
+							assert(server.TextPolicy.CreatePublication({["1"] = data.UserTextRecords[1]}))
 						),
 						"An error has occured"
 					)
@@ -861,6 +873,8 @@ return function(Vargs, env)
 		};
 
 		CreateStarterScript = {
+			-- The shared script label is public text; executable code retains its separate privileged path.
+			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
 			Args = {"name", "code"};

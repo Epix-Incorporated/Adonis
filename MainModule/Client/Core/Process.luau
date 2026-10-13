@@ -131,8 +131,14 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		-- Native TextChatCommand events own modern command execution. An unsunk
+		-- public send must never be replayed as a private conversation command.
 		Chat = function(msg)
-			--service.FireEvent("Chat",msg)
+			msg = service.UnWrap(msg)
+			if typeof(msg) == "Instance" and msg:IsA("TextChatMessage") then
+				return
+			end
+			if type(msg) ~= "string" then return end
 			if not service.Player or service.Player.Parent ~= service.Players then
 				Remote.Fire("ProcessChat",msg)
 			end
@@ -182,6 +188,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		-- Hides inaccessible suggestions while preserving native command interception.
 		HandleTextChatCommands = function()
 			local data = Remote.Get("PlayerData")
 			local adminLevel, isDonor = data.AdminLevel, data.isDonor
@@ -202,7 +209,7 @@ return function(Vargs, GetEnv)
 					local commandLevel = command:GetAttribute("AdminLevel")
 
 					if type(commandLevel) == "number" and commandLevel > adminLevel or commandLevel == "Donors" and not isDonor then
-						command.Parent = nil
+						command.AutocompleteVisible = false
 					end
 				end
 
@@ -211,6 +218,9 @@ return function(Vargs, GetEnv)
 				end
 
 				service.TextChatService.DescendantAdded:Connect(onCommandAdded)
+				service.TextChatService.DescendantRemoving:Connect(function(command)
+					if Process.TextChatCommands[command.Name] == command then Process.TextChatCommands[command.Name] = nil end
+				end)
 			end
 		end;
 	}

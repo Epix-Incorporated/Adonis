@@ -1,7 +1,16 @@
 return {
-	"Version: 283";
+	"Version: 284";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v284 2026-10-13 09:32 UTC] @Dimenpsyonal";
+	"Hotfix/implement textchannel restrictions where required";
+	"Add filtering to announcement commands per Roblox requirements";
+	"Axe cross-server messaging for now";
+	"(Git/jestemjaworr) Fix CustomRanks handling (#2194)";
+	"(Git/tmm619) Fix :nuke lasting indefinitely and repeatedly killing with large sizes (#2190)";
+	"(Git/melismau) Add hex color code support to Functions.ParseColor3 (#2154)";
+	"(Git/P3tray) Get rid of legacy chat from BackupNotification (#2195)";
 	"";
 	"[Patch v283.1 2026-10-07 14:42 UTC] @Dimenpsyonal";
 	"Revert #2182 freecam update until game EFC use can be verified";
