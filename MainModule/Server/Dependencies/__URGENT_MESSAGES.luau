@@ -27,7 +27,7 @@ return {
 		"If your game has been taken down due to issues relating to automated TCS/Text ChatService;";
 		"tickets be sure to contact Roblox support to get the moderation issue resolved.";
 		"Also if you have installed custom plugins that re-implement the original;";
-		"Adonis chat be sure to remove them as they can result in moderation action."
+		"Adonis chat be sure to remove them as they can result in moderation action.";
 		"[END_OF_MESSAGE 2024-02-07 00:00 UTC]";
 		"";
 		"";
