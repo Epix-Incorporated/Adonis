@@ -132,4 +132,134 @@ assert(find(":pm") == host and find("/:pm") and not find(":multi"), "Disabled pr
 nativeSource.Parent.GetAttribute = function() return nil end
 find("/:pm").Trigger(nativeSource, "/:pm 2 private-disabled")
 assert(#sent == 1 and #notices == 1 and not notices[1]:find("private-disabled", 1, true), "Disabled commands must return only a fixed notice without execution")
-print("Native chat registry contracts passed: prefixes, synonyms, host collision, alias scope, refresh, cleanup and author ingress")
+
+-- Exercises native ingress through the real remote handler, parser, aliases and permission check.
+local process, functions, executions = {MsgStringLimit = 500}, {}, {}
+local server = {Settings = settings}
+local aliases, rateAllowed, commandRateChecks = {}, true, 0
+settings.SplitKey, settings.BatchKey, settings.ChatCommands = " ", "|", true
+settings.Ranks, settings.PlayerCommands = {Creators = {Level = 900}}, true
+player.Name, player.Parent = "Author", service.Players
+player.IsA = function(_, class) return class == "Player" end
+service.UnWrap = function(value) return value end
+service.HttpService = {GenerateGUID = function() return "invocation" end}
+service.Events = {CommandRan = {Fire = function() end}}
+service.Trim = function(text) return text:match("^%s*(.-)%s*$") end
+service.SanitizePattern = function(text) return text:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1") end
+env.server, env.script, env.Process, env.Functions = server, {}, process, functions
+env.Logs = {AddAudit = function() end}
+env.typeof = function(value) return if value == player then "Instance" else typeof(value) end
+env.TrackTask = function(_, callback, onError, ...)
+	local result = table.pack(pcall(callback, ...))
+	if not result[1] then onError(result[2]) end
+	return table.unpack(result, 1, result.n)
+end
+process.RateLimit = function(_, kind)
+	if kind ~= "Command" then return false end
+	commandRateChecks += 1
+	return rateAllowed
+end
+
+-- Loads a complete declaration from the implementation without duplicating its behavior.
+local function declaration(text, startMarker, endMarker)
+	local start = assert(text:find(startMarker, 1, true), `Missing declaration: {startMarker}`)
+	local finish = assert(text:find(endMarker, start + #startMarker, true), `Missing boundary: {endMarker}`)
+	return text:sub(start, finish - 1)
+end
+
+local processSource = fs.readFile("MainModule/Server/Core/Process.luau")
+local remoteSource = fs.readFile("MainModule/Server/Core/Remote.luau")
+local functionsSource = fs.readFile("MainModule/Server/Core/Functions.luau")
+functions.Trim = service.Trim
+functions.Split = luau.load("return {" .. declaration(functionsSource, "\t\tSplit = function", "\t\tIsValidTexture = function") .. "}", {environment = env})().Split
+admin.GetArgs = luau.load("return {" .. declaration(source, "\t\tGetArgs = function", "\t\tAliasFormat = function") .. "}", {environment = env})().GetArgs
+admin.AliasFormat = luau.load(declaration(source, "\tlocal function stripArgPlaceholders", "\tserver.Admin = {") .. "\nreturn {"
+	.. declaration(source, "\t\tAliasFormat = function", "\t\tStringToComLevel = function") .. "}", {environment = env})().AliasFormat
+admin.CheckPermission = luau.load("return {" .. declaration(source, "\t\tCheckPermission = function", "\t\tUpdateCooldown = function") .. "}", {environment = env})().CheckPermission
+admin.GetAliases = function() return aliases end
+admin.GetLevel = function() return 100 end
+admin.IsPlaceOwner = function() return false end
+admin.IsBlacklisted = function() return false end
+admin.CheckComLevel = function(level, required) return level >= required end
+admin.CheckAdmin = function() return true end
+admin.UpdateCooldown = function() end
+local restricted = {
+	Prefix = ":", Commands = {"restricted"}, Args = {}, AdminLevel = 100, NonChattable = true,
+	-- Records successful execution and verifies that explicit submission author context survives dispatch.
+	Function = function(actor, _, data)
+		assert(server.ChatTransport.ResolveOriginAuthor(data.Options.UserCommandOrigin) == actor, "Ingress lost its original author")
+		table.insert(executions, {Chat = data.Options.Chat})
+	end,
+}
+env.Commands.Restricted = restricted
+admin.GetCommand = function(text)
+	if text:match("^(%S+)") == ":restricted" then return "Restricted", restricted, ":restricted" end
+end
+local transportLoader = luau.load(fs.readFile("MainModule/Server/Core/ChatTransport.luau"), {environment = env})()
+transportLoader({Server = server, Service = service}, function() return env end)
+process.GetOverrideMap = luau.load("return {" .. declaration(processSource, "\t\tGetOverrideMap = function", "\t\tCommand = function") .. "}", {environment = env})().GetOverrideMap
+process.Command = luau.load("return {" .. declaration(processSource, "\t\tCommand = function", "\t\tCrossServerChat = function") .. "}", {environment = env})().Command
+env.Remote.Commands.ProcessCommand = luau.load("return {" .. declaration(remoteSource, "\t\t\tProcessCommand = function", "\t\t\tProcessChat = function") .. "}", {environment = env})().ProcessCommand
+aliases = {[":shortcut"] = ":restricted"}
+core.PlayerData['1'].Aliases = aliases
+rebuild()
+for _, input in {":restricted", "/:restricted", ":shortcut", ":restricted | :restricted"} do
+	local token = input:match("^(%S+)")
+	find(token).Trigger(nativeSource, input)
+end
+assert(#executions == 0 and commandRateChecks == 4, "Native commands, slash variants, aliases and batches must preserve NonChattable checks")
+local noticeCount = #notices
+local clientArgs = {":restricted"}
+clientArgs.Chat = true
+env.Remote.Commands.ProcessCommand(player, clientArgs)
+assert(#executions == 1 and executions[1].Chat == false and #notices == noticeCount, "Command-bar requests must remain usable and ignore client-supplied origin flags")
+restricted.NonChattable = false
+find(":restricted").Trigger(nativeSource, ":restricted")
+assert(#executions == 2 and executions[2].Chat == true, "Ordinary native commands must retain their chat and author context")
+rateAllowed = false
+find(":restricted").Trigger(nativeSource, ":restricted")
+assert(#executions == 2 and commandRateChecks == 7, "Native ingress must retain command rate limiting")
+
+-- Exercises filtered broadcast presentation through native and command-bar ingress.
+local broadcastSource = fs.readFile("MainModule/Server/Commands/Admins.luau")
+local broadcast = luau.load("return {" .. declaration(broadcastSource, "\t\tBroadcast = {", "\t\tShutdownLogs = {") .. "}", {environment = env})().Broadcast
+broadcast.AdminLevel = 100
+-- Supplies the connected audience for the real broadcast handler.
+service.GetPlayers = function() return {player} end
+-- Provides the system title used by the rich-text presentation template.
+core.GetSettingText = function() return "System" end
+local sharedSource = fs.readFile("MainModule/Shared/Service.luau")
+service.SanitizeXML = luau.load("return {" .. declaration(sharedSource, "\t\tSanitizeXML = function", "\t\tSanitizePattern = function") .. "}", {environment = env})().SanitizeXML
+local broadcastInput = [[<b>source</b> &lt; & "quoted" 'single']]
+local filteredBroadcast = [[<b>approved</b> &lt; & "quoted" 'single']]
+local filteredCalls, broadcasts = 0, {}
+-- Substitutes a successful filtering response while verifying the authored input boundary.
+service.TryFilter = function(text, author, recipient, forBroadcast)
+	assert(text == broadcastInput and author == player and recipient == nil and forBroadcast == true, "Broadcast filtering must receive the literal input and its author")
+	filteredCalls += 1
+	return filteredBroadcast
+end
+local policyLoader = luau.load(fs.readFile("MainModule/Server/Core/TextPolicy.luau"), {environment = env})()
+policyLoader({Server = server, Service = service}, function() return env end)
+server.TextPolicy.WrapCommand(broadcast, "Broadcast")
+env.Commands.Broadcast = broadcast
+-- Resolves the broadcast definition while leaving parsing and permission checks intact.
+admin.GetCommand = function(text)
+	if text:match("^(%S+)") == ":broadcast" then return "Broadcast", broadcast, ":broadcast" end
+end
+-- Captures the exact rich-text payload passed to the client display function.
+env.Remote.Send = function(recipient, kind, name, channel, message)
+	assert(recipient == player and kind == "Function" and name == "DisplaySystemMessageInTextChat" and channel == nil, "Broadcasts must use the expected system-message sink")
+	table.insert(broadcasts, message)
+end
+rateAllowed = true
+rebuild()
+find(":broadcast").Trigger(nativeSource, ":broadcast " .. broadcastInput)
+find("/:broadcast").Trigger(nativeSource, "/:broadcast " .. broadcastInput)
+env.Remote.Commands.ProcessCommand(player, {":broadcast " .. broadcastInput})
+assert(#broadcasts == 3 and filteredCalls == 3, "Native, slash-prefixed and command-bar broadcasts must all filter and deliver")
+local expectedBroadcast = [[<font color="rgb(255, 64, 77)"><b>[System]</b></font> <font color="rgb(235, 99, 108)">&lt;b&gt;approved&lt;/b&gt; &amp;lt; &amp; &quot;quoted&quot; &apos;single&apos;</font>]]
+for _, message in broadcasts do
+	assert(message == expectedBroadcast, "Broadcast bodies must escape filtered markup and entities exactly once for every ingress")
+end
+print("Native chat registry contracts passed: aliases, lifecycle, ingress provenance, NonChattable permissions, rate limiting and broadcast escaping")

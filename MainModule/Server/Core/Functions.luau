@@ -951,10 +951,10 @@ return function(Vargs, GetEnv)
 			return table.concat(out, "")
 		end;
 
-		-- Publishes non-chat hints; plugin-authored user text must supply its author or body record.
-		Hint = function(message, players, duration, title, image, authorOrRecord)
+		-- Publishes non-chat hints; body and title records preserve independently verified display text.
+		Hint = function(message, players, duration, title, image, authorOrRecord, titleRecord)
 			message = server.TextPolicy.GetPublicationText(message, authorOrRecord)
-			title = server.TextPolicy.GetPublicationText(title, if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord)
+			title = server.TextPolicy.GetPublicationText(title, titleRecord or (if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord))
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if server.PanicMode and server._tempBackupHint then
@@ -979,8 +979,8 @@ return function(Vargs, GetEnv)
 		end;
 
 		-- Publishes non-chat announcements while retaining the legacy title/body helper signature.
-		-- Explicit sender attribution or a body record is required for plugin-provided user text.
-		Message = function(sender, title, message, image, players, scroll, duration, authorOrRecord)
+		-- Explicit sender attribution or verified body/title records are required for plugin-provided user text.
+		Message = function(sender, title, message, image, players, scroll, duration, authorOrRecord, titleRecord)
 			-- Currently not used
 			if sender == "Adonis" or sender == "HelpSystem" or sender == "Command" then
 				sender = nil
@@ -1009,7 +1009,7 @@ return function(Vargs, GetEnv)
 			end
 
 			message = server.TextPolicy.GetPublicationText(message, authorOrRecord or sender)
-			title = server.TextPolicy.GetPublicationText(title, sender or (if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord))
+			title = server.TextPolicy.GetPublicationText(title, titleRecord or sender or (if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord))
 
 			duration = duration or (#tostring(message) / 19) + 2.5
 
@@ -1048,10 +1048,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Publishes non-chat notifications using an explicit author or the active command context.
-		Notify = function(title, message, players, duration, author, bodyRecord)
+		-- Publishes non-chat notifications using author context or independently verified body/title records.
+		Notify = function(title, message, players, duration, author, bodyRecord, titleRecord)
 			message = server.TextPolicy.GetPublicationText(message, bodyRecord or author)
-			title = server.TextPolicy.GetPublicationText(title, author)
+			title = server.TextPolicy.GetPublicationText(title, titleRecord or author)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if server.PanicMode then

@@ -47,7 +47,7 @@ Global aliases and eligible personal aliases beginning with configured command p
 
 Personal alias updates are atomic and limited to one attempt per second, 64 entries, 128-byte names, and 4,096-byte command expansions. A native personal alias token must be at most 64 bytes and use a configured prefix followed by ASCII letters, digits, underscores, or hyphens. Other accepted aliases are command-bar/keybind inputs. Successful saves install native interception before acknowledging the update; rejected saves preserve the previous configuration and client state. Unchanged native handlers are reused. These internal resource limits are separate from the shared editable-text cooldown.
 
-An existing saved map with more than 64 aliases is preserved but is wholly command-bar/keybind-only until replaced with a map within the limits. The Aliases editor displays the native-chat requirements; unsupported aliases must not be entered through public chat. No partial subset of an oversized legacy map is registered.
+An existing saved map with more than 64 aliases is preserved but is wholly command-bar/keybind-only until reduced to a map within the limits. The Aliases editor permits deletion-only cleanup of legacy maps that exceed count or length limits; retained entries must remain unchanged. Additions and other edits must meet the current limits. The editor displays the native-chat requirements; unsupported aliases must not be entered through public chat. No partial subset of an oversized legacy map is registered.
 
 ## Non-chat filtering and publication
 
@@ -74,6 +74,7 @@ The command-function wrapper enforces declarations for normal dispatch, direct c
 | `TextPolicy.CreateRecord(text, author, kind)` | Creates an immutable safe-only record with version, author ID, kind, and filtered text. This helper filters; callers still need the relevant public-edit admission. |
 | `TextPolicy.GetRecordText(record)` | Uses a privately trusted current-session snapshot; otherwise re-filters a valid persisted record with its real online author. Returns unavailable on missing provenance or offline authors. |
 | `TextPolicy.GetPublicationText(value, authorOrRecord)` | Publication helper for non-chat UI. Explicit records retain their provenance; command calls inherit actual-author context. |
+| `TextPolicy.FormatPublishedRecord(record, presentation)` | During an authorized published command, derives fixed numeric author attribution or an attributed hint from that invocation's trusted record. Other records and arbitrary formats are rejected. |
 | `TextPolicy.GetCommandAuthor(actor)` | Resolves the actual author for a new non-chat submission inside a command, including `sudo`. Do not use the viewing admin to reattribute a stored record. |
 | `ChatTransport.SubmitCommand(author, recipients, text, input, kind, presentation, options)` | Consumes the opaque `data.ChatInput` from explicit command processing, resolves native eligibility, and authorizes the submitting client to send. A direct/generated call without that input is rejected. |
 | `Functions.Message`, `Hint`, `Notify`, `Notification` | Filter displayed titles/bodies using command author context or an explicit author/record. Preserve existing call signatures. |
@@ -100,7 +101,7 @@ end;
 
 ### Cross-server and persisted text
 
-The originating server filters announcements, poll fields, and moderation reasons using the real author. Authenticated cross-server handlers accept versioned server-created publication envelopes, validate record shapes, and deduplicate publication IDs for five minutes. They reject legacy raw-text publication. Published-command authorization is private, single-use, and bound to the exact command, actor, and arguments. Forwarding does not create a fresh edit allowance.
+The originating server filters announcements, poll fields, and moderation reasons using the real author. Authenticated cross-server handlers accept versioned server-created publication envelopes, validate record shapes, and deduplicate publication IDs for five minutes. They reject legacy raw-text publication. Published-command authorization is private, single-use, and bound to the exact command, actor, and arguments. Forwarding does not create a fresh edit allowance. Published announcement titles and attributed hints use the record's numeric author ID so presentation does not require filtering with a fabricated local player.
 
 Dynamic `cross change`, `cross tag`, and `cross disguise` are rejected because their destination-dependent text cannot be prepared reliably at the origin. This includes numeric `cross change`; use an appropriate local operation until an explicit cross-server contract exists. Arbitrary cross-server conversational chat relays are disabled.
 

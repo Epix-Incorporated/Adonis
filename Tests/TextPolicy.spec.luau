@@ -435,4 +435,112 @@ check("safe detail audits preserve command and invocation logging preferences", 
 	server.Logs = nil
 end)
 
+check("published announcement commands preserve trusted bodies and fixed author titles", function()
+	local displayed = {}
+	local commandEnv = table.clone(env)
+	commandEnv.server = server
+	commandEnv.Core = {GetSettingText = function() return "System" end}
+	commandEnv.service = table.clone(service)
+	commandEnv.service.GetPlayers = function() return {recipient} end
+	commandEnv.service.FormatPlayer = function(player) return player.Name end
+	commandEnv.Remote = {MakeGui = function(_, _, data) table.insert(displayed, data) end, RemoveGui = function() end}
+	commandEnv.task = {defer = function(callback) callback() end}
+	commandEnv.Functions = {}
+	local helpers = fs.readFile("MainModule/Server/Core/Functions.luau")
+	for _, name in {"Hint", "Message", "Notify"} do
+		local implementation = assert(helpers:match(`{name} = (function.-\n\t\tend);`), "Missing announcement helper")
+		commandEnv.Functions[name] = luau.load(`return {implementation}`, {environment = commandEnv})()
+	end
+	local source = fs.readFile("MainModule/Server/Commands/Moderators.luau")
+	local fake = {UserId = author.UserId, Name = "UNFILTERED_REMOTE_NAME"}
+	author.Name = "OriginAdmin"
+	for _, name in {"Hint", "TimeHint", "Message", "TimeMessage", "Notify"} do
+		local definition = assert(source:match("\n\t\t" .. name .. " = {(.-)\n\t\t};"), "Missing announcement command")
+		local metadata = assert(definition:match("UserText = ([^\n]+);"), "Missing announcement policy")
+		local implementation = assert(definition:match("Function = (function.-\n\t\t\tend)"), "Missing announcement handler")
+		local command = {UserText = luau.load(`return {metadata}`)(), Function = luau.load(`return {implementation}`, {environment = commandEnv})()}
+		policy.WrapCommand(command, name)
+		local index = command.UserText.Args[1]
+		local args = if index == 2 then {"7", "maintenance soon"} else {"maintenance soon"}
+		local record = assert(policy.CreateRecord(args[index], author, "Announcement"))
+		local records = assert(policy.AcceptPublication("announcement-origin", assert(policy.CreatePublication({[tostring(index)] = record}))))
+		local token, safeArgs = policy.AuthorizePublishedCommand(command, fake, args, records)
+		online[author.UserId] = nil
+		local before = calls
+		command.Function(fake, safeArgs, {Options = {TextPublication = token}})
+		local output = displayed[#displayed]
+		assert(output.Message == (if name == "Hint" then "User 101: public:maintenance soon" else record.Text), "Published announcement lost its accepted body")
+		assert(output.Title == (if name == "Hint" or name == "TimeHint" then "User 101" else "Message from User 101"), "Published announcement lost safe attribution")
+		assert(calls == before, "Published presentation tried to filter an unavailable remote author")
+		if index == 2 then assert(output.Time == 7, "Published announcement lost its requested duration") end
+		online[author.UserId] = author
+		command.Function(author, args)
+		local localOutput = displayed[#displayed]
+		assert(localOutput.Title:find("OriginAdmin", 1, true), "Local announcements lost existing player-name attribution")
+		assert(localOutput.Message:find("maintenance soon", 1, true), "Local announcements lost their body")
+	end
+end)
+
+check("published formatting cannot bless forged, unrelated, or arbitrary text", function()
+	local record = assert(policy.CreateRecord("accepted text", author, "Announcement"))
+	local unrelated = assert(policy.CreateRecord("other invocation", author, "Announcement"))
+	assert(policy.FormatPublishedRecord(record, "Hint") == nil, "A record outside a published invocation gained formatting authority")
+	local retained
+	local command = {UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}}, Function = function(_, _, data)
+		local accepted = data.UserTextRecords[1]
+		assert(policy.FormatPublishedRecord(table.clone(accepted), "Hint") == nil, "A copied record gained formatting authority")
+		assert(policy.FormatPublishedRecord(unrelated, "Hint") == nil, "A different invocation supplied a formatted record")
+		assert(policy.FormatPublishedRecord(accepted, "ARBITRARY_UNFILTERED_PREFIX") == nil, "An arbitrary presentation string was authorized")
+		assert(policy.GetPublicationText("ARBITRARY_UNFILTERED_BODY") == "Text unavailable", "Published formatting authorized unrelated fake-author text")
+		retained = assert(policy.FormatPublishedRecord(accepted, "Hint"))
+		assert(not pcall(function() retained.Text = "ARBITRARY_UNFILTERED_BODY" end), "Formatted records must be immutable")
+	end}
+	policy.WrapCommand(command)
+	local records = assert(policy.AcceptPublication("format-origin", assert(policy.CreatePublication({["1"] = record}))))
+	local fake = {UserId = author.UserId}
+	local token, args = policy.AuthorizePublishedCommand(command, fake, {record.Text}, records)
+	command.Function(fake, args, {Options = {TextPublication = token}})
+	assert(policy.GetRecordText(retained) == "User 101: public:accepted text", "Formatted records did not retain safe content and original authorship")
+	assert(retained.AuthorUserId == author.UserId and retained.Kind == "Announcement", "Formatted records lost author or kind")
+	assert(policy.FormatPublishedRecord(records["1"], "Hint") == nil, "Completed publication formatting authority leaked")
+end)
+
+check("filtered tag collisions merge membership and preserve edit admission", function()
+	local source = fs.readFile("MainModule/Server/Commands/Moderators.luau")
+	local definition = assert(source:match("\n\t\tTag = {(.-)\n\t\t};"), "Missing tag command")
+	local metadata = assert(definition:match("UserText = ([^\n]+);"), "Missing tag policy")
+	local implementation = assert(definition:match("Function = (function.-\n\t\t\tend)"), "Missing tag handler")
+	local tagEnv = table.clone(env)
+	tagEnv.server = server
+	tagEnv.Variables = {Tags = {}}
+	tagEnv.service = table.clone(service)
+	tagEnv.service.GetPlayers = function(_, selector) return {if selector == "first" then author else recipient} end
+	tagEnv.Functions = {Trim = function(text) return text:match("^%s*(.-)%s*$") end, Hint = function() end}
+	local command = {UserText = luau.load(`return {metadata}`)(), Function = luau.load(`return {implementation}`, {environment = tagEnv})()}
+	policy.WrapCommand(command, "Tag")
+	local originalFilter = service.TextService.FilterStringAsync
+	service.TextService.FilterStringAsync = function(...)
+		local result = originalFilter(...)
+		result.GetNonChatStringForBroadcastAsync = function() return "####" end
+		return result
+	end
+	now = 500
+	command.Function(author, {"first", "first-label"})
+	local members = tagEnv.Variables.Tags["####"]
+	local originalRecord = tagEnv.Variables.TagTextRecords["####"]
+	assert(#members == 1 and members[1] == author, "The first filtered tag was not created")
+	assert(not pcall(command.Function, author, {"second", "first-label"}) and #members == 1, "An unadmitted label changed tag membership")
+	now = 560
+	command.Function(author, {"second", "first-label"})
+	assert(tagEnv.Variables.Tags["####"] == members and #members == 2 and table.find(members, author) and table.find(members, recipient), "Repeating a filtered label replaced existing members")
+	now = 620
+	command.Function(author, {"second", "different-label"})
+	assert(#members == 2 and tagEnv.Variables.TagTextRecords["####"] == originalRecord, "A colliding label duplicated members or replaced existing provenance")
+	assert(not policy.TryPublicEdit(author), "Resolving a new label bypassed public-edit admission")
+	local before = calls
+	command.Function(author, {"first", "####"})
+	assert(#members == 2 and calls == before, "Selecting an existing displayed label filtered again or duplicated membership")
+	service.TextService.FilterStringAsync = originalFilter
+end)
+
 print(`TextPolicy: {count} assertion groups passed`)

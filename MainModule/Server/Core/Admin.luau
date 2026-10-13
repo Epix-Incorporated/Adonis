@@ -1315,7 +1315,7 @@ return function(Vargs, GetEnv)
 									return
 								end
 								local submitted = if string.sub(text, 1, #slash):lower() == slash:lower() and slash ~= plain then string.sub(text, 2) else text
-								Remote.Commands.ProcessCommand(player, {submitted})
+								Remote.Commands.ProcessCommand(player, {submitted}, true)
 							end
 						end)
 					end

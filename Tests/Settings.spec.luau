@@ -86,4 +86,27 @@ local assets = core.ProjectAssetList(catalog, "MusicList")
 assert(assets[1].Text == "Developer catalog item - 42" and not serde.encode("json", assets):find(secret, 1, true), "Catalog trust extended beyond the loader snapshot")
 local externalAssets = core.ProjectAssetList({{Name = secret, ID = "168"}, {Name = secret, ID = secret}}, "MusicList", true)
 assert(#externalAssets == 1 and externalAssets[1].Desc == "168" and not serde.encode("json", externalAssets):find(secret, 1, true), "External catalog exposed names or invalid identifiers")
-print("Settings contracts passed: filtering, admission, persistence, redaction, handles, path validation and catalog/rank projections")
+local moderatorSource = fs.readFile("MainModule/Server/Commands/Moderators.luau")
+local banDefinition = assert(moderatorSource:match("\n\t\tBanList = {(.-)\n\t\t};"), "Missing ban list command")
+local banUpdaterSource = assert(banDefinition:match("ListUpdater = (function.-\n\t\t\tend);"), "Missing ban list updater")
+local projections = 0
+local banSettings = {Banned = {"UNFILTERED_FIRST", {UserId = 42, ReasonRecord = record}, "UNFILTERED_SECOND", "UNFILTERED_THIRD"}}
+local banEnv = setmetatable({
+	Settings = banSettings,
+	Core = {ProjectSetting = function(key)
+		assert(key == "Banned", "The list projected unrelated configuration")
+		projections += 1
+		return {"SAFE_FIRST", "SAFE_TABLE", "SAFE_SECOND", "SAFE_THIRD"}
+	end},
+	server = server,
+}, {__index = getfenv()})
+local updateBans = luau.load(`return {banUpdaterSource}`, {environment = banEnv})()
+local banRows = updateBans(player)
+assert(projections == 1 and #banRows == 6, "Ban list must share one projection across all configured entries")
+assert(banRows[3].Text == "[GLOBAL] SAFE_FIRST" and banRows[5].Text == "[GLOBAL] SAFE_SECOND" and banRows[6].Text == "[GLOBAL] SAFE_THIRD", "Mixed ban entry types lost their projected indices")
+assert(banRows[4].Text == "[GLOBAL] User 42" and banRows[4].Desc:find("FILTERED_SETTINGS", 1, true), "Authored ban records lost their safe details")
+assert(not serde.encode("json", banRows):find("UNFILTERED_", 1, true), "Ban rows exposed operational configuration")
+banSettings.Banned = {{UserId = 42, ReasonRecord = record}}
+projections = 0
+assert(#updateBans(player) == 3 and projections == 0, "Record-only ban lists should not project configured entries")
+print("Settings contracts passed: filtering, admission, persistence, redaction, handles, path validation, catalog/rank projections and bounded ban-list projection")

@@ -475,7 +475,7 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			-- Atomically accepts a bounded alias map and installs native sinks before replying.
+			-- Accepts bounded alias maps or strict deletions from legacy maps, then installs native sinks.
 			UpdateAliases = function(p: Player, args: {[number]: any})
 				local now = os.clock()
 				if aliasUpdateTimes[p] and now - aliasUpdateTimes[p] < 1 then
@@ -483,18 +483,25 @@ return function(Vargs, GetEnv)
 				end
 				aliasUpdateTimes[p] = now
 				if type(args[1]) ~= "table" then return {Success = false, Message = "Invalid alias settings."} end
-				local aliases, count, commandBarOnly = {}, 0, false
+				local data = Core.GetPlayer(p)
+				local previous = data.Aliases or {}
+				local previousCount = 0
+				for _ in previous do previousCount += 1 end
+				local aliases, count, commandBarOnly, removalOnly, bounded = {}, 0, false, true, true
 				for key, value in args[1] do
 					count += 1
-					if count > 64 or type(key) ~= "string" or #key == 0 or #key > 128
-						or type(value) ~= "string" or #value == 0 or #value > 4096 then
+					if count > math.max(64, previousCount) or type(key) ~= "string" or type(value) ~= "string" then
 						return {Success = false, Message = "Use at most 64 aliases, with names up to 128 characters and commands up to 4096 characters."}
 					end
+					if count > 64 or #key == 0 or #key > 128 or #value == 0 or #value > 4096 then bounded = false end
+					if previous[key] ~= value then removalOnly = false end
 					aliases[key] = value
 					if not Admin.GetNativeAliasToken(key) then commandBarOnly = true end
 				end
-				local data = Core.GetPlayer(p)
-				local previous = data.Aliases or {}
+				-- Legacy cleanup may retain existing oversized entries, but cannot add or alter them.
+				if not bounded and not (removalOnly and count < previousCount) then
+					return {Success = false, Message = "Use at most 64 aliases, with names up to 128 characters and commands up to 4096 characters."}
+				end
 				local unchanged = true
 				for key, value in aliases do if previous[key] ~= value then unchanged = false; break end end
 				if unchanged then
@@ -507,7 +514,7 @@ return function(Vargs, GetEnv)
 					pcall(Admin.CacheNativeChatCommands, true)
 					return {Success = false, Message = "Aliases could not be installed. Please try again later."}
 				end
-				return {Success = true, CommandBarOnly = commandBarOnly}
+				return {Success = true, CommandBarOnly = commandBarOnly or not bounded}
 			end;
 
 			-- Returns only the caller's supported UI preferences, excluding moderation and plugin records.
@@ -1119,10 +1126,12 @@ return function(Vargs, GetEnv)
 				print("Client test event received")
 			end;
 
-			ProcessCommand = function(p: Player, args: {[number]: any})
+			-- Processes explicit submissions; only server dispatch supplies native-chat provenance.
+			ProcessCommand = function(p: Player, args: {[number]: any}, fromNativeChat: boolean?)
 				if Process.RateLimit(p, "Command") and type(args[1]) == "string" then
 					Process.Command(p, args[1], {
 						Check = true,
+						Chat = fromNativeChat == true,
 						UserCommandOrigin = server.ChatTransport.NewOrigin(p, args[1]),
 					})
 				elseif Process.RateLimit(p, "RateLog") then

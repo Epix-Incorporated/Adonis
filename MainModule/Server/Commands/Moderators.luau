@@ -260,8 +260,10 @@ return function(Vargs, env)
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, assert(args[2], "Missing message"), service.GetPlayers(), true, assert(tonumber(args[1]), "Invalid time amount (must be number)"))
+			-- Preserves the accepted announcement and its attribution when the author is in another server.
+			Function = function(plr: Player, args: {string}, data: {})
+				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[2], "AnnouncementTitle")
+				Functions.Message(nil, `Message from {service.FormatPlayer(plr)}`, assert(args[2], "Missing message"), nil, service.GetPlayers(), true, assert(tonumber(args[1]), "Invalid time amount (must be number)"), nil, titleRecord)
 			end
 		};
 
@@ -275,8 +277,10 @@ return function(Vargs, env)
 			Description = "Makes a message";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, assert(args[1], "Missing message"), nil, service.GetPlayers(), true)
+			-- Preserves the accepted announcement and its attribution when the author is in another server.
+			Function = function(plr: Player, args: {string}, data: {})
+				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "AnnouncementTitle")
+				Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, assert(args[1], "Missing message"), nil, service.GetPlayers(), true, nil, nil, titleRecord)
 			end
 		};
 
@@ -306,8 +310,10 @@ return function(Vargs, env)
 			Description = "Makes a small message";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				Functions.Notify(`Message from @{plr.Name}`, assert(args[1], "Missing message"), service.GetPlayers(), nil, plr)
+			-- Preserves the accepted announcement and its attribution when the author is in another server.
+			Function = function(plr: Player, args: {string}, data: {})
+				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "AnnouncementTitle")
+				Functions.Notify(`Message from @{plr.Name}`, assert(args[1], "Missing message"), service.GetPlayers(), nil, plr, nil, titleRecord)
 			end
 		};
 
@@ -352,9 +358,12 @@ return function(Vargs, env)
 			Description = "Makes a hint";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			-- Composes published hints from accepted text so themes without titles retain safe attribution.
+			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing message")
-				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), args[1]), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				local bodyRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "Hint")
+				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[1], "Author")
+				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), args[1]), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`, bodyRecord, titleRecord)
 			end
 		};
 
@@ -368,8 +377,10 @@ return function(Vargs, env)
 			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				Functions.Hint(assert(args[2], "Missing message"), service.GetPlayers(), assert(tonumber(args[1]), "Invalid time amount (must be a number)"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+			-- Preserves accepted timed hints and safe author attribution across servers.
+			Function = function(plr: Player, args: {string}, data: {})
+				local titleRecord = server.TextPolicy.FormatPublishedRecord(data.UserTextRecords[2], "Author")
+				Functions.Hint(assert(args[2], "Missing message"), service.GetPlayers(), assert(tonumber(args[1]), "Invalid time amount (must be a number)"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`, nil, titleRecord)
 			end
 		};
 
@@ -1862,9 +1873,11 @@ return function(Vargs, env)
 			Description = "Shows you the normal ban list";
 			Category = "Moderation";
 			AdminLevel = "Moderators";
+			-- Shares one settings projection across configured entries while preserving authored ban details.
 			ListUpdater = function(plr: Player)
 				local tab = table.create(#Settings.Banned + 2)
 				local count = 0
+				local projected
 				for _, v in Settings.Banned do
 					local entry = "Configured ban"
 					local reason = "No reason provided"
@@ -1881,7 +1894,7 @@ return function(Vargs, env)
 						local moderatorId = type(v.ReasonRecord) == "table" and tonumber(v.ReasonRecord.AuthorUserId)
 						if moderatorId then moderator = `User {moderatorId}` end
 					else
-						local projected = Core.ProjectSetting("Banned")
+						projected = projected or Core.ProjectSetting("Banned")
 						entry = `[{banType}] {projected[count] or "Configured ban"}`
 					end
 					table.insert(tab, {
@@ -7370,6 +7383,7 @@ return function(Vargs, env)
 			Description = `Add specific players to a tag, you can then use a player selector to select only people in that specific tag: {Settings.Prefix}count t-TAG_NAME`;
 			Category = "Moderation";
 			AdminLevel = "Moderators";
+			-- Adds membership to an existing filtered label without replacing players already assigned to it.
 			Function = function(plr,args)
 				assert(args[1], "Argument 1 is required!");
 				assert(args[2], "Argument 2 is required!");
@@ -7405,11 +7419,14 @@ return function(Vargs, env)
 				if not tag then
 					local filtered, records = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), {name}, {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}})
 					name = filtered[1]
-					Variables.TagTextRecords = Variables.TagTextRecords or {}
-					Variables.TagTextRecords[name] = records[1]
-					Variables.Tags[name] = players;
-					Functions.Hint(`Created tag "{name}" and added {#players} player(s) to it`, {plr});
-					return;
+					tag = Variables.Tags[name]
+					if not tag then
+						Variables.TagTextRecords = Variables.TagTextRecords or {}
+						Variables.TagTextRecords[name] = records[1]
+						Variables.Tags[name] = players;
+						Functions.Hint(`Created tag "{name}" and added {#players} player(s) to it`, {plr});
+						return;
+					end
 				end
 
 				local added = 0;

@@ -121,6 +121,32 @@ return function(Vargs, GetEnv)
 		return if context then context.Author else getAuthor(actor)
 	end
 
+	-- Formats only records from the current published invocation with fixed numeric author attribution.
+	-- Local commands and untrusted records cannot use this path to authorize arbitrary display text.
+	function policy.FormatPublishedRecord(record, presentation)
+		local context = publicationContexts[coroutine.running()]
+		if not context or not context.Published or type(record) ~= "table" or trustedRecords[record] == nil then return nil end
+		local belongsToInvocation = false
+		for _, accepted in context.Records do
+			if accepted == record then belongsToInvocation = true break end
+		end
+		if not belongsToInvocation then return nil end
+		local attribution = `User {record.AuthorUserId}`
+		local text
+		if presentation == "Author" then
+			text = attribution
+		elseif presentation == "AnnouncementTitle" then
+			text = `Message from {attribution}`
+		elseif presentation == "Hint" then
+			text = `{attribution}: {trustedRecords[record]}`
+		else
+			return nil
+		end
+		local formatted = table.freeze({Version = 1, AuthorUserId = record.AuthorUserId, Kind = record.Kind, Text = text})
+		trustedRecords[formatted] = text
+		return formatted
+	end
+
 	-- Resolves helper text from an authored record, an explicit author, or the active command author.
 	-- Calls outside commands without an author are reserved for developer-authored system text.
 	function policy.GetPublicationText(value, authorOrRecord)
@@ -144,10 +170,10 @@ return function(Vargs, GetEnv)
 	end
 
 	-- Scopes helper publication to this yielding invocation and restores its parent even after errors.
-	local function invoke(command, original, actor, args, data, records, textAuthor)
+	local function invoke(command, original, actor, args, data, records, textAuthor, published)
 		local thread = coroutine.running()
 		local previous = publicationContexts[thread]
-		publicationContexts[thread] = {Author = textAuthor, Records = records or {}}
+		publicationContexts[thread] = {Author = textAuthor, Records = records or {}, Published = published == true}
 		local result = table.pack(pcall(original, actor, args, data))
 		publicationContexts[thread] = previous
 		if not result[1] then error(result[2], 0) end
@@ -279,7 +305,7 @@ return function(Vargs, GetEnv)
 			if published and published.Command == command and published.Author == author and published.Args == args then
 				publishedCalls[token] = nil
 				data.UserTextRecords = published.Records
-				return invoke(command, original, author, args, data, published.Records, author)
+				return invoke(command, original, author, args, data, published.Records, author, true)
 			end
 			local prepared = preparedCalls[data]
 			if prepared and prepared.Command == command and prepared.Args == args and prepared.Author == author then

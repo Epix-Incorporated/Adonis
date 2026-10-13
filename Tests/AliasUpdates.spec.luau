@@ -103,4 +103,36 @@ nextResponse = {Success = true}
 click()
 assert(#requests == beforeRequests + 2 and not variables.Aliases[":old"] and variables.Aliases[":renamed"], "Accepted UI rename must use exactly one replacement request")
 assert(not uiState.binderBox.Visible and not uiState.editOldAlias and not uiState.currentAlias and redraws == 1, "Accepted UI edits must close and refresh the list")
-print("Alias update contracts passed: bounded atomic saves, throttling, synchronous registration, no-op reuse, rollback, client acceptance and atomic UI rename")
+
+-- Exercises incremental legacy cleanup through the real client helper and server endpoint.
+stored.Aliases = {}
+for index = 1, 66 do stored.Aliases[`:legacy{index}`] = ":help" end
+variables.Aliases = table.clone(stored.Aliases)
+local legacy = stored.Aliases
+assert(not save(table.clone(legacy)).Success and stored.Aliases == legacy, "Oversized unchanged maps must still be rejected")
+local changedLegacy = table.clone(legacy)
+changedLegacy[":legacy1"] = nil
+changedLegacy[":legacy2"] = ":pm 2 changed"
+assert(not save(changedLegacy).Success and stored.Aliases == legacy, "Oversized cleanup must not alter retained aliases")
+changedLegacy = table.clone(legacy)
+changedLegacy[":new"] = ":help"
+assert(not save(changedLegacy).Success and stored.Aliases == legacy, "Oversized cleanup must not add aliases")
+
+clientEnv.Remote.Get = function(name, aliases)
+	assert(name == "UpdateAliases", "Alias cleanup must use the bounded update endpoint")
+	nextResponse = save(aliases)
+	return nextResponse
+end
+assert(functions.RemoveAlias(":legacy1") and not stored.Aliases[":legacy1"] and not variables.Aliases[":legacy1"], "The editor must be able to reduce a 66-entry legacy map to 65")
+assert(nextResponse.CommandBarOnly, "An oversized reduced map must remain command-bar-only")
+local serverBefore, clientBefore = stored.Aliases, variables.Aliases
+failRefresh = true
+assert(not functions.RemoveAlias(":legacy2") and stored.Aliases == serverBefore and variables.Aliases == clientBefore, "Failed cleanup registration must roll back both maps")
+failRefresh = false
+assert(functions.RemoveAlias(":legacy2") and not nextResponse.CommandBarOnly, "Reducing to 64 eligible aliases must restore native eligibility")
+
+-- Removing another entry may retain an unchanged legacy value beyond today's length limit.
+stored.Aliases = {[":long"] = string.rep("x", 4097), [":delete"] = ":help"}
+assert(save({[":long"] = stored.Aliases[":long"]}).Success, "Legacy length limits must not trap deletion-only cleanup")
+assert(not save({[":long"] = string.rep("y", 4097)}).Success, "Cleanup must not permit new oversized expansions")
+print("Alias update contracts passed: bounded atomic saves, legacy deletion-only cleanup, throttling, synchronous registration, rollback, client acceptance and atomic UI rename")

@@ -291,13 +291,11 @@ return function(Vargs, env)
 			Description = "Makes a message in the chat window";
 			Category = "Messages";
 			AdminLevel = "Admins";
+			-- Displays a filtered announcement, escaping its body before rich-text rendering.
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers() do
 					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-						local TextToUse = args[1]
-						if data.Options.Chat ~= true then
-							TextToUse = service.SanitizeXML(args[1] or "Hello world!")
-						end
+						local TextToUse = service.SanitizeXML(args[1] or "Hello world!")
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
 							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, service.SanitizeXML(Core.GetSettingText("SystemTitle")), TextToUse)

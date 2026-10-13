@@ -18,6 +18,18 @@ return function(data, env)
 	local unsubscribe
 	local closed = false
 
+	-- Releases conversation listeners independently of the selected window theme's close callback.
+	local function cleanup()
+		if unsubscribe then
+			unsubscribe()
+			unsubscribe = nil
+		end
+		if sessionEvent then
+			sessionEvent:Disconnect()
+			sessionEvent = nil
+		end
+	end
+
 	-- Sends a local draft through Roblox, retaining it when submission is unsuccessful.
 	local function sendIt()
 		if debounce or closed then return end
@@ -261,13 +273,13 @@ return function(data, env)
 		Title = "Private Chat";
 		Icon = client.MatIcons.Forum;
 		Size  = {500,300};
+		-- Cleans up manual closure and leaves the session at most once.
 		OnClose = function()
-			if unsubscribe then unsubscribe() end
-			if sessionEvent then
-				sessionEvent:Disconnect()
+			cleanup()
+			if not closed then
+				closed = true
+				client.Remote.Send("Session", SessionKey, "LeaveSession")
 			end
-
-			if not closed then client.Remote.Send("Session", SessionKey, "LeaveSession") end
 		end;
 	})
 
@@ -369,10 +381,9 @@ return function(data, env)
 			receivedMessage(payload)
 		elseif eventName == "Closed" then
 			closed = true
-			reply.TextEditable = false
-			reply.PlaceholderText = "This conversation has ended"
-			send.Active = false
-			systemMessage("This conversation has ended.")
+			cleanup()
+			-- Release the registered window so this channel can be rejoined.
+			window:Close()
 		end
 	end)
 
