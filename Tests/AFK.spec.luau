@@ -2,10 +2,8 @@
 local fs = require("@lune/fs")
 local luau = require("@lune/luau")
 
-local root = fs.cwd()
-
 local function repoFile(path)
-    return fs.readFile(root .. "/" .. path:gsub("\\", "/"))
+    return fs.readFile(path)
 end
 
 local commandSource = repoFile("MainModule/Server/Commands/Moderators.luau")
