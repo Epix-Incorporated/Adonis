@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
         run: |
           $url = "https://github.com/lune-org/lune/releases/download/v0.11.0/lune-0.11.0-windows-x86_64.zip"
-          $expectedHash = "sha256:05de2b841a31653531611d0217aac553f165bb69732225f95056651e2d668f3b"
+          $expectedHash = "05de2b841a31653531611d0217aac553f165bb69732225f95056651e2d668f3b"
 
           $zip = Join-Path $env:RUNNER_TEMP "lune.zip"
           $installDir = Join-Path $env:RUNNER_TEMP "lune"
