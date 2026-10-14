@@ -1,0 +1,118 @@
+name: Continuous integration
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: Lint, build and regression tests
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Install pinned tools
+        shell: pwsh
+        run: aftman install
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Lune 0.11.0
+        shell: pwsh
+        run: cargo install lune --version 0.11.0 --locked
+
+      - name: Verify tool versions
+        shell: pwsh
+        run: |
+          selene --version
+          rojo --version
+          lune --version
+
+      - name: Generate Roblox standard library
+        shell: pwsh
+        run: selene generate-roblox-std
+
+      - name: Lint source
+        shell: pwsh
+        run: |
+          selene ./MainModule ./Loader
+          if ($LASTEXITCODE -ne 0) {
+            throw "Source linting failed"
+          }
+
+      - name: Lint regression fixtures
+        shell: pwsh
+        run: |
+          selene ./Tests
+          if ($LASTEXITCODE -ne 0) {
+            throw "Test linting failed"
+          }
+
+      - name: Build Roblox place
+        shell: pwsh
+        run: |
+          rojo build -o Adonis.rbxl
+          if ($LASTEXITCODE -ne 0) {
+            throw "Place build failed"
+          }
+
+      - name: Build agent-check model
+        shell: pwsh
+        run: |
+          rojo build -o Adonis_AgentCheck.rbxm .github/build.project.json
+          if ($LASTEXITCODE -ne 0) {
+            throw "Agent-check model build failed"
+          }
+
+      - name: Run regression fixtures
+        shell: pwsh
+        run: |
+          $fixtures = Get-ChildItem -LiteralPath Tests -Filter *.spec.luau |
+            Sort-Object Name
+
+          if ($fixtures.Count -eq 0) {
+            throw "No regression fixtures found"
+          }
+
+          foreach ($fixture in $fixtures) {
+            Write-Host "Running $($fixture.Name)"
+            lune run $fixture.FullName
+
+            if ($LASTEXITCODE -ne 0) {
+              throw "Fixture failed: $($fixture.Name)"
+            }
+          }
+
+      - name: Check whitespace on pull request
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: git diff --check $env:BASE_SHA...$env:HEAD_SHA
+
+      - name: Check whitespace on push
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          if ("${{ github.event.before }}" -match '^0+$') {
+            git diff --check HEAD
+          } else {
+            git diff --check "${{ github.event.before }}" "${{ github.sha }}"
+          }
+
