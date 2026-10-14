@@ -139,13 +139,13 @@ check("cooldown is reserved before a yielding filter and cannot race", function(
 	assert(resumed and output == "public:first", "The admitted request must resume with filtered text")
 end)
 
-check("non-chat audit records do not consume edit admission and moderation survives outages", function()
-	local command = {UserText = {Kind = "Audit", Audience = "Broadcast", Args = {1}}, Function = function(_, args) return args[1] end}
+check("announcements have no mandatory edit gate and moderation survives outages", function()
+	local command = {UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}}, Function = function(_, args) return args[1] end}
 	policy.WrapCommand(command)
-	assert(command.Function(author, {"one"}) == "public:one", "Audit details must publish filtered text")
-	assert(command.Function(author, {"two"}) == "public:two", "Audit details must not consume the shared public edit allowance")
+	assert(command.Function(author, {"one"}) == "public:one", "Announcements must publish filtered text")
+	assert(command.Function(author, {"two"}) == "public:two", "Announcements must not consume the shared public edit allowance")
 	failure = true
-	assert(not pcall(command.Function, author, {"failed audit detail"}), "Failed audit filtering must suppress publication")
+	assert(not pcall(command.Function, author, {"failed announcement"}), "Failed announcement filtering must suppress publication")
 	local moderation = {UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2}}, Function = function(_, args) return args[2] end}
 	policy.WrapCommand(moderation)
 	assert(moderation.Function(author, {"target", "secret reason"}) == "Reason unavailable", "Moderation must retain its action with a fixed unavailable reason")
@@ -163,7 +163,7 @@ check("parser controls can remove text during cooldown and arguments remain unmo
 end)
 
 check("server publications reject forged local records and duplicate deliveries", function()
-	local record = assert(policy.CreateRecord("audit detail", author, "Audit"), "A valid audit record must be created")
+	local record = assert(policy.CreateRecord("announcement", author, "Announcement"), "A valid announcement record must be created")
 	assert(policy.CreatePublication({Message = table.clone(record)}) == nil, "Copied records must not gain origin publication trust")
 	local publication = assert(policy.CreatePublication({Message = record}), "Trusted records must create a publication")
 	local received = assert(policy.AcceptPublication("origin-server", publication), "A valid origin publication must be accepted")
@@ -252,7 +252,7 @@ check("actual publication helpers filter title and body with legacy arity preser
 	assert(displayed[2].Title == "public:legacy title" and displayed[2].Message == "public:legacy body" and displayed[2].Time == 5, "Legacy Message arguments must preserve title, body and duration")
 	assert(displayed[3].Title == "public:notify title" and displayed[3].Message == "public:notify body", "Notify must filter its title and message")
 	assert(displayed[4].Title == "public:notification title" and displayed[4].Message == "public:notification body", "Notification must filter its title and message")
-	local record = assert(policy.CreateRecord("record body", author, "Audit"), "A valid explicit audit record must be created")
+	local record = assert(policy.CreateRecord("record body", author, "Announcement"), "A valid explicit announcement record must be created")
 	helpers.Hint(record.Text, {recipient}, nil, nil, nil, record)
 	assert(displayed[5].Message == "public:record body", "Explicit body records must preserve their safe snapshot")
 	failure = true
@@ -289,8 +289,8 @@ end)
 
 check("non-chat metadata requires an explicit broadcast-safe filtering audience", function()
 	local before = calls
-	assert(not pcall(policy.PrepareArguments, author, {"raw"}, {Kind = "Audit", Args = {1}}), "Missing audience metadata must be rejected")
-	assert(not pcall(policy.PrepareArguments, author, {"raw"}, {Kind = "Audit", Audience = "SelectedPlayers", Args = {1}}), "Unsupported audience metadata must be rejected")
+	assert(not pcall(policy.PrepareArguments, author, {"raw"}, {Kind = "Announcement", Args = {1}}), "Missing audience metadata must be rejected")
+	assert(not pcall(policy.PrepareArguments, author, {"raw"}, {Kind = "Announcement", Audience = "SelectedPlayers", Args = {1}}), "Unsupported audience metadata must be rejected")
 	assert(calls == before, "Invalid audience reached the filtering service")
 	local declarations = 0
 	for _, path in {
@@ -341,12 +341,12 @@ check("actual sudo preserves the original author without changing execution iden
 	assert(not policy.TryPublicEdit(author), "Sudo did not consume the original author's allowance")
 	assert(policy.TryPublicEdit(recipient), "Sudo consumed the execution target's allowance")
 	local published = false
-	local audit = {UserText = {Kind = "Audit", Audience = "Broadcast", Args = {1}}, Function = function() published = true end}
-	policy.WrapCommand(audit)
+	local announcement = {UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}}, Function = function() published = true end}
+	policy.WrapCommand(announcement)
 	now = 421
 	local before = calls
 	assert(server.ChatTransport.ResolveOriginAuthor(origin) == nil, "Expired origins must not resolve an author")
-	assert(not pcall(audit.Function, recipient, {"raw"}, {Options = {isSystem = true, UserCommandOrigin = origin}}), "Expired sudo origins must suppress audit text")
+	assert(not pcall(announcement.Function, recipient, {"raw"}, {Options = {isSystem = true, UserCommandOrigin = origin}}), "Expired sudo origins must suppress announcement text")
 	assert(not pcall(command.Function, recipient, {"raw"}, {Options = {isSystem = true}}), "System commands without origins must suppress public edits")
 	assert(not published and calls == before, "Missing or expired provenance reached publication or filtering")
 	local moderation = {UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {1}}, Function = function(actor, args)
@@ -416,48 +416,77 @@ check("safe detail audits preserve command and invocation logging preferences", 
 		table.insert(audits, {Category = category, Kind = kind, Actor = actor, Detail = detail})
 	end}
 	local command = {
-		CommandKey = "FixtureAudit", AdminLevel = "Moderators",
-		UserText = {Kind = "Audit", Audience = "Broadcast", Args = {1}},
+		CommandKey = "FixtureAnnouncement", AdminLevel = "Moderators",
+		UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}},
 		Function = function() end,
 	}
 	policy.WrapCommand(command)
-	command.Function(author, {"ordinary audit detail"})
-	assert(#audits == 1 and audits[1].Actor == author and audits[1].Detail.DetailRecord.Text == "public:ordinary audit detail", "Successful authored details must retain their safe record")
-	command.Function(author, {"unlogged audit detail"}, {Options = {DontLog = true}})
+	command.Function(author, {"ordinary announcement"})
+	assert(#audits == 1 and audits[1].Actor == author and audits[1].Detail.DetailRecord.Text == "public:ordinary announcement", "Successful authored details must retain their safe record")
+	command.Function(author, {"unlogged announcement"}, {Options = {DontLog = true}})
 	assert(#audits == 1, "Invocation logging opt-out must suppress safe detail audits")
 	command.NoLog = true
 	command.Function(author, {"unlogged command"})
 	assert(#audits == 1, "Command logging opt-out must suppress safe detail audits")
 	command.NoLog = nil
 	command.Donors = true
-	command.Function(author, {"donor audit detail"})
+	command.Function(author, {"donor announcement"})
 	assert(#audits == 2 and audits[2].Detail.NoSave, "Donor detail audits must remain session-only")
 	server.Logs = nil
 end)
 
-check("announcement declarations cannot bypass native chat or cross-server rejection", function()
-	local invoked = false
-	local legacy = {UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}}, Function = function() invoked = true end}
-	policy.WrapCommand(legacy, "LegacyAnnouncement")
-	local allowed, err = pcall(legacy.Function, author, {"private announcement"})
-	assert(not allowed and tostring(err):find("User messages must be sent through TextChannels.", 1, true) and not invoked, "Legacy announcement metadata must not publish through non-chat filtering")
-	local record = assert(policy.CreateRecord("accepted legacy announcement", author, "Announcement"))
-	assert(policy.AuthorizePublishedCommand(legacy, author, {record.Text}, {["1"] = record}) == nil, "Cross-server authorization resurrected an announcement declaration")
-	for _, name in {"Hint", "TimeHint", "Message", "TimeMessage", "Notify", "CustomNotify", "Warn"} do
-		local source = fs.readFile("MainModule/Server/Commands/Moderators.luau")
-		local definition = assert(source:match("\n\t\t" .. name .. " = {(.-)\n\t\t};"), "Missing message command")
-		local metadata = assert(definition:match("UserText = ([^\n]+);"), "Missing chat policy")
-		local command = {UserText = luau.load(`return {metadata}`)()}
-		assert(command.UserText.Kind == "Chat" and policy.AuthorizePublishedCommand(command, author, {}, {}) == nil, "User messages must not acquire a non-chat publication permit")
+check("published announcement commands preserve trusted bodies and fixed author titles", function()
+	local displayed = {}
+	local commandEnv = table.clone(env)
+	commandEnv.server = server
+	commandEnv.Core = {GetSettingText = function() return "System" end}
+	commandEnv.service = table.clone(service)
+	commandEnv.service.GetPlayers = function() return {recipient} end
+	commandEnv.service.FormatPlayer = function(player) return player.Name end
+	commandEnv.Remote = {MakeGui = function(_, _, data) table.insert(displayed, data) end, RemoveGui = function() end}
+	commandEnv.task = {defer = function(callback) callback() end}
+	commandEnv.Functions = {}
+	local helpers = fs.readFile("MainModule/Server/Core/Functions.luau")
+	for _, name in {"Hint", "Message", "Notify"} do
+		local implementation = assert(helpers:match(`{name} = (function.-\n\t\tend);`), "Missing announcement helper")
+		commandEnv.Functions[name] = luau.load(`return {implementation}`, {environment = commandEnv})()
+	end
+	local source = fs.readFile("MainModule/Server/Commands/Moderators.luau")
+	local fake = {UserId = author.UserId, Name = "UNFILTERED_REMOTE_NAME"}
+	author.Name = "OriginAdmin"
+	for _, name in {"Hint", "TimeHint", "Message", "TimeMessage", "Notify"} do
+		local definition = assert(source:match("\n\t\t" .. name .. " = {(.-)\n\t\t};"), "Missing announcement command")
+		local metadata = assert(definition:match("UserText = ([^\n]+);"), "Missing announcement policy")
+		local implementation = assert(definition:match("Function = (function.-\n\t\t\tend)"), "Missing announcement handler")
+		local command = {UserText = luau.load(`return {metadata}`)(), Function = luau.load(`return {implementation}`, {environment = commandEnv})()}
+		policy.WrapCommand(command, name)
+		local index = command.UserText.Args[1]
+		local args = if index == 2 then {"7", "maintenance soon"} else {"maintenance soon"}
+		local record = assert(policy.CreateRecord(args[index], author, "Announcement"))
+		local records = assert(policy.AcceptPublication("announcement-origin", assert(policy.CreatePublication({[tostring(index)] = record}))))
+		local token, safeArgs = policy.AuthorizePublishedCommand(command, fake, args, records)
+		online[author.UserId] = nil
+		local before = calls
+		command.Function(fake, safeArgs, {Options = {TextPublication = token}})
+		local output = displayed[#displayed]
+		assert(output.Message == (if name == "Hint" then "User 101: public:maintenance soon" else record.Text), "Published announcement lost its accepted body")
+		assert(output.Title == (if name == "Hint" or name == "TimeHint" then "User 101" else "Message from User 101"), "Published announcement lost safe attribution")
+		assert(calls == before, "Published presentation tried to filter an unavailable remote author")
+		if index == 2 then assert(output.Time == 7, "Published announcement lost its requested duration") end
+		online[author.UserId] = author
+		command.Function(author, args)
+		local localOutput = displayed[#displayed]
+		assert(localOutput.Title:find("OriginAdmin", 1, true), "Local announcements lost existing player-name attribution")
+		assert(localOutput.Message:find("maintenance soon", 1, true), "Local announcements lost their body")
 	end
 end)
 
 check("published formatting cannot bless forged, unrelated, or arbitrary text", function()
-	local record = assert(policy.CreateRecord("accepted text", author, "Audit"))
-	local unrelated = assert(policy.CreateRecord("other invocation", author, "Audit"))
+	local record = assert(policy.CreateRecord("accepted text", author, "Announcement"))
+	local unrelated = assert(policy.CreateRecord("other invocation", author, "Announcement"))
 	assert(policy.FormatPublishedRecord(record, "Hint") == nil, "A record outside a published invocation gained formatting authority")
 	local retained
-	local command = {UserText = {Kind = "Audit", Audience = "Broadcast", Args = {1}}, Function = function(_, _, data)
+	local command = {UserText = {Kind = "Announcement", Audience = "Broadcast", Args = {1}}, Function = function(_, _, data)
 		local accepted = data.UserTextRecords[1]
 		assert(policy.FormatPublishedRecord(table.clone(accepted), "Hint") == nil, "A copied record gained formatting authority")
 		assert(policy.FormatPublishedRecord(unrelated, "Hint") == nil, "A different invocation supplied a formatted record")
@@ -472,7 +501,7 @@ check("published formatting cannot bless forged, unrelated, or arbitrary text", 
 	local token, args = policy.AuthorizePublishedCommand(command, fake, {record.Text}, records)
 	command.Function(fake, args, {Options = {TextPublication = token}})
 	assert(policy.GetRecordText(retained) == "User 101: public:accepted text", "Formatted records did not retain safe content and original authorship")
-	assert(retained.AuthorUserId == author.UserId and retained.Kind == "Audit", "Formatted records lost author or kind")
+	assert(retained.AuthorUserId == author.UserId and retained.Kind == "Announcement", "Formatted records lost author or kind")
 	assert(policy.FormatPublishedRecord(records["1"], "Hint") == nil, "Completed publication formatting authority leaked")
 end)
 

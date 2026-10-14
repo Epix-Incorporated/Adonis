@@ -20,9 +20,6 @@ return function(Vargs, GetEnv)
 		["Too many pending messages; wait for earlier sends to finish."] = true,
 		["Chat capacity reached; please try again later."] = true,
 		["Text could not be filtered. Please try again later."] = true,
-		["User messages must be sent through TextChannels."] = true,
-		["Cross-server player messages are not supported; send the message in the current server."] = true,
-		["Cross-server commands require one supported command; aliases, batches, and command loops are unavailable."] = true,
 	})
 
 	-- Exposes fixed policy failures while keeping arbitrary plugin and runtime exceptions private.
@@ -238,7 +235,6 @@ return function(Vargs, GetEnv)
 	-- Filters declared argument positions for every viewer and reserves at most one public edit allowance.
 	-- Audience selects the filter projection; command targeting still determines who receives the result.
 	function policy.PrepareArguments(author, args, metadata)
-		assert(metadata.Kind ~= "Announcement", "User messages must be sent through TextChannels.")
 		assert(kinds[metadata.Kind], "Invalid user text policy")
 		assert(metadata.Audience == "Broadcast", "Non-chat text requires a broadcast-safe audience")
 		local filteredArgs = table.clone(args or {})
@@ -270,7 +266,7 @@ return function(Vargs, GetEnv)
 	-- Binds accepted server records to one exact command invocation without trusting serialized flags.
 	function policy.AuthorizePublishedCommand(command, author, args, records)
 		local metadata = command.UserText
-		if not metadata or metadata.Kind == "Announcement" or not kinds[metadata.Kind] or metadata.Audience ~= "Broadcast" then return nil end
+		if not metadata or not kinds[metadata.Kind] or metadata.Audience ~= "Broadcast" then return nil end
 		local filteredArgs = table.clone(args)
 		local commandRecords = {}
 		for _, index in metadata.Args or {} do

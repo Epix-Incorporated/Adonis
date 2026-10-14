@@ -9,7 +9,6 @@ return function(Vargs, GetEnv)
 	local channels = {}
 	local operations = {}
 	local operationOrder = {}
-	local presentationVersions = {}
 	local history = {}
 	local historyIds = {}
 	local transport
@@ -168,7 +167,7 @@ return function(Vargs, GetEnv)
 		end)
 	end
 
-	-- Presents received text; the newest Message or Notify receipt owns replacement across yielding cleanup.
+	-- Presents only the text received by this participant, using a fixed UI mode.
 	local function present(record, entry)
 		local descriptor = record.Descriptor
 		local sender = service.Players:GetPlayerByUserId(entry.SenderUserId)
@@ -203,43 +202,23 @@ return function(Vargs, GetEnv)
 			presentSpeech(record, entry)
 		elseif descriptor.Kind == "Notification" then
 			local title = `Message from {entry.SenderName}`
-			local body = entry.Text
 			local presentation = descriptor.Presentation
-			if descriptor.TitleMode == "Broadcast" then
-				title = "Broadcast"
-			elseif descriptor.TitleMode == "Custom" then
-				-- Filtering may change framing; malformed results keep a fixed title and the delivered text.
-				local boundary = string.find(body, "\n", 1, true)
-				if boundary and boundary > 1 and boundary < #body then
-					title, body = string.sub(body, 1, boundary - 1), string.sub(body, boundary + 1)
-				end
-			end
-			local duration = tonumber(descriptor.Duration)
-			if not duration or duration ~= duration or duration <= 0 or duration == math.huge then duration = nil end
-			duration = if duration then math.clamp(duration, 1, 3600)
-				else if descriptor.AutoDuration == true then #body / 19 + 2.5 else 10
 			if presentation == "RobloxNotification" then
+				local duration = tonumber(descriptor.Duration)
+				duration = duration and duration == duration and math.clamp(duration, 1, 60) or 10
 				pcall(function()
-					service.StarterGui:SetCore("SendNotification", {Title = title, Text = body, Duration = math.clamp(duration, 1, 30)})
+					service.StarterGui:SetCore("SendNotification", {Title = title, Text = entry.Text, Duration = duration})
 				end)
 			elseif presentation == "ChatMessage" then
 				local systemChannel = textChatService:FindFirstChild("RBXSystem", true)
 				if systemChannel and systemChannel:IsA("TextChannel") then
-					local escapedText = body:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")
-					local attribution = if descriptor.TitleMode == "Broadcast" then `Broadcast from {entry.SenderName}` else entry.SenderName
-					systemChannel:DisplaySystemMessage(`{attribution}: {escapedText}`)
+					local escapedText = entry.Text:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")
+					systemChannel:DisplaySystemMessage(`{entry.SenderName}: {escapedText}`)
 				else
-					client.UI.Make("Hint", {Title = title, Message = `{entry.SenderName}: {body}`, Time = duration})
+					client.UI.Make("Hint", {Title = title, Message = entry.Text})
 				end
 			elseif presentations[presentation] then
-				if presentation == "Hint" then body = `{entry.SenderName}: {body}` end
-				if presentation == "Message" or presentation == "Notify" then
-					local version = {}
-					presentationVersions[presentation] = version
-					client.UI.Remove(presentation)
-					if presentationVersions[presentation] ~= version then return end
-				end
-				client.UI.Make(presentation, {Title = title, Message = body, Time = duration})
+				client.UI.Make(presentation, {Title = title, Message = entry.Text, Time = 10})
 			end
 		end
 	end
@@ -362,8 +341,7 @@ return function(Vargs, GetEnv)
 						alias = string.lower(alias)
 						local withSlash = string.sub(alias, 1, 1) == "/" and alias or "/" .. alias
 						for _, candidate in {alias, withSlash} do
-							if lower == candidate or (string.sub(lower, 1, #candidate) == candidate
-								and string.match(string.sub(lower, #candidate + 1, #candidate + 1), "%s")) then return true end
+							if lower == candidate or string.sub(lower, 1, #candidate + 1) == candidate .. " " then return true end
 						end
 					end
 				end

@@ -461,10 +461,7 @@ return function(Vargs, GetEnv)
 					opts.OverrideArgs = overrideArgs
 				end
 			else
-				-- Cross-server ingress supplies an already validated canonical command and structured arguments.
-				if not (opts.CrossServer and type(opts.Args) == "table") then
-					msg, literalMask = Admin.AliasFormat(Admin.GetAliases(p), msg, literalMask)
-				end
+				msg, literalMask = Admin.AliasFormat(Admin.GetAliases(p), msg, literalMask)
 				opts.UserTextMask = literalMask
 
 				if string.match(msg, Settings.BatchKey) then

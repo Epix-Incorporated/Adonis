@@ -16,61 +16,6 @@ return function(Vargs, GetEnv)
 	local lastMessageSent = os.clock();
 
 	local oldCommands = Core.CrossServerCommands;
-	local unsupportedMessage = "Cross-server player messages are not supported; send the message in the current server."
-	local unsupportedCommand = "Cross-server commands require one supported command; aliases, batches, and command loops are unavailable."
-
-	-- Restricts shared text publications to editable content and moderation, never conversation.
-	local function canPublishCommand(command)
-		local metadata = command and command.UserText
-		return metadata and (metadata.Kind == "PublicEdit" or metadata.Kind == "Moderation")
-			and not command.CrossServerDenied and not metadata.RequiresLocalAuthor
-	end
-
-	-- Resolves one native command and retains its original argument spelling for legacy receivers.
-	local function resolveCommand(text, suppliedArgs)
-		if type(text) ~= "string" or string.match(text, Settings.BatchKey) then return nil, unsupportedCommand end
-		text = Functions.Trim(text)
-		local name, command, matched = Admin.GetCommand(text)
-		if not command then return nil, unsupportedCommand end
-		if command.UserText and (command.UserText.Kind == "Chat" or command.UserText.Kind == "Announcement") then
-			return nil, unsupportedMessage
-		end
-		if command.CrossServerDenied or name == "Repeat" then return nil, unsupportedCommand end
-		local argumentNames = command.Args or command.Arguments or {}
-		local args = suppliedArgs
-		if args == nil then
-			local argumentString = string.match(text, `^.-{Settings.SplitKey}(.+)`) or ""
-			args = if #argumentNames > 0 then Functions.Split(argumentString, Settings.SplitKey, #argumentNames) else {}
-		end
-		if type(args) ~= "table" then return nil, unsupportedCommand end
-		local copy = {}
-		for index, value in args do
-			if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #argumentNames or type(value) ~= "string" then
-				return nil, unsupportedCommand
-			end
-			copy[index] = value
-		end
-		local prefix = if type(command.Prefix) == "table" then command.Prefix[1] else command.Prefix
-		local canonical = `{prefix}{command.Commands[1]}`
-		return name, command, canonical, copy, canonical .. string.sub(text, #matched + 1)
-	end
-
-	-- Encodes a complete legacy command only when reparsing preserves every structured argument.
-	local function legacyCommandText(name, canonical, args, originalText)
-		local count = 0
-		for _ in args do count += 1 end
-		for index = 1, count do
-			if args[index] == nil then return nil end
-		end
-		local text = originalText or (canonical .. (if count > 0 then Settings.SplitKey .. table.concat(args, Settings.SplitKey) else ""))
-		local parsedName, _, _, parsedArgs = resolveCommand(text)
-		if parsedName ~= name or #parsedArgs ~= count then return nil end
-		for index, value in args do
-			if parsedArgs[index] ~= value then return nil end
-		end
-		return text
-	end
-
 	local secondsFormatted = {
 		[1800] = "30 minutes",
 		[1200] = "20 minutes",
@@ -86,7 +31,6 @@ return function(Vargs, GetEnv)
 	Core.CrossServerCommands = {
 		ServerChat = function()
 			-- Player conversation cannot be delivered through the server messaging bus.
-			return false, unsupportedMessage
 		end;
 
 		Ping = function(jobId, data)
@@ -100,20 +44,19 @@ return function(Vargs, GetEnv)
 			service.Events.ServerPingReplyReceived:Fire(jobId, data)
 		end;
 
-		-- Accepts canonical operational arguments, including validated callers from an older server.
-		NewRunCommand = function(jobId, plrData, comString, suppliedArgs)
-			local name, command, canonical, args = resolveCommand(comString, suppliedArgs)
-			if not name or command.UserText then return end
-			Process.Command(Functions.GetFakePlayer(plrData), canonical, {
+		NewRunCommand = function(jobId, plrData, comString)
+			local _, command = Admin.GetCommand(comString)
+			if command and command.UserText then return end
+			Process.Command(Functions.GetFakePlayer(plrData), comString, {
 				AdminLevel = plrData.AdminLevel,
-				CrossServer = true, Args = args,
+				CrossServer = true
 			})
 		end;
 
 		-- Executes only typed, origin-filtered command arguments under the existing cross-server permissions.
 		RunPublishedCommand = function(jobId, plrData, commandName, args, publication)
 			local command = rawget(Commands, commandName)
-			if not canPublishCommand(command) then return end
+			if not command or not command.UserText or command.UserText.Kind == "Chat" or command.CrossServerDenied or command.UserText.RequiresLocalAuthor then return end
 			local records = server.TextPolicy.AcceptPublication(jobId, publication)
 			if not records then return end
 			local author = Functions.GetFakePlayer(plrData)
@@ -125,9 +68,20 @@ return function(Vargs, GetEnv)
 			})
 		end;
 
-		-- Old servers may still publish Message packets; no record format authorizes chat delivery here.
-		Message = function()
-			return false, unsupportedMessage
+		Message = function(jobId, fromPlayer, publication, duration)
+			local records = server.TextPolicy.AcceptPublication(jobId, publication)
+			local record = records and records.Message
+			if not record or record.Kind ~= "Announcement" then return end
+			server.Functions.Message(
+				nil,
+				`Global Message from user {record.AuthorUserId}`,
+				record.Text,
+				nil,
+				service.GetPlayers(),
+				true,
+				duration,
+				record
+			)
 		end;
 
 		RemovePlayer = function(jobId, userId, banMessage, publication)
@@ -162,7 +116,6 @@ return function(Vargs, GetEnv)
 			service.Events[`CRSSRV:{eventId}`]:Fire(...)
 		end;
 
-		-- Keeps the reason in the moderation action while announcing only fixed numeric restart progress.
 		GlobalRestartRequest = function(jobId, publication, countdown, abortable)
 			local records, code = server.TextPolicy.AcceptPublication(jobId, publication)
 			if code == "DuplicatePublication" then return end
@@ -177,7 +130,7 @@ return function(Vargs, GetEnv)
 			end
 			Logs:AddLog("Script", `Global restart {if typeof(countdown) == "number" then `in {countdown} seconds` else ``} requested for "{reason}"`)
 			if typeof(countdown) == "number" then
-				Functions.Hint(`Global restart happening in {if countdown < 60 then countdown..` seconds` else math.floor(countdown / 60)..` minute{if countdown > 119 then "s" else ""}`}.`, service.GetPlayers())
+				Functions.Hint(`Global restart happening in {if countdown < 60 then countdown..` seconds` else math.floor(countdown / 60)..` minute{if countdown > 119 then "s" else ""}`}. Reason: {reason}`, service.GetPlayers())
 				local resumeTask, adonisTask
 				resumeTask, adonisTask = service.Threads.NewTask("Global Restart Countdown", function()
 					while countdown > 0 do
@@ -187,19 +140,19 @@ return function(Vargs, GetEnv)
 							return
 						end
 						if secondsFormatted[countdown] then
-							Functions.Hint(`Server restart in {secondsFormatted[countdown]}.`, service.GetPlayers())
+							Functions.Hint(`Server restart in {secondsFormatted[countdown]}. Reason: {reason}`, service.GetPlayers())
 						elseif countdown > 0 and countdown <= 30 then
-							Functions.Hint(`Server restart in {countdown} second{if countdown ~= 1 then `s` else ``}.`, service.GetPlayers(), 1)
+							Functions.Hint(`Server restart in {countdown} second{if countdown ~= 1 then `s` else ``}. Reason: {reason}`, service.GetPlayers(), 1)
 						end
 					end
 					Logs:AddLog("Script", `This server is now restarting due to the global restart. Reason: "{reason}"`)
-					Functions.Hint("This server is now restarting.", service.GetPlayers(), 1000)
+					Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 1000)
 					Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 				end)
 				adonisTask.abortable = abortable
 				resumeTask()
 			else
-				Functions.Hint("This server is now restarting.", service.GetPlayers(), 1000)
+				Functions.Hint(`This server is now restarting. Reason: {reason}`, service.GetPlayers(), 1000)
 				Admin.RunCommand(`{Settings.Prefix}restart`, reason)
 			end
 		end;
@@ -253,16 +206,19 @@ return function(Vargs, GetEnv)
 		Prefix = Settings.Prefix;
 		Commands = {"crossserver", "cross"};
 		Args = {"command"};
-		Description = "Runs one supported operational, moderation, or shared-edit command on all servers; player messages, aliases, batches, and loops are unavailable";
+		Description = "Runs the specified command string on all servers";
 		Category = "Server";
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
 		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
 		Function = function(plr: Player, args: {string})
-			local commandName, command, _, commandArgs = resolveCommand(args[1])
-			assert(commandName, command)
-			if command.UserText then
-				assert(canPublishCommand(command), unsupportedCommand)
+			local commandName, command = Admin.GetCommand(assert(args[1], "Missing command"))
+			if command and command.UserText then
+				assert(command.UserText.Kind ~= "Chat", "Player chat cannot be sent across servers")
+				assert(not command.CrossServerDenied, "This command cannot run across servers")
+				assert(not command.UserText.RequiresLocalAuthor, "This command requires its author in the destination server")
+				local argString = string.match(args[1], `^.-{Settings.SplitKey}(.+)`) or ""
+				local commandArgs = Functions.Split(argString, Settings.SplitKey, #(command.Args or {}))
 				local safeArgs, records = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), commandArgs, command.UserText)
 				local namedRecords = {}
 				for index, record in records do namedRecords[tostring(index)] = record end
@@ -461,25 +417,13 @@ return function(Vargs, GetEnv)
 		end
 	};
 
-	-- Preserves the legacy command string while supplying validated structured arguments to newer receivers.
-	Core.CrossServer = function(command, ...)
-		local args = table.pack(...)
-		if command == "Message" or command == "ServerChat" then return false, unsupportedMessage end
-		if command == "NewRunCommand" then
-			local name, definition, canonical, parsedArgs, originalText = resolveCommand(args[2], args[3])
-			if not name then return false, definition end
-			if definition.UserText then return false, unsupportedCommand end
-			local text = legacyCommandText(name, canonical, parsedArgs, if args[3] == nil then originalText else nil)
-			if not text then return false, unsupportedCommand end
-			args[2], args[3], args.n = text, parsedArgs, 3
-		elseif command == "RunPublishedCommand" then
-			if type(args[2]) ~= "string" or not canPublishCommand(rawget(Commands, args[2])) then return false, unsupportedCommand end
-		end
+	--// Handlers
+	Core.CrossServer = function(...)
 		if not Core.SubEvent then
 			return false
 		end
 
-		local data = {thisJobId, command, table.unpack(args, 1, args.n)};
+		local data = {thisJobId, ...};
 		service.Queue("CrossServerMessageQueue", function()
 			-- Limit the amount of messages we are publishing to the topic.
 			messagesSent += 1
@@ -533,10 +477,7 @@ return function(Vargs, GetEnv)
 
 	--// Check for additions added by other modules in core before this one loaded
 	for i, v in oldCommands do
-		-- Preserve extensions without restoring a retired relay or bypassing command validation.
-		if i ~= "Message" and i ~= "ServerChat" and i ~= "NewRunCommand" and i ~= "RunPublishedCommand" then
-			Core.CrossServerCommands[i] = v
-		end
+		Core.CrossServerCommands[i] = v
 	end
 
 	Logs:AddLog("Script", "Cross-Server Module Loaded");
