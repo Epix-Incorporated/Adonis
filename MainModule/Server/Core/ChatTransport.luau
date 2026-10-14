@@ -82,6 +82,7 @@ return function(Vargs, GetEnv)
 			LastActive = os.clock(),
 			Members = members,
 			Owner = owner,
+			Ready = {},
 			Sources = sources,
 		}
 		channel.Name = `Adonis_{channelId}`
@@ -271,6 +272,51 @@ return function(Vargs, GetEnv)
 			record.Members[player.UserId] = player
 			record.Sources[player.UserId] = source
 			return true
+		end;
+
+		-- Marks a channel member ready after their client subscribes to channel messages.
+		MarkReady = function(channelId, player)
+			local record = channels[channelId]
+			if not record or record.Members[player.UserId] ~= player then return false end
+			record.Ready[player.UserId] = true
+			return true
+		end;
+
+		-- Waits for channel listeners before the requester sends the initial message.
+		WaitForReady = function(channelId, timeout, includeOwner)
+			local deadline = os.clock() + timeout
+			repeat
+				local record = channels[channelId]
+				if not record then return {} end
+
+				local ready = {}
+				local waiting = false
+				for userId, player in record.Members do
+					if player ~= record.Owner or includeOwner then
+						if record.Ready[userId] then
+							if player ~= record.Owner then
+								table.insert(ready, player)
+							end
+						else
+							waiting = true
+						end
+					end
+				end
+				if not waiting then return ready, record.Ready[record.Owner.UserId] == true end
+				task.wait(0.1)
+			until os.clock() >= deadline
+
+			local record = channels[channelId]
+			local ready = {}
+			if record then
+				for userId, player in record.Members do
+					if player ~= record.Owner and record.Ready[userId] then
+						table.insert(ready, player)
+					end
+				end
+				return ready, record.Ready[record.Owner.UserId] == true
+			end
+			return ready
 		end;
 
 		RemoveMember = removeMember;

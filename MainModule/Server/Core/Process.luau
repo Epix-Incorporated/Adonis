@@ -510,7 +510,9 @@ return function(Vargs, GetEnv)
 				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 				local chatInput = server.ChatTransport.CommandInput(p, command, args, opts)
 
-				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
+				local hasUserText = type(command.UserText) == "table" and type(command.UserText.Args) == "table"
+				local commandDisplay = if command.NoLog or hasUserText then matched else msg
+				local taskName = string.format("Command :: %s : (%s)", p.Name, commandDisplay)
 
 				if #args > 0 and not isSystem and command.Filter or opts.Filter then
 					for i, arg in args do
@@ -549,7 +551,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog then
+				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog and not hasUserText then
 					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
 					AddLog("Commands", {
 						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
@@ -580,7 +582,7 @@ return function(Vargs, GetEnv)
 									Message = cmdError,
 								})
 								if Core.DebugMode == true then
-									warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+									warn(`Encountered an error while running a command: {commandDisplay}\n{cmdError}\n{debug.traceback()}`)
 								end
 							end
 						elseif cmdError ~= nil and cmdError ~= true and not isSystem then
@@ -596,10 +598,18 @@ return function(Vargs, GetEnv)
 				}))
 				local ran, cmdError = returnArgs[1], returnArgs[2]
 
+				local commandEventMessage = if command.NoLog or hasUserText then matched else msg
+				local commandEventArgs = args
+				if hasUserText then
+					commandEventArgs = table.clone(args)
+					for _, index in command.UserText.Args do
+						commandEventArgs[index] = "[sent through TextChannel]"
+					end
+				end
 				service.Events.CommandRan:Fire(p, {
-					Message = msg,
+					Message = commandEventMessage,
 					Matched = matched,
-					Args = args,
+					Args = commandEventArgs,
 					Command = command,
 					Index = index,
 					Success = ran,

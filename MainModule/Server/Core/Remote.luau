@@ -1077,6 +1077,12 @@ return function(Vargs, GetEnv)
 				print(`OK WE GOT COMMUNICATION! FROM: {p.Name} ORGL: {args[1]}`)
 			end;
 
+			HelpRequestReady = function(p: Player, args: {[number]: any})
+				if type(args[1]) == "string" then
+					server.ChatTransport.MarkReady(args[1], p)
+				end
+			end;
+
 			ProcessCommand = function(p: Player, args: {[number]: any}, userCommandOrigin)
 				if Process.RateLimit(p, "Command") and type(args[1]) == "string" then
 					Process.Command(p, args[1], {
