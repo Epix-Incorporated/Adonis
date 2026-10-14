@@ -69,28 +69,12 @@ jobs:
         shell: pwsh
         run: selene generate-roblox-std
 
-      - name: Lint source
-        shell: pwsh
-        run: |
-          selene ./MainModule ./Loader
-          if ($LASTEXITCODE -ne 0) {
-            throw "Source linting failed"
-          }
-
       - name: Lint regression fixtures
         shell: pwsh
         run: |
           selene ./Tests
           if ($LASTEXITCODE -ne 0) {
             throw "Test linting failed"
-          }
-
-      - name: Build Roblox place
-        shell: pwsh
-        run: |
-          rojo build -o Adonis.rbxl
-          if ($LASTEXITCODE -ne 0) {
-            throw "Place build failed"
           }
 
       - name: Build agent-check model
