@@ -29,12 +29,12 @@ jobs:
         shell: pwsh
         run: aftman install
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
 
       - name: Install Lune 0.11.0
         shell: pwsh
-        run: cargo install lune --version 0.11.0 --locked
+        run: cargo binstall lune --version 0.11.0 --no-confirm
 
       - name: Verify tool versions
         shell: pwsh
