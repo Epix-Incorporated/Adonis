@@ -20,6 +20,7 @@ local CORE_LOADING_ORDER = table.freeze {
 	--// Core functionality
 	"Core";
 	"Remote";
+	"ChatTransport";
 	"Process";
 
 	--// Misc

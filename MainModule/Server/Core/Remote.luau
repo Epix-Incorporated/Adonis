@@ -1077,10 +1077,11 @@ return function(Vargs, GetEnv)
 				print(`OK WE GOT COMMUNICATION! FROM: {p.Name} ORGL: {args[1]}`)
 			end;
 
-			ProcessCommand = function(p: Player, args: {[number]: any})
+			ProcessCommand = function(p: Player, args: {[number]: any}, userCommandOrigin)
 				if Process.RateLimit(p, "Command") and type(args[1]) == "string" then
 					Process.Command(p, args[1], {
-						Check = true
+						Check = true,
+						UserCommandOrigin = if server.ChatTransport.ResolveOriginAuthor(userCommandOrigin) == p then userCommandOrigin else nil,
 					})
 				elseif Process.RateLimit(p, "RateLog") then
 					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Command));
@@ -1091,39 +1092,6 @@ return function(Vargs, GetEnv)
 			ProcessChat = function(p: Player, args: {[number]: any})
 				if type(args[1]) == "string" then
 					Process.Chat(p, args[1])
-				end
-			end;
-
-			PrivateMessage = function(p: Player,args: {[number]: any})
-				if type(args[1]) ~= "string" then return end
-
-				local target = Variables.PMtickets[args[1]]
-				if target or Admin.CheckAdmin(p) then
-					if target then
-						Variables.PMtickets[args[1]] = nil;
-					else
-						target = args[2]
-					end
-
-					local title = string.format("Reply from %s (@%s)", p.DisplayName, p.Name)
-					local message = args[3]
-
-					local replyTicket = service.HttpService:GenerateGUID(false)
-					Variables.PMtickets[replyTicket] = p
-					Remote.MakeGui(target, "PrivateMessage", {
-						Title = title;
-						Player = p;
-						Message = service.Filter(message, p, target);
-						replyTicket = replyTicket;
-					})
-
-					Logs:AddLog(Logs.Script,{
-						Text = `{p.Name} replied to {target}`,
-						Desc = message,
-						Player = p;
-					})
-				else
-					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {args[2]}`)
 				end
 			end;
 

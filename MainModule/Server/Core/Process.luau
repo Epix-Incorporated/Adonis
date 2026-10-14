@@ -508,6 +508,7 @@ return function(Vargs, GetEnv)
 				local cmdArgs = command.Args or command.Arguments
 				local argString = string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ""
 				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+				local chatInput = server.ChatTransport.CommandInput(p, command, args, opts)
 
 				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
 
@@ -590,7 +591,8 @@ return function(Vargs, GetEnv)
 					end
 				end, p, args, {
 					PlayerData = pDat,
-					Options = opts
+					Options = opts,
+					ChatInput = chatInput,
 				}))
 				local ran, cmdError = returnArgs[1], returnArgs[2]
 

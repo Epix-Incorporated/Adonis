@@ -38,6 +38,10 @@ return function(Vargs, GetEnv)
 			--// Support for modern TextChatService
 			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 				local function onNewTextchannel(textchannel: TextChannel)
+					if textchannel:GetAttribute("AdonisManagedChatChannel") then
+						AddLog("Script", `Skipping Adonis-managed TextChannel: {textchannel.Name}`)
+						return
+					end
 					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
 
 					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
@@ -1269,10 +1273,15 @@ return function(Vargs, GetEnv)
 								})
 								command:SetAttribute("AdminLevel", tonumber(data.AdminLevel) or Admin.StringToComLevel(data.AdminLevel) or data.AdminLevel or nil)
 								command.Triggered:Connect(function(textSource: TextSource, text: string)
+									local channel = textSource.Parent
+									if channel and channel:GetAttribute("AdonisManagedChatChannel") then
+										return
+									end
 									local player: Player = service.Players:GetPlayerByUserId(textSource.UserId)
 
 									if player and type(text) == "string" then
-										Remote.Commands.ProcessCommand(player, {string.sub(text, 2)})
+										local origin = server.ChatTransport.NewOrigin(player, text)
+										Remote.Commands.ProcessCommand(player, {string.sub(text, 2)}, origin)
 									end
 								end)
 								command.Parent = container

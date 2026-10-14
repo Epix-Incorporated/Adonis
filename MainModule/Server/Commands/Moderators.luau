@@ -11,6 +11,45 @@ return function(Vargs, env)
 	local Routine = env.Routine
 	local Pcall = env.Pcall
 
+	-- Opens a UI session backed by a requester-owned TextChannel; session remotes carry controls only.
+	local function createPrivateSession(owner, participants, canManageUsers, initialMessage)
+		local channelId, channel = server.ChatTransport.Create(owner, participants)
+		local sessionName = service.HttpService:GenerateGUID(false)
+		local session = Remote.NewSession("PrivateChat")
+		session.Data.ChannelId = channelId
+		session.Data.SessionName = sessionName
+
+		session:ConnectEvent(function(player, event)
+			if not player and event == "LastUserRemoved" then
+				if not session.Ended then
+					session:End()
+				end
+				server.ChatTransport.Close(channelId, "SessionEnded")
+			elseif player and event == "RemovedFromSession" then
+				server.ChatTransport.RemoveMember(channelId, player)
+				if (player == owner or (not canManageUsers and session.NumUsers <= 1)) and not session.Ended then
+					session:End()
+					server.ChatTransport.Close(channelId, "SessionEnded")
+				end
+			end
+		end)
+
+		for _, player in {owner, table.unpack(participants)} do
+			session:AddUser(player)
+			Remote.MakeGui(player, "PrivateChat", {
+				Owner = owner;
+				SessionKey = session.SessionKey;
+				SessionName = sessionName;
+				ChannelId = channelId;
+				Channel = channel;
+				CanManageUsers = canManageUsers and player == owner;
+				InitialMessage = if player == owner then initialMessage else nil;
+			})
+		end
+
+		return session, channelId, channel
+	end
+
 	return {
 		Kick = {
 			Prefix = Settings.Prefix;
@@ -941,18 +980,45 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"privatechat", "dm", "pchat"};
 			Args = {"player", "message (optional)"};
-			Filter = true;
+			UserText = {Kind = "Chat", Args = {2}};
 			Description = "Send a private message to a player";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			NoLog = true;
+			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
+				if args[2] then
+					assert(server.ChatTransport.ConsumeInput(data.ChatInput, plr, args), "Send message text from native in-game chat.")
+				end
 
-				local sessionName = service.HttpService:GenerateGUID(false) --// Used by the private chat windows
-				local newSession = Remote.NewSession("PrivateChat")
-				local history = {}
+				local participants = {}
+				for _, player in service.GetPlayers(plr, args[1]) do
+					if player ~= plr then
+						local success, canChat = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, player.UserId)
+						if not success or not canChat then
+							Functions.Hint(`Unable to add {service.FormatPlayer(player)} to the session because chat is unavailable.`, {plr})
+							continue
+						end
+						local canDirectChat = true
+						for _, peer in participants do
+							local directSuccess, directData = pcall(service.TextChatService.CanUsersDirectChatAsync,
+								service.TextChatService, peer.UserId, {player.UserId})
+							if not directSuccess or #directData == 0 then
+								canDirectChat = false
+								break
+							end
+						end
+						if not canDirectChat then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(player)} due to chat restrictions.`, {plr})
+							continue
+						end
+						table.insert(participants, player)
+					end
+				end
+				assert(#participants > 0, "No available recipients for private chat.")
 
-				newSession.Data.History = history
+				local newSession, channelId = createPrivateSession(plr, participants, true, args[2])
+				local sessionName = newSession.Data.SessionName
 
 				local function getPeerList()
 					local peers = {}
@@ -967,58 +1033,8 @@ return function(Vargs, env)
 					return peers
 				end
 
-				local function getFilteredHistory(player)
-					local canUsersDirectChatAsyncCache = {}
-					local newHistory = {}
-
-					for _, historyItem in history do
-						local canUsersChat = false
-						local newHistoryItem = {
-							Message = nil,
-							Sender = {
-								Name = historyItem.Sender.Name,
-								DisplayName = historyItem.Sender.DisplayName,
-								UserId = historyItem.Sender.UserId,
-								Icon = historyItem.Sender.Icon
-							}
-						}
-
-						if player.UserId == historyItem.Sender.UserId or historyItem.Sender.UserId == 0 then
-							canUsersChat = true
-							newHistoryItem.Sender.IsMessageRestricted = false
-						elseif canUsersDirectChatAsyncCache[historyItem.Sender.UserId] ~= nil then
-							canUsersChat = canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
-							newHistoryItem.Sender.IsMessageRestricted = not canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
-						else
-							local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, player.UserId, {historyItem.Sender.UserId})
-							if success then
-								canUsersChat = #canUserChatData > 0
-								canUsersDirectChatAsyncCache[historyItem.Sender.UserId] = canUsersChat
-								newHistoryItem.Sender.IsMessageRestricted = not canUsersChat
-							else
-								newHistoryItem.Sender.IsMessageRestrictedError = true
-							end
-						end
-
-						newHistoryItem.Message = canUsersChat and historyItem.Message or nil
-
-						table.insert(newHistory, newHistoryItem)
-					end
-
-					return newHistory
-				end
-
 				local function systemMessage(msg)
-					local data = {
-						Name = "* SYSTEM *";
-						UserId = 0;
-						Icon = 0;
-					};
-					table.insert(history, {
-						Sender = data;
-						Message = msg;
-					});
-					newSession:SendToUsers("PlayerSentMessage", data, msg)
+					newSession:SendToUsers("SessionNotice", msg)
 				end;
 
 				newSession:ConnectEvent(function(p, cmd, ...)
@@ -1029,60 +1045,7 @@ return function(Vargs, env)
 							newSession:End()
 						end
 					else	-- Player event(s)
-						if cmd == "SendMessage" then
-							local message = string.sub(tostring(args[1]), 1, 140)
-							local filtered = service.BroadcastFilter(message, p)
-
-							if filtered ~= message then
-								Remote.MakeGui(p, "Output", {
-									Title = "Filter error",
-									Message = "A message filtering error occurred; please try again."
-								})
-							else
-								local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
-								local data, msg = {
-									Name = p.Name;
-									DisplayName = p.DisplayName;
-									UserId = p.UserId;
-									Icon = status and gotIcon or "rbxasset://textures/ui/GuiImagePlaceholder.png";
-								}, filtered
-
-								table.insert(history, {
-									Sender = data;
-									Message = msg;
-								})
-
-								if #history > 200 then
-									table.remove(history, 1)
-								end
-
-								for sessionPlayer in newSession.Users do
-									local newData = {
-										Name = data.Name,
-										DisplayName = data.DisplayName,
-										UserId = data.UserId,
-										Icon = data.Icon
-									}
-
-									local canUsersChat = false
-									if p.UserId == sessionPlayer.UserId then
-										canUsersChat = true
-									else
-										local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, p.UserId, {sessionPlayer.UserId})
-										if success then
-											canUsersChat = #canUserChatData > 0
-											newData.IsMessageRestricted = not canUsersChat
-										else
-											newData.IsMessageRestrictedError = true
-										end
-									end
-
-									local messageToSend = canUsersChat and msg or nil
-
-									newSession:SendToUser(sessionPlayer, "PlayerSentMessage", newData, messageToSend)
-								end
-							end
-						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
+						if cmd == "LeaveSession" or cmd == "RemovedFromSession" then
 							newSession:RemoveUser(p)
 							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
 							newSession:SendToUsers("UpdatePeerList", getPeerList())
@@ -1094,9 +1057,9 @@ return function(Vargs, env)
 						elseif cmd == "EndSession" and p == plr then
 							systemMessage("<i>Session ended</i>")
 							newSession:End()
+							server.ChatTransport.Close(channelId, "SessionEnded")
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
 							local peer = args[1]
-							local filteredHistory = getFilteredHistory(peer)
 
 							if peer then
 								local canUserChatSuccess, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, peer.UserId)
@@ -1108,6 +1071,25 @@ return function(Vargs, env)
 									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session due to them not being able to chat.`, {p})
 								end
 
+								local directSuccess, directData = pcall(service.TextChatService.CanUsersDirectChatAsync,
+									service.TextChatService, plr.UserId, {peer.UserId})
+								local canChatWithPeers = directSuccess and #directData > 0
+								if canChatWithPeers then
+									for currentPeer in newSession.Users do
+										if currentPeer ~= plr then
+											local peerSuccess, peerData = pcall(service.TextChatService.CanUsersDirectChatAsync,
+												service.TextChatService, currentPeer.UserId, {peer.UserId})
+											if not peerSuccess or #peerData == 0 then
+												canChatWithPeers = false
+												break
+											end
+										end
+									end
+								end
+								if not canChatWithPeers or not server.ChatTransport.AddMember(channelId, peer) then
+									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} due to chat restrictions.`, {p})
+								end
+
 								newSession:AddUser(peer)
 								newSession:SendToUser(peer, "AddedToSession")
 								systemMessage(string.format("<i>%s added %s to the session</i>", service.FormatPlayer(p), service.FormatPlayer(peer)))
@@ -1115,7 +1097,8 @@ return function(Vargs, env)
 									Owner = plr;
 									SessionKey = newSession.SessionKey;
 									SessionName = sessionName;
-									History = filteredHistory;
+									ChannelId = channelId;
+									Channel = server.ChatTransport.GetChannel(channelId);
 									CanManageUsers = Admin.CheckAdmin(peer);
 								})
 								newSession:SendToUsers("UpdatePeerList", getPeerList())
@@ -1141,54 +1124,7 @@ return function(Vargs, env)
 				end)
 
 				systemMessage("<i>Chat session started</i>")
-
-				if args[2] then
-					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
-					local data = {
-						Name = plr.Name;
-						DisplayName = plr.DisplayName;
-						UserId = plr.UserId;
-						Icon = status and gotIcon or "rbxasset://textures/ui/GuiImagePlaceholder.png";
-					}
-
-					table.insert(history, {
-						Sender = data;
-						Message = args[2];
-					})
-				end
-
-				newSession:AddUser(plr)
-				Remote.MakeGui(plr, "PrivateChat", {
-					Owner = plr;
-					SessionKey = newSession.SessionKey;
-					SessionName = sessionName;
-					History = getFilteredHistory(plr);
-					CanManageUsers = true;
-				})
-
-				for i, v in service.GetPlayers(plr, args[1]) do
-					if v ~= plr then
-						local success, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
-						if not success then
-							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session because an error occurred.`, {plr})
-							continue
-						end
-
-						if not canUserChatData then
-							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session due to them not being able to chat.`, {plr})
-							continue
-						end
-
-						newSession:AddUser(v)
-						Remote.MakeGui(v, "PrivateChat", {
-							Owner = plr;
-							SessionKey = newSession.SessionKey;
-							SessionName = sessionName;
-							History = getFilteredHistory(v);
-							CanManageUsers = Admin.CheckAdmin(v);
-						})
-					end
-				end
+				newSession:SendToUsers("UpdatePeerList", getPeerList())
 			end
 		};
 
@@ -1196,15 +1132,22 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"pm", "privatemessage"};
 			Args = {"player", "message"};
-			Filter = true;
+			UserText = {Kind = "Chat", Args = {2}};
 			Description = "Send a private message to a player";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			NoLog = true;
+			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
+				assert(server.ChatTransport.ConsumeInput(data.ChatInput, plr, args), "Send private messages through native in-game chat.")
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.UserId ~= plr.UserId then
+						local chatSuccess, canChat = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
+						if not chatSuccess or not canChat then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
+							continue
+						end
 						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
 						if not success then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
@@ -1217,15 +1160,7 @@ return function(Vargs, env)
 						end
 					end
 
-					local replyTicket = service.HttpService:GenerateGUID(false)
-					Variables.PMtickets[replyTicket] = plr
-
-					Remote.MakeGui(v, "PrivateMessage", {
-						Title = `Message from {service.FormatPlayer(plr)}`;
-						Player = plr;
-						Message = service.Filter(args[2], plr, v);
-						replyTicket = replyTicket;
-					})
+					createPrivateSession(plr, {v}, false, args[2])
 				end
 			end
 		};
