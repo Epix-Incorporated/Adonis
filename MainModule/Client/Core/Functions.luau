@@ -200,54 +200,27 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Saves an alias map before exposing it locally, retaining rejected edits for retry.
-		SaveAliases = function(aliases)
-			local ok, response = pcall(Remote.Get, "UpdateAliases", aliases)
-			if not ok or type(response) ~= "table" or response.Success ~= true then
-				task.defer(UI.MakeGui, "Notification", {
-					Time = 5; Icon = client.MatIcons.Help; Title = "Aliases";
-					Message = if ok and type(response) == "table" and type(response.Message) == "string" then response.Message else "Aliases could not be saved. Please try again later.";
-				})
-				return false
-			end
-			Variables.Aliases = aliases
-			if response.CommandBarOnly then
-				task.defer(UI.MakeGui, "Notification", {
-					Time = 6; Icon = client.MatIcons.Help; Title = "Aliases";
-					Message = "Some aliases are available only in the command bar or keybinds. See the Aliases tab for native chat requirements.";
-				})
-			end
-			return true
-		end;
-
-		-- Adds or renames an alias in a single server-approved update.
-		AddAlias = function(alias, command, oldAlias)
-			local aliases = table.clone(Variables.Aliases)
-			if oldAlias then aliases[string.lower(oldAlias)] = nil end
-			aliases[string.lower(alias)] = command
-			if not Functions.SaveAliases(aliases) then return false end
+		AddAlias = function(alias, command)
+			Variables.Aliases[string.lower(alias)] = command;
+			Remote.Get("UpdateAliases", Variables.Aliases)
 			task.defer(UI.MakeGui, "Notification", {
 				Time = 4;
 				Icon = client.MatIcons["Add circle"];
 				Title = "Notification";
 				Message = string.format('Alias "%s" added', string.lower(alias));
 			})
-			return true
 		end;
 
-		-- Removes an alias only after the server accepts the complete replacement map.
 		RemoveAlias = function(alias)
 			if Variables.Aliases[string.lower(alias)] then
-				local aliases = table.clone(Variables.Aliases)
-				aliases[string.lower(alias)] = nil
-				if not Functions.SaveAliases(aliases) then return false end
+				Variables.Aliases[string.lower(alias)] = nil;
+				Remote.Get("UpdateAliases", Variables.Aliases)
 				task.defer(UI.MakeGui, "Notification", {
 					Time = 4;
 					Icon = client.MatIcons.Delete;
 					Title = "Notification";
 					Message = string.format('Alias "%s" removed', string.lower(alias));
 				})
-				return true
 			else
 				task.defer(UI.MakeGui, "Notification", {
 					Time = 3;
@@ -255,7 +228,6 @@ return function(Vargs, GetEnv)
 					Title = "Error";
 					Message = string.format('Alias "%s" not found', string.lower(alias));
 				})
-				return false
 			end
 		end;
 
@@ -1387,8 +1359,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Plays local phoneme audio; optional callbacks allow recipient cancellation and cleanup.
-		TextToSpeech = function(str, shouldContinue, registerSound)
+		TextToSpeech = function(str)
 			local audioId = 296333956
 
 			local audio = Instance.new("Sound",service.LocalContainer())
@@ -1398,10 +1369,6 @@ return function(Vargs, GetEnv)
 			local audio2 = Instance.new("Sound",service.LocalContainer())
 			audio2.SoundId = `rbxassetid://{audioId}`
 			audio2.Volume = 1
-			if registerSound then
-				registerSound(audio)
-				registerSound(audio2)
-			end
 
 			local phonemes = {
 				{
@@ -1768,13 +1735,11 @@ return function(Vargs, GetEnv)
 			audio:Play()
 			audio2:Play()
 			for _, v in phos do
-				if shouldContinue and not shouldContinue() then break end
 				--print(i,v.str)
 				if type(v.func)=="string" then--v.func=="wait" then
 					task.wait(0.5)
 				elseif type(v)=="table" then
 					for _, p in v.func do
-						if shouldContinue and not shouldContinue() then break end
 						--[[--]]
 						if swap then
 							swap=false
@@ -1793,8 +1758,6 @@ return function(Vargs, GetEnv)
 			task.wait(0.5)
 			audio:Stop()
 			audio2:Stop()
-			audio:Destroy()
-			audio2:Destroy()
 		end;
 
 		IsValidTexture = function(id)

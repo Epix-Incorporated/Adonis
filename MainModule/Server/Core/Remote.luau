@@ -15,52 +15,6 @@ return function(Vargs, GetEnv)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults, Commands
 	local logError
-	-- Bounds personal alias updates without retaining players after they leave.
-	local aliasUpdateTimes = setmetatable({}, {__mode = "k"})
-	-- Applies a validated setting edit and reports only fixed failure descriptions to its author.
-	local function changeSetting(player, setting, value, save)
-		local accepted, prepared, record = server.Core.PrepareSetting(player, setting, value)
-		if not accepted then
-			server.Functions.Hint(prepared, {player})
-			return false
-		end
-		server.Settings[setting] = prepared
-		server.Core.RegisterSettingText(setting, prepared, record)
-		if save then server.Core.DoSave({Type = "SetSetting", Setting = setting, Value = prepared, TextRecord = record}) end
-		server.Logs.AddAudit("Script", "Setting", player, {Outcome = "Completed"})
-		return true
-	end
-
-	-- Edits a declared settings list using fresh authored input or an opaque viewer-specific handle.
-	local function editSettingsTable(player, action, path, value)
-		if server.Admin.GetLevel(player) < server.Settings.Ranks.Creators.Level then return {Success = false, Message = "Permission denied"} end
-		local tab = server.Core.GetEditableSettingsTable(path)
-		if not tab then return {Success = false, Message = "This table cannot be edited in game"} end
-		if action == "Add" then
-			if type(value) ~= "string" or #value == 0 or #value > 200 then return {Success = false, Message = "Invalid entry"} end
-			-- Selectors contain only a username/id or supported numeric access selector, never arbitrary labels.
-			local valid = value:match("^%d+$") or value:match("^[%w_]+:%d+$") or value:match("^[%w_]+$")
-				or value:match("^Group:%d+:%-?%d+$") or value:match("^Group:%d+$")
-				or value:match("^Item:%d+$") or value:match("^GamePass:%d+$")
-			if not valid then return {Success = false, Message = "Use a username, user ID, or supported access selector"} end
-			if not server.TextPolicy.TryPublicEdit(player) then return {Success = false, Message = "Wait 60 seconds between shared text edits"} end
-			local record = server.TextPolicy.CreateRecord(value, player, "PublicEdit")
-			if not record then return {Success = false, Message = "Text could not be filtered"} end
-			table.insert(tab, value)
-			server.Core.RegisterTableText(tab, value, record)
-			server.Core.DoSave({Type = "TableAdd", Table = path, Value = value, TextRecord = record})
-		elseif action == "Remove" then
-			if type(value) ~= "string" then return {Success = false, Message = "Invalid entry handle"} end
-			local current, index, original = server.Core.ResolveSettingsEntry(player, path, value)
-			if not current then return {Success = false, Message = "Entry expired; reopen this table"} end
-			table.remove(current, index)
-			server.Core.DoSave({Type = "TableRemove", Table = path, Value = original})
-		else
-			return {Success = false, Message = "Unknown table operation"}
-		end
-		server.Logs.AddAudit("Script", "Setting", player, {Outcome = "Completed"})
-		return {Success = true, Entries = server.Core.GetSettingsTableEntries(player, path)}
-	end
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -184,15 +138,6 @@ return function(Vargs, GetEnv)
 		};
 
 		Returnables = {
-			-- Returns safe display rows and opaque handles for an authorized settings editor.
-			SettingsTable = function(p, args)
-				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then return Core.GetSettingsTableEntries(p, args[1]) end
-			end;
-
-			-- Completes a table mutation before returning the new projected list to the editor.
-			EditSettingsTable = function(p, args)
-				return editSettingsTable(p, args[1], args[2], args[3])
-			end;
 			RateLimits = function(p: Player, args: {[number]: any})
 				return Process.RateLimits
 			end;
@@ -205,16 +150,16 @@ return function(Vargs, GetEnv)
 				return "Pong"
 			end;
 
-			-- The remote caller is the only valid author and recipient for this local preview.
 			Filter = function(p: Player, args: {[number]: any})
-				if type(args[1]) == "string" then
-					return service.Filter(args[1], p, p)
+				local from, to = args[2], args[3]
+				if type(args[1]) == "string" and typeof(from) == "Instance" and from:IsA("Player") and typeof(to) == "Instance" and to:IsA("Player") then
+					return service.Filter(args[1], from, to)
 				end
 			end;
 
 			BroadcastFilter = function(p: Player, args: {[number]: any})
 				if type(args[1]) == "string" then
-					return service.BroadcastFilter(args[1], p)
+					return service.BroadcastFilter(args[1], (typeof(args[2]) == "Instance" and args[2]:IsA("Player") and args[2]) or p)
 				end
 			end;
 
@@ -226,7 +171,7 @@ return function(Vargs, GetEnv)
 						for _, v in service.GetTasks() do
 							table.insert(tab, {
 								Status = v.Status;
-								Name = "Tracked task";
+								Name = v.Name;
 								Index = v.Index;
 								Created = v.Created;
 								Function = tostring(v.Function);
@@ -245,9 +190,9 @@ return function(Vargs, GetEnv)
 
 			Variable = function(p: Player,args: {[number]: any})
 				if Remote.WhitelistedVariable[args[1]] then
-					return if args[1] == "MusicList" then Core.ProjectSettingValue(Variables.MusicList, "MusicList") else Variables[args[1]]
+					return Variables[args[1]]
 				elseif Core.DebugMode then
-					print("Blocked attempted index of Variable from Remote")
+					print(string.format("Blocked attempted index of Variable from Remote (%s)", tostring(args[1])))
 				end
 			end;
 
@@ -347,12 +292,12 @@ return function(Vargs, GetEnv)
 					ret = {}
 					for _,set in setting do
 						if Settings[set] and (allowed[set] or level>=Settings.Ranks.Creators.Level) then
-							ret[set] = Core.ProjectSetting(set)
+							ret[set] = Settings[set]
 						end
 					end
 				elseif type(setting) == "string" then
 					if Settings[setting] and (allowed[setting] or level>=Settings.Ranks.Creators.Level) then
-						ret = Core.ProjectSetting(setting)
+						ret = Settings[setting]
 					end
 				end
 
@@ -362,16 +307,16 @@ return function(Vargs, GetEnv)
 			AllSettings = function(p: Player,args: {[number]: any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local sets = {
-						Settings = {};
+						Settings = table.clone(Settings);
 						Descs = server.Descriptions;
 						Order = server.Order;
 					}
 
 					local blocked = Remote.BlockedSettings
 
-					for setting in Settings do
-						if not blocked[setting] then
-							sets.Settings[setting] = Core.ProjectSetting(setting)
+					for setting in sets.Settings do
+						if blocked[setting] then
+							sets.Settings[setting] = nil
 						end
 					end
 
@@ -475,75 +420,27 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			-- Accepts bounded alias maps or strict deletions from legacy maps, then installs native sinks.
 			UpdateAliases = function(p: Player, args: {[number]: any})
-				local now = os.clock()
-				if aliasUpdateTimes[p] and now - aliasUpdateTimes[p] < 1 then
-					return {Success = false, Message = "Wait one second between alias changes."}
-				end
-				aliasUpdateTimes[p] = now
-				if type(args[1]) ~= "table" then return {Success = false, Message = "Invalid alias settings."} end
-				local data = Core.GetPlayer(p)
-				local previous = data.Aliases or {}
-				local previousCount = 0
-				for _ in previous do previousCount += 1 end
-				local aliases, count, commandBarOnly, removalOnly, bounded = {}, 0, false, true, true
-				for key, value in args[1] do
-					count += 1
-					if count > math.max(64, previousCount) or type(key) ~= "string" or type(value) ~= "string" then
-						return {Success = false, Message = "Use at most 64 aliases, with names up to 128 characters and commands up to 4096 characters."}
+				local aliases = args[1] or {};
+
+				if type(aliases) == "table" then
+					local data = Core.GetPlayer(p)
+
+					--// check for stupid stuff
+					for i,v in aliases do
+						if type(i) ~= "string" or type(v) ~= "string" then
+							aliases[i] = nil
+						end
 					end
-					if count > 64 or #key == 0 or #key > 128 or #value == 0 or #value > 4096 then bounded = false end
-					if previous[key] ~= value then removalOnly = false end
-					aliases[key] = value
-					if not Admin.GetNativeAliasToken(key) then commandBarOnly = true end
+
+					data.Aliases = aliases;
 				end
-				-- Legacy cleanup may retain existing oversized entries, but cannot add or alter them.
-				if not bounded and not (removalOnly and count < previousCount) then
-					return {Success = false, Message = "Use at most 64 aliases, with names up to 128 characters and commands up to 4096 characters."}
-				end
-				local unchanged = true
-				for key, value in aliases do if previous[key] ~= value then unchanged = false; break end end
-				if unchanged then
-					for key in previous do if aliases[key] == nil then unchanged = false; break end end
-				end
-				if not unchanged then data.Aliases = aliases end
-				local ok = pcall(Admin.CacheNativeChatCommands, true, unchanged)
-				if not ok then
-					data.Aliases = previous
-					pcall(Admin.CacheNativeChatCommands, true)
-					return {Success = false, Message = "Aliases could not be installed. Please try again later."}
-				end
-				return {Success = true, CommandBarOnly = commandBarOnly or not bounded}
 			end;
 
-			-- Returns only the caller's supported UI preferences, excluding moderation and plugin records.
 			PlayerData = function(p: Player,args: {[number]: any})
 				local data = Core.GetPlayer(p)
 				data.isDonor = Admin.CheckDonor(p)
-				local donor = if type(data.Donor) == "table" then data.Donor else {}
-				local cape = if type(donor.Cape) == "table" then donor.Cape else {}
-				local color = cape.Color
-				if type(color) == "table" then
-					color = {tonumber(color[1]) or 1, tonumber(color[2]) or 1, tonumber(color[3]) or 1}
-				elseif type(color) ~= "string" then
-					color = "White"
-				end
-				local result = {
-					AdminLevel = Admin.GetLevel(p), isDonor = data.isDonor == true,
-					Aliases = {}, Keybinds = {},
-					Donor = {Enabled = donor.Enabled == true, Cape = {
-						Image = if type(cape.Image) == "string" or type(cape.Image) == "number" then cape.Image else "0",
-						Material = if type(cape.Material) == "string" then cape.Material else "Neon",
-						Color = color,
-					}},
-				}
-				for _, key in {"Aliases", "Keybinds"} do
-					for name, value in if type(data[key]) == "table" then data[key] else {} do
-						if type(name) == "string" and type(value) == "string" then result[key][name] = value end
-					end
-				end
-				return result
+				return data
 			end;
 
 			CheckAdmin = function(p: Player,args: {[number]: any})
@@ -584,24 +481,23 @@ return function(Vargs, GetEnv)
 					end
 
 					return {
-						ServerLogs = Logs.ProjectConsole(service.LogService:GetLogHistory());
+						ServerLogs = service.LogService:GetLogHistory();
 						ClientLogs = {};
-						ScriptLogs = Logs.Project(Logs.Script, "Script");
-						AdminLogs = Logs.Project(Logs.Commands, "Commands");
-						ErrorLogs = Logs.Project(Logs.Errors, "Errors");
-						ChatLogs = {};
-						JoinLogs = Logs.Project(Logs.Joins, "Joins");
-						Replications = {};
-						Exploit = Logs.Project(Logs.Exploit, "Exploit");
+						ScriptLogs = Logs.Script;
+						AdminLogs = Logs.Commands;
+						ErrorLogs = Logs.Errors;
+						ChatLogs = Logs.Chats;
+						JoinLogs = Logs.Joins;
+						Replications = Logs.Replications;
+						Exploit = Logs.Exploit;
 					}
 				end
 			end;
 
 			Terminal = function(p: Player,args: {[number]: any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
+					local data = args[2]
 					local message = args[1]
-					if type(message) ~= "string" then return {"Invalid terminal command"} end
-					local data = {UserCommandOrigin = server.ChatTransport.NewOrigin(p, message)}
 					local command = string.match(message, "(.-) ") or message
 					local argString = string.match(message, "^.- (.+)") or ""
 					local comTable = Remote.Terminal.GetCommand(command)
@@ -609,15 +505,15 @@ return function(Vargs, GetEnv)
 						local cArgs = Functions.Split(argString, " ", comTable.Arguments)
 						local ran,ret = pcall(comTable.Function,p,cArgs,data)
 						if ran then
-							return if comTable == Remote.Terminal.Commands.Help then ret else {"Command completed"}
+							return ret
 						else
 							return {
-								"Command failed"
+								`COMMAND ERROR: {ret}`
 							}
 						end
 					else
 						return {
-							"Unknown terminal command"
+							`Could not find any command matching "{command}"`
 						}
 					end
 				end
@@ -750,10 +646,9 @@ return function(Vargs, GetEnv)
 						})
 					end
 
-					local displayRank = Core.ProjectRank(name)
 					table.insert(ranks, {
-						Rank = displayRank.Name;
-						Level = displayRank.Level;
+						Rank = name;
+						Level = data.Level;
 						Purchasables = purchasables;
 					})
 
@@ -807,8 +702,7 @@ return function(Vargs, GetEnv)
 			Format = function(msg, data) (data or {}).Text = msg end;
 			Output = function(tab, msg, mata) table.insert(tab, Remote.Terminal.Format(msg, mata)) end;
 			GetCommand = function(cmd) for i, com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
-			-- Terminal output may originate in arbitrary evaluated code and has no verified text author.
-			LiveOutput = function(p, data, outputType) Remote.FireEvent(p, "TerminalLive", {Data = "[Output unavailable: source cannot be verified]"; Type = "Terminal";}) end;
+			LiveOutput = function(p, data, type) Remote.FireEvent(p, "TerminalLive", {Data = data; Type = type or "Terminal";}) end;
 			Commands = {
 				Help = {
 					Usage = "help";
@@ -830,10 +724,10 @@ return function(Vargs, GetEnv)
 					Command = "message";
 					Arguments = 1;
 					Description = "Sends a message in the Roblox chat";
-					-- Only literal input from the actual terminal caller can authorize a channel send.
 					Function = function(p, args, data)
-						local input = server.ChatTransport.CommandInput(p, {UserText = {Args = {1}}}, args, data)
-						server.ChatTransport.SubmitCommand(p, service.GetPlayers(), args[1], input, "Notification", "ChatMessage")
+						for _,v in service.GetPlayers() do
+							Remote.Send(v,"Function","ChatMessage",args[1],Color3.fromRGB(255,64,77))
+						end
 					end
 				};
 
@@ -863,7 +757,7 @@ return function(Vargs, GetEnv)
 								end
 
 								Remote.Terminal.LiveOutput(p, `LUA_DEMAND_ERROR: {reason}`)
-								oError("Adonis terminal error", (level or 1) + 1)
+								oError(`Adonis terminal error: {reason}`, (level or 1) + 1)
 							end;
 						})
 
@@ -903,7 +797,7 @@ return function(Vargs, GetEnv)
 						if #plrs > 0 then
 							local ret = {}
 							for _,v in plrs do
-								v:Kick((args[2] and server.TextPolicy.FilterForUser(args[2], p, v)) or "Disconnected by server")
+								v:Kick(args[2] or "Disconnected by server")
 								table.insert(ret, `Disconnect {service.FormatPlayer(v)} from the server`)
 							end
 							return ret
@@ -962,16 +856,13 @@ return function(Vargs, GetEnv)
 					Command = "shutdown";
 					Arguments = 1;
 					Description = "Disconnects all players from the server and prevents rejoining";
-					-- Reuses one broadcast-safe snapshot for current and later arrivals in this server.
-					Function = function(p,args,data)
-						local record = args[1] and server.TextPolicy.CreateRecord(args[1], p, "Moderation")
-						local reason = (record and server.TextPolicy.GetRecordText(record)) or "Server shut down"
-						service.PlayerAdded:Connect(function(player)
-							player:Kick(reason)
+					Function = function(p,args,data) -- TODO: Make this use Functions.Shutdown
+						service.PlayerAdded:Connect(function(p)
+							p:Kick(args[1] or "No Given Reason")
 						end)
 
 						for _, v in service.Players:GetPlayers() do
-							v:Kick(reason)
+							v:Kick(args[1] or "No Given Reason")
 						end
 					end
 				};
@@ -982,8 +873,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Enables Adonis panic mode";
 					Function = function(p, args, data)
-						local record = args[1] and server.TextPolicy.CreateRecord(args[1], p, "Moderation")
-						server.Panic((record and server.TextPolicy.GetRecordText(record)) or "Panic mode requested by an administrator")
+						server.Panic(args[1])
 					end
 				};
 			};
@@ -1063,21 +953,67 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			-- Legacy editor events use the same validated path as the request/response editor.
 			SaveTableAdd = function(p: Player, args: {[number]: any})
-				local result = editSettingsTable(p, "Add", args[1], args[2])
-				if not result.Success then Functions.Hint(result.Message, {p}) end
+				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
+					local tabName = args[1];
+					local value = args[2];
+					local tab = Core.IndexPathToTable(tabName);
+
+					table.insert(tab, value);
+
+					Core.DoSave({
+						Type = "TableAdd";
+						Table = tabName;
+						Value = value;
+					})
+				end
 			end;
 
-			-- Removal accepts only an entry handle previously issued to the current viewer.
 			SaveTableRemove = function(p: Player, args: {[number]: any})
-				local result = editSettingsTable(p, "Remove", args[1], args[2])
-				if not result.Success then Functions.Hint(result.Message, {p}) end
+				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
+					local tabName = args[1];
+					local value = args[2];
+					local tab = Core.IndexPathToTable(tabName);
+					local ind = Functions.GetIndex(tab, value);
+
+					if ind then
+						table.remove(tab, ind);
+					end
+
+					Core.DoSave({
+						Type = "TableRemove";
+						Table = tabName;
+						Value = value;
+					})
+				end
 			end;
 
-			-- Persists a validated primitive and its text provenance under the existing settings key.
 			SaveSetSetting = function(p: Player, args: {[number]: any})
-				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then changeSetting(p, args[1], args[2], true) end
+				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
+					local setting = args[1]
+					local value = args[2]
+
+					if type(setting) == "string" then
+						if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
+							local orig = Settings[setting]
+							for _, v in Commands do
+								if v.Prefix == orig then
+									v.Prefix = value
+								end
+							end
+
+							server.Admin.CacheCommands()
+						end
+
+						Settings[setting] = value
+
+						Core.DoSave({
+							Type = "SetSetting";
+							Setting = setting;
+							Value = value;
+						})
+					end
+				end
 			end;
 
 			ClearSavedSettings = function(p: Player, args: {[number]: any})
@@ -1087,9 +1023,24 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			-- Applies the same publication policy to settings that last only for this server session.
 			SetSetting = function(p: Player, args: {[number]: any})
-				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then changeSetting(p, args[1], args[2], false) end
+				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
+					local setting = args[1]
+					local value = args[2]
+
+					if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
+						local orig = Settings[setting]
+						for _, v in Commands do
+							if v.Prefix == orig then
+								v.Prefix = value
+							end
+						end
+
+						server.Admin.CacheCommands()
+					end
+
+					Settings[setting] = value
+				end
 			end;
 
 			Detected = function(p: Player, args: {[number]: any})
@@ -1123,16 +1074,13 @@ return function(Vargs, GetEnv)
 			end;
 
 			Test = function(p: Player,args: {[number]: any})
-				print("Client test event received")
+				print(`OK WE GOT COMMUNICATION! FROM: {p.Name} ORGL: {args[1]}`)
 			end;
 
-			-- Processes explicit submissions; only server dispatch supplies native-chat provenance.
-			ProcessCommand = function(p: Player, args: {[number]: any}, fromNativeChat: boolean?)
+			ProcessCommand = function(p: Player, args: {[number]: any})
 				if Process.RateLimit(p, "Command") and type(args[1]) == "string" then
 					Process.Command(p, args[1], {
-						Check = true,
-						Chat = fromNativeChat == true,
-						UserCommandOrigin = server.ChatTransport.NewOrigin(p, args[1]),
+						Check = true
 					})
 				elseif Process.RateLimit(p, "RateLog") then
 					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Command));
@@ -1141,16 +1089,42 @@ return function(Vargs, GetEnv)
 			end;
 
 			ProcessChat = function(p: Player, args: {[number]: any})
-				-- Modern commands are intercepted by native Triggered before any public delivery.
-				if service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then return end
 				if type(args[1]) == "string" then
 					Process.Chat(p, args[1])
 				end
 			end;
 
-			-- Legacy reply tickets never authorize relaying text outside TextChannels.
-			PrivateMessage = function(p: Player)
-				Remote.MakeGui(p, "Output", {Message = "This reply window has expired. Open a new conversation to reply."})
+			PrivateMessage = function(p: Player,args: {[number]: any})
+				if type(args[1]) ~= "string" then return end
+
+				local target = Variables.PMtickets[args[1]]
+				if target or Admin.CheckAdmin(p) then
+					if target then
+						Variables.PMtickets[args[1]] = nil;
+					else
+						target = args[2]
+					end
+
+					local title = string.format("Reply from %s (@%s)", p.DisplayName, p.Name)
+					local message = args[3]
+
+					local replyTicket = service.HttpService:GenerateGUID(false)
+					Variables.PMtickets[replyTicket] = p
+					Remote.MakeGui(target, "PrivateMessage", {
+						Title = title;
+						Player = p;
+						Message = service.Filter(message, p, target);
+						replyTicket = replyTicket;
+					})
+
+					Logs:AddLog(Logs.Script,{
+						Text = `{p.Name} replied to {target}`,
+						Desc = message,
+						Player = p;
+					})
+				else
+					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {args[2]}`)
+				end
 			end;
 
 			SaveScript = function(p: Player, args: {})
@@ -1164,7 +1138,6 @@ return function(Vargs, GetEnv)
 
 				Variable.Script = args[1]["Text"]
 			end,
-			-- Executes an authorized personal script draft and returns only fixed error classifications.
 			RunScript = function(p: Player, args: {})
 				local adminLevel = Admin.GetLevel(p)
 
@@ -1189,20 +1162,20 @@ return function(Vargs, GetEnv)
 								oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 							end
 
-							Remote.MakeGui(p, "Output", {Title = 'LUA_DEMAND_ERROR'; Message = "Script failed; details are unavailable."})
-							oError("Adonis ScriptEditor error; details are unavailable.", (level or 1) + 1)
+							Remote.MakeGui(p, "Output", {Title = 'LUA_DEMAND_ERROR'; Message = `{reason}`})
+							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 						end;
 					})
 
 					-- TODO: Maybe make it not work with the server Env?
-					service.TrackTask(`Thread: ScriptEditor: {p.UserId}`, function()
-						local func = Core.Loadstring(Variable["Script"], newenv)
+					service.TrackTask(`Thread: ScriptEditor: {p.UserId}: {Name}`, function()
+						local func, err = Core.Loadstring(Variable["Script"], newenv)
 						if func then
-							xpcall(func, function()
-								Remote.MakeGui(p, "Output", {Title = "LUA_ERROR"; Message = "Script failed; details are unavailable."})
+							xpcall(func, function(reason)
+								Remote.MakeGui(p, "Output", {Title = "LUA_ERROR"; Message = reason})
 							end)
 						else
-							Remote.MakeGui(p, "Output", {Title = "SYNTAX_ERROR"; Message = "Script syntax is invalid; details are unavailable."})
+							Remote.MakeGui(p, "Output", {Title = "SYNTAX_ERROR"; Message = err})
 						end
 					end)
 				end
@@ -1444,14 +1417,14 @@ return function(Vargs, GetEnv)
 
 		MakeGui = function(p: Player, GUI: string, data: {[any]: any}, themeData: {[string]: any})
 			if not p then return end
-			local theme = {Desktop = Core.ProjectSetting("Theme"); Mobile = Core.ProjectSetting("MobileTheme")}
+			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in themeData do theme[ind] = dat end end
 			Remote.Send(p,"UI",GUI,theme,data or {})
 		end;
 
 		MakeGuiGet = function(p: Player, GUI: string, data: {[any]: any}, themeData: {[string]: any})
 			if not p then return nil end
-			local theme = {Desktop = Core.ProjectSetting("Theme"); Mobile = Core.ProjectSetting("MobileTheme")}
+			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in themeData do theme[ind] = dat end end
 			return Remote.Get(p,"UI",GUI,theme,data or {})
 		end;
@@ -1467,7 +1440,7 @@ return function(Vargs, GetEnv)
 
 		RefreshGui = function(p: Player, name: string | boolean | Instance, ignore: string, data: {[any]: any}, themeData: {[string]: any})
 			if not p then return end
-			local theme = {Desktop = Core.ProjectSetting("Theme"); Mobile = Core.ProjectSetting("MobileTheme")}
+			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in themeData do theme[ind] = dat end end
 			Remote.Send(p,"RefreshUI",name,ignore,themeData or theme,data or {})
 		end;

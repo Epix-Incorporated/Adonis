@@ -49,9 +49,6 @@ return function(Vargs, GetEnv)
 
 		for _, v in Settings.MusicList or {} do table.insert(Variables.MusicList, v) end
 		for _, v in Settings.InsertList or {} do table.insert(Variables.InsertList, v) end
-		-- These catalogs are developer configuration; later additions need authored display records.
-		Core.RegisterStaticSettingValue("MusicList", Variables.MusicList)
-		Core.RegisterStaticSettingValue("InsertList", Variables.InsertList)
 		for _, v in Settings.CapeList or {} do table.insert(Variables.Capes, v) end
 		for k, v in Settings.Aliases or {} do Variables.Aliases[k] = v end
 		for k, v in Settings.Waypoints or {} do Variables.Waypoints[k] = v end

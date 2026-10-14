@@ -46,8 +46,9 @@ return function(Vargs, GetEnv)
 
 			local plr = userId and service.Players:GetPlayerByUserId(userId)
 			if plr then
-				local reason = type(data) == "table" and server.TextPolicy.GetRecordText(data.ReasonRecord) or "Reason unavailable"
-				pcall(plr.Kick, plr, string.format("%s | Reason: %s", Core.GetVariableText("BanMessage"), reason or "Reason unavailable"))
+				local reason = if type(data) == "table" and data.Reason then data.Reason
+					else "No reason provided"
+				pcall(plr.Kick, plr, string.format("%s | Reason: %s", Variables.BanMessage, reason))
 				AddLog("Script", {
 					Text = `Applied ban on {plr.Name}`;
 					Desc = `Ban reason: {reason}`;
@@ -61,7 +62,8 @@ return function(Vargs, GetEnv)
 
 			local plr = userId and service.Players:GetPlayerByUserId(userId)
 			if plr then
-				local reason = type(data) == "table" and server.TextPolicy.GetRecordText(data.ReasonRecord) or "Reason unavailable"
+				local reason = if type(data) == "table" and data.Reason then data.Reason
+					else "No reason provided"
 
 				pcall(
 					plr.Kick,
@@ -103,7 +105,7 @@ return function(Vargs, GetEnv)
 
 			if oldVer and server.Version and server.Version > oldVer then
 				Process.SaveDatastoreVersionDebounce = true
-				server.AddSystemMessage({
+				table.insert(server.Messages, {
 					Level = 1;
 					Title = "Updated!";
 					Message = "Click to view the changelog.";
@@ -115,7 +117,7 @@ return function(Vargs, GetEnv)
 		end)
 
 		if Core.DebugMode == true then
-			server.AddSystemMessage({
+			table.insert(server.Messages, {
 				Level = 301;
 				Title = "Debug Mode Enabled";
 				Message = "Adonis is currently running in Debug Mode.";
@@ -126,7 +128,7 @@ return function(Vargs, GetEnv)
 		end
 
 		if Settings.DataStoreKey == Defaults.Settings.DataStoreKey and Core.DebugMode == false then
-			server.AddSystemMessage({
+			table.insert(server.Messages, {
 				Level = 301;
 				Title = "Warning!";
 				Message = "Using default datastore key!";
@@ -385,7 +387,11 @@ return function(Vargs, GetEnv)
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = cliData.Mode == "Get" and Remote.Returnables[comString] or Remote.Commands[comString]
 
-								Logs.AddAudit("RemoteFires", "Remote", p, {RemoteName = comString, Count = #args, Outcome = "Requested"})
+								AddLog("RemoteFires", {
+									Text = string.format("%s fired %s; Arg1: %s", p.Name, comString, service.MaxLen(tostring(args[1]), 50));
+									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args));
+									Player = p;
+								})
 
 								if command then
 									local rets = {TrackTask(`Remote: {p.Name}: {comString}`, command, false, p, args)}
@@ -428,29 +434,20 @@ return function(Vargs, GetEnv)
 			return tbl2
 		end;
 
-		-- Resolves authorized commands while preserving literal input provenance and canonical audit outcomes.
 		Command = function(p, msg, opts, noYield)
-			opts = table.clone(opts or {})
-			local literalMask = opts.UserTextMask or server.ChatTransport.OriginMask(opts.UserCommandOrigin, p, msg)
+			opts = opts or {}
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
 				msg = string.sub(msg, 1, Process.MsgStringLimit)
 			end
 
-			local trimmed = Functions.Trim(msg)
-			local trimStart = string.find(msg, trimmed, 1, true) or 1
-			literalMask = string.sub(literalMask, trimStart, trimStart + #trimmed - 1)
-			msg = trimmed
+			msg = Functions.Trim(msg)
 
 			if string.match(msg, Settings.BatchKey) then
 				local overrideArgs = {}
-				local cursor = 1
 
 				for cmd, overrideMap in string.gmatch(msg, `([^{Settings.BatchKey}]+)({Settings.BatchKey}?[%d,>]*)`) do
 					cmd, overrideMap = Functions.Trim(cmd), Process.GetOverrideMap(overrideMap)
-					local first, last = string.find(msg, cmd, cursor, true)
-					opts.UserTextMask = first and string.sub(literalMask, first, last) or string.rep("0", #cmd)
-					cursor = last and last + 1 or cursor
 					local returnArgs = table.pack(Process.Command(p, cmd, opts, false))
 					table.clear(overrideArgs)
 
@@ -461,11 +458,7 @@ return function(Vargs, GetEnv)
 					opts.OverrideArgs = overrideArgs
 				end
 			else
-				-- Cross-server ingress supplies an already validated canonical command and structured arguments.
-				if not (opts.CrossServer and type(opts.Args) == "table") then
-					msg, literalMask = Admin.AliasFormat(Admin.GetAliases(p), msg, literalMask)
-				end
-				opts.UserTextMask = literalMask
+				msg = Admin.AliasFormat(Admin.GetAliases(p), msg) or msg
 
 				if string.match(msg, Settings.BatchKey) then
 					return Process.Command(p, msg, opts, false)
@@ -515,20 +508,10 @@ return function(Vargs, GetEnv)
 				local cmdArgs = command.Args or command.Arguments
 				local argString = string.match(msg, `^.-{Settings.SplitKey}(.+)`) or ""
 				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
-				-- Only bytes copied from this invocation may become a player's chat body.
-				opts.LiteralArguments = {}
-				local argumentCursor = #msg - #argString + 1
-				for i, value in args do
-					if type(value) == "string" then
-						local first, last = string.find(msg, value, argumentCursor, true)
-						opts.LiteralArguments[i] = first ~= nil and string.sub(literalMask or "", first, last) == string.rep("1", #value)
-						argumentCursor = last and last + 1 or argumentCursor
-					end
-				end
 
-				local taskName = string.format("Command :: %s : %s", p.Name, index)
+				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
 
-				if not command.UserText and ((#args > 0 and not isSystem and command.Filter) or opts.Filter) then
+				if #args > 0 and not isSystem and command.Filter or opts.Filter then
 					for i, arg in args do
 						local cmdArg = cmdArgs[i]
 						if cmdArg then
@@ -565,11 +548,14 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				local auditActor = server.ChatTransport.ResolveOriginAuthor(opts.UserCommandOrigin) or (not isSystem and p)
-				local logCommand = (opts.CrossServer or (auditActor and not opts.DontLog)) and not command.NoLog
-				local noSave = command.AdminLevel == "Players" or command.AdminLevel == "Donors" or command.Donors or command.AdminLevel == 0
-				if logCommand then
-					Logs.AddAudit("Commands", "Command", auditActor, {CommandKey = index, Outcome = "Accepted", NoSave = noSave})
+				if (opts.CrossServer or (not isSystem and not opts.DontLog)) and not command.NoLog then
+					local noSave = command.AdminLevel == "Player" or command.Donors or command.AdminLevel == 0
+					AddLog("Commands", {
+						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
+						Desc = `{matched}{Settings.SplitKey}{table.concat(args, Settings.SplitKey)}`;
+						Player = p;
+						NoSave = noSave;
+					})
 
 					if Settings.ConfirmCommands then
 						Functions.Hint(`Executed Command: [ {msg} ]`, {p})
@@ -580,33 +566,31 @@ return function(Vargs, GetEnv)
 					taskName = `Thread: {taskName}`
 				end
 
-				-- Only literal fields from this author's explicit submission may initiate chat.
-				local chatInput = command.UserText and command.UserText.Kind == "Chat"
-					and server.ChatTransport.CommandInput(p, command, args, opts)
 				Admin.UpdateCooldown(pDat, command)
-				-- Records completion only after the command returns, including asynchronously yielding tasks.
-				local function executeCommand(...)
-					local results = table.pack(command.Function(...))
-					if logCommand then
-						Logs.AddAudit("Commands", "Command", auditActor, {CommandKey = index, Outcome = "Completed", NoSave = noSave})
-					end
-					return table.unpack(results, 1, results.n)
-				end
-				local returnArgs = table.pack(TrackTask(taskName, executeCommand, function(cmdError)
-					if logCommand then
-						Logs.AddAudit("Commands", "Command", auditActor, {CommandKey = index, Outcome = "Failed", NoSave = noSave})
-					end
+				local returnArgs = table.pack(TrackTask(taskName, command.Function, function(cmdError)
 					if not opts.IgnoreErrors then
-						if not command.NoLog then Logs.AddAudit("Errors", "Error", auditActor, {CommandKey = index, Outcome = "Failed"}) end
-						if not isSystem then
-							Remote.MakeGui(p, "Output", {Message = server.TextPolicy.ProjectCommandError(cmdError)})
+						if type(cmdError) == "string" then
+							AddLog("Errors", `[{matched}] {cmdError}`)
+
+							cmdError = cmdError:match("%d: (.+)$") or cmdError
+
+							if not isSystem then
+								Remote.MakeGui(p, "Output", {
+									Message = cmdError,
+								})
+								if Core.DebugMode == true then
+									warn(`Encountered an error while running a command: {msg}\n{cmdError}\n{debug.traceback()}`)
+								end
+							end
+						elseif cmdError ~= nil and cmdError ~= true and not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = `There was an error but the error was not a string? : {cmdError}`;
+							})
 						end
-						if Core.DebugMode == true then warn("An Adonis command failed; inspect its audit event.") end
 					end
 				end, p, args, {
 					PlayerData = pDat,
-					Options = opts,
-					ChatInput = chatInput,
+					Options = opts
 				}))
 				local ran, cmdError = returnArgs[1], returnArgs[2]
 
@@ -626,13 +610,17 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Cross-server conversational relays cannot provide TextChannel delivery guarantees.
-		CrossServerChat = function()
-			return false
+		CrossServerChat = function(data)
+			if data then
+				for _, v in service.GetPlayers() do
+					if Admin.GetLevel(v) > 0 then
+						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
+					end
+				end
+			end
 		end;
 
-		Chat = function(p, msg, sourceKind)
-			local origin = server.ChatTransport.NewOrigin(p, msg)
+		Chat = function(p, msg)
 			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "Chat")
 			if didPassRate then
 				local isMuted = Admin.IsMuted(p);
@@ -642,23 +630,29 @@ return function(Vargs, GetEnv)
 					if not Admin.CheckSlowMode(p) then
 						msg = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.UnsanitizeXML(msg) or msg -- Hack to fix TextChatService invalidly XML escaping messages
 						local msg = string.sub(msg, 1, Process.MsgStringLimit)
-						Logs.AddAudit("Chats", "Chat", p, {Outcome = "Accepted"})
+						local filtered = service.LaxFilter(msg, p)
 
-						if Settings.ChatCommands and sourceKind ~= "MetadataOnly" then
+						AddLog(Logs.Chats, {
+							Text = `{p.Name}: {filtered}`;
+							Desc = tostring(filtered);
+							Player = p;
+						})
+
+						if Settings.ChatCommands then
 							if Admin.DoHideChatCmd(p, msg) then
 								Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
-								Process.Command(p, msg, {Chat = true; UserCommandOrigin = origin;})
+								Process.Command(p, msg, {Chat = true;})
 							elseif string.sub(msg, 1, 3) == "/e " then
 								service.Events.PlayerChatted:Fire(p, msg)
 								msg = string.sub(msg, 4)
-								Process.Command(p, msg, {Chat = true; UserCommandOrigin = origin;})
+								Process.Command(p, msg, {Chat = true;})
 							elseif string.sub(msg, 1, 8) == "/system " then
 								service.Events.PlayerChatted:Fire(p, msg)
 								msg = string.sub(msg, 9)
-								Process.Command(p, msg, {Chat = true; UserCommandOrigin = origin;})
+								Process.Command(p, msg, {Chat = true;})
 							else
 								service.Events.PlayerChatted:Fire(p, msg)
-								Process.Command(p, msg, {Chat = true; UserCommandOrigin = origin;})
+								Process.Command(p, msg, {Chat = true;})
 							end
 						else
 							service.Events.PlayerChatted:Fire(p, msg)
@@ -666,12 +660,12 @@ return function(Vargs, GetEnv)
 					else
 						local msg = string.sub(msg, 1, Process.MsgStringLimit)
 
-						if Settings.ChatCommands and sourceKind ~= "MetadataOnly" then
+						if Settings.ChatCommands then
 							if Admin.DoHideChatCmd(p, msg) then
 								Remote.Send(p,"Function","ChatMessage",`> {msg}`,Color3.new(1, 1, 1))
-								Process.Command(p, msg, {Chat = true; UserCommandOrigin = origin;})
+								Process.Command(p, msg, {Chat = true;})
 							else
-								Process.Command(p, msg, {Chat = true; UserCommandOrigin = origin;})
+								Process.Command(p, msg, {Chat = true;})
 							end
 						end
 					end
@@ -679,7 +673,11 @@ return function(Vargs, GetEnv)
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
 					service.Events.MutedPlayerChat_UnFiltered:Fire(p, msg)
 					local filtered = service.LaxFilter(msg, p)
-					Logs.AddAudit("Chats", "Chat", p, {Outcome = "Rejected"})
+					AddLog(Logs.Chats, {
+						Text = `[MUTED] {p.Name}: {filtered}`;
+						Desc = tostring(filtered);
+						Player = p;
+					})
 					service.Events.MutedPlayerChat_Filtered:Fire(p, filtered)
 				end
 			elseif not didPassRate and RateLimit(p, "RateLog") then
@@ -738,13 +736,13 @@ return function(Vargs, GetEnv)
 
 				if banned then
 					Remote.Clients[key] = nil;
-					p:Kick(string.format("%s | Reason: %s", Core.GetVariableText("BanMessage"), (reason or "Reason unavailable")))
+					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
 					return "REMOVED"
 				end
 
 				if Variables.ServerLock and level < 1 then
 					Remote.Clients[key] = nil;
-					p:Kick(Core.GetVariableText("LockMessage"))
+					p:Kick(Variables.LockMessage or "::Adonis:: Server Locked")
 					return "REMOVED"
 				end
 
@@ -761,7 +759,7 @@ return function(Vargs, GetEnv)
 
 					if not listed and level == 0 then
 						Remote.Clients[key] = nil;
-						p:Kick(Core.GetVariableText("LockMessage"))
+						p:Kick(Variables.LockMessage or "::Adonis:: Whitelist Enabled")
 						return "REMOVED"
 					end
 				end
@@ -792,11 +790,10 @@ return function(Vargs, GetEnv)
 			if not ran then
 				AddLog("Errors", `{p.Name} PlayerAdded Failed: {err}`)
 				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:")
-				warn("Adonis player initialization failed; details are unavailable.")
+				warn(tostring(err))
 			end
 
 			if Remote.Clients[key] then
-				Admin.CacheNativeChatCommands()
 				Core.HookClient(p)
 
 				AddLog("Script", {
@@ -817,7 +814,7 @@ return function(Vargs, GetEnv)
 
 				--// Get chats
 				Connections[p].Chatted = p.Chatted:Connect(function(msg)
-					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, false, p, msg, service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and "MetadataOnly" or nil)
+					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, false, p, msg)
 					if not ran then
 						logError(err);
 					end
@@ -857,7 +854,6 @@ return function(Vargs, GetEnv)
 			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
-					Admin.CacheNativeChatCommands()
 					
 					if Remote.Clients[key] then
 						Remote.Clients[key] = nil
@@ -1054,16 +1050,23 @@ return function(Vargs, GetEnv)
 				if level > 0 then
 					if Settings.Notification then
 						task.wait(1)
-						local projectedRank = rank and Core.ProjectRank(rank)
-						local rankName = projectedRank and projectedRank.Name or (if level >= 1000 then "Place Owner" else `Level {level}`)
-						Functions.Notification("Welcome.", `Your rank is {rankName} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.UI.Make("CommandList")`))
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.UI.Make("CommandList")`))
 
 						if #server.Messages > 0 then
 							for _, message in server.Messages do
-								local safe = server.ProjectSystemMessage(message)
-								if level >= (tonumber(safe.Level) or 300) then
-									task.delay(1, Functions.Notification, safe.Title or "Message", safe.Message or "Notice text unavailable",
-										{p}, tonumber(safe.Time) or 10, safe.Icon, safe.onClick)
+								local isString = type(message) == "string"
+
+								if level >= (not isString and message.Level or 300) then
+									task.delay(
+										1,
+										Functions.Notification,
+										not isString and message.Title or "Message",
+										isString and message or not isString and message.Message or "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+										{p},
+										isString and math.round((#message/19)+2.5) or not isString and message.Time or 10,
+										not isString and message.Icon,
+										not isString and message.onClick
+									)
 								end
 							end
 						end

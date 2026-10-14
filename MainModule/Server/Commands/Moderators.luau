@@ -13,8 +13,6 @@ return function(Vargs, env)
 
 	return {
 		Kick = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"kick"};
 			Args = {"player", "optional reason"};
@@ -125,11 +123,9 @@ return function(Vargs, env)
 					if timeLeft <= 0 then
 						table.remove(variables.TimeBans, ind)
 					else
-						local reason = server.TextPolicy.GetRecordText(v.ReasonRecord) or "Reason unavailable"
-						local moderatorId = type(v.ReasonRecord) == "table" and tonumber(v.ReasonRecord.AuthorUserId)
 						table.insert(tab, {
-							Text = `User {tonumber(v.UserId) or 0}`,
-							Desc = string.format("Issued by: %s | Reason: %s | Minutes left: %d", moderatorId and `User {moderatorId}` or "Unknown", reason, minutes)
+							Text = `{v.Name}:{v.UserId}`,
+							Desc = string.format("Issued by: %s | Reason: %s | Minutes left: %d", v.Moderator or "%UNKNOWN%", v.Reason, minutes)
 						})
 					end
 				end
@@ -144,13 +140,14 @@ return function(Vargs, env)
 			Args = {"player", "message"};
 			Description = "Sends the player a notification";
 			Category = "Messages";
-			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
+			Filter = true;
 			AdminLevel = "Moderators";
-			-- Submits this author's literal text through recipient-controlled chat delivery.
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing player name")
+			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(plr, args[1]), args[2], data and data.ChatInput, "Notification", "Notification")
+
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing player name")) do
+					Functions.Notification("Notification", service.Filter(args[2], plr, v), {v})
+				end
 			end
 		};
 
@@ -251,31 +248,28 @@ return function(Vargs, env)
 		};
 
 		TimeMessage = {
-			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"tm", "timem", "timedmessage", "timemessage"};
 			Args = {"time", "message"};
+			Filter = true;
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Delivers the author's literal message through native chat before timed presentation.
-			Function = function(plr: Player, args: {string}, data: {})
-				local duration = assert(tonumber(args[1]), "Invalid time amount (must be number)")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[2], "Missing message"), data and data.ChatInput, "Notification", "Message", {Duration = duration})
+			Function = function(plr: Player, args: {string})
+				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(assert(args[2], "Missing message"), plr), service.GetPlayers(), true, assert(tonumber(args[1]), "Invalid time amount (must be number)"))
 			end
 		};
 
 		Message = {
-			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"m", "message"};
 			Args = {"message"};
+			Filter = true;
 			Description = "Makes a message";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Presents only the author's message delivered through each recipient's native chat channel.
-			Function = function(plr: Player, args: {string}, data: {})
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "Message", {AutoDuration = true})
+			Function = function(plr: Player, args: {string})
+				Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(assert(args[1], "Missing message"), plr), nil, service.GetPlayers(), true)
 			end
 		};
 
@@ -283,44 +277,44 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"mpm", "messagepm"};
 			Args = {"player", "message"};
-			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
+			Filter = true;
 			Description = "Makes a private message on the target player(s) screen.";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Submits this author's literal text through recipient-controlled chat delivery.
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(plr, args[1]), args[2], data and data.ChatInput, "Notification", "Message")
+
+				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
+				end
 			end
 		};
 
 		Notify = {
-			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"n", "smallmessage", "nmessage", "nmsg", "smsg", "smessage"};
 			Args = {"message"};
+			Filter = true;
 			Description = "Makes a small message";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Uses the small-message layout only after native chat delivers the author's text.
-			Function = function(plr: Player, args: {string}, data: {})
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "Notify", {AutoDuration = true})
+			Function = function(plr: Player, args: {string})
+				Functions.Notify(`Message from @{plr.Name}`, service.BroadcastFilter(assert(args[1], "Missing message"), plr), service.GetPlayers(), nil, plr)
 			end
 		};
 
 		CustomNotify = {
-			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1, 2}};
 			Prefix = Settings.Prefix;
 			Commands = {"cn", "customsmallmessage", "cnmessage"};
 			Args = {"title", "message"};
+			Filter = true;
 			Description = `Same as {Functions.GetMainPrefix()}n but says whatever you want the title to be instead of your name.`;
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Sends title and body together so both are derived from the recipient's filtered receipt.
-			Function = function(plr: Player, args: {string}, data: {})
-				local text = assert(args[1], "Missing title") .. "\n" .. assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), text, data and data.ChatInput, "Notification", "Notify", {TitleMode = "Custom", AutoDuration = true})
+			Function = function(plr: Player, args: {string})
+				Functions.Notify(service.BroadcastFilter(assert(args[1], "Missing title"), plr), service.BroadcastFilter(assert(args[2], "Missing message")	, plr), service.GetPlayers())
 			end
 		};
 
@@ -328,64 +322,59 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"npm", "smallmessagepm", "nmessagepm", "nmsgpm", "npmmsg", "smsgpm", "spmmsg", "smessagepm"};
 			Args = {"player", "message"};
-			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
+			Filter = true;
 			Description = "Makes a small private message on the target player(s) screen.";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Submits this author's literal text through recipient-controlled chat delivery.
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(plr, args[1]), args[2], data and data.ChatInput, "Notification", "Notify")
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.RemoveGui(v, "Notify")
+					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
+				end
 			end
 		};
 
 		Hint = {
-			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"h", "hint"};
 			Args = {"message"};
+			Filter = true;
 			Description = "Makes a hint";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Preserves the hint layout while native delivery supplies the text and sender attribution.
-			Function = function(plr: Player, args: {string}, data: {})
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[1], "Missing message"), data and data.ChatInput, "Notification", "Hint", {AutoDuration = true})
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing message")
+				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr)), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
 		TimeHint = {
-			UserText = {Kind = "Chat", Audience = "AllPlayers", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"th", "timehint", "thint"};
 			Args = {"time", "message"};
+			Filter = true;
 			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Applies the requested duration to a hint built from native chat delivery.
-			Function = function(plr: Player, args: {string}, data: {})
-				local duration = assert(tonumber(args[1]), "Invalid time amount (must be a number)")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(), assert(args[2], "Missing message"), data and data.ChatInput, "Notification", "Hint", {Duration = duration})
+			Function = function(plr: Player, args: {string})
+				Functions.Hint(service.BroadcastFilter(assert(args[2], "Missing message"), plr), service.GetPlayers(), assert(tonumber(args[1]), "Invalid time amount (must be a number)"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
 			end
 		};
 
 		Warn = {
-			UserText = {Kind = "Chat", Audience = "SelectedPlayers", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"warn", "warning"};
 			Args = {"player/user", "reason"};
+			Filter = true;
 			Dangerous = true;
 			Description = "Warns players";
 			Category = "Moderation";
 			AdminLevel = "Moderators";
-			-- Records moderation independently of chat; only native delivery may display its custom reason.
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target player(s) (argument #1)")
-				local submittedReason = assert(args[2], "Missing reason (argument #2)")
-				local author = server.TextPolicy.GetCommandAuthor(plr)
-				local reasonRecord = server.TextPolicy.CreateRecord(submittedReason, author, "Moderation")
-				local reason = reasonRecord and reasonRecord.Text or "Reason unavailable"
-				local recipients, targetIds = {}, {}
+				local reason = assert(args[2], "Missing reason (argument #2)")
 
 				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
@@ -399,41 +388,25 @@ return function(Vargs, env)
 						table.insert(playerData.Warnings, {
 							From = plr.Name;
 							Message = reason;
-							ReasonRecord = reasonRecord;
 							Time = os.time();
 						})
 						Functions.LogAdminAction(plr, "Warned", v.Name, reason)
-						service.Events.WarningAdded:Fire(v, reason, plr)
-						table.insert(targetIds, v.UserId)
+						service.Events.WarningAdded:Fire(v, args[2], plr)
 
 						--// Check if its a fake player, this should allow it to save.
 						if service.Wrapped(v) then
 							task.defer(Core.SavePlayerData, v, playerData)
 						end
 
-						local target = service.UnWrap(v)
-						if typeof(target) == "Instance" and target:IsA("Player") and service.UnWrap(service.Players:GetPlayerByUserId(target.UserId)) == target then
-							table.insert(recipients, v)
-							Functions.Notify("Warning", "A moderator recorded a warning for your account.", {v})
-						end
+						Remote.RemoveGui(v, "Notify")
+						Functions.Notify(`Warning from {service.FormatPlayer(plr)}`, reason, {v})
 						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
-					end
-				end
-				if #targetIds > 0 and not (data and data.Options and data.Options.DontLog) then
-					Logs.AddAudit("Commands", "Command", author, {CommandKey = "Warn", TargetUserIds = targetIds, Outcome = "Completed", DetailRecord = reasonRecord})
-				end
-				if #recipients > 0 then
-					local ok, channelId = pcall(server.ChatTransport.SubmitCommand, plr, recipients, submittedReason, data and data.ChatInput, "Notification", "Notify")
-					if not ok or not channelId then
-						Remote.MakeGui(plr, "Output", {Message = "Warning recorded; its chat message could not be submitted."})
 					end
 				end
 			end
 		};
 
 		KickWarn = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"kickwarn", "kwarn", "kickwarning"};
 			Args = {"player/user", "reason"};
@@ -452,7 +425,6 @@ return function(Vargs, env)
 						table.insert(playerData.Warnings, {
 							From = plr.Name;
 							Message = reason;
-							ReasonRecord = data.UserTextRecords[2];
 							Time = os.time();
 						})
 						Functions.LogAdminAction(plr, "Kick Warning", v.Name, reason)
@@ -559,10 +531,9 @@ return function(Vargs, env)
 				local data = Core.GetPlayer(target)
 				local tab = table.create(#(data.Warnings or {}))
 				for k, m in data.Warnings or {} do
-					local reason = server.TextPolicy.GetRecordText(m.ReasonRecord) or "Reason unavailable"
 					table.insert(tab, {
-						Text = `[{k}] {reason}`;
-						Desc = `Issued by: {if type(m.ReasonRecord) == "table" and tonumber(m.ReasonRecord.AuthorUserId) then `User {tonumber(m.ReasonRecord.AuthorUserId)}` else "Unknown"}; {reason}`;
+						Text = `[{k}] {m.Message}`;
+						Desc = `Issued by: {m.From}; {m.Message}`;
 						Time = m.Time;
 					})
 				end
@@ -601,15 +572,23 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"chatnotify", "chatmsg"};
 			Args = {"player", "message"};
-			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
+			Filter = true;
 			Description = "Makes a message in the target player(s)'s chat window";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Submits this author's literal text through recipient-controlled chat delivery.
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(plr, args[1]), args[2], data and data.ChatInput, "Notification", "ChatMessage")
+			Function = function(plr: Player, args: {string}, data: {any})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+						local TextToUse = args[2]
+						if data.Options.Chat ~= true then
+							TextToUse = service.SanitizeXML(args[2] or "Hello world!")
+						end
+						Remote.Send(v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{service.Filter(TextToUse, plr, v)}</font>`)
+					else
+						Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
+					end
+
+				end
 			end
 		};
 
@@ -758,27 +737,14 @@ return function(Vargs, env)
 		};
 
 		AFK = {
-			-- Generated character labels share one public-edit admission for the selected players.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {}, RequiresLocalAuthor = true};
 			Prefix = Settings.Prefix;
 			Commands = {"afk"};
 			Args = {"player"};
 			Description = "FFs, Gods, Names, Freezes, and removes the target player's tools until they jump.";
 			Category = "Moderation";
 			AdminLevel = "Moderators";
-			-- Prepares every label under the originating author before asynchronous AFK effects begin.
 			Function = function(plr: Player, args: {string})
-				local players = service.GetPlayers(plr, args[1])
-				local labels, labelArgs = {}, {}
-				for index, player in players do
-					labels[index] = `-AFK-_{service.FormatPlayer(player)}_-AFK-`
-					labelArgs[index] = index
-				end
-				local filteredLabels = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), labels, {
-					Kind = "PublicEdit", Audience = "Broadcast", Args = labelArgs,
-				})
-				for index, v in players do
-					local label = filteredLabels[index]
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
 						local ff = service.New("ForceField", v.Character)
 						local hum = v.Character.Humanoid
@@ -790,7 +756,7 @@ return function(Vargs, env)
 						for k, t in v.Backpack:GetChildren() do
 							t.Parent = tools
 						end
-						hum.DisplayName = label
+						Admin.RunCommand(`{Functions.GetMainPrefix()}name`, v.Name, `-AFK-_{service.FormatPlayer(v)}_-AFK-`)
 						local torso = v.Character.HumanoidRootPart
 						local pos = torso.CFrame
 						local running=true
@@ -975,65 +941,254 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"privatechat", "dm", "pchat"};
 			Args = {"player", "message (optional)"};
-			UserText = {Kind = "Chat", Args = {2}, Audience = "Conversation"};
-			Description = "Starts a private group conversation with the selected players";
+			Filter = true;
+			Description = "Send a private message to a player";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Owns group controls; message bodies remain in each client's TextChannel.
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				local transport = server.ChatTransport
-				local session = Remote.NewSession("PrivateChat")
-				local channelId
 
-				-- Projects current membership without returning any conversation history.
-				local function peers()
-					local list = {}
-					for peer in session.Users do
-						table.insert(list, {Name = peer.Name, DisplayName = peer.DisplayName, UserId = peer.UserId})
+				local sessionName = service.HttpService:GenerateGUID(false) --// Used by the private chat windows
+				local newSession = Remote.NewSession("PrivateChat")
+				local history = {}
+
+				newSession.Data.History = history
+
+				local function getPeerList()
+					local peers = {}
+					for peer in newSession.Users do
+						table.insert(peers, {
+							Name = peer.Name;
+							DisplayName = peer.DisplayName;
+							UserId = peer.UserId;
+							--Instance = service.UnWrap(peer);
+						})
 					end
-					return list
+					return peers
 				end
 
-				session:ConnectEvent(function(player, operation, value)
-					if operation == "RemovedFromSession" and channelId then
-						transport.RemoveMember(channelId, player)
-						if not session.Ended then session:SendToUsers("UpdatePeerList", peers()) end
-						return
-					end
-					if not channelId or session.Ended then return end
-					if not player then
-						if operation == "LastUserRemoved" then transport.Close(channelId, "Closed") end
-						return
-					end
-					if not session.Users[player] then return end
-					if operation == "GetPeerList" then
-						session:SendToUser(player, "UpdatePeerList", peers())
-					elseif operation == "LeaveSession" then
-						transport.RemoveMember(channelId, player)
-					elseif operation == "EndSession" and player == plr then
-						transport.Close(channelId, "Closed")
-					elseif player == plr or Admin.CheckAdmin(player) then
-						if operation == "AddPlayerToSession" then
-							if not transport.AddMember(channelId, value, true) then
-								Functions.Hint("This player cannot join the conversation.", {player})
+				local function getFilteredHistory(player)
+					local canUsersDirectChatAsyncCache = {}
+					local newHistory = {}
+
+					for _, historyItem in history do
+						local canUsersChat = false
+						local newHistoryItem = {
+							Message = nil,
+							Sender = {
+								Name = historyItem.Sender.Name,
+								DisplayName = historyItem.Sender.DisplayName,
+								UserId = historyItem.Sender.UserId,
+								Icon = historyItem.Sender.Icon
+							}
+						}
+
+						if player.UserId == historyItem.Sender.UserId or historyItem.Sender.UserId == 0 then
+							canUsersChat = true
+							newHistoryItem.Sender.IsMessageRestricted = false
+						elseif canUsersDirectChatAsyncCache[historyItem.Sender.UserId] ~= nil then
+							canUsersChat = canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
+							newHistoryItem.Sender.IsMessageRestricted = not canUsersDirectChatAsyncCache[historyItem.Sender.UserId]
+						else
+							local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, player.UserId, {historyItem.Sender.UserId})
+							if success then
+								canUsersChat = #canUserChatData > 0
+								canUsersDirectChatAsyncCache[historyItem.Sender.UserId] = canUsersChat
+								newHistoryItem.Sender.IsMessageRestricted = not canUsersChat
+							else
+								newHistoryItem.Sender.IsMessageRestrictedError = true
 							end
-						elseif operation == "RemovePlayerFromSession" and type(value) == "table" and type(value.UserId) == "number" then
-							local peer = service.Players:GetPlayerByUserId(value.UserId)
-							if peer and session.Users[peer] then transport.RemoveMember(channelId, peer) end
+						end
+
+						newHistoryItem.Message = canUsersChat and historyItem.Message or nil
+
+						table.insert(newHistory, newHistoryItem)
+					end
+
+					return newHistory
+				end
+
+				local function systemMessage(msg)
+					local data = {
+						Name = "* SYSTEM *";
+						UserId = 0;
+						Icon = 0;
+					};
+					table.insert(history, {
+						Sender = data;
+						Message = msg;
+					});
+					newSession:SendToUsers("PlayerSentMessage", data, msg)
+				end;
+
+				newSession:ConnectEvent(function(p, cmd, ...)
+					local args = table.pack(...)
+
+					if not p then -- System event(s)
+						if cmd == "LastUserRemoved" then
+							newSession:End()
+						end
+					else	-- Player event(s)
+						if cmd == "SendMessage" then
+							local message = string.sub(tostring(args[1]), 1, 140)
+							local filtered = service.BroadcastFilter(message, p)
+
+							if filtered ~= message then
+								Remote.MakeGui(p, "Output", {
+									Title = "Filter error",
+									Message = "A message filtering error occurred; please try again."
+								})
+							else
+								local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+								local data, msg = {
+									Name = p.Name;
+									DisplayName = p.DisplayName;
+									UserId = p.UserId;
+									Icon = status and gotIcon or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+								}, filtered
+
+								table.insert(history, {
+									Sender = data;
+									Message = msg;
+								})
+
+								if #history > 200 then
+									table.remove(history, 1)
+								end
+
+								for sessionPlayer in newSession.Users do
+									local newData = {
+										Name = data.Name,
+										DisplayName = data.DisplayName,
+										UserId = data.UserId,
+										Icon = data.Icon
+									}
+
+									local canUsersChat = false
+									if p.UserId == sessionPlayer.UserId then
+										canUsersChat = true
+									else
+										local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, p.UserId, {sessionPlayer.UserId})
+										if success then
+											canUsersChat = #canUserChatData > 0
+											newData.IsMessageRestricted = not canUsersChat
+										else
+											newData.IsMessageRestrictedError = true
+										end
+									end
+
+									local messageToSend = canUsersChat and msg or nil
+
+									newSession:SendToUser(sessionPlayer, "PlayerSentMessage", newData, messageToSend)
+								end
+							end
+						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
+							newSession:RemoveUser(p)
+							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
+							newSession:SendToUsers("UpdatePeerList", getPeerList())
+
+							if p == plr then
+								systemMessage("<i>Session ended: Session owner left</i>")
+								newSession:End()
+							end
+						elseif cmd == "EndSession" and p == plr then
+							systemMessage("<i>Session ended</i>")
+							newSession:End()
+						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
+							local peer = args[1]
+							local filteredHistory = getFilteredHistory(peer)
+
+							if peer then
+								local canUserChatSuccess, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, peer.UserId)
+								if not canUserChatSuccess then
+									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session because an error occurred.`, {p})
+								end
+
+								if not canUserChatData then
+									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session due to them not being able to chat.`, {p})
+								end
+
+								newSession:AddUser(peer)
+								newSession:SendToUser(peer, "AddedToSession")
+								systemMessage(string.format("<i>%s added %s to the session</i>", service.FormatPlayer(p), service.FormatPlayer(peer)))
+								Remote.MakeGui(peer, "PrivateChat", {
+									Owner = plr;
+									SessionKey = newSession.SessionKey;
+									SessionName = sessionName;
+									History = filteredHistory;
+									CanManageUsers = Admin.CheckAdmin(peer);
+								})
+								newSession:SendToUsers("UpdatePeerList", getPeerList())
+							end
+						elseif cmd == "RemovePlayerFromSession" and (p == plr or Admin.CheckAdmin(p)) then
+							local peer = args[1]
+
+							if peer then
+								for pr in newSession.Users do
+									if peer.UserId and peer.UserId == pr.UserId then
+										newSession:SendToUser(pr, "RemovedFromSession")
+										newSession:RemoveUser(pr)
+										systemMessage(string.format("<i>%s removed %s from the session</i>", p.Name, pr.Name))
+									end
+								end
+							end
+
+							newSession:SendToUsers("UpdatePeerList", getPeerList())
+						elseif cmd == "GetPeerList" then
+							newSession:SendToUser(p, "UpdatePeerList", getPeerList())
 						end
 					end
-					if not session.Ended then session:SendToUsers("UpdatePeerList", peers()) end
 				end)
-				local ok, result = pcall(transport.SubmitCommand, plr, service.GetPlayers(plr, args[1]), args[2] or "",
-					data and data.ChatInput, "PrivateChat", nil, {Session = session})
-				if not ok or not result then
-					session:End()
-					assert(ok, result)
-					return
+
+				systemMessage("<i>Chat session started</i>")
+
+				if args[2] then
+					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
+					local data = {
+						Name = plr.Name;
+						DisplayName = plr.DisplayName;
+						UserId = plr.UserId;
+						Icon = status and gotIcon or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+					}
+
+					table.insert(history, {
+						Sender = data;
+						Message = args[2];
+					})
 				end
-				channelId = result
-				session:SendToUsers("UpdatePeerList", peers())
+
+				newSession:AddUser(plr)
+				Remote.MakeGui(plr, "PrivateChat", {
+					Owner = plr;
+					SessionKey = newSession.SessionKey;
+					SessionName = sessionName;
+					History = getFilteredHistory(plr);
+					CanManageUsers = true;
+				})
+
+				for i, v in service.GetPlayers(plr, args[1]) do
+					if v ~= plr then
+						local success, canUserChatData = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
+						if not success then
+							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session because an error occurred.`, {plr})
+							continue
+						end
+
+						if not canUserChatData then
+							Functions.Hint(`Unable to add {service.FormatPlayer(v)} to the session due to them not being able to chat.`, {plr})
+							continue
+						end
+
+						newSession:AddUser(v)
+						Remote.MakeGui(v, "PrivateChat", {
+							Owner = plr;
+							SessionKey = newSession.SessionKey;
+							SessionName = sessionName;
+							History = getFilteredHistory(v);
+							CanManageUsers = Admin.CheckAdmin(v);
+						})
+					end
+				end
 			end
 		};
 
@@ -1041,15 +1196,37 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"pm", "privatemessage"};
 			Args = {"player", "message"};
-			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
+			Filter = true;
 			Description = "Send a private message to a player";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Submits this author's literal text through recipient-controlled chat delivery.
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(plr, args[1]), args[2], data and data.ChatInput, "PrivateMessage", nil)
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if v.UserId ~= plr.UserId then
+						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
+						if not success then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
+							continue
+						end
+
+						if #canUserChatData == 0 then
+							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
+							continue
+						end
+					end
+
+					local replyTicket = service.HttpService:GenerateGUID(false)
+					Variables.PMtickets[replyTicket] = plr
+
+					Remote.MakeGui(v, "PrivateMessage", {
+						Title = `Message from {service.FormatPlayer(plr)}`;
+						Player = plr;
+						Message = service.Filter(args[2], plr, v);
+						replyTicket = replyTicket;
+					})
+				end
 			end
 		};
 
@@ -1277,8 +1454,6 @@ return function(Vargs, env)
 		};
 
 		Waypoint = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"waypoint", "wp", "checkpoint"};
 			Args = {"name"};
@@ -1350,8 +1525,6 @@ return function(Vargs, env)
 		};
 
 		MakeCamera = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"makecam", "makecamera", "camera", "newcamera", "newcam"};
 			Args = {"name"};
@@ -1726,14 +1899,54 @@ return function(Vargs, env)
 			Description = "Displays running tasks";
 			Category = "Server";
 			AdminLevel = "Moderators";
-			-- Task output has no reliable text author; only operational state reaches the viewer.
 			ListUpdater = function(plr: Player, target)
 				if target then
-					return Logs.ProjectTasks(Remote.Get(target, "TaskManager", "GetTasks"))
+					for _, v in Functions.GetPlayers(plr, target, {UseFakePlayer = true}) do
+						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
+						local temp = table.create(#cTasks + 1)
+
+						table.insert(temp, {
+							Text = "Client Tasks",
+							Desc = "Tasks their client is performing"})
+
+						for _, t in cTasks do
+							table.insert(temp, {
+								Text = `{t.Name or t.Function}- Status: {t.Status} - Elapsed: {t.CurrentTime - t.Created}`;
+								Desc = tostring(t.Function);
+							})
+						end
+
+						return temp
+					end
+				else
+					local tasks = service.GetTasks()
+					local temp = {}
+					local cTasks = Remote.Get(plr, "TaskManager", "GetTasks") or {}
+
+					table.insert(temp, {Text = "Server Tasks"; Desc = "Tasks the server is performing";})
+
+					for _, v in tasks do
+						table.insert(temp, {
+							Text = `{v.Name or v.Function} - Status: {v.Status} - Elapsed: {os.time()-v.Created}`;
+							Desc = tostring(v.Function);
+						})
+					end
+
+					table.insert(temp, " ")
+					table.insert(temp, {
+						Text = "Client Tasks",
+						Desc = "Tasks your client is performing"
+					})
+
+					for _, v in cTasks do
+						table.insert(temp, {
+							Text = `{v.Name or v.Function} - Status: {v.Status} - Elapsed: {v.CurrentTime-v.Created}`;
+							Desc = tostring(v.Function);
+						})
+					end
+
+					return temp
 				end
-				local rows = Logs.ProjectTasks(service.GetTasks())
-				for _, row in Logs.ProjectTasks(Remote.Get(plr, "TaskManager", "GetTasks")) do table.insert(rows, row) end
-				return rows
 			end;
 			Function = function(plr: Player, args: {string})
 				if args[1] then
@@ -1776,7 +1989,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", "Teleporting", "Please wait while you join the selected server.", nil, players, false, 10)
+				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
 			end
 		};
 
@@ -1799,8 +2012,6 @@ return function(Vargs, env)
 
 				for _, v in service.Players:GetPlayers() do
 					local level, rankName = Admin.GetLevel(v);
-					local rankDisplay = rankName and Core.ProjectRank(rankName)
-					rankName = rankDisplay and service.SanitizeXML(rankDisplay.Name)
 					if level > 0 then
 						table.insert(unsorted, {
 							Text = string.format(RANK_TEXT_FORMAT, service.FormatPlayer(v), (rankName or (`Level: {level}`)));
@@ -1826,13 +2037,12 @@ return function(Vargs, env)
 
 				for rank, data in Settings.Ranks do
 					if type(rank) == "string" and type(data) == "table" and tonumber(data.Level) and not data.Hidden then
-						local displayRank = Core.ProjectRank(rank)
 						table.insert(unsorted, {
-							Text = string.format(RANK_RICHTEXT, service.SanitizeXML(displayRank.Name), data.Level);
+							Text = string.format(RANK_RICHTEXT, rank, data.Level);
 							Desc = "";
 							Level = data.Level;
-							Users = displayRank.Users;
-							Rank = service.SanitizeXML(displayRank.Name);
+							Users = data.Users;
+							Rank = rank;
 						})
 					end
 				end
@@ -1859,7 +2069,7 @@ return function(Vargs, env)
 						end
 
 						table.insert(temptable, {
-							Text = `  {service.SanitizeXML(tostring(user))}`;
+							Text = `  {user}`;
 							Desc = string.format(RANK_DESCRIPTION_FORMAT, Rank, Level);
 							--SortLevel = data.Level;
 						})
@@ -1887,13 +2097,11 @@ return function(Vargs, env)
 			Description = "Shows you the normal ban list";
 			Category = "Moderation";
 			AdminLevel = "Moderators";
-			-- Shares one settings projection across configured entries while preserving authored ban details.
 			ListUpdater = function(plr: Player)
 				local tab = table.create(#Settings.Banned + 2)
 				local count = 0
-				local projected
 				for _, v in Settings.Banned do
-					local entry = "Configured ban"
+					local entry = type(v) == "string" and v
 					local reason = "No reason provided"
 					local moderator = "%UNKNOWN%"
 
@@ -1903,13 +2111,21 @@ return function(Vargs, env)
 
 					count +=1
 					if type(v) == "table" then
-						if tonumber(v.UserId) then entry = `[{banType}] User {tonumber(v.UserId)}` end
-						reason = server.TextPolicy.GetRecordText(v.ReasonRecord) or "Reason unavailable"
-						local moderatorId = type(v.ReasonRecord) == "table" and tonumber(v.ReasonRecord.AuthorUserId)
-						if moderatorId then moderator = `User {moderatorId}` end
+						if v.Name and v.UserId then
+							entry = `[{banType}] {v.Name}:{v.UserId}`
+						elseif v.UserId then
+							entry = `[{banType}] ID: {v.UserId}`
+						elseif v.Name then
+							entry = `[{banType}] {v.Name}`
+						end
+						if v.Reason then
+							reason = v.Reason
+						end
+						if v.Moderator then
+							moderator = v.Moderator
+						end
 					else
-						projected = projected or Core.ProjectSetting("Banned")
-						entry = `[{banType}] {projected[count] or "Configured ban"}`
+						entry = `[{banType}] {v}`
 					end
 					table.insert(tab, {
 						Text = tostring(entry),
@@ -1932,8 +2148,6 @@ return function(Vargs, env)
 		};
 
 		Vote = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {2, 3}};
 			Prefix = Settings.Prefix;
 			Commands = {"vote", "makevote", "startvote", "question", "survey"};
 			Args = {"player", "answer1,answer2,etc (NO SPACES)", "question"};
@@ -1994,14 +2208,14 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in players do
+					for i, v in players do
 					Routine(function()
 						local response = Remote.GetGui(v, "Vote", {
 							Question = question;
 							Answers = anstab;
 							IsRandomOrder = true;
 						})
-						if type(response) == "string" and table.find(anstab, response) then
+						if response then
 							table.insert(responses, response)
 						end
 					end)
@@ -2020,8 +2234,6 @@ return function(Vargs, env)
 		};
 
 		OrderedVote = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {2, 3}};
 			Prefix = Settings.Prefix;
 			Commands = {"orderedvote","ovote"};
 			Args = {"player", "answer1,answer2,etc (NO SPACES)", "question"};
@@ -2092,7 +2304,7 @@ return function(Vargs, env)
 							Answers = anstab;
 							IsRandomOrder = false;
 						})
-						if type(response) == "string" and table.find(anstab, response) then
+						if response then
 							table.insert(responses, response)
 						end
 					end)
@@ -2167,8 +2379,12 @@ return function(Vargs, env)
 			Category = "Tools";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local tab = Core.ProjectAssetList(Variables.InsertList, "InsertList", false)
-				for _, row in Core.ProjectAssetList(HTTP.Trello.InsertList, "InsertList", true) do table.insert(tab, row) end
+				local tab = table.create(#Variables.InsertList + #HTTP.Trello.InsertList)
+				for _, v in Variables.InsertList do table.insert(tab, v) end
+				for _, v in HTTP.Trello.InsertList do table.insert(tab, v) end
+				for i, v in tab do
+					tab[i] = {Text = `{v.Name} - {v.ID}`; Desc = v.ID;}
+				end
 				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab; TextSelectable = true})
 			end
 		};
@@ -4436,7 +4652,6 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local reservedServerInfo = (Core.GetData("PrivateServers") or {})[args[2]]
-				local serverLabel = reservedServerInfo and (server.TextPolicy.GetRecordText(reservedServerInfo.NameRecord) or "reserved server")
 				local placeId = assert(if reservedServerInfo then reservedServerInfo.ID else tonumber(args[2]), "Invalid place ID or server name (argument #2)")
 				local teleportOptions = if reservedServerInfo then service.New("TeleportOptions", {
 					ReservedServerAccessCode = reservedServerInfo.Code
@@ -4447,7 +4662,7 @@ return function(Vargs, env)
 							Remote.MakeGuiGet(v, "Notification", {
 								Title = "Teleport";
 								Icon = server.MatIcons["QR code scanner"];
-								Text = if reservedServerInfo then string.format("Click to teleport to server %s.", serverLabel) else string.format("Click to teleport to place %d.", placeId);
+								Text = if reservedServerInfo then string.format("Click to teleport to server %s.", args[2]) else string.format("Click to teleport to place %d.", placeId);
 								Time = 30;
 								OnClick = Core.Bytecode("return true");
 							})
@@ -4462,8 +4677,6 @@ return function(Vargs, env)
 		};
 
 		MakeServer = {
-			-- Reserved-server labels are persistent shared text and retain their original author.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"makeserver", "reserveserver", "privateserver"};
 			Args = {"serverName", "(optional) placeId"};
@@ -4472,11 +4685,11 @@ return function(Vargs, env)
 			Description = "Makes a private server that you can teleport yourself and friends to using :place player(s) serverName; Will overwrite servers with the same name; Caps specific";
 			Category = "Server";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string})
 				local place = tonumber(args[2]) or game.PlaceId
 				local code, serverId = service.TeleportService:ReserveServer(place)
 				local servers = Core.GetData("PrivateServers") or {}
-				servers[args[1]] = {Code = code, ID = place, PrivateServerID = serverId, NameRecord = data.UserTextRecords[1]}
+				servers[args[1]] = {Code = code, ID = place, PrivateServerID = serverId}
 				Core.SetData("PrivateServers", servers)
 				Functions.Hint(`Made server {args[1]} | Place: {place}`, {plr})
 			end
@@ -4511,8 +4724,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local servers = Core.GetData("PrivateServers") or {}
 				local tab = table.create(#servers)
-				for _, v in servers do
-					table.insert(tab, {Text = server.TextPolicy.GetRecordText(v.NameRecord) or "Server name unavailable", Desc = `Place: {tonumber(v.ID) or 0}`})
+				for i, v in servers do
+					table.insert(tab, {Text = i, Desc = `Place: {v.ID} | Code: {v.Code}`})
 				end
 				Remote.MakeGui(plr, "List", {Title = "Servers"; Table = tab;})
 			end
@@ -4900,8 +5113,6 @@ return function(Vargs, env)
 		};
 
 		Change = {
-			-- String-valued stats are admitted and filtered after resolving their actual value type.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {}, RequiresLocalAuthor = true};
 			Prefix = Settings.Prefix;
 			Commands = {"change", "leaderstat", "stat", "changestat"};
 			Args = {"player", "stat", "value"};
@@ -4911,35 +5122,22 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local statName = assert(args[2], "Missing stat name (argument #2)")
-				local stats = {}
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local leaderstats = v:FindFirstChild("leaderstats")
 					if leaderstats then
 						local absolute = leaderstats:FindFirstChild(statName)
 						if absolute and absolute:IsA("ValueBase") then
-							table.insert(stats, absolute)
+							absolute.Value = (absolute:IsA("IntValue") or absolute:IsA("NumberValue")) and tonumber(args[3]) or args[3]
 						else
 							for _, st in leaderstats:GetChildren() do
 								if st:IsA("ValueBase") and string.match(st.Name:lower(), `^{service.SanitizePattern(statName:lower())}`) then
-									table.insert(stats, st)
+									st.Value = (st:IsA("IntValue") or st:IsA("NumberValue")) and tonumber(args[3]) or args[3]
 								end
 							end
 						end
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} doesn't have a leaderstats folder`, {plr})
 					end
-				end
-				local textValue
-				for _, stat in stats do
-					if stat:IsA("StringValue") then
-						local filtered = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), {assert(args[3], "Missing value")}, {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}})
-						textValue = filtered[1]
-						break
-					end
-				end
-				for _, stat in stats do
-					stat.Value = if stat:IsA("StringValue") then textValue
-						elseif stat:IsA("IntValue") or stat:IsA("NumberValue") then tonumber(args[3]) else args[3]
 				end
 			end
 		};
@@ -4979,8 +5177,6 @@ return function(Vargs, env)
 		};
 
 		NewStat = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"newstat", "createstat", "cstat"};
 			Args = {"statname", "type (string/number [default: number])"};
@@ -4993,7 +5189,11 @@ return function(Vargs, env)
 					error("Not statname provided!")
 				end
 				local statType = if args[2] then args[2]:lower() else "number"
-				local FilteredStatName = statName
+				local FilteredStatName = service.BroadcastFilter(statName, plr)
+
+				if FilteredStatName ~= statName then
+					error("Stat name is filtered! Sorry!")
+				end
 
 				for _,p in service.GetPlayers() do
 					local leaderstats = p:FindFirstChild("leaderstats") or service.New("Folder")
@@ -6041,8 +6241,12 @@ return function(Vargs, env)
 			Category = "Audio";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local tab = Core.ProjectAssetList(Variables.MusicList, "MusicList", false)
-				for _, row in Core.ProjectAssetList(HTTP.Trello.Music, "MusicList", true) do table.insert(tab, row) end
+				local tab = table.create(#Variables.MusicList + #HTTP.Trello.Music)
+				for _, v in Variables.MusicList do table.insert(tab, v) end
+				for _, v in HTTP.Trello.Music do table.insert(tab, v) end
+				for i, v in tab do
+					tab[i] = {Text = `{v.Name} - {v.ID}`; Desc = v.ID;}
+				end
 				Remote.MakeGui(plr, "List", {Title = "Music List", Table = tab, TextSelectable = true})
 			end
 		};
@@ -6229,8 +6433,6 @@ return function(Vargs, env)
 		};
 
 		DisplayName = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {2}, ExemptValues = {[2] = {hide = true}}};
 			Prefix = Settings.Prefix;
 			Commands = {"displayname", "dname"};
 			Args = {"player", "name/'hide'"};
@@ -6275,8 +6477,6 @@ return function(Vargs, env)
 		};
 
 		Name = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {2}, ExemptValues = {[2] = {hide = true}}};
 			Prefix = Settings.Prefix;
 			Commands = {"name", "rename"};
 			Args = {"player", "name/hide"};
@@ -6284,10 +6484,8 @@ return function(Vargs, env)
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			Category = "Appearance";
 			AdminLevel = "Moderators";
-			-- Keeps every exempt hide spelling a removal while retaining prepared display names.
 			Function = function(plr: Player, args: {string})
-				local name = args[2]
-				if type(name) == "string" and name:lower() == "hide" then name = " " end
+				local name = args[2] == "hide" and " " or args[2]
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
@@ -6473,9 +6671,26 @@ return function(Vargs, env)
 			Category = "Logs";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			-- Exposes only the approved log projection, including refresh responses.
 			ListUpdater = function(plr: Player)
-				return Logs.ProjectConsole(service.LogService:GetLogHistory())
+				local MESSAGE_TYPE_COLORS = {
+					[Enum.MessageType.MessageWarning] = Color3.fromRGB(221, 187, 13),
+					[Enum.MessageType.MessageError] = Color3.fromRGB(255, 50, 14),
+					[Enum.MessageType.MessageInfo] = Color3.fromRGB(14, 78, 255)
+				}
+				local logHistory: {{message: string, messageType: Enum.MessageType, timestamp: number}} = service.LogService:GetLogHistory()
+				local tab = table.create(#logHistory)
+				for i = #logHistory, 1, -1 do
+					local log = logHistory[i]
+					for i, v in service.ExtractLines(log.message) do
+						table.insert(tab, {
+							Text = v;
+							Time = if i == 1 then log.timestamp else nil;
+							Desc = log.messageType.Name:match("^Message(.+)$");
+							Color = MESSAGE_TYPE_COLORS[log.messageType];
+						})
+					end
+				end
+				return tab
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
@@ -6498,9 +6713,8 @@ return function(Vargs, env)
 			Category = "Logs";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			-- Exposes only the approved log projection, including refresh responses.
 			ListUpdater = function(plr: Player, target: Player)
-				return if target and target.Parent then Logs.ProjectConsole(Remote.Get(target, "ClientLog")) else {"Player is currently unreachable"}
+				return if target and target.Parent then Remote.Get(target, "ClientLog") else {"Player is currently unreachable"}
 			end;
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -6525,9 +6739,22 @@ return function(Vargs, env)
 			Description = "View script error log";
 			Category = "Logs";
 			AdminLevel = "Moderators";
-			-- Exposes only the approved log projection, including refresh responses.
 			ListUpdater = function(plr: Player)
-				return Logs.Project(Logs.Errors, "Errors")
+				local Count = if Logs.Errors.__meta == "DLL" then Logs.Errors.count else #Logs.Errors
+				local tab = table.create(Count)
+				for i, v in
+					if Logs.Errors.__meta == "DLL" then
+						Logs.Errors:GetAsTable()
+					else
+						Logs.Errors
+				do
+					table.insert(tab, i, {
+						Time = v.Time;
+						Text = `{v.Text}: {v.Desc}`;
+						Desc = tostring(v.Desc);
+					})
+				end
+				return tab
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
@@ -6607,13 +6834,22 @@ return function(Vargs, env)
 		ChatLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"chatlogs", "chats", "chathistory"};
-			Args = {};
-			Description = "Shows messages delivered to your client; use Roblox's read-only view for expanded moderation";
+			Args = {"autoupdate? (default: false)"};
+			Description = "Displays the current chat logs for the server";
 			Category = "Logs";
 			AdminLevel = "Moderators";
-			-- History stays on the recipient client and cannot replay server transcripts.
-			Function = function(plr: Player)
-				Remote.Send(plr, "ChatHistory")
+			ListUpdater = "Chats";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Chat Logs";
+					Tab = Logs.ListUpdaters.ChatLogs(plr);
+					Dots = true;
+					Update = "ChatLogs";
+					TextSelectable = true;
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
+					Sanitize = true;
+					Stacking = true;
+				})
 			end
 		};
 
@@ -6668,9 +6904,22 @@ return function(Vargs, env)
 			Description = "View the command logs for the server";
 			Category = "Logs";
 			AdminLevel = "Moderators";
-			-- Exposes only the approved log projection, including refresh responses.
 			ListUpdater = function(plr: Player)
-				return Logs.Project(Logs.Commands, "Commands")
+				local Count = if Logs.Commands.__meta == "DLL" then Logs.Commands.count else #Logs.Commands
+				local tab = table.create(Count)
+				for i, v in
+					if Logs.Commands.__meta == "DLL" then
+						Logs.Commands:GetAsTable()
+						else
+						Logs.Commands
+				do
+					table.insert(tab, i, {
+						Time = v.Time;
+						Text = `{v.Text}: {v.Desc}`;
+						Desc = v.Desc;
+					})
+				end
+				return tab
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
@@ -6693,15 +6942,22 @@ return function(Vargs, env)
 			Description = "View the command logs for previous servers ordered by time";
 			Category = "Logs";
 			AdminLevel = "Moderators";
-			-- Exposes only the approved log projection, including refresh responses.
 			ListUpdater = function(plr: Player)
-				if not Core.DataStore then return {"DataStore is not available in game"} end
-				local data = Core.GetData("OldCommandLogs")
-				if not data then return {} end
-				local success, entries = pcall(function()
-					return if type(data) == "string" then Logs.DeserializeOldlogs(data) else data
-				end)
-				return if success then Logs.Project(entries, "Commands") else {"History could not be loaded"}
+				if Core.DataStore then
+					local tab = table.create(Logs.OldCommandLogsLimit)
+					local data = Core.GetData("OldCommandLogs")
+					if data then
+						for i, v in Logs.DeserializeOldlogs(data) do
+							tab[i] = {
+								Time = v.Time,
+								Text = `{v.Text}: {v.Desc}`,
+								Desc = v.Desc
+							}
+						end
+					end
+					return tab
+				end
+				return {"DataStore is not available in game"}
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
@@ -6961,15 +7217,14 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tell", "tts", "texttospeech"};
 			Args = {"player", "message"};
-			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
+			Filter = true;
 			Description = "[Experimental] Says aloud the supplied text";
 			Category = "Messages";
 			AdminLevel = "Moderators";
-			-- Submits this author's literal text through recipient-controlled chat delivery.
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(plr, args[1]), args[2], data and data.ChatInput, "Speech", nil)
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(v, "Function", "TextToSpeech", args[2])
+				end
 			end
 		};
 
@@ -7391,15 +7646,12 @@ return function(Vargs, env)
 		};
 
 		Tag = {
-			-- New tag labels use the shared edit gate; selecting an existing label does not edit it.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {}, RequiresLocalAuthor = true};
 			Prefix = Settings.Prefix;
 			Commands = {"tag", "addtag"};
 			Args = {"player", "tag name (or \"all\")"};
 			Description = `Add specific players to a tag, you can then use a player selector to select only people in that specific tag: {Settings.Prefix}count t-TAG_NAME`;
 			Category = "Moderation";
 			AdminLevel = "Moderators";
-			-- Adds membership to an existing filtered label without replacing players already assigned to it.
 			Function = function(plr,args)
 				assert(args[1], "Argument 1 is required!");
 				assert(args[2], "Argument 2 is required!");
@@ -7433,16 +7685,9 @@ return function(Vargs, env)
 				local tag = Variables.Tags[name];
 
 				if not tag then
-					local filtered, records = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), {name}, {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}})
-					name = filtered[1]
-					tag = Variables.Tags[name]
-					if not tag then
-						Variables.TagTextRecords = Variables.TagTextRecords or {}
-						Variables.TagTextRecords[name] = records[1]
-						Variables.Tags[name] = players;
-						Functions.Hint(`Created tag "{name}" and added {#players} player(s) to it`, {plr});
-						return;
-					end
+					Variables.Tags[name] = players;
+					Functions.Hint(`Created tag "{name}" and added {#players} player(s) to it`, {plr});
+					return;
 				end
 
 				local added = 0;
@@ -7533,10 +7778,9 @@ return function(Vargs, env)
 				};
 
 				for name: string, players: {Player} in Variables.Tags do
-					local label = server.TextPolicy.GetRecordText(Variables.TagTextRecords and Variables.TagTextRecords[name]) or "Tag unavailable"
 					table.insert(tab, {
-						Text = `{label} [{#players} player(s)]`,
-						Desc = `Use "{Functions.GetMainPrefix()}count t-{label}" to view all tagged players`
+						Text = `{name} [{#players} player(s)]`,
+						Desc = `Use "{Settings.Prefix}count t-{name}" to view all tagged players`
 					})
 				end
 

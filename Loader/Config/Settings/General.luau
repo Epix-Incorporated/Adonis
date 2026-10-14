@@ -70,7 +70,7 @@ return {
 	CommandFeedback = false;			-- Should players be notified when commands with non-obvious effects are run on them?
 	SilentCommandDenials = false;		-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 	OverrideChatCallbacks = true;		-- If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for slowmode. Mutes use a CanSend method to mute when this is set to false.
-	ChatCreateRobloxCommands = false;	-- Shows native chat autocomplete suggestions; ChatCommands controls native command execution.
+	ChatCreateRobloxCommands = false;	-- Whether "/" commands for Roblox should get created in new Chat
 	DefaultTheme = "Default";			-- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 
 	CodeExecution = false;	-- Enables the use of code execution in Adonis. Scripting related (such as :s) and a few other commands require this
