@@ -1,8 +1,6 @@
 -- Exercises real AFK preparation and cleanup with separate asynchronous effect coroutines.
 local fs = require("@lune/fs")
 local luau = require("@lune/luau")
-print("Working directory:", fs.cwd())
-print("Expected file exists:", fs.isFile("MainModule/Server/Commands/Moderators.luau"))
 
 local root = fs.cwd()
 
