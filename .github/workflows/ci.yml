@@ -29,12 +29,34 @@ jobs:
         shell: pwsh
         run: aftman install
 
-      - name: Install cargo-binstall
-        uses: cargo-bins/cargo-binstall@main
-
+      
       - name: Install Lune 0.11.0
         shell: pwsh
-        run: cargo binstall lune --version 0.11.0 --no-confirm
+        run: |
+          $url = "https://github.com/lune-org/lune/releases/download/v0.11.0/lune-0.11.0-windows-x86_64.zip"
+          $expectedHash = "sha256:05de2b841a31653531611d0217aac553f165bb69732225f95056651e2d668f3b"
+
+          $zip = Join-Path $env:RUNNER_TEMP "lune.zip"
+          $installDir = Join-Path $env:RUNNER_TEMP "lune"
+
+          Invoke-WebRequest -Uri $url -OutFile $zip
+
+          $actualHash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualHash -ne $expectedHash) {
+            throw "Lune ZIP SHA-256 checksum mismatch"
+          }
+
+          Expand-Archive -Path $zip -DestinationPath $installDir -Force
+
+          $exe = Get-ChildItem -Path $installDir -Filter "lune.exe" -Recurse |
+            Select-Object -First 1
+
+          if (-not $exe) {
+            throw "lune.exe was not found in the downloaded archive"
+          }
+
+          Add-Content $env:GITHUB_PATH $exe.DirectoryName
+          & $exe.FullName --version
 
       - name: Verify tool versions
         shell: pwsh
