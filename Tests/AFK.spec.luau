@@ -12,7 +12,7 @@ local function repoFile(path)
 end
 
 local commandSource = repoFile("MainModule/Server/Commands/Moderators.luau")
-local policySource = repoFile("MainModule/Server/Core/TextPolicy.luau")
+local policySource = repoFile("Tests/TextPolicy.luau")
 local runCommandSource = assert(
     repoFile("MainModule/Server/Core/Admin.luau"):match("RunCommand = (function.-\n\t\tend);")
 )
