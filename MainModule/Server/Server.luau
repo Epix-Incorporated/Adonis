@@ -24,8 +24,6 @@ local CORE_LOADING_ORDER = table.freeze {
 
 	--// Misc
 	"Admin";
-	"TextPolicy";
-	"ChatTransport";
 	"HTTP";
 	"Anti";
 	"Commands";
@@ -96,8 +94,6 @@ local server = {}
 local service = {}
 local RbxEvents = {}
 local ErrorLogs = {}
-	-- Keeps immutable snapshots only for explicitly authored startup notices.
-local startupMessages = {}
 local HookedEvents = {}
 local ServiceSpecific = {}
 local Folder = script.Parent
@@ -119,9 +115,8 @@ local logError = function(plr, err)
 		plr = nil;
 	end
 
-	-- Provider and command exceptions can contain another player's unfiltered input.
 	if server.Core and server.Core.DebugMode then
-		warn(":: Adonis :: An operation failed; inspect the classified audit event.")
+		warn(`:: Adonis :: Error: {plr}: {err}`)
 	end
 
 	if server and server.Logs then
@@ -144,7 +139,7 @@ end
 local function Pcall(func, ...)
 	local pSuccess, pError = pcall(func, ...)
 	if not pSuccess then
-		warn("An Adonis operation failed.")
+		warn(pError)
 		logError(pError)
 	end
 
@@ -196,7 +191,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				`CoreModule: {module}`,
 				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
-					warn("An Adonis core module failed to load; details are unavailable.")
+					warn(`Core module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 					server.Panic(`Core module encountered an error while loading: {module}\n{err}`)
 				end,
 				GetVargTable(),
@@ -208,7 +203,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				`Plugin: {module}`,
 				((noEnv or isRaw or isValue) and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				function(err)
-					warn("An Adonis module failed to load; details are unavailable.")
+					warn(`Module encountered an error while loading: {module}\n{err}\n{debug.traceback()}`)
 				end,
 				GetVargTable()
 			)
@@ -295,19 +290,6 @@ end;
 
 -- TODO: Re-add codename to server but remove it from Variables and directly bake it in to the client too without a remote
 server = {
-	-- Registers developer-authored system text; user text requires an authored TextPolicy record.
-	AddSystemMessage = function(message)
-		local snapshot = type(message) == "table" and table.clone(message) or {Title = "Message", Message = tostring(message)}
-		startupMessages[message] = snapshot
-		table.insert(server.Messages, message)
-	end;
-	-- Projects startup notices without exposing arbitrary plugin/error strings or mutable payloads.
-	ProjectSystemMessage = function(message)
-		local snapshot = startupMessages[message]
-		if snapshot then return table.clone(snapshot) end
-		local record = type(message) == "table" and message.MessageRecord
-		return {Title = "Server notice", Message = server.TextPolicy.GetRecordText(record) or "Notice text unavailable", Level = 300, Time = 10}
-	end;
 	Running = true;
 	Version = 0;
 	Modules = {};
@@ -321,12 +303,12 @@ server = {
 		server.PanicMode = true -- Immediatly flip the flag before anything else to ensure it works! Don't change!
 
 		warn("SOMETHING SEVERE HAPPENED; ENABLING PANIC MODE; REASON BELOW;") -- TODO: Put all the messages to logerror and scriptlogs
-		warn("An internal error occurred; details are unavailable.")
+		warn(tostring(reason))
 		warn("ENABLING CHAT MODE AND DISABLING CLIENT CHECKS;")
 		warn("MODS NOW HAVE ACCESS TO PANIC COMMANDS SUCH AS :SHUTDOWN")
 
 		server._tempBackupHint = server._tempBackupHint or service.New("Hint", {
-			Text = "~= Adonis PanicMode Enabled =~",
+			Text = `~= Adonis PanicMode Enabled - {reason} =~`,
 			Name = `ADONIS_TEMPHINT_{server.CodeName}`,
 			Archivable = false,
 			Parent = workspace,
@@ -343,7 +325,7 @@ server = {
 		--]]
 
 		service.Debris:AddItem(service.New("Message", {
-			Text = "System Message:\n\nA critical error occurred in Adonis. Panic mode has been enabled. Error details are unavailable.",
+			Text = `{select(2, pcall(function() return server.Settings and server.Settings.SystemTitle end)) or "System Message"}:\n\nA CRITICAL ERROR OCCURED IN ADONIS AND PANIC MODE HAS BEEN ENABLED DUE TO:\n{reason}`,
 			Name = `ADONIS_TEMPMESSAGE_{server.CodeName}_{math.random()}`,
 			Archivable = false,
 			Parent = workspace,
@@ -603,8 +585,7 @@ return service.NewProxy({
 		server.Settings = data.Settings or setTab.Settings or {}
 		server.OriginalSettings = service.DeepCopy(server.Settings, true)
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
-		server.Messages = {}
-		for _, message in data.Messages or setTab.Settings.Messages or {} do server.AddSystemMessage(message) end
+		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}
 		server.Data = data
 		server.Model = data.Model or service.New("Model")
@@ -783,12 +764,12 @@ return service.NewProxy({
 
 		for _, module in ipairs(data.ServerPlugins or {}) do
 			task.defer(xpcall, LoadModule, function(reason)
-				warn("An Adonis plugin failed to load; details are unavailable.")
+				warn(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
 				logError(`The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load! Reason: {reason}`)
-				server.AddSystemMessage({
-					Title = "A plugin failed to load",
+				table.insert(server.Messages, {
+					Title = `The plugin {type(module) == "string" and string.sub(module, 1, 15) or module} failed to load!`,
 					Icon = "MatIcon://Dangerous",
-					Message = "The plugin could not start. Error details are unavailable.",
+					Message = string.match(reason, "Requested module experienced an error while loading") and "The plugin has invalid code or the code fails before return!" or string.match(reason, "Module code did not return exactly one value") and "The plugin returns an invalid amount of values or returns nothing at all!" or `Reason {reason}`,
 					Time = 15
 				})
 			end, module, false, {script = module, cPcall = server.cPcall})

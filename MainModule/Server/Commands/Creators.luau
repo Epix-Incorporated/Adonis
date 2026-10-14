@@ -10,8 +10,6 @@ return function(Vargs, env)
 
 	return {
 		DirectBan = {
-			-- Declares user-authored display arguments for filtering and public edit admission.
-			UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {2}};
 			Prefix = Settings.Prefix;
 			Commands = {"directban"};
 			Args = {"username(s)", "reason"};
@@ -39,7 +37,7 @@ return function(Vargs, env)
 						Admin.AddBan({
 							UserId = UserId,
 							Name = username
-						}, reason, true, plr, "Global", data.UserTextRecords[2])
+						}, reason, true, plr)
 
 						Functions.Hint(`Direct-banned {if getNameSuccess then `@{username}` else `'{username}'`} from the game`, {plr})
 					else
@@ -208,15 +206,11 @@ return function(Vargs, env)
 			Category = "Developer";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
-			-- Preserves the submitting author separately from the target's execution identity.
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target player (argument #1)")
 				assert(args[2], "Missing command string (argument #2)")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					task.defer(Process.Command, v, args[2], {
-						isSystem = true,
-						UserCommandOrigin = data and data.Options and data.Options.UserCommandOrigin,
-					})
+					task.defer(Process.Command, v, args[2], {isSystem = true})
 				end
 			end
 		};
@@ -269,12 +263,7 @@ return function(Vargs, env)
 			Category = "Developer";
 			CrossServerDenied = true;
 			AdminLevel = "Creators";
-			-- Raw code drafts and editor output are private to the submitting execution actor.
 			Function = function(plr: Player, args: {string})
-				if service.UnWrap(server.TextPolicy.GetCommandAuthor(plr)) ~= service.UnWrap(plr) then
-					Remote.MakeGui(plr, "Output", {Message = "Run the script editor yourself to access personal code and output."})
-					return
-				end
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
 
@@ -350,8 +339,6 @@ return function(Vargs, env)
 		};
 
 		CreateStarterScript = {
-			-- The shared script label is public text; executable code retains its separate privileged path.
-			UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1}};
 			Prefix = Settings.Prefix;
 			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
 			Args = {"name", "code"};

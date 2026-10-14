@@ -951,14 +951,11 @@ return function(Vargs, GetEnv)
 			return table.concat(out, "")
 		end;
 
-		-- Publishes non-chat hints; body and title records preserve independently verified display text.
-		Hint = function(message, players, duration, title, image, authorOrRecord, titleRecord)
-			message = server.TextPolicy.GetPublicationText(message, authorOrRecord)
-			title = server.TextPolicy.GetPublicationText(title, titleRecord or (if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord))
+		Hint = function(message, players, duration, title, image)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if server.PanicMode and server._tempBackupHint then
-				local message = `{title or Core.GetSettingText("SystemTitle")}: {message}`
+				local message = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}: {message}`
 				server._tempBackupHint.Text = message
 
 				task.delay(duration, function()
@@ -978,9 +975,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Publishes non-chat announcements while retaining the legacy title/body helper signature.
-		-- Explicit sender attribution or verified body/title records are required for plugin-provided user text.
-		Message = function(sender, title, message, image, players, scroll, duration, authorOrRecord, titleRecord)
+		Message = function(sender, title, message, image, players, scroll, duration)
 			-- Currently not used
 			if sender == "Adonis" or sender == "HelpSystem" or sender == "Command" then
 				sender = nil
@@ -1008,9 +1003,6 @@ return function(Vargs, GetEnv)
 				image = nil
 			end
 
-			message = server.TextPolicy.GetPublicationText(message, authorOrRecord or sender)
-			title = server.TextPolicy.GetPublicationText(title, titleRecord or sender or (if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord))
-
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if image then
@@ -1026,7 +1018,7 @@ return function(Vargs, GetEnv)
 
 			if server.PanicMode then
 				service.Debris:AddItem(service.New("Message", {
-					Text = `{title or Core.GetSettingText("SystemTitle")}:\n\n{message}`,
+					Text = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}:\n\n{message}`,
 					Name = `ADONIS_TEMPMESSAGE_{server.CodeName}_{math.random()}`,
 					Archivable = false,
 					Parent = workspace,
@@ -1048,15 +1040,12 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Publishes non-chat notifications using author context or independently verified body/title records.
-		Notify = function(title, message, players, duration, author, bodyRecord, titleRecord)
-			message = server.TextPolicy.GetPublicationText(message, bodyRecord or author)
-			title = server.TextPolicy.GetPublicationText(title, titleRecord or author)
+		Notify = function(title, message, players, duration, author)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if server.PanicMode then
 				service.Debris:AddItem(service.New("Message", {
-					Text = `{title or Core.GetSettingText("SystemTitle")}:\n\n{message}`,
+					Text = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}:\n\n{message}`,
 					Name = `ADONIS_TEMPNOTIFY_{server.CodeName}_{math.random()}`,
 					Archivable = false,
 					Parent = workspace,
@@ -1076,10 +1065,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Publishes system UI notifications; dynamic user text outside commands requires an author.
-		Notification = function(title, message, players, duration, icon, onClick, authorOrRecord)
-			message = server.TextPolicy.GetPublicationText(message, authorOrRecord)
-			title = server.TextPolicy.GetPublicationText(title, if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord)
+		Notification = function(title, message, players, duration, icon, onClick)
 			local properties = {
 				Title = title;
 				Message = message;
@@ -1569,10 +1555,8 @@ return function(Vargs, GetEnv)
 			return cache
 		end;
 
-		-- Captures a safe reason before delayed shutdown kicks and future player joins.
-		Shutdown = function(reason, authorOrRecord)
-			reason = server.TextPolicy.GetPublicationText(reason, authorOrRecord) or "No Reason Given"
-			Functions.Message("Adonis", Core.GetSettingText("SystemTitle"), "The server is shutting down...", "MatIcon://Warning", service.Players:GetPlayers(), false, 5)
+		Shutdown = function(reason)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is shutting down...", "MatIcon://Warning", service.Players:GetPlayers(), false, 5)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)

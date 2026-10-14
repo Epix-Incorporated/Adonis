@@ -32,7 +32,7 @@ return function(Vargs, GetEnv)
 			else
 				Logs:AddLog("Script", `Failed to teleport {player.Name} {isReservedServer and "back to the main game" or "to a temporary softshutdown server"} due to {result.Name}. Details: {message}`)
 				Logs:AddLog("Errors", `Failed to teleport {player.Name} {isReservedServer and "back to the main game" or "to a temporary softshutdown server"} to {result.Name}. Details: {message}`)
-				Functions.Notification("Teleport failed", "The restart teleport failed. Please rejoin the experience.", {player}, 35, "MatIcon://Error")
+				Functions.Notification("Teleport failed", `SoftShutdown failed to teleport {isReservedServer and "back to the main game" or "to a temporary softshutdown server"}. Details {message}`, {player}, 35, "MatIcon://Error")
 			end
 		end
 	end)
@@ -51,7 +51,7 @@ return function(Vargs, GetEnv)
 			local function sendMessage(player)
 				task.defer(function()
 					repeat task.wait(0.25) until not player or not player.Parent or teleportedPlayers[player] or Remote.Clients[tostring(player.UserId)] and Remote.Clients[tostring(player.UserId)].FinishedLoading
-					Functions.Message("Adonis", Core.GetSettingText("SystemTitle"), "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
+					Functions.Message("Adonis", Settings.SystemTitle, "Teleporting back to main game...", "MatIcon://Hourglass empty", {player}, false, 1000)
 				end)
 			end
 
@@ -117,7 +117,7 @@ return function(Vargs, GetEnv)
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", Core.GetSettingText("SystemTitle"), "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
 		
 			task.wait(2)
 
@@ -142,8 +142,6 @@ return function(Vargs, GetEnv)
 		end
 	}
 	Commands.SoftShutdown = {
-		-- Restart reasons are moderation text; filtering failures must not stop the restart.
-		UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {1}};
 		Prefix = Settings.Prefix;
 		Commands = {"softshutdown", "restart", "sshutdown", "restartserver"};
 		Args = {"reason"};
@@ -152,30 +150,27 @@ return function(Vargs, GetEnv)
 		Filter = true;
 		NoStudio = true; --// TeleportService does not work in Studio
 		AdminLevel = "Admins";
-		Function = function(plr: Player, args: {string}, data: {})
+		Function = function(plr: Player, args: {string})
 			if #Players:GetPlayers() == 0 then return end
 
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			Functions.Message("Adonis", Core.GetSettingText("SystemTitle"), "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is restarting, please wait...", "MatIcon://Hourglass empty", service.GetPlayers(), false, 1000)
 
 			if Core.DataStore then
 				Core.UpdateData("ShutdownLogs", function(logs)
 					if plr then
 						table.insert(logs, 1, {
 							User = plr.Name,
-							UserId = plr.UserId,
 							Restart = true,
 							Time = os.time(),
-							Reason = args[1] or "N/A",
-							ReasonRecord = data.UserTextRecords[1],
+							Reason = args[1] or "N/A"
 						})
 					else
 						table.insert(logs, 1, {
 							User = "[Server]",
 							Restart = true,
 							Time = os.time(),
-							Reason = args[1] or "N/A",
-							ReasonRecord = data.UserTextRecords[1],
+							Reason = args[1] or "N/A"
 						})
 					end
 
@@ -209,8 +204,6 @@ return function(Vargs, GetEnv)
 		end
 	}
 	Commands.GlobalSoftShutdown = {
-		-- The origin filters the reason before publishing it to other servers.
-		UserText = {Kind = "Moderation", Audience = "Broadcast", Args = {1}};
 		Prefix = Settings.Prefix;
 		Commands = {"globalsoftshutdown", "globalrestart", "globalsshutdown", "grestart"};
 		Args = {"reason (default: none)", "time<s,m> (default: instant)", "abortable (default: true)"};
@@ -220,7 +213,7 @@ return function(Vargs, GetEnv)
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true;
 		IsCrossServer = true;
-		Function = function(plr: Player, args: {string}, data: {})
+		Function = function(plr: Player, args: {string})
 			local time
 			if args[2] then
 				time = string.lower(args[2])
@@ -236,7 +229,7 @@ return function(Vargs, GetEnv)
 				assert(time, "Invalid time specified. Example usage: 60s, 5m or \"instant\"");
 			end
 			if not Core.CrossServer("GlobalRestartRequest",
-				assert(server.TextPolicy.CreatePublication({Reason = data.UserTextRecords[1]})),
+				args[1] or "No reason specified.",
 				tonumber(time),
 				if args[3] then (string.lower(args[3]) == "no" or string.lower(args[3]) == "false") else true
 				)

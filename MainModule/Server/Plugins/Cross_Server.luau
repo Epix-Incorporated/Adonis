@@ -29,8 +29,17 @@ return function(Vargs, GetEnv)
 
 	--// Cross Server Commands
 	Core.CrossServerCommands = {
-		ServerChat = function()
-			-- Player conversation cannot be delivered through the server messaging bus.
+		ServerChat = function(jobId, data)
+			-- This function does not appear to be used in the Adonis codebase.
+			-- There is also a duplicate function of this named "CrossServerChat"
+			-- in MainModule/Server/Core/Process.luau which is not used.
+			if data then
+				for index, player in service.GetPlayers() do
+					if Admin.GetLevel(player) > 0 then
+						Remote.Send(player, "handler", "ChatHandler", data.Player, data.Message, "Cross")
+					end
+				end
+			end
 		end;
 
 		Ping = function(jobId, data)
@@ -45,66 +54,40 @@ return function(Vargs, GetEnv)
 		end;
 
 		NewRunCommand = function(jobId, plrData, comString)
-			local _, command = Admin.GetCommand(comString)
-			if command and command.UserText then return end
 			Process.Command(Functions.GetFakePlayer(plrData), comString, {
 				AdminLevel = plrData.AdminLevel,
 				CrossServer = true
 			})
 		end;
 
-		-- Executes only typed, origin-filtered command arguments under the existing cross-server permissions.
-		RunPublishedCommand = function(jobId, plrData, commandName, args, publication)
-			local command = rawget(Commands, commandName)
-			if not command or not command.UserText or command.UserText.Kind == "Chat" or command.CrossServerDenied or command.UserText.RequiresLocalAuthor then return end
-			local records = server.TextPolicy.AcceptPublication(jobId, publication)
-			if not records then return end
-			local author = Functions.GetFakePlayer(plrData)
-			local token, safeArgs = server.TextPolicy.AuthorizePublishedCommand(command, author, args, records)
-			if not token then return end
-			local prefix = if type(command.Prefix) == "table" then command.Prefix[1] else command.Prefix
-			Process.Command(author, `{prefix}{command.Commands[1]}`, {
-				AdminLevel = plrData.AdminLevel, CrossServer = true, Args = safeArgs, TextPublication = token,
-			})
-		end;
-
-		Message = function(jobId, fromPlayer, publication, duration)
-			local records = server.TextPolicy.AcceptPublication(jobId, publication)
-			local record = records and records.Message
-			if not record or record.Kind ~= "Announcement" then return end
+		Message = function(jobId, fromPlayer, message, duration)
 			server.Functions.Message(
 				nil,
-				`Global Message from user {record.AuthorUserId}`,
-				record.Text,
+				`Global Message from {fromPlayer or "[Unknown]"}`,
+				message,
 				nil,
 				service.GetPlayers(),
 				true,
-				duration,
-				record
+				duration
 			)
 		end;
 
-		RemovePlayer = function(jobId, userId, banMessage, publication)
-			local records, code = server.TextPolicy.AcceptPublication(jobId, publication)
-			if code == "DuplicatePublication" then return end
-			local record = records and records.Reason
-			local reason = if record and record.Kind == "Moderation" then record.Text else "Reason unavailable"
+		RemovePlayer = function(jobId, userId, banMessage, reason)
 			local player = if typeof(userId) == "number" then service.Players:GetPlayerByUserId(userId) else service.Players:FindFirstChild(userId)
 			if player then
-				player:Kick(string.format("Banned | Reason: %s", reason))
+				player:Kick(string.format("%s | Reason: %s", banMessage, reason))
 			end
 		end;
 
 		DataStoreUpdate = function(jobId, key, data)
 			if key and data then
-				task.defer(Core.LoadData, key, data, jobId)
+				task.defer(Core.LoadData, key, data)
 			end
 		end;
 
 		UpdateSetting = function(jobId, setting, newValue)
 			if type(setting) == "string" then
-				local value = if newValue == nil then require(Deps.DefaultSettings).Settings[setting] else newValue
-				Core.LoadData("SavedSettings", {[setting] = value}, jobId)
+				Settings[setting] = if newValue == nil then require(Deps.DefaultSettings).Settings[setting] else newValue
 			end
 		end;
 
@@ -116,11 +99,7 @@ return function(Vargs, GetEnv)
 			service.Events[`CRSSRV:{eventId}`]:Fire(...)
 		end;
 
-		GlobalRestartRequest = function(jobId, publication, countdown, abortable)
-			local records, code = server.TextPolicy.AcceptPublication(jobId, publication)
-			if code == "DuplicatePublication" then return end
-			local record = records and records.Reason
-			local reason = if record and record.Kind == "Moderation" then record.Text else "Reason unavailable"
+		GlobalRestartRequest = function(jobId, reason, countdown, abortable)
 			local abortSuccess, abortMessage = Core.CrossServerCommands.GlobalRestartAbort()
 			if abortMessage == "This global restart is not abortable." then
 				Logs:AddLog("Script", "A global restart has been requested, but a non-abortable restart is already in progress.")
@@ -171,16 +150,8 @@ return function(Vargs, GetEnv)
 		end;
 
 		CrossServerVote = function(jobId, data)
-			if type(data) ~= "table" or type(data.AnswerCount) ~= "number" or data.AnswerCount < 1 or data.AnswerCount > 63 then return end
-			local records = server.TextPolicy.AcceptPublication(jobId, data.Publication)
-			if not records or not records.Question or records.Question.Kind ~= "PublicEdit" then return end
-			local question = records.Question.Text
-			local answers = {}
-			for index = 1, data.AnswerCount do
-				local record = records[`Answer{index}`]
-				if not record or record.Kind ~= "PublicEdit" then return end
-				table.insert(answers, record.Text)
-			end
+			local question = data.Question
+			local answers = data.Answers
 			local voteKey = data.VoteKey
 
 			local start = os.clock()
@@ -193,7 +164,7 @@ return function(Vargs, GetEnv)
 			for _, v in service.GetPlayers() do
 				task.defer(function()
 					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
-					if type(response) == "string" and table.find(answers, response) and (os.clock() - start) <= 120 then
+					if response and (os.clock() - start) <= 120 then
 						messagingService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
 					end
 				end)
@@ -212,22 +183,6 @@ return function(Vargs, GetEnv)
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
 		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
 		Function = function(plr: Player, args: {string})
-			local commandName, command = Admin.GetCommand(assert(args[1], "Missing command"))
-			if command and command.UserText then
-				assert(command.UserText.Kind ~= "Chat", "Player chat cannot be sent across servers")
-				assert(not command.CrossServerDenied, "This command cannot run across servers")
-				assert(not command.UserText.RequiresLocalAuthor, "This command requires its author in the destination server")
-				local argString = string.match(args[1], `^.-{Settings.SplitKey}(.+)`) or ""
-				local commandArgs = Functions.Split(argString, Settings.SplitKey, #(command.Args or {}))
-				local safeArgs, records = server.TextPolicy.PrepareArguments(server.TextPolicy.GetCommandAuthor(plr), commandArgs, command.UserText)
-				local namedRecords = {}
-				for index, record in records do namedRecords[tostring(index)] = record end
-				local publication = assert(server.TextPolicy.CreatePublication(namedRecords))
-				assert(Core.CrossServer("RunPublishedCommand", {
-					UserId = plr.UserId, Name = plr.Name, DisplayName = plr.DisplayName, AdminLevel = Admin.GetLevel(plr),
-				}, commandName, safeArgs, publication), "CrossServer handler not ready (try again later)")
-				return
-			end
 			if not Core.CrossServer("NewRunCommand", {
 					UserId = plr.UserId;
 					Name = plr.Name;
@@ -318,8 +273,6 @@ return function(Vargs, GetEnv)
 	};
 
 	Commands.CrossServerVote = {
-		-- Poll labels share the same author edit allowance as other editable public text.
-		UserText = {Kind = "PublicEdit", Audience = "Broadcast", Args = {1, 2}};
 		Prefix = Settings.Prefix;
 		Commands = {"crossservervote", "crsvote", "globalvote", "gvote"};
 		Args = {"answer1,answer2,etc (NO SPACES)", "question"};
@@ -329,7 +282,7 @@ return function(Vargs, GetEnv)
 		AdminLevel = "Moderators";
 		CrossServerDenied = true;
 		IsCrossServer = true;
-		Function = function(plr: Player, args: {string}, context: {})
+		Function = function(plr: Player, args: {string})
 			local question = args[2]
 			if not question then error("You forgot to supply a question! (argument #2)") end
 			local answers = args[1]
@@ -337,23 +290,9 @@ return function(Vargs, GetEnv)
 			local responses = {}
 			local voteKey = `ADONISVOTE{math.random()}`
 			local startTime = os.clock()
-			if not answers then
-				anstab = {"Yes", "No"}
-			else
-				for answer in string.gmatch(answers, "([^,]+)") do table.insert(anstab, answer) end
-			end
-			assert(#anstab > 0 and #anstab <= 63, "Provide between one and 63 poll answers")
-			local records = {Question = context.UserTextRecords[2]}
-			for index, answer in anstab do
-				local record = assert(server.TextPolicy.CreateRecord(answer, server.TextPolicy.GetCommandAuthor(plr), "PublicEdit"), "Poll answer could not be filtered")
-				records[`Answer{index}`] = record
-				anstab[index] = record.Text
-			end
 
 			local msgSub = messagingService:SubscribeAsync(voteKey, function(data)
-				if type(data.Data) == "table" and type(data.Data.Response) == "string" and table.find(anstab, data.Data.Response) then
-					table.insert(responses, data.Data.Response)
-				end
+				table.insert(responses, data.Data.Response)
 			end)
 
 			local function voteUpdate()
@@ -392,9 +331,17 @@ return function(Vargs, GetEnv)
 
 			Logs.TempUpdaters[voteKey] = voteUpdate;
 
+			if not answers then
+				anstab = {"Yes","No"}
+			else
+				for ans in string.gmatch(answers, "([^,]+)") do
+					table.insert(anstab, ans)
+				end
+			end
+
 			local data = {
-				Publication = assert(server.TextPolicy.CreatePublication(records));
-				AnswerCount = #anstab;
+				Answers = anstab;
+				Question = question;
 				VoteKey = voteKey;
 				Initiator = service.FormatPlayer(plr);
 			}

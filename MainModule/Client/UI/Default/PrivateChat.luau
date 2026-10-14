@@ -4,9 +4,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	local Owner = data.Owner;
-	local channelId = data.ChannelId
-	local transport = client.ChatTransport
+	local Owner = data.FromPlayer;
 	local SessionKey = data.SessionKey;
 	local SessionName = data.SessionName;
 	local CanManageUsers = data.CanManageUsers;
@@ -15,43 +13,11 @@ return function(data, env)
 	local peerList, messageObjs = {}, {}
 
 	local window, chatlog, reply, playerList, send, layout, sessionEvent;
-	local unsubscribe
-	local closed = false
 
-	-- Releases conversation listeners independently of the selected window theme's close callback.
-	local function cleanup()
-		if unsubscribe then
-			unsubscribe()
-			unsubscribe = nil
-		end
-		if sessionEvent then
-			sessionEvent:Disconnect()
-			sessionEvent = nil
-		end
-	end
-
-	-- Leaves a manually closed conversation once, after releasing its message listeners.
-	local function closeConversation()
-		cleanup()
-		if not closed then
-			closed = true
-			client.Remote.Send("Session", SessionKey, "LeaveSession")
-		end
-	end
-
-	-- Sends a local draft through Roblox, retaining it when submission is unsuccessful.
 	local function sendIt()
-		if debounce or closed then return end
 		local text = service.Trim(reply.Text)
 		if text ~= "" then
-			debounce = true
-			local sent, status = transport.Send(channelId, text)
-			if sent then
-				reply.Text = ""
-			else
-				client.UI.Make("Hint", {Message = transport.StatusText(status)})
-			end
-			debounce = false
+			client.Remote.Send("Session", SessionKey, "SendMessage", text)
 		end
 	end
 
@@ -158,8 +124,7 @@ return function(data, env)
 		playerList.CanvasSize = UDim2.new(0, 0, 0, lObj.AbsoluteContentSize.Y)
 	end;
 
-	-- Renders a recipient-local message or a fixed membership notice.
-	local function newMessage(data)
+	function newMessage(data)
 		local pName = data.PlayerName;
 		local pDisplayName = pName ~= "*SYSTEM*" and data.PlayerDisplayName
 		local msg = data.Message;
@@ -209,7 +174,7 @@ return function(data, env)
 				}
 			})
 		else
-			newMsg = chatlog:Add("Frame", {
+			chatlog:Add("Frame", {
 				Size = UDim2.new(1, 0, 0, 50);
 				BackgroundTransparency = 1;
 				AutomaticSize = "Y";
@@ -248,7 +213,7 @@ return function(data, env)
 								AutomaticSize = "Y";
 								TextWrapped = true;
 								TextScaled = false;
-								RichText = false;
+								RichText = data.RichText;
 								BackgroundTransparency = 1;
 							};
 						}
@@ -264,7 +229,6 @@ return function(data, env)
 			table.remove(messageObjs, 1)
 		end
 	end
-	-- Adds a fixed local session status to the conversation window.
 	local function systemMessage(msg)
 		newMessage({
 			PlayerName = "* SYSTEM *";
@@ -278,11 +242,17 @@ return function(data, env)
 	end
 
 	window = client.UI.Make("Window", {
-		Name  = `PrivateChat{SessionName}`;
+		Name  = `"PrivateChat{SessionName}`;
 		Title = "Private Chat";
 		Icon = client.MatIcons.Forum;
 		Size  = {500,300};
-		OnClose = closeConversation;
+		OnClose = function()
+			if sessionEvent then
+				sessionEvent:Disconnect()
+			end
+
+			client.Remote.Send("Session", SessionKey, "LeaveSession")
+		end;
 	})
 
 	chatlog = window:Add("ScrollingFrame", {
@@ -343,6 +313,7 @@ return function(data, env)
 		Position = UDim2.new(1, -65, 1, -35);
 		OnClick = function()
 			sendIt()
+			reply.Text = ""
 		end
 	})
 
@@ -358,6 +329,7 @@ return function(data, env)
 	reply.FocusLost:Connect(function(isEnter)
 		if isEnter then
 			sendIt()
+			reply.Text = ""
 			reply:CaptureFocus()
 		end
 	end)
@@ -367,32 +339,48 @@ return function(data, env)
 		chatlog.CanvasPosition = Vector2.new(0, layout.AbsoluteContentSize.Y)
 	end)
 
-	-- Maps an already delivered TextChannel message into the existing window layout.
-	local function receivedMessage(entry)
-		local sender = service.Players:GetPlayerByUserId(entry.SenderUserId)
-		newMessage({
-			PlayerName = entry.SenderName,
-			PlayerDisplayName = sender and sender.DisplayName,
-			Message = entry.Text,
-			Icon = entry.SenderUserId > 0 and `rbxthumb://type=AvatarHeadShot&id={entry.SenderUserId}&w=48&h=48` or "",
-		})
-	end
-	for _, entry in transport.GetHistory(channelId) do receivedMessage(entry) end
-	unsubscribe = transport.Subscribe(channelId, function(eventName, payload)
-		if eventName == "Message" then
-			receivedMessage(payload)
-		elseif eventName == "Closed" then
-			closed = true
-			cleanup()
-			-- Release the registered window so this channel can be rejoined.
-			window:Close()
+	if data.History then
+		for i,data in ipairs(data.History) do
+			local p = data.Sender;
+			local message = data.Message
+			if p.IsMessageRestricted then
+				message = "<font color='rgb(230,0,0)'>Message unavailable due to chat restrictions.</font>"
+			elseif p.IsMessageRestrictedError then
+				message = "<font color='rgb(230,0,0)'>Message unavailable due to an error.</font>"
+			end
+
+			newMessage({
+				PlayerName = p.Name;
+				PlayerDisplayName = p.DisplayName;
+				Message = message;
+				Icon = p.Icon or 0;
+				RichText = p.IsMessageRestricted or p.IsMessageRestrictedError;
+			});
 		end
-	end)
+	end
 
 	sessionEvent = service.Events.SessionData:Connect(function(sessionKey, cmd, ...)
 		local vargs = {...};
 		if SessionKey == sessionKey then
-			if cmd == "UpdatePeerList" then
+			if cmd == "PlayerSentMessage" then
+				local p = vargs[1]
+				local message = vargs[2]
+				if newMessage then
+					if p.IsMessageRestricted then
+						message = "<font color='rgb(230,0,0)'>Message unavailable due to chat restrictions.</font>"
+					elseif p.IsMessageRestrictedError then
+						message = "<font color='rgb(230,0,0)'>Message unavailable due to an error.</font>"
+					end
+
+					newMessage({
+						PlayerName = p.Name;
+						PlayerDisplayName = p.DisplayName;
+						Message = message;
+						Icon = p.Icon or 0;
+						RichText = p.IsMessageRestricted or p.IsMessageRestrictedError;
+					})
+				end
+			elseif cmd == "UpdatePeerList" then
 				updatePeerList(vargs[1])
 			elseif cmd == "RemovedFromSession" then
 				systemMessage("<i>You have been removed from this chat session</i>")
@@ -404,16 +392,5 @@ return function(data, env)
 
 	client.Remote.Send("Session", SessionKey, "GetPeerList")
 	gTable = window.gTable
-	local destroyWindow = gTable.CustomDestroy
-	-- Theme close buttons always destroy the registered GUI, even when they skip OnClose.
-	gTable.CustomDestroy = function()
-		-- A failed leave submission must not prevent the theme from destroying its GUI.
-		pcall(closeConversation)
-		if destroyWindow then
-			destroyWindow()
-		else
-			service.UnWrap(gTable.Object):Destroy()
-		end
-	end
 	window:Ready()
 end

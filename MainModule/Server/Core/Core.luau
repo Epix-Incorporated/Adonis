@@ -21,59 +21,6 @@ return function(Vargs, GetEnv)
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps, t;
 	local AddLog, Queue, TrackTask
 	local logError = env.logError
-	-- Runtime associations are deliberately separate from persisted settings and client payloads.
-	local settingRecords, settingValues = {}, {}
-	local variableRecords, variableValues = {}, {}
-	local staticSettingValues = {}
-	local tableRecords = setmetatable({}, {__mode = "k"})
-	local editorHandles = setmetatable({}, {__mode = "k"})
-	local settingsRecordKey = "__AdonisTextRecords"
-	local unavailableText = "[Text unavailable: source cannot be verified]"
-	local editableTables = {Admins = true, HeadAdmins = true, Moderators = true, Banned = true, Muted = true, Blacklist = true, Whitelist = true}
-	-- Defaults can share live rank tables, so retain their trusted baseline before plugins mutate them.
-	local defaultRanks = service.DeepCopy(server.Defaults and server.Defaults.Settings and server.Defaults.Settings.Ranks or {}, true)
-
-	-- Resolves the loader-owned rank baseline, including default definitions omitted by legacy loaders.
-	local function getOriginalRank(name)
-		local ranks = server.OriginalSettings.Ranks
-		return if type(ranks) == "table" then ranks[name] else defaultRanks[name]
-	end
-
-	-- Distinguishes registered UI/command identifiers from freely authored display text.
-	local function technicalSetting(setting, value)
-		if setting == "Theme" or setting == "MobileTheme" or setting == "DefaultTheme" then
-			return true, type(value) == "string" and (value == server.OriginalSettings[setting] or server.Client.UI:FindFirstChild(value) ~= nil)
-		elseif setting == "SplitKey" or setting == "BatchKey" or setting == "PlayerPrefix" or setting == "SpecialPrefix" then
-			return true, type(value) == "string" and #value <= 8 and (value ~= "" or setting == "SpecialPrefix") and value:match("^[%p ]*$") ~= nil
-		elseif setting == "HelpButtonImage" then
-			return true, type(value) == "string" and (value == server.OriginalSettings[setting] or value:match("^rbxassetid://%d+$") ~= nil)
-		end
-		return false, false
-	end
-
-	-- Projects known configuration recursively, retaining only static or verified non-chat strings.
-	local function projectSetting(value, original, record, depth)
-		if type(value) == "string" then
-			if value == original then return value end
-			return (record and server.TextPolicy.GetRecordText(record)) or unavailableText
-		elseif type(value) == "boolean" or type(value) == "number" then
-			return value
-		elseif type(value) == "table" and depth < 8 then
-			local result = {}
-			local records = tableRecords[value] or {}
-			for key, item in value do
-				if type(key) == "number" or (type(key) == "string" and type(original) == "table" and original[key] ~= nil) then
-					local originalItem = type(original) == "table" and original[key]
-					if type(key) == "number" and type(original) == "table" and type(item) == "string" and table.find(original, item) then
-						originalItem = item
-					end
-					result[key] = projectSetting(item, originalItem, records[item], depth + 1)
-				end
-			end
-			return result
-		end
-		return nil
-	end
 	local function Init(data)
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -173,182 +120,6 @@ return function(Vargs, GetEnv)
 		Connections = {};
 		BytecodeCache = {};
 		SavedPlayerData = {};
-
-		-- Associates a setting assignment with its verified text record without exposing the raw value.
-		RegisterSettingText = function(setting, value, record)
-			settingValues[setting] = value
-			settingRecords[setting] = record
-		end;
-
-		-- Associates an existing server-only table entry with its author and safe display record.
-		RegisterTableText = function(tab, value, record)
-			tableRecords[tab] = tableRecords[tab] or {}
-			tableRecords[tab][value] = record
-		end;
-
-		-- Returns a safe setting value with its original operational type and no provenance payload.
-		ProjectSetting = function(setting)
-			local value = Settings[setting]
-			local technical, valid = technicalSetting(setting, value)
-			if technical then return if valid then value else server.OriginalSettings[setting] end
-			local record = if settingValues[setting] == value then settingRecords[setting] else nil
-			return projectSetting(value, server.OriginalSettings[setting], record, 0)
-		end;
-
-		-- Returns a display-safe configured string for publication sinks that use settings directly.
-		GetSettingText = function(setting)
-			local value = Core.ProjectSetting(setting)
-			return if type(value) == "string" then value else unavailableText
-		end;
-
-		-- Associates a runtime display override with the record produced for its actual author.
-		RegisterVariableText = function(name, value, record)
-			variableValues[name], variableRecords[name] = value, record
-		end;
-
-		-- Reads a verified runtime override or falls back to the safely projected configuration.
-		GetVariableText = function(name)
-			local value = Variables[name]
-			if variableValues[name] == value and variableRecords[name] then
-				return server.TextPolicy.GetRecordText(variableRecords[name]) or unavailableText
-			elseif value == server.OriginalSettings[name] then
-				return Core.GetSettingText(name)
-			end
-			return unavailableText
-		end;
-
-		-- Projects rank labels and access selectors against trusted loader or legacy fallback definitions.
-		ProjectRank = function(name)
-			local rank = Settings.Ranks[name]
-			if type(rank) ~= "table" then return nil end
-			local original = getOriginalRank(name)
-			local display = {Name = if original then name else "Custom rank", Level = tonumber(rank.Level) or 0, Users = {}}
-			if display.Level ~= display.Level or math.abs(display.Level) == math.huge then display.Level = 0 end
-			local originals = original and original.Users or {}
-			for _, user in rank.Users or {} do
-				local text
-				if type(user) == "table" and type(user.Group) == "number" and type(user.Rank) == "number" then
-					text = `Group:{user.Group}:{user.Rank}`
-				elseif type(user) == "number" then
-					text = `User ID: {user}`
-				else
-					local record = tableRecords[rank.Users] and tableRecords[rank.Users][user]
-					text = projectSetting(user, table.find(originals, user) and user, record, 0)
-					if text == unavailableText and type(user) == "string" then
-						local userId = user:match("^[%w_]+:(%d+)$") or user:match("^(%d+)$")
-						if userId then text = `User ID: {userId}` end
-					end
-				end
-				table.insert(display.Users, if type(text) == "string" then text else "Configured entry")
-			end
-			return display
-		end;
-
-		-- Projects variable-backed configuration against the corresponding trusted loader setting.
-		ProjectSettingValue = function(value, setting)
-			return projectSetting(value, staticSettingValues[setting] or server.OriginalSettings[setting], nil, 0)
-		end;
-
-		-- Captures loader-owned catalogs once, before persisted or in-game content can change them.
-		RegisterStaticSettingValue = function(setting, value)
-			assert(staticSettingValues[setting] == nil, "Static settings baseline already registered")
-			staticSettingValues[setting] = service.DeepCopy(value, true)
-		end;
-
-		-- Exposes safe catalog labels and numeric asset identifiers, including unattributed external rows.
-		ProjectAssetList = function(entries, setting, external)
-			local projected = if external then {} else Core.ProjectSettingValue(entries, setting)
-			local rows = {}
-			for index, entry in entries do
-				if type(entry) == "table" then
-					local id = tonumber(entry.ID)
-					if id and id > 0 and id < math.huge and id % 1 == 0 then
-						local display = projected[index]
-						local name = if type(display) == "table" and type(display.Name) == "string" then display.Name else "Asset name unavailable"
-						table.insert(rows, {Text = `{name} - {id}`, Desc = tostring(id)})
-					end
-				end
-			end
-			return rows
-		end;
-
-		-- Limits editor mutations to declared editable settings tables and existing rank user lists.
-		GetEditableSettingsTable = function(path)
-			if type(path) == "string" and editableTables[path] then
-				return if type(Settings[path]) == "table" then Settings[path] else nil
-			elseif type(path) == "table" and #path == 4 and path[1] == "Settings" and path[2] == "Ranks" and path[4] == "Users" then
-				for key, value in path do
-					if type(key) ~= "number" or key < 1 or key > 4 or key % 1 ~= 0 or type(value) ~= "string" then return nil end
-				end
-				local rank = Settings.Ranks[path[3]]
-				if path[3] ~= "Creators" and type(rank) == "table" and type(rank.Users) == "table" then return rank.Users end
-			end
-		end;
-
-		-- Issues bounded per-viewer entry handles with loader/default rank labels and no raw removal values.
-		GetSettingsTableEntries = function(player, path)
-			local tab = Core.GetEditableSettingsTable(path)
-			if not tab then return {} end
-			local handles = editorHandles[player] or {}
-			editorHandles[player] = handles
-			for id, entry in handles do
-				if entry.Expires < os.clock() or entry.Table == tab then handles[id] = nil end
-			end
-			local rows = {}
-			local count = 0
-			for _ in handles do count += 1 end
-			for _, value in tab do
-				if #rows >= 1000 or count + #rows >= 2000 then break end
-				local id = service.HttpService:GenerateGUID(false)
-				handles[id] = {Table = tab, Value = value, Expires = os.clock() + 600}
-				local record = tableRecords[tab] and tableRecords[tab][value]
-				local originalRank = type(path) == "table" and getOriginalRank(path[3])
-				local original = if type(path) == "string" then server.OriginalSettings[path] else originalRank and originalRank.Users
-				local static = type(original) == "table" and table.find(original, value) and value
-				local display = projectSetting(value, static, record, 0)
-				table.insert(rows, {Id = id, Text = if type(display) == "string" or type(display) == "number" then tostring(display) else "Configured entry"})
-			end
-			return rows
-		end;
-
-		-- Resolves an unexpired entry handle only for its issuing viewer and current target table.
-		ResolveSettingsEntry = function(player, path, id)
-			local entry = editorHandles[player] and editorHandles[player][id]
-			local tab = Core.GetEditableSettingsTable(path)
-			if entry and entry.Expires >= os.clock() and entry.Table == tab then
-				local index = table.find(tab, entry.Value)
-				if index then
-					editorHandles[player][id] = nil
-					return tab, index, entry.Value
-				end
-			end
-		end;
-
-		-- Validates editable primitives and filters authored strings before changing live settings.
-		PrepareSetting = function(player, setting, value)
-			if type(setting) ~= "string" or Remote.BlockedSettings[setting] or Core.DS_BLACKLIST[setting] or server.OriginalSettings[setting] == nil then
-				return false, "This setting cannot be edited in game"
-			end
-			local expected = type(server.OriginalSettings[setting])
-			if expected == "number" then value = tonumber(value) end
-			if type(value) ~= expected or (expected ~= "string" and expected ~= "boolean" and expected ~= "number") then
-				return false, "Invalid setting value type"
-			end
-			if expected == "number" and (value ~= value or math.abs(value) == math.huge) then return false, "Invalid number" end
-			local record
-			if expected == "string" then
-				if #value > 1000 then return false, "Setting text is too long" end
-				local technical, valid = technicalSetting(setting, value)
-				if technical and not valid then return false, "Invalid configuration identifier" end
-				local allowed = server.TextPolicy.TryPublicEdit(player)
-				if not allowed then return false, "Wait 60 seconds between shared text edits" end
-				if not technical then
-					record = server.TextPolicy.CreateRecord(value, player, "PublicEdit")
-					if not record then return false, "Text could not be filtered" end
-				end
-			end
-			return true, value, record
-		end;
 
 		Variables = {
 			TimeBans = {};
@@ -524,7 +295,7 @@ return function(Vargs, GetEnv)
 			end)
 
 			if err then
-				warn("Adonis remote initialization failed")
+				warn(err)
 				server.Panic(err)
 			end
 		end;
@@ -759,12 +530,12 @@ return function(Vargs, GetEnv)
 					Cleanup(Player, false)
 				end)
 
-				local ok = pcall(function()
+				local ok, err = pcall(function()
 					container.Parent = parentObj
 				end)
 
 				if not ok then
-					p:Kick("[ACLI-0x192385]: Loading Error [HookClient failed]")
+					p:Kick(`[ACLI-0x192385]: Loading Error [HookClient Error: {err}]`)
 					return false
 				else
 					return true
@@ -1105,7 +876,7 @@ return function(Vargs, GetEnv)
 		RemoveData = function(key)
 			local DataStore = Core.DataStore
 			if DataStore then
-				local ran2 = Queue(`DataStoreWriteData{key}`, function()
+				local ran2, err2 = Queue(`DataStoreWriteData{key}`, function()
 					local ran, ret = Core.DS_WriteLimiter("Write", DataStore.RemoveAsync, DataStore, Core.DataStoreEncode(key))
 					if ran then
 						Core.DataCache[key] = nil
@@ -1115,14 +886,14 @@ return function(Vargs, GetEnv)
 				end, 120, true)
 
 				if not ran2 then
-					warn("DataStore RemoveData failed; details are unavailable")
+					warn(`DataStore RemoveData Failed: {err2}`)
 				end
 			end
 		end;
 
 		SetData = function(key: string, value: any?, repeatCount: number?)
 			if repeatCount then
-				warn("Retrying SetData request");
+				warn(`Retrying SetData request for {key}`);
 			end
 
 			local DataStore = Core.DataStore
@@ -1156,7 +927,7 @@ return function(Vargs, GetEnv)
 
 		UpdateData = function(key: string, callback: (currentData: any?)->any?, repeatCount: number?)
 			if repeatCount then
-				warn("Retrying UpdateData request")
+				warn(`Retrying UpdateData request for {key}`)
 			end
 
 			local DataStore = Core.DataStore
@@ -1190,7 +961,7 @@ return function(Vargs, GetEnv)
 
 		GetData = function(key: string, repeatCount: number?, showStatus: boolean?)
 			if repeatCount then
-				warn("Retrying GetData request")
+				warn(`Retrying GetData request for {key}`)
 			end
 
 			local DataStore = Core.DataStore
@@ -1340,18 +1111,11 @@ return function(Vargs, GetEnv)
 				local val = data.Value
 
 				Core.UpdateData("SavedSettings", function(savedSettings)
-					savedSettings = savedSettings or {}
 					savedSettings[setting] = val
-					savedSettings[settingsRecordKey] = if type(savedSettings[settingsRecordKey]) == "table" then savedSettings[settingsRecordKey] else {}
-					savedSettings[settingsRecordKey][setting] = data.TextRecord
 					return savedSettings
 				end)
 
-				Core.CrossServer("LoadData", "SavedSettings", {
-					[setting] = val;
-					[settingsRecordKey] = {[setting] = data.TextRecord};
-					__AdonisTextPublication = if data.TextRecord then server.TextPolicy.CreatePublication({[setting] = data.TextRecord}) else nil;
-				})
+				Core.CrossServer("LoadData", "SavedSettings", {[setting] = val})
 			elseif data.Type == "TableRemove" then
 				local tab = data.Table
 				local val = data.Value
@@ -1461,9 +1225,7 @@ return function(Vargs, GetEnv)
 					return sets
 				end)
 
-				local publicationData = table.clone(data)
-				publicationData.TextPublication = if data.TextRecord then server.TextPolicy.CreatePublication({Value = data.TextRecord}) else nil
-				Core.CrossServer("LoadData", "TableUpdate", publicationData)
+				Core.CrossServer("LoadData", "TableUpdate", data)
 			else
 				error(`Invalid data action type '{data.Type}'`, 2)
 			end
@@ -1474,7 +1236,6 @@ return function(Vargs, GetEnv)
 			})
 		end;
 
-		-- Loads operational values and keeps provenance separate from every client-facing projection.
 		LoadData = function(key: string, data: TableData, serverId: string?)
 			if serverId and serverId == game.JobId then
 				return
@@ -1531,12 +1292,6 @@ return function(Vargs, GetEnv)
 				end
 
 				if realTable and data.Action == "Add" then
-					local record = data.TextRecord
-					if serverId and data.TextPublication then
-						local accepted = server.TextPolicy.AcceptPublication(serverId, data.TextPublication)
-						if not accepted then return end
-						record = accepted.Value
-					end
 					for i, v in realTable do
 						if CheckMatch(v, data.Value) then
 							table.remove(realTable, i)
@@ -1549,7 +1304,6 @@ return function(Vargs, GetEnv)
 					})
 
 					table.insert(realTable, data.Value)
-					Core.RegisterTableText(realTable, data.Value, record)
 					service.Events[`DataStoreAdd_{displayName}`]:Fire(data.Value)
 				elseif realTable and data.Action == "Remove" then
 					for i, v in realTable do
@@ -1602,13 +1356,8 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedSettings then
-						local records = if type(SavedSettings[settingsRecordKey]) == "table" then SavedSettings[settingsRecordKey] else {}
-						if serverId and SavedSettings.__AdonisTextPublication then
-							records = server.TextPolicy.AcceptPublication(serverId, SavedSettings.__AdonisTextPublication)
-							if not records then return end
-						end
 						for setting, value in SavedSettings do
-							if not ds_blacklist[setting] and server.OriginalSettings[setting] ~= nil and type(value) == type(server.OriginalSettings[setting]) then
+							if not ds_blacklist[setting] then
 
 								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
@@ -1620,7 +1369,6 @@ return function(Vargs, GetEnv)
 								end
 
 								Settings[setting] = value
-								Core.RegisterSettingText(setting, value, records[setting])
 							end
 						end
 					end
@@ -1848,9 +1596,20 @@ return function(Vargs, GetEnv)
 
 				Hint = MetaFunc(Functions.Hint, true, { t.string, t.array(t.instanceOf("Player")), t.optional(t.number), t.string, t.optional(t.string) });
 
-				-- Uses the publication helper so active command authorship reaches the public API too.
 				Message = MetaFunc(function(title: string, message: string, players: {Player}, scroll: boolean?, duration: number?)
-					Functions.Message(nil, title, message, nil, players, scroll, duration)
+					duration = duration or (#tostring(message) / 19) + 2.5
+
+					for _, v in ipairs(players) do
+						task.defer(function()
+							Remote.RemoveGui(v, "Message")
+							Remote.MakeGui(v, "Message", {
+								Title = title;
+								Message = message;
+								Scroll = scroll;
+								Time = duration;
+							})
+						end)
+					end
 				end, true, { t.string, t.string, t.array(t.instanceOf("Player")), t.optional(t.boolean), t.optional(t.number) });
 			}
 

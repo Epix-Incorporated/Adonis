@@ -15,12 +15,6 @@ return function(Vargs, GetEnv)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local AddLog, TrackTask, Defaults
-	-- Coalesces native alias rebuilds caused by command and player-data updates.
-	local nativeChatRefreshQueued = false
-	-- Failed or unfinished refreshes must be retried before an alias save reports readiness.
-	local nativeChatReady = false
-	-- Retains unchanged native interceptors across bounded personal-alias updates.
-	local nativeChatRegistry, nativeChatSequence = {}, 0
 	local CreatorId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GetGroupCreatorId(game.CreatorId)
 	local function Init()
 		Functions = server.Functions;
@@ -44,8 +38,6 @@ return function(Vargs, GetEnv)
 			--// Support for modern TextChatService
 			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 				local function onNewTextchannel(textchannel: TextChannel)
-					-- Managed conversations own membership, mute state and delivery callbacks.
-					if textchannel:GetAttribute("AdonisChannelId") then return end
 					AddLog("Script", `Connected to TextChannel: {textchannel.Name}`)
 
 					if Settings.OverrideChatCallbacks ~= false then --// Default to "on" this for all games
@@ -307,8 +299,7 @@ return function(Vargs, GetEnv)
 		return service.Trim(string.gsub(alias, "<%S+>", ""))
 	end
 
-	-- Expands placeholders while retaining byte provenance for literal chat submissions.
-	local function FormatAliasArgs(alias, aliasCmd, msg, literalMask)
+	local function FormatAliasArgs(alias, aliasCmd, msg)
 		local uniqueArgs = {}
 		local argTab = {}
 		local numArgs = 0
@@ -341,32 +332,16 @@ return function(Vargs, GetEnv)
 
 		local suppliedArgs = Admin.GetArgs(msg, numArgs) -- User supplied args (when running :alias arg)
 		local out = aliasCmd
-		local outMask = string.rep("0", #out)
-		local cursor = (string.find(msg, Settings.SplitKey, 1, true) or #msg) + #Settings.SplitKey
 
 		local SanitizePattern = service.SanitizePattern
 		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				local first, last = string.find(msg, replaceWith, cursor, true)
-				local replacementMask = first and literalMask and string.sub(literalMask, first, last) or string.rep("0", #replaceWith)
-				cursor = last and last + 1 or cursor
-				local from, chunks, masks = 1, {}, {}
-				repeat
-					local a, b = string.find(out, SanitizePattern(argType), from)
-					if not a then
-						table.insert(chunks, string.sub(out, from)); table.insert(masks, string.sub(outMask, from))
-						break
-					end
-					table.insert(chunks, string.sub(out, from, a - 1)); table.insert(masks, string.sub(outMask, from, a - 1))
-					table.insert(chunks, replaceWith); table.insert(masks, replacementMask)
-					from = b + 1
-				until false
-				out, outMask = table.concat(chunks), table.concat(masks)
+				out = string.gsub(out, SanitizePattern(argType), replaceWith)
 			end
 		end
 
-		return out, outMask
+		return out
 	end
 
 	server.Admin = {
@@ -981,7 +956,7 @@ return function(Vargs, GetEnv)
 
 			for ind, admin in Settings.Banned do
 				if (type(admin) == "table" and ((admin.UserId and doCheck(p, admin.UserId, true)) or (admin.Name and not admin.UserId and doCheck(p, admin.Name, true)))) or doCheck(p, admin, true) then
-					return true, type(admin) == "table" and server.TextPolicy.GetRecordText(admin.ReasonRecord) or "Reason unavailable"
+					return true, (type(admin) == "table" and admin.Reason)
 				end
 			end
 
@@ -990,7 +965,7 @@ return function(Vargs, GetEnv)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, `\n {server.TextPolicy.GetRecordText(ban.ReasonRecord) or "Reason unavailable"}\n | Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
+						return true, `\n {ban.Reason or "(No reason provided.)"}\n | Banned until {service.FormatTime(ban.EndTime, {WithWrittenDate = true})}`
 					end
 				end
 			end
@@ -998,29 +973,24 @@ return function(Vargs, GetEnv)
 			for ind, admin in HTTP.Trello.Bans do
 				local name = type(admin) == "table" and admin.Name or admin
 				if doCheck(p, name) or banCheck(p, name) then
-					return true, "Reason unavailable"
+					return true, if type(admin) == "table" and admin.Reason and typeof(p) == "Instance" then service.Filter(admin.Reason, p, p) else admin.Reason
 				end
 			end
 
 			if HTTP.WebPanel.Bans then
 				for ind, admin in HTTP.WebPanel.Bans do
 					if doCheck(p, admin) or banCheck(p, admin) then
-						return true, type(admin) == "table" and server.TextPolicy.GetRecordText(admin.ReasonRecord) or "Reason unavailable"
+						return true, (type(admin) == "table" and admin.Reason)
 					end
 				end
 			end
 		end;
 
-		-- Stores a moderation action with an authored, filtered reason when available.
-		AddBan = function(p, reason, doSave, moderator, banType, reasonRecord)
-			local author = server.TextPolicy.GetCommandAuthor(moderator)
-			reasonRecord = reasonRecord or (author and reason and server.TextPolicy.CreateRecord(reason, author, "Moderation"))
-			reason = server.TextPolicy.GetRecordText(reasonRecord) or "Reason unavailable"
+		AddBan = function(p, reason, doSave, moderator, banType)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				Reason = reason;
-				ReasonRecord = reasonRecord;
 				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
 				BanType = banType
 			}
@@ -1034,32 +1004,26 @@ return function(Vargs, GetEnv)
 					Value = value;
 				})
 
-				Core.CrossServer("RemovePlayer", tonumber(p.UserId), nil, server.TextPolicy.CreatePublication(reasonRecord and {Reason = reasonRecord} or {}))
+				Core.CrossServer("RemovePlayer", tonumber(p.UserId), Variables.BanMessage, value.Reason or "No reason provided")
 			end
 
 			if type(p) ~= "table" then
 				if not service.Players:FindFirstChild(p.Name) then
 					Remote.Send(p,'Function','KillClient')
 				else
-					if p then pcall(function() p:Kick(`{Core.GetVariableText("BanMessage")} | Reason: {reason}`) end) end
+					if p then pcall(function() p:Kick(`{Variables.BanMessage} | Reason: {value.Reason or "No reason provided"}`) end) end
 				end
 			end
 
-			Logs.AddAudit("Commands", "Ban", author, {TargetUserIds = {p.UserId}, Outcome = "Completed", DetailRecord = reasonRecord})
 			service.Events.PlayerBanned:Fire(p, reason, doSave, moderator)
 		end;
 
-		-- Persists timed moderation without retaining an unfiltered reason.
-		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string, moderator: Player?, reasonRecord)
-			local author = server.TextPolicy.GetCommandAuthor(moderator)
-			reasonRecord = reasonRecord or (author and reason and server.TextPolicy.CreateRecord(reason, author, "Moderation"))
-			reason = server.TextPolicy.GetRecordText(reasonRecord) or "Reason unavailable"
+		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string, moderator: Player?)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				EndTime = os.time() + tonumber(duration);
 				Reason = reason;
-				ReasonRecord = reasonRecord;
 				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
 			}
 
@@ -1071,17 +1035,16 @@ return function(Vargs, GetEnv)
 				Value = value;
 			})
 
-			Core.CrossServer("RemovePlayer", tonumber(p.UserId), nil, server.TextPolicy.CreatePublication(reasonRecord and {Reason = reasonRecord} or {}))
+			Core.CrossServer("RemovePlayer", tonumber(p.UserId), Variables.BanMessage, value.Reason or "No reason provided")
 
 			if type(p) ~= "table" then
 				if not service.Players:FindFirstChild(p.Name) then
 					Remote.Send(p, "Function", "KillClient")
 				else
-					if p then pcall(function() p:Kick(`{Core.GetVariableText("BanMessage")} | Reason: {reason}`) end) end
+					if p then pcall(function() p:Kick(`{Variables.BanMessage} | Reason: {value.Reason or "No reason provided"}`) end) end
 				end
 			end
 
-			Logs.AddAudit("Commands", "TimeBan", author, {TargetUserIds = {p.UserId}, Outcome = "Completed", DetailRecord = reasonRecord})
 			service.Events.PlayerBanned:Fire(p, reason, true, moderator)
 		end,
 
@@ -1159,12 +1122,11 @@ return function(Vargs, GetEnv)
 				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				TrackTask(`Command: {coma}`, com.Function, function(err)
-					warn("An Adonis command failed; details are unavailable.")
+					warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
 				end, false, args)
 			end
 		end;
 
-		-- Runs a generated command with the selected player's permission context and safe failure output.
 		RunCommandAsPlayer = function(coma, plr, ...)
 			local ind, com = Admin.GetCommand(coma)
 			if com then
@@ -1176,12 +1138,13 @@ return function(Vargs, GetEnv)
 					`{plr.Name}: {coma}`,
 					com.Function,
 					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
 							Title = "Error",
-							Message = server.TextPolicy.ProjectCommandError(err),
+							Message = error,
 							Color = Color3.new(1, 0, 0),
 						})
-						warn("An Adonis command failed; details are unavailable.")
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
 					end,
 					plr,
 					args,
@@ -1196,7 +1159,6 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Runs a player-level generated command without promoting its caller or exposing exceptions.
 		RunCommandAsNonAdmin = function(coma, plr, ...)
 			local ind, com = Admin.GetCommand(coma)
 			if com and com.AdminLevel == 0 then
@@ -1206,12 +1168,13 @@ return function(Vargs, GetEnv)
 					`{plr.Name}: {coma}`,
 					com.Function,
 					function(err)
+						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
 							Title = "",
-							Message = server.TextPolicy.ProjectCommandError(err),
+							Message = error,
 							Color = Color3.new(1, 0, 0),
 						})
-						warn("An Adonis command failed; details are unavailable.")
+						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
 					end,
 					plr,
 					args,
@@ -1246,134 +1209,78 @@ return function(Vargs, GetEnv)
 
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
-			Admin.CacheNativeChatCommands()
-		end;
 
-		-- Returns the bounded technical token eligible for a personal native-chat alias.
-		GetNativeAliasToken = function(alias)
-			if type(alias) ~= "string" or #alias > 128 then return nil end
-			local stem = stripArgPlaceholders(alias)
-			local token = string.match(stem, "^(%S+)")
-			if not token or #token > 64 or Admin.CheckAliasBlacklist(stem) then return nil end
-			local prefixes = type(Settings.Prefix) == "table" and table.clone(Settings.Prefix) or {Settings.Prefix}
-			table.insert(prefixes, Settings.PlayerPrefix)
-			for _, prefix in prefixes do
-				if type(prefix) == "string" and prefix ~= "" and string.sub(token, 1, #prefix) == prefix
-					and string.sub(token, #prefix + 1):match("^[A-Za-z0-9_%-]+$") then return token end
-			end
-			return nil
-		end;
+			if Variables.ChatCreateRobloxCommands and Settings.ChatCommands then
+				-- // Support for commands to be ran via TextChat
+				task.spawn(function()
+					local container = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.TextChatService:WaitForChild("TextChatCommands", 120)
 
-		-- Registers native sinks for command names and currently loaded executable aliases.
-		-- Personal aliases without a configured prefix remain command-bar/keybind inputs.
-		CacheNativeChatCommands = function(immediate, onlyPending)
-			if onlyPending and not nativeChatRefreshQueued and nativeChatReady then return end
-			if nativeChatRefreshQueued and not immediate then return end
-			nativeChatRefreshQueued = true
-			-- Applies accepted aliases before their save response and reuses unchanged objects.
-			local function refresh()
-				if not nativeChatRefreshQueued then return end
-				nativeChatRefreshQueued = false
-				nativeChatReady = false
-				if service.TextChatService.ChatVersion ~= Enum.ChatVersion.TextChatService then nativeChatReady = true; return end
-				local container = service.TextChatService:FindFirstChild("TextChatCommands") or service.TextChatService
-				local occupied, retained, keptInstances = {}, {}, {}
-				for _, command in service.TextChatService:GetDescendants() do
-					if command:IsA("TextChatCommand") and string.sub(command.Name, 1, 7) ~= "Adonis_" then
-						occupied[string.lower(command.PrimaryAlias)] = true
-						occupied[string.lower(command.SecondaryAlias)] = true
-					end
-				end
-				-- Leaves host-owned variants intact while sinking every unoccupied spelling.
-				local function register(plain, level, visible)
-					local slash = string.sub(plain, 1, 1) == "/" and plain or "/" .. plain
-					local variants = {}
-					for _, variant in {plain, slash} do
-						local lower = string.lower(variant)
-						if not occupied[lower] then
-							occupied[lower] = true
-							table.insert(variants, variant)
+					if container and container:IsA("Folder") then
+						for _, v in container:GetChildren() do
+							if string.sub(v.Name, 1, 7) == "Adonis_" then
+								v:Destroy()
+							end
 						end
-					end
-					if #variants == 0 then return end
-					local key = plain .. "\0" .. table.concat(variants, "\0")
-					local command = nativeChatRegistry[key]
-					if command and command.Parent ~= container then command = nil end
-					if not command then
-						nativeChatSequence += 1
-						command = service.New("TextChatCommand", {
-							Name = "Adonis_Native_" .. tostring(nativeChatSequence),
-							PrimaryAlias = variants[1], SecondaryAlias = variants[2] or "",
-							AutocompleteVisible = visible, Archivable = false,
-						})
-						command.Triggered:Connect(function(source, text)
-							if not source.Parent or source.Parent:GetAttribute("AdonisChannelId") then return end
-							local player = service.Players:GetPlayerByUserId(source.UserId)
-							if player and type(text) == "string" then
-								if not Settings.ChatCommands then
-									Remote.MakeGui(player, "Output", {Message = "Chat commands are disabled. Use the command bar."})
-									return
+
+						local blacklistedCommands = {}
+
+						for _, v in container:GetDescendants() do
+							if v:IsA("TextChatCommand") then
+								blacklistedCommands[v.PrimaryAlias] = true
+								blacklistedCommands[v.SecondaryAlias] = true
+							end
+						end
+
+						for name, data in Commands do
+							local command1, command2 = nil, nil
+
+							if type(data) ~= "table" or data.Hidden then
+								continue
+							end
+
+							for _, v in data.Commands do
+								if type(data.Prefix) == "table" then
+									for _, p in data.Prefix do
+										if not blacklistedCommands[`/{p}{v}`] then
+											if not command1 then
+												command1 = `/{p}{v}`
+											else
+												command2 = `/{p}{v}`
+											end
+										end
+									end
+								else
+									if not blacklistedCommands[`/{data.Prefix}{v}`] then
+										if not command1 then
+											command1 = `/{data.Prefix}{v}`
+										else
+											command2 = `/{data.Prefix}{v}`
+										end
+									end
 								end
-								local submitted = if string.sub(text, 1, #slash):lower() == slash:lower() and slash ~= plain then string.sub(text, 2) else text
-								Remote.Commands.ProcessCommand(player, {submitted}, true)
 							end
-						end)
-					end
-					command.AutocompleteVisible = visible
-					command:SetAttribute("AdminLevel", if type(level) == "number" or type(level) == "string" then level else nil)
-					command.Parent = container
-					retained[key], keptInstances[command] = command, true
-				end
-				for _, definition in Commands do
-					if type(definition) ~= "table" then continue end
-					-- Disabled conversations still need a sink to keep their command text private.
-					if not Settings.ChatCommands and not (definition.UserText and definition.UserText.Kind == "Chat") then continue end
-					local prefixes = type(definition.Prefix) == "table" and definition.Prefix or {definition.Prefix}
-					for _, prefix in prefixes do
-						for _, alias in definition.Commands do
-							register(prefix .. alias, tonumber(definition.AdminLevel) or Admin.StringToComLevel(definition.AdminLevel) or definition.AdminLevel, Settings.ChatCommands and Variables.ChatCreateRobloxCommands and not definition.Hidden)
-						end
-					end
-				end
-				-- Only prefixed personal aliases may intercept text typed into public chat.
-				local function registerAliases(aliases, personal)
-					if personal then
-						local bounded, count = {}, 0
-						for alias, expansion in aliases or {} do
-							count += 1
-							-- Oversized legacy maps remain wholly command-bar-only, avoiding arbitrary subsets.
-							if count > 64 then return end
-							bounded[alias] = expansion
-						end
-						aliases = bounded
-					end
-					for alias, expansion in aliases or {} do
-						if type(alias) ~= "string" or type(expansion) ~= "string" then continue end
-						if personal then
-							if #expansion > 0 and #expansion <= 4096 then
-								local token = Admin.GetNativeAliasToken(alias)
-								if token then register(token, nil, false) end
+
+							if command1 then
+								local command = service.New("TextChatCommand", {
+									Name = `Adonis_{name}`,
+									PrimaryAlias = command1,
+									SecondaryAlias = command2 or "",
+									Archivable = false,
+								})
+								command:SetAttribute("AdminLevel", tonumber(data.AdminLevel) or Admin.StringToComLevel(data.AdminLevel) or data.AdminLevel or nil)
+								command.Triggered:Connect(function(textSource: TextSource, text: string)
+									local player: Player = service.Players:GetPlayerByUserId(textSource.UserId)
+
+									if player and type(text) == "string" then
+										Remote.Commands.ProcessCommand(player, {string.sub(text, 2)})
+									end
+								end)
+								command.Parent = container
 							end
-							continue
 						end
-						local stem = stripArgPlaceholders(alias)
-						local token = string.match(stem, "^(%S+)")
-						if not token or Admin.CheckAliasBlacklist(stem) then continue end
-						register(token, nil, false)
 					end
-				end
-				registerAliases(Variables.Aliases, false)
-				for _, player in service.Players:GetPlayers() do
-					local data = Core.PlayerData[tostring(player.UserId)]
-					if data then registerAliases(data.Aliases, true) end
-				end
-				for _, child in container:GetChildren() do
-					if child:IsA("TextChatCommand") and string.sub(child.Name, 1, 7) == "Adonis_" and not keptInstances[child] then child:Destroy() end
-				end
-				nativeChatRegistry = retained
-				nativeChatReady = true
+				end)
 			end
-			if immediate then refresh() else task.defer(refresh) end
 		end;
 
 		GetCommand = function(Command)
@@ -1510,7 +1417,7 @@ return function(Vargs, GetEnv)
 			return args
 		end;
 
-		AliasFormat = function(aliases, msg, literalMask)
+		AliasFormat = function(aliases, msg)
 			local foundPlayerAlias = false --// Check if there's a player-defined alias first then otherwise check settings aliases
 
 			local CheckAliasBlacklist, SanitizePattern = Admin.CheckAliasBlacklist, service.SanitizePattern
@@ -1530,7 +1437,7 @@ return function(Vargs, GetEnv)
 						--// Matching an alias can result in an infinite loop like running !fire with the alias !f, it will infinitely run the !f alias
 						--// If you have an alias !f
 						if escAlias == aliasCharacters[1] or string.match(trimmedMsg, `%s{escAlias}`) then
-							msg, literalMask = FormatAliasArgs(alias, cmd, msg, literalMask)
+							msg = FormatAliasArgs(alias, cmd, msg)
 						end
 					end
 				end
@@ -1541,12 +1448,12 @@ return function(Vargs, GetEnv)
 				if not CheckAliasBlacklist(tAlias) then
 					local escAlias = SanitizePattern(tAlias)
 					if string.match(msg, `^{escAlias}`) or string.match(msg, `%s{escAlias}`) then
-						msg, literalMask = FormatAliasArgs(alias, cmd, msg, literalMask)
+						msg = FormatAliasArgs(alias, cmd, msg)
 					end
 				end
 			end
 
-			return msg, literalMask
+			return msg
 		end;
 
 		StringToComLevel = function(str)

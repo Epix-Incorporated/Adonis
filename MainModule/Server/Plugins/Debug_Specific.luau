@@ -124,12 +124,7 @@ return function(Vargs, GetEnv)
 		Description = "Test out Roblox's text filtering on a player";
 		Category = "Developer";
 		AdminLevel = "Moderators";
-		-- Keeps unfiltered diagnostic input visible only to the user who submitted it.
 		Function = function(plr: Player, args: {string})
-			if service.UnWrap(server.TextPolicy.GetCommandAuthor(plr)) ~= service.UnWrap(plr) then
-				Remote.MakeGui(plr, "Output", {Message = "Run filtering diagnostics yourself to provide their text."})
-				return
-			end
 			assert(args[1], "Missing player name")
 			assert(args[2], "Missing text to filter")
 			local temp = {{Text=`Original: {args[2]}`, Desc = args[2]}}
@@ -326,8 +321,7 @@ local service = wrappedEnv.Service
 		Debug = true;
 		AdminLevel = "Creators";
 		Function = function(plr: Player, args: {string})
-			Remote.Get(plr, "Test")
-			print("Client test request completed")
+			print(Remote.Get(plr,"Test"))
 
 			local tab = {
 				{
@@ -342,9 +336,9 @@ local service = wrappedEnv.Service
 
 			local FuncTime = os.clock();
 
-			Remote.Get(plr, "Test", tab)
+			local _, ret = Remote.Get(plr, "Test", tab)
 
-			print("Client test response received")
+			print(`Remote.Get RETURN:`, ret)
 
 			warn(`Remote.Get TOOK: {os.clock() - FuncTime}`)
 
@@ -356,19 +350,18 @@ local service = wrappedEnv.Service
 
 			local RemoteTime;
 
-			Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
-			print("Color picker response received")
+			local testColor = Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
+			print(testColor)
 
-			Remote.GetGui(plr, "YesNoPrompt", {
+			local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
 				Icon = server.MatIcons["Bug report"];
 				Question = "Is this a test question?";
-			})
-			Remote.NewPlayerEvent(plr, "TestEvent", function()
-				print("Client test event received")
+			}), Remote.NewPlayerEvent(plr, "TestEvent", function(...)
+				print("RemoteEvent Return:", ...)
 				warn(`Remote.Send TOOK: {os.clock() - RemoteTime}`)
 				print("THAT'D BE ALL")
 			end)
-			print("Prompt response received")
+			print(`PLAYER ANSWER: {ans}`)
 
 			task.wait(0.5)
 
