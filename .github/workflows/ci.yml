@@ -81,6 +81,7 @@ jobs:
 
       - name: Run regression fixtures
         shell: pwsh
+        working-directory: ${{ github.workspace }}
         run: |
           $fixtures = Get-ChildItem -LiteralPath Tests -Filter *.spec.luau |
             Sort-Object Name
