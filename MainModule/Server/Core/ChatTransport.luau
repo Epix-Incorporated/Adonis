@@ -62,12 +62,6 @@ return function(Vargs, GetEnv)
 		return false
 	end
 
-	local function canUsersDirectChat(first, second)
-		local ok, result = pcall(service.TextChatService.CanUsersDirectChatAsync,
-			service.TextChatService, first.UserId, {second.UserId})
-		return ok and #result > 0
-	end
-
 	local function createChannel(owner, participants)
 		assert(service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService,
 			"Private messaging requires TextChatService.")
@@ -78,6 +72,8 @@ return function(Vargs, GetEnv)
 		local channelId = service.HttpService:GenerateGUID(false)
 		local members = {[owner.UserId] = owner}
 		local sources = {}
+		local addedParticipants = {}
+		local skippedParticipants = {}
 		local deliveryDecisions = setmetatable({}, {__mode = "k"})
 		local record = {
 			Channel = channel,
@@ -102,19 +98,26 @@ return function(Vargs, GetEnv)
 			end
 
 			for _, player in participants do
-				assert(isLivePlayer(player), "A private chat participant is no longer available.")
-				if player ~= owner then
-					local chatOk, canChat = pcall(textService.CanUserChatAsync, textService, player.UserId)
-					assert(chatOk and canChat, `Unable to add {player.Name}; chat is unavailable.`)
-					for _, existing in members do
-						assert(canUsersDirectChat(existing, player),
-							`Unable to add {player.Name} because direct chat is restricted.`)
+				if player ~= owner and typeof(player) == "Instance" and player:IsA("Player")
+					and not members[player.UserId] then
+					local added = false
+					if isLivePlayer(player) then
+						local chatOk, canChat = pcall(textService.CanUserChatAsync, textService, player.UserId)
+						if chatOk and canChat and isLivePlayer(player) then
+							local addOk, source = pcall(channel.AddUserAsync, channel, player.UserId)
+							if addOk and source and isLivePlayer(player) then
+								members[player.UserId] = player
+								sources[player.UserId] = source
+								table.insert(addedParticipants, player)
+								added = true
+							elseif source and source.Parent == channel then
+								source:Destroy()
+							end
+						end
 					end
-					local source = channel:AddUserAsync(player.UserId)
-					assert(source, `Unable to add {player.Name} to the private chat.`)
-					assert(isLivePlayer(player), "A private chat participant is no longer available.")
-					members[player.UserId] = player
-					sources[player.UserId] = source
+					if not added then
+						table.insert(skippedParticipants, player)
+					end
 				end
 			end
 
@@ -163,7 +166,7 @@ return function(Vargs, GetEnv)
 		end
 
 		channels[channelId] = record
-		return channelId, channel
+		return channelId, channel, addedParticipants, skippedParticipants
 	end
 
 	local function removeMember(channelId, player)
@@ -262,9 +265,6 @@ return function(Vargs, GetEnv)
 			if not record or not isLivePlayer(player) or record.Members[player.UserId] then return false end
 			local chatOk, canChat = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, player.UserId)
 			if not chatOk or not canChat then return false end
-			for _, existing in record.Members do
-				if not canUsersDirectChat(existing, player) then return false end
-			end
 			local ok, source = pcall(record.Channel.AddUserAsync, record.Channel, player.UserId)
 			if not ok or not source then return false end
 			if channels[channelId] ~= record or not isLivePlayer(player) or not record.Channel.Parent then

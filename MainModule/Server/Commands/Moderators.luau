@@ -13,7 +13,15 @@ return function(Vargs, env)
 
 	-- Opens a UI session backed by a requester-owned TextChannel; session remotes carry controls only.
 	local function createPrivateSession(owner, participants, canManageUsers, initialMessage)
-		local channelId, channel = server.ChatTransport.Create(owner, participants)
+		local channelId, channel, addedParticipants, skippedParticipants = server.ChatTransport.Create(owner, participants)
+		for _, player in skippedParticipants do
+			Functions.Hint(`Unable to add {service.FormatPlayer(player)} to the chat session.`, {owner})
+		end
+		if #addedParticipants == 0 then
+			server.ChatTransport.Close(channelId, "NoRecipients")
+			error("No available recipients for private chat.")
+		end
+		participants = addedParticipants
 		local sessionName = service.HttpService:GenerateGUID(false)
 		local session = Remote.NewSession("PrivateChat")
 		session.Data.ChannelId = channelId
@@ -999,19 +1007,6 @@ return function(Vargs, env)
 							Functions.Hint(`Unable to add {service.FormatPlayer(player)} to the session because chat is unavailable.`, {plr})
 							continue
 						end
-						local canDirectChat = true
-						for _, peer in participants do
-							local directSuccess, directData = pcall(service.TextChatService.CanUsersDirectChatAsync,
-								service.TextChatService, peer.UserId, {player.UserId})
-							if not directSuccess or #directData == 0 then
-								canDirectChat = false
-								break
-							end
-						end
-						if not canDirectChat then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(player)} due to chat restrictions.`, {plr})
-							continue
-						end
 						table.insert(participants, player)
 					end
 				end
@@ -1071,22 +1066,7 @@ return function(Vargs, env)
 									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} to the session due to them not being able to chat.`, {p})
 								end
 
-								local directSuccess, directData = pcall(service.TextChatService.CanUsersDirectChatAsync,
-									service.TextChatService, plr.UserId, {peer.UserId})
-								local canChatWithPeers = directSuccess and #directData > 0
-								if canChatWithPeers then
-									for currentPeer in newSession.Users do
-										if currentPeer ~= plr then
-											local peerSuccess, peerData = pcall(service.TextChatService.CanUsersDirectChatAsync,
-												service.TextChatService, currentPeer.UserId, {peer.UserId})
-											if not peerSuccess or #peerData == 0 then
-												canChatWithPeers = false
-												break
-											end
-										end
-									end
-								end
-								if not canChatWithPeers or not server.ChatTransport.AddMember(channelId, peer) then
+								if not server.ChatTransport.AddMember(channelId, peer) then
 									return Functions.Hint(`Unable to add {service.FormatPlayer(peer)} due to chat restrictions.`, {p})
 								end
 
@@ -1145,16 +1125,6 @@ return function(Vargs, env)
 					if v.UserId ~= plr.UserId then
 						local chatSuccess, canChat = pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId)
 						if not chatSuccess or not canChat then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
-							continue
-						end
-						local success, canUserChatData = pcall(service.TextChatService.CanUsersDirectChatAsync, service.TextChatService, plr.UserId, {v.UserId})
-						if not success then
-							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due an error.`, {plr})
-							continue
-						end
-
-						if #canUserChatData == 0 then
 							Functions.Hint(`Unable to private message {service.FormatPlayer(v)} due to chat restrictions.`, {plr})
 							continue
 						end

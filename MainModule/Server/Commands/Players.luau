@@ -358,27 +358,22 @@ return function(Vargs, env)
 							if player ~= plr and Admin.CheckAdmin(player) then
 								local chatOk, canChat = pcall(service.TextChatService.CanUserChatAsync,
 									service.TextChatService, player.UserId)
-								local directOk, directUsers = pcall(service.TextChatService.CanUsersDirectChatAsync,
-									service.TextChatService, plr.UserId, {player.UserId})
-								if chatOk and canChat and directOk and #directUsers > 0 then
-									local compatible = true
-									for _, participant in participants do
-										local ok, users = pcall(service.TextChatService.CanUsersDirectChatAsync,
-											service.TextChatService, participant.UserId, {player.UserId})
-										if not ok or #users == 0 then
-											compatible = false
-											break
-										end
-									end
-									if compatible then
-										table.insert(participants, player)
-									end
+								if chatOk and canChat then
+									table.insert(participants, player)
 								end
 							end
 						end
 						assert(#participants > 0, "No admins are available to receive help requests through chat.")
 
-						local channelId, channel = server.ChatTransport.Create(plr, participants)
+						local channelId, channel, addedParticipants, skippedParticipants = server.ChatTransport.Create(plr, participants)
+						for _, player in skippedParticipants do
+							Functions.Hint(`Unable to add {service.FormatPlayer(player)} to the help chat.`, {plr})
+						end
+						participants = addedParticipants
+						if #participants == 0 then
+							server.ChatTransport.Close(channelId, "NoRecipients")
+							error("No admins are available to receive help requests through chat.")
+						end
 						for _, player in participants do
 							Remote.MakeGui(player, "HelpRequestChat", {
 								Channel = channel;
