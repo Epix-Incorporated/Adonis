@@ -4,6 +4,8 @@ service = nil
 return function(Vargs, GetEnv)
 	local server = Vargs.Server
 	local service = Vargs.Service
+	local Settings = server.Settings
+	local Functions = server.Functions
 	local origins = setmetatable({}, {__mode = "k"})
 	local inputs = setmetatable({}, {__mode = "k"})
 	local channels = {}

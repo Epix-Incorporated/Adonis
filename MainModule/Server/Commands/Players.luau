@@ -332,7 +332,7 @@ return function(Vargs, env)
 			Category = "General";
 			AdminLevel = "Players";
 			NoLog = true;
-			Function = function(plr: Player, args: {string})
+			Function = function(plr: Player, args: {string}, data: {})
 				if Settings.HelpSystem == true then
 					local pending = Variables.HelpRequests[plr.Name];
 					if pending and pending.Pending then
