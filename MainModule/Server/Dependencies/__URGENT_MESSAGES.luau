@@ -3,9 +3,9 @@
 return {
 	MessageVersion = 6;					--// Message version/number
 	MessageAdminType = 300;  			--// Minimum admin level to be notified (Or Donors or Players or nil to not notify)
-	MessageDate = "1791936000";			--// Time of message creation
+	MessageDate = "1792018800";			--// Time of message creation
 	MessageDuration = 60*60*24*7; 	--// How long should we notify people about this message
-	LastDateTime = "2026-10-14 00:00:01 UTC";
+	LastDateTime = "2026-10-15 00:00:01 UTC";
 	Messages = {
 		"YOU WILL ONLY BE NOTIFIED ONCE PER GAME ON JOIN, WHEN THERE ARE NEW MESSAGES.";
 		"THESE ARE IMPORTANT ANNOUNCEMENTS RELATED TO ADONIS AND ADONIS USERS.";
@@ -13,7 +13,7 @@ return {
 		"NOTIFICATIONS WILL ONLY HAPPEN FOR A SET TIME (WEEK AVG) AFTER THE MESSAGE WAS ADDED.";
 		"PLEASE READ THE MOST RECENT MESSAGE CAREFULLY AS IT LIKELY AFFECTS YOU AND YOUR USERS.";
 		"";
-		"[MEDIUM - DATE: 2026-10-14 00:00:01 UTC]";
+		"[MEDIUM - DATE: 2026-10-15 00:00:01 UTC]";
 		"[DURATION: 7 DAYS]";
 		"[NOTIFY: ALL LEVEL 300 AND HIGHER]";
 		"RECENTLY ROBLOX HAS MANDATED RESTRICTIONS REGARDING USER INPUT;";
