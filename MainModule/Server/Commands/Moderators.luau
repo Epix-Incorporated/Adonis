@@ -303,7 +303,16 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Message(`Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(assert(args[2], "Missing message"), plr), service.GetPlayers(), true, assert(tonumber(args[1]), "Invalid time amount (must be number)"))
+				local duration = assert(tonumber(args[1]), "Invalid time amount (must be number)")
+				local message = service.BroadcastFilter(assert(args[2], "Missing message"), plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+
+				if #legacyRecipients > 0 then
+					Functions.Message(`Message from {service.FormatPlayer(plr)}`, message,
+						legacyRecipients, true, duration)
+				end
+				Functions.DisplayAnnouncementInTextChat(`Message from {service.FormatPlayer(plr)}`,
+					message, textChatRecipients)
 			end
 		};
 
@@ -316,7 +325,15 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, service.BroadcastFilter(assert(args[1], "Missing message"), plr), nil, service.GetPlayers(), true)
+				local message = service.BroadcastFilter(assert(args[1], "Missing message"), plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+
+				if #legacyRecipients > 0 then
+					Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, message,
+						nil, legacyRecipients, true)
+				end
+				Functions.DisplayAnnouncementInTextChat(`Message from {service.FormatPlayer(plr)}`,
+					message, textChatRecipients)
 			end
 		};
 
@@ -333,8 +350,13 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
-				for _, v in service.GetPlayers(plr, args[1]) do
+				local legacyRecipients, textChatRecipients =
+					Functions.SplitAnnouncementRecipients(service.GetPlayers(plr, args[1]))
+				for _, v in legacyRecipients do
 					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
+				end
+				for _, v in textChatRecipients do
+					Functions.DisplayAnnouncementInTextChat(Sender, service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -348,7 +370,14 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Notify(`Message from @{plr.Name}`, service.BroadcastFilter(assert(args[1], "Missing message"), plr), service.GetPlayers(), nil, plr)
+				local message = service.BroadcastFilter(assert(args[1], "Missing message"), plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+
+				if #legacyRecipients > 0 then
+					Functions.Notify(`Message from @{plr.Name}`, message, legacyRecipients, nil, plr)
+				end
+				Functions.DisplayAnnouncementInTextChat(`Message from @{plr.Name}`,
+					message, textChatRecipients)
 			end
 		};
 
@@ -361,7 +390,14 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Notify(service.BroadcastFilter(assert(args[1], "Missing title"), plr), service.BroadcastFilter(assert(args[2], "Missing message")	, plr), service.GetPlayers())
+				local title = service.BroadcastFilter(assert(args[1], "Missing title"), plr)
+				local message = service.BroadcastFilter(assert(args[2], "Missing message"), plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+
+				if #legacyRecipients > 0 then
+					Functions.Notify(title, message, legacyRecipients)
+				end
+				Functions.DisplayAnnouncementInTextChat(title, message, textChatRecipients)
 			end
 		};
 
@@ -376,9 +412,16 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				local legacyRecipients, textChatRecipients =
+					Functions.SplitAnnouncementRecipients(service.GetPlayers(plr, args[1]))
+				for _, v in legacyRecipients do
 					Remote.RemoveGui(v, "Notify")
 					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
+				end
+				for _, v in textChatRecipients do
+					Remote.RemoveGui(v, "Notify")
+					Functions.DisplayAnnouncementInTextChat(
+						`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -393,7 +436,15 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
-				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr)), service.GetPlayers(), nil, service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				local message = service.BroadcastFilter(args[1], plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				if #legacyRecipients > 0 then
+					Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), message),
+						legacyRecipients, nil, service.FormatPlayer(plr),
+						`rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				end
+				Functions.DisplayAnnouncementInTextChat(`Hint from {service.FormatPlayer(plr)}`,
+					message, textChatRecipients)
 			end
 		};
 
@@ -406,7 +457,15 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Hint(service.BroadcastFilter(assert(args[2], "Missing message"), plr), service.GetPlayers(), assert(tonumber(args[1]), "Invalid time amount (must be a number)"), service.FormatPlayer(plr), `rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				local duration = assert(tonumber(args[1]), "Invalid time amount (must be a number)")
+				local message = service.BroadcastFilter(assert(args[2], "Missing message"), plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				if #legacyRecipients > 0 then
+					Functions.Hint(message, legacyRecipients, duration, service.FormatPlayer(plr),
+						`rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)
+				end
+				Functions.DisplayAnnouncementInTextChat(`Hint from {service.FormatPlayer(plr)}`,
+					message, textChatRecipients)
 			end
 		};
 
@@ -632,7 +691,11 @@ return function(Vargs, env)
 						end
 						Remote.Send(v, "Function", "DisplaySystemMessageInTextChat", nil, `<font color="rgb(255, 64, 77)">{service.Filter(TextToUse, plr, v)}</font>`)
 					else
-						Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
+						local legacyRecipients = Functions.SplitAnnouncementRecipients({v})
+						for _, recipient in legacyRecipients do
+							Remote.Send(recipient, "Function", "ChatMessage",
+								service.Filter(args[2], plr, recipient), Color3.fromRGB(255, 64, 77))
+						end
 					end
 
 				end

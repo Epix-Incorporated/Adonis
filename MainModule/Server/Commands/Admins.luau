@@ -290,18 +290,24 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in service.GetPlayers() do
-					if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+				if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+					for _, v in service.GetPlayers() do
 						local TextToUse = args[1]
 						if data.Options.Chat ~= true then
 							TextToUse = service.SanitizeXML(args[1] or "Hello world!")
 						end
+						TextToUse = service.BroadcastFilter(TextToUse, plr)
 						Remote.Send(
 							v, "Function", "DisplaySystemMessageInTextChat", nil, `{
-							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, Settings.SystemTitle, service.Filter(TextToUse), plr, v)
+							string.format(`<font color="rgb(255, 64, 77)"><b>[%s]</b></font> <font color="rgb(235, 99, 108)">%s</font>`, Settings.SystemTitle, TextToUse, plr, v)
 							}`)
-					else
-						Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.fromRGB(255,64,77))
+					end
+				else
+					local legacyRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+					for _, v in legacyRecipients do
+						Remote.Send(v, "Function", "ChatMessage",
+							string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)),
+							Color3.fromRGB(255,64,77))
 					end
 				end
 			end
@@ -429,10 +435,16 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
+				local message = service.BroadcastFilter(args[1], plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+
 				for _, v in service.GetPlayers() do
 					Remote.RemoveGui(v, "Notify")
-					Functions.Notify(Settings.SystemTitle, service.Filter(args[1], plr, v), {v})
 				end
+				for _, v in legacyRecipients do
+					Functions.Notify(Settings.SystemTitle, message, {v})
+				end
+				Functions.DisplayAnnouncementInTextChat(Settings.SystemTitle, message, textChatRecipients)
 			end
 		};
 
@@ -446,19 +458,30 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local message = not (args[1] == "off" or args[1] == "false") and assert(args[1], "Missing message (or enter 'off' to disable)") or nil
+				if message then
+					message = service.BroadcastFilter(message, plr)
+				end
 
 				if server.PanicMode and server._tempBackupHint then
 					server._tempBackupHint.Text = `~= Adonis PanicMode Enabled{message and " - " or ""}{message or ""} =~`
 				end
 				Variables.NotifMessage = message
+				local legacyRecipients, textChatRecipients = {}, {}
+				if message then
+					legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				end
 				for _, v in service.GetPlayers() do
-					if Variables.NotifMessage then
+					Remote.RemoveGui(v, "Notif")
+				end
+				for _, v in legacyRecipients do
+					if message then
 						Remote.MakeGui(v, "Notif", {
-							Message = Variables.NotifMessage;
+							Message = message;
 						})
-					else
-						Remote.RemoveGui(v, "Notif")
 					end
+				end
+				if message then
+					Functions.DisplayAnnouncementInTextChat("Notice", message, textChatRecipients)
 				end
 			end
 		};
@@ -498,7 +521,12 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				Functions.Message(Settings.SystemTitle, service.BroadcastFilter(assert(args[1], "Missing message (argument #1)"), plr), service.GetPlayers(), true)
+				local message = service.BroadcastFilter(assert(args[1], "Missing message (argument #1)"), plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				if #legacyRecipients > 0 then
+					Functions.Message(Settings.SystemTitle, message, legacyRecipients, true)
+				end
+				Functions.DisplayAnnouncementInTextChat(Settings.SystemTitle, message, textChatRecipients)
 			end
 		};
 
@@ -538,7 +566,14 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr,string.lower(args[1])) do
-					Remote.MakeGui(v, "Alert", {Message = args[2] and service.Filter(args[2],plr, v) or "Wake up; Your attention is required"})
+					local message = args[2] and service.Filter(args[2], plr, v)
+						or "Wake up; Your attention is required"
+					local _, textChatRecipients = Functions.SplitAnnouncementRecipients({v})
+					Remote.MakeGui(v, "Alert", {
+						Message = if #textChatRecipients > 0 then "Check chat for alert details." else message;
+					})
+					Functions.DisplayAnnouncementInTextChat(`Alert from {service.FormatPlayer(plr)}`,
+						message, textChatRecipients)
 				end
 			end
 		};
@@ -1182,15 +1217,13 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message title (argument #1)")
 				assert(args[2], "Missing message (argument #2)")
-				for _, v in service.Players:GetPlayers() do
-					Remote.RemoveGui(v, "Message")
-					Remote.MakeGui(v, "Message", {
-						Title = args[1];
-						Message = args[2];
-						Time = (#tostring(args[1]) / 19) + 2.5;
-						--service.Filter(args[1],plr, v);
-					})
+				local title = service.BroadcastFilter(args[1], plr)
+				local message = service.BroadcastFilter(args[2], plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				if #legacyRecipients > 0 then
+					Functions.Message(title, message, legacyRecipients, true, (#tostring(title) / 19) + 2.5)
 				end
+				Functions.DisplayAnnouncementInTextChat(title, message, textChatRecipients)
 			end
 		};
 

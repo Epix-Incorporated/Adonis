@@ -937,12 +937,15 @@ return function(Vargs, GetEnv)
 					--// we wanna get the default channel because the new ChatSystem sucks
 					--// Please fix it Roblox
 					--// we need less strict ways to filter & receive messages
-					if service.TextChatService:FindFirstChild("TextChannels") and service.TextChatService.TextChannels:FindFirstChild("RBXSystem") then
-						channel = service.TextChatService.TextChannels.RBXSystem
+					local channels = service.TextChatService:FindFirstChild("TextChannels")
+					if channels then
+						channel = channels:FindFirstChild("RBXSystem") or channels:FindFirstChildOfClass("TextChannel")
 					end
 				end
 				if channel then
 					channel:DisplaySystemMessage(message, meta)
+				else
+					warn("Unable to display TextChatService system message because no TextChannel is available.")
 				end
 			end
 		end;

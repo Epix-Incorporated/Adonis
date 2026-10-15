@@ -1160,9 +1160,15 @@ return function(Vargs, GetEnv)
 
 				--// GUI loading
 				if Variables.NotifMessage then
-					Remote.MakeGui(p, "Notif", {
-						Message = Variables.NotifMessage
-					})
+					local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients({p})
+					if #legacyRecipients > 0 then
+						Remote.MakeGui(p, "Notif", {
+							Message = Variables.NotifMessage
+						})
+					end
+					if #textChatRecipients > 0 then
+						Functions.DisplayAnnouncementInTextChat("Notice", Variables.NotifMessage, textChatRecipients)
+					end
 				end
 
 				if

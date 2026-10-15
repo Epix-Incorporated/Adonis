@@ -61,15 +61,12 @@ return function(Vargs, GetEnv)
 		end;
 
 		Message = function(jobId, fromPlayer, message, duration)
-			server.Functions.Message(
-				nil,
-				`Global Message from {fromPlayer or "[Unknown]"}`,
-				message,
-				nil,
-				service.GetPlayers(),
-				true,
-				duration
-			)
+			local title = `Global Message from {fromPlayer or "[Unknown]"}`
+			local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+			if #legacyRecipients > 0 then
+				server.Functions.Message(nil, title, message, nil, legacyRecipients, true, duration)
+			end
+			Functions.DisplayAnnouncementInTextChat(title, message, textChatRecipients)
 		end;
 
 		RemovePlayer = function(jobId, userId, banMessage, reason)

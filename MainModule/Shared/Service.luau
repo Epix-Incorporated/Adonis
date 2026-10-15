@@ -606,7 +606,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				local ran, newl = pcall(function()
 					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForUserAsync(to.UserId)
 				end)
-				new[i] = ran and newl or lines[i] or ""
+				if not ran then
+					error(`Text filtering failed: {newl}`)
+				end
+				new[i] = newl
 			end
 			return new and table.concat(new, "\n") or "Filter Error"
 		end;
@@ -639,8 +642,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local lines = service.ExtractLines(str)
 			local new = table.create(#lines)
 			for i = 1, #lines do
-				local ran, newl = pcall(function() return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForBroadcastAsync() end)
-				new[i] = ran and newl or lines[i] or ""
+				local ran, newl = pcall(function()
+					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForBroadcastAsync()
+				end)
+				if not ran then
+					error(`Text filtering failed: {newl}`)
+				end
+				new[i] = newl
 			end
 			return new and table.concat(new, "\n") or "Filter Error"
 		end;
