@@ -153,13 +153,13 @@ return function(Vargs, GetEnv)
 			Filter = function(p: Player, args: {[number]: any})
 				local from, to = args[2], args[3]
 				if type(args[1]) == "string" and typeof(from) == "Instance" and from:IsA("Player") and typeof(to) == "Instance" and to:IsA("Player") then
-					return service.Filter(args[1], from, to)
+					return service.Filter(string.sub(args[1], 1, 1000), from, to)
 				end
 			end;
 
 			BroadcastFilter = function(p: Player, args: {[number]: any})
 				if type(args[1]) == "string" then
-					return service.BroadcastFilter(args[1], (typeof(args[2]) == "Instance" and args[2]:IsA("Player") and args[2]) or p)
+					return service.BroadcastFilter(string.sub(args[1], 1, 1000), (typeof(args[2]) == "Instance" and args[2]:IsA("Player") and args[2]) or p)
 				end
 			end;
 
@@ -426,10 +426,22 @@ return function(Vargs, GetEnv)
 				if type(aliases) == "table" then
 					local data = Core.GetPlayer(p)
 
+					local MaxAliases = Variables.MaxPlayerAliases or 100
+					local MaxAliasNameLength = Variables.MaxAliasNameLength or 100
+					local MaxAliasCommandLength = Variables.MaxAliasCommandLength or 2000
+
 					--// check for stupid stuff
+					local count = 0
 					for i,v in aliases do
-						if type(i) ~= "string" or type(v) ~= "string" then
+						if
+							type(i) ~= "string" or type(v) ~= "string"
+							or #i == 0 or #i > MaxAliasNameLength
+							or #v > MaxAliasCommandLength
+							or count >= MaxAliases
+						then
 							aliases[i] = nil
+						else
+							count += 1
 						end
 					end
 

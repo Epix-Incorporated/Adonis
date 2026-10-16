@@ -318,6 +318,7 @@ return function(Vargs, GetEnv)
 		RateLimit = RateLimit;
 		newRateLimit = newRateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
+		AdminMsgStringLimit = 5000;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
 		RemoteMaxArgCount = 5; --// The maximum argument count Adonis will take from Remote (alter if your script requires more arguments)
 		RateLimits = {
@@ -437,8 +438,11 @@ return function(Vargs, GetEnv)
 		Command = function(p, msg, opts, noYield)
 			opts = opts or {}
 
-			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
-				msg = string.sub(msg, 1, Process.MsgStringLimit)
+			if type(p) == "userdata" and p:IsA("Player") then
+				local limit = if Admin.CheckAdmin(p) then Process.AdminMsgStringLimit else Process.MsgStringLimit
+				if #msg > limit then
+					msg = string.sub(msg, 1, limit)
+				end
 			end
 
 			msg = Functions.Trim(msg)
@@ -458,6 +462,20 @@ return function(Vargs, GetEnv)
 					opts.OverrideArgs = overrideArgs
 				end
 			else
+				local aliasKey, aliasExec = Admin.IsAlias(p, Functions.Trim(msg))
+				if aliasKey then
+					local isRecursive = Admin.IsRecursiveAlias(p, aliasKey, aliasExec)
+					if isRecursive then
+						Remote.MakeGui(p, "Output", {
+							Title = "Alias error";
+							Message = if isRecursive == true
+								then "Your alias was infinitely recursive and has not been run."
+								else isRecursive;
+						})
+						return
+					end
+				end
+
 				msg = Admin.AliasFormat(Admin.GetAliases(p), msg) or msg
 
 				if string.match(msg, Settings.BatchKey) then
@@ -854,7 +872,7 @@ return function(Vargs, GetEnv)
 			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
-					
+
 					if Remote.Clients[key] then
 						Remote.Clients[key] = nil
 			        end
@@ -890,7 +908,7 @@ return function(Vargs, GetEnv)
 				["PlatformKick"] = "Kicked by Roblox",
 				["CreatorKick"] = "Kicked by Creator"
 			}
-			
+
 			local reason = reasons[r.Name] or r.Name
 
 			AddLog("Leaves", {
@@ -957,14 +975,14 @@ return function(Vargs, GetEnv)
 				table.remove(players, index);
 				if #players == 0 then
 					Variables.Tags[name] = nil;
-					
+
 					AddLog("Script", {
 						Text = `Tag "{name}" was removed because the last player who was in it left`;
 						Desc = `Tag "{name}" was removed`;
 					})
 				end
 			end
-			
+
 			Variables.PersistedItems[tostring(p.UserId)] = nil
 		end;
 
@@ -1199,10 +1217,10 @@ return function(Vargs, GetEnv)
 				if Speed then
 					Hum.WalkSpeed = Speed
 				end
-				
+
 				local Items = Variables.PersistedItems[tostring(p.UserId)]
 				if Items then
-					
+
 					for _,item in Items do
 						server.Commands.AvatarItem.Function(p, {"me", tostring(item)})
 					end
