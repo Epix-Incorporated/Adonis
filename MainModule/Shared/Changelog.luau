@@ -3,11 +3,12 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v285 2026-xx-xx xx:xx UTC] @Maintainer";
+	"[v285 2026-10-17 16:00 UTC] @Dimenpsyonal";
 	"Reverts hotfixes in v284";
 	"Restores the functionality of most commands";
 	"Admin now prevents 'chat' between admins using commands";
 	"Other updates to ensure compliance with TextChatService";
+	"(Git/krampuszc) Fixed inf recursive aliases and added filtering to exploitlogs (#2208)";
 	"";
 	"[v284 2026-10-13 09:32 UTC] @Dimenpsyonal";
 	"Hotfix/implement textchannel restrictions where required";
