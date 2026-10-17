@@ -1,7 +1,12 @@
 return {
-	"Version: 284";
+	"Version: 285";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
+	"";
+	"[v285 2026-10-13 09:32 UTC] @Dimenpsyonal";
+	"Revert hotfixes";
+	"Restores the functionality of most commands";
+	"Admin now prevents 'chat' between admins using commands";
 	"";
 	"[v284 2026-10-13 09:32 UTC] @Dimenpsyonal";
 	"Hotfix/implement textchannel restrictions where required";
