@@ -357,5 +357,5 @@ return function(Vargs, GetEnv)
 		for token, input in inputs do
 			if nextCleanup - input.Created > 30 then inputs[token] = nil end
 		end
-	end)
+	end, true)
 end
