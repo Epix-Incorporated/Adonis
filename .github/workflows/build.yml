@@ -69,9 +69,11 @@ jobs:
 
       - name: Get short SHA
         id: get-short-sha
+        env:
+          GIT_SHA: ${{ github.sha }}
         run: |
-          id=$(echo ${{github.sha}} | cut -c 1-7)
-          echo "::set-output name=id::$id"
+          id="${GIT_SHA:0:7}"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v7.0.0

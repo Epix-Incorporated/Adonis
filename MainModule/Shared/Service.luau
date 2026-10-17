@@ -595,43 +595,62 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return string.split(string.gsub(str, "[%z\1-\9\11-\31]", ""), "\n")
 		end;
 
-		-- Filters one non-chat submission and returns nil plus a fixed code on every failure.
-		TryFilter = function(str, from, to, broadcast)
-			if type(str) ~= "string" or not utf8.len(str) then return nil, "InvalidText" end
-			local author = service.UnWrap(from)
-			if typeof(author) ~= "Instance" or not author:IsA("Player")
-				or service.UnWrap(service.Players:GetPlayerByUserId(author.UserId)) ~= author then
-				return nil, "AuthorUnavailable"
-			end
-			local recipient = if broadcast then nil else service.UnWrap(to)
-			if not broadcast and (typeof(recipient) ~= "Instance" or not recipient:IsA("Player")) then
-				return nil, "RecipientUnavailable"
-			end
-			local cleaned = table.concat(service.ExtractLines(str), "\n")
-			if cleaned == "" then return "" end
-			local ok, filtered = pcall(function()
-				local result = service.TextService:FilterStringAsync(cleaned, author.UserId, Enum.TextFilterContext.PublicChat)
-				return if broadcast then result:GetNonChatStringForBroadcastAsync() else result:GetNonChatStringForUserAsync(recipient.UserId)
-			end)
-			if not ok or type(filtered) ~= "string" or not utf8.len(filtered) then return nil, "FilterUnavailable" end
-			return filtered
-		end;
-
-		-- Compatibility helper that never exposes source text when recipient filtering fails.
 		Filter = function(str, from, to)
-			local filtered, code = service.TryFilter(str, from, to, false)
-			return filtered or "Text unavailable", code
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
+
+			local lines = service.ExtractLines(str)
+			local new = table.create(#lines)
+			for i = 1, #lines do
+				local ran, newl = pcall(function()
+					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForUserAsync(to.UserId)
+				end)
+				if not ran then
+					error(`Text filtering failed: {newl}`)
+				end
+				new[i] = newl
+			end
+			return new and table.concat(new, "\n") or "Filter Error"
 		end;
 
-		-- Legacy callers receive broadcast-safe text; displayed numbers and names are not exempt.
-		LaxFilter = function(str, from)
-			return service.BroadcastFilter(str, from)
+		LaxFilter = function(str, from, cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
+			if tonumber(str) then				-- to avoid major filter related problems (like commands becoming unusable due to numbers or names being filtered)
+				return str						-- Please consider dropping the filter rules down a notch or improving on the existing filtering methods
+			elseif type(str) == "string" then	-- Also always feel free to message me with any concerns you have :)!
+				if not utf8.len(str) then
+					return "Filter Error"
+				end
+
+				if cmd and #service.GetPlayers(from, str, {
+					DontError = true;
+				}) > 0 then
+					return str
+				else
+					return service.Filter(str, from, from)
+				end
+			else
+				return str
+			end
 		end;
 
-		-- Compatibility helper that fails closed for public non-chat text.
 		BroadcastFilter = function(str, from)
-			local filtered, code = service.TryFilter(str, from, nil, true)
-			return filtered or "Text unavailable", code
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
+
+			local lines = service.ExtractLines(str)
+			local new = table.create(#lines)
+			for i = 1, #lines do
+				local ran, newl = pcall(function()
+					return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForBroadcastAsync()
+				end)
+				if not ran then
+					error(`Text filtering failed: {newl}`)
+				end
+				new[i] = newl
+			end
+			return new and table.concat(new, "\n") or "Filter Error"
 		end;
 
 		RecursiveMtSearch = function(tab)
@@ -803,7 +822,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						service.TrackTask(`Thread: {key or "Unknown"}_QueuedFunction`, function()
 							local r, e = xpcall(func.Function, function(e)
 								func.Error = e
-								warn("An Adonis queued operation failed; details are unavailable.")
+								warn(`Queue Error: {key}: {e} \n {debug.traceback()}`)
 							end)
 
 							func.Running = false
@@ -1482,7 +1501,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;
 		DelRbxEvent = function(signal) for i, v in RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
 		SanitizeString = function(str) return string.gsub(service.Trim(str), "[%c%z\n]", "") end;
-		Trim = function(str) return string.match(str,"^%s*(.-)%s*$") end;
+		Trim = function(str) local from = string.match(str, "^%s*()") if from > #str then return "" end return string.match(str, ".*%S", from) end;
 		Localize = function(obj, readOnly) local Localize = service.Localize local ReadOnly = service.ReadOnly if type(obj) == "table" then local newTab = {} for i in obj do newTab[i] = Localize(obj[i], readOnly) end return (readOnly and ReadOnly(newTab)) or newTab else return obj end end;
 		RawEqual = function(obj1, obj2) return service.UnWrap(obj1) == service.UnWrap(obj2) end;
 		CheckProperty = function(obj, prop) return pcall(function() return obj[prop] end) end;

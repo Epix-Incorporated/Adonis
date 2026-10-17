@@ -1,0 +1,135 @@
+name: Continuous integration
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: Regression tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install pinned tools
+        run: aftman install
+
+      - name: Cache Roblox Standard Library
+        id: cache-roblox-std
+        uses: actions/cache@v6.1.0
+        with:
+          path: roblox.yml
+          key: roblox-std-${{ github.run_id }}
+          restore-keys: |
+            roblox-std-
+
+      - name: Check standard Roblox library status
+        id: check-roblox-std
+        env:
+          DID_CACHE: ${{ steps.cache-roblox-std.outputs.cache-hit }}
+        run: |
+          set -euo pipefail
+
+          should_fetch=true
+
+          if [[ "$DID_CACHE" == "true" && -f roblox.yml ]]; then
+            generated_date="$(head -n 1 roblox.yml | grep -oP '\d{4}-\d{2}-\d{2}(?=\s+\d{2}:\d{2}:\d{2})' || true)"
+
+            if [[ -n "$generated_date" ]]; then
+              generated_epoch="$(date -u -d "$generated_date" +%s)"
+              current_epoch="$(date -u +%s)"
+              age_seconds=$((current_epoch - generated_epoch))
+
+              if (( age_seconds >= 0 && age_seconds < 604800 )); then
+                should_fetch=false
+              fi
+            fi
+          fi
+
+          echo "should-fetch=$should_fetch" >> "$GITHUB_OUTPUT"
+
+      - name: Update standard Roblox library
+        if: steps.check-roblox-std.outputs.should-fetch == 'true'
+        run: selene generate-roblox-std
+
+      - name: Install Lune 0.11.0
+        env:
+          LUNE_SHA256: 5a0ea32c3e13e5e3b1dc415c2056bcfe44258b3a811dcd473c50e3b437d10f72
+        run: |
+          set -euo pipefail
+
+          url="https://github.com/lune-org/lune/releases/download/v0.11.0/lune-0.11.0-linux-x86_64.zip"
+          zip="$RUNNER_TEMP/lune.zip"
+          install_dir="$RUNNER_TEMP/lune"
+
+          curl --fail --location --silent --show-error "$url" --output "$zip"
+
+          echo "$LUNE_SHA256  $zip" | sha256sum --check
+
+          mkdir -p "$install_dir"
+          unzip -q "$zip" -d "$install_dir"
+
+          lune_exe="$(find "$install_dir" -type f -name lune -print -quit)"
+          if [[ -z "$lune_exe" ]]; then
+            echo "::error::lune executable was not found in the downloaded archive"
+            exit 1
+          fi
+
+          chmod +x "$lune_exe"
+          echo "$(dirname "$lune_exe")" >> "$GITHUB_PATH"
+          "$lune_exe" --version
+
+      - name: Lint regression fixtures
+        run: selene ./Tests
+
+      - name: Run regression fixtures
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          fixtures=(Tests/*.spec.luau)
+
+          if (( ${#fixtures[@]} == 0 )); then
+            echo "::error::No regression fixtures found"
+            exit 1
+          fi
+
+          for fixture in "${fixtures[@]}"; do
+            echo "Running $fixture"
+            lune run "$fixture"
+          done
+
+      - name: Check whitespace
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            git diff --check "$BASE_SHA...$HEAD_SHA"
+          elif [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
+            git diff --check "$CURRENT_SHA"
+          else
+            git diff --check "$BEFORE_SHA" "$CURRENT_SHA"
+          fi

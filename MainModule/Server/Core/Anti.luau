@@ -131,7 +131,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Detected = function(player, action, info)
-			local info = string.sub(string.gsub(tostring(info), "\n", ""), 1, 50)
+			local info = string.sub(service.Filter(tostring(info), player, player), 1, 50)
 
 			if Anti.KickedPlayers[player] then
 				player:Kick(`:: Adonis Anti Cheat ::\n{info}`)

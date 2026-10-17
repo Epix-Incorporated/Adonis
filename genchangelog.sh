@@ -8,8 +8,10 @@
 # The output will be printed to stdout instead of written to the files
 # 
 # ## --from-stdin or -I
-# Takes the input for custom notes from a stdin instead of asking the user manually for the file
+# Takes the input for custom notes from a stdin instead of asking the user to manually edit a temporary file
 # 
+# ## Adding custom edit notes
+# If not set via -I then this is done via editing the `Adonis_TEMP_ReleaseNotes.txt` file.
 
 
 # Copyright (c) 2025 ccuser44, Epix-Incorporated
@@ -19,6 +21,11 @@
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# # TODO: notes
+# - Do more fixing
+# - Add support for having a nightly/beta release mock version header
+# - ^^^^^^^ Allow adding new changelogs under it without making a new release
 
 valVer=$(cat Loader/Version.model.json | grep "\"Value\"\s*\:" -E | sed -E "s/\s*\"Value\"\s*:\s*(\-?[0-9][0-9A-Fa-fXx\.]*)\s*,?\s*/\1/gi")
 logVer=$(cat MainModule/Shared/Changelog.luau | head -n 20 | grep "Version\s*\:" -E | head -n 1 | sed -E "s/\s*[\"']\s*Version\s*:\s*(Patch|Hot[\-\s]?Fix)?\s*(\-?[0-9][0-9A-Fa-fXx\.]*)\s*[\"']\s*[,;]?\s*/\2/gi")
@@ -89,7 +96,7 @@ date +" %Y-%m-%d %T %Z" -u | tr -d "\n" >> SigmaSigmaBoy.tmp
 printf "] @" >> SigmaSigmaBoy.tmp
 git config user.name | sed -e 's/([Nn]ichole|([Dd]imenp?s[yi]onal|[Pp]bst?)[Ff]usion|[Dd]imenp?s[yi]onal)/Dimenpsyonal/g' | tr -d "\n" >> SigmaSigmaBoy.tmp
 echo "\";" >> SigmaSigmaBoy.tmp
-cat Adonis_TEMP_ReleaseNotes.txt | dos2unix -r -q --to-stdout | tr -d "\r" | sed sed 's|\|\\|g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\",/g' >> SigmaSigmaBoy.tmp
+cat Adonis_TEMP_ReleaseNotes.txt | dos2unix -r -q --to-stdout | tr -d "\r" | sed 's|\|\\|g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\",/g' >> SigmaSigmaBoy.tmp
 #echo "	\"\";" >> SigmaSigmaBoy.tmp
 git --no-pager log v$tagVer..HEAD --max-count=2048 --show-pulls --format="(Git/%an) %s" | grep "\\(#[0-9]+\\)$" -E | sed 's/\\/\\\\/g; s/\"/\\\"/g' | sed -E 's/^.*$/\t\"\0\";/g' >> SigmaSigmaBoy.tmp
 

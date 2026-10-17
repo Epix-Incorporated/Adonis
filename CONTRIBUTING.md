@@ -59,6 +59,8 @@ For AI-assisted development, see [AGENTS.md](AGENTS.md) for the repository map, 
 ## 5. Changelog Policy
 
 - The changelog is the record of all notable changes.
+- All entries to the changelog should be generally treated as if they're immutable.
+- PRs should generally not add themselves to the changelog. Release PRs are an exception.
 - Each release of Adonis is documented within the changelog. Adonis uses two forms of releases:
 	- Full releases: most PRs are released in full releases.
 	- Patch releases: denoted by adding a decimal version. Maintainers may choose to include your PR in a patch release if it is related to a non-trivial and/or uncommon bug.
@@ -66,7 +68,7 @@ For AI-assisted development, see [AGENTS.md](AGENTS.md) for the repository map, 
 	- the version number,
 	- the ISO 8601 date (YYYY–MM–DD) and the time (usually in UTC, some old releases in EST),
 	- and the name of the maintainer responsible for that release.
-- The version number uses decimal versioning (e.g. v1.2 is an older version than v1.12), older releases use semantic versioning.
+- The version number uses decimal versioning (e.g. v1.2 is an older version than v1.12), older releases use semantic versioning (specifically releases that are older than v159).
 - Entries should be concise, in the present tense, and reference Adonis commands by their usage name (e.g. `:somecommand`).
 - Maintainers will base the changelog entry off the title of your PR and may copyedit it for clarity.
 - Maintainers may edit or reorganise entries before release publication.

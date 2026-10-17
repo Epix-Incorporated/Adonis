@@ -8,6 +8,27 @@ return function(Vargs, GetEnv)
 
 	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local ANNOUNCEMENT_REPLY_COMMANDS = {
+		"Message";
+		"TimeMessage";
+		"Notify";
+		"CustomNotify";
+		"SystemMessage";
+		"SystemNotify";
+		"Hint";
+		"TimeHint";
+		"CustomMessage";
+		"Broadcast";
+		"Notif";
+		"ChatNotify";
+		"PrivateMessage";
+		"PrivateChat";
+		"MessagePM";
+		"NotifyPM";
+		"Alert";
+		"MakeTalk";
+	}
+
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -583,14 +604,16 @@ return function(Vargs, GetEnv)
 
 				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
 				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
-				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors
+				local IsUnsafeSelectorSource = PlrLevel > 0 or options.AllowUnsafeSelectors
 				local MaxSelectors = Variables.MaxSafeSelectors or 400 -- 400 seems like a good "max" that won't ever be reached
+				local MaxAdminSelectors = Variables.MaxAdminSafeSelectors or 2000
+				local SelectorCap = if IsUnsafeSelectorSource then MaxAdminSelectors else MaxSelectors
 
 				local index = 0
 
 				for s in selectors do
 					index += 1
-					if not AllowUnsafeSelectors and index > MaxSelectors then
+					if index > SelectorCap then
 						break
 					end
 					local plrCount = 0
@@ -652,13 +675,9 @@ return function(Vargs, GetEnv)
 							if plrCount == 0 then
 								if options.UseFakePlayer then
 									--// Attempt to retrieve non-ingame user
-									local UserId
-									if Functions.GetUserIdFromNameAsync(s) then
-										UserId = Functions.GetUserIdFromNameAsync(s)
-									else
-										if tonumber(s) then
-											UserId = s
-										end
+									local UserId = Functions.GetUserIdFromNameAsync(s)
+									if not UserId and tonumber(s) then
+										UserId = s
 									end
 									if UserId or options.AllowUnknownUsers then
 										table.insert(players, Functions.GetFakePlayer({
@@ -951,14 +970,11 @@ return function(Vargs, GetEnv)
 			return table.concat(out, "")
 		end;
 
-		-- Publishes non-chat hints; body and title records preserve independently verified display text.
-		Hint = function(message, players, duration, title, image, authorOrRecord, titleRecord)
-			message = server.TextPolicy.GetPublicationText(message, authorOrRecord)
-			title = server.TextPolicy.GetPublicationText(title, titleRecord or (if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord))
+		Hint = function(message, players, duration, title, image)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if server.PanicMode and server._tempBackupHint then
-				local message = `{title or Core.GetSettingText("SystemTitle")}: {message}`
+				local message = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}: {message}`
 				server._tempBackupHint.Text = message
 
 				task.delay(duration, function()
@@ -978,9 +994,51 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Publishes non-chat announcements while retaining the legacy title/body helper signature.
-		-- Explicit sender attribution or verified body/title records are required for plugin-provided user text.
-		Message = function(sender, title, message, image, players, scroll, duration, authorOrRecord, titleRecord)
+		-- Splits announcement recipients by reply-command access while keeping the sender on the legacy UI.
+		SplitAnnouncementRecipients = function(players, sender)
+			local legacyRecipients = {}
+			local textChatRecipients = {}
+
+			for _, player in players do
+				if player == sender then
+					table.insert(legacyRecipients, player)
+					continue
+				end
+
+				local playerData = {
+					Player = player;
+					Level = Admin.GetLevel(player);
+					isDonor = false;
+				}
+				local canReply = false
+				for _, commandName in ANNOUNCEMENT_REPLY_COMMANDS do
+					local command = server.Commands[commandName]
+					if command and Admin.CheckPermission(playerData, command, true) then
+						canReply = true
+						break
+					end
+				end
+				table.insert(if canReply then textChatRecipients else legacyRecipients, player)
+			end
+
+			if #textChatRecipients > 0 then
+				assert(service.TextChatService
+					and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService,
+					"TextChatService is required to deliver announcements to players who can reply.")
+			end
+			return legacyRecipients, textChatRecipients
+		end;
+
+		-- Displays a filtered admin announcement in the recipient's TextChatService chat window.
+		DisplayAnnouncementInTextChat = function(title, message, players)
+			if #players == 0 then return end
+			local text = `{service.SanitizeXML(title)}: {service.SanitizeXML(message)}`
+			for _, player in players do
+				Remote.Send(player, "Function", "DisplaySystemMessageInTextChat", nil, text)
+			end
+		end;
+
+		Message = function(sender, title, message, image, players, scroll, duration)
 			-- Currently not used
 			if sender == "Adonis" or sender == "HelpSystem" or sender == "Command" then
 				sender = nil
@@ -1008,9 +1066,6 @@ return function(Vargs, GetEnv)
 				image = nil
 			end
 
-			message = server.TextPolicy.GetPublicationText(message, authorOrRecord or sender)
-			title = server.TextPolicy.GetPublicationText(title, titleRecord or sender or (if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord))
-
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if image then
@@ -1026,7 +1081,7 @@ return function(Vargs, GetEnv)
 
 			if server.PanicMode then
 				service.Debris:AddItem(service.New("Message", {
-					Text = `{title or Core.GetSettingText("SystemTitle")}:\n\n{message}`,
+					Text = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}:\n\n{message}`,
 					Name = `ADONIS_TEMPMESSAGE_{server.CodeName}_{math.random()}`,
 					Archivable = false,
 					Parent = workspace,
@@ -1048,15 +1103,12 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Publishes non-chat notifications using author context or independently verified body/title records.
-		Notify = function(title, message, players, duration, author, bodyRecord, titleRecord)
-			message = server.TextPolicy.GetPublicationText(message, bodyRecord or author)
-			title = server.TextPolicy.GetPublicationText(title, titleRecord or author)
+		Notify = function(title, message, players, duration, author)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			if server.PanicMode then
 				service.Debris:AddItem(service.New("Message", {
-					Text = `{title or Core.GetSettingText("SystemTitle")}:\n\n{message}`,
+					Text = `{title or server.Settings and server.Settings.SystemTitle or "System Message"}:\n\n{message}`,
 					Name = `ADONIS_TEMPNOTIFY_{server.CodeName}_{math.random()}`,
 					Archivable = false,
 					Parent = workspace,
@@ -1076,10 +1128,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Publishes system UI notifications; dynamic user text outside commands requires an author.
-		Notification = function(title, message, players, duration, icon, onClick, authorOrRecord)
-			message = server.TextPolicy.GetPublicationText(message, authorOrRecord)
-			title = server.TextPolicy.GetPublicationText(title, if type(authorOrRecord) == "table" and authorOrRecord.Version == 1 then nil else authorOrRecord)
+		Notification = function(title, message, players, duration, icon, onClick)
 			local properties = {
 				Title = title;
 				Message = message;
@@ -1490,7 +1539,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		Trim = function(str)
-			return string.match(str, "^%s*(.-)%s*$")
+			local from = string.match(str, "^%s*()")
+			if from > #str then
+				return ""
+			end
+			return string.match(str, ".*%S", from)
 		end;
 
 		RoundToPlace = function(num, places)
@@ -1569,10 +1622,8 @@ return function(Vargs, GetEnv)
 			return cache
 		end;
 
-		-- Captures a safe reason before delayed shutdown kicks and future player joins.
-		Shutdown = function(reason, authorOrRecord)
-			reason = server.TextPolicy.GetPublicationText(reason, authorOrRecord) or "No Reason Given"
-			Functions.Message("Adonis", Core.GetSettingText("SystemTitle"), "The server is shutting down...", "MatIcon://Warning", service.Players:GetPlayers(), false, 5)
+		Shutdown = function(reason)
+			Functions.Message("Adonis", Settings.SystemTitle, "The server is shutting down...", "MatIcon://Warning", service.Players:GetPlayers(), false, 5)
 			task.wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)

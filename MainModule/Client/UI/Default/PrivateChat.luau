@@ -4,54 +4,50 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	local Owner = data.Owner;
-	local channelId = data.ChannelId
-	local transport = client.ChatTransport
+	local Owner = data.FromPlayer;
 	local SessionKey = data.SessionKey;
 	local SessionName = data.SessionName;
+	local Channel = data.Channel;
 	local CanManageUsers = data.CanManageUsers;
 
 	local debounce, gTable, selectedPlayer = false, nil, nil
 	local peerList, messageObjs = {}, {}
 
-	local window, chatlog, reply, playerList, send, layout, sessionEvent;
-	local unsubscribe
-	local closed = false
+	local window, chatlog, reply, playerList, send, layout, sessionEvent, messageEvent, channelEvent;
+	local systemMessage
 
-	-- Releases conversation listeners independently of the selected window theme's close callback.
-	local function cleanup()
-		if unsubscribe then
-			unsubscribe()
-			unsubscribe = nil
-		end
-		if sessionEvent then
-			sessionEvent:Disconnect()
-			sessionEvent = nil
-		end
-	end
-
-	-- Leaves a manually closed conversation once, after releasing its message listeners.
-	local function closeConversation()
-		cleanup()
-		if not closed then
-			closed = true
-			client.Remote.Send("Session", SessionKey, "LeaveSession")
-		end
-	end
-
-	-- Sends a local draft through Roblox, retaining it when submission is unsuccessful.
 	local function sendIt()
-		if debounce or closed then return end
 		local text = service.Trim(reply.Text)
-		if text ~= "" then
-			debounce = true
-			local sent, status = transport.Send(channelId, text)
-			if sent then
-				reply.Text = ""
-			else
-				client.UI.Make("Hint", {Message = transport.StatusText(status)})
+		if text ~= "" and Channel then
+			local commandToken = text:match("^(%S+)")
+			local chatService = service.TextChatService
+			if commandToken and chatService then
+				for _, command in chatService:GetDescendants() do
+					if command:IsA("TextChatCommand") and command.Enabled then
+						for _, alias in {command.PrimaryAlias, command.SecondaryAlias} do
+							if type(alias) == "string" and alias ~= "" then
+								local token = commandToken
+								if token:sub(1, 1) == "/" then
+									token = token:sub(2)
+								end
+								local normalizedAlias = if alias:sub(1, 1) == "/" then alias:sub(2) else alias
+								if string.lower(commandToken) == string.lower(alias)
+									or string.lower(token) == string.lower(normalizedAlias) then
+									systemMessage("Commands can't be sent as private chat messages.")
+									return
+								end
+							end
+						end
+					end
+				end
 			end
-			debounce = false
+			local ok, err = pcall(Channel.SendAsync, Channel, text)
+			if not ok then
+				systemMessage("Unable to send this message through Roblox chat.")
+				warn(`Adonis private chat send failed: {tostring(err)}`)
+			end
+		elseif text ~= "" then
+			systemMessage("Roblox chat is unavailable for this private conversation.")
 		end
 	end
 
@@ -158,8 +154,7 @@ return function(data, env)
 		playerList.CanvasSize = UDim2.new(0, 0, 0, lObj.AbsoluteContentSize.Y)
 	end;
 
-	-- Renders a recipient-local message or a fixed membership notice.
-	local function newMessage(data)
+	function newMessage(data)
 		local pName = data.PlayerName;
 		local pDisplayName = pName ~= "*SYSTEM*" and data.PlayerDisplayName
 		local msg = data.Message;
@@ -248,7 +243,7 @@ return function(data, env)
 								AutomaticSize = "Y";
 								TextWrapped = true;
 								TextScaled = false;
-								RichText = false;
+								RichText = data.RichText;
 								BackgroundTransparency = 1;
 							};
 						}
@@ -264,25 +259,36 @@ return function(data, env)
 			table.remove(messageObjs, 1)
 		end
 	end
-	-- Adds a fixed local session status to the conversation window.
-	local function systemMessage(msg)
+	systemMessage = function(msg)
 		newMessage({
 			PlayerName = "* SYSTEM *";
 			Message = msg;
 			Icon = 0;
 		})
-	end;
+	end
 
 	if client.UI.Get(`PrivateChat{SessionName}`) then
 		return
 	end
 
 	window = client.UI.Make("Window", {
-		Name  = `PrivateChat{SessionName}`;
+		Name  = `"PrivateChat{SessionName}`;
 		Title = "Private Chat";
 		Icon = client.MatIcons.Forum;
 		Size  = {500,300};
-		OnClose = closeConversation;
+		OnClose = function()
+			if sessionEvent then
+				sessionEvent:Disconnect()
+			end
+			if messageEvent then
+				messageEvent:Disconnect()
+			end
+			if channelEvent then
+				channelEvent:Disconnect()
+			end
+
+			client.Remote.Send("Session", SessionKey, "LeaveSession")
+		end;
 	})
 
 	chatlog = window:Add("ScrollingFrame", {
@@ -343,6 +349,7 @@ return function(data, env)
 		Position = UDim2.new(1, -65, 1, -35);
 		OnClick = function()
 			sendIt()
+			reply.Text = ""
 		end
 	})
 
@@ -358,6 +365,7 @@ return function(data, env)
 	reply.FocusLost:Connect(function(isEnter)
 		if isEnter then
 			sendIt()
+			reply.Text = ""
 			reply:CaptureFocus()
 		end
 	end)
@@ -367,53 +375,59 @@ return function(data, env)
 		chatlog.CanvasPosition = Vector2.new(0, layout.AbsoluteContentSize.Y)
 	end)
 
-	-- Maps an already delivered TextChannel message into the existing window layout.
-	local function receivedMessage(entry)
-		local sender = service.Players:GetPlayerByUserId(entry.SenderUserId)
-		newMessage({
-			PlayerName = entry.SenderName,
-			PlayerDisplayName = sender and sender.DisplayName,
-			Message = entry.Text,
-			Icon = entry.SenderUserId > 0 and `rbxthumb://type=AvatarHeadShot&id={entry.SenderUserId}&w=48&h=48` or "",
-		})
+	if Channel and Channel.MessageReceived then
+		messageEvent = Channel.MessageReceived:Connect(function(message)
+			if message.Status == Enum.TextChatMessageStatus.TextFilterFailed then
+				local source = message.TextSource
+				if source and source.UserId == service.Players.LocalPlayer.UserId then
+					systemMessage("Roblox could not filter that message, so it was not sent.")
+				end
+				return
+			elseif message.Status ~= Enum.TextChatMessageStatus.Success or message.Text == "" then
+				return
+			end
+			local source = message.TextSource
+			local player = source and service.Players:GetPlayerByUserId(source.UserId)
+			if player then
+				newMessage({
+					PlayerName = player.Name;
+					PlayerDisplayName = player.DisplayName;
+					Message = message.Text;
+					Icon = player.UserId > 0 and `rbxthumb://type=AvatarHeadShot&id={player.UserId}&w=48&h=48` or 0;
+				})
+			end
+		end)
+		channelEvent = Channel.AncestryChanged:Connect(function(_, parent)
+			if parent == nil and window and not window.Destroyed then
+				window:Close()
+			end
+		end)
 	end
-	for _, entry in transport.GetHistory(channelId) do receivedMessage(entry) end
-	unsubscribe = transport.Subscribe(channelId, function(eventName, payload)
-		if eventName == "Message" then
-			receivedMessage(payload)
-		elseif eventName == "Closed" then
-			closed = true
-			cleanup()
-			-- Release the registered window so this channel can be rejoined.
-			window:Close()
-		end
-	end)
 
 	sessionEvent = service.Events.SessionData:Connect(function(sessionKey, cmd, ...)
 		local vargs = {...};
 		if SessionKey == sessionKey then
 			if cmd == "UpdatePeerList" then
 				updatePeerList(vargs[1])
+			elseif cmd == "SessionNotice" then
+				systemMessage(vargs[1])
 			elseif cmd == "RemovedFromSession" then
 				systemMessage("<i>You have been removed from this chat session</i>")
+				window:Close()
 			elseif cmd == "AddedToSession" then
 				systemMessage("<i>You have been added to this chat session</i>")
+			elseif cmd == "SessionEnded" then
+				window:Close()
 			end
 		end
 	end)
 
 	client.Remote.Send("Session", SessionKey, "GetPeerList")
 	gTable = window.gTable
-	local destroyWindow = gTable.CustomDestroy
-	-- Theme close buttons always destroy the registered GUI, even when they skip OnClose.
-	gTable.CustomDestroy = function()
-		-- A failed leave submission must not prevent the theme from destroying its GUI.
-		pcall(closeConversation)
-		if destroyWindow then
-			destroyWindow()
-		else
-			service.UnWrap(gTable.Object):Destroy()
-		end
-	end
 	window:Ready()
+	if data.InitialMessage and Channel then
+		reply.Text = data.InitialMessage
+		sendIt()
+		reply.Text = ""
+	end
 end

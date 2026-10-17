@@ -20,7 +20,6 @@ local CORE_LOADING_ORDER = table.freeze({
 	"Remote",
 	"UI",
 	"Process",
-	"ChatTransport",
 
 	--// Misc
 	"Anti",

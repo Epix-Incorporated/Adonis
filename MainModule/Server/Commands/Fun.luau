@@ -4277,17 +4277,25 @@ return function(Vargs, env)
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk", "maketalk"};
-			Args = {"recipients", "message"};
-			UserText = {Kind = "Chat", Args = {2}, Audience = "SelectedPlayers"};
+			Args = {"player", "message"};
+			Filter = true;
 			Fun = true;
-			Description = "Shows your chat bubble over your character to the selected recipients";
+			Description = "Displays the message above targets without reply commands, or in TextChat for others";
 			Category = "Messages";
 			AdminLevel = "Admins";
-			-- Keeps bubble authorship and visibility tied to Roblox's delivered message.
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing recipients")
-				assert(args[2], "Missing message")
-				server.ChatTransport.SubmitCommand(plr, service.GetPlayers(plr, args[1]), args[2], data and data.ChatInput, "Bubble")
+			Function = function(plr: Player, args: {string})
+				local message = service.BroadcastFilter(args[2], plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(
+					service.GetPlayers(plr, args[1]), plr)
+
+				for _, v in legacyRecipients do
+					local head = v.Character and v.Character:FindFirstChild("Head")
+					if head then
+						service.ChatService:Chat(head, message, Enum.ChatColor.Blue)
+					end
+				end
+				Functions.DisplayAnnouncementInTextChat(`Message from {service.FormatPlayer(plr)}`,
+					message, textChatRecipients)
 			end
 		};
 

@@ -1,9 +1,21 @@
 -- Exercises real AFK preparation and cleanup with separate asynchronous effect coroutines.
 local fs = require("@lune/fs")
 local luau = require("@lune/luau")
-local commandSource = fs.readFile("MainModule/Server/Commands/Moderators.luau")
-local policySource = fs.readFile("MainModule/Server/Core/TextPolicy.luau")
-local runCommandSource = assert(fs.readFile("MainModule/Server/Core/Admin.luau"):match("RunCommand = (function.-\n\t\tend);"))
+local process = require("@lune/process")
+
+local root = process.cwd:gsub("\\", "/")
+
+local function repoFile(path)
+    local fullPath = root .. "/" .. path:gsub("\\", "/")
+    assert(fs.isFile(fullPath), "File not found: " .. fullPath)
+    return fs.readFile(fullPath)
+end
+
+local commandSource = repoFile("MainModule/Server/Commands/Moderators.luau")
+local policySource = repoFile("Tests/TextPolicy.luau")
+local runCommandSource = assert(
+    repoFile("MainModule/Server/Core/Admin.luau"):match("RunCommand = (function.-\n\t\tend);")
+)
 local passed = 0
 
 -- Creates isolated actors, character effects, and author-sensitive filtering for one scenario.
