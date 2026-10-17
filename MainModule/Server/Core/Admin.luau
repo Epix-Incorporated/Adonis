@@ -888,7 +888,7 @@ return function(Vargs, GetEnv)
 				return true
 			else
 				local pGroup = Admin.GetPlayerGroup(p, 886423)
-				if pGroup and pGroup.Rank >= 10 then 
+				if pGroup and pGroup.Rank >= 10 then
 					--// Complimentary donor access is given to Adonis contributors & developers.
 					Variables.CachedDonors[key] = os.time()
 					return true
@@ -1415,6 +1415,60 @@ return function(Vargs, GetEnv)
 				table.insert(args, newArgs[i])
 			end
 			return args
+		end;
+
+		IsAlias = function(player, message)
+			if not (player and type(player) == "userdata" and player:IsA("Player")) then
+				return false
+			end
+
+			local data = Core.GetPlayer(player)
+			local playerAliases = data and data.Aliases
+			if type(playerAliases) ~= "table" or type(message) ~= "string" then
+				return false
+			end
+
+			local lowered = string.lower(message)
+
+			for alias, exec in playerAliases do
+				if type(alias) == "string" and type(exec) == "string" then
+					local escaped = service.SanitizePattern(string.lower(alias))
+					if string.match(lowered, `^{escaped}%s+`) or string.match(lowered, `^{escaped}$`) then
+						return alias, exec
+					end
+				end
+			end
+
+			return false
+		end;
+
+		IsRecursiveAlias = function(player, alias, exec, path, counter)
+			counter = counter or {Count = 0}
+			path = path and table.clone(path) or {}
+			path[string.lower(alias)] = true
+
+			for cmd in string.gmatch(exec, `[^{Settings.BatchKey}]+`) do
+				local trimmed = Functions.Trim(cmd)
+				local cmdAlias, cmdExec = Admin.IsAlias(player, trimmed)
+
+				if cmdAlias then
+					counter.Count += 1
+					if counter.Count > 5 then
+						return "Your alias ran more than 5 aliases and has not been run for security reasons!"
+					end
+
+					if path[string.lower(cmdAlias)] then
+						return true
+					end
+
+					local nested = Admin.IsRecursiveAlias(player, cmdAlias, cmdExec, path, counter)
+					if nested then
+						return nested
+					end
+				end
+			end
+
+			return false
 		end;
 
 		AliasFormat = function(aliases, msg)

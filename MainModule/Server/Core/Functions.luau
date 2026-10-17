@@ -583,14 +583,16 @@ return function(Vargs, GetEnv)
 
 				--// This is for player commands that take in service.GetPlayers() to make sure someone isnt passing in a message that is insanely long
 				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
-				local AllowUnsafeSelectors = PlrLevel > 0 or options.AllowUnsafeSelectors
+				local IsUnsafeSelectorSource = PlrLevel > 0 or options.AllowUnsafeSelectors
 				local MaxSelectors = Variables.MaxSafeSelectors or 400 -- 400 seems like a good "max" that won't ever be reached
+				local MaxAdminSelectors = Variables.MaxAdminSafeSelectors or 2000
+				local SelectorCap = if IsUnsafeSelectorSource then MaxAdminSelectors else MaxSelectors
 
 				local index = 0
 
 				for s in selectors do
 					index += 1
-					if not AllowUnsafeSelectors and index > MaxSelectors then
+					if index > SelectorCap then
 						break
 					end
 					local plrCount = 0
@@ -652,13 +654,9 @@ return function(Vargs, GetEnv)
 							if plrCount == 0 then
 								if options.UseFakePlayer then
 									--// Attempt to retrieve non-ingame user
-									local UserId
-									if Functions.GetUserIdFromNameAsync(s) then
-										UserId = Functions.GetUserIdFromNameAsync(s)
-									else
-										if tonumber(s) then
-											UserId = s
-										end
+									local UserId = Functions.GetUserIdFromNameAsync(s)
+									if not UserId and tonumber(s) then
+										UserId = s
 									end
 									if UserId or options.AllowUnknownUsers then
 										table.insert(players, Functions.GetFakePlayer({
@@ -1476,7 +1474,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		Trim = function(str)
-			return string.match(str, "^%s*(.-)%s*$")
+			local from = string.match(str, "^%s*()")
+			if from > #str then
+				return ""
+			end
+			return string.match(str, ".*%S", from)
 		end;
 
 		RoundToPlace = function(num, places)
