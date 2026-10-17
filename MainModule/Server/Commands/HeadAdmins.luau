@@ -229,7 +229,8 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				if not Core.CrossServer("Message", plr.Name, assert(args[1], "Missing message")) then
+				local message = service.BroadcastFilter(assert(args[1], "Missing message"), plr)
+				if not Core.CrossServer("Message", plr.Name, message) then
 					error("CrossServer handler not ready; please try again later")
 				end
 			end;
@@ -246,7 +247,9 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				if not Core.CrossServer("Message", plr.Name, assert(args[2], "Missing message"), assert(args[1], "Missing time amount")) then
+				local duration = assert(tonumber(args[1]), "Invalid time amount (must be a number)")
+				local message = service.BroadcastFilter(assert(args[2], "Missing message"), plr)
+				if not Core.CrossServer("Message", plr.Name, message, duration) then
 					error("CrossServer handler not ready; please try again later")
 				end
 			end;

@@ -327,74 +327,131 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"help", "requesthelp", "gethelp", "lifealert", "sos"};
 			Args = {"reason"};
+			UserText = {Kind = "Chat", Args = {1}};
 			Description = "Calls admins for help";
 			Category = "General";
-			Filter = true;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			NoLog = true;
+			Function = function(plr: Player, args: {string}, data: {})
 				if Settings.HelpSystem == true then
-					local num = 0
-					local answered = false
 					local pending = Variables.HelpRequests[plr.Name];
-					local reason = args[1] or "No reason provided";
-
-					if pending and os.time() - pending.Time < 30 then
-						error("You can only send a help request once every 30 seconds.");
-					elseif pending and pending.Pending then
+					if pending and pending.Pending then
 						error("You already have a pending request")
-					else
-						service.TrackTask(`Thread: {plr} Help Request Handler`, function()
-							Functions.Hint("Request sent", {plr})
-
-							pending = {
-								Time = os.time();
-								Pending = true;
-								Reason = reason;
-							}
-
-							Variables.HelpRequests[plr.Name] = pending;
-
-							for ind, p in service.Players:GetPlayers() do
-								Routine(function()
-									if Admin.CheckAdmin(p) then
-										local ret = Remote.MakeGuiGet(p, "Notification", {
-											Title = "Help Request";
-											Message = `{plr.Name} needs help! Reason: {pending.Reason}`;
-											Icon = server.MatIcons.Mail;
-											Time = 30;
-											OnClick = Core.Bytecode("return true");
-											OnClose = Core.Bytecode("return false");
-											OnIgnore = Core.Bytecode("return false");
-										})
-
-										num += 1
-										if ret then
-											if not answered then
-												answered = true
-												Commands.Teleport.Function(plr, {p.Name, `@{plr.Name}`})
-											else
-												Remote.MakeGui(p, "Notification", {
-													Title = "Help Request";
-													Message = "Another admin has already responded to this request!";
-													Icon = server.MatIcons.Mail;
-													Time = 5;
-												})
-											end
-										end
-									end
-								end)
-							end
-
-							local w = os.time()
-							repeat task.wait(0.5) until os.time()-w>30 or answered
-
-							pending.Pending = false;
-
-							if not answered then
-								Functions.Message('HelpSystem', "Help System", "Sorry but no one is available to help you right now", 'MatIcon://Warning', {plr})
-							end
-						end)
+					elseif pending and os.time() - pending.Time < 60 then
+						error("You can only send a help request once every 60 seconds.");
 					end
+
+					if args[1] then
+						assert(server.ChatTransport.ConsumeInput(data.ChatInput, plr, args),
+							"Send help request text from native in-game chat.")
+					end
+
+					pending = {
+						Time = os.time();
+						Pending = false;
+					}
+					Variables.HelpRequests[plr.Name] = pending
+
+					service.TrackTask(`Thread: {plr} Help Request Handler`, function()
+						local participants = {}
+						for _, player in service.Players:GetPlayers() do
+							if player ~= plr and Admin.CheckAdmin(player) then
+								local chatOk, canChat = pcall(service.TextChatService.CanUserChatAsync,
+									service.TextChatService, player.UserId)
+								if chatOk and canChat then
+									table.insert(participants, player)
+								end
+							end
+						end
+						assert(#participants > 0, "No admins are available to receive help requests through chat.")
+
+						local channelId, channel, addedParticipants, skippedParticipants = server.ChatTransport.Create(plr, participants)
+						for _, player in skippedParticipants do
+							Functions.Hint(`Unable to add {service.FormatPlayer(player)} to the help chat.`, {plr})
+						end
+						participants = addedParticipants
+						if #participants == 0 then
+							server.ChatTransport.Close(channelId, "NoRecipients")
+							error("No admins are available to receive help requests through chat.")
+						end
+						for _, player in participants do
+							Remote.MakeGui(player, "HelpRequestChat", {
+								Channel = channel;
+								ChannelId = channelId;
+								Requester = plr;
+							})
+						end
+						local readyParticipants = server.ChatTransport.WaitForReady(channelId, 10)
+						local readySet = {}
+						for _, player in readyParticipants do
+							readySet[player] = true
+						end
+						for _, player in participants do
+							if not readySet[player] then
+								server.ChatTransport.RemoveMember(channelId, player)
+							end
+						end
+						if #readyParticipants == 0 then
+							server.ChatTransport.Close(channelId, "NoRecipients")
+							error("No admins are available to receive help requests through chat.")
+						end
+
+						pending.Pending = true
+						Remote.MakeGui(plr, "HelpRequestChat", {
+							Channel = channel;
+							ChannelId = channelId;
+							InitialMessage = args[1] or "No reason provided";
+							IsRequester = true;
+							Requester = plr;
+						})
+						local _, requesterReady = server.ChatTransport.WaitForReady(channelId, 10, true)
+						if not requesterReady then
+							server.ChatTransport.Close(channelId, "RequesterUnavailable")
+							pending.Pending = false
+							error("The help request could not be sent through Roblox chat.")
+						end
+						Functions.Hint("Request sent", {plr})
+
+						local answered = false
+						for _, player in readyParticipants do
+							Routine(function()
+								local ret = Remote.MakeGuiGet(player, "Notification", {
+									Title = "Help Request";
+									Message = `{plr.Name} needs help. Open the help chat to read the request.`;
+									Icon = server.MatIcons.Mail;
+									Time = 30;
+									OnClick = Core.Bytecode("return true");
+									OnClose = Core.Bytecode("return false");
+									OnIgnore = Core.Bytecode("return false");
+								})
+
+								if ret then
+									if not answered then
+										answered = true
+										Commands.Teleport.Function(plr, {player.Name, `@{plr.Name}`})
+									else
+										Remote.MakeGui(player, "Notification", {
+											Title = "Help Request";
+											Message = "Another admin has already responded to this request!";
+											Icon = server.MatIcons.Mail;
+											Time = 5;
+										})
+									end
+								end
+							end)
+						end
+
+						local startedAt = os.time()
+						repeat task.wait(0.5) until os.time() - startedAt > 30 or answered
+
+						server.ChatTransport.Close(channelId, if answered then "Answered" else "Expired")
+						pending.Pending = false
+
+						if not answered then
+							Functions.Message("HelpSystem", "Help System",
+								"Sorry but no one is available to help you right now", "MatIcon://Warning", {plr})
+						end
+					end)
 				else
 					Functions.Message('HelpSystem', "Help System", "The help system has been disabled by the place owner.", 'MatIcon://Error', {plr})
 				end

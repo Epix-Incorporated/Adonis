@@ -4280,14 +4280,22 @@ return function(Vargs, env)
 			Args = {"player", "message"};
 			Filter = true;
 			Fun = true;
-			Description = "Makes a dialog bubble appear over the target player(s) head with the desired message";
+			Description = "Displays the message above targets without reply commands, or in TextChat for others";
 			Category = "Messages";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local message = args[2]
-				for _, v in service.GetPlayers(plr, args[1]) do
-					service.ChatService:Chat(v.Character.Head, message, Enum.ChatColor.Blue)
+				local message = service.BroadcastFilter(args[2], plr)
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(
+					service.GetPlayers(plr, args[1]))
+
+				for _, v in legacyRecipients do
+					local head = v.Character and v.Character:FindFirstChild("Head")
+					if head then
+						service.ChatService:Chat(head, message, Enum.ChatColor.Blue)
+					end
 				end
+				Functions.DisplayAnnouncementInTextChat(`Message from {service.FormatPlayer(plr)}`,
+					message, textChatRecipients)
 			end
 		};
 

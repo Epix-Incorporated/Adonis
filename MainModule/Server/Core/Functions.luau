@@ -8,6 +8,27 @@ return function(Vargs, GetEnv)
 
 	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local ANNOUNCEMENT_REPLY_COMMANDS = {
+		"Message";
+		"TimeMessage";
+		"Notify";
+		"CustomNotify";
+		"SystemMessage";
+		"SystemNotify";
+		"Hint";
+		"TimeHint";
+		"CustomMessage";
+		"Broadcast";
+		"Notif";
+		"ChatNotify";
+		"PrivateMessage";
+		"PrivateChat";
+		"MessagePM";
+		"NotifyPM";
+		"Alert";
+		"MakeTalk";
+	}
+
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -970,6 +991,45 @@ return function(Vargs, GetEnv)
 					Title = title;
 					Image = image;
 				})
+			end
+		end;
+
+		-- Splits announcement recipients according to access to any built-in text command that can send a reply.
+		SplitAnnouncementRecipients = function(players)
+			local legacyRecipients = {}
+			local textChatRecipients = {}
+
+			for _, player in players do
+				local playerData = {
+					Player = player;
+					Level = Admin.GetLevel(player);
+					isDonor = false;
+				}
+				local canReply = false
+				for _, commandName in ANNOUNCEMENT_REPLY_COMMANDS do
+					local command = server.Commands[commandName]
+					if command and Admin.CheckPermission(playerData, command, true) then
+						canReply = true
+						break
+					end
+				end
+				table.insert(if canReply then textChatRecipients else legacyRecipients, player)
+			end
+
+			if #textChatRecipients > 0 then
+				assert(service.TextChatService
+					and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService,
+					"TextChatService is required to deliver announcements to players who can reply.")
+			end
+			return legacyRecipients, textChatRecipients
+		end;
+
+		-- Displays a filtered admin announcement in the recipient's TextChatService chat window.
+		DisplayAnnouncementInTextChat = function(title, message, players)
+			if #players == 0 then return end
+			local text = `{service.SanitizeXML(title)}: {service.SanitizeXML(message)}`
+			for _, player in players do
+				Remote.Send(player, "Function", "DisplaySystemMessageInTextChat", nil, text)
 			end
 		end;
 

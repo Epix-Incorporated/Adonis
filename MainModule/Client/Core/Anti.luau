@@ -256,165 +256,168 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		local detectors = table.freeze{
-			indexInstance = table.freeze{"kick", function()
-				local callstackInvalid = false
-				local metamethod
+		local function checkIndexInstance()
+			local callstackInvalid = false
+			local metamethod
 
-				local success, err = xpcall(function()
-					local c = rawGame.____________
-				end, function()
-					metamethod = debug.info(2, "f")
-					if callstackInvalid or checkStack("indexInstance") then
-						callstackInvalid = true
-					end
-				end)
-
-				if not isMethamethodValid(metamethod) then
-					return true
+			local success, err = xpcall(function()
+				local c = rawGame.____________
+			end, function()
+				metamethod = debug.info(2, "f")
+				if callstackInvalid or checkStack("indexInstance") then
+					callstackInvalid = true
 				end
+			end)
 
-				local success3, err3 = pcall(metamethod, rawGame)
-				local success2, err2 = pcall(metamethod)
-				pcall(metamethod, proxyDetector, "GetChildren")
-				pcall(metamethod, proxyDetector)
-				pcall(metamethod, rawGame, proxyDetector)
+			if not isMethamethodValid(metamethod) then
+				return true
+			end
 
-				if callstackInvalid or success or success2 or success3 then
-					return true
-				elseif not errorMessages["indexInstance"] then
-					errorMessages["indexInstance"] = {err, err2, err3}
+			local success3, err3 = pcall(metamethod, rawGame)
+			local success2, err2 = pcall(metamethod)
+			pcall(metamethod, proxyDetector, "GetChildren")
+			pcall(metamethod, proxyDetector)
+			pcall(metamethod, rawGame, proxyDetector)
+
+			if callstackInvalid or success or success2 or success3 then
+				return true
+			elseif not errorMessages["indexInstance"] then
+				errorMessages["indexInstance"] = {err, err2, err3}
+			end
+
+			return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
+		end
+
+		local function checkNewindexInstance()
+			local callstackInvalid = false
+			local metamethod
+
+			local success, err = xpcall(function()
+				rawGame.____________ = 5
+			end, function()
+				metamethod = debug.info(2, "f")
+				if callstackInvalid or checkStack("newindexInstance") then
+					callstackInvalid = true
 				end
+			end)
 
-				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
-			end},
-			newindexInstance = table.freeze{"kick", function()
-				local callstackInvalid = false
-				local metamethod
+			if not isMethamethodValid(metamethod) then
+				return true
+			end
 
-				local success, err = xpcall(function()
-					rawGame.____________ = 5
-				end, function()
-					metamethod = debug.info(2, "f")
-					if callstackInvalid or checkStack("newindexInstance") then
-						callstackInvalid = true
-					end
-				end)
+			local success3, err3 = pcall(metamethod, rawGame)
+			local success2, err2 = pcall(metamethod)
+			pcall(metamethod, proxyDetector, "GetChildren")
+			pcall(metamethod, proxyDetector)
+			pcall(metamethod, rawGame, proxyDetector)
+			pcall(metamethod, rawGame, "AllowThirdPartySales", proxyDetector)
 
-				if not isMethamethodValid(metamethod) then
-					return true
+			if callstackInvalid or success or success2 or success3 then
+				return true
+			elseif not errorMessages["newindexInstance"] then
+				errorMessages["newindexInstance"] = {err, err2, err3}
+			end
+
+			return not compareTables(errorMessages["newindexInstance"], {err, err2, err3})
+		end
+
+		local function checkNamecallInstance()
+			local callstackInvalid = false
+			local metamethod
+
+			local success, err = xpcall(function()
+				local c = rawGame:____________()
+			end, function()
+				metamethod = debug.info(2, "f")
+				if callstackInvalid or checkStack("namecallInstance") then
+					callstackInvalid = true
 				end
+			end)
 
-				local success3, err3 = pcall(metamethod, rawGame)
-				local success2, err2 = pcall(metamethod)
-				pcall(metamethod, proxyDetector, "GetChildren")
-				pcall(metamethod, proxyDetector)
-				pcall(metamethod, rawGame, proxyDetector)
-				pcall(metamethod, rawGame, "AllowThirdPartySales", proxyDetector)
+			if not isMethamethodValid(metamethod) then
+				return true
+			end
 
-				if callstackInvalid or success or success2 or success3 then
-					return true
-				elseif not errorMessages["newindexInstance"] then
-					errorMessages["newindexInstance"] = {err, err2, err3}
+			local success3, err3 = pcall(metamethod, rawGame)
+			local success2, err2 = pcall(metamethod)
+			pcall(metamethod, proxyDetector)
+			pcall(metamethod, rawGame, proxyDetector)
+
+			if callstackInvalid or success or success2 or success3 then
+				return not isStudio
+			elseif not errorMessages["namecallInstance"] then
+				errorMessages["namecallInstance"] = {err, err2, err3}
+			end
+
+			return not compareTables(errorMessages["namecallInstance"], {err, err2, err3}) and not isStudio
+		end
+
+		local function checkIndexEnum()
+			local callstackInvalid = false
+			local metamethod
+
+			local success, err = xpcall(function()
+				local c = Enum.HumanoidStateType.____________
+			end, function()
+				metamethod = debug.info(2, "f")
+				if callstackInvalid or checkStack("indexEnum") then
+					callstackInvalid = true
 				end
+			end)
 
-				return not compareTables(errorMessages["newindexInstance"], {err, err2, err3})
-			end},
-			namecallInstance = table.freeze{"kick", function()
-				local callstackInvalid = false
-				local metamethod
+			if not isMethamethodValid(metamethod) then
+				return true
+			end
 
-				local success, err = xpcall(function()
-					local c = rawGame:____________()
-				end, function()
-					metamethod = debug.info(2, "f")
-					if callstackInvalid or checkStack("namecallInstance") then
-						callstackInvalid = true
-					end
-				end)
+			local success3, err3 = pcall(metamethod, Enum.HumanoidStateType)
+			local success2, err2 = pcall(metamethod)
+			pcall(metamethod, proxyDetector, "Name")
+			pcall(metamethod, proxyDetector)
+			pcall(metamethod, Enum.HumanoidStateType, proxyDetector)
 
-				if not isMethamethodValid(metamethod) then
-					return true
+			if callstackInvalid or success or success2 or success3 then
+				return true
+			elseif not errorMessages["indexEnum"] then
+				errorMessages["indexEnum"] = {err, err2, err3}
+			end
+
+			return not compareTables(errorMessages["indexEnum"], {err, err2, err3})
+		end
+
+		local function checkNamecallEnum()
+			local callstackInvalid = false
+			local metamethod
+
+			local success, err = xpcall(function()
+				local c = Enum.HumanoidStateType:____________()
+			end, function()
+				metamethod = debug.info(2, "f")
+				if callstackInvalid or checkStack("namecallEnum") then
+					callstackInvalid = true
 				end
+			end)
 
-				local success3, err3 = pcall(metamethod, rawGame)
-				local success2, err2 = pcall(metamethod)
-				pcall(metamethod, proxyDetector)
-				pcall(metamethod, rawGame, proxyDetector)
+			if not isMethamethodValid(metamethod) then
+				return true
+			end
 
-				if callstackInvalid or success or success2 or success3 then
-					return not isStudio
-				elseif not errorMessages["namecallInstance"] then
-					errorMessages["namecallInstance"] = {err, err2, err3}
-				end
+			local success3, err3 = pcall(metamethod, Enum.HumanoidStateType)
+			local success2, err2 = pcall(metamethod)
+			pcall(metamethod, proxyDetector)
+			pcall(metamethod, Enum.HumanoidStateType, proxyDetector)
 
-				return not compareTables(errorMessages["namecallInstance"], {err, err2, err3}) and not isStudio
-			end},
-			indexEnum = table.freeze{"kick", function()
-				local callstackInvalid = false
-				local metamethod
+			if callstackInvalid or success or success2 or success3 then
+				return true
+			elseif not errorMessages["namecallEnum"] then
+				errorMessages["namecallEnum"] = {err, err2, err3}
+			end
 
-				local success, err = xpcall(function()
-					local c = Enum.HumanoidStateType.____________
-				end, function()
-					metamethod = debug.info(2, "f")
-					if callstackInvalid or checkStack("indexEnum") then
-						callstackInvalid = true
-					end
-				end)
+			return not compareTables(errorMessages["namecallEnum"], {err, err2, err3})
+		end
 
-				if not isMethamethodValid(metamethod) then
-					return true
-				end
-
-				local success3, err3 = pcall(metamethod, Enum.HumanoidStateType)
-				local success2, err2 = pcall(metamethod)
-				pcall(metamethod, proxyDetector, "Name")
-				pcall(metamethod, proxyDetector)
-				pcall(metamethod, Enum.HumanoidStateType, proxyDetector)
-
-				if callstackInvalid or success or success2 or success3 then
-					return true
-				elseif not errorMessages["indexEnum"] then
-					errorMessages["indexEnum"] = {err, err2, err3}
-				end
-
-				return not compareTables(errorMessages["indexEnum"], {err, err2, err3})
-			end},
-			namecallEnum = table.freeze{"kick", function()
-				local callstackInvalid = false
-				local metamethod
-
-				local success, err = xpcall(function()
-					local c = Enum.HumanoidStateType:____________()
-				end, function()
-					metamethod = debug.info(2, "f")
-					if callstackInvalid or checkStack("namecallEnum") then
-						callstackInvalid = true
-					end
-				end)
-
-				if not isMethamethodValid(metamethod) then
-					return true
-				end
-
-				local success3, err3 = pcall(metamethod, Enum.HumanoidStateType)
-				local success2, err2 = pcall(metamethod)
-				pcall(metamethod, proxyDetector)
-				pcall(metamethod, Enum.HumanoidStateType, proxyDetector)
-
-				if callstackInvalid or success or success2 or success3 then
-					return true
-				elseif not errorMessages["namecallEnum"] then
-					errorMessages["namecallEnum"] = {err, err2, err3}
-				end
-
-				return not compareTables(errorMessages["namecallEnum"], {err, err2, err3})
-			end},
-			eqEnum = table.freeze{"kick", function()
-				return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
-			end},
-		}
+		local function checkEqEnum()
+			return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
+		end
 
 		local remEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
 		local remFuncCheck = service.UnWrap(Instance.new("RemoteFunction"))
@@ -426,6 +429,19 @@ return function(Vargs, GetEnv)
 				nilPlayers[child] = true
 			end
 		end)
+
+		local function runDetector(method, callback)
+			local success, value = pcall(callback)
+			if not success or value ~= false and value ~= true then
+				Detected("crash", "Tamper Protection 0xDD42F")
+				task.wait(1)
+				pcall(Disconnect, "Adonis_0xDD42F")
+				pcall(Kill, "Adonis_0xDD42F")
+				pcall(Kick, Player, "Adonis_0xDD42F")
+			elseif value then
+				Detected("kick", `{method} detector detected`)
+			end
+		end
 
 		Routine(function()
 			while true do
@@ -444,20 +460,12 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				for method, detector in detectors do
-					local action, callback = detector[1],  detector[2]
-
-					local success, value = pcall(callback)
-					if not success or value ~= false and value ~= true then
-						Detected("crash", "Tamper Protection 0xDD42F")
-						task.wait(1)
-						pcall(Disconnect, "Adonis_0xDD42F")
-						pcall(Kill, "Adonis_0xDD42F")
-						pcall(Kick, Player, "Adonis_0xDD42F")
-					elseif value then
-						Detected(action, `{method} detector detected`)
-					end
-				end
+				runDetector("indexInstance", checkIndexInstance)
+				runDetector("newindexInstance", checkNewindexInstance)
+				runDetector("namecallInstance", checkNamecallInstance)
+				runDetector("indexEnum", checkIndexEnum)
+				runDetector("namecallEnum", checkNamecallEnum)
+				runDetector("eqEnum", checkEqEnum)
 
 				local hasCompleted = false
 				task.spawn(xpcall, function()

@@ -7,17 +7,47 @@ return function(data, env)
 	local Owner = data.FromPlayer;
 	local SessionKey = data.SessionKey;
 	local SessionName = data.SessionName;
+	local Channel = data.Channel;
 	local CanManageUsers = data.CanManageUsers;
 
 	local debounce, gTable, selectedPlayer = false, nil, nil
 	local peerList, messageObjs = {}, {}
 
-	local window, chatlog, reply, playerList, send, layout, sessionEvent;
+	local window, chatlog, reply, playerList, send, layout, sessionEvent, messageEvent, channelEvent;
+	local systemMessage
 
 	local function sendIt()
 		local text = service.Trim(reply.Text)
-		if text ~= "" then
-			client.Remote.Send("Session", SessionKey, "SendMessage", text)
+		if text ~= "" and Channel then
+			local commandToken = text:match("^(%S+)")
+			local chatService = service.TextChatService
+			if commandToken and chatService then
+				for _, command in chatService:GetDescendants() do
+					if command:IsA("TextChatCommand") and command.Enabled then
+						for _, alias in {command.PrimaryAlias, command.SecondaryAlias} do
+							if type(alias) == "string" and alias ~= "" then
+								local token = commandToken
+								if token:sub(1, 1) == "/" then
+									token = token:sub(2)
+								end
+								local normalizedAlias = if alias:sub(1, 1) == "/" then alias:sub(2) else alias
+								if string.lower(commandToken) == string.lower(alias)
+									or string.lower(token) == string.lower(normalizedAlias) then
+									systemMessage("Commands can't be sent as private chat messages.")
+									return
+								end
+							end
+						end
+					end
+				end
+			end
+			local ok, err = pcall(Channel.SendAsync, Channel, text)
+			if not ok then
+				systemMessage("Unable to send this message through Roblox chat.")
+				warn(`Adonis private chat send failed: {tostring(err)}`)
+			end
+		elseif text ~= "" then
+			systemMessage("Roblox chat is unavailable for this private conversation.")
 		end
 	end
 
@@ -174,7 +204,7 @@ return function(data, env)
 				}
 			})
 		else
-			chatlog:Add("Frame", {
+			newMsg = chatlog:Add("Frame", {
 				Size = UDim2.new(1, 0, 0, 50);
 				BackgroundTransparency = 1;
 				AutomaticSize = "Y";
@@ -229,13 +259,13 @@ return function(data, env)
 			table.remove(messageObjs, 1)
 		end
 	end
-	local function systemMessage(msg)
+	systemMessage = function(msg)
 		newMessage({
 			PlayerName = "* SYSTEM *";
 			Message = msg;
 			Icon = 0;
 		})
-	end;
+	end
 
 	if client.UI.Get(`PrivateChat{SessionName}`) then
 		return
@@ -249,6 +279,12 @@ return function(data, env)
 		OnClose = function()
 			if sessionEvent then
 				sessionEvent:Disconnect()
+			end
+			if messageEvent then
+				messageEvent:Disconnect()
+			end
+			if channelEvent then
+				channelEvent:Disconnect()
 			end
 
 			client.Remote.Send("Session", SessionKey, "LeaveSession")
@@ -339,53 +375,49 @@ return function(data, env)
 		chatlog.CanvasPosition = Vector2.new(0, layout.AbsoluteContentSize.Y)
 	end)
 
-	if data.History then
-		for i,data in ipairs(data.History) do
-			local p = data.Sender;
-			local message = data.Message
-			if p.IsMessageRestricted then
-				message = "<font color='rgb(230,0,0)'>Message unavailable due to chat restrictions.</font>"
-			elseif p.IsMessageRestrictedError then
-				message = "<font color='rgb(230,0,0)'>Message unavailable due to an error.</font>"
+	if Channel and Channel.MessageReceived then
+		messageEvent = Channel.MessageReceived:Connect(function(message)
+			if message.Status == Enum.TextChatMessageStatus.TextFilterFailed then
+				local source = message.TextSource
+				if source and source.UserId == service.Players.LocalPlayer.UserId then
+					systemMessage("Roblox could not filter that message, so it was not sent.")
+				end
+				return
+			elseif message.Status ~= Enum.TextChatMessageStatus.Success or message.Text == "" then
+				return
 			end
-
-			newMessage({
-				PlayerName = p.Name;
-				PlayerDisplayName = p.DisplayName;
-				Message = message;
-				Icon = p.Icon or 0;
-				RichText = p.IsMessageRestricted or p.IsMessageRestrictedError;
-			});
-		end
+			local source = message.TextSource
+			local player = source and service.Players:GetPlayerByUserId(source.UserId)
+			if player then
+				newMessage({
+					PlayerName = player.Name;
+					PlayerDisplayName = player.DisplayName;
+					Message = message.Text;
+					Icon = player.UserId > 0 and `rbxthumb://type=AvatarHeadShot&id={player.UserId}&w=48&h=48` or 0;
+				})
+			end
+		end)
+		channelEvent = Channel.AncestryChanged:Connect(function(_, parent)
+			if parent == nil and window and not window.Destroyed then
+				window:Close()
+			end
+		end)
 	end
 
 	sessionEvent = service.Events.SessionData:Connect(function(sessionKey, cmd, ...)
 		local vargs = {...};
 		if SessionKey == sessionKey then
-			if cmd == "PlayerSentMessage" then
-				local p = vargs[1]
-				local message = vargs[2]
-				if newMessage then
-					if p.IsMessageRestricted then
-						message = "<font color='rgb(230,0,0)'>Message unavailable due to chat restrictions.</font>"
-					elseif p.IsMessageRestrictedError then
-						message = "<font color='rgb(230,0,0)'>Message unavailable due to an error.</font>"
-					end
-
-					newMessage({
-						PlayerName = p.Name;
-						PlayerDisplayName = p.DisplayName;
-						Message = message;
-						Icon = p.Icon or 0;
-						RichText = p.IsMessageRestricted or p.IsMessageRestrictedError;
-					})
-				end
-			elseif cmd == "UpdatePeerList" then
+			if cmd == "UpdatePeerList" then
 				updatePeerList(vargs[1])
+			elseif cmd == "SessionNotice" then
+				systemMessage(vargs[1])
 			elseif cmd == "RemovedFromSession" then
 				systemMessage("<i>You have been removed from this chat session</i>")
+				window:Close()
 			elseif cmd == "AddedToSession" then
 				systemMessage("<i>You have been added to this chat session</i>")
+			elseif cmd == "SessionEnded" then
+				window:Close()
 			end
 		end
 	end)
@@ -393,4 +425,9 @@ return function(data, env)
 	client.Remote.Send("Session", SessionKey, "GetPeerList")
 	gTable = window.gTable
 	window:Ready()
+	if data.InitialMessage and Channel then
+		reply.Text = data.InitialMessage
+		sendIt()
+		reply.Text = ""
+	end
 end

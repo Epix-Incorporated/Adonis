@@ -166,7 +166,6 @@ return function(Vargs, GetEnv)
 
 		PersistView = {};
 
-		PMtickets = {};
 
 		HelpRequests = {};
 
