@@ -4286,7 +4286,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local message = service.BroadcastFilter(args[2], plr)
 				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(
-					service.GetPlayers(plr, args[1]))
+					service.GetPlayers(plr, args[1]), plr)
 
 				for _, v in legacyRecipients do
 					local head = v.Character and v.Character:FindFirstChild("Head")

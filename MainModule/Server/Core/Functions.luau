@@ -994,12 +994,17 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		-- Splits announcement recipients according to access to any built-in text command that can send a reply.
-		SplitAnnouncementRecipients = function(players)
+		-- Splits announcement recipients by reply-command access while keeping the sender on the legacy UI.
+		SplitAnnouncementRecipients = function(players, sender)
 			local legacyRecipients = {}
 			local textChatRecipients = {}
 
 			for _, player in players do
+				if player == sender then
+					table.insert(legacyRecipients, player)
+					continue
+				end
+
 				local playerData = {
 					Player = player;
 					Level = Admin.GetLevel(player);

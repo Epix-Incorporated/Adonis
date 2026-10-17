@@ -305,7 +305,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local duration = assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				local message = service.BroadcastFilter(assert(args[2], "Missing message"), plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 
 				if #legacyRecipients > 0 then
 					Functions.Message(`Message from {service.FormatPlayer(plr)}`, message,
@@ -326,7 +326,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local message = service.BroadcastFilter(assert(args[1], "Missing message"), plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 
 				if #legacyRecipients > 0 then
 					Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, message,
@@ -351,7 +351,7 @@ return function(Vargs, env)
 
 				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
 				local legacyRecipients, textChatRecipients =
-					Functions.SplitAnnouncementRecipients(service.GetPlayers(plr, args[1]))
+					Functions.SplitAnnouncementRecipients(service.GetPlayers(plr, args[1]), plr)
 				for _, v in legacyRecipients do
 					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
 				end
@@ -371,7 +371,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local message = service.BroadcastFilter(assert(args[1], "Missing message"), plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 
 				if #legacyRecipients > 0 then
 					Functions.Notify(`Message from @{plr.Name}`, message, legacyRecipients, nil, plr)
@@ -392,7 +392,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local title = service.BroadcastFilter(assert(args[1], "Missing title"), plr)
 				local message = service.BroadcastFilter(assert(args[2], "Missing message"), plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 
 				if #legacyRecipients > 0 then
 					Functions.Notify(title, message, legacyRecipients)
@@ -413,7 +413,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
 				local legacyRecipients, textChatRecipients =
-					Functions.SplitAnnouncementRecipients(service.GetPlayers(plr, args[1]))
+					Functions.SplitAnnouncementRecipients(service.GetPlayers(plr, args[1]), plr)
 				for _, v in legacyRecipients do
 					Remote.RemoveGui(v, "Notify")
 					Functions.Notify(`Message from {service.FormatPlayer(plr)}`, service.Filter(args[2], plr, v), {v})
@@ -437,7 +437,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 				local message = service.BroadcastFilter(args[1], plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 				if #legacyRecipients > 0 then
 					Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), message),
 						legacyRecipients, nil, service.FormatPlayer(plr),
@@ -459,7 +459,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local duration = assert(tonumber(args[1]), "Invalid time amount (must be a number)")
 				local message = service.BroadcastFilter(assert(args[2], "Missing message"), plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 				if #legacyRecipients > 0 then
 					Functions.Hint(message, legacyRecipients, duration, service.FormatPlayer(plr),
 						`rbxthumb://type=AvatarHeadShot&id={plr.UserId}&w=48&h=48`)

@@ -303,7 +303,7 @@ return function(Vargs, env)
 							}`)
 					end
 				else
-					local legacyRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+					local legacyRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 					for _, v in legacyRecipients do
 						Remote.Send(v, "Function", "ChatMessage",
 							string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)),
@@ -436,7 +436,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 				local message = service.BroadcastFilter(args[1], plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 
 				for _, v in service.GetPlayers() do
 					Remote.RemoveGui(v, "Notify")
@@ -468,7 +468,7 @@ return function(Vargs, env)
 				Variables.NotifMessage = message
 				local legacyRecipients, textChatRecipients = {}, {}
 				if message then
-					legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+					legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 				end
 				for _, v in service.GetPlayers() do
 					Remote.RemoveGui(v, "Notif")
@@ -522,7 +522,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local message = service.BroadcastFilter(assert(args[1], "Missing message (argument #1)"), plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 				if #legacyRecipients > 0 then
 					Functions.Message(Settings.SystemTitle, message, legacyRecipients, true)
 				end
@@ -568,7 +568,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr,string.lower(args[1])) do
 					local message = args[2] and service.Filter(args[2], plr, v)
 						or "Wake up; Your attention is required"
-					local _, textChatRecipients = Functions.SplitAnnouncementRecipients({v})
+					local _, textChatRecipients = Functions.SplitAnnouncementRecipients({v}, plr)
 					Remote.MakeGui(v, "Alert", {
 						Message = if #textChatRecipients > 0 then "Check chat for alert details." else message;
 					})
@@ -1219,7 +1219,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing message (argument #2)")
 				local title = service.BroadcastFilter(args[1], plr)
 				local message = service.BroadcastFilter(args[2], plr)
-				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers())
+				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 				if #legacyRecipients > 0 then
 					Functions.Message(title, message, legacyRecipients, true, (#tostring(title) / 19) + 2.5)
 				end
