@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 jobs:
-  regression:
-    name: Regression tests
+  test:
+    name: CI tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -30,7 +30,7 @@ jobs:
       - name: Install pinned tools
         run: aftman install
 
-      - name: Cache Roblox Standard Library
+      - name: Cache Roblox standard library
         id: cache-roblox-std
         uses: actions/cache@v6.1.0
         with:
@@ -39,7 +39,7 @@ jobs:
           restore-keys: |
             roblox-std-
 
-      - name: Check standard Roblox library status
+      - name: Check Roblox standard library status
         id: check-roblox-std
         env:
           DID_CACHE: ${{ steps.cache-roblox-std.outputs.cache-hit }}
@@ -64,7 +64,7 @@ jobs:
 
           echo "should-fetch=$should_fetch" >> "$GITHUB_OUTPUT"
 
-      - name: Update standard Roblox library
+      - name: Update Roblox standard library
         if: steps.check-roblox-std.outputs.should-fetch == 'true'
         run: selene generate-roblox-std
 
@@ -95,10 +95,10 @@ jobs:
           echo "$(dirname "$lune_exe")" >> "$GITHUB_PATH"
           "$lune_exe" --version
 
-      - name: Lint regression fixtures
+      - name: Lint regression tests
         run: selene ./Tests
 
-      - name: Run regression fixtures
+      - name: Run regression tests
         working-directory: ${{ github.workspace }}
         run: |
           set -euo pipefail
