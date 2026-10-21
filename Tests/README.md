@@ -19,8 +19,8 @@ selene ./Tests
 * `AdminCore.spec.luau` tests the actual permission and rank/cache methods from `Admin.luau`. 
 * `AdminBans.spec.luau` tests the actual ban lookup, expiry, persistence, and removal methods. 
 * `AdminAuthority.spec.luau` checks target-level and self-target authority decisions. 
-* `AdminAliases.spec.luau` tests alias matching, formatting, blacklist, and recursion checks. 
+* `AdminAliases.spec.luau` tests alias matching, formatting, blacklist, and alias infinite recursion. 
 * `AdminCommandWrappers.spec.luau` verifies that the command wrappers preserve arguments and execution context and restrict non-admin execution to player-level commands.
 * The Admin tests use lune, which is only a substitute - none boot Roblox or verify engine behaviour.
 
-The CI workflow installs Lune 0.11.0 and runs every `Tests/*.spec.luau` file. Stand-alone tests should be kept focused on behaviour that can be exercised reliably with the current source and Lune's runtime.
+The CI workflow installs Lune 0.11.0 and runs every `Tests/*.spec.luau` file. Stand-alone tests should be kept focused on behaviour that can be exercised reliably, with the current source (no test-driven development on master!) and Lune's runtime.
