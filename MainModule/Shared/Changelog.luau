@@ -4,6 +4,7 @@ return {
 	"*Report bugs/issues on our repository*";
 	"";
 	"[v286 2026-xx-xx xx:xx UTC] @Maintainer";
+	"Changes to :maketalk command";
 	"";
 	"[v285 2026-10-17 16:00 UTC] @Dimenpsyonal";
 	"Reverts hotfixes in v284";
