@@ -4280,7 +4280,7 @@ return function(Vargs, env)
 			Args = {"player", "message"};
 			Filter = true;
 			Fun = true;
-			Description = "Displays the message above targets without reply commands, or in TextChat for others";
+			Description = "Sends an announcement to the target player(s)";
 			Category = "Messages";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -4288,11 +4288,9 @@ return function(Vargs, env)
 				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(
 					service.GetPlayers(plr, args[1]), plr)
 
-				for _, v in legacyRecipients do
-					local head = v.Character and v.Character:FindFirstChild("Head")
-					if head then
-						service.ChatService:Chat(head, message, Enum.ChatColor.Blue)
-					end
+				if #legacyRecipients > 0 then
+					Functions.Message(plr, `Message from {service.FormatPlayer(plr)}`, message,
+						nil, legacyRecipients, true)
 				end
 				Functions.DisplayAnnouncementInTextChat(`Message from {service.FormatPlayer(plr)}`,
 					message, textChatRecipients)
