@@ -834,6 +834,8 @@ return function(Vargs, env)
 						end
 
 						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
+						local deviceTrustLevel = if elevated then plr.DeviceTrustLevel.Name else "[Redacted]"
+
 						local hasAdsAllowed = if policyInfo then
 							type(policyInfo) == "string" and policyInfo or policyInfo.AreAdsAllowed and "Yes" or "No"
 							else "[Redacted]"
@@ -858,6 +860,7 @@ return function(Vargs, env)
 							Target = v;
 							AdsAllowed = hasAdsAllowed;
 							CanChatGet = table.pack(pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId));
+							DeviceTrustLevel = deviceTrustLevel;
 							MailVerified = hasVerifiedMail;
 							VerificationLevel = determinedVerifLevel;
 							IsDonor = Admin.CheckDonor(v);
@@ -993,7 +996,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Coords")
 			end;
 		};
-		
+
 		Velocity = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"vel", "velocity"};
