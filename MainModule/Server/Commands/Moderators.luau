@@ -2987,28 +2987,6 @@ return function(Vargs, env)
 			end
 		};
 
-		BubbleChat = {
-			Prefix = Settings.Prefix;
-			Commands = {"bchat", "dchat", "bubblechat", "dialogchat"};
-			Args = {"player", "color(red/green/blue/white/off)"};
-			Description = "Gives the target player(s) a little chat gui, when used will let them chat (local only messages) using dialog bubbles";
-			Category = "Messages";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local CHAT_COLORS = {
-					red = Enum.ChatColor.Red,
-					green = Enum.ChatColor.Green,
-					blue = Enum.ChatColor.Blue,
-					white = Enum.ChatColor.White,
-					off = "off"
-				}
-				local chatColor = args[2] and CHAT_COLORS[args[2]:lower()] or CHAT_COLORS.red
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.MakeGui(v, "BubbleChat", {Color = chatColor;})
-				end
-			end
-		};
-
 		Track = {
 			Prefix = Settings.Prefix,
 			Commands = {"track", "trace", "find", "locate"},
