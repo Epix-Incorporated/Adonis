@@ -166,7 +166,7 @@ return function(Vargs, env)
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins")
-						Functions.Notification("Notification", "You are a head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", "You are a head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v)} is now a permanent head admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})
@@ -189,7 +189,7 @@ return function(Vargs, env)
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins", true)
-						Functions.Notification("Notification", "You are a temp head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", "You are a temp head admin. Click to view commands.", {v}, 10, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v)} is now a temporary head admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})

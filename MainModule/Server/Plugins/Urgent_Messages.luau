@@ -78,7 +78,7 @@ return function(Vargs, GetEnv)
 				local data = Core.GetPlayer(p);
 				if checkDoNotify(p, data) then
 					data.LastUrgentMessage = MessageVersion;
-					task.delay(0.5, Functions.Notification, "Urgent Message!", "Click to view messages", {p}, 20, "MatIcon://Announcement", Core.Bytecode("client.Remote.Send('ProcessCommand',':adonisalerts')"))
+					task.delay(0.5, Functions.Notification, "Urgent Message!", "Click to view messages", {p}, 20, "MatIcon://Announcement", {Action = "ProcessCommand"; Command = ":adonisalerts";})
 				end
 			end
 		end

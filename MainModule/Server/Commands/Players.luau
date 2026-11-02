@@ -173,7 +173,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local children = {
-					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
+					{Action = "ResizeCanvas"; Arguments = {false, true, false, false, 5, 5};};
 				}
 
 				local brickColorNames = {}
@@ -420,9 +420,9 @@ return function(Vargs, env)
 									Message = `{plr.Name} needs help. Open the help chat to read the request.`;
 									Icon = server.MatIcons.Mail;
 									Time = 30;
-									OnClick = Core.Bytecode("return true");
-									OnClose = Core.Bytecode("return false");
-									OnIgnore = Core.Bytecode("return false");
+									OnClick = {Action = "ReturnValue"; Value = true};
+									OnClose = {Action = "ReturnValue"; Value = false};
+									OnIgnore = {Action = "ReturnValue"; Value = false};
 								})
 
 								if ret then

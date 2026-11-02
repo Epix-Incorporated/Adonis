@@ -506,7 +506,7 @@ return function(Vargs, env)
 
 						Remote.RemoveGui(v, "Notify")
 						Functions.Notify(`Warning from {service.FormatPlayer(plr)}`, reason, {v})
-						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
+						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Functions.GetMainPrefix()}warnings {v.Name}`;})
 					end
 				end
 			end
@@ -542,7 +542,7 @@ return function(Vargs, env)
 							Core.CrossServer("RemovePlayer", tonumber(v.UserId), `Warning from {service.FormatPlayer(plr)}`, reason)
 						end
 
-						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}warnings {v.Name}')`))
+						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Functions.GetMainPrefix()}warnings {v.Name}`;})
 					end
 				end
 			end
@@ -597,7 +597,7 @@ return function(Vargs, env)
 							task.defer(Core.SavePlayerData, v, playerData)
 						end
 
-						Functions.Notification("Notification", string.format("Removed %d warning%s from %s.", count, count == 1 and "" or "s", service.FormatPlayer(v)), {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
+						Functions.Notification("Notification", string.format("Removed %d warning%s from %s.", count, count == 1 and "" or "s", service.FormatPlayer(v)), {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}warnings {v.Name}`;})
 					end
 				end
 			end
@@ -621,7 +621,7 @@ return function(Vargs, env)
 						task.defer(Core.SavePlayerData, v, playerData)
 					end
 					Functions.LogAdminAction(plr, "Clear Warnings", v.Name, "Warnings cleared")
-					Functions.Notification("Notification", `Cleared warning(s) for {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}warnings {v.Name}')`))
+					Functions.Notification("Notification", `Cleared warning(s) for {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}warnings {v.Name}`;})
 				end
 			end
 		};
@@ -751,7 +751,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					if char then
-						Remote.LoadCode(v, [[service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)]])
+						Remote.Send(v, "Function", "SetCoreGuiEnabled", Enum.CoreGuiType.Backpack, false)
 						char.Parent = service.UnWrap(Settings.Storage)
 					end
 				end
@@ -771,7 +771,7 @@ return function(Vargs, env)
 					if char then
 						char.Parent = workspace
 						char:MakeJoints()
-						Remote.LoadCode(v, [[service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)]])
+						Remote.Send(v, "Function", "SetCoreGuiEnabled", Enum.CoreGuiType.Backpack, true)
 					end
 				end
 			end
@@ -1349,7 +1349,7 @@ return function(Vargs, env)
 							TitleButtons = {
 								{
 									Text = "";
-									OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Functions.GetMainPrefix()}tools')`);
+									OnClick = {Action = "ProcessCommand"; Command = `{Functions.GetMainPrefix()}tools`;};
 									Children = {
 										{
 											Class = "ImageLabel";
@@ -4282,7 +4282,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) and v.Name ~= "TouchGui" then pcall(v.Destroy, v) end end]])
+					Remote.Send(v, "Function", "RemoveNonAdonisGuis")
 				end
 			end
 		};
@@ -4583,7 +4583,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2] and tonumber(args[2]), "Missing or invalid FOV number")
 				for i, v in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]].. math.clamp(tonumber(args[2]), 1, 120))
+					Remote.Send(v, "Function", "SetCameraFieldOfView", math.clamp(tonumber(args[2]), 1, 120))
 				end
 			end
 		};
@@ -4610,7 +4610,7 @@ return function(Vargs, env)
 								Icon = server.MatIcons["QR code scanner"];
 								Text = if reservedServerInfo then string.format("Click to teleport to server %s.", args[2]) else string.format("Click to teleport to place %d.", placeId);
 								Time = 30;
-								OnClick = Core.Bytecode("return true");
+								OnClick = {Action = "ReturnValue"; Value = true};
 							})
 						then
 							service.TeleportService:TeleportAsync(placeId, {v}, teleportOptions)
@@ -4687,7 +4687,7 @@ return function(Vargs, env)
 			Hidden = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Functions.Notification("Teleport", "Click to teleport to Plaza Connect", service.GetPlayers(plr, args[1]), 30, "MatIcon://QR code scanner", Core.Bytecode("service.TeleportService:Teleport(5118029260)"))
+				Functions.Notification("Teleport", "Click to teleport to Plaza Connect", service.GetPlayers(plr, args[1]), 30, "MatIcon://QR code scanner", {Action = "TeleportToPlace"; PlaceId = 5118029260;})
 			end
 		};
 
@@ -7219,7 +7219,7 @@ return function(Vargs, env)
 
 				if args[2] then
 					for _, v in service.GetPlayers(plr, args[2]) do
-						Remote.LoadCode(v, `game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType[{rev}]`)
+						Remote.Send(v, "Function", "SetAmbientReverb", rev)
 					end
 
 					Functions.Hint("Changed Ambient Reverb of specified player(s)", {plr})

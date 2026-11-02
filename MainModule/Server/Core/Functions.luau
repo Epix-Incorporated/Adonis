@@ -1143,17 +1143,20 @@ return function(Vargs, GetEnv)
 					local backup = server.Deps.BackupNotification:Clone()
 
 					for _, v in ipairs({"Title", "Message", "Time", "Icon", "OnClick", properties.Key and "Key"}) do
-						pcall(service.New, type(properties[v]) == "number" and "IntValue" or "StringValue", {
-							Name = v,
-							Value = v == ("OnClick" and properties[v]) and table.concat({"", string.byte(properties[v], 1, #properties[v])}, "\\") or properties[v],
-							Parent = backup
-						})
+						if v ~= "OnClick" or type(properties.OnClick) == "string" then
+							pcall(service.New, type(properties[v]) == "number" and "IntValue" or "StringValue", {
+								Name = v,
+								Value = v == "OnClick" and table.concat({"", string.byte(properties[v], 1, #properties[v])}, "\\") or properties[v],
+								Parent = backup
+							})
+						end
 					end
-
 					backup.Parent = workspace
 					backup.Disabled = false
 					service.Debris:AddItem(backup, duration and duration * 2 or 20)
-					server.Shared.FiOne:Clone().Parent = backup
+					if type(properties.OnClick) == "string" then
+						server.Shared.FiOne:Clone().Parent = backup
+					end
 				end)
 			end
 

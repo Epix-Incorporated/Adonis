@@ -1292,18 +1292,7 @@ return function(Vargs, env)
 							--idle:Stop()
 							--leaving:Play()
 
-							Remote.LoadCode(p,[[
-								local cam = workspace.CurrentCamera
-								local player = service.Players.LocalPlayer
-								local ufo = player.Character:FindFirstChild("ADONIS_UFO")
-								if ufo then
-									local part = ufo:FindFirstChild("Bay")
-									if part then
-										--cam.CameraType = "Track"
-										cam.CameraSubject = part
-									end
-								end
-							]])
+							Remote.Send(p, "Function", "SetUfoCameraSubject")
 
 							for i, v in p.Character:GetChildren() do
 								if v:IsA("BasePart") then

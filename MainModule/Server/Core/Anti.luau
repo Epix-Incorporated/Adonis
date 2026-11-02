@@ -210,7 +210,7 @@ return function(Vargs, GetEnv)
 								player.Name,
 								action,
 								string.sub(info, 1, 50)
-							), {plr}, 30, "MatIcon://Notification important", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}exploitlogs')`)
+							), {plr}, 30, "MatIcon://Notification important", {Action = "ProcessCommand"; Command = `{Settings.Prefix}exploitlogs`;}
 						)
 					end
 				end
