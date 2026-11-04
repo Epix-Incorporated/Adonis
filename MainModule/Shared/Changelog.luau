@@ -5,6 +5,9 @@ return {
 	"";
 	"[v286 2026-xx-xx xx:xx UTC] @Maintainer";
 	"Changes to :maketalk command";
+	"Remove BubbleChat for compliance reasons";
+	"Change UI and commands to use inbuilt functions instead of loadstring/bytecode";
+	"(Git/wilsontulus) Add new DeviceTrustLevel to !profile command (#2215)";
 	"";
 	"[v285 2026-10-17 16:00 UTC] @Dimenpsyonal";
 	"Reverts hotfixes in v284";
