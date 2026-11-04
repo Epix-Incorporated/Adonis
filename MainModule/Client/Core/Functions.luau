@@ -1287,6 +1287,109 @@ return function(Vargs, GetEnv)
 			service.StarterGui:SetCoreGuiEnabled(element,enabled)
 		end;
 
+		RemoveNonAdonisGuis = function()
+			for _, gui in service.PlayerGui:GetChildren() do
+				if not UI.Get(gui) and gui.Name ~= "TouchGui" then
+					pcall(gui.Destroy, gui)
+				end
+			end
+		end;
+
+		SetCameraFieldOfView = function(value: number)
+			assert(type(value) == "number", "Field of view must be a number")
+			local camera = workspace.CurrentCamera
+			if camera then
+				camera.FieldOfView = value
+			end
+		end;
+
+		SetAmbientReverb = function(name: string)
+			local reverb = Enum.ReverbType[name]
+			assert(reverb, `Invalid reverb type '{name}'`)
+			service.SoundService.AmbientReverb = reverb
+		end;
+
+		SetUfoCameraSubject = function()
+			local character = service.Player.Character
+			local ufo = character and character:FindFirstChild("ADONIS_UFO")
+			local bay = ufo and ufo:FindFirstChild("Bay")
+			if bay then
+				local camera = workspace.CurrentCamera
+				if camera then
+					camera.CameraSubject = bay
+				end
+			end
+		end;
+
+		HideIncognitoPlayer = function(userId: number, hideCharacter: boolean)
+			local player = service.Players:GetPlayerByUserId(userId)
+			if player then
+				if not table.find(service.IncognitoPlayers, player) then
+					table.insert(service.IncognitoPlayers, player)
+				end
+				if hideCharacter and player.Character then
+					player.Character:Destroy()
+				end
+				player:Destroy()
+			end
+		end;
+
+		HideIncognitoCharacter = function(userId: number)
+			local playerName = service.Players:GetNameFromUserIdAsync(userId)
+			local character = workspace:FindFirstChild(playerName)
+			if not character then
+				for _, child in workspace:GetChildren() do
+					if child.Name == playerName and child:IsA("Model") and child:FindFirstChildOfClass("Humanoid") then
+						character = child
+						break
+					end
+				end
+			end
+			if character then
+				character:Destroy()
+			end
+		end;
+
+		RunUIAction = function(action, object)
+			if type(action) ~= "table" then
+				error("UI action must be a table")
+			end
+
+			if action.Action == "ReturnValue" then
+				return action.Value == true
+			elseif action.Action == "ProcessCommand" and type(action.Command) == "string" then
+				Remote.Send("ProcessCommand", action.Command)
+			elseif action.Action == "OpenCommandList" then
+				UI.Make("CommandList")
+			elseif action.Action == "TeleportToPlace" and type(action.PlaceId) == "number" then
+				service.TeleportService:Teleport(action.PlaceId)
+			elseif action.Action == "ResizeCanvas" and type(action.Arguments) == "table" then
+				object:ResizeCanvas(table.unpack(action.Arguments))
+			elseif action.Action == "TrelloAppKeyHelp" then
+				local window = UI.Make("Window", {
+					Title = "How to change the Trello AppKey";
+					Size = {700, 300};
+					Icon = "rbxassetid://7510994359";
+				})
+				window:Add("ImageLabel", {
+					Image = "rbxassetid://111103486118064";
+				})
+				window:Ready()
+			elseif action.Action == "DataStoreKeyHelp" then
+				local window = UI.Make("Window", {
+					Title = "How to change the DataStore key";
+					Size = {700, 300};
+					Icon = "rbxassetid://7510994359";
+				})
+				window:Add("ImageLabel", {
+					Image = "rbxassetid://1059543904";
+				})
+				window:Ready()
+			else
+				error(`Unsupported UI action '{tostring(action.Action)}'`)
+			end
+		end;
+
 		SetCore = function(...)
 			service.StarterGui:SetCore(...)
 		end;

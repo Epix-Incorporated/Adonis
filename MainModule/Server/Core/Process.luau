@@ -111,7 +111,7 @@ return function(Vargs, GetEnv)
 					Message = "Click to view the changelog.";
 					Time = 10;
 					Icon = "MatIcon://System upgrade";
-					onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`);
+					onClick = {Action = "ProcessCommand"; Command = `{Settings.Prefix}changelog`;};
 				})
 			end
 		end)
@@ -123,7 +123,7 @@ return function(Vargs, GetEnv)
 				Message = "Adonis is currently running in Debug Mode.";
 				Time = 10;
 				Icon = "MatIcon://Bug report";
-				onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`);
+				onClick = {Action = "ProcessCommand"; Command = `{Settings.Prefix}debugcmds`;};
 			})
 		end
 
@@ -134,19 +134,8 @@ return function(Vargs, GetEnv)
 				Message = "Using default datastore key!";
 				Time = 15;
 				Icon = "MatIcon://Description";
-				onClick = Core.Bytecode([[
-					local window = client.UI.Make("Window", {
-						Title = "How to change the DataStore key";
-						Size = {700,300};
-						Icon = "rbxassetid://7510994359";
-					})
-
-					window:Add("ImageLabel", {
-						Image = "rbxassetid://1059543904";
-					})
-
-					window:Ready()
-			]])})
+				onClick = {Action = "DataStoreKeyHelp"}
+			})
 		end
 
 		--// Load client onto existing players
@@ -1080,7 +1069,7 @@ return function(Vargs, GetEnv)
 				if level > 0 then
 					if Settings.Notification then
 						task.wait(1)
-						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.UI.Make("CommandList")`))
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", {Action = "OpenCommandList"})
 
 						if #server.Messages > 0 then
 							for _, message in server.Messages do
@@ -1125,28 +1114,9 @@ return function(Vargs, GetEnv)
 						continue
 					end
 					if pdata.hide_character then
-						Remote.LoadCode(p, [[
-							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-							if plr then
-								if not table.find(service.IncognitoPlayers, plr) then
-									table.insert(service.IncognitoPlayers, plr)
-								end
-								if plr.Character then
-									plr.Character:Destroy()
-								end
-								plr:Destroy()
-							end
-						]])
+						Remote.Send(p, "Function", "HideIncognitoPlayer", v.UserId, true)
 					else
-						Remote.LoadCode(p, [[
-							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-							if plr then
-								if not table.find(service.IncognitoPlayers, plr) then
-									table.insert(service.IncognitoPlayers, plr)
-								end
-								plr:Destroy()
-							end
-						]])
+						Remote.Send(p, "Function", "HideIncognitoPlayer", v.UserId, false)
 					end
 				end
 			end

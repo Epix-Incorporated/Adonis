@@ -322,19 +322,8 @@ return function(Vargs, GetEnv)
 				Message = "You have enabled Trello without having an AppKey and thus Trello will likely not work! It is adviced also add a Trello Token. Click to see more";
 				Time = 15;
 				Icon = "MatIcon://Description";
-				onClick = Core.Bytecode([[
-					local window = client.UI.Make("Window", {
-						Title = "How to change the Trello AppKey";
-						Size = {700,300};
-						Icon = "rbxassetid://7510994359";
-					})
-
-					window:Add("ImageLabel", {
-						Image = "rbxassetid://111103486118064";
-					})
-
-					window:Ready()
-			]])})
+				onClick = {Action = "TrelloAppKeyHelp"}
+			})
 		end
 	end
 	Logs:AddLog("Script", "Trello Module Loaded")
