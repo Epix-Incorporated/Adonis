@@ -79,6 +79,9 @@ return {
 
 	MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]];
 	SaveCommandLogs = [[ If command logs are saved to the datastores ]];
+	MsgStringLimit = [[ Max characters allowed in a command or command-bar message before it is truncated; Helps prevent long-message spam from crashing the server ]];
+	AdminMsgStringLimit = [[ Max characters allowed in a command or command-bar message from admins before it is truncated ]];
+	MaxChatCharacterLimit = [[ Max characters a player's chat message may contain before it is rejected ]];
 	Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]];
 	CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]];
 	SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]];
