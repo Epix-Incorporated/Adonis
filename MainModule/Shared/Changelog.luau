@@ -3,11 +3,12 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our repository*";
 	"";
-	"[v286 2026-xx-xx xx:xx UTC] @Maintainer";
+	"[v286 2026-11-14 21:40 UTC] @Dimenpsyonal";
 	"Changes to :maketalk command";
 	"Remove BubbleChat for compliance reasons";
 	"Change UI and commands to use inbuilt functions instead of loadstring/bytecode";
 	"(Git/wilsontulus) Add new DeviceTrustLevel to !profile command (#2215)";
+	"(Git/krampuszc) Increase the command limit for admins and made it a setting (#2220)";
 	"";
 	"[v285 2026-10-17 16:00 UTC] @Dimenpsyonal";
 	"Reverts hotfixes in v284";
