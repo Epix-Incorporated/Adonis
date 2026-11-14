@@ -1,44 +1,38 @@
-# Communication regression checks
+# Lune smoke test
+Basic unit tests for some Adonis functions, intended to catch bugs and errors before Roblox testing.
 
-Run from the repository root. The repository pins **Selene 0.31.0** and **Rojo 7.7.0** in `aftman.toml`. The standalone fixtures use **Lune 0.11.0** and its built-in `@lune/fs`, `@lune/luau`, `@lune/serde`, and `@lune/task` modules. Lune is a test runner, not a game dependency.
+Run from the repository root with Lune 0.11.0:
 
-```powershell
-# Use the pinned binaries on PATH, or equivalent absolute paths.
-selene ./MainModule ./Loader
+```sh
+lune run Tests/LinkedList.spec.luau
+lune run Tests/AdminAPI.spec.luau
+lune run Tests/AdminCore.spec.luau
+lune run Tests/AdminBans.spec.luau
+lune run Tests/AdminAuthority.spec.luau
+lune run Tests/AdminAliases.spec.luau
+lune run Tests/AdminCommandWrappers.spec.luau
+lune run Tests/AdminCommandRegistry.spec.luau
+lune run Tests/AdminAssignments.spec.luau
+lune run Tests/AdminMute.spec.luau
+lune run Tests/AdminCooldownUpdates.spec.luau
+lune run Tests/AdminFormatting.spec.luau
+lune run Tests/AdminIdentity.spec.luau
 selene ./Tests
-rojo build -o Adonis.rbxl
-rojo build -o Adonis_AgentCheck.rbxm .github/build.project.json
-Get-ChildItem -LiteralPath Tests -Filter *.spec.luau | ForEach-Object {
-    lune run $_.FullName
-    if ($LASTEXITCODE -ne 0) { throw "Fixture failed: $($_.Name)" }
-}
-git diff --check
 ```
 
-If the Roblox standard library has not been generated locally, run the pinned `selene generate-roblox-std` first. Generated Roblox library/build artifacts are ignored. None of these commands publishes a place, changes datastores, or commits source.
+* `LinkedList.spec.luau` loads the actual shared linked-list module and checks insertion order, node removal, count updates, and bounded insertion. 
+* `AdminAPI.spec.luau` runs the actual `Core.StartAPI` implementation with minimal service/admin substitutes and checks public admin calls, argument filtering, keyed read-only access, and the `disabled` API setting. 
+* `AdminCore.spec.luau` tests the actual permission and rank/cache methods from `Admin.luau`.
+* `AdminBans.spec.luau` tests the actual ban lookup, expiry, persistence, and removal methods.
+* `AdminAuthority.spec.luau` checks target-level and self-target authority decisions.
+* `AdminAliases.spec.luau` tests alias matching, formatting, blacklist, and alias infinite recursion.
+* `AdminCommandWrappers.spec.luau` verifies that the command wrappers preserve arguments and execution context and restrict non-admin execution to player-level commands.
+* `AdminCommandRegistry.spec.luau` checks command prefix/alias caching, lookup, search, and permission updates.
+* `AdminAssignments.spec.luau` checks rank assignment, reassignment, temporary access, removal, and persistence requests.
+* `AdminMute.spec.luau` checks configured, Trello, and web-panel mutes with identity matching.
+* `AdminCooldownUpdates.spec.luau` checks player, server, and cross-server cooldown timestamps and system-command exclusions.
+* `AdminFormatting.spec.luau` checks split limits, quoted arguments, explicit arguments, and command usage formatting.
+* `AdminIdentity.spec.luau` checks user/name matching and group, asset, gamepass, and subscription requirements.
+* The Admin tests use lune, which is only a substitute - none boot Roblox or verify engine behaviour.
 
-| Fixture | Boundary exercised |
-| --- | --- |
-| `ChatTransportServer.spec.luau` | Real transport with deterministic engine substitutes: origin/permit authority, readiness/membership, read-only mute handling, pair reuse, close/join races, timeouts/capacity, help acceptance, actual private-chat controls. |
-| `ChatTransportClient.spec.luau` | Real client transport: ready/send, no raw recipient relay, successful delivered text only, deduplication, histories, timeout/late receipt, announcement replacement without clearing stacking presentations, speech cancellation through Default/Unity/Aero manual and registry cleanup, command preflight. |
-| `PrivateChatLifecycle.spec.luau` | Actual private-chat window and Default/Unity/Aero close implementations: removal cleanup, same-channel rejoin, delivered messages, replies, exactly-once manual/registry leave, and server removal during animated closure. |
-| `CommandProvenance.spec.luau` | Actual command parser and alias formatting: literal arguments, generated templates, batches, overrides, actual actor, expiry, admission/completion/failure audit timing and persistence exclusions. |
-| `NativeChatCommands.spec.luau` | Actual native registry and command dispatch: prefixes/synonyms, startup and late plugin registration, coalesced refreshes, invalid definitions, host collisions, personal aliases, refresh/cleanup, managed-channel guard, hidden/disabled interception, chat-only restrictions through aliases/batches, rate limiting, native broadcast submission, and canonical cross-server dispatch without destination alias expansion. |
-| `AnnouncementCommands.spec.luau` | Actual announcement and warning handlers with real server transport: aliases, authored native submissions, custom title/body framing, presentation metadata, missing input, generated/sudo denial, and warning persistence independent of chat delivery. |
-| `CrossServerCommunication.spec.luau` | Actual global commands and cross-server plugin: retired message routes, operational argument compatibility with older receivers, real-parser roundtrip validation, rejection of aliases/batches/loops, retained public-edit filtering/admission, and fixed restart status without supplied reason text. |
-| `AliasUpdates.spec.luau` | Actual alias-save endpoint, client helpers and rename callback: bounded atomic updates, deletion-only legacy cleanup, throttling, synchronous registration, rollback, accepted client state, and one-request edits. |
-| `AFK.spec.luau` | Actual AFK command, text policy, and jump cleanup: filtered labels for multiple targets, originating author under `sudo`, one shared admission, and no partial effects after cooldown or filtering rejection. |
-| `TextPolicy.spec.luau` | Actual filtering and command wrapper: both filter stages, audience/author checks, shared admission, records, non-chat publication, retired announcement declarations, helper context, direct calls, filtered tag membership collisions, case-insensitive removal controls, and author-only debug diagnostics through `sudo`. |
-| `Logging.spec.luau` | Entire projected rows, including descriptions and unknown fields; canonical metadata and non-chat detail provenance. |
-| `Settings.spec.luau` | Mutation validation, text admission, operational/display separation, persistence-shaped records, different viewer handles, ranks/catalogs, legacy loaders without rank baselines, immutable fallback definitions, legacy redaction, and one ban-list projection per refresh. |
-| `StartupMessages.spec.luau` | Immutable startup snapshots, unregistered notices, record projection, actual delayed notification sink, missing/special ranks. |
-| `CommandErrors.spec.luau` | Fixed error projection and actual Process/Admin/ScriptEditor output sinks; unknown exceptions never become outgoing text. |
-| `ModerationAudit.spec.luau` | Actual ban and time-ban producers retain resolved numeric targets, the originating actor, and safe reasons. |
-| `PlayerData.spec.luau` | Actual player-preferences response keeps supported UI fields and excludes moderation records and unknown plugin fields. |
-| `ProfileData.spec.luau` | Actual client telemetry producer, profile command, and UI value labels: strict technical fields, protected server-owned facts, invalid numeric/string inputs, and viewer permissions. |
-
-Some fixtures extract a bounded function from its real source module to avoid booting the whole engine. Source anchors failing after a refactor require updating the harness and reviewing the exercised boundary; they are not proof of a product regression by themselves. Mock services deliberately force failure, timing, and privacy outcomes; their pass results do not validate Roblox's real account restrictions.
-
-For an engine check, build an **unpublished** test place that loads the local `MainModule`. Before playing, verify `GameId == 0`, point the loader to that module, enable local/mock storage, disable real persistence, and isolate cloud/HTTP integrations and external plugins. Use `TextChatService` chat mode. Keep these test-only changes out of production configuration. Start the real Adonis UI, submit a command, and observe both native sending and recipient delivery events independently. A sender event or `Sending` status does not establish delivery.
-
-The required account/privacy and operator checks are documented in [communication-compliance.md](../docs/communication-compliance.md#verification-and-release-gate). Do not restore a remote-body fallback if an engine test fails.
+The CI workflow installs Lune 0.11.0 and runs every `Tests/*.spec.luau` file. Stand-alone tests should be kept focused on behaviour that can be exercised reliably, with the current source (no test-driven development on master!) and Lune's runtime.

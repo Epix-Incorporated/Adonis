@@ -113,6 +113,7 @@ return function(data, env)
 			{"Membership", data.MembershipStatus or "None", "The player's Roblox membership type. (Plus/Premium)"},
 			{"Can Chat", data.CanChatGet[1] and boolToStr(data.CanChatGet[2]) or "[Error]", "Does the player's account settings allow them to chat?"},
 			{"Ads Allowed", data.AdsAllowed, "[Admins Only] Does the player have permission to view advertisements?"},
+			{"Device Trust Level", data.DeviceTrustLevel, "[Admins Only] The player's device trust level according to Device Trust API."},
 			{"Mail Verified", data.MailVerified, "[Admins Only] Does the player have verified their mail?"},
 			{"Verification Level", data.VerificationLevel, "[Admins Only] Does the player have a verification status?"},
 			}) do
@@ -145,7 +146,7 @@ return function(data, env)
 			if v[1] then
 				generaltab:Add("TextLabel", {
 					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, 32*c + 285);
+					Position = UDim2.new(0, 5, 0, 32*c + 315);
 					BackgroundTransparency = 0.4;
 					Text = v[2];
 					ToolTip = v[4];

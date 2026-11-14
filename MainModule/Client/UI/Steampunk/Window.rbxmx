@@ -1209,7 +1209,11 @@ return function(data, env)
 		if Children then
 			local runWhenDone = Children.RunWhenDone and functionify(Children.RunWhenDone, Obj)
 			for class,data in pairs(Children) do
-				if type(data) == "table" then
+				if type(data) == "table" and type(data.Action) == "string" then
+					if not runWhenDone then
+						runWhenDone = functionify(data, Obj)
+					end
+				elseif type(data) == "table" then
 					if not data.Parent then data.Parent = Obj end
 					create(data.Class or data.ClassName or class, data)
 				elseif type(data) == "function" or type(data) == "string" and not runWhenDone then
@@ -1277,7 +1281,11 @@ return function(data, env)
 	end
 
 	function functionify(func, object)
-		if type(func) == "string" then
+		if type(func) == "table" then
+			return function()
+				return client.Functions.RunUIAction(func, object)
+			end
+		elseif type(func) == "string" then
 			if object then
 				local env = GetEnv()
 				env.Object = object

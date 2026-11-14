@@ -111,7 +111,7 @@ return function(Vargs, GetEnv)
 					Message = "Click to view the changelog.";
 					Time = 10;
 					Icon = "MatIcon://System upgrade";
-					onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}changelog")`);
+					onClick = {Action = "ProcessCommand"; Command = `{Settings.Prefix}changelog`;};
 				})
 			end
 		end)
@@ -123,7 +123,7 @@ return function(Vargs, GetEnv)
 				Message = "Adonis is currently running in Debug Mode.";
 				Time = 10;
 				Icon = "MatIcon://Bug report";
-				onClick = Core.Bytecode(`client.Remote.Send("ProcessCommand","{Settings.Prefix}debugcmds")`);
+				onClick = {Action = "ProcessCommand"; Command = `{Settings.Prefix}debugcmds`;};
 			})
 		end
 
@@ -134,19 +134,8 @@ return function(Vargs, GetEnv)
 				Message = "Using default datastore key!";
 				Time = 15;
 				Icon = "MatIcon://Description";
-				onClick = Core.Bytecode([[
-					local window = client.UI.Make("Window", {
-						Title = "How to change the DataStore key";
-						Size = {700,300};
-						Icon = "rbxassetid://7510994359";
-					})
-
-					window:Add("ImageLabel", {
-						Image = "rbxassetid://1059543904";
-					})
-
-					window:Ready()
-			]])})
+				onClick = {Action = "DataStoreKeyHelp"}
+			})
 		end
 
 		--// Load client onto existing players
@@ -318,7 +307,7 @@ return function(Vargs, GetEnv)
 		RateLimit = RateLimit;
 		newRateLimit = newRateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
-		AdminMsgStringLimit = 5000;
+		AdminMsgStringLimit = 50000;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
 		RemoteMaxArgCount = 5; --// The maximum argument count Adonis will take from Remote (alter if your script requires more arguments)
 		RateLimits = {
@@ -439,9 +428,13 @@ return function(Vargs, GetEnv)
 			opts = opts or {}
 
 			if type(p) == "userdata" and p:IsA("Player") then
-				local limit = if Admin.CheckAdmin(p) then Process.AdminMsgStringLimit else Process.MsgStringLimit
+				local limit = if Admin.CheckAdmin(p) then (Settings.AdminMsgStringLimit or Process.AdminMsgStringLimit) else (Settings.MsgStringLimit or Process.MsgStringLimit)
 				if #msg > limit then
 					msg = string.sub(msg, 1, limit)
+					Remote.MakeGui(p, "Hint", {
+						Message = `Your command was too long and was truncated to {limit} characters.`;
+						Time = 5;
+					})
 				end
 			end
 
@@ -654,12 +647,12 @@ return function(Vargs, GetEnv)
 			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "Chat")
 			if didPassRate then
 				local isMuted = Admin.IsMuted(p);
-				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
+				if utf8.len(utf8.nfcnormalize(msg)) > (Settings.MaxChatCharacterLimit or Process.MaxChatCharacterLimit) and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
 					if not Admin.CheckSlowMode(p) then
 						msg = service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and service.UnsanitizeXML(msg) or msg -- Hack to fix TextChatService invalidly XML escaping messages
-						local msg = string.sub(msg, 1, Process.MsgStringLimit)
+						local msg = string.sub(msg, 1, Settings.MsgStringLimit or Process.MsgStringLimit)
 						local filtered = service.LaxFilter(msg, p)
 
 						AddLog(Logs.Chats, {
@@ -688,7 +681,7 @@ return function(Vargs, GetEnv)
 							service.Events.PlayerChatted:Fire(p, msg)
 						end
 					else
-						local msg = string.sub(msg, 1, Process.MsgStringLimit)
+						local msg = string.sub(msg, 1, Settings.MsgStringLimit or Process.MsgStringLimit)
 
 						if Settings.ChatCommands then
 							if Admin.DoHideChatCmd(p, msg) then
@@ -700,7 +693,7 @@ return function(Vargs, GetEnv)
 						end
 					end
 				elseif isMuted then
-					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					local msg = string.sub(msg, 1, Settings.MsgStringLimit or Process.MsgStringLimit);
 					service.Events.MutedPlayerChat_UnFiltered:Fire(p, msg)
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
@@ -1080,7 +1073,7 @@ return function(Vargs, GetEnv)
 				if level > 0 then
 					if Settings.Notification then
 						task.wait(1)
-						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", Core.Bytecode(`client.UI.Make("CommandList")`))
+						Functions.Notification("Welcome.", `Your rank is {rank} ({level}). Click here for commands.`, {p}, 15, "MatIcon://Verified user", {Action = "OpenCommandList"})
 
 						if #server.Messages > 0 then
 							for _, message in server.Messages do
@@ -1125,28 +1118,9 @@ return function(Vargs, GetEnv)
 						continue
 					end
 					if pdata.hide_character then
-						Remote.LoadCode(p, [[
-							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-							if plr then
-								if not table.find(service.IncognitoPlayers, plr) then
-									table.insert(service.IncognitoPlayers, plr)
-								end
-								if plr.Character then
-									plr.Character:Destroy()
-								end
-								plr:Destroy()
-							end
-						]])
+						Remote.Send(p, "Function", "HideIncognitoPlayer", v.UserId, true)
 					else
-						Remote.LoadCode(p, [[
-							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-							if plr then
-								if not table.find(service.IncognitoPlayers, plr) then
-									table.insert(service.IncognitoPlayers, plr)
-								end
-								plr:Destroy()
-							end
-						]])
+						Remote.Send(p, "Function", "HideIncognitoPlayer", v.UserId, false)
 					end
 				end
 			end

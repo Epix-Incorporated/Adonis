@@ -106,15 +106,20 @@ return function(data, env)
 	
 	local returner = nil
 	
-	if clickfunc and type(clickfunc)=="string" then
-		clickfunc = client.Core.LoadCode(clickfunc, GetEnv())
+	local function resolveCallback(callback)
+		if type(callback) == "string" then
+			return client.Core.LoadCode(callback, GetEnv())
+		elseif type(callback) == "table" then
+			return function()
+				return client.Functions.RunUIAction(callback)
+			end
+		end
+		return callback
 	end
-	if closefunc and type(closefunc)=="string" then
-		closefunc = client.Core.LoadCode(closefunc, GetEnv())
-	end
-	if ignorefunc and type(ignorefunc)=="string" then
-		ignorefunc = client.Core.LoadCode(ignorefunc, GetEnv())
-	end
+
+	clickfunc = resolveCallback(clickfunc)
+	closefunc = resolveCallback(closefunc)
+	ignorefunc = resolveCallback(ignorefunc)
 	
 	local holder = client.UI.Get("NotificationHolder",nil,true)
 	

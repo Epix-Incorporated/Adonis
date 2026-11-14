@@ -48,7 +48,7 @@ return function(Vargs, env)
 						Functions.Notification(
 							"Notification",
 							`You are {if string.lower(string.sub(rankName, 1, 3)) == "the" then "" elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(string.sub(rankName, 1, 3)) ~= "uni" then "an " else "a "}{rankName}. Click to view commands.`,
-							{p}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`)
+							{p}, 10, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;}
 						)
 						Functions.Hint(`{service.FormatPlayer(p, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
 					else
@@ -91,7 +91,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, rankName, true)
 						Functions.LogAdminAction(plr, "Set Temporary Rank", v.Name, `Temporary rank set to: {rankName}`)
-						Functions.Notification("Notification", `You are a temp {rankName}. Click to view commands.`, {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", `You are a temp {rankName}. Click to view commands.`, {v}, 10, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now rank {rankName} (Permission Level: {newLevel})`, {plr})
 					else
 						Functions.Hint(`You do not have permission to set the rank of {service.FormatPlayer(v, true)}`, {plr})
@@ -118,7 +118,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.SetLevel(v, newLevel, args[3] == "true")
 						Functions.LogAdminAction(plr, "Set Level", v.Name, `New level: {newLevel}`)
-						Functions.Notification("Notification", `Your admin permission level was set to {newLevel} for this server only. Click to view commands.`, {v}, 10, "MatIcon://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", `Your admin permission level was set to {newLevel} for this server only. Click to view commands.`, {v}, 10, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now permission level {newLevel}`, {plr})
 					else
 						Functions.Hint(`You do not have permission to set the permission level of {service.FormatPlayer(v, true)}`, {plr})
@@ -245,7 +245,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators", true)
 						Functions.LogAdminAction(plr, "Temporary Moderator", v.Name, "N/A")
-						Functions.Notification("Notification", "You are a temp moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", "You are a temp moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temp moderator`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -272,7 +272,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators")
 						Functions.LogAdminAction(plr, "Promoted to Moderator", v.Name, "N/A")
-						Functions.Notification("Notification", "You are a moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", "You are a moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a moderator`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})

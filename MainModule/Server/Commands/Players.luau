@@ -173,7 +173,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local children = {
-					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
+					{Action = "ResizeCanvas"; Arguments = {false, true, false, false, 5, 5};};
 				}
 
 				local brickColorNames = {}
@@ -420,9 +420,9 @@ return function(Vargs, env)
 									Message = `{plr.Name} needs help. Open the help chat to read the request.`;
 									Icon = server.MatIcons.Mail;
 									Time = 30;
-									OnClick = Core.Bytecode("return true");
-									OnClose = Core.Bytecode("return false");
-									OnIgnore = Core.Bytecode("return false");
+									OnClick = {Action = "ReturnValue"; Value = true};
+									OnClose = {Action = "ReturnValue"; Value = false};
+									OnIgnore = {Action = "ReturnValue"; Value = false};
 								})
 
 								if ret then
@@ -834,6 +834,8 @@ return function(Vargs, env)
 						end
 
 						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
+						local deviceTrustLevel = if elevated then plr.DeviceTrustLevel.Name else "[Redacted]"
+
 						local hasAdsAllowed = if policyInfo then
 							type(policyInfo) == "string" and policyInfo or policyInfo.AreAdsAllowed and "Yes" or "No"
 							else "[Redacted]"
@@ -858,6 +860,7 @@ return function(Vargs, env)
 							Target = v;
 							AdsAllowed = hasAdsAllowed;
 							CanChatGet = table.pack(pcall(service.TextChatService.CanUserChatAsync, service.TextChatService, v.UserId));
+							DeviceTrustLevel = deviceTrustLevel;
 							MailVerified = hasVerifiedMail;
 							VerificationLevel = determinedVerifLevel;
 							IsDonor = Admin.CheckDonor(v);
@@ -993,7 +996,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Coords")
 			end;
 		};
-		
+
 		Velocity = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"vel", "velocity"};

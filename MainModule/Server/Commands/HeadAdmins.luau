@@ -182,7 +182,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins", true)
 						Functions.LogAdminAction(plr, "Temporary Admin", v.Name, "Temporary admin granted.")
-						Functions.Notification("Notification", "You are a temp administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", "You are a temp administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temporary admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -209,7 +209,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins")
 						Functions.LogAdminAction(plr, "Permanent Admin", v.Name, "Granted permanent admin rights.")
-						Functions.Notification("Notification", "You are an administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`))
+						Functions.Notification("Notification", "You are an administrator. Click to view commands.", {v}, 10, "MatIcon://Admin panel settings", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a permanent admin`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -476,19 +476,7 @@ return function(Vargs, env)
 						v.CharacterAdded:Connect(function(character: Model)
 							for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
 								if otherPlr == v then continue end
-								Remote.LoadCode(otherPlr, [[
-									local plrName = service.Players:GetNameFromUserIdAsync(]] .. v.UserId .. [[)
-									local character = service.Workspace:FindFirstChild(plrName)
-									if character:FindFirstChildWhichIsA("Humanoid") == nil then
-										for _, v in service.Workspace:GetChildren() do
-											if v.Name == plrName and v:IsA("Model") and v:FindFirstChildWhichIsA("Humanoid") ~= nil then
-												character = v
-												break
-											end
-										end
-									end
-									character:Destroy()
-								]])
+								Remote.Send(otherPlr, "Function", "HideIncognitoCharacter", v.UserId)
 							end
 						end)
 					end
@@ -497,28 +485,9 @@ return function(Vargs, env)
 					for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
 						if otherPlr == v then continue end
 						if hideCharacter then
-							Remote.LoadCode(otherPlr, [[
-							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-								if plr then
-									if not table.find(service.IncognitoPlayers, plr) then
-										table.insert(service.IncognitoPlayers, plr)
-									end
-									if plr.Character then
-										plr.Character:Destroy()
-									end
-									plr:Destroy()
-								end
-							]])
+							Remote.Send(otherPlr, "Function", "HideIncognitoPlayer", v.UserId, true)
 						else
-							Remote.LoadCode(otherPlr, [[
-								local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-								if plr then
-									if not table.find(service.IncognitoPlayers, plr) then
-										table.insert(service.IncognitoPlayers, plr)
-									end
-									plr:Destroy()
-								end
-							]])
+							Remote.Send(otherPlr, "Function", "HideIncognitoPlayer", v.UserId, false)
 						n += 1
 						end
 					end

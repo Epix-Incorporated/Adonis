@@ -67,7 +67,7 @@ return function(Vargs, GetEnv)
 				TitleButtons = {
 					{
 						Text = "?";
-						OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}usage')`)
+						OnClick = {Action = "ProcessCommand"; Command = `{Settings.PlayerPrefix}usage`;};
 					}
 				};
 			})
@@ -108,7 +108,7 @@ return function(Vargs, GetEnv)
 				TitleButtons = {
 					{
 						Text = "?";
-						OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.PlayerPrefix}debugusage')`)
+						OnClick = {Action = "ProcessCommand"; Command = `{Settings.PlayerPrefix}debugusage`;};
 					}
 				};
 			})
