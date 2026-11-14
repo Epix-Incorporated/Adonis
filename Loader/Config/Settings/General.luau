@@ -23,6 +23,9 @@ return {
 
 	SaveCommandLogs = true;	-- If command logs are saved to the datastores
 	MaxLogs = 5000;			-- Maximum logs to save before deleting the oldest
+	MsgStringLimit = 500;				-- Max characters allowed in a command (command bar & chat commands) before it is truncated; Prevents long-message spam from crashing the server
+	AdminMsgStringLimit = 50000;		-- Max characters allowed in a command from admins before it is truncated
+	MaxChatCharacterLimit = 250;		-- Max characters a player's chat message may contain before it is rejected
 
 	Storage = game:GetService("ServerStorage");	-- Where things like tools are stored
 	RecursiveTools = false;	-- Whether tools that are included in sub-containers within Storage will be available via the :give command (useful if your tools are organized into multiple folders)

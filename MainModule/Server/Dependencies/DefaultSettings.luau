@@ -299,6 +299,9 @@ settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 settings.MaxLogs = 5000			           -- Maximum logs to save before deleting the oldest
 settings.SaveCommandLogs = true	           -- If command logs are saved to the datastores
+settings.MsgStringLimit = 500
+settings.AdminMsgStringLimit = 50000
+settings.MaxChatCharacterLimit = 250
 settings.Notification = true	           -- Whether or not to show the "You're an admin" and "Updated" notifications
 settings.SongHint = true		           -- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	           -- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
@@ -469,6 +472,9 @@ descs.SystemTitle = [[ Title to display in :sm ]]
 
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
+descs.MsgStringLimit = [[ Max characters allowed in a command or command-bar message before it is truncated; Helps prevent long-message spam from crashing the server ]]
+descs.AdminMsgStringLimit = [[ Max characters allowed in a command or command-bar message from admins before it is truncated ]]
+descs.MaxChatCharacterLimit = [[ Max characters a player's chat message may contain before it is rejected ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
@@ -583,6 +589,9 @@ order = {
 	" ";
 	"MaxLogs";
 	"SaveCommandLogs";
+	"MsgStringLimit";
+	"AdminMsgStringLimit";
+	"MaxChatCharacterLimit";
 	"Notification";
 	"SongHint";
 	"TopBarShift";

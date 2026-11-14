@@ -75,6 +75,9 @@ return {
 	" ";
 	"MaxLogs";
 	"SaveCommandLogs";
+	"MsgStringLimit";
+	"AdminMsgStringLimit";
+	"MaxChatCharacterLimit";
 	"Notification";
 	"SongHint";
 	"TopBarShift";
