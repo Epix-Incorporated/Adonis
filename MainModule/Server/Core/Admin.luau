@@ -750,7 +750,11 @@ return function(Vargs, GetEnv)
 					return true
 				end
 
-				if p.UserId == -1 and Variables.IsStudio then --// To account for player emulators in multi-client Studio tests
+				if p.UserId < 0 and Variables.IsStudio then --// To account for player emulators in multi-client Studio tests
+					return true
+				end
+
+				if game.PlaceId == 0 and Variables.IsStudio then --// To account for unpublished games
 					return true
 				end
 			end
