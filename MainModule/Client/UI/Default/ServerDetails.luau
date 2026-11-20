@@ -173,6 +173,7 @@ return function(data, env)
 					-- {"Timezone", serii.timezone or "[Error]"},
 					{"Country", serii.country or "[Error]"},
 					{"Region", serii.region or "[Error]"},
+					{"Closest airport", serii.rbxRegion or "[Error]"},
 					{"City", serii.city or "[Error]"},
 					{if serii.country and (string.match(serii.country, "United States") or string.match(serii.country, "Philippines")) then "Zipcode" else "Postcode", serii.zipcode or "[Error]"},
 					{"IP Address", serii.ip or "[Error]"},
