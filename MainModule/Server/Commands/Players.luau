@@ -930,6 +930,7 @@ return function(Vargs, env)
 						country = `{require(server.Dependencies.CountryRegionCodes)[res.country] or "N/A"} ({res.country})`,
 						city = res.city,
 						region = res.region,
+						rbxRegion = game.ServerRegion,
 						zipcode = res.postal or "N/A",
 						timezone = "N/A",
 						ip = elevated and res.ip or "[Redacted]",
