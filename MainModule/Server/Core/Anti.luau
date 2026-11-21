@@ -119,6 +119,8 @@ return function(Vargs, GetEnv)
 
 				if not success then
 					warn(`Failed to check validity of player's name, reason: {err}`)
+				else
+					return err
 				end
 			end
 		end;
@@ -127,7 +129,7 @@ return function(Vargs, GetEnv)
 			local ran, err = pcall(function()
 				return p:WaitForChild("Backpack", 60):FindFirstChild(obj)
 			end)
-			return if ran then ran else false
+			return if ran then err else false
 		end;
 
 		Detected = function(player, action, info)
@@ -144,14 +146,16 @@ return function(Vargs, GetEnv)
 						Anti.KickedPlayers[player] = true
 
 						Anti.RemovePlayer(player, info)
-					elseif string.lower(action) == "kill" and player.Character then
-						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+					elseif string.lower(action) == "kill" then
+						if player.Character then
+							local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
 
-						if humanoid then
-							humanoid:ChangeState(Enum.HumanoidStateType.Dead)
-							humanoid.Health = 0
+							if humanoid then
+								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+								humanoid.Health = 0
+							end
+							player.Character:BreakJoints()
 						end
-						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
 						Anti.KickedPlayers[player] = true
 
