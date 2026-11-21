@@ -474,7 +474,7 @@ return function(Vargs, env)
 					}
 					if hideCharacter then
 						v.CharacterAdded:Connect(function(character: Model)
-							for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
+							for _, otherPlr: Player in service.GetPlayers(v, if hidefromEveryone then "others" else "nonadmins", {DontError = true}) do
 								if otherPlr == v then continue end
 								Remote.Send(otherPlr, "Function", "HideIncognitoCharacter", v.UserId)
 							end
@@ -482,14 +482,10 @@ return function(Vargs, env)
 					end
 
 					local n = 0
-					for _, otherPlr: Player in service.Players:GetPlayers(v, if hidefromEveryone then "others" else "nonadmins") do
+					for _, otherPlr: Player in service.GetPlayers(v, if hidefromEveryone then "others" else "nonadmins", {DontError = true}) do
 						if otherPlr == v then continue end
-						if hideCharacter then
-							Remote.Send(otherPlr, "Function", "HideIncognitoPlayer", v.UserId, true)
-						else
-							Remote.Send(otherPlr, "Function", "HideIncognitoPlayer", v.UserId, false)
+						Remote.Send(otherPlr, "Function", "HideIncognitoPlayer", v.UserId, hideCharacter)
 						n += 1
-						end
 					end
 
 					if n == 0 then
@@ -536,7 +532,7 @@ return function(Vargs, env)
 						success, hasBadge = pcall(service.BadgeService.UserHasBadgeAsync, service.BadgeService, v.UserId, badgeId)
 					until success or tries > 2
 					if not success then
-						Functions.Hint(string.format("ERROR: Unable to get badge ownership status for %s; skipped", service.FormatPlayer(v)))
+						Functions.Hint(string.format("ERROR: Unable to get badge ownership status for %s; skipped", service.FormatPlayer(v)), {plr})
 						continue
 					end
 					if hasBadge then
@@ -585,12 +581,13 @@ return function(Vargs, env)
 					sb = {
 						Script = {};
 						LocalScript = {};
+						ClientScript = {};
 						Events = {};
 					}
 					Variables.ScriptBuilder[tostring(plr.UserId)] = sb
 				end
 
-				local action = string.lower(args[1])
+				local action = string.lower(assert(args[1], "Missing action (argument #1)"))
 				local class = args[2] or "LocalScript"
 				local name = args[3]
 
@@ -613,8 +610,8 @@ return function(Vargs, env)
 							sb[class][name].Script.Disabled = true
 							sb[class][name].Script:Destroy()
 						end)
-						if sb.ChatEvent then
-							sb.ChatEvent:Disconnect()
+						if sb[class][name].Event then
+							sb[class][name].Event:Disconnect()
 						end
 					end
 
@@ -636,6 +633,9 @@ return function(Vargs, env)
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
 						if scr and tab then
+							if sb[class][name].Event then
+								sb[class][name].Event:Disconnect()
+							end
 							sb[class][name].Event = plr.Chatted:Connect(function(msg)
 								if string.sub(msg, 1,#(`{Settings.Prefix}sb`)) ~= `{Settings.Prefix}sb` then
 									tab.Source ..= `\n{msg}`
@@ -649,8 +649,6 @@ return function(Vargs, env)
 					end
 				elseif action == "close" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
-					local scr = sb[class][name].Script
-					local tab = Core.GetScript(scr)
 					if sb[class][name] then
 						if sb[class][name].Event then
 							sb[class][name].Event:Disconnect()
@@ -662,11 +660,13 @@ return function(Vargs, env)
 					end
 				elseif action == "clear" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
-					local scr = sb[class][name].Script
-					local tab = Core.GetScript(scr)
-					if scr and tab then
-						tab.Source = " "
-						Functions.Hint(`Cleared {class} {name}`, {plr})
+					if sb[class][name] then
+						local scr = sb[class][name].Script
+						local tab = Core.GetScript(scr)
+						if scr and tab then
+							tab.Source = " "
+							Functions.Hint(`Cleared {class} {name}`, {plr})
+						end
 					else
 						error(`{class} {name} not found!`)
 					end
@@ -677,9 +677,9 @@ return function(Vargs, env)
 							sb[class][name].Script.Disabled = true
 							sb[class][name].Script:Destroy()
 						end)
-						if sb.ChatEvent then
-							sb.ChatEvent:Disconnect()
-							sb.ChatEvent = nil
+						if sb[class][name].Event then
+							sb[class][name].Event:Disconnect()
+							sb[class][name].Event = nil
 						end
 						sb[class][name] = nil
 					else
@@ -700,7 +700,7 @@ return function(Vargs, env)
 				elseif action == "run" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
 					if sb[class][name] then
-						if class == "LocalScript" then
+						if class == "LocalScript" or class == "ClientScript" then
 							sb[class][name].Script.Parent = plr:FindFirstChildOfClass("Backpack")
 						else
 							sb[class][name].Script.Parent = service.ServerScriptService
@@ -723,11 +723,15 @@ return function(Vargs, env)
 				elseif action == "list" then
 					local tab = {}
 					for i, v in sb.Script do
-						table.insert(tab, {Text = `Script: {i}`, Desc = `Running: {v.Script.Disabled}`})
+						table.insert(tab, {Text = `Script: {i}`, Desc = `Running: {not v.Script.Disabled}`})
 					end
 
 					for i, v in sb.LocalScript do
-						table.insert(tab, {Text = `LocalScript: {i}`, Desc = `Running: {v.Script.Disabled}`})
+						table.insert(tab, {Text = `LocalScript: {i}`, Desc = `Running: {not v.Script.Disabled}`})
+					end
+
+					for i, v in sb.ClientScript do
+						table.insert(tab, {Text = `ClientScript: {i}`, Desc = `Running: {not v.Script.Disabled}`})
 					end
 
 					Remote.MakeGui(plr, "List", {Title = "SB Scripts", Table = tab})
@@ -886,8 +890,8 @@ return function(Vargs, env)
 
 				local result = {}
 				for _,v : Instance in service.StarterGui:GetChildren() do
-					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
-						table.insert(result, (v.Name:gsub("%[Adonis%] ", "")))
+					if v:IsA("LocalScript") and v.Name:find("[Adonis] ", 1, true) == 1 then
+						table.insert(result, (v.Name:gsub("^%[Adonis%] ", "")))
 					end
 				end
 
@@ -911,8 +915,8 @@ return function(Vargs, env)
 				assert(args[1], "No starterscript name provided!")
 
 				for _,v : Instance in service.StarterGui:GetChildren() do
-					if v:IsA("LocalScript") and v.Name:find("[Adonis]") then
-						if v.Name:gsub("%[Adonis%] ", ""):lower() == args[1]:lower() or args[1]:lower() == "all" then
+					if v:IsA("LocalScript") and v.Name:find("[Adonis] ", 1, true) == 1 then
+						if v.Name:gsub("^%[Adonis%] ", ""):lower() == args[1]:lower() or args[1]:lower() == "all" then
 							service.Delete(v)
 							Functions.Hint("Removed starter script "..v.Name, {plr})
 						end

@@ -196,7 +196,7 @@ return function(Vargs, GetEnv)
 			local ratePassed: boolean? = rateLimit.Passed or rateLimit.passed
 
 			local canThrottle: boolean? = rateLimit.ThrottleEnabled
-			local throttleReset: number? = rateLimit.ThrottleReset
+			local throttleReset: number = math.abs(rateLimit.ThrottleReset or 1)
 			local throttleMax: number? = math.floor(math.abs(rateData.ThrottleMax or 1))
 
 			-- Ensure minimum requirement is followed
@@ -235,7 +235,7 @@ return function(Vargs, GetEnv)
 
 			local didThrottle: boolean = canThrottle and rateCache.Throttle+1<=throttleMax
 			local throttleResetOs: number? = rateCache.ThrottleReset
-			local canResetThrottle: boolean = throttleResetOs and nowOs-throttleResetOs <= 0
+			local canResetThrottle: boolean = throttleResetOs and nowOs - throttleResetOs >= throttleReset
 
 			rateCache.Rate += 1
 
@@ -393,7 +393,7 @@ return function(Vargs, GetEnv)
 								else
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
-							elseif rateLimitCheck and RateLimit(p, "RateLog") then
+							elseif not rateLimitCheck and RateLimit(p, "RateLog") then
 								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate))
 								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate))
 							end
@@ -489,18 +489,20 @@ return function(Vargs, GetEnv)
 				end
 
 				local allowed, denialMessage = false, nil
-				local isSystem = false
+				local isSystem = opts.isSystem or p == "SYSTEM"
+				if isSystem then
+					p = p or "SYSTEM"
+				end
+				local isRealPlayer = type(p) ~= "string" and p ~= nil
 
 				local pDat = {
 					Player = opts.Player or p;
-					Level = opts.AdminLevel or Admin.GetLevel(p);
-					isDonor = opts.IsDonor or ((Settings.DonorCommands or command.AllowDonors) and Admin.CheckDonor(p));
+					Level = opts.AdminLevel or (if isRealPlayer then Admin.GetLevel(p) else 1000);
+					isDonor = opts.IsDonor or (isRealPlayer and (Settings.DonorCommands or command.AllowDonors) and Admin.CheckDonor(p)) or false;
 				}
 
-				if opts.isSystem or p == "SYSTEM" then
-					isSystem = true
+				if isSystem then
 					allowed = not command.Disabled
-					p = p or "SYSTEM"
 				else
 					allowed, denialMessage = Admin.CheckPermission(pDat, command, false, opts)
 				end
@@ -523,7 +525,7 @@ return function(Vargs, GetEnv)
 
 				local hasUserText = type(command.UserText) == "table" and type(command.UserText.Args) == "table"
 				local commandDisplay = if command.NoLog or hasUserText then matched else msg
-				local taskName = string.format("Command :: %s : (%s)", p.Name, commandDisplay)
+				local taskName = string.format("Command :: %s : (%s)", if isRealPlayer then p.Name else tostring(p), commandDisplay)
 
 				if #args > 0 and not isSystem and command.Filter or opts.Filter then
 					for i, arg in args do
@@ -1038,7 +1040,7 @@ return function(Vargs, GetEnv)
 					Remote.Send(p, "LaunchAnti", "MainDetection")
 
 					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
-						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
+						Enabled = (Settings.AntiAntiIdle == true or Settings.AntiClientIdle == true)
 					})
 
 					--if Settings.ExploitGuiDetection and Settings.AllowClientAntiExploit then

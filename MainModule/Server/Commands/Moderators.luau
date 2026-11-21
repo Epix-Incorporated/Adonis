@@ -135,18 +135,23 @@ return function(Vargs, env)
 				assert(rawDistance, "Invalid distance value (must be a number)")
 
 				local distance = rawDistance * -1
-				if plr.Character:FindFirstChild("HumanoidRootPart") then
-					if plr.Character.Humanoid.SeatPart~=nil then
-						Functions.RemoveSeatWelds(plr.Character.Humanoid.SeatPart)
+				local char = plr.Character
+				local root = char and char:FindFirstChild("HumanoidRootPart")
+				if root then
+					local hum = char:FindFirstChildOfClass("Humanoid")
+					if hum then
+						if hum.SeatPart ~= nil then
+							Functions.RemoveSeatWelds(hum.SeatPart)
+						end
+						if hum.Sit then
+							hum.Sit = false
+							hum.Jump = true
+						end
 					end
-					if plr.Character.Humanoid.Sit then
-						plr.Character.Humanoid.Sit = false
-						plr.Character.Humanoid.Jump = true
-					end
-					Variables.ReturnPoints[plr] = plr.Character.HumanoidRootPart.CFrame
+					Variables.ReturnPoints[plr] = root.CFrame
 
 					task.wait()
-					plr.Character:PivotTo(plr.Character:GetPivot() * CFrame.new(0, 0, distance))
+					char:PivotTo(char:GetPivot() * CFrame.new(0, 0, distance))
 				end
 			end
 		};
@@ -287,7 +292,7 @@ return function(Vargs, env)
 			Category = "Messages";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers() do
 					Remote.RemoveGui(v, "Countdown")
 				end
 				service.StopLoop("HintCountdown")
@@ -506,7 +511,7 @@ return function(Vargs, env)
 
 						Remote.RemoveGui(v, "Notify")
 						Functions.Notify(`Warning from {service.FormatPlayer(plr)}`, reason, {v})
-						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Functions.GetMainPrefix()}warnings {v.Name}`;})
+						Functions.Notification("Notification", `Warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Functions.GetMainPrefix()}warnings {v.Name}`;})
 					end
 				end
 			end
@@ -542,7 +547,7 @@ return function(Vargs, env)
 							Core.CrossServer("RemovePlayer", tonumber(v.UserId), `Warning from {service.FormatPlayer(plr)}`, reason)
 						end
 
-						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Functions.GetMainPrefix()}warnings {v.Name}`;})
+						Functions.Notification("Notification", `Kick-warned {service.FormatPlayer(v)}`, {plr}, 5, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Functions.GetMainPrefix()}warnings {v.Name}`;})
 					end
 				end
 			end
@@ -597,7 +602,7 @@ return function(Vargs, env)
 							task.defer(Core.SavePlayerData, v, playerData)
 						end
 
-						Functions.Notification("Notification", string.format("Removed %d warning%s from %s.", count, count == 1 and "" or "s", service.FormatPlayer(v)), {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}warnings {v.Name}`;})
+						Functions.Notification("Notification", string.format("Removed %d warning%s from %s.", count, count == 1 and "" or "s", service.FormatPlayer(v)), {plr}, 5, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}warnings {v.Name}`;})
 					end
 				end
 			end
@@ -621,7 +626,7 @@ return function(Vargs, env)
 						task.defer(Core.SavePlayerData, v, playerData)
 					end
 					Functions.LogAdminAction(plr, "Clear Warnings", v.Name, "Warnings cleared")
-					Functions.Notification("Notification", `Cleared warning(s) for {service.FormatPlayer(v)}`, {plr}, 5, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}warnings {v.Name}`;})
+					Functions.Notification("Notification", `Cleared warning(s) for {service.FormatPlayer(v)}`, {plr}, 5, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}warnings {v.Name}`;})
 				end
 			end
 		};
@@ -856,31 +861,41 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
-						local ff = service.New("ForceField", v.Character)
-						local hum = v.Character.Humanoid
+						local char = v.Character
+						local hum = char and char:FindFirstChildOfClass("Humanoid")
+						local torso = char and char:FindFirstChild("HumanoidRootPart")
+						if not (hum and torso) then return end
+
+						local ff = service.New("ForceField", char)
 						local orig = hum.MaxHealth
 						local tools = service.New("Model")
 						hum.MaxHealth = math.huge
-						wait()
+						task.wait()
 						hum.Health = hum.MaxHealth
-						for k, t in v.Backpack:GetChildren() do
-							t.Parent = tools
+						local backpack = v:FindFirstChildOfClass("Backpack")
+						if backpack then
+							for _, t in backpack:GetChildren() do
+								t.Parent = tools
+							end
 						end
-						Admin.RunCommand(`{Functions.GetMainPrefix()}name`, v.Name, `-AFK-_{service.FormatPlayer(v)}_-AFK-`)
-						local torso = v.Character.HumanoidRootPart
+						Admin.RunCommand(`{Functions.GetMainPrefix()}name`, `@{v.Name}`, `-AFK-_{service.FormatPlayer(v)}_-AFK-`)
 						local pos = torso.CFrame
-						local running=true
-						v.Character.Humanoid.Jumping:Once(function()
+						local running = true
+						hum.Jumping:Once(function()
 							running = false
 							ff:Destroy()
 							hum.Health = orig
 							hum.MaxHealth = orig
-							for k, t in tools:GetChildren() do
-								t.Parent = v.Backpack
+							local curBackpack = v:FindFirstChildOfClass("Backpack")
+							if curBackpack then
+								for _, t in tools:GetChildren() do
+									t.Parent = curBackpack
+								end
 							end
-							Admin.RunCommand(`{Functions.GetMainPrefix()}unname`, v.Name)
+							tools:Destroy()
+							Admin.RunCommand(`{Functions.GetMainPrefix()}unname`, `@{v.Name}`)
 						end)
-						repeat torso.CFrame = pos wait() until not v or not v.Character or not torso or not running or not torso.Parent
+						repeat torso.CFrame = pos task.wait() until not v or not v.Character or not torso or not running or not torso.Parent
 					end)
 				end
 			end
@@ -917,7 +932,7 @@ return function(Vargs, env)
 						hum.MaxHealth = math.huge
 						hum.Health = 9e9
 						if Settings.CommandFeedback then
-							Functions.Notification("God mode", "Character God mode has been enabled. You will not take damage from non-explosive weapons.", {v}, 15, "Info")
+							Functions.Notification("God mode", "Character God mode has been enabled. You will not take damage from non-explosive weapons.", {v}, 15, "MatIcon://Info")
 						end
 					end
 				end
@@ -942,7 +957,7 @@ return function(Vargs, env)
 							fullGodFF:Destroy()
 						end
 						if Settings.CommandFeedback then
-							Functions.Notification("God Mode", "Character god mode has been disabled.", {v}, 15, "Info")
+							Functions.Notification("God Mode", "Character god mode has been disabled.", {v}, 15, "MatIcon://Info")
 						end
 					end
 				end
@@ -968,7 +983,7 @@ return function(Vargs, env)
 							Visible = false;
 						})
 						if Settings.CommandFeedback then
-							Functions.Notification("God Mode", "Character god mode has been enabled. You will not take any damage.", {v}, 15, "Info")
+							Functions.Notification("God Mode", "Character god mode has been enabled. You will not take any damage.", {v}, 15, "MatIcon://Info")
 						end
 					end
 				end
@@ -1431,8 +1446,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local name = args[1] or tostring(#Variables.Waypoints + 1)
-				if plr.Character:FindFirstChild("HumanoidRootPart") then
-					Variables.Waypoints[name] = plr.Character.HumanoidRootPart.Position
+				local root = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+				if root then
+					Variables.Waypoints[name] = root.Position
 					Functions.Hint(`Made waypoint {name} | {Variables.Waypoints[name]}`, {plr})
 				end
 			end
@@ -1671,8 +1687,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v and v.Character:FindFirstChildOfClass("Humanoid") then
-						Remote.MakeGui(plr, "Viewport", {Subject = v.Character.HumanoidRootPart});
+					local root = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
+					if root and v.Character:FindFirstChildOfClass("Humanoid") then
+						Remote.MakeGui(plr, "Viewport", {Subject = root});
 					end
 				end
 			end
@@ -1756,8 +1773,8 @@ return function(Vargs, env)
 			Category = "Server";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {any})
-				local amount = tonumber(args[1])
-				local timer = tonumber(args[2])
+				local amount = assert(tonumber(args[1]), "Missing or invalid repeat amount (argument #1)")
+				local timer = assert(tonumber(args[2]), "Missing or invalid interval (argument #2)")
 				if timer<=0 then timer=0.1 end
 				if amount>50 then amount=50 end
 				local command = args[3]
@@ -1810,25 +1827,19 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local name = args[1] and string.lower(args[1])
 
-				if name and name=="me" then
-					for i, v in Variables.CommandLoops do
-						if string.lower(string.sub(i, 1, plr.Name)) == string.lower(plr.Name) then
-							Variables.CommandLoops[string.lower(plr.Name)..args[2]] = nil
+				if not name or name == "all" then
+					table.clear(Variables.CommandLoops)
+				else
+					local targetName = if name == "me" then string.lower(plr.Name) else name
+					local found = false
+					for i in Variables.CommandLoops do
+						if string.lower(string.sub(i, 1, #targetName)) == targetName then
+							Variables.CommandLoops[i] = nil
+							found = true
 						end
 					end
-				elseif name and name=="all" then
-					for i, v in Variables.CommandLoops do
-						Variables.CommandLoops[string.lower(plr.Name)..args[2]] = nil
-					end
-				elseif args[2] then
-					if Variables.CommandLoops[name..args[2]] then
-						Variables.CommandLoops[name..args[2]] = nil
-					else
+					if not found then
 						Remote.MakeGui(plr, "Output", {Title = "Output"; Message = "No loops relating to your search"})
-					end
-				else
-					for i, v in Variables.CommandLoops do
-						Variables.CommandLoops[i] = nil
 					end
 				end
 			end
@@ -1869,7 +1880,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, target)
 				if target then
-					for _, v in Functions.GetPlayers(plr, target, {UseFakePlayer = true}) do
+					local players = if typeof(target) == "Instance" and target:IsA("Player")
+						then {target}
+						else Functions.GetPlayers(plr, target, {UseFakePlayer = true})
+					for _, v in players do
 						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 						local temp = table.create(#cTasks + 1)
 
@@ -1957,7 +1971,7 @@ return function(Vargs, env)
 				})
 
 				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
-				Functions.Message("Adonis", `Teleporting to server "{args[2]}"\nPlease wait...`, players, false, 10)
+				Functions.Message("Adonis", "Teleporting", `Teleporting to server "{args[2]}"\nPlease wait...`, nil, players, false, 10)
 			end
 		};
 
@@ -2215,7 +2229,7 @@ return function(Vargs, env)
 				local answers = args[2]
 				local anstab = {}
 				local responses = {}
-				local voteKey = `ADONISVOTE{service.GenerateGUID(false)}`;
+				local voteKey = `ADONISVOTE{service.HttpService:GenerateGUID(false)}`;
 				local players = service.GetPlayers(plr, args[1])
 				local startTime = os.clock();
 
@@ -2412,12 +2426,12 @@ return function(Vargs, env)
 					v:Destroy()
 				end
 
-				for i, v in Variables.Cameras do
-					if v then
-						table.remove(Variables.Cameras, i)
-						v:Destroy()
+				for _, v in Variables.Cameras do
+					if v and v.Brick then
+						v.Brick:Destroy()
 					end
 				end
+				table.clear(Variables.Cameras)
 
 				for _, v in Variables.Jails do
 					if not v.Player or not v.Player.Parent then
@@ -2713,13 +2727,16 @@ return function(Vargs, env)
 				clipper.Name = "ADONIS_NoClip"
 
 				for i, p in service.GetPlayers(plr, args[1]) do
-					Admin.RunCommand(`{Settings.Prefix}clip`, p.Name)
-					local new = clipper:Clone()
-					new.Parent = p.Character.Humanoid
-					new.Clip.Value = true
-					new.Disabled = false
-					if Settings.CommandFeedback then
-						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk through walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+					local hum = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+					if hum then
+						Admin.RunCommand(`{Settings.Prefix}clip`, `@{p.Name}`)
+						local new = clipper:Clone()
+						new.Parent = hum
+						new.Clip.Value = true
+						new.Disabled = false
+						if Settings.CommandFeedback then
+							Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk through walls.", {p}, 15, "MatIcon://Info") -- Functions.Notification(title,message,player,time,icon)
+						end
 					end
 				end
 			end
@@ -2734,7 +2751,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, p in service.GetPlayers(plr, args[1]) do
-					local old = p.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
+					local hum = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+					local old = hum and hum:FindFirstChild("ADONIS_NoClip")
 					if old then
 						if old.Clip.Value then
 							old.Clip.Value = false
@@ -2742,7 +2760,7 @@ return function(Vargs, env)
 							task.delay(.5,function() old:Destroy() end)
 
 							if Settings.CommandFeedback then
-								Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk through walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+								Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk through walls.", {p}, 15, "MatIcon://Info") -- Functions.Notification(title,message,player,time,icon)
 							end
 						end
 					end
@@ -2760,7 +2778,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local Duration, Valid
 				if args[2] then
-					if args[2]:lower() ~= ("inf" or "infinite" or "infinity" or "unlimited") then
+					if not table.find({"inf", "infinite", "infinity", "unlimited"}, args[2]:lower()) then
 						Duration, Valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
 							return if unit == "s" then val
 								elseif unit == "m" then val * 60
@@ -2877,7 +2895,10 @@ return function(Vargs, env)
 						}
 						Variables.Jails[ind] = jail
 
-						v.Character.Humanoid:UnequipTools()
+						local jailHum = v.Character:FindFirstChildOfClass("Humanoid")
+						if jailHum then
+							jailHum:UnequipTools()
+						end
 						local Backpack = v:FindFirstChildOfClass("Backpack")
 						if Backpack then
 							for _, k in Backpack:GetChildren() do
@@ -2903,8 +2924,10 @@ return function(Vargs, env)
 									if v.Character then
 										local torso = v.Character:FindFirstChild("HumanoidRootPart")
 										if torso then
-
-											v.Character.Humanoid:UnequipTools()
+											local loopHum = v.Character:FindFirstChildOfClass("Humanoid")
+											if loopHum then
+												loopHum:UnequipTools()
+											end
 											local Backpack = v:FindFirstChildOfClass("Backpack")
 											if Backpack then
 												for _, k in Backpack:GetChildren() do
@@ -2974,7 +2997,7 @@ return function(Vargs, env)
 					end
 				end
 
-				if not found then
+				if not found and args[1] then
 					for i, v in Variables.Jails do
 						if string.sub(string.lower(v.Name), 1, #args[1]) == string.lower(args[1]) then
 							local ind = v.Index
@@ -3237,7 +3260,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing player name. What player would you want to copy?")
 
-				local target = service.GetPlayers(plr, args[2])[1]
+				local target = assert(service.GetPlayers(plr, args[2])[1], "Target player not found")
 				local target_character = target.Character
 				if target_character then
 					target_character.Archivable = true
@@ -3340,11 +3363,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v.Character then
-						local Humanoid = v.Character.Humanoid
-
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
 						local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
-						local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, v.Character.Humanoid.RigType)
+						local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, Humanoid.RigType)
 						local Animate: BaseScript = newCharacterModel.Animate
 
 						newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
@@ -3428,7 +3450,7 @@ return function(Vargs, env)
 								wait(); -- Let it finish loading character contents
 
 								newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
-								newPrimary = newChar.PrimaryPart or (newHumanoid and newHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
+								newPrimary = newChar.PrimaryPart or (newHumanoid and newHumanoid.RootPart) or newChar:FindFirstChild("HumanoidRootPart");
 
 								local forcefield = newChar:FindFirstChildOfClass("ForceField")
 								if forcefield then
@@ -3656,10 +3678,9 @@ return function(Vargs, env)
 				};
 			};
 			Function = function(plr: Player, args: {string})
-				local value = assert(tonumber(args[3]), "")
 				local self = Commands.TransparentPart
 				local TypeInput, ParentDir, GroupPartInputs, PartInputs = self.Vars.TypeInput, self.Vars.ParentDir, self.Vars.GroupPartInputs, self.Vars.PartInputs
-		
+
 				if not args[2] then
 					--// Generate the UI for this player
 					server.Remote.MakeGui(plr, "List", {
@@ -3667,69 +3688,79 @@ return function(Vargs, env)
 						Title = "Command Usage";
 					})
 					return
-				elseif not self.Vars._converted then
-					for _, t in ipairs({ TypeInput, ParentDir, GroupPartInputs }) do
-						for k, v in ipairs(t) do
+				end
+
+				local value = assert(tonumber(args[3]), "Missing or invalid transparency value (argument #3)")
+
+				if not self.Vars._converted then
+					for _, t in { TypeInput, ParentDir, GroupPartInputs } do
+						for k, v in pairs(table.clone(t)) do
 							t[string.lower(k)] = v
 						end
 					end
-		
-					for _, v in ipairs(PartInputs) do
+
+					for _, v in ipairs(table.clone(PartInputs)) do
 						PartInputs[string.lower(v)], PartInputs[v] = v, v
 					end
-		
+
 					self.Vars._converted = true
 				end
-		
+
 				for _, player in service.GetPlayers(plr, args[1]) do
 					local character = player.Character
-		
+
 					if character then
 						local partInput = {}
 						local parts = {}
-		
+
 						for _, v in ipairs(string.split(args[2], ",")) do
-							if v == "all" then
+							local lowered = string.lower(v)
+							if lowered == "all" then
 								partInput = {"all"}
 								break
-							elseif self.TypeInput[string.lower(v)] then
-								table.insert(partInput, v)
+							elseif TypeInput[lowered] then
+								table.insert(partInput, lowered)
 							end
-		
-							local group = self.GroupPartInputs[string.lower(v)]
-		
+
+							local group = GroupPartInputs[lowered]
+
 							if group then
 								for _, name in ipairs(group) do
 									table.insert(partInput, name)
 								end
 							else
-								local name = self.PartInputs[string.lower(v)]
-		
+								local name = PartInputs[lowered]
+
 								if name then
 									table.insert(partInput, name)
 								end
 							end
 						end
-		
+
 						for _, v in ipairs(partInput) do
-							local class = self.TypeInput[string.lower(v)]
-							local parent = self.ParentDir[string.lower(v)] and character:FindFirstChild(self.ParentDir[string.lower(v)]) or character
-		
+							local class = TypeInput[string.lower(v)]
+
 							if class then
-								for _, obj in ipairs(parent:GetChildren()) do
-									if v:IsA(class) then
-										table.insert(parts, v)
+								for _, obj in ipairs(character:GetDescendants()) do
+									if obj:IsA(class) then
+										if obj:IsA("Accoutrement") then
+											for _, desc in ipairs(obj:GetDescendants()) do
+												table.insert(parts, desc)
+											end
+										else
+											table.insert(parts, obj)
+										end
 									end
 								end
 							else
-								local found = parent:FindFirstChild(v)
-		
+								local found = character:FindFirstChild(v)
+
 								if found then
 									table.insert(parts, found)
 								end
 							end
 						end
-		
+
 						for _, v in ipairs(parts) do
 							if v:IsA("BasePart") or v:IsA("Decal") then
 								v.Transparency = value
@@ -4472,7 +4503,7 @@ return function(Vargs, env)
 						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
 							if Settings.CommandFeedback then
-								Functions.Notification("Team", `You are now on the '{tm.Name}' team.`, {v}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+								Functions.Notification("Team", `You are now on the '{tm.Name}' team.`, {v}, 15, "MatIcon://Info") -- Functions.Notification(title,message,player,time,icon)
 							end
 						end
 					end
@@ -4532,6 +4563,8 @@ return function(Vargs, env)
 					end
 				end
 
+				assert(#teams > 0, "No matching teams found")
+				if #players == 0 then return end
 				cTeam = math.random(1, #teams)
 				assign()
 			end
@@ -4552,7 +4585,7 @@ return function(Vargs, env)
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
 					if Settings.CommandFeedback then
-						Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+						Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, "MatIcon://Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
 			end
@@ -4727,6 +4760,7 @@ return function(Vargs, env)
 
 							local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 							local root = (Humanoid and Humanoid.RootPart or Character.PrimaryPart or Character:FindFirstChild("HumanoidRootPart"))
+							if not root then continue end
 							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
 							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
 
@@ -4955,8 +4989,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, player in service.GetPlayers(plr, args[1]) do
-					if Variables.ReturnPoints[player] then
-						player.Character.HumanoidRootPart.CFrame = Variables.ReturnPoints[player]
+					local rootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+					if rootPart and Variables.ReturnPoints[player] then
+						rootPart.CFrame = Variables.ReturnPoints[player]
 						Variables.ReturnPoints[player] = nil;
 					end
 				end
@@ -5008,9 +5043,9 @@ return function(Vargs, env)
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
-						Variables.ReturnPoints[players[i]] = rootPart.CFrame
 
 						if rootPart then
+							Variables.ReturnPoints[players[i]] = rootPart.CFrame
 							rootPart.CFrame = (
 								plrRootPart.CFrame
 									* CFrame.Angles(0, math.rad(90), 0)
@@ -5044,9 +5079,9 @@ return function(Vargs, env)
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
-						Variables.ReturnPoints[players[i]] = rootPart.CFrame
 
 						if rootPart then
+							Variables.ReturnPoints[players[i]] = rootPart.CFrame
 							rootPart.CFrame = (
 								plrRootPart.CFrame
 									* CFrame.Angles(0, math.rad(90), 0)
@@ -5267,7 +5302,7 @@ return function(Vargs, env)
 									local humDescClone = humanoidAppliedDesc:Clone()
 
 									humDescClone.GraphicTShirt = 6901238398 -- Some template shirt graphic
-									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
+									humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -5340,7 +5375,7 @@ return function(Vargs, env)
 
 									-- Default Shirt ID 855777286, given when no valid shirt was set with HumanoidDescription
 									humDescClone.Shirt = 855777286 -- Default shirt TODO: You want to change this because the ID put here can't be given with the command if already ran.
-									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
+									humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -5413,7 +5448,7 @@ return function(Vargs, env)
 
 									-- Default Pants ID 855782781, given when no valid pants was set with HumanoidDescription
 									humDescClone.Pants = 855782781 -- Default pants
-									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
+									humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -5777,9 +5812,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
-				assert(args[2] and tonumber(args[2]), "Missing or invalid AudioId")
-
-				local id = args[2]
+				local id = string.lower(assert(args[2], "Missing or invalid AudioId"))
 				local volume = 1 --tonumber(args[5]) or 1
 				local pitch = 1 --tonumber(args[4]) or 1
 				local loop = true
@@ -5809,6 +5842,8 @@ return function(Vargs, env)
 						end
 					end
 				end
+
+				id = assert(tonumber(id), "Missing or invalid AudioId")
 
 				if args[3] and args[3] == "true" then loop = false end
 				volume = tonumber(args[5]) or volume
@@ -6283,10 +6318,10 @@ return function(Vargs, env)
 			Category = "Character";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local speed = tonumber(args[2])
+				local speed = assert(tonumber(args[2]), "Invalid speed value (argument #2)")
 
 				for i, v in service.GetPlayers(plr, args[1]) do
-					local part = v.Character:FindFirstChild("HumanoidRootPart")
+					local part = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local scr = part:FindFirstChild("ADONIS_FLIGHT")
 						if scr then
@@ -6371,9 +6406,12 @@ return function(Vargs, env)
 				scr.Strength.Value = strength
 				scr.Name = "SUPER_FLING"
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local new = scr:Clone()
-					new.Parent = v.Character.HumanoidRootPart
-					new.Disabled = false
+					local root = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
+					if root then
+						local new = scr:Clone()
+						new.Parent = root
+						new.Disabled = false
+					end
 				end
 			end
 		};
@@ -6474,9 +6512,15 @@ return function(Vargs, env)
 
 				if suc then
 					for _, item in ers.Items do
+						if item.Type == "UserOutfit" then
+							Commands.Outfit.Function(plr, {args[1], tostring(item.Id)})
+							return
+						end
+					end
+					for _, item in ers.Items do
 						if item.Type == "Asset" then
-							Commands.AvatarItem.Function(plr, {args[1], item.Id})
-							break
+							Commands.AvatarItem.Function(plr, {args[1], tostring(item.Id)})
+							task.wait()
 						end
 					end
 				else
@@ -6499,8 +6543,9 @@ return function(Vargs, env)
 
 				if success then
 					for _, v in service.GetPlayers(plr, args[1]) do
-						if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
-							v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
+						local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+						if hum then
+							hum:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 						end
 					end
 				else
@@ -6521,17 +6566,17 @@ return function(Vargs, env)
 				local target = service.GetPlayers(plr, assert(args[2], "Missing username or UserId"), {
 					AllowUnknownUsers = true;
 					UseFakePlayer = true
-				})
+				})[1]
 				if target then
-					target = target[1]
 					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target.UserId)
 
 					if success then
 						for _, v in service.GetPlayers(plr, args[1]) do
 							v.CharacterAppearanceId = target.UserId
 
-							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
-								v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
+							local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+							if hum then
+								hum:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 							end
 						end
 					else
@@ -6669,7 +6714,7 @@ return function(Vargs, env)
 						Table = Logs.ListUpdaters.LocalLog(plr, v);
 						Update = "LocalLog";
 						UpdateArg = v;
-						AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
+						AutoUpdate = if args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes") then 1 else nil;
 						Stacking = true;
 						Sanitize = true;
 						TextSelectable = true;
@@ -6951,7 +6996,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local Duration, Valid
 				if args[2] then
-					if args[2]:lower() ~= table.find({"inf", "infinite", "infinity", "unlimited"}, string.lower(args[2])) then
+					if not table.find({"inf", "infinite", "infinity", "unlimited"}, string.lower(args[2])) then
 						Duration, Valid = args[2]:gsub("^(%d+)([smhd])$", function(val, unit)
 							return if unit == "s" then val
 								elseif unit == "m" then val * 60
@@ -7203,7 +7248,8 @@ return function(Vargs, env)
 
 				local ReverbType = Enum.ReverbType
 				local reverbs = ReverbType:GetEnumItems()
-				if not rev or not ReverbType[rev] then
+				local reverbEnum = rev and ReverbType:FromName(rev)
+				if not reverbEnum then
 
 					Functions.Hint("Reverb type was not specified or is invalid. Opening list of valid reverb types", {plr})
 
@@ -7224,7 +7270,7 @@ return function(Vargs, env)
 
 					Functions.Hint("Changed Ambient Reverb of specified player(s)", {plr})
 				else
-					service.SoundService.AmbientReverb = ReverbType[rev]
+					service.SoundService.AmbientReverb = reverbEnum
 					Functions.Hint(`Successfully changed the Ambient Reverb to {rev}`, {plr})
 				end
 			end

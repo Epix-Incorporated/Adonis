@@ -89,7 +89,7 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
 					local secondary = Color3.new(1,0,0)
@@ -131,7 +131,7 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
 					if args[1] then
@@ -171,7 +171,7 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
 					if args[1] then
@@ -207,30 +207,10 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing TextureId")
 
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
-					local startColor = {}
-					local endColor = {}
-
-					if args[2] then
-						for s in args[2]:gmatch("[%d]+") do
-							table.insert(startColor,tonumber(s))
-						end
-					end
-					if args[3] then--276138620 :)
-						for s in args[3]:gmatch("[%d]+") do
-							table.insert(endColor,tonumber(s))
-						end
-					end
-
-					local startc = Color3.new(1,1,1)
-					local endc = Color3.new(1,1,1)
-					if #startColor==3 then
-						startc = Color3.new(startColor[1],startColor[2],startColor[3])
-					end
-					if #endColor==3 then
-						endc = Color3.new(endColor[1],endColor[2],endColor[3])
-					end
+					local startc = Functions.ParseColor3(args[2]) or Color3.new(1, 1, 1)
+					local endc = Functions.ParseColor3(args[3]) or startc
 
 					Functions.RemoveParticle(torso, "DONOR_PARTICLE")
 					Functions.NewParticle(torso, "ParticleEmitter", {
@@ -268,8 +248,10 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso, "DONOR_PARTICLE")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+				if torso then
+					Functions.RemoveParticle(torso, "DONOR_PARTICLE")
+				end
 			end
 		};
 
@@ -282,9 +264,11 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso, "DONOR_FIRE")
-				Functions.RemoveParticle(torso, "DONOR_FIRE_LIGHT")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+				if torso then
+					Functions.RemoveParticle(torso, "DONOR_FIRE")
+					Functions.RemoveParticle(torso, "DONOR_FIRE_LIGHT")
+				end
 			end
 		};
 
@@ -297,9 +281,11 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso, "DONOR_SPARKLES")
-				Functions.RemoveParticle(torso, "DONOR_SPARKLES_LIGHT")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+				if torso then
+					Functions.RemoveParticle(torso, "DONOR_SPARKLES")
+					Functions.RemoveParticle(torso, "DONOR_SPARKLES_LIGHT")
+				end
 			end
 		};
 
@@ -312,8 +298,10 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso, "DONOR_LIGHT")
+				local torso = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+				if torso then
+					Functions.RemoveParticle(torso, "DONOR_LIGHT")
+				end
 			end
 		};
 
@@ -380,8 +368,9 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				local hat = plr.Character:FindFirstChild(args[1])
-				if hat and hat:IsA("Accessory") then
+				assert(args[1], "Missing accessory name")
+				local hat = plr.Character and plr.Character:FindFirstChild(args[1])
+				if hat and hat:IsA("Accoutrement") then
 					hat:Destroy()
 					Functions.Hint(`{args[1]} has been removed.`, {plr})
 				else
@@ -400,9 +389,11 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				for _, v in plr.Character:GetChildren() do
-					if v:IsA("Accoutrement") then
-						v:Destroy()
+				if plr.Character then
+					for _, v in plr.Character:GetChildren() do
+						if v:IsA("Accoutrement") then
+							v:Destroy()
+						end
 					end
 				end
 			end

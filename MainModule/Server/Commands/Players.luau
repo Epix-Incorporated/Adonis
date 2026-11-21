@@ -150,14 +150,14 @@ return function(Vargs, env)
 			Category = "General";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {any})
-				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
-				assert((not args[2]) or tonumber(args[2]), "Arguments provided must be numbers")
+				local num1 = args[1] and assert(tonumber(args[1]), "Argument(s) provided must be numbers")
+				local num2 = args[2] and assert(tonumber(args[2]), "Arguments provided must be numbers")
 
-				if args[2] then
-					assert(args[2] >= args[1], "Second argument n cannot be smaller than first")
-					Functions.Hint(math.random(args[1], args[2]), {plr})
-				elseif args[1] then
-					Functions.Hint(math.random(args[1]), {plr})
+				if num2 then
+					assert(num2 >= num1, "Second argument n cannot be smaller than first")
+					Functions.Hint(math.random(num1, num2), {plr})
+				elseif num1 then
+					Functions.Hint(math.random(num1), {plr})
 				else
 					Functions.Hint(math.random(), {plr})
 				end
@@ -834,7 +834,7 @@ return function(Vargs, env)
 						end
 
 						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
-						local deviceTrustLevel = if elevated then plr.DeviceTrustLevel.Name else "[Redacted]"
+						local deviceTrustLevel = if elevated then v.DeviceTrustLevel.Name else "[Redacted]"
 
 						local hasAdsAllowed = if policyInfo then
 							type(policyInfo) == "string" and policyInfo or policyInfo.AreAdsAllowed and "Yes" or "No"

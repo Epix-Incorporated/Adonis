@@ -40,7 +40,7 @@ return function(Vargs, GetEnv)
 				Logs:AddLog("Script", `Pooled HttpEnabled from service as {HTTP.HttpEnabled}`)
 			else
 				local success, res = pcall(service.HttpService.GetAsync, service.HttpService, Variables.HTTPCheckUrl)
-				HTTP.HttpEnabled = not (not success and res:find("Http requests are not enabled.")) or true
+				HTTP.HttpEnabled = not (not success and type(res) == "string" and res:find("Http requests are not enabled.", 1, true) ~= nil)
 				Logs:AddLog("Script", `Pooled HttpEnabled from request as {HTTP.HttpEnabled}. Status {success}`)
 			end
 		end)
@@ -91,11 +91,11 @@ return function(Vargs, GetEnv)
 							local cmd = card.name
 
 							if string.sub(cmd, 1, 1) == "$" then
-								local placeid = string.match(string.sub(cmd, 2), ".%d+")
-								cmd = string.sub(cmd, #placeid+2)
-								if tonumber(placeid) ~= game.PlaceId then
+								local placeid, rest = string.match(cmd, "^%$(%d+)%s*(.+)$")
+								if not placeid or tonumber(placeid) ~= game.PlaceId then
 									return
 								end
+								cmd = rest
 							end
 
 							Admin.RunCommand(cmd)
