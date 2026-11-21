@@ -219,7 +219,7 @@ return function(Vargs, env)
 							Admin.RemoveAdmin(v, true)
 							Functions.LogAdminAction(plr, "Temporary Unadmin", v.Name, "Admin powers temporarily removed")
 							Functions.Hint(`Removed {service.FormatPlayer(v)}'s admin powers`, {plr})
-							Functions.Notification("Notification", "Your admin powers have been temporarily removed", {v}, 10, "MatIcons://Remove moderator")
+							Functions.Notification("Notification", "Your admin powers have been temporarily removed", {v}, 10, "MatIcon://Remove moderator")
 						else
 							Functions.Hint(`You do not have permission to remove {service.FormatPlayer(v, true)}'s admin powers`, {plr})
 						end
@@ -245,7 +245,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators", true)
 						Functions.LogAdminAction(plr, "Temporary Moderator", v.Name, "N/A")
-						Functions.Notification("Notification", "You are a temp moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
+						Functions.Notification("Notification", "You are a temp moderator. Click to view commands.", {v}, 10, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temp moderator`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -272,7 +272,7 @@ return function(Vargs, env)
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators")
 						Functions.LogAdminAction(plr, "Promoted to Moderator", v.Name, "N/A")
-						Functions.Notification("Notification", "You are a moderator. Click to view commands.", {v}, 10, "MatIcons://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
+						Functions.Notification("Notification", "You are a moderator. Click to view commands.", {v}, 10, "MatIcon://Shield", {Action = "ProcessCommand"; Command = `{Settings.Prefix}cmds`;})
 						Functions.Hint(`{service.FormatPlayer(v, true)} is now a moderator`, {plr})
 					else
 						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
@@ -1221,7 +1221,7 @@ return function(Vargs, env)
 				local message = service.BroadcastFilter(args[2], plr)
 				local legacyRecipients, textChatRecipients = Functions.SplitAnnouncementRecipients(service.GetPlayers(), plr)
 				if #legacyRecipients > 0 then
-					Functions.Message(title, message, legacyRecipients, true, (#tostring(title) / 19) + 2.5)
+					Functions.Message(title, message, legacyRecipients, true, (#tostring(message) / 19) + 2.5)
 				end
 				Functions.DisplayAnnouncementInTextChat(title, message, textChatRecipients)
 			end
@@ -1236,14 +1236,11 @@ return function(Vargs, env)
 			Category = "Moderation";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local sourcePlayerLevel = Admin.GetLevel(plr)
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if Admin.GetLevel(v) <= sourcePlayerLevel then
+				for _, v in service.GetPlayers(plr, args[1], {IsKicking = true}) do
+					if Admin.CheckAuthority(plr, v, "nil") then
 						v.Character = nil
 						v.Parent = nil
 						Functions.Hint(`Sent {service.FormatPlayer(v)} to nil`, {plr})
-					else
-						Functions.Hint(`You don't have permission to send {service.FormatPlayer(v)} to nil`, {plr})
 					end
 				end
 			end
@@ -1314,7 +1311,7 @@ return function(Vargs, env)
 					Variables.DisguiseBindings[v.UserId] = {
 						TargetUsername = username;
 						Rename = v.CharacterAppearanceLoaded:Connect(function(char)
-							Commands.DisplayName.Function(v, {v.Name, username})
+							Commands.DisplayName.Function(v, {`@{v.Name}`, username})
 						end);
 					}
 				end
