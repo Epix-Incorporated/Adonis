@@ -59,6 +59,8 @@ return function(Vargs, env)
 				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
 					local UserId = Functions.GetUserIdFromNameAsync(i)
 					if UserId then
+						Admin.RemoveBan(UserId, true)
+
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
@@ -70,7 +72,7 @@ return function(Vargs, env)
 							Core.DoSave({
 								Type = "TableRemove";
 								Table = "Banned";
-								Value = `{i}:{actualName}`;
+								Value = `{actualName}:{UserId}`;
 							})
 						end
 
@@ -297,6 +299,7 @@ return function(Vargs, env)
 
 					Commands.ScriptEditor.Function(plr,{"edit",Name})
 				elseif Operation:lower() == "edit" then
+					assert(se[Name], "No script found")
 					Remote.MakeGui(plr, "ScriptEditor",{
 						Name = Name;
 						Script = se[Name].Script
@@ -307,10 +310,11 @@ return function(Vargs, env)
 					se[Name] = nil
 				elseif Operation:lower() == "run" then
 					assert(se[Name], "No script found")
+					assert(type(se[Name].Script) == "string", "Script is empty")
 
 					local oError = error
-					local newenv = setfenv(getfenv(),{
-						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "WARN"; Message = `{str}`}) end;
+					local newenv = setmetatable({
+						print = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "PRINT"; Message = `{str}`}) end;
 						warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= `{(i > 1 and " " or "")}{args[i]}` end Remote.MakeGui(plr, "Output",{Title = "WARN"; Message = `{str}`}) end;
 						error = function(reason, level)
 							if level ~= nil and type(level) ~= "number" then
@@ -320,7 +324,7 @@ return function(Vargs, env)
 							Remote.MakeGui(plr, "Output",{Title = "LUA_DEMAND_ERROR"; Message = `LUA_DEMAND_ERROR: {reason}`})
 							oError(`Adonis ScriptEditor error: {reason}`, (level or 1) + 1)
 						end;
-					})
+					}, {__index = getfenv()})
 
 					service.TrackTask(`Thread: ScriptEditor: {plr.UserId}: {Name}`,function()
 						local func,err = Core.Loadstring(se[Name]["Script"], newenv)
@@ -329,55 +333,15 @@ return function(Vargs, env)
 								func()
 							end)
 
-							Remote.MakeGui(plr,'Output',{Title = 'ScriptEditor error'; Message = `ScriptEditor error: {Err}`})
+							if not Succ then
+								Remote.MakeGui(plr,'Output',{Title = 'ScriptEditor error'; Message = `ScriptEditor error: {Err}`})
+							end
 						else
 							Remote.MakeGui(plr,'Output',{Title = 'ScriptEditor error'; Message = `ScriptEditor error: {err}`})
 						end
 					end)
 				end
 			end,
-		};
-
-		CreateStarterScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"starterscript", "clientstarterscript", "starterclientscript", "createstarterscript"};
-			Args = {"name", "code"};
-			Description = "Executes the given code on everyone's client upon respawn";
-			Category = "Developer";
-			AdminLevel = "Creators";
-			NoFilter = true;
-			CrossServerDenied = true;
-			Function = function(plr: Player, args: {string})
-				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				assert(plr ~= false and not service.Wrapped(plr), "A player is needed to run CodeExecution related commands.")
-
-				if type(Remote.RemoteExecutionConfirmed) == "table" and not Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] then
-					local ans = Remote.GetGui(plr, "YesNoPrompt", {
-						Icon = server.MatIcons.Warning;
-						Question = "Are you sure you want to use the starterscript command? (Once confirmed, you will not be asked again)";
-						Title = "Adonis StarterScript";
-						Delay = 3;
-					})
-
-					if ans == "Yes" then
-						Remote.RemoteExecutionConfirmed[tostring(plr.UserId)] = true
-					else
-						return
-					end
-				end
-
-				assert(args[1], "Missing starter script name (argument #1)")
-				assert(args[2], "Missing LocalScript code (argument #2)")
-
-				local bytecode = Core.Bytecode(args[2])
-				assert(string.find(bytecode, "\27Lua"), `LocalScript unable to be created: {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`)
-
-				local new = Core.NewScript("LocalScript", args[2], true)
-				new.Name = `[Adonis] {args[1]}`
-				new.Parent = service.StarterGui
-				new.Disabled = false
-				Functions.Hint("Created starter script", {plr})
-			end
 		};
 
 		ClearOldLogs = {
