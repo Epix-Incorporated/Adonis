@@ -270,7 +270,7 @@ return function(Vargs, GetEnv)
 			["displayname-"] = {
 				Match = "displayname-";
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, isServer, dontError, useFakePlayer, allowUnknownUsers)
-					local matched = tonumber(string.match(msg, "displayname%-(.*)"))
+					local matched = string.match(msg, "displayname%-(.*)")
 					local foundNum = 0
 
 					if matched then
@@ -396,7 +396,7 @@ return function(Vargs, GetEnv)
 
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
-							local character = p.Character
+							local character = p and p.Character
 							local Head = character and character:FindFirstChild("Head")
 
 							if Head and p and p ~= plr and plr:DistanceFromCharacter(Head.Position) <= num then
@@ -738,11 +738,13 @@ return function(Vargs, GetEnv)
 
 			local removalSuccessList = {}
 
-			for i, v in filteredList do
-				for j, w in delFilteredList do
+			for i = #filteredList, 1, -1 do
+				local v = filteredList[i]
+				for _, w in delFilteredList do
 					if v.Name == w.Name then
-						table.remove(filteredList,i)
+						table.remove(filteredList, i)
 						table.insert(removalSuccessList, w)
+						break
 					end
 				end
 			end
@@ -773,29 +775,30 @@ return function(Vargs, GetEnv)
 			end
 
 			local function rplrsort()
-				local children = parent:GetChildren()
-				local childcount = #children
-				local excludecount = #comboTableCheck
-				if excludecount < childcount then
-					local rand = children[math.random(#children)]
-					local rp = getplr(rand)
-
-					for _, v in comboTableCheck do
-						if v.Name == rp.Name then
-							rplrsort()
-							return
-						end
+				local validPlayers = {}
+				for _, child in parent:GetChildren() do
+					local p = getplr(child)
+					if p then
+						table.insert(validPlayers, p)
 					end
+				end
 
+				local excluded = {}
+				for _, v in comboTableCheck do
+					excluded[v.Name] = true
+				end
+
+				local candidates = {}
+				for _, p in validPlayers do
+					if not excluded[p.Name] then
+						table.insert(candidates, p)
+					end
+				end
+
+				if #candidates > 0 then
+					local rp = candidates[math.random(#candidates)]
 					table.insert(finalFilteredList, rp)
-
-					local comboTableCheck = {}
-					for _, v in finalFilteredList do
-						table.insert(comboTableCheck, v)
-					end
-					for _, v in delFilteredList do
-						table.insert(comboTableCheck, v)
-					end
+					table.insert(comboTableCheck, rp)
 				end
 			end
 
@@ -1755,11 +1758,11 @@ return function(Vargs, GetEnv)
 
 			local Humanoid: Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
 
-			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
+			local HumanoidDescription = (Humanoid and Humanoid:GetAppliedDescription()) or service.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
 			local newCharacterModel: any = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType, Enum.AssetTypeVerification.Always)
 			local Animate: BaseScript = newCharacterModel.Animate
 
-			newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
+			newCharacterModel.Humanoid.DisplayName = if Humanoid then Humanoid.DisplayName else plr.DisplayName
 			newCharacterModel.Name = plr.Name
 
 			local oldCFrame = plr.Character and plr.Character:GetPivot() or CFrame.new()
@@ -1810,10 +1813,10 @@ return function(Vargs, GetEnv)
 			end
 
 			if str:sub(1,1) == "#" then
-				local hex = string.match(str:lower(), "[%d|abcdef]+")
+				local hex = string.match(str:lower(), "^#([%da-f]+)$")
 				if hex then
-					local hexColor = Color3.fromHex(hex)
-					if hexColor then
+					local ok, hexColor = pcall(Color3.fromHex, hex)
+					if ok and hexColor then
 						return hexColor
 					end
 				end
