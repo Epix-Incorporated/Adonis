@@ -98,7 +98,15 @@ return function(Vargs, GetEnv)
 				warn(`Deprecated 'Chattable' property found in command {ind}; switched to NonChattable = {cmd.NonChattable}`)
 			end
 
-			Admin.PrefixCache[cmd.Prefix] = true
+			if type(cmd.Prefix) == "table" then
+				for _, p in cmd.Prefix do
+					if p == "" then Admin.BlankPrefix = true end
+					Admin.PrefixCache[p] = true
+				end
+			else
+				if cmd.Prefix == "" then Admin.BlankPrefix = true end
+				Admin.PrefixCache[cmd.Prefix] = true
+			end
 
 			for _, v in cmd.Commands do
 				if type(cmd.Prefix) == "table" then
@@ -143,6 +151,7 @@ return function(Vargs, GetEnv)
 			if not isValid then
 				logError(`The command {ind} is not formatted correctly:`, fault)
 				Commands[ind] = nil
+				return
 			end
 
 			rawset(Commands, ind, cmd)

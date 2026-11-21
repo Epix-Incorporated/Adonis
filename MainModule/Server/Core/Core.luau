@@ -570,7 +570,7 @@ return function(Vargs, GetEnv)
 
 			for _, val in Core.ExecuteScripts do
 				if not isLocal or isLocal and (val.Type == "LocalScript" or val.Type == "ClientScript") then
-					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
+					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions < val.runLimit)) then
 						val.Executions += 1
 
 						return {
@@ -736,7 +736,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		ClearPlayer = function(p)
-			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData(p)
+			Core.PlayerData[tostring(p.UserId)] = Core.DefaultPlayerData(p)
 		end;
 
 		SavePlayerData = function(p, customData)
@@ -1067,6 +1067,7 @@ return function(Vargs, GetEnv)
 
 		GetTableKey = function(indList: {string})
 			local tabs, SuccessSavedTables = Core.GetData("SavedTables", nil, true)
+			tabs = tabs or {}
 			local realTable, tableName = Core.IndexPathToTable(indList)
 
 			local foundTable = nil
@@ -1111,6 +1112,7 @@ return function(Vargs, GetEnv)
 				local val = data.Value
 
 				Core.UpdateData("SavedSettings", function(savedSettings)
+					savedSettings = savedSettings or {}
 					savedSettings[setting] = val
 					return savedSettings
 				end)
@@ -1165,6 +1167,10 @@ return function(Vargs, GetEnv)
 								break
 							end
 						end
+					end
+
+					if continueOperation then
+						table.insert(sets, data)
 					end
 
 					return sets
@@ -1489,7 +1495,7 @@ return function(Vargs, GetEnv)
 						if type(targ) == "table" then
 							return service.NewProxy {
 								__index = function(_, k)
-									if targ[k] ~= nil and API_Special[k] == nil or API_Special[k] == true then
+									if targ[k] ~= nil and (API_Special[k] == nil or API_Special[k] == true) then
 										AddLog(Logs.Script, {
 											Text = `Access to {k} was granted`;
 											Desc = `A server script was granted access to {k}`;
@@ -1539,7 +1545,7 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						if exists and exists.noCache ~= true and (not exists.runLimit or (exists.runLimit and exists.Executions <= exists.runLimit)) then
+						if exists and exists.noCache ~= true and (not exists.runLimit or (exists.runLimit and exists.Executions < exists.runLimit)) then
 							exists.Executions += 1
 							return exists.Source, exists.Loadstring
 						end

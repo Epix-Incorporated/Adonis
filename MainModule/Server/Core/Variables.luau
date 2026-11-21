@@ -251,7 +251,7 @@ return function(Vargs, GetEnv)
 		};
 
 		Blacklist = {
-			Enabled = (server.Settings.BlacklistEnabled ~= nil and server.Settings.BlacklistEnabled) or true,
+			Enabled = if server.Settings.BlacklistEnabled ~= nil then server.Settings.BlacklistEnabled else true,
 			Lists = {
 				Settings = server.Settings.Blacklist
 			},

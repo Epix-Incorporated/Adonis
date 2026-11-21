@@ -179,8 +179,9 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 	local isFunc = type(module) == "function"
 	local isRaw = type(module) == "string"
 	local isValue = not isFunc and not isRaw and module:IsA("StringValue")
+	local origModule = module
 	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
-	local plug = (isFunc and module) or isValue and (server.Core.LoadCode or function(...) return require(server.Shared.FiOne)(...) end)(server.Functions.Base64Decode(module.Value), GetEnv({}, envVars)) or isRaw and assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
+	local plug = (isFunc and origModule) or isValue and (server.Core.LoadCode or function(...) return require(server.Shared.FiOne)(...) end)(server.Functions.Base64Decode(module.Value), GetEnv({}, envVars)) or isRaw and assert(assert(server.Core.Loadstring, "Cannot compile plugin due to Core.Loadstring missing")(module, GetEnv({}, envVars)), "Failed to compile module")() or require(module)
 
 	if server.Modules and not isFunc and not isRaw then
 		table.insert(server.Modules,module)
@@ -548,8 +549,8 @@ return service.NewProxy({
 
 		if not data.Loader and not silentStartup then
 			warn("WARNING: MainModule loaded without using the loader!")
-		elseif data.Loader and not data.LoaderVersion and server.Model then
-			data.LoaderVersion = server.Model:FindFirstChild("Version") and tonumber(server.Model.Version.Value)
+		elseif data.Loader and not data.LoaderVersion and data.Model then
+			data.LoaderVersion = data.Model:FindFirstChild("Version") and tonumber(data.Model.Version.Value)
 		end
 
 		if data.NightlyMode or data.ModuleID == 8612978896 then
@@ -561,7 +562,7 @@ return service.NewProxy({
 		end
 
 		if data.NightlyMode then -- Wrap things that should be wrapped?
-			for _, v in {"Folder", "Deps", "CommandModules", "Client", "Dependancies", "PluginsFolder"} do
+			for _, v in {"Folder", "Deps", "CommandModules", "Client", "Dependencies", "PluginsFolder"} do
 				server[v] = service.Wrap(server[v])
 			end
 			locals.Folder = service.Wrap(locals.Folder)
@@ -600,7 +601,6 @@ return service.NewProxy({
 		server.Shared = Folder.Parent.Shared
 		server.ServerPlugins = data.ServerPlugins
 		server.ClientPlugins = data.ClientPlugins
-		server.Client = Folder.Parent.Client
 
 		locals.Settings = server.Settings
 
@@ -787,7 +787,7 @@ return service.NewProxy({
 				local code = service.New("StringValue")
 
 				code.Name = service.HttpService:GenerateGUID(false)
-				code.Value = server.Functions.Base64Encode(module:sub(1, 4) == "\27Lua" or server.Core.Bytecode(module))
+				code.Value = server.Functions.Base64Encode(if module:sub(1, 4) == "\27Lua" then module else server.Core.Bytecode(module))
 				code.Parent = server.Client.Plugins
 			end
 		end

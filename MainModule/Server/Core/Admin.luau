@@ -95,7 +95,7 @@ return function(Vargs, GetEnv)
 						end
 					else
 						AddLog("Script", `Using the 'CanSend' method of handling chat connectivity in channel {textchannel.Name}`)
-						Variables.TextChatSpeakers = {}
+						Variables.TextChatSpeakers = Variables.TextChatSpeakers or {}
 						local function AddUserToTextChatSpeakers(player: Player, speaker: TextSource)
 							if not Variables.TextChatSpeakers[player] then
 								Variables.TextChatSpeakers[player] = {}
@@ -157,7 +157,8 @@ return function(Vargs, GetEnv)
 
 				--// Only set this up once
 				--// This is for commands to tell us when a player should be muted
-				if not Settings.OverrideChatCallbacks then
+				if Settings.OverrideChatCallbacks == false then
+					Variables.TextChatSpeakers = Variables.TextChatSpeakers or {}
 					service.Events.PlayerMuted:Connect(function(data)
 						local PlayerId = data.Target;
 						local ModId = data.Moderator;
@@ -251,26 +252,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		if Settings.CommandCooldowns then
-			for cmdName, cooldownData in Settings.CommandCooldowns do
-				local realCmd = Admin.GetCommand(cmdName)
-
-				if realCmd then
-					if cooldownData.Player then
-						realCmd.PlayerCooldown = cooldownData.Player
-					end
-
-					if cooldownData.Server then
-						realCmd.ServerCooldown = cooldownData.Server
-					end
-
-					if cooldownData.Cross then
-						realCmd.CrossCooldown = cooldownData.Cross
-					end
-				end
-			end
-		end
-
 		--// Cache clearing job to clear GroupsCache every 6 minutes to prevent gradual memory leaking
 		service.StartLoop("GroupsCacheClear", 360, function()
 			for key, cache in Admin.GroupsCache do
@@ -297,6 +278,31 @@ return function(Vargs, GetEnv)
 
 		Admin.RunAfterPlugins = nil;
 		AddLog("Script", "Admin Module RunAfterPlugins Finished")
+	end
+
+	local function RunLast(data)
+		if Settings.CommandCooldowns then
+			for cmdName, cooldownData in Settings.CommandCooldowns do
+				local _, realCmd = Admin.GetCommand(cmdName)
+
+				if realCmd then
+					if cooldownData.Player then
+						realCmd.PlayerCooldown = cooldownData.Player
+					end
+
+					if cooldownData.Server then
+						realCmd.ServerCooldown = cooldownData.Server
+					end
+
+					if cooldownData.Cross then
+						realCmd.CrossCooldown = cooldownData.Cross
+					end
+				end
+			end
+		end
+
+		Admin.RunLast = nil
+		AddLog("Script", "Admin Module RunLast Finished")
 	end
 
 	local function stripArgPlaceholders(alias)
@@ -351,6 +357,7 @@ return function(Vargs, GetEnv)
 	server.Admin = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
+		RunLast = RunLast;
 
 		SpecialLevels = {};
 		TempAdmins = {};
@@ -550,6 +557,12 @@ return function(Vargs, GetEnv)
 				if filterName then
 					filterName = string.lower(filterName)
 				else
+					if not banCheck and not string.find(check, ":", 1, true) then
+						local cache = Functions.GetUserIdFromNameAsync(check)
+						if cache and plr.UserId == cache then
+							return true
+						end
+					end
 					return false
 				end
 				if filterName == "group" then
@@ -581,13 +594,6 @@ return function(Vargs, GetEnv)
 					local username, userId = string.match(check, "^(.*):(.*)")
 					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
 						return true
-					end
-
-					if not banCheck and type(check) == "string" and not string.find(check, ":") then
-						local cache = Functions.GetUserIdFromNameAsync(check)
-						if cache and plr.UserId == cache then
-							return true
-						end
 					end
 				end
 			elseif cType == "table" then
@@ -832,7 +838,7 @@ return function(Vargs, GetEnv)
 
 		AddAdmin = function(p, level, temp)
 			local current, rank = Admin.GetLevel(p)
-			local list = rank and Settings.Ranks[rank]
+			local list = rank and Settings.Ranks[rank] and Settings.Ranks[rank].Users
 			local levelName, newRank, newList
 
 			if type(level) == "string" then
@@ -1145,7 +1151,7 @@ return function(Vargs, GetEnv)
 						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
 							Title = "Error",
-							Message = error,
+							Message = err,
 							Color = Color3.new(1, 0, 0),
 						})
 						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
@@ -1175,7 +1181,7 @@ return function(Vargs, GetEnv)
 						err = string.match(err, ":(.+)$") or "Unknown error"
 						Remote.MakeGui(plr, "Output", {
 							Title = "",
-							Message = error,
+							Message = err,
 							Color = Color3.new(1, 0, 0),
 						})
 						warn(`Encountered an error while running a command: {coma}\n{err}\n{debug.traceback()}`)
@@ -1331,7 +1337,8 @@ return function(Vargs, GetEnv)
 				matched = string.lower(matched)
 
 				for ind,cmd in Commands do
-					if type(cmd) == "table" and ((checkPrefix and prefixChar == cmd.Prefix) or not checkPrefix) then
+					local prefixMatches = if type(cmd) == "table" then (if type(cmd.Prefix) == "table" then table.find(cmd.Prefix, prefixChar) ~= nil else prefixChar == cmd.Prefix) else false
+					if type(cmd) == "table" and ((checkPrefix and prefixMatches) or not checkPrefix) then
 						for _, alias in cmd.Commands do
 							if string.lower(alias) == matched then
 								foundCmds[ind] = cmd
@@ -1715,11 +1722,15 @@ return function(Vargs, GetEnv)
 			--// Cross cooldown
 			do
 				local playerData = Core.GetPlayer(pDat.Player)
-				local crossCooldown_Cache = playerData._crossCooldownCache or {}
+				local crossCooldown_Cache = playerData._crossCooldownCache
+				if not crossCooldown_Cache then
+					crossCooldown_Cache = {}
+					playerData._crossCooldownCache = crossCooldown_Cache
+				end
 				local crossCooldown_playerCache = crossCooldown_Cache[cmdFullName]
 
 				if not crossCooldown and crossCooldown_playerCache then
-					crossCooldown_playerCache[cmdFullName] = nil
+					crossCooldown_Cache[cmdFullName] = nil
 				elseif crossCooldown then
 					crossCooldown_Cache[cmdFullName] = lastUsed
 				end
