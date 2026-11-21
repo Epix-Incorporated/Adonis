@@ -43,6 +43,11 @@ return function(Vargs, GetEnv)
 				Remote.MaxLen = string.len(com)
 			end
 		end
+		for com in Remote.Returnables do
+			if string.len(com) > Remote.MaxLen then
+				Remote.MaxLen = string.len(com)
+			end
+		end
 
 		--// Start key check loop
 		service.StartLoop("ClientKeyCheck", 60, Remote.CheckKeys, true);
@@ -533,7 +538,7 @@ return function(Vargs, GetEnv)
 
 			AudioLib = function(p, args)
 				local AdminLevel = Admin.GetLevel(p)
-				if Commands.Music and Admin.CheckComLevel(AdminLevel, Commands.Music) then
+				if Commands.Music and Admin.CheckComLevel(AdminLevel, Commands.Music.AdminLevel) then
 					local audioLib = Functions.AudioLib
 
 					if not Functions.AudioLib then
@@ -711,7 +716,7 @@ return function(Vargs, GetEnv)
 
 		Terminal = {
 			Data = {};
-			Format = function(msg, data) (data or {}).Text = msg end;
+			Format = function(msg, data) data = data or {} data.Text = msg return data end;
 			Output = function(tab, msg, mata) table.insert(tab, Remote.Terminal.Format(msg, mata)) end;
 			GetCommand = function(cmd) for i, com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
 			LiveOutput = function(p, data, type) Remote.FireEvent(p, "TerminalLive", {Data = data; Type = type or "Terminal";}) end;
@@ -827,8 +832,8 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p, args[1], {UseFakePlayer = true})
 						if #plrs > 0 then
+							local ret = {}
 							for _, v in plrs do
-								local ret = {}
 								local char = v.Character
 								if char and char.ClassName == "Model" then
 									char:BreakJoints()
@@ -836,8 +841,8 @@ return function(Vargs, GetEnv)
 								else
 									table.insert(ret, `{service.FormatPlayer(v)} has no character or it's not a model`)
 								end
-								return ret
 							end
+							return ret
 						else
 							return {`No players matching '{args[1]}' found`}
 						end
@@ -857,6 +862,7 @@ return function(Vargs, GetEnv)
 								v:LoadCharacter()
 								table.insert(ret, `Respawned {service.FormatPlayer(v)}`)
 							end
+							return ret
 						else
 							return {`No players matching '{args[1]}' found`}
 						end
@@ -869,7 +875,7 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Disconnects all players from the server and prevents rejoining";
 					Function = function(p,args,data) -- TODO: Make this use Functions.Shutdown
-						service.PlayerAdded:Connect(function(p)
+						service.Players.PlayerAdded:Connect(function(p)
 							p:Kick(args[1] or "No Given Reason")
 						end)
 
@@ -971,13 +977,15 @@ return function(Vargs, GetEnv)
 					local value = args[2];
 					local tab = Core.IndexPathToTable(tabName);
 
-					table.insert(tab, value);
+					if tab then
+						table.insert(tab, value);
 
-					Core.DoSave({
-						Type = "TableAdd";
-						Table = tabName;
-						Value = value;
-					})
+						Core.DoSave({
+							Type = "TableAdd";
+							Table = tabName;
+							Value = value;
+						})
+					end
 				end
 			end;
 
@@ -986,17 +994,20 @@ return function(Vargs, GetEnv)
 					local tabName = args[1];
 					local value = args[2];
 					local tab = Core.IndexPathToTable(tabName);
-					local ind = Functions.GetIndex(tab, value);
 
-					if ind then
-						table.remove(tab, ind);
+					if tab then
+						local ind = Functions.GetIndex(tab, value);
+
+						if ind then
+							table.remove(tab, ind);
+						end
+
+						Core.DoSave({
+							Type = "TableRemove";
+							Table = tabName;
+							Value = value;
+						})
 					end
-
-					Core.DoSave({
-						Type = "TableRemove";
-						Table = tabName;
-						Value = value;
-					})
 				end
 			end;
 
@@ -1281,17 +1292,17 @@ return function(Vargs, GetEnv)
 		end;
 
 		Fire = function(p: Player,...)
-			assert(p and p:IsA("Player"), `Remote.Fire: {p.Name} is not a valid Player`)
+			assert(p and p:IsA("Player"), `Remote.Fire: {tostring(p)} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
-			if RemoteEvent and RemoteEvent.Object then
+			if keys and RemoteEvent and RemoteEvent.Object then
 				keys.Sent += 1
 				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, { Mode = "Fire", Sent = 0 }, ...)
 			end
 		end;
 
 		Send = function(p: Player,com: string,...)
-			assert(p and p:IsA("Player"), `Remote.Send: {p.Name} is not a valid Player`)
+			assert(p and p:IsA("Player"), `Remote.Send: {tostring(p)} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				Remote.Fire(p, Remote.NewEncrypt(com, keys.Key, keys.Cache), ...)
@@ -1301,7 +1312,7 @@ return function(Vargs, GetEnv)
 		GetFire = function(p: Player, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
-			if RemoteEvent and RemoteEvent.Function then
+			if keys and RemoteEvent and RemoteEvent.Function then
 				keys.Sent += 1
 				local ran, ret = pcall(RemoteEvent.Function.InvokeClient, RemoteEvent.Function, p, { Mode = "Get", Sent = 0 }, ...)
 				if ran then
@@ -1336,8 +1347,8 @@ return function(Vargs, GetEnv)
 
 				print("GETTING RETURN")
 				if not finished and not returns and p.Parent then
-					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
-					task.delay(600, function() if not finished then event:Fire() end end)
+					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then Yield:Fire() end end)
+					task.delay(600, function() if not finished then Yield:Fire() end end)
 					print(string.format("WAITING FOR RETURN %s", tostring(returns)))
 					Yield:Wait()
 					Yield:Destroy()
@@ -1450,7 +1461,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		MoveLocal = function(p: Player, object: string, parent: string?, newParent: Instance)
-			Remote.Send(p, "Function", "MoveLocal", object, false, newParent)
+			Remote.Send(p, "Function", "MoveLocal", object, parent, newParent)
 		end;
 
 		RemoveLocal = function(p: Player, object: string, parent: string?, match: boolean?)
@@ -1474,7 +1485,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		StartLoop = function(p: Player, name: string, delay: number | string, funcCode: string)
-			Remote.Send(p, "StartLoop", name, delay, Core.ByteCode(funcCode))
+			Remote.Send(p, "StartLoop", name, delay, Core.Bytecode(funcCode))
 		end;
 
 		StopLoop = function(p: Player, name: string)
@@ -1542,7 +1553,7 @@ return function(Vargs, GetEnv)
 				local keyLen = #key
 
 				for i = 0, #str - 1 do
-					writeu8(rawStr, i, (readu8(rawStr, i) - readu8(rawKey, (i + 1) % keyLen)) % 126 - 1)
+					writeu8(rawStr, i, (readu8(rawStr, i) - 1 - readu8(rawKey, (i + 1) % keyLen)) % 126)
 				end
 
 				cache[key] = keyCache
